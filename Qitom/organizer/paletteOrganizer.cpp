@@ -21,6 +21,8 @@
 *********************************************************************** */
 
 #include "paletteOrganizer.h"
+#include "../AppManagement.h"
+#include <qsettings.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 inline uchar saturate_cast(float v)
@@ -49,7 +51,7 @@ inline int ItomPaletteBase::findUpper( double pos ) const
     int index = 0;
 
     //int n = _stops.size();
-    int n = m_colorStops.size();
+    int n = m_paletteData.colorStops.size();
 
     //const ColorStop *stops = _stops.data();
 
@@ -58,7 +60,7 @@ inline int ItomPaletteBase::findUpper( double pos ) const
         const int half = n >> 1;
         const int middle = index + half;
 
-        if ( m_colorStops[middle].first <= pos )
+        if (m_paletteData.colorStops[middle].first <= pos )
         //if ( stops[middle].pos <= pos )
         {
             index = middle + 1;
@@ -80,17 +82,16 @@ inline int ItomPaletteBase::findUpper( double pos ) const
 */
 bool ItomPaletteBase::setInverseColorOne(const QColor color)
 {
-    if((m_type & ito::tPaletteReadOnly) && m_inverseColorOne.isValid())
+    if((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.inverseColorOne.isValid())
     {
         //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
         return false;
     }
 
-    m_inverseColorOne = color;
+    m_paletteData.inverseColorOne = color;
 
     return true;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Set the second inverse color for this color bar
@@ -99,15 +100,15 @@ bool ItomPaletteBase::setInverseColorOne(const QColor color)
     \param      color   new color as QColor value
     \return     bool    true if success
 */
-bool ItomPaletteBase::setInversColorTwo(const QColor color)
+bool ItomPaletteBase::setInverseColorTwo(const QColor color)
 {
-    if((m_type & ito::tPaletteReadOnly) && m_inverseColorTwo.isValid())
+    if ((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.inverseColorTwo.isValid())
     {
         //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
         return false;
     }
 
-    m_inverseColorTwo = color;
+    m_paletteData.inverseColorTwo = color;
 
     return true;
 }
@@ -121,13 +122,13 @@ bool ItomPaletteBase::setInversColorTwo(const QColor color)
 */
 bool ItomPaletteBase::setInvalidColor(const QColor color)
 {
-    if((m_type & ito::tPaletteReadOnly) && m_invalidColor.isValid())
+    if ((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.invalidColor.isValid())
     {
         //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
         return false;
     }
 
-    m_invalidColor = color;
+    m_paletteData.invalidColor = color;
 
     return true;
 }
@@ -140,7 +141,8 @@ bool ItomPaletteBase::setInvalidColor(const QColor color)
 */
 QColor ItomPaletteBase::getInvalidColor() const 
 {
-    return m_invalidColor.isValid() ? m_invalidColor : (m_colorStops.size() > 0 ? QColor(m_colorStops[0].second) : QColor(0,0,0));
+    return m_paletteData.invalidColor.isValid() ? m_paletteData.invalidColor : 
+        (m_paletteData.colorStops.size() > 0 ? QColor(m_paletteData.colorStops[0].second) : QColor(0, 0, 0));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Insert a new color stop into the palette defined by color and position
@@ -158,7 +160,7 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
     // Lookups need to be very fast, insertions are not so important.
     // Anyway, a balanced tree is what we need here. TODO ...
 
-    if(m_type & ito::tPaletteReadOnly)
+    if (m_paletteData.type & ito::tPaletteReadOnly)
     {
         //qDebug() << "ItomPalette insertColorStop. Tried to write to a readonly palette. ";
         return false;
@@ -169,30 +171,30 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
         return false;
     }
     int index;
-    if ( m_colorStops.size() == 0 )
+    if (m_paletteData.colorStops.size() == 0 )
     //if ( _stops.size() == 0 )
     {
         index = 0;
         //_stops.resize( 1 );  
-        m_colorStops.resize(1);
+        m_paletteData.colorStops.resize(1);
     }
     else
     {
         index = findUpper( pos );
         //if ( index == _stops.size() || qAbs( _stops[index].pos - pos ) >= 0.001 )
-        if ( index == m_colorStops.size() || qAbs( m_colorStops[index].first - pos ) >= 0.001 )
+        if ( index == m_paletteData.colorStops.size() || qAbs(m_paletteData.colorStops[index].first - pos ) >= 0.001 )
         {
             //_stops.resize( _stops.size() + 1 );
             //for ( int i = _stops.size() - 1; i > index; i-- )
             //    _stops[i] = _stops[i-1];
-            m_colorStops.resize( m_colorStops.size() + 1 );
-            for ( int i = m_colorStops.size() - 1; i > index; i-- )
-                m_colorStops[i] = m_colorStops[i-1];
+            m_paletteData.colorStops.resize(m_paletteData.colorStops.size() + 1 );
+            for ( int i = m_paletteData.colorStops.size() - 1; i > index; i-- )
+                m_paletteData.colorStops[i] = m_paletteData.colorStops[i-1];
         }   
     }
     //_stops[index] = ColorStop( pos, color );
-    m_colorStops[index].first = pos;
-    m_colorStops[index].second = color;
+    m_paletteData.colorStops[index].first = pos;
+    m_paletteData.colorStops[index].second = color;
     return true;
 }
 
@@ -205,8 +207,9 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 */
 double ItomPaletteBase::getPos(unsigned int color) const
 {
-    if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].first;
-    return m_colorStops[color].first;
+    if(color > (unsigned int) (m_paletteData.colorStops.size() - 1)) 
+        return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].first;
+    return m_paletteData.colorStops[color].first;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -218,8 +221,9 @@ double ItomPaletteBase::getPos(unsigned int color) const
 */
 QColor ItomPaletteBase::getColor(unsigned int color) const
 {
-    if(color > (unsigned int)(m_colorStops.size() - 1)) return m_colorStops[m_colorStops.size() - 1].second;
-    return m_colorStops[color].second;
+    if(color > (unsigned int)(m_paletteData.colorStops.size() - 1)) 
+        return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].second;
+    return m_paletteData.colorStops[color].second;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -231,8 +235,6 @@ QColor ItomPaletteBase::getColor(unsigned int color) const
 */
 void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
 {
-
-
     return;
 }
 
@@ -244,27 +246,21 @@ void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
 */
 void ItomPaletteBase::update(const bool updateInverseColors)
 {
-    m_paletteData.name = m_name;
-    m_paletteData.colorStops = m_colorStops;
-    m_paletteData.type = m_type;
     m_paletteData.colorVector256 = get256Colors();
 
-    if(updateInverseColors || !m_inverseColorOne.isValid() || !m_inverseColorTwo.isValid())
+    if(updateInverseColors || !m_paletteData.inverseColorOne.isValid() || !m_paletteData.inverseColorTwo.isValid())
     {
         QColor color1, color2;
         calculateInverseColors(color1, color2);
-        if(updateInverseColors || !m_inverseColorOne.isValid())
+        if(updateInverseColors || !m_paletteData.inverseColorOne.isValid())
         {
-            m_inverseColorOne = color1;
+            m_paletteData.inverseColorOne = color1;
         }
-        if(updateInverseColors || !m_inverseColorTwo.isValid())
+        if(updateInverseColors || !m_paletteData.inverseColorTwo.isValid())
         {
-            m_inverseColorTwo = color2;        
+            m_paletteData.inverseColorTwo = color2;
         }
     }
-    m_paletteData.inverseColorOne = m_inverseColorOne;
-    m_paletteData.inverseColorTwo = m_inverseColorTwo;
-    m_paletteData.invalidColor = m_invalidColor;
     return;
 }
 
@@ -295,49 +291,64 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
     int curIdx = 0;
     float pos = 0.0;
 
-    if (m_colorStops.size() > 0) //check if at least one color stop is defined
+    if (m_paletteData.colorStops.size() > 0) //check if at least one color stop is defined
     {
-        float offsetR = m_colorStops[curIdx].second.red();
-        float offsetG = m_colorStops[curIdx].second.green();
-        float offsetB = m_colorStops[curIdx].second.blue();
-        float offsetA = m_colorStops[curIdx].second.alpha();
+        float offsetR = m_paletteData.colorStops[curIdx].second.red();
+        float offsetG = m_paletteData.colorStops[curIdx].second.green();
+        float offsetB = m_paletteData.colorStops[curIdx].second.blue();
+        float offsetA = m_paletteData.colorStops[curIdx].second.alpha();
 
         unsigned char rVal = 0;
         unsigned char gVal = 0;
         unsigned char bVal = 0;
         unsigned char alphaVal = 0;
 
-        colors[0] = ((unsigned int)m_colorStops[curIdx].second.blue());
-        colors[0] += ((unsigned int)m_colorStops[curIdx].second.green()) << 8;
-        colors[0] += ((unsigned int)m_colorStops[curIdx].second.red()) << 16;
+        colors[0] = ((unsigned int)m_paletteData.colorStops[curIdx].second.blue());
+        colors[0] += ((unsigned int)m_paletteData.colorStops[curIdx].second.green()) << 8;
+        colors[0] += ((unsigned int)m_paletteData.colorStops[curIdx].second.red()) << 16;
 
-        colors[255] = ((unsigned int)m_colorStops[m_colorStops.size()-1].second.blue());
-        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.green()) << 8;
-        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) << 16;
+        colors[255] = ((unsigned int)m_paletteData.colorStops[m_paletteData.colorStops.size()-1].second.blue());
+        colors[255] += ((unsigned int)m_paletteData.colorStops[m_paletteData.colorStops.size()-1].second.green()) << 8;
+        colors[255] += ((unsigned int)m_paletteData.colorStops[m_paletteData.colorStops.size()-1].second.red()) << 16;
 
         if(includeAlpha)
         {
-            colors[0] += ((unsigned int)m_colorStops[curIdx].second.alpha()) << 24;
-            colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.alpha()) << 24;
+            colors[0] += ((unsigned int)m_paletteData.colorStops[curIdx].second.alpha()) << 24;
+            colors[255] += ((unsigned int)m_paletteData.colorStops[m_paletteData.colorStops.size()-1].second.alpha()) << 24;
         }
 
         for(int i = 1; i < 255; i++)
         {
             pos = i / 255.0;
-            if((curIdx < m_colorStops.size()-2) && (pos > m_colorStops[curIdx+1].first))
+            if((curIdx < m_paletteData.colorStops.size()-2) && (pos > m_paletteData.colorStops[curIdx+1].first))
             {
                 curIdx++;
-                offsetR = m_colorStops[curIdx].second.red();
-                offsetG = m_colorStops[curIdx].second.green();
-                offsetB = m_colorStops[curIdx].second.blue();
-                offsetA = m_colorStops[curIdx].second.alpha();
+                offsetR = m_paletteData.colorStops[curIdx].second.red();
+                offsetG = m_paletteData.colorStops[curIdx].second.green();
+                offsetB = m_paletteData.colorStops[curIdx].second.blue();
+                offsetA = m_paletteData.colorStops[curIdx].second.alpha();
             }
 
-            bVal = saturate_cast(((float)m_colorStops[curIdx+1].second.blue() - (float)m_colorStops[curIdx].second.blue())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetB);
-            gVal = saturate_cast(((float)m_colorStops[curIdx+1].second.green() - (float)m_colorStops[curIdx].second.green())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetG);
-            rVal = saturate_cast(((float)m_colorStops[curIdx+1].second.red() - (float)m_colorStops[curIdx].second.red())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetR);
+            bVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.blue() 
+                - (float)m_paletteData.colorStops[curIdx].second.blue())
+                / (m_paletteData.colorStops[curIdx+1].first - m_paletteData.colorStops[curIdx].first) 
+                * (pos - m_paletteData.colorStops[curIdx].first) + offsetB);
+            gVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.green() 
+                - (float)m_paletteData.colorStops[curIdx].second.green()) 
+                / (m_paletteData.colorStops[curIdx+1].first 
+                - m_paletteData.colorStops[curIdx].first) 
+                * (pos - m_paletteData.colorStops[curIdx].first) + offsetG);
+            rVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.red() 
+                - (float)m_paletteData.colorStops[curIdx].second.red())
+                / (m_paletteData.colorStops[curIdx+1].first 
+                - m_paletteData.colorStops[curIdx].first) 
+                * (pos - m_paletteData.colorStops[curIdx].first) + offsetR);
 
-            alphaVal = saturate_cast(((float)m_colorStops[curIdx+1].second.alpha() - (float)m_colorStops[curIdx].second.alpha())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetA);
+            alphaVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.alpha() 
+                - (float)m_paletteData.colorStops[curIdx].second.alpha())
+                / (m_paletteData.colorStops[curIdx+1].first 
+                - m_paletteData.colorStops[curIdx].first) 
+                * (pos - m_paletteData.colorStops[curIdx].first) + offsetA);
 
             colors[i] = ((unsigned int)bVal);
             colors[i] += ((unsigned int)gVal) << 8;
@@ -380,12 +391,13 @@ PaletteOrganizer::PaletteOrganizer()
     //declare "gray"
     newPalette = ItomPaletteBase("gray", ito::tPaletteGray | ito::tPaletteRGB | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 255, 255));
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo("#e31a1c"); //dark red
+    newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "gray"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("gray");
     m_colorBarLookUp.insert("gray", m_colorBars.size() - 1);
+    m_builtInPalettes << "gray";
     //------------
 
     //declare "grayMarked"
@@ -393,12 +405,13 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.0, Qt::black);
     newPalette.insertColorStop(1.0, Qt::red);
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo(Qt::green);
+    newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "grayMarked"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("grayMarked");
     m_colorBarLookUp.insert("grayMarked", m_colorBars.size() - 1);
+    m_builtInPalettes << "grayMarked";
     //------------
 
     //declare "falseColor"
@@ -409,12 +422,13 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.8, Qt::blue);
     //newPalette.calculateInverseColors(inv1, inv2);
     newPalette.setInverseColorOne(Qt::black);
-    newPalette.setInversColorTwo(Qt::gray);
+    newPalette.setInverseColorTwo(Qt::gray);
     newPalette.setWriteProtection();
     //set "falseColor"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColor");
     m_colorBarLookUp.insert("falseColor", m_colorBars.size() - 1);
+    m_builtInPalettes << "falseColor";
     //------------
 
     //declare "falseColorIR"
@@ -425,12 +439,13 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.75, Qt::yellow);
     newPalette.insertColorStop(0.97, Qt::red);
     newPalette.setInverseColorOne(Qt::black);
-    newPalette.setInversColorTwo(Qt::gray);
+    newPalette.setInverseColorTwo(Qt::gray);
     newPalette.setWriteProtection();
     //set "falseColorIR"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColorIR");
     m_colorBarLookUp.insert("falseColorIR", m_colorBars.size() - 1);
+    m_builtInPalettes << "falseColorIR";
     //------------
 
     //declare "hotIron"
@@ -438,45 +453,49 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.33, Qt::red);
     newPalette.insertColorStop(0.67, QColor::fromRgb(255, 129, 0));
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo(Qt::green);
+    newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "hotIron"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("hotIron");
     m_colorBarLookUp.insert("hotIron", m_colorBars.size() - 1);
+    m_builtInPalettes << "hotIron";
     //------------
 
     //declare "red"
     newPalette = ItomPaletteBase(ItomPaletteBase("red", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 0, 0)));
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo(Qt::green);
+    newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "red"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("red");
     m_colorBarLookUp.insert("red", m_colorBars.size() - 1);
+    m_builtInPalettes << "red";
     //------------
 
     //declare "blue"
     newPalette = ItomPaletteBase(ItomPaletteBase("blue", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 0, 255)));
     newPalette.setInverseColorOne("#e31a1c"); //dark red
-    newPalette.setInversColorTwo(Qt::green);
+    newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "blue"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("blue");
     m_colorBarLookUp.insert("blue", m_colorBars.size() - 1);
+    m_builtInPalettes << "blue";
     //------------
 
     //declare "green"
     newPalette = ItomPaletteBase(ItomPaletteBase("green", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 255, 0)));
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo("#e31a1c"); //dark red
+    newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "green"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("green");
-    m_colorBarLookUp.insert("green", m_colorBars.size() - 1);    
+    m_colorBarLookUp.insert("green", m_colorBars.size() - 1);
+    m_builtInPalettes << "green";
     //------------
 
     //declare "viridis" as new default map of Matplotlib (only approximated, since non linear-map is currently not supported in itom.
@@ -501,13 +520,44 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.90, QColor::fromRgb(189, 223, 38));
     newPalette.insertColorStop(0.95, QColor::fromRgb(221, 227, 24));
     newPalette.setInverseColorOne("#ff7f00"); //dark orange
-    newPalette.setInversColorTwo("#e31a1c"); //dark red
+    newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "viridis"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("viridis");
     m_colorBarLookUp.insert("viridis", m_colorBars.size() - 1);
+    m_builtInPalettes << "viridis";
     //------------
+
+    // load saved palettes from settings file
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("ito::Palettes");
+    foreach(QString child, settings.childGroups())
+    {
+        settings.beginGroup(child);
+        const QString name = settings.value("name").toString();
+        int type = settings.value("type").toInt();
+        uint uinvalidCol = settings.value("invalidColor").toUInt();
+        uint uinvCol1 = settings.value("inverseColor1").toUInt();
+        uint uinvCol2 = settings.value("inverseColor2").toUInt();
+        QColor invalidCol(uinvalidCol & 0xFF, (uinvalidCol >> 8) & 0xFF, (uinvalidCol >> 16) & 0xFF);
+        QColor invCol1(uinvCol1 & 0xFF, (uinvCol1 >> 8) & 0xFF, (uinvCol1 >> 16) & 0xFF);
+        QColor invCol2(uinvCol2 & 0xFF, (uinvCol2 >> 8) & 0xFF, (uinvCol2 >> 16) & 0xFF);
+        QVariant numColStops = settings.value("numColorStops");
+        QVector<QGradientStop> colorStops;
+        for (int ns = 0; ns < numColStops.toInt(); ns++)
+        {
+            QVariant val = settings.value(QString("cs%1_1").arg(ns));
+            QVariant col = settings.value(QString("cs%1_2").arg(ns));
+            uint ucol = val.toUInt();
+            colorStops.append(QGradientStop(val.toFloat(), QColor(ucol & 0xFF, (ucol >> 8) & 0xFF, (ucol >> 16) & 0xFF)));
+        }
+        ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
+        m_colorBars.append(newPal);
+
+        settings.endGroup();
+    }
+    settings.endGroup();
 
  //   m_colorBars.append(ItomPaletteBase("RGB", ItomPalette::RGBPalette | ItomPalette::ReadOnlyPalette, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 255, 255)));
  //   restrictedKeyWords.append("256Colors");
@@ -645,7 +695,7 @@ ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPalette
     else if(m_colorBarLookUp.contains(name))
     {
         idx = m_colorBarLookUp[name];
-        if(m_colorBars[idx].getType() & ito::tPaletteReadOnly)
+        if(idx < m_colorBars.length() && m_colorBars[idx].getType() & ito::tPaletteReadOnly)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a write protection.").arg(name).toLatin1().data());
         }
