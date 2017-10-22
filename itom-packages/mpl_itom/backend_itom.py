@@ -103,6 +103,7 @@ cursord = {
     cursors.HAND          : 13,
     cursors.POINTER       : 0,
     cursors.SELECT_REGION : 2,
+    cursors.WAIT : 3,
     }
 
 

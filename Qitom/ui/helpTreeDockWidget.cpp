@@ -1744,6 +1744,9 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
     m_pMainFilterModel->sort(0, Qt::AscendingOrder);
 
+    //disconnect earlier connections (if available)
+    disconnect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+
     //model has been 
     ui.treeView->setModel(m_pMainFilterModel);
 
@@ -1848,6 +1851,13 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     // Allgemeine HTML sachen anfuegen /
     /*********************************/ 
     QString rawContent = helpText;
+    QRegExp bodyFinder("<body>(.*)</body>");
+    if (bodyFinder.indexIn(rawContent) >= 0)
+    {
+        rawContent = bodyFinder.cap(1);
+    }
+    
+
     QString html = "<html><head>"
                    "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
                    "</head><body>%1"
@@ -1865,7 +1875,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     // Prefix als Navigations-Links einfuegen
     // -------------------------------------
     QStringList splittedLink = prefix.split(".");
-    rawContent.insert(0, ">>" + splittedLink[splittedLink.length() - 1]);
+    rawContent.insert(0, "&gt;&gt;&nbsp;" + splittedLink[splittedLink.length() - 1]);
     for (int i = splittedLink.length() - 2; i > -1; i--)
     {
         QString linkPath;
@@ -1873,7 +1883,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
             linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
         if (linkPath.right(1) == ".")
             linkPath = linkPath.left(linkPath.length() - 1);
-        rawContent.insert(0, ">> <a id=\"HiLink\" href=\"itom://" + linkPath + "\">" + splittedLink[i] + "</a>");
+        rawContent.insert(0, "&nbsp;&gt;&gt;&nbsp;<a id=\"HiLink\" href=\"itom://" + linkPath + "\">" + splittedLink[i] + "</a>");
     }
 
     // Insert docstring
@@ -1892,52 +1902,76 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
             document->addResource(QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData));
             file.close();
         }
-        // Remake "See Also"-Section so that the links work
-        // -------------------------------------
-        // Alte "See Also" Section kopieren
-        QRegExp seeAlso("(<div class=\"seealso\">).*(</div>)");
-        seeAlso.setMinimal(true);
-        seeAlso.indexIn(rawContent);
-        QString oldSec = seeAlso.capturedTexts()[0];
 
-        if (oldSec == "") //there are version, where the see-also section is an admonition
+        //see if prefix is a leaf or a module / package:
+        QModelIndex idx = findIndexByPath(1, prefix.split("."), m_pMainModel->invisibleRootItem());
+        bool leaf = (m_pMainModel->rowCount(idx) == 0);
+
+        
+        if (leaf)
         {
-            seeAlso.setPattern("(<div class=\"admonition-see-also seealso\">).*(</div>)");
+            //matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as &lt; or &gt; in html!
+            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"), "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + ".\\1\">\\2</a>");
+
+            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"), "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + ".\\1\">\\1</a>");
+        }
+        else
+        {
+            //matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as &lt; or &gt; in html!
+            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"), "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\2</a>");
+
+            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"), "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\1</a>");
+        }
+
+        if (0)
+        {
+            // Remake "See Also"-Section so that the links work
+            // -------------------------------------
+            // Alte "See Also" Section kopieren
+            QRegExp seeAlso("(<div class=\"seealso\">).*(</div>)");
+            seeAlso.setMinimal(true);
             seeAlso.indexIn(rawContent);
-            oldSec = seeAlso.capturedTexts()[0];
-        }
+            QString oldSec = seeAlso.capturedTexts()[0];
 
-        // Extract Links (names) from old Section
-        QRegExp links("`(.*)`");
-        links.setMinimal(true);
-        int offset = 0;
-        QStringList texts;
-        while (links.indexIn(oldSec, offset) > -1)
-        {
-            texts.append(links.capturedTexts()[1]);
-            offset = links.pos()+links.matchedLength();
-        }
+            if (oldSec == "") //there are version, where the see-also section is an admonition
+            {
+                seeAlso.setPattern("(<div class=\"admonition-see-also seealso\">).*(</div>)");
+                seeAlso.indexIn(rawContent);
+                oldSec = seeAlso.capturedTexts()[0];
+            }
 
-        // Build the new Section with Headings, Links, etc
-        QString newSection = "<p class=\"rubric\">See Also</p><p>";
-        for (int i = 0; i < texts.length(); i++)
-        {
-            newSection.append("\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
-        }
-        newSection = newSection.left(newSection.length() - 2);
-        newSection.append("\n</p>");
+            // Extract Links (names) from old Section
+            QRegExp links("`(.*)`");
+            links.setMinimal(true);
+            int offset = 0;
+            QStringList texts;
+            while (links.indexIn(oldSec, offset) > -1)
+            {
+                texts.append(links.capturedTexts()[1]);
+                offset = links.pos()+links.matchedLength();
+            }
 
-        // Exchange old Section against new one
-        rawContent.remove(seeAlso.pos(), seeAlso.matchedLength());
-        rawContent.insert(seeAlso.pos(), newSection);
+            // Build the new Section with Headings, Links, etc
+            QString newSection = "<p class=\"rubric\">See Also</p><p>";
+            for (int i = 0; i < texts.length(); i++)
+            {
+                newSection.append("\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
+            }
+            newSection = newSection.left(newSection.length() - 2);
+            newSection.append("\n</p>");
+
+            // Exchange old Section against new one
+            rawContent.remove(seeAlso.pos(), seeAlso.matchedLength());
+            rawContent.insert(seeAlso.pos(), newSection);
+        }
 
         document->setHtml(html.arg(rawContent));
         
         ////dummy output (write last loaded Plaintext into html-File)
-        //QFile file2("helpOutput.html");
-        //file2.open(QIODevice::WriteOnly);
-        //file2.write(html.arg(rawContent).toLatin1());
-        //file2.close();
+        /*QFile file2("helpOutput.html");
+        file2.open(QIODevice::WriteOnly);
+        file2.write(html.arg(rawContent).toLatin1());
+        file2.close();*/
     }
 
     return ito::retOk;
@@ -1969,16 +2003,56 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const QString &
     {
         QStringList nameFilters = QStringList() << QString("*.db");
         QStringList files = basePath.entryList(nameFilters, QDir::NoDotAndDotDot | QDir::Files, QDir::IgnoreCase | QDir::Name);
-        foreach (const QString &filename, files)
+
+        //filter files with the highest version number, if two of the same name are available
+        if (files.join(";;") != m_possibleFileNameCacheHash)
         {
-            possibleFileNames << basePath.absoluteFilePath(filename);
+            QMap<QString, QPair<int, QString> > lut;
+            QString dbName;
+            int dbVersion;
+
+            m_possibleFileNameCacheHash = files.join(";;");
+            foreach (const QString &filename, files)
+            {
+                QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", filename); //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
+                database.setDatabaseName(filename);
+                bool ok = database.open();
+                if (ok)
+                {
+                    QSqlQuery query("SELECT id, name, version, date, itomMinVersion FROM DatabaseInfo ORDER BY id", database);
+                    query.exec();
+                    query.next();
+                    dbName            = query.value(1).toString();
+                    dbVersion         = query.value(2).toInt();
+                    if (!lut.contains(dbName))
+                    {
+                        lut[dbName] = QPair<int, QString>(dbVersion, filename);
+                    }
+                    else
+                    {
+                        if (lut[dbName].first < dbVersion)
+                        {
+                            lut[dbName] = QPair<int, QString>(dbVersion, filename);
+                        }
+                    }
+                }
+                database.close();
+                QSqlDatabase::removeDatabase(filename);
+            }
+
+            QMap<QString, QPair<int, QString> >::const_iterator it = lut.constBegin();
+            for (; it != lut.constEnd(); ++it)
+            {
+                possibleFileNames << it->second;
+            }
+
+            m_possibleFileNameCache = possibleFileNames;           
+        }
+        else
+        {
+            possibleFileNames = m_possibleFileNameCache;
         }
     }
-
-
-    // Das ist ein kleiner workaround mit dem if 5 Zeilen spaeter. Man koennt auch direkt ueber die includeddbs list iterieren
-    // dann waere folgende Zeile hinfaellig
-    QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
     foreach (const QString &filename, possibleFileNames)
     {
@@ -2003,6 +2077,7 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const QString &
                         if (docCompressed.size() > 0)
                         {
                             doc = qUncompress(docCompressed);
+                            //qDebug() << doc;
                         }
 
                         highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document());
@@ -2065,8 +2140,9 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
     QStringList result;
     QByteArray examplePrefix = "example:";
+    QString scheme = link.scheme();
 
-    if (link.scheme() == "itom")
+    if (scheme == "itom")
     {
         if (link.host() == "widget.html")
         {
@@ -2092,12 +2168,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
             result.append(link.host());
         }
     }
-    else if (link.scheme() == "mailto")
+    else if (scheme == "mailto")
     {
         result.append("mailto");
         result.append(link.path());
     }
-    else if (link.scheme() == "example")
+    else if (scheme == "example")
     {
         result.append("example");
 #if QT_VERSION < 0x050000
@@ -2105,6 +2181,11 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 #else
         result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
 #endif
+    }
+    else if (scheme == "http" || scheme == "https")
+    {
+        result.append("http");
+        result.append(link.toString());
     }
     else
     {

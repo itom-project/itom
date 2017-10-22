@@ -29,6 +29,8 @@
 
 #include <qhash.h>
 #include <qsharedpointer.h>
+#include <qbrush.h>
+
 namespace ito
 {
 
@@ -36,28 +38,48 @@ class ItomPaletteBase
 {
     public:
 
-        ItomPaletteBase():m_name(""), m_type(0), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
-        ItomPaletteBase(const QString name, const char type): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
-        ItomPaletteBase(const QString name, const char type, QColor start, QColor stop): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo() , m_invalidColor()
+        //ItomPaletteBase():m_name(""), m_type(0), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
+        ItomPaletteBase() 
         {
-            m_colorStops.clear();
-            m_colorStops.append(QPair<double, QColor>(0.0, start));
-            m_colorStops.append(QPair<double, QColor>(1.0, stop));
-        };
-
-        ItomPaletteBase(const ItomPaletteBase & scr)
+            m_paletteData.name = ""; 
+            m_paletteData.type = 0; 
+            m_paletteData.inverseColorOne = QColor();         
+            m_paletteData.inverseColorTwo = QColor();
+            m_paletteData.invalidColor = QColor();
+        }
+        ItomPaletteBase(const QString name, const char type) 
         {
-            m_invalidColor = scr.m_invalidColor;
-            m_inverseColorOne = scr.m_inverseColorOne;
-            m_inverseColorTwo = scr.m_inverseColorTwo;
-            m_name = scr.m_name;
-            m_type = scr.m_type;
-            m_colorStops.clear();
-            m_colorStops = scr.m_colorStops;
-            m_paletteData = scr.m_paletteData;
+            m_paletteData.name = name;
+            m_paletteData.type = type;
+            m_paletteData.inverseColorOne = QColor();
+            m_paletteData.inverseColorTwo = QColor();
+            m_paletteData.invalidColor = QColor();
+        }
+        ItomPaletteBase(const QString name, const char type, QColor invCol1, QColor invCol2, QColor invalCol, QVector<QGradientStop> colStops) 
+        { 
+            m_paletteData.name = name;
+            m_paletteData.type = type;
+            m_paletteData.inverseColorOne = invCol1;
+            m_paletteData.inverseColorTwo = invCol2;
+            m_paletteData.invalidColor = invalCol;
+            m_paletteData.colorStops = colStops;
+        }
+        ItomPaletteBase(const QString name, const char type, QColor start, QColor stop)
+        {
+            m_paletteData.name = name;
+            m_paletteData.type = type;
+            m_paletteData.colorStops.append(QPair<double, QColor>(0.0, start));
+            m_paletteData.colorStops.append(QPair<double, QColor>(1.0, stop));
         }
 
-        ~ItomPaletteBase() {m_colorStops.clear(); m_paletteData.colorStops.clear(); m_paletteData.colorVector256.clear();};
+        ItomPaletteBase(const ItomPaletteBase & src) : m_paletteData(src.m_paletteData)
+        { }
+
+        ~ItomPaletteBase() { 
+            m_paletteData.colorStops.clear();
+            //m_paletteData.colorStops.clear(); 
+            //m_paletteData.colorVector256.clear(); 
+        }
 /*
         enum tPalette{
             NoType      = 0x00,
@@ -69,30 +91,32 @@ class ItomPaletteBase
             ReadOnlyPalette = 0x20,
         };
 */
-        QString getName() const {return m_name;};
-        inline int getSize() const {return m_colorStops.size();};
-        inline int getType() const {return m_type;};
+        QString getName() const { return m_paletteData.name; }
+        inline int getSize() const { return m_paletteData.colorStops.size(); }
+        inline int getType() const { return m_paletteData.type; }
 
-        double getPosFirst() const {return m_colorStops[0].first;};
-        double getPosLast() const {return m_colorStops[m_colorStops.size()-1].first;};
+        double getPosFirst() const { return m_paletteData.colorStops[0].first; }
+        double getPosLast() const { return m_paletteData.colorStops[m_paletteData.colorStops.size()-1].first; }
         double getPos(unsigned int color) const;
 
         bool   setInverseColorOne(const QColor color);
-        QColor getInverseColorOne() const {return m_inverseColorOne;};
-        bool   setInversColorTwo(const QColor color);
-        QColor getInverseColorTwo() const {return m_inverseColorTwo;};
+        QColor getInverseColorOne() const { return m_paletteData.inverseColorOne; }
+        bool   setInverseColorTwo(const QColor color);
+        QColor getInverseColorTwo() const { return m_paletteData.inverseColorTwo; }
         
         bool setInvalidColor(const QColor color);
         QColor getInvalidColor() const;
 
-        QColor getColorFirst() const {return m_colorStops[0].second;};
-        QColor getColorLast() const {return m_colorStops[m_colorStops.size()-1].second;};
+        QColor getColorFirst() const { return m_paletteData.colorStops[0].second; }
+        QColor getColorLast() const { return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].second; }
+        int findUpper(double pos) const;
+        inline QVector<QPair<double, QColor> > getColorStops(void) const { return m_paletteData.colorStops; }
         QColor getColor(unsigned int color) const;
 
         void update(const bool updateInverseColors);
         ItomPalette getPalette();
 
-        inline void setWriteProtection() { m_type = m_type | ito::tPaletteReadOnly; return;};
+        inline void setWriteProtection() { m_paletteData.type = m_paletteData.type | ito::tPaletteReadOnly; return; }
         bool insertColorStop( double pos, const QColor color );
         void calculateInverseColors(QColor &inv1, QColor &inv2);
         //QColor getColor(double pos) const;
@@ -100,27 +124,18 @@ class ItomPaletteBase
         QVector<ito::uint32> get256Colors(bool includeAlpha = false) const;
 
     protected:
-        inline void removeWriteProtection() { m_type = m_type & !ito::tPaletteReadOnly; return;};
+        inline void removeWriteProtection() { m_paletteData.type = m_paletteData.type & !ito::tPaletteReadOnly; return; }
 
     private:
-        QString m_name;
-        char m_type; 
+        //QString m_name;
+        //char m_type; 
         
         ItomPalette m_paletteData;
 
-        QColor m_inverseColorTwo;
-        QColor m_inverseColorOne;
-        QColor m_invalidColor;
-        QVector<QPair<double, QColor> > m_colorStops;
-
-        int findUpper( double pos ) const;
-
-    public slots:
-
-    private slots:
-
-    signals:
-
+        //QColor m_inverseColorTwo;
+        //QColor m_inverseColorOne;
+        //QColor m_invalidColor;
+        //QVector<QPair<double, QColor> > m_colorStops;
 };
 
 class PaletteOrganizer : public QObject
@@ -128,17 +143,13 @@ class PaletteOrganizer : public QObject
     Q_OBJECT
 
     public:
-
         PaletteOrganizer();
         ~PaletteOrganizer(){};
 
-    protected:
-
-
-    private:
-        
+    private:        
         QList<QString> restrictedKeyWords;
         QList<ItomPaletteBase> m_colorBars;
+        QList<QString> m_builtInPalettes;
         QHash<QString,int> m_colorBarLookUp;
 
         ItomPaletteBase noPalette;
@@ -149,15 +160,22 @@ class PaletteOrganizer : public QObject
         int getColorBarIndex(const QString name, bool *found = NULL) const;
         ItomPaletteBase getColorBar(const QString name, bool *found = NULL) const;
         QList<QString> getColorBarList(const int type = ito::tPaletteNoType) const;
-        int numberOfColorBars() const {return m_colorBars.length();};
+        QList<QString> getBuiltInPaletteNames() const { return m_builtInPalettes; }
+        int numberOfColorBars() const { return m_colorBars.length(); }
+        bool removeColorbar(const int index) 
+        { 
+            if (index >= 0 && index < m_colorBars.length() && !(m_colorBars[index].getType() & ito::tPaletteReadOnly))
+            {
+                m_colorBarLookUp.remove(m_colorBars[index].getName());
+                m_colorBars.removeAt(index);
+                return true;
+            }
+            return false;
+        }
 
         ito::RetVal setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
-    private slots:
-
-    signals:
-
 }; 
 } //namespace íto
 #endif

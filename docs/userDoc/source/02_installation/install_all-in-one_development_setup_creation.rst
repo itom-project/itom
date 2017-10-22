@@ -29,6 +29,7 @@ First download alle the needed software and packages. This download links are fo
 * `TortoiseGit 2.1.0.0 <http://tortoisegit.org/download/>`_ (TortoiseGit-2.1.0.0-64bit.msi)
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
 * `QScintilla 2.9.2 <http://www.riverbankcomputing.com/software/qscintilla/download/>`_ (QScintilla_gpl-2.9.2.zip)
+* `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
 Download packages for the 3rdPartyPCL tools
 ===========================================
@@ -111,6 +112,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
 * From Qt5.6.0 delete the following things: 
     * folder: dist, Examples, Tools, vcredist, Docs (after having copied the qch files)
     * files: all files in the main folder, e. g. components.xml...
+* Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.6.0/5.6/msvc2013_64/bin
 
 .. note: 
 
@@ -120,6 +122,8 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     
     The QT version **5.6.2** has a bug which prevent the start of the QT designer {'QTBUG-53984': ('https://bugreports.qt.io/browse/QTBUG-53984', 'QTBUG-53984')}. 
     The workaround is to change the name of **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**, then copy the **Qt5Core.dll** and **Qt5Cored.dll** and change the name of these dll-files into **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 (release August 2017).
+	
+
     
     
 Compile OpenCV

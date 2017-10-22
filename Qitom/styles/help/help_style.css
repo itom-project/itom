@@ -47,7 +47,8 @@ table.borderless td, table.borderless th {
   margin-bottom: 0 ! important }
 
 .hidden {
-  display: none }
+  display: none; 
+  }
 
 a.toc-backref {
   text-decoration: none ;

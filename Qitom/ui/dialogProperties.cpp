@@ -45,6 +45,7 @@
 #include "widgetPropPluginsAlgorithms.h"
 #include "widgetPropWorkspaceUnpack.h"
 #include "widgetPropGeneralPlotSettings.h"
+#include "widgetPropPalettes.h"
 
 #include "AppManagement.h"
 
@@ -177,6 +178,7 @@ void DialogProperties::initPages()
     m_pages["07_plots"] = PropertyPage(tr("Plots And Figures"), tr("Plots And Figures - Please Choose Subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots And Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
     m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots And Figures - Default Style Settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots And Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
 
 	PropertyPage page;
     QStringList pathes;
@@ -186,10 +188,12 @@ void DialogProperties::initPages()
         pathes = page.m_fullname.split("/");
         addPage(page, m_pCategories->invisibleRootItem(), pathes);
 
-        /*if (page.m_widget)
+        /*
+        if (page.m_widget)
         {
             page.m_widget->readSettings();
-        }*/
+        }
+        */
     }
 }
 

@@ -1428,7 +1428,7 @@ The axis units are considered if the data object is plotted. \n\
 \n\
 See Also \n\
 --------- \n\
-setAxisUnits : alternative method to change the unit string of one single axis \n\
+setAxisUnit : alternative method to change the unit string of one single axis \n\
 \n\
 Notes \n\
 ------- \n\
