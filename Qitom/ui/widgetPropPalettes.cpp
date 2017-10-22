@@ -140,17 +140,18 @@ void ColCurve::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void ColCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu contextMenu(tr("Context menu"), m_parentWidget);
+    QAction *action;
 
     if (m_parentWidget->m_selPt >= 0)
     {
-        QAction action(tr("Delete Color Stop"), this);
-        connect(&action, SIGNAL(triggered()), this, SLOT(removeDataPoint()));
-        contextMenu.addAction(&action);
+        action = new QAction(tr("Delete Color Stop"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(removeDataPoint()));
+        contextMenu.addAction(action);
     }
     m_insertPos = event->scenePos();
-    QAction action(tr("Add Color Stop"), this);
-    connect(&action, SIGNAL(triggered()), this, SLOT(addDataPoint()));
-    contextMenu.addAction(&action);
+    action = new QAction(tr("Add Color Stop"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(addDataPoint()));
+    contextMenu.addAction(action);
     contextMenu.exec(event->screenPos());
 }
 
@@ -163,15 +164,23 @@ void ColCurve::removeDataPoint()
         m_parentWidget->m_isDirty = 1;
 
         QVector<QGradientStop> pts = m_parentWidget->m_curPalette.getColorStops();
-        pts.remove(m_parentWidget->m_selPt);
-        m_parentWidget->m_selPt = -1;
 
-        ito::ItomPaletteBase palette(m_parentWidget->getCurPalette()->getName(), m_parentWidget->getCurPalette()->getType(),
-            m_parentWidget->getCurPalette()->getInverseColorOne(), m_parentWidget->getCurPalette()->getInverseColorTwo(),
-            m_parentWidget->getCurPalette()->getInvalidColor(), pts);
-        m_parentWidget->m_curPalette = palette;
-        m_parentWidget->drawPalCurves(-1);
-        m_parentWidget->updatePalette();
+        if (pts.size() > 2)
+        {
+            pts.remove(m_parentWidget->m_selPt);
+            m_parentWidget->m_selPt = -1;
+
+            ito::ItomPaletteBase palette(m_parentWidget->getCurPalette()->getName(), m_parentWidget->getCurPalette()->getType(),
+                m_parentWidget->getCurPalette()->getInverseColorOne(), m_parentWidget->getCurPalette()->getInverseColorTwo(),
+                m_parentWidget->getCurPalette()->getInvalidColor(), pts);
+            m_parentWidget->m_curPalette = palette;
+            m_parentWidget->drawPalCurves(-1);
+            m_parentWidget->updatePalette();
+        }
+        else
+        {
+            QMessageBox::information(par, tr("Too few color stops"), tr("A color palette must have at least two color stops."));
+        }
     }
 }
 
@@ -229,6 +238,7 @@ WidgetPropPalettes::WidgetPropPalettes(QWidget *parent) :
     connect(ui.pbG, SIGNAL(toggled(bool)), this, SLOT(pbColToggled(bool)));
     connect(ui.pbB, SIGNAL(toggled(bool)), this, SLOT(pbColToggled(bool)));
     connect(ui.pbAdd, SIGNAL(clicked()), this, SLOT(pbAddClicked()));
+    connect(ui.pbDuplicate, SIGNAL(clicked()), this, SLOT(pbDuplicateClicked()));
     connect(ui.pbRemove, SIGNAL(clicked()), this, SLOT(pbRemoveClicked()));
     connect(ui.pbPalSave, SIGNAL(clicked()), this, SLOT(pbSaveClicked()));
     connect(ui.btnInvColor, SIGNAL(colorChanged(QColor)), this, SLOT(palSpecialColorChanged(QColor)));
@@ -488,7 +498,7 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), tr("Current palette has been altered and is unsaved. Save changeds or discard?")) == QMessageBox::Yes)
+        if (QMessageBox::question(this, tr("Palette altered"), tr("Current palette has been altered and is unsaved. Save changes or discard?")) == QMessageBox::Yes)
         {
             QList<QString> palettes = palOrganizer->getColorBarList();
             if (palettes.contains(ui.lePalName->text()))
@@ -510,6 +520,10 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     ui.btnInvColor2->setColor(m_curPalette.getInverseColorTwo());
     ui.btnInvColor->setColor(m_curPalette.getInvalidColor());
     ui.lePalName->setText(m_curPalette.getName());
+
+    ui.pbDuplicate->setEnabled(row >= 0);
+    ui.pbRemove->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPalette::tPaletteReadOnly));
+    ui.groupOptions->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPalette::tPaletteReadOnly));
 
     //m_curCols = m_curPalette.get256Colors();
     //m_curPalData = pal.getColorStops();
@@ -535,24 +549,65 @@ void WidgetPropPalettes::resizeEvent(QResizeEvent * event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::pbAddClicked()
 {
-    QString newPalName("User Palette");
-    QString tmpPalName = newPalName;
+    QString newPalName = tr("User Palette");
     int newCnt = 1;
 
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
     QList<QString> paletteNames = palOrganizer->getColorBarList();
+    QString tmpPalName = newPalName;
+
     while (paletteNames.contains(tmpPalName))
+    {
         tmpPalName = newPalName + " " + QString::number(newCnt++);
+    }
     newPalName = tmpPalName;
 
     ito::ItomPaletteBase pal = palOrganizer->getColorBar(palOrganizer->getColorBarIndex("gray"));
-    m_curPalette = ito::ItomPaletteBase(newPalName, pal.getType(), pal.getInverseColorOne(), 
+    m_curPalette = ito::ItomPaletteBase(newPalName, pal.getType(), pal.getInverseColorOne(), \
         pal.getInverseColorTwo(), pal.getInvalidColor(), pal.getColorStops());
 
     ui.btnInvColor1->setColor(m_curPalette.getInverseColorOne());
     ui.btnInvColor2->setColor(m_curPalette.getInverseColorTwo());
     ui.btnInvColor->setColor(m_curPalette.getInvalidColor());
     ui.lePalName->setText(m_curPalette.getName());
+
+    ui.groupOptions->setEnabled(true);
+
+    drawPalCurves();
+    updatePalette();
+
+    m_isDirty = 1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPalettes::pbDuplicateClicked()
+{
+    ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+    ito::ItomPaletteBase pal = palOrganizer->getColorBar(ui.lwPalettes->currentRow()); // current palette
+
+
+    QString tmpPalName = pal.getName() + tr(" - Copy");
+    QString newPalName = tmpPalName;
+
+    int newCnt = 1;
+    QList<QString> paletteNames = palOrganizer->getColorBarList();
+
+    while (paletteNames.contains(tmpPalName))
+    {
+        tmpPalName = newPalName + QString(" (%i)").arg(newCnt++);
+    }
+    newPalName = tmpPalName;
+
+    
+    m_curPalette = ito::ItomPaletteBase(newPalName, pal.getType() & (~ito::tPalette::tPaletteReadOnly), pal.getInverseColorOne(), \
+        pal.getInverseColorTwo(), pal.getInvalidColor(), pal.getColorStops());
+
+    ui.btnInvColor1->setColor(m_curPalette.getInverseColorOne());
+    ui.btnInvColor2->setColor(m_curPalette.getInverseColorTwo());
+    ui.btnInvColor->setColor(m_curPalette.getInvalidColor());
+    ui.lePalName->setText(m_curPalette.getName());
+
+    ui.groupOptions->setEnabled(true);
 
     drawPalCurves();
     updatePalette();

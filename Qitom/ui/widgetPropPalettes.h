@@ -94,6 +94,7 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         void sbValueChanged(int value);
         void pbColToggled(bool);
         void pbAddClicked();
+        void pbDuplicateClicked();
         void pbRemoveClicked();
         void pbSaveClicked();
         void palSpecialColorChanged(QColor color);

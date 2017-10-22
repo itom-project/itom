@@ -138,6 +138,7 @@ class ItomPaletteBase
         //QVector<QPair<double, QColor> > m_colorStops;
 };
 
+//----------------------------------------------------------------------------------
 class PaletteOrganizer : public QObject
 {
     Q_OBJECT

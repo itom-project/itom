@@ -553,7 +553,16 @@ PaletteOrganizer::PaletteOrganizer()
             colorStops.append(QGradientStop(val.toFloat(), QColor(ucol & 0xFF, (ucol >> 8) & 0xFF, (ucol >> 16) & 0xFF)));
         }
         ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
-        m_colorBars.append(newPal);
+
+        int existingIndex = getColorBarList().indexOf(newPal.getName());
+        if (existingIndex < 0)
+        {
+            m_colorBars.append(newPal);
+        }
+        else if ((m_colorBars[existingIndex].getType() & ito::tPalette::tPaletteReadOnly) == 0)
+        {
+            m_colorBars[existingIndex] = newPal;
+        }
 
         settings.endGroup();
     }
