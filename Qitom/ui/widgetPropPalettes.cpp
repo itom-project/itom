@@ -143,12 +143,12 @@ void ColCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     if (m_parentWidget->m_selPt >= 0)
     {
-        QAction action("Delete Color Stop", this);
+        QAction action(tr("Delete Color Stop"), this);
         connect(&action, SIGNAL(triggered()), this, SLOT(removeDataPoint()));
         contextMenu.addAction(&action);
     }
     m_insertPos = event->scenePos();
-    QAction action("Add Color Stop", this);
+    QAction action(tr("Add Color Stop"), this);
     connect(&action, SIGNAL(triggered()), this, SLOT(addDataPoint()));
     contextMenu.addAction(&action);
     contextMenu.exec(event->screenPos());
@@ -249,9 +249,19 @@ void WidgetPropPalettes::updatePaletteList()
         ito::ItomPaletteBase pal = palOrganizer->getColorBar(nc);
         QVector<uint> cols = pal.get256Colors();
         QImage img(256, 10, QImage::Format_RGB32);
+
         for (int np = 0; np < 256; np++)
+        {
             for (int nh = 0; nh < 10; nh++)
+            {
+#if QTVERSION < 0x050600
+                img.setPixel(np, nh, QColor((cols[np] >> 16) & 0xFF, (cols[np] >> 8) & 0xFF, cols[np] & 0xFF).rgb());
+#else
                 img.setPixelColor(np, nh, QColor((cols[np] >> 16) & 0xFF, (cols[np] >> 8) & 0xFF, cols[np] & 0xFF));
+#endif
+            }
+        }
+
         QPixmap pixmap = QPixmap::fromImage(img);
         QIcon icon(pixmap);
         QListWidgetItem *item = new QListWidgetItem(icon, paletteNames[nc]);
@@ -452,7 +462,13 @@ void WidgetPropPalettes::updatePalette()
     QImage img(256, 1, QImage::Format_RGB32);
     QVector<uint> curCols = m_curPalette.get256Colors();
     for (int np = 0; np < 256; np++)
+    {
+#if QTVERSION < 0x050600
+        img.setPixel(np, 0, QColor((curCols[np] >> 16) & 0xFF, (curCols[np] >> 8) & 0xFF, curCols[np] & 0xFF).rgb());
+#else
         img.setPixelColor(np, 0, QColor((curCols[np] >> 16) & 0xFF, (curCols[np] >> 8) & 0xFF, curCols[np] & 0xFF));
+#endif
+    }
 
     m_imgGVCurPalette = img;
     ui.gvCurPalette->setSceneRect(0, 0, ui.gvCurPalette->width(), ui.gvCurPalette->height());
@@ -472,7 +488,7 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), "Current palette has been altered and is unsaved. Save changeds or discard?") == QMessageBox::Yes)
+        if (QMessageBox::question(this, tr("Palette altered"), tr("Current palette has been altered and is unsaved. Save changeds or discard?")) == QMessageBox::Yes)
         {
             QList<QString> palettes = palOrganizer->getColorBarList();
             if (palettes.contains(ui.lePalName->text()))
