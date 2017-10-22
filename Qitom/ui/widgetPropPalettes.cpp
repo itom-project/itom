@@ -522,8 +522,8 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     ui.lePalName->setText(m_curPalette.getName());
 
     ui.pbDuplicate->setEnabled(row >= 0);
-    ui.pbRemove->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPalette::tPaletteReadOnly));
-    ui.groupOptions->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPalette::tPaletteReadOnly));
+    ui.pbRemove->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPaletteReadOnly));
+    ui.groupOptions->setEnabled((row >= 0) && !(m_curPalette.getType() & ito::tPaletteReadOnly));
 
     //m_curCols = m_curPalette.get256Colors();
     //m_curPalData = pal.getColorStops();
