@@ -102,9 +102,11 @@ cursord = {
     cursors.MOVE          : 9,
     cursors.HAND          : 13,
     cursors.POINTER       : 0,
-    cursors.SELECT_REGION : 2,
-    cursors.WAIT : 3,
+    cursors.SELECT_REGION : 2
     }
+
+if hasattr(cursors, "WAIT"): #> matplotlib 2.1
+    cursord[cursors.WAIT] = 3
 
 
 def draw_if_interactive():
