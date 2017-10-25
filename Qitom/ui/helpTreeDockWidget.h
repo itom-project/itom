@@ -129,7 +129,8 @@ private:
     ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);
     QString parseParam(const QString &tmpl, const ito::Param &param);
 
-    QFutureWatcher<ito::RetVal> dbLoaderWatcher;
+    QFutureWatcher<ito::RetVal> m_dbLoaderWatcher;
+    QMutex m_dbLoaderMutex;
 
     // Const
     static const int rolePath = Qt::UserRole + 1;

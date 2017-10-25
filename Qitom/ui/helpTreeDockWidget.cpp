@@ -59,7 +59,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     // Initialize Variables
     m_treeVisible = false;
 
-    connect(&dbLoaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(dbLoaderFinished(int)));
+    connect(&m_dbLoaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(dbLoaderFinished(int)));
 
     m_pMainFilterModel = new LeafFilterProxyModel(this);
     m_pMainModel = new QStandardItemModel(this);
@@ -1705,10 +1705,10 @@ void HelpTreeDockWidget::propertiesChanged()
 */
 void HelpTreeDockWidget::reloadDB()
 {
-    if (dbLoaderWatcher.isRunning())
+    if (m_dbLoaderWatcher.isRunning())
     {
         //a previous reload and QtConcurrent::run is still running, wait for it to be finished
-        dbLoaderWatcher.waitForFinished();
+        m_dbLoaderWatcher.waitForFinished();
     }
 
     //Create and Display Mainmodel
@@ -1723,9 +1723,11 @@ void HelpTreeDockWidget::reloadDB()
     ui.splitter->setVisible(false);
     ui.lblProcessText->setText(tr("Help database is loading..."));
 
+    m_dbLoaderMutex.lock();
+
     // THREAD START QtConcurrent::run
     QFuture<ito::RetVal> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery, m_showSelection);
-    dbLoaderWatcher.setFuture(f1);
+    m_dbLoaderWatcher.setFuture(f1);
     //f1.waitForFinished();
     // THREAD END  
 }
@@ -1738,7 +1740,7 @@ void HelpTreeDockWidget::reloadDB()
 */
 void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 {
-    ito::RetVal retval = dbLoaderWatcher.future().resultAt(0);
+    ito::RetVal retval = m_dbLoaderWatcher.future().resultAt(0);
 
     m_pMainFilterModel->setSourceModel(m_pMainModel);
 
@@ -1771,6 +1773,8 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
     }
 
     ui.treeView->resizeColumnToContents(0);
+
+    m_dbLoaderMutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2207,6 +2211,25 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 */
 void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink)
 {
+    bool ok = false;
+    for (int i = 0; i < 1000; ++i)
+    {
+        if (m_dbLoaderMutex.tryLock(100))
+        {
+            ok = true;
+            break;
+        }
+        else
+        {
+            QCoreApplication::processEvents();
+        }
+    }
+
+    if (!ok)
+    {
+        return;
+    }
+
     // Check if it is a click by the back or forward button
     if (modelIndex.isValid())
     {
@@ -2227,13 +2250,10 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QMo
         }
         else
         {
-            if (type == 1)
+            QModelIndex index = findIndexByPath(type == 1 ? 1 : 2, name.split("."), m_pMainModel->invisibleRootItem());
+            if (index.isValid() && m_pMainFilterModel->sourceModel())
             {
-                ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(findIndexByPath(1, name.split("."), m_pMainModel->invisibleRootItem())));
-            }
-            else
-            {
-                ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(findIndexByPath(2, name.split("."), m_pMainModel->invisibleRootItem())));
+                ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(index));
             }
         }
         m_internalCall = false;
@@ -2288,6 +2308,8 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QMo
             break;
         }
     }
+
+    m_dbLoaderMutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
