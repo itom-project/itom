@@ -118,9 +118,15 @@ def draw_if_interactive():
         if figManager is not None:
             figManager.canvas.draw_idle()
 
-class Show(ShowBase):
-    def mainloop(self):
-        pass
+if matplotlib.__version__ < '2.1.0':
+    class Show(ShowBase):
+        def mainloop(self):
+            pass
+else:
+    class Show(ShowBase):
+        @classmethod
+        def mainloop(cls):
+            pass
 
 show = Show()
 
@@ -233,7 +239,9 @@ class FigureCanvasItom(FigureCanvasBase):
         self.canvas.connect("eventKey(int,int,int,bool)", self.keyEvent)
         self.canvas.connect("eventResize(int,int)", self.resizeEvent)
         self.canvas.connect("eventCopyToClipboard(int)", self.copyToClipboardEvent)
-        self.canvas.connect("eventIdle()", self.idle_event)
+        if matplotlib.__version__ < '2.1.0':
+            #idle_event is deprecated from 2.1.0 on (removed without replacement, since usually unused)
+            self.canvas.connect("eventIdle()", self.idle_event)
         
         w, h = self.get_width_height()
         self.resize(w, h)
