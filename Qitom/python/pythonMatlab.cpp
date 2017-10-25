@@ -78,7 +78,7 @@ int mxtonpy[17] = {
     NPY_USERDEF,    /* mxCELL_CLASS (1) */
     NPY_USERDEF,     /* mxSTRUCT_CLASS (2) */
     NPY_BOOL,     /* mxLOGICAL_CLASS (3) */
-    NPY_CHAR,     /* mxCHAR_CLASS (4) */
+    NPY_STRING,     /* mxCHAR_CLASS (4) */
     NPY_USERDEF,     /* mxVOID_CLASS (5) */
     NPY_DOUBLE,         /* mxDOUBLE_CLASS (6) */
     NPY_FLOAT,     /* mxSINGLE_CLASS (7) */
@@ -93,7 +93,7 @@ int mxtonpy[17] = {
     NPY_USERDEF     /* mxFUNCTION_CLASS (16) */
 };
 
-mxClassID npytomx[23]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
+mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
                         mxINT8_CLASS, /*NPY_BYTE (1)*/
                         mxUINT8_CLASS, /*NPY_UBYTE (2)*/
                         mxINT16_CLASS,  /*NPY_SHORT (3)*/
@@ -116,6 +116,10 @@ mxClassID npytomx[23]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
                         mxUNKNOWN_CLASS, /*NPY_VOID (20)*/
                         mxUNKNOWN_CLASS, /*NPY_DATETIME (21)*/
                         mxCHAR_CLASS, /*NPY_TIMEDELTA (22)*/
+                        mxUNKNOWN_CLASS, /*NPY_HALF (23)*/
+                        mxUNKNOWN_CLASS, /*NPY_NTYPES (24)*/
+                        mxUNKNOWN_CLASS, /*NPY_NOTYPE (25)*/
+                        mxUNKNOWN_CLASS, /*NPY_CHAR (26)*/
 };
 
 //------------------------------------------------------------------------------------------------------------------------
