@@ -79,7 +79,7 @@ void WidgetFindWord::on_cmdFindDown_clicked()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_txtFind_textChanged (const QString & /*text*/)
 {
-    ui.txtFind->setStyleSheet("background-color: white");
+    ui.txtFind->setStyleSheet("");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void WidgetFindWord::setSuccessState(bool successfull)
 {
     if (successfull)
     {
-        ui.txtFind->setStyleSheet("background-color: white");
+        ui.txtFind->setStyleSheet("");
     }
     else
     {
