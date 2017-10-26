@@ -51,13 +51,13 @@ void WidgetPropGeneralStyles::readSettings()
     QString rccFile = settings.value("rccFile", "").toString();
     QDir appPath(QCoreApplication::applicationDirPath());
     QDir qssDir(qssFile);
-    if (qssDir.isRelative())
+    if (qssFile != "" && qssDir.isRelative())
     {
         qssFile = QDir::cleanPath(appPath.absoluteFilePath(qssFile));
     }
 
     QDir rccDir(rccFile);
-    if (rccDir.isRelative())
+    if (rccFile != "" && rccDir.isRelative())
     {
         rccFile = QDir::cleanPath(appPath.absoluteFilePath(rccFile));
     }
@@ -71,8 +71,8 @@ void WidgetPropGeneralStyles::readSettings()
     ui.comboPredefinedStyle->clear();
     QStringList styleFolders = stylePath.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     QString absPath;
-    QString rccAbsPath = rcc.absoluteFilePath();
-    QString qssAbsPath = qss.absoluteFilePath();
+    QString rccAbsPath = rccFile != "" ? rcc.absoluteFilePath() : "";
+    QString qssAbsPath = qssFile != "" ? qss.absoluteFilePath() : "";
     int foundIdx = -1;
 
     foreach(const QString &styleFolder, styleFolders)
@@ -109,7 +109,7 @@ void WidgetPropGeneralStyles::readSettings()
     else
     {
         ui.radioUserdefinedStyle->setChecked(true);
-        ui.pathResource->setCurrentPath(qssAbsPath);
+        ui.pathResource->setCurrentPath(rccAbsPath);
         ui.pathStylesheet->setCurrentPath(qssAbsPath);
         ui.comboPredefinedStyle->setCurrentIndex(-1);
     }
