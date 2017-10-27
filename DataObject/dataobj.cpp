@@ -1390,9 +1390,10 @@ int DataObject::getStep(int index) const
     cv::Size osize;
     cv::Point ofs;
     ((cv::Mat*)(this->m_data[0]))->locateROI(osize, ofs);
-    if (index > 2)
+    
+    if (index > 2) // steps of 3D Objekt from plane to plane
         step *= osize.height * osize.width;
-    else
+    else if (m_dims == 2 && index == 0)
         step *= osize.width;
 
     return step;
