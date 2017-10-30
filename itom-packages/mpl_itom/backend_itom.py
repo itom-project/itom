@@ -31,6 +31,8 @@ figureoptions = None
 
 backend_version = "2.0.0"
 
+DEBUG = False
+
 # SPECIAL_KEYS are keys that do *not* return their unicode name
 # instead they have manually specified names
 SPECIAL_KEYS = {0x01000021: 'control',
@@ -95,16 +97,16 @@ if sys.platform == 'darwin':
 def fn_name():
     return sys._getframe(1).f_code.co_name
 
-DEBUG = False
-
 cursord = {
     -1 : -1,
     cursors.MOVE          : 9,
     cursors.HAND          : 13,
     cursors.POINTER       : 0,
-    cursors.SELECT_REGION : 2,
-    cursors.WAIT : 3,
+    cursors.SELECT_REGION : 2
     }
+
+if hasattr(cursors, "WAIT"): #> matplotlib 2.1
+    cursord[cursors.WAIT] = 3
 
 
 def draw_if_interactive():
@@ -116,9 +118,15 @@ def draw_if_interactive():
         if figManager is not None:
             figManager.canvas.draw_idle()
 
-class Show(ShowBase):
-    def mainloop(self):
-        pass
+if matplotlib.__version__ < '2.1.0':
+    class Show(ShowBase):
+        def mainloop(self):
+            pass
+else:
+    class Show(ShowBase):
+        @classmethod
+        def mainloop(cls):
+            pass
 
 show = Show()
 
@@ -231,7 +239,9 @@ class FigureCanvasItom(FigureCanvasBase):
         self.canvas.connect("eventKey(int,int,int,bool)", self.keyEvent)
         self.canvas.connect("eventResize(int,int)", self.resizeEvent)
         self.canvas.connect("eventCopyToClipboard(int)", self.copyToClipboardEvent)
-        self.canvas.connect("eventIdle()", self.idle_event)
+        if matplotlib.__version__ < '2.1.0':
+            #idle_event is deprecated from 2.1.0 on (removed without replacement, since usually unused)
+            self.canvas.connect("eventIdle()", self.idle_event)
         
         w, h = self.get_width_height()
         self.resize(w, h)
@@ -306,7 +316,7 @@ class FigureCanvasItom(FigureCanvasBase):
             hinch = h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
             FigureCanvasBase.resize_event(self)
-            if draw:
+            if draw and matplotlib.__version__ < '2.1.0':
                 self.draw_idle()
 
     def copyToClipboardEvent(self, dpi):
@@ -675,7 +685,7 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
         w = abs(x1 - x0)
         h = abs(y1 - y0)
         
-        rect = [ int(val) for val in (min(x0,x1), min(y0, y1), w, h) ]
+        rect = [ round(val) for val in (min(x0,x1), min(y0, y1), w, h) ]
         self.canvas.drawRectangle( rect )
     
     def remove_rubberband(self):

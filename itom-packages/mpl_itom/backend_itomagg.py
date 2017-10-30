@@ -105,7 +105,7 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
 
         if DEBUG:
             print('FigureCanvasItomAgg.paintEvent: ', self,
-                  self.get_width_height())
+                  self.get_width_height(), self.renderer.width, self.renderer.height)
 
         if self.blitbox is None:
             # matplotlib is in rgba byte order.  QImage wants to put the bytes
@@ -116,8 +116,8 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
 
             X = 0
             Y = 0
-            W = int(self.renderer.width)
-            H = int(self.renderer.height)
+            W = round(self.renderer.width)
+            H = round(self.renderer.height)
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, False)
             except RuntimeError as e:

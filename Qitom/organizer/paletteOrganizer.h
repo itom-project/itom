@@ -123,9 +123,6 @@ class ItomPaletteBase
 
         QVector<ito::uint32> get256Colors(bool includeAlpha = false) const;
 
-    protected:
-        inline void removeWriteProtection() { m_paletteData.type = m_paletteData.type & !ito::tPaletteReadOnly; return; }
-
     private:
         //QString m_name;
         //char m_type; 
@@ -138,6 +135,7 @@ class ItomPaletteBase
         //QVector<QPair<double, QColor> > m_colorStops;
 };
 
+//----------------------------------------------------------------------------------
 class PaletteOrganizer : public QObject
 {
     Q_OBJECT
