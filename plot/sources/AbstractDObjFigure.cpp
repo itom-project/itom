@@ -82,7 +82,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisObj(unsigned int axis
 {
     if (axisNum == 1)
     {
-        ito::DataObject *dobj = m_pInput["xvec"]->getVal<ito::DataObject*>();
+        ito::DataObject *dobj = m_pInput["xVec"]->getVal<ito::DataObject*>();
         if (dobj)
         {
             return QSharedPointer<ito::DataObject>(new ito::DataObject(*dobj));
