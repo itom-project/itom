@@ -1871,7 +1871,9 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     // Insert Shortdescription
     // -------------------------------------
     if (shortDesc != "")
-        rawContent.insert(0,shortDesc+"");
+    {
+        rawContent.insert(0, shortDesc);
+    }
 
     // Ueberschrift (Funktionsname) einfuegen
     // -------------------------------------
