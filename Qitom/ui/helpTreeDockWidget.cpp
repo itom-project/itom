@@ -1845,7 +1845,8 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
 // ERROR decides whether it's already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
-ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document)
+ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, \
+    const QString &helpText, const QString &error, QTextDocument *document, const QMap<QString, QImage> &images)
 {
     QString errorS = error.left(error.indexOf(" ", 0));
     int errorCode = errorS.toInt();
@@ -1905,6 +1906,13 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
             QByteArray cssData = file.readAll();
             document->addResource(QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData));
             file.close();
+        }
+
+        QMap<QString, QImage>::const_iterator it = images.constBegin();
+        while (it != images.constEnd())
+        {
+            document->addResource(QTextDocument::ImageResource, it.key(), it.value());
+            it++;
         }
 
         //see if prefix is a leaf or a module / package:
@@ -2084,7 +2092,23 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const QString &
                             //qDebug() << doc;
                         }
 
-                        highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document());
+                        //try to load image resources
+                        QSqlQuery imgQuery("SELECT prefix, href, blob FROM itomIMG WHERE LOWER(prefix) IS '" + path.toUtf8().toLower() + "'", database);
+                        imgQuery.exec();
+                        QString href;
+                        QImage img;
+                        QMap<QString, QImage> images;
+                        while (imgQuery.next())
+                        {
+                            href = imgQuery.value("href").toString();
+                            if (img.loadFromData(imgQuery.value("blob").toByteArray()))
+                            {
+                                images[href] = img;
+                            }
+                        }
+
+                        highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), \
+                            query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document(), images);
                     }
                     database.close();
                 }

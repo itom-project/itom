@@ -11,7 +11,7 @@ that should be created
 '''
 
 #  Systemstuff
-import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
+import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword, html
 from sphinx import environment
 from sphinx.application import Sphinx
 import itom
@@ -52,7 +52,7 @@ idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib"
 # --->>>Global simple Settings<<<---
 
 # Filename and DB-Name
-databasename = 'matplotlib'
+databasename = 'numpy'
 
 name = databasename
 
@@ -175,6 +175,7 @@ ns = {}
 doubleID = {}
 idList = {}
 doclist = []
+imglist = []
 
 def printPercent(value, maxim):
     global oldPercentage
@@ -367,11 +368,13 @@ def processName(moduleP, ns, recLevel = 0):
     except:
         reportMessage('Module unknown: '+module,'e')
         return
-    if ns['mID'] not in idList:
+    
+    if prefix+module in blacklist:
+        return
+    nametype = getPyType(prefix+module, ns)
+    
+    if (ns['mID'] not in idList) or nametype == '6':
         idList[ns['mID']] = prefix+module
-        if prefix+module in blacklist:
-            return
-        nametype = getPyType(prefix+module, ns)
         try:
             exec('hasdoc = hasattr('+prefix+module+', "__doc__")', ns)
         except:
@@ -409,9 +412,6 @@ def processName(moduleP, ns, recLevel = 0):
     else:
         # Hier werden die Links eingefuegt!!!
         # da diese Objekte im original bereits bestehen!
-        if prefix+module in blacklist:
-            return
-        nametype = getPyType(prefix+module, ns)
         try:
             prefixP = idList[ns['mID']].split('.')[:-1]
             moduleL = idList[ns['mID']].split('.')[-1:][0]
@@ -480,7 +480,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         else:
             line[4] = ''
     else:
-        line[4] = 'This item is only referenced here. Its original position is: \n'
+        line[4] = 'The documentation for this item can be found under: \n'
         
     # 6. Doc
     if (id != 0):
@@ -508,28 +508,37 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
                     reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e')
                 return
             line[6] = '0'
+            extractImages(sout, line[1])
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
             exec('value = ' + prefix + name, ns)
-            line[5] = itom.compressData('constant: '+ str(ns["value"]))
+            line[5] = itom.compressData(html.escape('constant: '+ str(ns["value"])))
             line[6] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
-            line[5] = itom.compressData(docstr)
+            extractImages(sout, line[1])
+            line[5] = itom.compressData(html.escape(docstr))
             line[6] = '3'
     else:
-        # only a link reference
-        if (prefix[:prefix.find('.')] in builtinList) or (prefix in builtinList) or (name in builtinList):
-            line[5] = itom.compressData(docstr)
-            line[6] = '0'
-        else:
-            line[5] = itom.compressData(docstr)
-            line[6] = '0'
+        # only a link reference, docstr contains the link
+        line[5] = itom.compressData(docstr)
+        line[6] = '0'
     
     # 7 HTML-Error
     # Wiird bereits bei #7 eingetragen
     # Insert commands into doclist
     doclist.append(line)
+    
+def extractImages(docstr, prefix):
+    basepath = os.path.join(itom.getCurrentPath(), "_images")
+    result = re.findall(b'src=\"([a-zA-Z0-9\./]+\.[a-zA-Z0-9]+)\"',docstr,re.DOTALL)
+    for path in result:
+        path = path.decode('utf8')
+        filename = os.path.join(basepath, path)
+        if os.path.exists(filename):
+            with open(filename, 'rb') as fp:
+                content = fp.read()
+            imglist.append([prefix, path, content])
 
 
 # writes doclist into the given sql-DB
@@ -540,7 +549,7 @@ def createSQLDB(ns):
         c = conn.cursor()
         # Create table
         c.execute("DROP TABLE IF EXISTS itomCTL")
-        c.execute('''create table itomCTL (type int, prefix text, name text, param text, sdesc text, doc text, htmlERROR int)''')
+        c.execute('''CREATE TABLE itomCTL (type int, prefix text, name text, param text, sdesc text, doc text, htmlERROR int)''')
         j = 0
         for line in doclist:
             j = j + 1
@@ -550,6 +559,19 @@ def createSQLDB(ns):
             except:
                 print('ERROR_5: at line ['+str(j)+']: ',line)
             printPercent(j,len(doclist))
+        
+        c.execute("DROP TABLE IF EXISTS itomIMG")
+        c.execute('''CREATE TABLE itomIMG (prefix text, href text, blob text)''')
+        j = 0
+        for line in imglist:
+            j = j + 1
+            line
+            try:
+                c.execute('INSERT INTO itomIMG VALUES (?,?,?)',line)
+            except:
+                print('ERROR_5: at line ['+str(j)+']: ',line)
+            printPercent(j,len(imglist))
+        
         # Save (commit) the changes
         conn.commit()
         print("SQL-DB succesful")

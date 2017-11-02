@@ -122,7 +122,7 @@ private:
     void loadIni();
     ito::RetVal displayHelp(const QString &path, const QString &possibleFileName = "");
     QStringList separateLink(const QUrl &link);
-    ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document);
+    ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document, const QMap<QString, QImage> &images);
     QModelIndex findIndexByPath(const int type, QStringList path, const QStandardItem* current);
 
     QString parseFilterWidgetContent(const QString &input);
