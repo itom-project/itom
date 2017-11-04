@@ -415,7 +415,7 @@ PaletteOrganizer::PaletteOrganizer()
     //------------
 
     //declare "falseColor"
-    newPalette = ItomPaletteBase("falseColor", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, Qt::red, Qt::magenta);
+    newPalette = ItomPaletteBase("falseColor", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, Qt::red, QColor::fromRgb(165, 30, 165));
     newPalette.insertColorStop(0.2, Qt::yellow);
     newPalette.insertColorStop(0.4, Qt::green);
     newPalette.insertColorStop(0.6, Qt::cyan);
@@ -432,12 +432,11 @@ PaletteOrganizer::PaletteOrganizer()
     //------------
 
     //declare "falseColorIR"
-    newPalette = ItomPaletteBase("falseColorIR", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(165, 30, 165), Qt::white);
-    newPalette.insertColorStop(0.15, Qt::blue);
-    newPalette.insertColorStop(0.35, Qt::cyan);
-    newPalette.insertColorStop(0.55, Qt::green);
-    newPalette.insertColorStop(0.75, Qt::yellow);
-    newPalette.insertColorStop(0.97, Qt::red);
+    newPalette = ItomPaletteBase("falseColorIR", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(165, 30, 165), Qt::red);
+    newPalette.insertColorStop(0.8, Qt::yellow);
+    newPalette.insertColorStop(0.6, Qt::green);
+    newPalette.insertColorStop(0.4, Qt::cyan);
+    newPalette.insertColorStop(0.2, Qt::blue);
     newPalette.setInverseColorOne(Qt::black);
     newPalette.setInverseColorTwo(Qt::gray);
     newPalette.setWriteProtection();
