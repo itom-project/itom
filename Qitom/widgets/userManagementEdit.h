@@ -52,6 +52,10 @@ class DialogUserManagementEdit : public QDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
+
+    public slots:
+        void on_pb_addScript_clicked();
+        void on_pb_removeScript_clicked();
 };
 
 } //end namespace ito

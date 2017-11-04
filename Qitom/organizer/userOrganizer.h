@@ -27,6 +27,8 @@
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qhash.h>
+#include <qdir.h>
+#include <qcoreapplication.h>
 
 #include "models/UserModel.h"
 
@@ -55,7 +57,36 @@ class UserOrganizer : public QObject
 
         UserFeatures getUserFeatures(void) const { return m_features; }
 
-        inline QString getSettingsFile() const { return m_settingsFile; };
+        inline QString getSettingsFile(const QString uid = "") const 
+        {
+            if (uid == "")
+            {
+                return m_settingsFile;
+            }
+            else
+            {
+                QDir appDir(QCoreApplication::applicationDirPath());
+                if (!appDir.cd("itomSettings"))
+                {
+                    return "";
+                }
+                else
+                {
+                    QString filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+                    QFileInfo fi(filename);
+
+                    if (fi.exists() == false)
+                    {
+                        QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath("itomDefault.ini")));
+                        if (!stdIniFile.copy(filename))
+                        {
+                            return "";
+                        }
+                    }
+                    return filename;
+                }
+            }
+        }
         ito::RetVal loadSettings(const QString &defUserName);
         
         bool hasFeature(UserFeature feature)
