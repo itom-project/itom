@@ -72,10 +72,10 @@ bool DialogUserManagementEdit::saveUser()
 
     if (!ui.lineEdit_name->text().isEmpty())
     {
-        if (m_userModel->index(0, 5).data().toByteArray() != ui.lineEdit_password->text().toUtf8())
+        if (m_oldPassword != ui.lineEdit_password->text())
             password = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
         else
-            password = ui.lineEdit_password->text().toUtf8();
+            password = m_oldPassword;
     }
     else
         password = "";
@@ -192,6 +192,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 
                 ui.lineEdit_id->setText(uid);
                 ui.lineEdit_id->setEnabled(false);
+                m_oldPassword = password;
                 ui.lineEdit_password->setText(password);
                 
                 switch (role)

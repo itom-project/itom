@@ -44,6 +44,7 @@ class DialogUserManagementEdit : public QDialog
         UserModel *m_userModel;
         bool saveUser();
         QString m_fileName;
+        QByteArray m_oldPassword;
 
     protected:
 //        void init();
