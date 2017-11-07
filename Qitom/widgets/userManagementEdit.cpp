@@ -267,8 +267,29 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 settings.endArray();
                 settings.endGroup();
             }
+
+            updateScriptButtons();
         }
     }
+
+    QString label = ui.checkAddFileRel->text().arg(QCoreApplication::applicationDirPath());
+    ui.checkAddFileRel->setText(label);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_lv_startUpScripts_currentRowChanged(int row)
+{
+    updateScriptButtons();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::updateScriptButtons()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    int rows = ui.lv_startUpScripts->count();
+    ui.pb_removeScript->setEnabled(currentRow >= 0);
+    ui.pb_downScript->setEnabled((currentRow >= 0) && (currentRow < (rows - 1)));
+    ui.pb_upScript->setEnabled(currentRow > 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -279,14 +300,22 @@ void DialogUserManagementEdit::on_pb_addScript_clicked()
     if (!filenames.empty())
     {
         QDir::setCurrent(QFileInfo(filenames.first()).path());
+        QDir baseDir(QCoreApplication::applicationDirPath());
 
         foreach(QString filename, filenames)
         {
+            if (ui.checkAddFileRel->isChecked())
+            {
+                filename = baseDir.relativeFilePath(filename);
+            }
+
             if (ui.lv_startUpScripts->findItems(filename, Qt::MatchExactly).isEmpty())
             {
                 ui.lv_startUpScripts->addItem(filename);
             }
         }
+
+        updateScriptButtons();
     }
 }
 
@@ -294,6 +323,40 @@ void DialogUserManagementEdit::on_pb_addScript_clicked()
 void DialogUserManagementEdit::on_pb_removeScript_clicked()
 {
     qDeleteAll(ui.lv_startUpScripts->selectedItems());
+    updateScriptButtons();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_downScript_clicked()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    int numRows = ui.lv_startUpScripts->count();
+
+    if (currentRow < (numRows - 1))
+    {
+        QListWidgetItem *item = ui.lv_startUpScripts->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.lv_startUpScripts->insertItem(currentRow + 1, text);
+        ui.lv_startUpScripts->setCurrentRow(currentRow + 1);
+        updateScriptButtons();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_upScript_clicked()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    
+    if (currentRow > 0)
+    {
+        QListWidgetItem *item = ui.lv_startUpScripts->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.lv_startUpScripts->insertItem(currentRow - 1, text);
+        ui.lv_startUpScripts->setCurrentRow(currentRow - 1);
+        updateScriptButtons();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

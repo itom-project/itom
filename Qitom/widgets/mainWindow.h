@@ -127,7 +127,8 @@ private:
 
     HelpSystem *m_pHelpSystem;
 
-    QLabel *m_statusLblCurrentDir; //label for showing current directory
+    QLabel *m_pStatusLblCurrentDir; //label for showing current directory
+	QLabel *m_pStatusLblPythonBusy; //label for showing the busy status of python (hidden, if python is currently not working)
 
 #ifdef ITOM_USEHELPVIEWER
     QPointer<HelpViewer> m_helpViewer;
