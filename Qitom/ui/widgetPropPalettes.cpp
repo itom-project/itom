@@ -685,20 +685,20 @@ void WidgetPropPalettes::readSettings()
         settings.beginGroup(child);
         const QString name = settings.value("name").toString();
         int type = settings.value("type").toInt();
-        uint uinvalidCol = settings.value("invalidColor").toUInt();
-        uint uinvCol1 = settings.value("inverseColor1").toUInt();
-        uint uinvCol2 = settings.value("inverseColor2").toUInt();
-        QColor invalidCol(uinvalidCol & 0xFF, (uinvalidCol >> 8) & 0xFF, (uinvalidCol >> 16) & 0xFF);
-        QColor invCol1(uinvCol1 & 0xFF, (uinvCol1 >> 8) & 0xFF, (uinvCol1 >> 16) & 0xFF);
-        QColor invCol2(uinvCol2 & 0xFF, (uinvCol2 >> 8) & 0xFF, (uinvCol2 >> 16) & 0xFF);
+        QRgb uinvalidCol = settings.value("invalidColor").toUInt();
+        QRgb uinvCol1 = settings.value("inverseColor1").toUInt();
+        QRgb uinvCol2 = settings.value("inverseColor2").toUInt();
+        QColor invalidCol(uinvalidCol);
+        QColor invCol1(uinvCol1);
+        QColor invCol2(uinvCol2);
         QVariant numColStops = settings.value("numColorStops");
         QVector<QGradientStop> colorStops;
         for (int ns = 0; ns < numColStops.toInt(); ns++)
         {
             QVariant val = settings.value(QString("cs%1_1").arg(ns));
             QVariant col = settings.value(QString("cs%1_2").arg(ns));
-            uint ucol = val.toUInt();
-            colorStops.append(QGradientStop(val.toFloat(), QColor(ucol & 0xFF, (ucol >> 8) & 0xFF, (ucol >> 16) & 0xFF)));
+            QColor color(val.toUInt());
+            colorStops.append(QGradientStop(val.toFloat(), color));
         }
         ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
         palOrganizer->setColorBarThreaded(name, newPal);

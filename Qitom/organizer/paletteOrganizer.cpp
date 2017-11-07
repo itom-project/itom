@@ -396,7 +396,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "gray"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("gray");
-    m_colorBarLookUp.insert("gray", m_colorBars.size() - 1);
     m_builtInPalettes << "gray";
     //------------
 
@@ -410,7 +409,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "grayMarked"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("grayMarked");
-    m_colorBarLookUp.insert("grayMarked", m_colorBars.size() - 1);
     m_builtInPalettes << "grayMarked";
     //------------
 
@@ -427,7 +425,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "falseColor"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColor");
-    m_colorBarLookUp.insert("falseColor", m_colorBars.size() - 1);
     m_builtInPalettes << "falseColor";
     //------------
 
@@ -443,7 +440,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "falseColorIR"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("falseColorIR");
-    m_colorBarLookUp.insert("falseColorIR", m_colorBars.size() - 1);
     m_builtInPalettes << "falseColorIR";
     //------------
 
@@ -457,7 +453,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "hotIron"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("hotIron");
-    m_colorBarLookUp.insert("hotIron", m_colorBars.size() - 1);
     m_builtInPalettes << "hotIron";
     //------------
 
@@ -469,7 +464,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "red"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("red");
-    m_colorBarLookUp.insert("red", m_colorBars.size() - 1);
     m_builtInPalettes << "red";
     //------------
 
@@ -481,7 +475,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "blue"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("blue");
-    m_colorBarLookUp.insert("blue", m_colorBars.size() - 1);
     m_builtInPalettes << "blue";
     //------------
 
@@ -493,7 +486,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "green"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("green");
-    m_colorBarLookUp.insert("green", m_colorBars.size() - 1);
     m_builtInPalettes << "green";
     //------------
 
@@ -524,7 +516,6 @@ PaletteOrganizer::PaletteOrganizer()
     //set "viridis"
     m_colorBars.append(newPalette);
     restrictedKeyWords.append("viridis");
-    m_colorBarLookUp.insert("viridis", m_colorBars.size() - 1);
     m_builtInPalettes << "viridis";
     //------------
 
@@ -536,12 +527,12 @@ PaletteOrganizer::PaletteOrganizer()
         settings.beginGroup(child);
         const QString name = settings.value("name").toString();
         int type = settings.value("type").toInt();
-        uint uinvalidCol = settings.value("invalidColor").toUInt();
-        uint uinvCol1 = settings.value("inverseColor1").toUInt();
-        uint uinvCol2 = settings.value("inverseColor2").toUInt();
-        QColor invalidCol(uinvalidCol & 0xFF, (uinvalidCol >> 8) & 0xFF, (uinvalidCol >> 16) & 0xFF);
-        QColor invCol1(uinvCol1 & 0xFF, (uinvCol1 >> 8) & 0xFF, (uinvCol1 >> 16) & 0xFF);
-        QColor invCol2(uinvCol2 & 0xFF, (uinvCol2 >> 8) & 0xFF, (uinvCol2 >> 16) & 0xFF);
+        QRgb uinvalidCol = settings.value("invalidColor").toUInt();
+        QRgb uinvCol1 = settings.value("inverseColor1").toUInt();
+        QRgb uinvCol2 = settings.value("inverseColor2").toUInt();
+        QColor invalidCol(uinvalidCol);
+        QColor invCol1(uinvCol1);
+        QColor invCol2(uinvCol2);
         QVariant numColStops = settings.value("numColorStops");
         QVector<QGradientStop> colorStops;
         for (int ns = 0; ns < numColStops.toInt(); ns++)
@@ -567,9 +558,7 @@ PaletteOrganizer::PaletteOrganizer()
     }
     settings.endGroup();
 
- //   m_colorBars.append(ItomPaletteBase("RGB", ItomPalette::RGBPalette | ItomPalette::ReadOnlyPalette, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 255, 255)));
- //   restrictedKeyWords.append("256Colors");
- //   m_colorBarLookUp.insert("256Colors", 7);
+    calcColorBarLut();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -688,6 +677,29 @@ QList<QString> PaletteOrganizer::getColorBarList(const int type) const
     }
     return outPut;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PaletteOrganizer::removeColorbar(const int index)
+{
+    if (index >= 0 && index < m_colorBars.length() && !(m_colorBars[index].getType() & ito::tPaletteReadOnly))
+    {
+        m_colorBars.removeAt(index);
+        calcColorBarLut();
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PaletteOrganizer::calcColorBarLut()
+{
+    m_colorBarLookUp.clear();
+    for (int i = 0; i < m_colorBars.size(); ++i)
+    {
+        m_colorBarLookUp.insert(m_colorBars[i].getName(), i);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond)
 {
@@ -715,7 +727,7 @@ ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPalette
     else
     {
         m_colorBars.append(newPalette);
-        m_colorBarLookUp.insert(name, m_colorBars.size() - 1);
+        calcColorBarLut();
     }
 
     if (waitCond)
