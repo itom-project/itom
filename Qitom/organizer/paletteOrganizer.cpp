@@ -537,10 +537,10 @@ PaletteOrganizer::PaletteOrganizer()
         QVector<QGradientStop> colorStops;
         for (int ns = 0; ns < numColStops.toInt(); ns++)
         {
-            QVariant val = settings.value(QString("cs%1_1").arg(ns));
+            float pos = settings.value(QString("cs%1_1").arg(ns)).toFloat();
             QVariant col = settings.value(QString("cs%1_2").arg(ns));
-            uint ucol = val.toUInt();
-            colorStops.append(QGradientStop(val.toFloat(), QColor(ucol & 0xFF, (ucol >> 8) & 0xFF, (ucol >> 16) & 0xFF)));
+            QColor color(col.toUInt());
+            colorStops.append(QGradientStop(pos, color));
         }
         ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
 

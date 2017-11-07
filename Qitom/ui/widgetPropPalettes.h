@@ -40,8 +40,8 @@ class ColCurve : public QObject, public QGraphicsPathItem
     Q_OBJECT
 
     public:
-        ColCurve(WidgetPropPalettes *parentWidget, int colChannel) 
-            : QObject(), QGraphicsPathItem(), m_parentWidget(parentWidget), m_colChannel(colChannel) 
+        ColCurve(WidgetPropPalettes *parentWidget, int colChannel, QObject *parent = NULL) 
+            : QObject(parent), QGraphicsPathItem(), m_parentWidget(parentWidget), m_colChannel(colChannel) 
         { }
         int getColChannel() { return m_colChannel; }
 
