@@ -80,6 +80,8 @@ class ITOMWIDGETS_EXPORT PlotInfoShapes : public QTreeWidget
 		void setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element);
 		void setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element);
 
+        void adjustNumberOfChildItems(QTreeWidgetItem* curItem, int count);
+
         QHash< int, relation> m_relationHash;
 
 
