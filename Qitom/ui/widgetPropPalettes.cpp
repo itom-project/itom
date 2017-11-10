@@ -294,7 +294,8 @@ WidgetPropPalettes::WidgetPropPalettes(QWidget *parent) :
 void WidgetPropPalettes::updatePaletteList()
 {
     float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
-    int width = qRound(dpiFactor * 256);
+    //int width = qRound(dpiFactor * 256);
+    int width = 256;
     int height = qRound(dpiFactor * 10);
 
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
