@@ -1139,7 +1139,7 @@ void ParamCharArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property
             if (index >= 0 && index < num)
             {
                 const ParamCharArrayPropertyManager::DataType* vals = m_d_ptr->m_values[prop].param.getVal<const ParamCharArrayPropertyManager::DataType*>();
-                ParamCharArrayPropertyManager::DataType* newvals = (ParamCharArrayPropertyManager::DataType*)malloc(num * sizeof(ParamCharArrayPropertyManager::DataType*));
+                ParamCharArrayPropertyManager::DataType* newvals = (ParamCharArrayPropertyManager::DataType*)malloc(num * sizeof(ParamCharArrayPropertyManager::DataType));
                 memcpy(newvals, vals, sizeof(ParamCharArrayPropertyManager::DataType) * num);
                 newvals[index] = value;
                 q_ptr->setValue(prop, num, newvals);
@@ -1239,38 +1239,38 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
 
+    if (oldSubItems > len)
+    {
+        //remove supernumerous sub-items
+        for (int i = oldSubItems; i = len; --i)
+        {
+            QtProperty *subProp = d_ptr->m_propertyToValues[property][i - 1];
+            property->removeSubProperty(subProp);
+            d_ptr->m_valuesToProperty.remove(subProp);
+            delete subProp;
+            d_ptr->m_propertyToValues[property].removeLast();
+        }
+    }
+
+    if (len > oldSubItems)
+    {
+        //add new sub-items
+        for (int i = oldSubItems; i < len; ++i)
+        {
+            QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+            prop->setPropertyName(tr("%1").arg(i));
+            d_ptr->m_numberPropertyManager->setValue(prop, 0);
+            d_ptr->m_propertyToValues[property].append(prop);
+            d_ptr->m_valuesToProperty[prop] = property;
+            property->addSubProperty(prop);
+        }
+    }
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
         data.param = param;
-
-        if (oldSubItems > len)
-        {
-            //remove supernumerous sub-items
-            for (int i = oldSubItems; i = len; --i)
-            {
-                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
-                property->removeSubProperty(subProp);
-                d_ptr->m_valuesToProperty.remove(subProp);
-                delete subProp;
-                d_ptr->m_propertyToValues[property].removeLast();
-            }
-        }
-
-        if (len > oldSubItems)
-        {
-            //add new sub-items
-            for (int i = oldSubItems; i < len; ++i)
-            {
-                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
-                prop->setPropertyName(tr("%1").arg(i));
-                d_ptr->m_numberPropertyManager->setValue(prop, 0);
-                d_ptr->m_propertyToValues[property].append(prop);
-                d_ptr->m_valuesToProperty[prop] = property;
-                property->addSubProperty(prop);
-            }
-        }
 
         const DataType* vals = data.param.getVal<const DataType*>();
         ito::CharMeta *im;
@@ -1294,7 +1294,14 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
 
         for (int i = 0; i < len; ++i)
         {
-            im = new ito::CharMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            if (metaNew)
+            {
+                im = new ito::CharMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            }
+            else
+            {
+                im = NULL;
+            }
             ito::Param val("val", ito::ParamBase::Char, vals[i], im, "");
             d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
         }
@@ -1412,7 +1419,7 @@ void ParamIntArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property,
             if (index >= 0 && index < num)
             {
                 const ParamIntArrayPropertyManager::DataType* vals = m_d_ptr->m_values[prop].param.getVal<const ParamIntArrayPropertyManager::DataType*>();
-                ParamIntArrayPropertyManager::DataType* newvals = (ParamIntArrayPropertyManager::DataType*)malloc(num * sizeof(ParamIntArrayPropertyManager::DataType*));
+                ParamIntArrayPropertyManager::DataType* newvals = (ParamIntArrayPropertyManager::DataType*)malloc(num * sizeof(ParamIntArrayPropertyManager::DataType));
                 memcpy(newvals, vals, sizeof(ParamIntArrayPropertyManager::DataType) * num);
                 newvals[index] = value;
                 q_ptr->setValue(prop, num, newvals);
@@ -1512,38 +1519,38 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
 
+    if (oldSubItems > len)
+    {
+        //remove supernumerous sub-items
+        for (int i = oldSubItems; i = len; --i)
+        {
+            QtProperty *subProp = d_ptr->m_propertyToValues[property][i - 1];
+            property->removeSubProperty(subProp);
+            d_ptr->m_valuesToProperty.remove(subProp);
+            delete subProp;
+            d_ptr->m_propertyToValues[property].removeLast();
+        }
+    }
+
+    if (len > oldSubItems)
+    {
+        //add new sub-items
+        for (int i = oldSubItems; i < len; ++i)
+        {
+            QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+            prop->setPropertyName(tr("%1").arg(i));
+            d_ptr->m_numberPropertyManager->setValue(prop, 0);
+            d_ptr->m_propertyToValues[property].append(prop);
+            d_ptr->m_valuesToProperty[prop] = property;
+            property->addSubProperty(prop);
+        }
+    }
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
         data.param = param;
-
-        if (oldSubItems > len)
-        {
-            //remove supernumerous sub-items
-            for (int i = oldSubItems; i = len; --i)
-            {
-                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
-                property->removeSubProperty(subProp);
-                d_ptr->m_valuesToProperty.remove(subProp);
-                delete subProp;
-                d_ptr->m_propertyToValues[property].removeLast();
-            }
-        }
-
-        if (len > oldSubItems)
-        {
-            //add new sub-items
-            for (int i = oldSubItems; i < len; ++i)
-            {
-                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
-                prop->setPropertyName(tr("%1").arg(i));
-                d_ptr->m_numberPropertyManager->setValue(prop, 0);
-                d_ptr->m_propertyToValues[property].append(prop);
-                d_ptr->m_valuesToProperty[prop] = property;
-                property->addSubProperty(prop);
-            }
-        }
 
         const DataType* vals = data.param.getVal<const DataType*>();
         ito::IntMeta *im;
@@ -1567,7 +1574,14 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
 
         for (int i = 0; i < len; ++i)
         {
-            im = new ito::IntMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            if (metaNew)
+            {
+                im = new ito::IntMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            }
+            else
+            {
+                im = NULL;
+            }
             ito::Param val("val", ito::ParamBase::Int, vals[i], im, "");
             d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
         }
@@ -1682,7 +1696,7 @@ void ParamDoubleArrayPropertyManagerPrivate::slotValueChanged(QtProperty *proper
             if (index >= 0 && index < num)
             {
                 const ParamDoubleArrayPropertyManager::DataType* vals = m_d_ptr->m_values[prop].param.getVal<const ParamDoubleArrayPropertyManager::DataType*>();
-                ParamDoubleArrayPropertyManager::DataType* newvals = (ParamDoubleArrayPropertyManager::DataType*)malloc(num * sizeof(ParamDoubleArrayPropertyManager::DataType*));
+                ParamDoubleArrayPropertyManager::DataType* newvals = (ParamDoubleArrayPropertyManager::DataType*)malloc(num * sizeof(ParamDoubleArrayPropertyManager::DataType));
                 memcpy(newvals, vals, sizeof(ParamDoubleArrayPropertyManager::DataType) * num);
                 newvals[index] = value;
                 q_ptr->setValue(prop, num, newvals);
@@ -1782,38 +1796,38 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
 
+    if (oldSubItems > len)
+    {
+        //remove supernumerous sub-items
+        for (int i = oldSubItems; i = len; --i)
+        {
+            QtProperty *subProp = d_ptr->m_propertyToValues[property][i - 1];
+            property->removeSubProperty(subProp);
+            d_ptr->m_valuesToProperty.remove(subProp);
+            delete subProp;
+            d_ptr->m_propertyToValues[property].removeLast();
+        }
+    }
+
+    if (len > oldSubItems)
+    {
+        //add new sub-items
+        for (int i = oldSubItems; i < len; ++i)
+        {
+            QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+            prop->setPropertyName(tr("%1").arg(i));
+            d_ptr->m_numberPropertyManager->setValue(prop, 0);
+            d_ptr->m_propertyToValues[property].append(prop);
+            d_ptr->m_valuesToProperty[prop] = property;
+            property->addSubProperty(prop);
+        }
+    }
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
         data.param = param;
-
-        if (oldSubItems > len)
-        {
-            //remove supernumerous sub-items
-            for (int i = oldSubItems; i = len; --i)
-            {
-                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
-                property->removeSubProperty(subProp);
-                d_ptr->m_valuesToProperty.remove(subProp);
-                delete subProp;
-                d_ptr->m_propertyToValues[property].removeLast();
-            }
-        }
-
-        if (len > oldSubItems)
-        {
-            //add new sub-items
-            for (int i = oldSubItems; i < len; ++i)
-            {
-                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
-                prop->setPropertyName(tr("%1").arg(i));
-                d_ptr->m_numberPropertyManager->setValue(prop, 0);
-                d_ptr->m_propertyToValues[property].append(prop);
-                d_ptr->m_valuesToProperty[prop] = property;
-                property->addSubProperty(prop);
-            }
-        }
 
         const DataType* vals = data.param.getVal<const DataType*>();
         ito::DoubleMeta *im;
@@ -1837,7 +1851,14 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
 
         for (int i = 0; i < len; ++i)
         {
-            im = new ito::DoubleMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            if (metaNew)
+            {
+                im = new ito::DoubleMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            }
+            else
+            {
+                im = NULL;
+            }
             ito::Param val("val", ito::ParamBase::Double, vals[i], im, "");
             d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
         }
