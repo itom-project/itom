@@ -4090,7 +4090,7 @@ This methods changes the overall cursor icon of itom where cursorIndex correspon
 Parameters \n\
 ----------- \n\
 cursorIndex : {int} optional\n\
-The cursor enumeration value of the desired cursor shape (Qt::CursorShape) or -1 if the previous cursor should be restored (default)");
+    The cursor enumeration value of the desired cursor shape (Qt::CursorShape) or -1 if the previous cursor should be restored (default)");
 PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 {
     int i = -1;

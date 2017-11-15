@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>472</width>
-    <height>254</height>
+    <width>551</width>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,13 +43,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>To change the order in which the items (files) are loaded, use Drag and Drop</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -66,8 +59,56 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnRemove">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Remove</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnUpScript">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Move Up</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnDownScript">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Move Down</string>
          </property>
         </widget>
        </item>
@@ -89,9 +130,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="lblBasePath">
+    <widget class="QCheckBox" name="checkAddFileRel">
      <property name="text">
-      <string>Base path: </string>
+      <string>Add new files relative to itom base path: %1</string>
      </property>
     </widget>
    </item>

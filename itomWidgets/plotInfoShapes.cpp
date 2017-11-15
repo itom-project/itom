@@ -59,6 +59,20 @@ PlotInfoShapes::PlotInfoShapes(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
     setHeaderLabels(headerLabels);
 
 }
+
+//---------------------------------------------------------------------------------------------------------
+void PlotInfoShapes::adjustNumberOfChildItems(QTreeWidgetItem* curItem, int count)
+{
+    while (curItem->childCount() > count)
+    {
+        curItem->removeChild(curItem->child(curItem->childCount() - 1));
+    }
+    while (curItem->childCount() < count)
+    {
+        curItem->addChild(new QTreeWidgetItem());
+    }
+}
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -69,18 +83,13 @@ void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &e
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-	while (curItem->childCount() > 1)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 1)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+    adjustNumberOfChildItems(curItem, 1);
+
 	QPointF center = element.centerPoint();
 	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -91,14 +100,8 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-	while (curItem->childCount() > 3)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 3)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+    adjustNumberOfChildItems(curItem, 3);
+
 	const QPolygonF points = element.rbasePoints();
 	double length = std::sqrt(std::pow(points[0].x() - points[1].x(), 2) + std::pow(points[0].y() - points[1].y(), 2));
 	curItem->child(0)->setData(0, Qt::DisplayRole, "Start");
@@ -108,6 +111,7 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
 	curItem->child(2)->setData(0, Qt::DisplayRole, "Length");
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(length)));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -118,21 +122,18 @@ void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-	while (curItem->childCount() > 2)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 2)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+    adjustNumberOfChildItems(curItem, 3);
+
 	QPointF center = element.centerPoint();
 	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
+    curItem->child(2)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -143,17 +144,10 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-	while (curItem->childCount() > 3)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 3)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+    adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
 	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius1");
@@ -161,7 +155,10 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
 	radius = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y()) / 2;
 	curItem->child(2)->setData(0, Qt::DisplayRole, "Radius2");
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
+    curItem->child(3)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(3)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -172,22 +169,18 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-	while (curItem->childCount() > 2)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 2)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+    adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
-	curItem->child(1)->setData(0, Qt::DisplayRole, "SizeX");
+	curItem->child(1)->setData(0, Qt::DisplayRole, "Side Length");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
+    curItem->child(2)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -197,25 +190,22 @@ void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &el
 #else
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
-	while (curItem->childCount() > 3)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 3)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+
+    adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
-	curItem->child(1)->setData(0, Qt::DisplayRole, "SizeX");
+	curItem->child(1)->setData(0, Qt::DisplayRole, "Width");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
 	side = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y());
-	curItem->child(2)->setData(0, Qt::DisplayRole, "SizeY");
+	curItem->child(2)->setData(0, Qt::DisplayRole, "Height");
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
+    curItem->child(3)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(3)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
@@ -225,22 +215,17 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
 #else
 	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
-	while (curItem->childCount() > 3)
-	{
-		curItem->removeChild(curItem->child(curItem->childCount() - 1));
-	}
-	while (curItem->childCount() < 3)
-	{
-		curItem->addChild(new QTreeWidgetItem());
-	}
+
+    adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	curItem->child(1)->setData(0, Qt::DisplayRole, "Length");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.circumference())));
 	curItem->child(2)->setData(0, Qt::DisplayRole, "Nodes");
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().size())));
 }
+
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::updateShape(const ito::Shape element)
 {

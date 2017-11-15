@@ -41,9 +41,12 @@ class DialogUserManagementEdit : public QDialog
         Ui::userManagementEdit ui;
 
     private:
+        void updateScriptButtons();
+
         UserModel *m_userModel;
         bool saveUser();
         QString m_fileName;
+        QByteArray m_oldPassword;
 
     protected:
 //        void init();
@@ -51,6 +54,13 @@ class DialogUserManagementEdit : public QDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_lv_startUpScripts_currentRowChanged(int row);
+
+    public slots:
+        void on_pb_addScript_clicked();
+        void on_pb_removeScript_clicked();
+        void on_pb_downScript_clicked();
+        void on_pb_upScript_clicked();
 };
 
 } //end namespace ito

@@ -24,6 +24,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../organizer/paletteOrganizer.h"
+#include "../helper/guiHelper.h"
+
 #include <qsettings.h>
 #include <qgraphicsitem.h>
 #include <qgraphicswidget.h>
@@ -46,28 +48,50 @@ void ColCurve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             m_parentWidget->m_isDirty = 1;
 
             QGraphicsView *par = qobject_cast<QGraphicsView*>(parent());
-            float posXRel = event->lastScenePos().x() / par->size().width();
-            if (m_parentWidget->m_selPt > 0 && posXRel <= pts[m_parentWidget->m_selPt - 1].first)
-                pts[m_parentWidget->m_selPt].first = (pts[m_parentWidget->m_selPt - 1].first);
-            else if (m_parentWidget->m_selPt < (pts.length() - 1) && posXRel >= pts[m_parentWidget->m_selPt + 1].first)
-                pts[m_parentWidget->m_selPt].first = pts[m_parentWidget->m_selPt + 1].first;
-            else if (m_parentWidget->m_selPt == 0 && posXRel != 0)
-                pts[m_parentWidget->m_selPt].first = 0;
-            else if (m_parentWidget->m_selPt == (pts.length() - 1) && par && posXRel != 1)
-                pts[m_parentWidget->m_selPt].first = 1;
-            else
-                pts[m_parentWidget->m_selPt].first = posXRel;
+            float posXRel = qBound(0.0, event->lastScenePos().x() / par->size().width(), 1.0);
 
-            int colVal = (par->size().height() - event->lastScenePos().y()) / par->size().height() * 255;
-            int r = (pts[m_parentWidget->m_selPt].second.rgb() & 0xFF0000) >> 16;
-            int g = (pts[m_parentWidget->m_selPt].second.rgb() & 0xFF00) >> 8;
-            int b = (pts[m_parentWidget->m_selPt].second.rgb() & 0xFF);
-            if (m_colChannel == 0)
-                pts[m_parentWidget->m_selPt].second = QColor(colVal, g, b);
-            else if (m_colChannel == 1)
-                pts[m_parentWidget->m_selPt].second = QColor(r, colVal, b);
+            //define x-coordinate of gradient
+            if (m_parentWidget->m_selPt == (pts.length() - 1))
+            {
+                //last point stays at pos 1
+                pts[m_parentWidget->m_selPt].first = 1.0;
+            }
+            else if (m_parentWidget->m_selPt == 0)
+            {
+                //first point stays at pos 0
+                pts[m_parentWidget->m_selPt].first = 0.0;
+            }
+            else if (m_parentWidget->m_selPt > 0 && posXRel <= pts[m_parentWidget->m_selPt - 1].first)
+            {
+                pts[m_parentWidget->m_selPt].first = (pts[m_parentWidget->m_selPt - 1].first);
+            }
+            else if (m_parentWidget->m_selPt < (pts.length() - 1) && posXRel >= pts[m_parentWidget->m_selPt + 1].first)
+            {
+                pts[m_parentWidget->m_selPt].first = pts[m_parentWidget->m_selPt + 1].first;
+            }
             else
-                pts[m_parentWidget->m_selPt].second = QColor(r, g, colVal);
+            {
+                pts[m_parentWidget->m_selPt].first = posXRel;
+            }
+
+            int colVal = qBound(0.0, (par->size().height() - event->lastScenePos().y()) / par->size().height() * 255, 255.0);
+
+            QColor currentColor(pts[m_parentWidget->m_selPt].second);
+
+            switch (m_colChannel)
+            {
+            case 0: //red
+                currentColor.setRed(colVal);
+                break;
+            case 1: //green
+                currentColor.setGreen(colVal);
+                break;
+            case 2: //blue
+                currentColor.setBlue(colVal);
+                break;
+            }
+
+            pts[m_parentWidget->m_selPt].second = currentColor;
 
             ito::ItomPaletteBase palette(m_parentWidget->getCurPalette()->getName(), m_parentWidget->getCurPalette()->getType(),
                 m_parentWidget->getCurPalette()->getInverseColorOne(), m_parentWidget->getCurPalette()->getInverseColorTwo(),
@@ -86,8 +110,10 @@ void ColCurve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ColCurve::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+
     double minDist = 1e208;
-    int thisPt;
+    int thisPt = -1;
 
     QGraphicsView *par = qobject_cast<QGraphicsView*>(parent());
     if (m_parentWidget && par)
@@ -95,19 +121,26 @@ void ColCurve::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QVector<QGradientStop> pts = m_parentWidget->m_curPalette.getColorStops();
         float scaleX = par->size().width();
         float scaleY = par->size().height();
+        QPointF cursorPos = event->scenePos();
 
         for (int ne = 0; ne < pts.length(); ne++)
         {
             QLineF l;
-            if (m_colChannel == 0)
-                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.redF() * scaleY),
-                    QPointF(event->buttonDownScenePos(Qt::LeftButton).x(), event->buttonDownScenePos(Qt::LeftButton).y()));
-            else if (m_colChannel == 1)
-                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.greenF() * scaleY),
-                    QPointF(event->buttonDownScenePos(Qt::LeftButton).x(), event->buttonDownScenePos(Qt::LeftButton).y()));
-            else
-                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.blueF() * scaleY),
-                    QPointF(event->buttonDownScenePos(Qt::LeftButton).x(), event->buttonDownScenePos(Qt::LeftButton).y()));
+
+            switch (m_colChannel)
+            {
+            case 0:
+                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.redF() * scaleY), cursorPos);
+                break;
+            case 1:
+                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.greenF() * scaleY), cursorPos);
+                break;
+            case 2:
+                l = QLineF(QPointF(pts[ne].first * scaleX, par->size().height() - pts[ne].second.blueF() * scaleY), cursorPos);
+                break;
+            default:
+                continue;
+            }
 
             if (l.length() < minDist)
             {
@@ -116,18 +149,26 @@ void ColCurve::mousePressEvent(QGraphicsSceneMouseEvent *event)
             }
         }
 
-        //if (minDist < 20)
+        qDebug() << cursorPos << "best index: " << thisPt;
+
+        if (minDist < (20 * dpiFactor))
         {
             m_parentWidget->m_isUpdating = 1;
             m_parentWidget->m_selPt = thisPt;
             m_parentWidget->drawPalCurves(m_parentWidget->m_selPt);
             m_parentWidget->m_isUpdating = 0;
+            event->accept();
+        }
+        else
+        {
+            m_parentWidget->m_selPt = -1;
+            event->ignore();
         }
     }
-    else
+    else if (m_parentWidget)
     {
-        if (m_parentWidget)
-            m_parentWidget->m_selPt = -1;
+        m_parentWidget->m_selPt = -1;
+        event->ignore();
     }
 }
 
@@ -142,16 +183,18 @@ void ColCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QMenu contextMenu(tr("Context menu"), m_parentWidget);
     QAction *action;
 
-    if (m_parentWidget->m_selPt >= 0)
-    {
-        action = new QAction(tr("Delete Color Stop"), this);
-        connect(action, SIGNAL(triggered()), this, SLOT(removeDataPoint()));
-        contextMenu.addAction(action);
-    }
-    m_insertPos = event->scenePos();
-    action = new QAction(tr("Add Color Stop"), this);
+    int numColorStops = m_parentWidget->m_curPalette.getColorStops().size();
+
+    action = new QAction(tr("Delete Color Stop"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(removeDataPoint()));
+    contextMenu.addAction(action);
+    action->setEnabled(m_parentWidget->m_selPt > 0 && m_parentWidget->m_selPt < (numColorStops - 1));
+
+    action = new QAction(tr("Add color stop"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(addDataPoint()));
     contextMenu.addAction(action);
+
+    m_insertPos = event->scenePos();
     contextMenu.exec(event->screenPos());
 }
 
@@ -159,11 +202,11 @@ void ColCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void ColCurve::removeDataPoint()
 {
     QGraphicsView *par = qobject_cast<QGraphicsView*>(parent());
-    if (m_parentWidget && par && m_parentWidget->m_selPt >= 0)
+    QVector<QGradientStop> pts = m_parentWidget->m_curPalette.getColorStops();
+
+    if (m_parentWidget && par && m_parentWidget->m_selPt > 0 && m_parentWidget->m_selPt < (pts.size() - 1))
     {
         m_parentWidget->m_isDirty = 1;
-
-        QVector<QGradientStop> pts = m_parentWidget->m_curPalette.getColorStops();
 
         if (pts.size() > 2)
         {
@@ -205,9 +248,9 @@ void ColCurve::addDataPoint()
         QColor col1 = pts[first].second;
         QColor col2 = pts[first < pts.length() - 1 ? first + 1 : first].second;
         float cfact = xpos - pts[first].first;
-        pts.insert(first + 1, QGradientStop(xpos, QColor((col2.red() - col1.red()) * cfact, 
-            (col2.green() - col1.green()) * cfact,
-            (col2.blue() - col1.blue()) * cfact)));
+        pts.insert(first + 1, QGradientStop(xpos, QColor(col1.red() + (col2.red() - col1.red()) * cfact, 
+            col1.green() + (col2.green() - col1.green()) * cfact,
+            col1.blue() + (col2.blue() - col1.blue()) * cfact)));
 
         ito::ItomPaletteBase palette(m_parentWidget->getCurPalette()->getName(), m_parentWidget->getCurPalette()->getType(),
             m_parentWidget->getCurPalette()->getInverseColorOne(), m_parentWidget->getCurPalette()->getInverseColorTwo(),
@@ -250,19 +293,31 @@ WidgetPropPalettes::WidgetPropPalettes(QWidget *parent) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::updatePaletteList()
 {
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+    //int width = qRound(dpiFactor * 256);
+    int width = 256;
+    int height = qRound(dpiFactor * 10);
+
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
     QList<QString> paletteNames = palOrganizer->getColorBarList();
     ui.lwPalettes->clear();
-    ui.lwPalettes->setIconSize(QSize(256, 10));
+    ui.lwPalettes->setIconSize(QSize(width, height));
+
     for (int nc = 0; nc < paletteNames.size(); nc++)
     {
         ito::ItomPaletteBase pal = palOrganizer->getColorBar(nc);
-        QVector<uint> cols = pal.get256Colors();
-        QImage img(256, 10, QImage::Format_RGB32);
 
-        for (int np = 0; np < 256; np++)
+        if (pal.getType() & ito::tPalette::tPaletteReadOnly)
         {
-            for (int nh = 0; nh < 10; nh++)
+            paletteNames[nc].append(tr(" (unchangeable)"));
+        }
+        
+        QVector<uint> cols = pal.get256Colors();
+        QImage img(width, height, QImage::Format_RGB32);
+
+        for (int np = 0; np < width; np++)
+        {
+            for (int nh = 0; nh < height; nh++)
             {
 #if QTVERSION < 0x050600
                 img.setPixel(np, nh, QColor((cols[np] >> 16) & 0xFF, (cols[np] >> 8) & 0xFF, cols[np] & 0xFF).rgb());
@@ -355,12 +410,9 @@ void WidgetPropPalettes::drawPalCurves(int selPt, int sx0, int sy0, int sdx, int
     if (items.size() < 3)
     {
         sceneCurves->clear();
-        curveR = new ColCurve(this, 0);
-        curveR->setParent(ui.gvPalCurves);
-        curveG = new ColCurve(this, 1);
-        curveG->setParent(ui.gvPalCurves);
-        curveB = new ColCurve(this, 2);
-        curveB->setParent(ui.gvPalCurves);
+        curveR = new ColCurve(this, 0, ui.gvPalCurves);
+        curveG = new ColCurve(this, 1, ui.gvPalCurves);
+        curveB = new ColCurve(this, 2, ui.gvPalCurves);
 
         QPen rPen(Qt::red, 2);
         QPen gPen(Qt::green, 2);
@@ -402,7 +454,7 @@ void WidgetPropPalettes::drawPalCurves(int selPt, int sx0, int sy0, int sdx, int
     // draw line
 
     float scalex = ui.gvPalCurves->frameSize().width() - sdx;
-    float scaley = (ui.gvPalCurves->frameSize().height() - sdy) / 255;
+    float scaley = (float)(ui.gvPalCurves->frameSize().height() - sdy) / 255.0;
     QPolygonF polyR, polyG, polyB;
     QVector<QGradientStop> curPalData = m_curPalette.getColorStops();
     for (int cs = 0; cs < curPalData.size(); cs++)
@@ -493,25 +545,20 @@ void WidgetPropPalettes::updatePalette()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::lwCurrentRowChanged(int row)
 {
+    if (m_isUpdating)
+    {
+        return;
+    }
+
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
 
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), tr("Current palette has been altered and is unsaved. Save changes or discard?")) == QMessageBox::Yes)
+        if (QMessageBox::question(this, tr("Palette altered"), \
+            tr("Current palette has been altered and is unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
         {
-            QList<QString> palettes = palOrganizer->getColorBarList();
-            if (palettes.contains(ui.lePalName->text()))
-            {
-
-            }
-            else
-            {
-                m_curPalette.setInvalidColor(ui.btnInvColor->color());
-                m_curPalette.setInverseColorOne(ui.btnInvColor1->color());
-                m_curPalette.setInverseColorTwo(ui.btnInvColor2->color());
-                palOrganizer->setColorBarThreaded(ui.lePalName->text(), m_curPalette, NULL);
-            }
+            pbSaveClicked();
         }
     }
 
@@ -668,45 +715,20 @@ void WidgetPropPalettes::pbSaveClicked()
             return;
     }
 
+    m_isUpdating = true;
+
     m_curPalette = ItomPaletteBase(ui.lePalName->text(), m_curPalette.getType()&~tPaletteReadOnly, m_curPalette.getInverseColorOne(),
         m_curPalette.getInverseColorTwo(), m_curPalette.getInvalidColor(), m_curPalette.getColorStops());
     palOrganizer->setColorBarThreaded(ui.lePalName->text(), m_curPalette, NULL);
+    m_isDirty = 0;
     updatePaletteList();
+
+    m_isUpdating = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::readSettings()
 {
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
-    settings.beginGroup("ito::Palettes");
-    foreach(QString child, settings.childGroups())
-    {
-        settings.beginGroup(child);
-        const QString name = settings.value("name").toString();
-        int type = settings.value("type").toInt();
-        uint uinvalidCol = settings.value("invalidColor").toUInt();
-        uint uinvCol1 = settings.value("inverseColor1").toUInt();
-        uint uinvCol2 = settings.value("inverseColor2").toUInt();
-        QColor invalidCol(uinvalidCol & 0xFF, (uinvalidCol >> 8) & 0xFF, (uinvalidCol >> 16) & 0xFF);
-        QColor invCol1(uinvCol1 & 0xFF, (uinvCol1 >> 8) & 0xFF, (uinvCol1 >> 16) & 0xFF);
-        QColor invCol2(uinvCol2 & 0xFF, (uinvCol2 >> 8) & 0xFF, (uinvCol2 >> 16) & 0xFF);
-        QVariant numColStops = settings.value("numColorStops");
-        QVector<QGradientStop> colorStops;
-        for (int ns = 0; ns < numColStops.toInt(); ns++)
-        {
-            QVariant val = settings.value(QString("cs%1_1").arg(ns));
-            QVariant col = settings.value(QString("cs%1_2").arg(ns));
-            uint ucol = val.toUInt();
-            colorStops.append(QGradientStop(val.toFloat(), QColor(ucol & 0xFF, (ucol >> 8) & 0xFF, (ucol >> 16) & 0xFF)));
-        }
-        ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
-        palOrganizer->setColorBarThreaded(name, newPal);
-
-        settings.endGroup();
-    }
-
-    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

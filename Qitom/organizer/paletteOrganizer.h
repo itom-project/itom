@@ -145,6 +145,8 @@ class PaletteOrganizer : public QObject
         ~PaletteOrganizer(){};
 
     private:        
+        void calcColorBarLut();
+
         QList<QString> restrictedKeyWords;
         QList<ItomPaletteBase> m_colorBars;
         QList<QString> m_builtInPalettes;
@@ -160,16 +162,7 @@ class PaletteOrganizer : public QObject
         QList<QString> getColorBarList(const int type = ito::tPaletteNoType) const;
         QList<QString> getBuiltInPaletteNames() const { return m_builtInPalettes; }
         int numberOfColorBars() const { return m_colorBars.length(); }
-        bool removeColorbar(const int index) 
-        { 
-            if (index >= 0 && index < m_colorBars.length() && !(m_colorBars[index].getType() & ito::tPaletteReadOnly))
-            {
-                m_colorBarLookUp.remove(m_colorBars[index].getName());
-                m_colorBars.removeAt(index);
-                return true;
-            }
-            return false;
-        }
+        bool removeColorbar(const int index);
 
         ito::RetVal setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond = NULL);

@@ -40,9 +40,8 @@ WidgetPropPythonStartup::WidgetPropPythonStartup(QWidget *parent) :
 {
     ui.setupUi(this);
 
-    ui.lblBasePath->setText(tr("Base path for relative pathes: ") + QCoreApplication::applicationDirPath());
-    ui.btnAdd->setEnabled(true);
-    ui.btnRemove->setEnabled(false);
+    QString label = ui.checkAddFileRel->text().arg(QCoreApplication::applicationDirPath());
+    ui.checkAddFileRel->setText(label);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -66,6 +65,8 @@ void WidgetPropPythonStartup::readSettings()
 
     settings.endArray();
     settings.endGroup();
+
+    updateScriptButtons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -89,7 +90,7 @@ void WidgetPropPythonStartup::writeSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* /*previous*/)
 {
-    ui.btnRemove->setEnabled(current != NULL);
+    updateScriptButtons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -100,14 +101,22 @@ void WidgetPropPythonStartup::on_btnAdd_clicked()
     if (!filenames.empty())
     {
         QDir::setCurrent(QFileInfo(filenames.first()).path());
+        QDir baseDir(QCoreApplication::applicationDirPath());
 
         foreach (QString filename, filenames)
         {
+            if (ui.checkAddFileRel->isChecked())
+            {
+                filename = baseDir.relativeFilePath(filename);
+            }
+
             if (ui.listWidget->findItems(filename, Qt::MatchExactly).isEmpty())
             {
                 ui.listWidget->addItem(filename);
             }
         }
+
+        updateScriptButtons();
     }
 }
 
@@ -115,19 +124,49 @@ void WidgetPropPythonStartup::on_btnAdd_clicked()
 void WidgetPropPythonStartup::on_btnRemove_clicked()
 {
     qDeleteAll(ui.listWidget->selectedItems());
-/*    if (ui.listWidget->currentItem())
-    {
-        ui.listWidget->takeItem(ui.listWidget->currentIndex().row());
-    }*/
+    updateScriptButtons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropPythonStartup::on_listWidget_itemActivated(QListWidgetItem* item)
+void WidgetPropPythonStartup::updateScriptButtons()
 {
-    if (item)
+    int currentRow = ui.listWidget->currentRow();
+    int rows = ui.listWidget->count();
+    ui.btnRemove->setEnabled(currentRow >= 0);
+    ui.btnDownScript->setEnabled((currentRow >= 0) && (currentRow < (rows - 1)));
+    ui.btnUpScript->setEnabled(currentRow > 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPythonStartup::on_btnDownScript_clicked()
+{
+    int currentRow = ui.listWidget->currentRow();
+    int numRows = ui.listWidget->count();
+
+    if (currentRow < (numRows - 1))
     {
-/*        item->setFlags(item->flags() | Qt::ItemIsEditable);
-        ui.listWidget->editItem(item);*/
+        QListWidgetItem *item = ui.listWidget->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.listWidget->insertItem(currentRow + 1, text);
+        ui.listWidget->setCurrentRow(currentRow + 1);
+        updateScriptButtons();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPythonStartup::on_btnUpScript_clicked()
+{
+    int currentRow = ui.listWidget->currentRow();
+
+    if (currentRow > 0)
+    {
+        QListWidgetItem *item = ui.listWidget->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.listWidget->insertItem(currentRow - 1, text);
+        ui.listWidget->setCurrentRow(currentRow - 1);
+        updateScriptButtons();
     }
 }
 

@@ -315,7 +315,11 @@ class FigureCanvasItom(FigureCanvasBase):
             winch = w / dpival
             hinch = h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
+            status = self._agg_draw_pending
+            if not draw and matplotlib.__version__ >= '2.1.0':
+                self._agg_draw_pending = True #else the following resize_event will call draw_idle, too
             FigureCanvasBase.resize_event(self)
+            self._agg_draw_pending = status
             if draw and matplotlib.__version__ < '2.1.0':
                 self.draw_idle()
 
@@ -734,8 +738,12 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
                 ui.msgCritical("Error saving file", str(e), parent = self.itomUI())
     
     def set_history_buttons(self):
-        can_backward = (self._views._pos > 0)
-        can_forward = (self._views._pos < len(self._views._elements) - 1)
+        if hasattr(self, "_views"): #matplotlib <= 2.1.0
+            can_backward = (self._views._pos > 0)
+            can_forward = (self._views._pos < len(self._views._elements) - 1)
+        elif hasattr(self, "_nav_stack"): #matplotlib
+            can_backward = (self._nav_stack._pos > 0)
+            can_forward = (self._nav_stack._pos < len(self._nav_stack._elements) - 1)
         
         itomUI = self.itomUI()
         if(not itomUI is None):

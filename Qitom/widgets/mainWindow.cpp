@@ -63,12 +63,12 @@ namespace ito {
 /*!
     establishes widgets being part of the main window including necessary actions
 */
-	MainWindow::MainWindow() :
+MainWindow::MainWindow() :
 	m_console(NULL),
 	m_contentLayout(NULL),
 	m_breakPointDock(NULL),
 	m_lastCommandDock(NULL),
-//    m_pythonMessageDock(NULL),
+	//    m_pythonMessageDock(NULL),
 	m_helpDock(NULL),
 	m_globalWorkspaceDock(NULL),
 	m_localWorkspaceDock(NULL),
@@ -90,7 +90,8 @@ namespace ito {
 	m_pMenuReloadModule(NULL),
 	m_pMenuView(NULL),
 	m_pHelpSystem(NULL),
-	m_statusLblCurrentDir(NULL),
+	m_pStatusLblCurrentDir(NULL),
+	m_pStatusLblPythonBusy(NULL),
 	m_pythonBusy(false),
 	m_pythonDebugMode(false),
 	m_pythonInWaitingMode(false),
@@ -932,8 +933,12 @@ void MainWindow::openScript(const QString &filename)
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
-    m_statusLblCurrentDir = new QLabel("cd: ");
-    statusBar()->addPermanentWidget(m_statusLblCurrentDir);
+	m_pStatusLblCurrentDir = new QLabel("cd: ", this);
+    statusBar()->addPermanentWidget(m_pStatusLblCurrentDir);
+
+	m_pStatusLblPythonBusy = new QLabel(tr("Python is being executed"), this);
+	m_pStatusLblPythonBusy->setVisible(false);
+	statusBar()->addWidget(m_pStatusLblPythonBusy);
 
     currentDirectoryChanged(); //actualize the label of m_statusLblCurrentDir
 
@@ -959,7 +964,8 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonInWaitingMode=false;
         m_pythonDebugMode = false;
         m_pythonBusy = true;
-        statusBar()->showMessage(tr("Python is being executed"));
+		statusBar()->clearMessage();
+		m_pStatusLblPythonBusy->setVisible(true);
 
         //disable every userDefined-Action
         foreach(tempToolBar, m_userDefinedToolBars)
@@ -974,7 +980,8 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonInWaitingMode=false;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
-        statusBar()->showMessage(tr("Python is being executed"));
+		statusBar()->clearMessage();
+		m_pStatusLblPythonBusy->setVisible(true);
 
         //disable every userDefined-Action
         foreach(tempToolBar, m_userDefinedToolBars)
@@ -1001,10 +1008,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonBusy = false;
         m_pythonInWaitingMode=false;
 
-        if (statusBar()->currentMessage() == tr("Python is being executed"))
-        {
-            statusBar()->clearMessage();
-        }
+		m_pStatusLblPythonBusy->setVisible(false);
 
         //enable every userDefined-Action
         foreach(tempToolBar, m_userDefinedToolBars)
@@ -1785,9 +1789,9 @@ void MainWindow::mnuPyPipManager()
 void MainWindow::currentDirectoryChanged()
 {
     QString cd = QDir::cleanPath(QDir::currentPath());
-    if (m_statusLblCurrentDir)
+    if (m_pStatusLblCurrentDir)
     {
-        m_statusLblCurrentDir->setText(tr("Current Directory: %1").arg(cd));
+        m_pStatusLblCurrentDir->setText(tr("Current Directory: %1").arg(cd));
     }
 
     if (m_fileSystemDock)

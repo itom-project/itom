@@ -29,6 +29,8 @@
 #include <qtimer.h>
 #include <qdebug.h>
 #include <QCryptographicHash>
+#include <qsettings.h>
+#include <qfiledialog.h>
 
 namespace ito {
 
@@ -72,10 +74,10 @@ bool DialogUserManagementEdit::saveUser()
 
     if (!ui.lineEdit_name->text().isEmpty())
     {
-        if (m_userModel->index(0, 5).data().toByteArray() != ui.lineEdit_password->text().toUtf8())
+        if (m_oldPassword != ui.lineEdit_password->text())
             password = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
         else
-            password = ui.lineEdit_password->text().toUtf8();
+            password = m_oldPassword;
     }
     else
         password = "";
@@ -129,10 +131,33 @@ bool DialogUserManagementEdit::saveUser()
             flags |= featConsoleRead;
         }
 
-        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role, password); 
+        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role, password);
         if (retval.containsError())
         {
             QMessageBox::critical(this, tr("Error"), QLatin1String(retval.errorMessage()), QMessageBox::Ok);
+            return false;
+        }
+
+        QStringList files;
+        QString settingsFile = uio->getSettingsFile(uid);
+        if (settingsFile != "")
+        {
+            QSettings settings(settingsFile, QSettings::IniFormat);
+            settings.beginGroup("Python");
+            settings.beginWriteArray("startupFiles");
+            for (int i = 0; i < ui.lv_startUpScripts->count(); i++)
+            {
+                settings.setArrayIndex(i);
+                settings.setValue("file", ui.lv_startUpScripts->item(i)->text());
+                files.append(ui.lv_startUpScripts->item(i)->text());
+            }
+
+            settings.endArray();
+            settings.endGroup();
+        }
+        else
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Error retrieving user settings file name. Startup scripts not written to file."));
             return false;
         }
     }
@@ -192,18 +217,21 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 
                 ui.lineEdit_id->setText(uid);
                 ui.lineEdit_id->setEnabled(false);
+                m_oldPassword = password;
                 ui.lineEdit_password->setText(password);
                 
                 switch (role)
                 {
-                case userRoleAdministrator:
-                    ui.radioButton_roleAdmin->setChecked(true);
+                    case userRoleAdministrator:
+                        ui.radioButton_roleAdmin->setChecked(true);
                     break;
-                case userRoleDeveloper:
-                    ui.radioButton_roleDevel->setChecked(true);
+
+                    case userRoleDeveloper:
+                        ui.radioButton_roleDevel->setChecked(true);
                     break;
-                default:
-                    ui.radioButton_roleUser->setChecked(true);
+
+                    default:
+                        ui.radioButton_roleUser->setChecked(true);
                 }
 
                 ui.checkBox_devTools->setChecked(features & featDeveloper);
@@ -224,8 +252,110 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 {
                     ui.radioButton_consoleOff->setChecked(true);
                 }
+
+
+                QSettings settings(filename, QSettings::IniFormat);
+                settings.beginGroup("Python");
+
+                int size = settings.beginReadArray("startupFiles");
+                for (int i = 0; i < size; ++i)
+                {
+                    settings.setArrayIndex(i);
+                    ui.lv_startUpScripts->addItem(settings.value("file", QString()).toString());
+                }
+
+                settings.endArray();
+                settings.endGroup();
+            }
+
+            updateScriptButtons();
+        }
+    }
+
+    QString label = ui.checkAddFileRel->text().arg(QCoreApplication::applicationDirPath());
+    ui.checkAddFileRel->setText(label);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_lv_startUpScripts_currentRowChanged(int row)
+{
+    updateScriptButtons();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::updateScriptButtons()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    int rows = ui.lv_startUpScripts->count();
+    ui.pb_removeScript->setEnabled(currentRow >= 0);
+    ui.pb_downScript->setEnabled((currentRow >= 0) && (currentRow < (rows - 1)));
+    ui.pb_upScript->setEnabled(currentRow > 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_addScript_clicked()
+{
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Load python script"), QDir::currentPath(), tr("Python script (*.py)"));
+
+    if (!filenames.empty())
+    {
+        QDir::setCurrent(QFileInfo(filenames.first()).path());
+        QDir baseDir(QCoreApplication::applicationDirPath());
+
+        foreach(QString filename, filenames)
+        {
+            if (ui.checkAddFileRel->isChecked())
+            {
+                filename = baseDir.relativeFilePath(filename);
+            }
+
+            if (ui.lv_startUpScripts->findItems(filename, Qt::MatchExactly).isEmpty())
+            {
+                ui.lv_startUpScripts->addItem(filename);
             }
         }
+
+        updateScriptButtons();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_removeScript_clicked()
+{
+    qDeleteAll(ui.lv_startUpScripts->selectedItems());
+    updateScriptButtons();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_downScript_clicked()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    int numRows = ui.lv_startUpScripts->count();
+
+    if (currentRow < (numRows - 1))
+    {
+        QListWidgetItem *item = ui.lv_startUpScripts->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.lv_startUpScripts->insertItem(currentRow + 1, text);
+        ui.lv_startUpScripts->setCurrentRow(currentRow + 1);
+        updateScriptButtons();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_pb_upScript_clicked()
+{
+    int currentRow = ui.lv_startUpScripts->currentRow();
+    
+    if (currentRow > 0)
+    {
+        QListWidgetItem *item = ui.lv_startUpScripts->item(currentRow);
+        QString text = item->text();
+        DELETE_AND_SET_NULL(item);
+        ui.lv_startUpScripts->insertItem(currentRow - 1, text);
+        ui.lv_startUpScripts->setCurrentRow(currentRow - 1);
+        updateScriptButtons();
     }
 }
 
