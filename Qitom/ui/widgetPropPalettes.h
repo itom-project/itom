@@ -68,42 +68,51 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         WidgetPropPalettes(QWidget *parent = NULL);
         void readSettings();
         void writeSettings();
-        //void setCurPaletteCols(QVector<uint> palCols) { m_curCols = palCols; }
-        //QVector<QGradientStop>* getCurPalData() { return &m_curPalData; }
-        ItomPaletteBase* getCurPalette() { return &m_curPalette; }
+        const ItomPaletteBase* getCurPalette() const { return &m_currentPalette; }
         void drawPalCurves(int selPt = -1, int x0 = 5, int y0 = 5, int dx = 10, int dy = 10);
-        void updatePalette();
+        void updateOptionPalette();
+
+        void removeColorStop(int index);
+        void addColorStop(int index_before, float percent_to_next = 0.5);
+        void changeSelectedColorStop(int new_index);
+        int getSelectedColorStop() const { return m_selectedColorStop; }
+
+
+        ito::RetVal saveCurrentPalette();
 
         friend class ColCurve;
 
     private:
         Ui::WidgetPropPalettes ui;
         QImage m_imgGVCurPalette;
-        //QVector<uint> m_curCols;
-        //QVector<QGradientStop> m_curPalData;
-        ItomPaletteBase m_curPalette;
-        int m_selPt;
+        int m_selectedColorStop;
         int m_isUpdating;
         int m_isDirty;
 
         void updatePaletteList();
 
+        QList<ito::ItomPaletteBase> m_palettes; //all existing palettes
+        int m_curPaletteIndex; //index of current palette in m_palettes or -1 if new and not saved, yet
+        ito::ItomPaletteBase m_currentPalette;
+
     public slots:
         void lwCurrentRowChanged(int row);
-        void mousePressEvent(QMouseEvent* event);
-        void sbValueChanged(int value);
-        void pbColToggled(bool);
-        void pbAddClicked();
-        void pbDuplicateClicked();
-        void pbRemoveClicked();
-        void pbSaveClicked();
+        void colorComponentChanged(int value);
+        void colorComponentVisibilityChanged(bool);
+        
         void palSpecialColorChanged(QColor color);
-        //void gvPalCurvesMouseMove(QEvent *event);
-        //void widgetResize(QResizeEvent * event);
 
     private slots :
-        void on_defaultBtn_clicked();
+        void on_sbIndex_valueChanged(double value);
+        void on_pbAdd_clicked();
+        void on_pbDuplicate_clicked();
+        void on_pbRemove_clicked();
+        void on_pbPalSave_clicked();
         void resizeEvent(QResizeEvent *event);
+        void on_pbEquidistantColorStop_clicked();
+        void on_pbRemoveColorStop_clicked();
+        void on_pbAddColorStop_clicked();
+        void on_lePalName_textChanged(const QString & text);
 };
 
 }//end namespace

@@ -212,6 +212,10 @@
     <qresource prefix="/misc">
         <file>icons/User.png</file>
         <file>icons/shell.png</file>
+        <file>icons/lock.png</file>
+        <file>icons/color_stop_add.png</file>
+        <file>icons/color_stop_remove.png</file>
+        <file>icons/color_stop_equidistant.png</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>

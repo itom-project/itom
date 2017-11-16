@@ -216,14 +216,14 @@ double ItomPaletteBase::getPos(unsigned int color) const
 //! \brief      Get the RGBA-Color of the n-th color-stop in the palette
 /*! \detail     This function returns the position (doubel value) of the color stop devined by int color
 
-    \param      color     index of the color to retrieve
+    \param      index     index of the color stop, whose color is returned
     \return     QColor    the RGBA-Color of the color stop
 */
-QColor ItomPaletteBase::getColor(unsigned int color) const
+QColor ItomPaletteBase::getColor(unsigned int index) const
 {
-    if(color > (unsigned int)(m_paletteData.colorStops.size() - 1)) 
+    if(index > (unsigned int)(m_paletteData.colorStops.size() - 1)) 
         return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].second;
-    return m_paletteData.colorStops[color].second;
+    return m_paletteData.colorStops[index].second;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -521,44 +521,84 @@ PaletteOrganizer::PaletteOrganizer()
 
     // load saved palettes from settings file
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("ito::Palettes");
+    settings.beginGroup("ColorPalettes");
     foreach(QString child, settings.childGroups())
     {
-        settings.beginGroup(child);
-        const QString name = settings.value("name").toString();
-        int type = settings.value("type").toInt();
-        QRgb uinvalidCol = settings.value("invalidColor").toUInt();
-        QRgb uinvCol1 = settings.value("inverseColor1").toUInt();
-        QRgb uinvCol2 = settings.value("inverseColor2").toUInt();
-        QColor invalidCol(uinvalidCol);
-        QColor invCol1(uinvCol1);
-        QColor invCol2(uinvCol2);
-        QVariant numColStops = settings.value("numColorStops");
-        QVector<QGradientStop> colorStops;
-        for (int ns = 0; ns < numColStops.toInt(); ns++)
-        {
-            float pos = settings.value(QString("cs%1_1").arg(ns)).toFloat();
-            QVariant col = settings.value(QString("cs%1_2").arg(ns));
-            QColor color(col.toUInt());
-            colorStops.append(QGradientStop(pos, color));
-        }
-        ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
+        ItomPaletteBase newPal;
+        loadColorPaletteFromSettings(child, newPal, settings);
 
         int existingIndex = getColorBarList().indexOf(newPal.getName());
         if (existingIndex < 0)
         {
             m_colorBars.append(newPal);
         }
-        else if ((m_colorBars[existingIndex].getType() & ito::tPalette::tPaletteReadOnly) == 0)
+        else if ((m_colorBars[existingIndex].getType() & ito::tPaletteReadOnly) == 0)
         {
             m_colorBars[existingIndex] = newPal;
         }
-
-        settings.endGroup();
     }
     settings.endGroup();
 
     calcColorBarLut();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* save the given color palette to the settings. Settings must already be opened in the group, 
+where the palette should be saved. Each palette is stored as a subgroup of the current group. */
+ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings)
+{
+    settings.beginGroup(palette.getName());
+    settings.setValue("name", palette.getName());
+    settings.setValue("type", palette.getType());
+    settings.setValue("invalidColor", palette.getInvalidColor());
+    settings.setValue("inverseColor1", palette.getInverseColorOne());
+    settings.setValue("inverseColor2", palette.getInverseColorTwo());
+    settings.setValue("numColorStops", palette.getSize());
+
+    const QVector< QPair<double, QColor> > &colorStops = palette.getColorStops();
+    for (int idx = 0; idx < colorStops.size(); ++idx)
+    {
+        settings.setValue(QString("cs%1_1").arg(idx), colorStops[idx].first);
+        settings.setValue(QString("cs%1_2").arg(idx), colorStops[idx].second);
+    }
+    
+    settings.endGroup();
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* load a color palette from the settings. Settings must already be opened in the group, 
+where the palette should be loaded from. The current group must hereby consist of a subgroup with the group name 'paletteName'. */
+ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings)
+{
+    if (! settings.childGroups().contains(paletteName))
+    {
+        return ito::RetVal::format(ito::retError, 0, "Settings do not contain a color palette entry for the palette name '%s'", paletteName.toLatin1().data());
+    }
+
+    settings.beginGroup(paletteName);
+    const QString name = settings.value("name").toString();
+    int type = settings.value("type").toInt();
+    QColor invalidCol = settings.value("invalidColor").value<QColor>();
+    QColor invCol1 = settings.value("inverseColor1").value<QColor>();
+    QColor invCol2 = settings.value("inverseColor2").value<QColor>();
+    QVariant numColStops = settings.value("numColorStops");
+    QVector<QGradientStop> colorStops;
+    for (int ns = 0; ns < numColStops.toInt(); ns++)
+    {
+        float pos = settings.value(QString("cs%1_1").arg(ns)).toFloat();
+        QColor color = settings.value(QString("cs%1_2").arg(ns)).value<QColor>();
+        colorStops.append(QGradientStop(pos, color));
+    }
+
+    ItomPaletteBase newPal(name, type, invCol1, invCol2, invalidCol, colorStops);
+
+    settings.endGroup();
+
+    palette = newPal;
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -618,7 +658,7 @@ ItomPaletteBase PaletteOrganizer::getNextColorBar(const int curindex, const int 
     \param found
     \return ItomPaletteBase
 */
-ItomPaletteBase PaletteOrganizer::getColorBar(const QString name, bool *found /*= NULL*/) const
+ItomPaletteBase PaletteOrganizer::getColorBar(const QString &name, bool *found /*= NULL*/) const
 {
     for(int i = 0; i < m_colorBars.length(); i++)
     {
@@ -640,7 +680,7 @@ ItomPaletteBase PaletteOrganizer::getColorBar(const QString name, bool *found /*
     \param found
     \return int
 */
-int PaletteOrganizer::getColorBarIndex(const QString name, bool *found /*= NULL*/) const
+int PaletteOrganizer::getColorBarIndex(const QString &name, bool *found /*= NULL*/) const
 {
     if(m_colorBarLookUp.contains(name))
     {

@@ -30,6 +30,7 @@
 #include <qhash.h>
 #include <qsharedpointer.h>
 #include <qbrush.h>
+#include <qsettings.h>
 
 namespace ito
 {
@@ -37,8 +38,6 @@ namespace ito
 class ItomPaletteBase
 {
     public:
-
-        //ItomPaletteBase():m_name(""), m_type(0), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
         ItomPaletteBase() 
         {
             m_paletteData.name = ""; 
@@ -77,20 +76,8 @@ class ItomPaletteBase
 
         ~ItomPaletteBase() { 
             m_paletteData.colorStops.clear();
-            //m_paletteData.colorStops.clear(); 
-            //m_paletteData.colorVector256.clear(); 
         }
-/*
-        enum tPalette{
-            NoType      = 0x00,
-            GrayPalette = 0x01,
-            RGBPalette  = 0x02,
-            FCPalette  = 0x04,
-            indexPalette = 0x08,
-            LinearPalette = 0x10,
-            ReadOnlyPalette = 0x20,
-        };
-*/
+
         QString getName() const { return m_paletteData.name; }
         inline int getSize() const { return m_paletteData.colorStops.size(); }
         inline int getType() const { return m_paletteData.type; }
@@ -111,7 +98,7 @@ class ItomPaletteBase
         QColor getColorLast() const { return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].second; }
         int findUpper(double pos) const;
         inline QVector<QPair<double, QColor> > getColorStops(void) const { return m_paletteData.colorStops; }
-        QColor getColor(unsigned int color) const;
+        QColor getColor(unsigned int index) const;
 
         void update(const bool updateInverseColors);
         ItomPalette getPalette();
@@ -119,20 +106,11 @@ class ItomPaletteBase
         inline void setWriteProtection() { m_paletteData.type = m_paletteData.type | ito::tPaletteReadOnly; return; }
         bool insertColorStop( double pos, const QColor color );
         void calculateInverseColors(QColor &inv1, QColor &inv2);
-        //QColor getColor(double pos) const;
 
         QVector<ito::uint32> get256Colors(bool includeAlpha = false) const;
 
     private:
-        //QString m_name;
-        //char m_type; 
-        
         ItomPalette m_paletteData;
-
-        //QColor m_inverseColorTwo;
-        //QColor m_inverseColorOne;
-        //QColor m_invalidColor;
-        //QVector<QPair<double, QColor> > m_colorStops;
 };
 
 //----------------------------------------------------------------------------------
@@ -143,6 +121,14 @@ class PaletteOrganizer : public QObject
     public:
         PaletteOrganizer();
         ~PaletteOrganizer(){};
+
+        /* save the given color palette to the settings. Settings must already be opened in the group, 
+        where the palette should be saved. Each palette is stored as a subgroup of the current group. */
+        ito::RetVal saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings); 
+
+        /* load a color palette from the settings. Settings must already be opened in the group, 
+        where the palette should be loaded from. The current group must hereby consist of a subgroup with the group name 'name'. */
+        ito::RetVal loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings); 
 
     private:        
         void calcColorBarLut();
@@ -157,8 +143,8 @@ class PaletteOrganizer : public QObject
     public slots:
         ItomPaletteBase getColorBar(const int index) const;
         ItomPaletteBase getNextColorBar(const int curindex, const int type = ito::tPaletteNoType) const;
-        int getColorBarIndex(const QString name, bool *found = NULL) const;
-        ItomPaletteBase getColorBar(const QString name, bool *found = NULL) const;
+        int getColorBarIndex(const QString& name, bool *found = NULL) const;
+        ItomPaletteBase getColorBar(const QString &name, bool *found = NULL) const;
         QList<QString> getColorBarList(const int type = ito::tPaletteNoType) const;
         QList<QString> getBuiltInPaletteNames() const { return m_builtInPalettes; }
         int numberOfColorBars() const { return m_colorBars.length(); }
