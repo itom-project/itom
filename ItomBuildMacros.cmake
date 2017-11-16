@@ -86,7 +86,10 @@ ENDIF()
 
 
 if(MSVC)
-    ADD_DEFINITIONS(/MP)
+    # ck 15/11/2017 changed, as adding /MP to definitions breaks cuda builds with e.g. enable_language(CUDA), i.e. better
+    # msvs integration of cuda build
+    #ADD_DEFINITIONS(/MP)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP")
 
     # set some optimization compiler flags
     # i.e.:
