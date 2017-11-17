@@ -1069,7 +1069,7 @@ void WidgetPropPalettes::on_pbImportPalette_clicked()
                 {
                     if (m_palettes[i].getName() == name)
                     {
-                        name = QInputDialog::getText(this, tr("Name already exists"), tr("The name '%1' of the color palette already exists. Please indicate a new name to load the color palette").arg(name), QLineEdit::Normal, pal.getName(), &ok);
+                        name = QInputDialog::getText(this, tr("Name already exists"), tr("The name '%1' of the color palette already exists. Please indicate a new name to load the color palette:").arg(name), QLineEdit::Normal, pal.getName(), &ok);
                         if (!ok)
                         {
                             ok = true;

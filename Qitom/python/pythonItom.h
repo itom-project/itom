@@ -115,7 +115,7 @@ public:
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* PyGetPalette(PyObject* pSelf, PyObject* pArgs);
-    static PyObject* PySetPalette(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyGetPaletteList(PyObject* pSelf, PyObject* pArgs);
 
     static PyObject* compressData(PyObject* pSelf, PyObject* pArgs);
