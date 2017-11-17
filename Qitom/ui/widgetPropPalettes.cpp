@@ -33,6 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmenu.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
+#include <qfiledialog.h>
 
 namespace ito
 {
@@ -95,12 +96,8 @@ void ColCurve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
             pts[selectedColorStop].second = currentColor;
 
-            ito::ItomPaletteBase palette(m_parentWidget->getCurPalette()->getName(), m_parentWidget->getCurPalette()->getType(),
-                m_parentWidget->getCurPalette()->getInverseColorOne(), m_parentWidget->getCurPalette()->getInverseColorTwo(),
-                m_parentWidget->getCurPalette()->getInvalidColor(), pts);
-
             m_parentWidget->m_isUpdating = 1;
-            m_parentWidget->m_currentPalette = palette;
+            m_parentWidget->m_currentPalette.setColorStops(pts);
             m_parentWidget->drawPalCurves(selectedColorStop);
             m_parentWidget->updateOptionPalette();
             m_parentWidget->m_isUpdating = 0;
@@ -474,30 +471,26 @@ void WidgetPropPalettes::colorComponentChanged(int value)
 
     if (m_selectedColorStop >= 0 && !m_isUpdating)
     {
-        QVector<QGradientStop> curPalData = m_currentPalette.getColorStops();
-        int r = curPalData[m_selectedColorStop].second.red();
-        int g = curPalData[m_selectedColorStop].second.green();
-        int b = curPalData[m_selectedColorStop].second.blue();
+        QVector<QGradientStop> colorStops = m_currentPalette.getColorStops();
+        int r = colorStops[m_selectedColorStop].second.red();
+        int g = colorStops[m_selectedColorStop].second.green();
+        int b = colorStops[m_selectedColorStop].second.blue();
 
         QObject *sender = QObject::sender();
         if (sender == ui.sbR)
         {
-            curPalData[m_selectedColorStop].second = QColor(value > 255 ? 255 : value < 0 ? 0 : value, g, b);
+            colorStops[m_selectedColorStop].second = QColor(value > 255 ? 255 : value < 0 ? 0 : value, g, b);
         }
         else if (sender == ui.sbG)
         {
-            curPalData[m_selectedColorStop].second = QColor(r, value > 255 ? 255 : value < 0 ? 0 : value, b);
+            colorStops[m_selectedColorStop].second = QColor(r, value > 255 ? 255 : value < 0 ? 0 : value, b);
         }
         else
         {
-            curPalData[m_selectedColorStop].second = QColor(r, g, value > 255 ? 255 : value < 0 ? 0 : value);
+            colorStops[m_selectedColorStop].second = QColor(r, g, value > 255 ? 255 : value < 0 ? 0 : value);
         }
 
-        ito::ItomPaletteBase palette(m_currentPalette.getName(), m_currentPalette.getType(),
-            m_currentPalette.getInverseColorOne(), m_currentPalette.getInverseColorTwo(),
-            m_currentPalette.getInvalidColor(), curPalData);
-
-        m_currentPalette = palette;
+        m_currentPalette.setColorStops(colorStops);
         drawPalCurves(m_selectedColorStop);
         updateOptionPalette();
 
@@ -528,14 +521,10 @@ void WidgetPropPalettes::on_sbIndex_valueChanged(double value)
 
         if (m_selectedColorStop > 0 && m_selectedColorStop < (m_currentPalette.getColorStops().size() - 1) && !m_isUpdating)
         {
-            QVector<QGradientStop> curPalData = m_currentPalette.getColorStops();
-            curPalData[m_selectedColorStop].first = value;
+            QVector<QGradientStop> colorStops = m_currentPalette.getColorStops();
+            colorStops[m_selectedColorStop].first = value;
 
-            ito::ItomPaletteBase palette(m_currentPalette.getName(), m_currentPalette.getType(),
-                m_currentPalette.getInverseColorOne(), m_currentPalette.getInverseColorTwo(),
-                m_currentPalette.getInvalidColor(), curPalData);
-
-            m_currentPalette = palette;
+            m_currentPalette.setColorStops(colorStops);
             drawPalCurves(m_selectedColorStop);
             updateOptionPalette();
 
@@ -568,8 +557,8 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), \
-            tr("Current palette has been altered and is unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
+        if (QMessageBox::question(this, tr("Color palette altered"), \
+            tr("The current color palette was altered and is currently unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
         {
             if (saveCurrentPalette().containsError())
             {
@@ -594,9 +583,10 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     ui.lePalName->setText(m_currentPalette.getName());
 
     ui.pbDuplicate->setEnabled(row >= 0);
-    bool editable = (row >= 0) && !(m_currentPalette.getType() & ito::tPaletteReadOnly);
+    bool editable = (row >= 0) && !m_currentPalette.isWriteProtected();
 
     ui.pbRemove->setEnabled(editable);
+    ui.pbExportPalette->setEnabled(row >= 0);
     ui.groupColorStops->setEnabled(editable);
     ui.btnInvColor1->setEnabled(editable);
     ui.btnInvColor2->setEnabled(editable);
@@ -641,8 +631,8 @@ void WidgetPropPalettes::on_pbAdd_clicked()
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), \
-            tr("Current palette has been altered and is unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
+        if (QMessageBox::question(this, tr("Color palette altered"), \
+            tr("The current color palette was altered and is currently unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
         {
             if (saveCurrentPalette().containsError())
             {
@@ -650,8 +640,6 @@ void WidgetPropPalettes::on_pbAdd_clicked()
                 return;
             }
         }
-
-        m_isDirty = 0;
     }
 
     QString newPalName = tr("User Palette");
@@ -672,7 +660,7 @@ void WidgetPropPalettes::on_pbAdd_clicked()
     newPalName = tmpPalName;
 
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
-    ito::ItomPaletteBase pal = palOrganizer->getColorBar(palOrganizer->getColorBarIndex("gray"));
+    ito::ItomPaletteBase pal = palOrganizer->getColorPalette(palOrganizer->getColorBarIndex("gray"));
 
     m_currentPalette = ito::ItomPaletteBase(newPalName, pal.getType() & (~ito::tPaletteReadOnly), pal.getInverseColorOne(), \
         pal.getInverseColorTwo(), pal.getInvalidColor(), pal.getColorStops());
@@ -693,8 +681,8 @@ void WidgetPropPalettes::on_pbDuplicate_clicked()
     // handling of altered palette
     if (m_isDirty)
     {
-        if (QMessageBox::question(this, tr("Palette altered"), \
-            tr("Current palette has been altered and is unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
+        if (QMessageBox::question(this, tr("Color palette altered"), \
+            tr("The current color palette was altered and is currently unsaved. Save changes or discard?"), QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save)
         {
             if (saveCurrentPalette().containsError())
             {
@@ -702,8 +690,6 @@ void WidgetPropPalettes::on_pbDuplicate_clicked()
                 return;
             }
         }
-
-        m_isDirty = 0;
     }
 
     ito::ItomPaletteBase pal = m_palettes[ui.lwPalettes->currentRow()]; // current palette
@@ -746,7 +732,7 @@ void WidgetPropPalettes::on_pbRemove_clicked()
     if (idx >= 0 && idx < m_palettes.size())
     {
         const ito::ItomPaletteBase &currentPalette = m_palettes[m_curPaletteIndex];
-        if (currentPalette.getType() & ito::tPaletteReadOnly)
+        if (currentPalette.isWriteProtected())
         {
             QMessageBox::information(this, tr("Palette is read only"), tr("Palette is read only and cannot be removed!"));
             return;
@@ -825,9 +811,9 @@ void WidgetPropPalettes::readSettings()
     ito::ItomPaletteBase palette;
     bool found;
 
-    foreach (const QString &colorBarName, palOrganizer->getColorBarList())
+    foreach (const QString &colorBarName, palOrganizer->getColorPaletteList())
     {
-        palette = palOrganizer->getColorBar(colorBarName, &found);
+        palette = palOrganizer->getColorPalette(colorBarName, &found);
         if (found)
         {
             m_palettes.append(palette);
@@ -841,12 +827,29 @@ void WidgetPropPalettes::readSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::writeSettings()
 {
+    // handling of altered palette
+    if (m_isDirty)
+    {
+        if (QMessageBox::question(this, tr("Color palette altered"), \
+            tr("The current color palette was altered and is currently unsaved. Save changes or ignore?"), QMessageBox::Save, QMessageBox::Ignore) == QMessageBox::Save)
+        {
+            if (saveCurrentPalette().containsError())
+            {
+                QMessageBox::information(this, tr("Error saving current color palette."), tr("The current color palette could not be saved."));
+            }
+
+            m_isDirty = 0;
+            ui.pbPalSave->setEnabled(false);
+            updatePaletteList();
+        }
+    }
+
     ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
     QList<QString> remainingPalettes;
 
     foreach (const ito::ItomPaletteBase &palette, m_palettes)
     {
-        if (!(palette.getType() & ito::tPaletteReadOnly))
+        if (!palette.isWriteProtected())
         {
             palOrganizer->setColorBarThreaded(palette.getName(), palette);
         }
@@ -856,18 +859,18 @@ void WidgetPropPalettes::writeSettings()
 
     //remove deleted palettes...
     QList<QString> builtInPalettes = palOrganizer->getBuiltInPaletteNames();
-    QList<QString> colorBarList = palOrganizer->getColorBarList();
+    QList<QString> colorBarList = palOrganizer->getColorPaletteList();
 
     for (int i = colorBarList.size() - 1; i >= 0; --i)
     {
         if (!remainingPalettes.contains(colorBarList[i]))
         {
-            palOrganizer->removeColorbar(i);
+            palOrganizer->removeColorPalette(i);
         }
     }
 
     //update list
-    colorBarList = palOrganizer->getColorBarList();
+    colorBarList = palOrganizer->getColorPaletteList();
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -888,7 +891,7 @@ void WidgetPropPalettes::writeSettings()
     {
         if (!builtInPalettes.contains(colorBarList[np]))
         {
-            ItomPaletteBase pal = palOrganizer->getColorBar(colorBarList[np]);
+            ItomPaletteBase pal = palOrganizer->getColorPalette(colorBarList[np]);
             palOrganizer->saveColorPaletteToSettings(pal, settings);
         }
     }
@@ -1025,6 +1028,88 @@ void WidgetPropPalettes::on_pbAddColorStop_clicked()
     else if (m_selectedColorStop > 0 && m_selectedColorStop == m_currentPalette.getColorStops().size() - 1)
     {
         addColorStop(m_selectedColorStop - 1);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPalettes::on_pbImportPalette_clicked()
+{
+    const ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+    QString filename = QFileDialog::getOpenFileName(this, tr("Color palette import"), QString(), tr("Itom color palette (*.icp)"));
+    bool save = false;
+
+    if (filename != "" && palOrganizer)
+    {
+        QSettings settings(filename, QSettings::IniFormat);
+        settings.beginGroup("ColorPalettes");
+        foreach(QString child, settings.childGroups())
+        {
+            ItomPaletteBase pal;
+            ito::RetVal retval = palOrganizer->loadColorPaletteFromSettings(child, pal, settings);
+            if (retval.containsError())
+            {
+                QMessageBox::critical(this, tr("Wrong file format"), tr("The color palette '%1' in the itom color palette file is no valid color palette").arg(child));
+                continue;
+            }
+
+            bool ok = false;
+            QString name = pal.getName();
+            if (name != child)
+            {
+                QMessageBox::critical(this, tr("Wrong file format"), tr("The color palette '%1' in the itom color palette file is no valid color palette").arg(child));
+                continue;
+            }
+
+            while (!ok)
+            {
+                ok = true;
+                save = true;
+
+                for (int i = 0; i < m_palettes.size(); ++i)
+                {
+                    if (m_palettes[i].getName() == name)
+                    {
+                        name = QInputDialog::getText(this, tr("Name already exists"), tr("The name '%1' of the color palette already exists. Please indicate a new name to load the color palette").arg(name), QLineEdit::Normal, pal.getName(), &ok);
+                        if (!ok)
+                        {
+                            ok = true;
+                            save = false;
+                            break;
+                        }
+                        ok = false;
+                        save = false;
+                        break;
+                    }
+                }
+            }
+
+            if (save)
+            {
+                pal.setName(name);
+                m_palettes.append(pal);
+            }
+        }
+        settings.endGroup();
+
+        updatePaletteList();
+
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPalettes::on_pbExportPalette_clicked()
+{
+    const ito::PaletteOrganizer *palOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+    ItomPaletteBase pal = m_palettes[ui.lwPalettes->currentRow()];
+    QString filename = QFileDialog::getSaveFileName(this, tr("Color palette export"), pal.getName(), tr("Itom color palette (*.icp)"));
+    if (filename != "" && palOrganizer)
+    {
+        QSettings settings(filename, QSettings::IniFormat);
+        settings.clear();
+        pal.removeWriteProtection();
+        settings.beginGroup("ColorPalettes");
+        palOrganizer->saveColorPaletteToSettings(pal, settings);
+        settings.endGroup();
     }
 }
 

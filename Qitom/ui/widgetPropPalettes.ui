@@ -87,6 +87,23 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QPushButton" name="pbImportPalette">
+          <property name="text">
+           <string>Import Palette</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pbExportPalette">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Export Selected</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -371,6 +388,31 @@
    <header>colorPickerButton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>lwPalettes</tabstop>
+  <tabstop>pbAdd</tabstop>
+  <tabstop>pbDuplicate</tabstop>
+  <tabstop>pbRemove</tabstop>
+  <tabstop>pbImportPalette</tabstop>
+  <tabstop>pbExportPalette</tabstop>
+  <tabstop>gvCurPalette</tabstop>
+  <tabstop>gvPalCurves</tabstop>
+  <tabstop>lePalName</tabstop>
+  <tabstop>btnInvColor1</tabstop>
+  <tabstop>btnInvColor2</tabstop>
+  <tabstop>btnInvColor</tabstop>
+  <tabstop>pbR</tabstop>
+  <tabstop>sbR</tabstop>
+  <tabstop>pbG</tabstop>
+  <tabstop>sbG</tabstop>
+  <tabstop>pbB</tabstop>
+  <tabstop>sbB</tabstop>
+  <tabstop>sbIndex</tabstop>
+  <tabstop>pbPalSave</tabstop>
+  <tabstop>pbAddColorStop</tabstop>
+  <tabstop>pbRemoveColorStop</tabstop>
+  <tabstop>pbEquidistantColorStop</tabstop>
+ </tabstops>
  <resources>
   <include location="../qitom.qrc"/>
  </resources>

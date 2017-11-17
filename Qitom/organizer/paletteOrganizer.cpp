@@ -80,11 +80,10 @@ inline int ItomPaletteBase::findUpper( double pos ) const
     \param      color   new color as QColor value
     \return     bool    true if success
 */
-bool ItomPaletteBase::setInverseColorOne(const QColor color)
+bool ItomPaletteBase::setInverseColorOne(const QColor &color)
 {
     if((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.inverseColorOne.isValid())
     {
-        //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
         return false;
     }
 
@@ -100,15 +99,27 @@ bool ItomPaletteBase::setInverseColorOne(const QColor color)
     \param      color   new color as QColor value
     \return     bool    true if success
 */
-bool ItomPaletteBase::setInverseColorTwo(const QColor color)
+bool ItomPaletteBase::setInverseColorTwo(const QColor &color)
 {
     if ((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.inverseColorTwo.isValid())
     {
-        //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
         return false;
     }
 
     m_paletteData.inverseColorTwo = color;
+
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ItomPaletteBase::setName(const QString &name)
+{
+    if ((m_paletteData.type & ito::tPaletteReadOnly))
+    {
+        return false;
+    }
+
+    m_paletteData.name = name;
 
     return true;
 }
@@ -120,7 +131,7 @@ bool ItomPaletteBase::setInverseColorTwo(const QColor color)
     \param      color   new color as QColor value
     \return     bool    true if success
 */
-bool ItomPaletteBase::setInvalidColor(const QColor color)
+bool ItomPaletteBase::setInvalidColor(const QColor &color)
 {
     if ((m_paletteData.type & ito::tPaletteReadOnly) && m_paletteData.invalidColor.isValid())
     {
@@ -154,7 +165,7 @@ QColor ItomPaletteBase::getInvalidColor() const
     \param      color   new color as QColor value
     \return     bool    true if success
 */
-bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
+bool ItomPaletteBase::insertColorStop( double pos, const QColor &color )
 {
     // This code is copied from QWT-PLOT.
     // Lookups need to be very fast, insertions are not so important.
@@ -162,39 +173,44 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 
     if (m_paletteData.type & ito::tPaletteReadOnly)
     {
-        //qDebug() << "ItomPalette insertColorStop. Tried to write to a readonly palette. ";
         return false;
     }
     if ( pos < 0.0 || pos > 1.0 )
     {
-        //qDebug() << "ItomPalette insertColorStop. Position out of range [0..1]. ";
         return false;
     }
     int index;
     if (m_paletteData.colorStops.size() == 0 )
-    //if ( _stops.size() == 0 )
     {
-        index = 0;
-        //_stops.resize( 1 );  
+        index = 0; 
         m_paletteData.colorStops.resize(1);
     }
     else
     {
         index = findUpper( pos );
-        //if ( index == _stops.size() || qAbs( _stops[index].pos - pos ) >= 0.001 )
         if ( index == m_paletteData.colorStops.size() || qAbs(m_paletteData.colorStops[index].first - pos ) >= 0.001 )
         {
-            //_stops.resize( _stops.size() + 1 );
-            //for ( int i = _stops.size() - 1; i > index; i-- )
-            //    _stops[i] = _stops[i-1];
             m_paletteData.colorStops.resize(m_paletteData.colorStops.size() + 1 );
             for ( int i = m_paletteData.colorStops.size() - 1; i > index; i-- )
+            {
                 m_paletteData.colorStops[i] = m_paletteData.colorStops[i-1];
+            }
         }   
     }
-    //_stops[index] = ColorStop( pos, color );
     m_paletteData.colorStops[index].first = pos;
     m_paletteData.colorStops[index].second = color;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ItomPaletteBase::setColorStops(const QVector<QPair<double, QColor> > &colorStops)
+{
+    if (m_paletteData.type & ito::tPaletteReadOnly)
+    {
+        return false;
+    }
+
+    m_paletteData.colorStops = colorStops;
     return true;
 }
 
@@ -227,53 +243,11 @@ QColor ItomPaletteBase::getColor(unsigned int index) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! \brief      Function which shall calculate the ideal inverse colors
-/*! \detail     Not inplemented yet
-
-    \param      inv1     first invalid color
-    \param      inv2     second invalid color
+//! \brief      This function returns the internal structur of the palette
+/*! \detail     This function returns the internal structur of the palette
 */
-void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
+ItomPalette ItomPaletteBase::getPalette() const
 {
-    return;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! \brief      This function updates the internal structur of the palette after modifications
-/*! \detail     This function updates the internal structur of the palette after modifications
-
-    \param      updateInverseColors     recalculate the ideals inverse color
-*/
-void ItomPaletteBase::update(const bool updateInverseColors)
-{
-    m_paletteData.colorVector256 = get256Colors();
-
-    if(updateInverseColors || !m_paletteData.inverseColorOne.isValid() || !m_paletteData.inverseColorTwo.isValid())
-    {
-        QColor color1, color2;
-        calculateInverseColors(color1, color2);
-        if(updateInverseColors || !m_paletteData.inverseColorOne.isValid())
-        {
-            m_paletteData.inverseColorOne = color1;
-        }
-        if(updateInverseColors || !m_paletteData.inverseColorTwo.isValid())
-        {
-            m_paletteData.inverseColorTwo = color2;
-        }
-    }
-    return;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! \brief      This function returns the internal structur of the palett
-/*! \detail     This function returns the internal structur of the palett
-*/
-ItomPalette ItomPaletteBase::getPalette()
-{
-    if(m_paletteData.colorStops.isEmpty() || m_paletteData.colorVector256.isEmpty() || m_paletteData.type == ito::tPaletteNoType)
-    {
-        update(false);
-    }
     return m_paletteData;
 }
 
@@ -377,12 +351,12 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
 */
 PaletteOrganizer::PaletteOrganizer()
 {
-    m_colorBars.clear();
-    restrictedKeyWords.clear();
-    m_colorBarLookUp.clear();
+    m_colorPalettes.clear();
+    m_restrictedKeyWords.clear();
+    m_colorPaletteLUT.clear();
 
-    restrictedKeyWords.append("");
-    restrictedKeyWords.append("none");
+    m_restrictedKeyWords.append("");
+    m_restrictedKeyWords.append("none");
 
     noPalette = ItomPaletteBase("none", 0); 
 
@@ -394,8 +368,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "gray"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("gray");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("gray");
     m_builtInPalettes << "gray";
     //------------
 
@@ -407,8 +381,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "grayMarked"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("grayMarked");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("grayMarked");
     m_builtInPalettes << "grayMarked";
     //------------
 
@@ -423,8 +397,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::gray);
     newPalette.setWriteProtection();
     //set "falseColor"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("falseColor");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("falseColor");
     m_builtInPalettes << "falseColor";
     //------------
 
@@ -438,8 +412,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::gray);
     newPalette.setWriteProtection();
     //set "falseColorIR"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("falseColorIR");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("falseColorIR");
     m_builtInPalettes << "falseColorIR";
     //------------
 
@@ -451,8 +425,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "hotIron"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("hotIron");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("hotIron");
     m_builtInPalettes << "hotIron";
     //------------
 
@@ -462,8 +436,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "red"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("red");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("red");
     m_builtInPalettes << "red";
     //------------
 
@@ -473,8 +447,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "blue"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("blue");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("blue");
     m_builtInPalettes << "blue";
     //------------
 
@@ -484,8 +458,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "green"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("green");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("green");
     m_builtInPalettes << "green";
     //------------
 
@@ -514,8 +488,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.setInverseColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "viridis"
-    m_colorBars.append(newPalette);
-    restrictedKeyWords.append("viridis");
+    m_colorPalettes.append(newPalette);
+    m_restrictedKeyWords.append("viridis");
     m_builtInPalettes << "viridis";
     //------------
 
@@ -527,25 +501,25 @@ PaletteOrganizer::PaletteOrganizer()
         ItomPaletteBase newPal;
         loadColorPaletteFromSettings(child, newPal, settings);
 
-        int existingIndex = getColorBarList().indexOf(newPal.getName());
+        int existingIndex = getColorPaletteList().indexOf(newPal.getName());
         if (existingIndex < 0)
         {
-            m_colorBars.append(newPal);
+            m_colorPalettes.append(newPal);
         }
-        else if ((m_colorBars[existingIndex].getType() & ito::tPaletteReadOnly) == 0)
+        else if ((m_colorPalettes[existingIndex].getType() & ito::tPaletteReadOnly) == 0)
         {
-            m_colorBars[existingIndex] = newPal;
+            m_colorPalettes[existingIndex] = newPal;
         }
     }
     settings.endGroup();
 
-    calcColorBarLut();
+    calcColorPaletteLut();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /* save the given color palette to the settings. Settings must already be opened in the group, 
 where the palette should be saved. Each palette is stored as a subgroup of the current group. */
-ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings)
+ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings) const
 {
     settings.beginGroup(palette.getName());
     settings.setValue("name", palette.getName());
@@ -553,7 +527,7 @@ ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &
     settings.setValue("invalidColor", palette.getInvalidColor());
     settings.setValue("inverseColor1", palette.getInverseColorOne());
     settings.setValue("inverseColor2", palette.getInverseColorTwo());
-    settings.setValue("numColorStops", palette.getSize());
+    settings.setValue("numColorStops", palette.getNumColorStops());
 
     const QVector< QPair<double, QColor> > &colorStops = palette.getColorStops();
     for (int idx = 0; idx < colorStops.size(); ++idx)
@@ -570,11 +544,11 @@ ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &
 //----------------------------------------------------------------------------------------------------------------------------------
 /* load a color palette from the settings. Settings must already be opened in the group, 
 where the palette should be loaded from. The current group must hereby consist of a subgroup with the group name 'paletteName'. */
-ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings)
+ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings) const
 {
     if (! settings.childGroups().contains(paletteName))
     {
-        return ito::RetVal::format(ito::retError, 0, "Settings do not contain a color palette entry for the palette name '%s'", paletteName.toLatin1().data());
+        return ito::RetVal::format(ito::retError, 0, "Settings do not contain a color palette entry for the palette name '%s'", paletteName.toLatin1().constData());
     }
 
     settings.beginGroup(paletteName);
@@ -608,47 +582,14 @@ ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &palett
     \param index
     \return ItomPaletteBase
 */
-ItomPaletteBase PaletteOrganizer::getColorBar(const int index) const
+ItomPaletteBase PaletteOrganizer::getColorPalette(const int index) const
 {
-    if(index < 0 || index >= m_colorBars.length())
+    if(index < 0 || index >= m_colorPalettes.length())
         return noPalette;
 
-    return m_colorBars[index];
+    return m_colorPalettes[index];
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
-    \param curindex
-    \param type
-    \return ItomPaletteBase
-*/
-ItomPaletteBase PaletteOrganizer::getNextColorBar(const int curindex, const int type) const
-{
-    int nextIndex = (curindex + 1) % m_colorBars.length();
-
-    if((type != ito::tPaletteNoType) && (type & m_colorBars[nextIndex].getType()))
-    {
-        int temIndex;
-
-        for(int i = 0; i < m_colorBars.length(); i++)
-        {
-            temIndex = (curindex + i + 2) % m_colorBars.length();
-
-            if(temIndex == curindex)
-                return m_colorBars[curindex];
-                
-            if(type & m_colorBars[temIndex].getType())
-                return m_colorBars[temIndex];
-        }
-        return m_colorBars[curindex];
-    }
-    else
-    {
-        return m_colorBars[nextIndex];
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shortdesc
@@ -658,14 +599,14 @@ ItomPaletteBase PaletteOrganizer::getNextColorBar(const int curindex, const int 
     \param found
     \return ItomPaletteBase
 */
-ItomPaletteBase PaletteOrganizer::getColorBar(const QString &name, bool *found /*= NULL*/) const
+ItomPaletteBase PaletteOrganizer::getColorPalette(const QString &name, bool *found /*= NULL*/) const
 {
-    for(int i = 0; i < m_colorBars.length(); i++)
+    for(int i = 0; i < m_colorPalettes.length(); i++)
     {
-        if(!m_colorBars[i].getName().compare(name, Qt::CaseSensitive))
+        if(!m_colorPalettes[i].getName().compare(name, Qt::CaseSensitive))
         {
             if (found) *found = true;
-            return m_colorBars[i]; 
+            return m_colorPalettes[i]; 
         }
     }
     if (found) *found = false;
@@ -682,10 +623,10 @@ ItomPaletteBase PaletteOrganizer::getColorBar(const QString &name, bool *found /
 */
 int PaletteOrganizer::getColorBarIndex(const QString &name, bool *found /*= NULL*/) const
 {
-    if(m_colorBarLookUp.contains(name))
+    if(m_colorPaletteLUT.contains(name))
     {
         if (found) *found = true;
-        return m_colorBarLookUp[name];
+        return m_colorPaletteLUT[name];
     }
     if (found) *found = false;
     return -1;
@@ -698,45 +639,45 @@ int PaletteOrganizer::getColorBarIndex(const QString &name, bool *found /*= NULL
     \param type
     \return QList<QString>
 */
-QList<QString> PaletteOrganizer::getColorBarList(const int type) const
+QList<QString> PaletteOrganizer::getColorPaletteList(const int type) const
 {
     QList<QString> outPut;
     outPut.clear();
 
-    for(int i = 0; i < m_colorBars.length(); i++)
+    for(int i = 0; i < m_colorPalettes.length(); i++)
     {
         if((type != ito::tPaletteNoType))
         {
-            if(type & m_colorBars[i].getType())
-                outPut.append(m_colorBars[i].getName());
+            if(type & m_colorPalettes[i].getType())
+                outPut.append(m_colorPalettes[i].getName());
         }
         else
         {
-            outPut.append(m_colorBars[i].getName());
+            outPut.append(m_colorPalettes[i].getName());
         }
     }
     return outPut;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PaletteOrganizer::removeColorbar(const int index)
+bool PaletteOrganizer::removeColorPalette(const int index)
 {
-    if (index >= 0 && index < m_colorBars.length() && !(m_colorBars[index].getType() & ito::tPaletteReadOnly))
+    if (index >= 0 && index < m_colorPalettes.length() && !(m_colorPalettes[index].getType() & ito::tPaletteReadOnly))
     {
-        m_colorBars.removeAt(index);
-        calcColorBarLut();
+        m_colorPalettes.removeAt(index);
+        calcColorPaletteLut();
         return true;
     }
     return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PaletteOrganizer::calcColorBarLut()
+void PaletteOrganizer::calcColorPaletteLut()
 {
-    m_colorBarLookUp.clear();
-    for (int i = 0; i < m_colorBars.size(); ++i)
+    m_colorPaletteLUT.clear();
+    for (int i = 0; i < m_colorPalettes.size(); ++i)
     {
-        m_colorBarLookUp.insert(m_colorBars[i].getName(), i);
+        m_colorPaletteLUT.insert(m_colorPalettes[i].getName(), i);
     }
 }
 
@@ -748,26 +689,26 @@ ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPalette
 
     int idx = -1;
 
-    if(restrictedKeyWords.contains(name))
+    if(m_restrictedKeyWords.contains(name))
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a restricted access.").arg(name).toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a restricted access.").arg(name).toLatin1().constData());
     }
-    else if(m_colorBarLookUp.contains(name))
+    else if(m_colorPaletteLUT.contains(name))
     {
-        idx = m_colorBarLookUp[name];
-        if(idx < m_colorBars.length() && m_colorBars[idx].getType() & ito::tPaletteReadOnly)
+        idx = m_colorPaletteLUT[name];
+        if(idx < m_colorPalettes.length() && m_colorPalettes[idx].isWriteProtected())
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a write protection.").arg(name).toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a write protection.").arg(name).toLatin1().constData());
         }
         else
         {
-            m_colorBars[idx] = newPalette;
+            m_colorPalettes[idx] = newPalette;
         }
     }
     else
     {
-        m_colorBars.append(newPalette);
-        calcColorBarLut();
+        m_colorPalettes.append(newPalette);
+        calcColorPaletteLut();
     }
 
     if (waitCond)
@@ -786,11 +727,11 @@ ito::RetVal PaletteOrganizer::getColorBarThreaded(QString name, QSharedPointer<i
 
     bool found = false;
 
-    *palette = this->getColorBar(name, &found);
+    *palette = getColorPalette(name, &found);
 
     if(!found)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 not found within palette list").arg(name).toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 not found within palette list").arg(name).toLatin1().constData());
     }
 
     if (waitCond)
@@ -811,7 +752,7 @@ ito::RetVal PaletteOrganizer::getColorBarListThreaded(int types, QSharedPointer<
     if(!palettes.isNull())
     {
         palettes->clear();
-        QList<QString> curList = this->getColorBarList(0);
+        QList<QString> curList = this->getColorPaletteList(0);
 
         for(int i = 0; i < curList.size(); i++)
         {
@@ -821,7 +762,7 @@ ito::RetVal PaletteOrganizer::getColorBarListThreaded(int types, QSharedPointer<
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Destination vector not initialized").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Destination vector not initialized").toLatin1().constData());
     }
 
     if (waitCond)

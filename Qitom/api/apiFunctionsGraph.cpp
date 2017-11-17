@@ -80,7 +80,7 @@ ito::RetVal apiFunctionsGraph::mnumberOfColorBars(int &number)
     ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
     if (!paletteOrganizer)
         return ito::retError;
-    number = paletteOrganizer->numberOfColorBars();
+    number = paletteOrganizer->numberOfColorPalettes();
     return ito::retOk;
 }
 
@@ -94,7 +94,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
     }
 
     bool found;
-    palette = paletteOrganizer->getColorBar(name, &found).getPalette();
+    palette = paletteOrganizer->getColorPalette(name, &found).getPalette();
 
     if (found)
     {
@@ -110,9 +110,9 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
 ito::RetVal apiFunctionsGraph::mgetColorBarIdx(const int number, ito::ItomPalette &palette)
 {
     ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
-    if (!paletteOrganizer || (number > (paletteOrganizer->numberOfColorBars() - 1)))
+    if (!paletteOrganizer || (number > (paletteOrganizer->numberOfColorPalettes() - 1)))
         return ito::retError;
-    palette = paletteOrganizer->getColorBar(number).getPalette();
+    palette = paletteOrganizer->getColorPalette(number).getPalette();
     return ito::retOk;
 }
 

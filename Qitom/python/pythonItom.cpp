@@ -4256,8 +4256,8 @@ Parameters \n\
 ----------- \n\
 name : {string} \n\
     name of the new palette. \n\
-entries : {dict} \n\
-    dictionary with two floating type entries defining the stop coordiate and its rgba32 value.\n\
+entries : {tuple} \n\
+    tuple with two floating type entries defining the stop coordinate and its rgba32 value.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4287,7 +4287,7 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Palette organizer not loaded");
         return NULL;    
     }
 
@@ -4398,8 +4398,18 @@ name : {string} \n\
 \n\
 Returns \n\
 -------- \n\
-palette : {tuple} \n\
-    Color stop tuple of desired color palette \n\
+palette : {dict} \n\
+    Dictionary with the following entries: \n\
+    name : {str} \n\
+        name of palette \n\
+    colorStops : {tuple} \n\
+        tuple with all color stops, each element is another tuple whose first value is the float position [0.0,1.0]  and the 2nd value is the color (itom.rgba32) \n\
+    inverseColor1 : {itom.rgba32} \n\
+        first defined inverse color \n\
+    inverseColor2 : {itom.rgba32} \n\
+        2nd defined inverse color \n\
+    invalidColor : {itom.rgba32} \n\
+        color used for NaN or Inf values \n\
 \n\
 Raises \n\
 ----------- \n\
@@ -4412,7 +4422,6 @@ setPalette, getPaletteList");
 PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 {
     char* name = NULL;
-    PyObject *tuple = NULL;
     PyObject *subtuple = NULL;
 
     unsigned char overwriteIfExists = 1;
@@ -4428,7 +4437,7 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Palette organizer not loaded");
         return NULL;    
     }
 
@@ -4449,31 +4458,63 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
         return NULL;
     }
 
-    tuple = PyTuple_New(sharedPalette->getSize());
+    PyObject *colorStops = PyTuple_New(sharedPalette->getNumColorStops());
 
-    for(int elem = 0; elem < sharedPalette->getSize(); elem++)
+    for(int elem = 0; elem < sharedPalette->getNumColorStops(); elem++)
     {
-        subtuple = PyTuple_New(2);
-        PyObject* rgb = ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL );
-        ((ito::PythonRgba::PyRgba*)rgb)->rgba.a = sharedPalette->getColor(elem).alpha();
-        ((ito::PythonRgba::PyRgba*)rgb)->rgba.r = sharedPalette->getColor(elem).red();
-        ((ito::PythonRgba::PyRgba*)rgb)->rgba.g = sharedPalette->getColor(elem).green();
-        ((ito::PythonRgba::PyRgba*)rgb)->rgba.b = sharedPalette->getColor(elem).blue();
-        PyTuple_SetItem(subtuple, 0, PyFloat_FromDouble(sharedPalette->getPos(elem)));
-        PyTuple_SetItem(subtuple, 1, rgb);
-        PyTuple_SetItem(tuple, elem, subtuple);
+        subtuple = PyTuple_New(2); //new ref
+        ito::PythonRgba::PyRgba* rgb = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+        rgb->rgba.a = sharedPalette->getColor(elem).alpha();
+        rgb->rgba.r = sharedPalette->getColor(elem).red();
+        rgb->rgba.g = sharedPalette->getColor(elem).green();
+        rgb->rgba.b = sharedPalette->getColor(elem).blue();
+        PyTuple_SetItem(subtuple, 0, PyFloat_FromDouble(sharedPalette->getPos(elem))); //steals a reference
+        PyTuple_SetItem(subtuple, 1, (PyObject*)rgb); //steals a reference
+        PyTuple_SetItem(colorStops, elem, subtuple); //steals a reference
     }
 
-    return tuple;
+    PyObject *dict = PyDict_New();
+    PyObject *name_ = PythonQtConversion::QByteArrayToPyUnicodeSecure(sharedPalette->getName().toLatin1());
+    PyDict_SetItemString(dict, "name", name_);
+    Py_DECREF(name_);
+
+    PyDict_SetItemString(dict, "colorStops", colorStops);
+    Py_DECREF(colorStops);
+
+    ito::PythonRgba::PyRgba* inverseColor1 = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    inverseColor1->rgba.a = sharedPalette->getInverseColorOne().alpha();
+    inverseColor1->rgba.r = sharedPalette->getInverseColorOne().red();
+    inverseColor1->rgba.g = sharedPalette->getInverseColorOne().green();
+    inverseColor1->rgba.b = sharedPalette->getInverseColorOne().blue();
+    PyDict_SetItemString(dict, "inverseColor1", (PyObject*)inverseColor1);
+    Py_DECREF(inverseColor1);
+
+    ito::PythonRgba::PyRgba* inverseColor2 = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    inverseColor2->rgba.a = sharedPalette->getInverseColorTwo().alpha();
+    inverseColor2->rgba.r = sharedPalette->getInverseColorTwo().red();
+    inverseColor2->rgba.g = sharedPalette->getInverseColorTwo().green();
+    inverseColor2->rgba.b = sharedPalette->getInverseColorTwo().blue();
+    PyDict_SetItemString(dict, "inverseColor2", (PyObject*)inverseColor2);
+    Py_DECREF(inverseColor2);
+
+    ito::PythonRgba::PyRgba* invalidColor = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    invalidColor->rgba.a = sharedPalette->getInvalidColor().alpha();
+    invalidColor->rgba.r = sharedPalette->getInvalidColor().red();
+    invalidColor->rgba.g = sharedPalette->getInvalidColor().green();
+    invalidColor->rgba.b = sharedPalette->getInvalidColor().blue();
+    PyDict_SetItemString(dict, "invalidColor", (PyObject*)invalidColor);
+    Py_DECREF(invalidColor);
+
+    return dict;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getPaletteList_doc,"getPaletteList(typefilter) -> get a list of color bars / palettes.\n\
+PyDoc_STRVAR(getPaletteList_doc,"getPaletteList([typefilter = 0]) -> returns a tuple of all currently available names of color palettes.\n\
 \n\
 \n\
 Parameters \n\
 ----------- \n\
 typefilter : {int} \n\
-    currently not implemented filter for palette types. \n\
+    currently unused parameter \n\
 \n\
 See Also \n\
 --------- \n\
@@ -4485,7 +4526,7 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     unsigned char overwriteIfExists = 1;
 
-    if (!PyArg_ParseTuple(pArgs, "i", &typefilter)) //all borrowed
+    if (!PyArg_ParseTuple(pArgs, "|i", &typefilter)) //all borrowed
     {
         return NULL;
     }
@@ -4496,7 +4537,7 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Palette organizer not loaded");
         return NULL;    
     }
 

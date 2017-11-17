@@ -113,6 +113,8 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         void on_pbRemoveColorStop_clicked();
         void on_pbAddColorStop_clicked();
         void on_lePalName_textChanged(const QString & text);
+        void on_pbImportPalette_clicked();
+        void on_pbExportPalette_clicked();
 };
 
 }//end namespace
