@@ -40,6 +40,14 @@ for Ubuntu 12.04 based distributions the following command should install all ne
 .. code-block:: bash
 
     sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
+    
+for Ubuntu 16.04 based distributions the following command should install all necessary packages and its dependencies:
+
+.. code-block:: bash
+
+    sudo apt-get install cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 libqt5scintilla2-dev qttools5-dev-tools qttools5-dev
+    sudo apt-get update && sudo apt-get install build-essential
+    sudo apt-get install libopencv-dev libv4l-dev xsdcxx libxerces-c3.1 libxerces-c-dev
 
 
 Recommended folder structure

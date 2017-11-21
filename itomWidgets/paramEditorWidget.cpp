@@ -983,12 +983,16 @@ ito::RetVal ParamEditorWidget::setPluginParameter(QSharedPointer<ito::ParamBase>
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, param), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+
             retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
 
             if (retval.containsWarningOrError())
             {
                 QMetaObject::invokeMethod(d->m_plugin, "sendParameterRequest");
             }
+
+            QApplication::restoreOverrideCursor();
         }
         else
         {
@@ -1037,12 +1041,16 @@ ito::RetVal ParamEditorWidget::setPluginParameters(const QVector<QSharedPointer<
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_plugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+
             retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
 
             if (retval.containsWarningOrError())
             {
                 QMetaObject::invokeMethod(d->m_plugin, "sendParameterRequest");
             }
+
+            QApplication::restoreOverrideCursor();
         }
         else
         {
