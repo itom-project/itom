@@ -1306,7 +1306,7 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(array-like object) -> Rotate shape by given angle in degree (counterclockwise).");
+PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(array-like object) -> Rotate shape by given angle in degree around center point of shape (counterclockwise).");
 PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
@@ -1329,7 +1329,7 @@ PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(array-like object) -> Rotate shape by given angle in radians (counterclockwise).");
+PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(array-like object) -> Rotate shape by given angle in radians around center point of shape (counterclockwise).");
 PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
@@ -1627,6 +1627,19 @@ rectangle, square, circle or ellipse are not affected by this and are returned a
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_copy_doc, "copy() -> return a deep copy of this shape.");
+/*static*/ PyObject* PythonShape::PyShape_copy(PyShape *self)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    return createPyShape(ito::Shape(*self->shape));
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonShape::PointF2PyObject(const QPointF &point)
 {
     PyObject *tuple = PyTuple_New(2);
@@ -1722,6 +1735,7 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     { "contour", (PyCFunction)PyShape_contour, METH_VARARGS | METH_KEYWORDS, shape_contour_doc },
     { "contains", (PyCFunction)PyShape_contains, METH_VARARGS | METH_KEYWORDS, shape_contains_doc },
     { "normalized", (PyCFunction)PyShape_normalized, METH_NOARGS, shape_normalized_doc },
+    { "copy", (PyCFunction)PyShape_copy, METH_NOARGS, shape_copy_doc },
     {NULL}  /* Sentinel */
 };
 
