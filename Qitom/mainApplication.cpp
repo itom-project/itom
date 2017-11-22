@@ -694,17 +694,24 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     settings->beginGroup("Python");
 
     int size = settings->beginReadArray("startupFiles");
+    QFileInfo startupScript;
+    QDir baseDir(QCoreApplication::applicationDirPath());
+
     for (int i = 0; i < size; ++i)
     {
         settings->setArrayIndex(i);
-        startupScripts.append(settings->value("file", QString()).toString());
+        startupScript = QFileInfo(baseDir, settings->value("file", QString()).toString()); //if "file" is absolute, baseDir is disregarded
+        if (startupScript.isFile())
+        {
+            startupScripts.append(startupScript.absoluteFilePath());
+        }
     }
 
     settings->endArray();
     settings->endGroup();
     settings->sync();
 
-    if (startupScripts.count()>0)
+    if (startupScripts.count() > 0)
     {
         QMetaObject::invokeMethod(m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
     }
