@@ -101,7 +101,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
     return QSharedPointer<ito::DataObject>();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> xObj, unsigned int axisNum)
+void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> obj, unsigned int axisNum)
 {
     ito::RetVal retval = ito::retOk;
     if (axisNum == 1)
@@ -109,17 +109,17 @@ void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> xObj, unsign
         if (m_dataPointer.contains("xVec"))
         {
 
-            if (m_dataPointer["xVec"].data() != xObj.data())
+            if (m_dataPointer["xVec"].data() != obj.data())
             {
                 QSharedPointer<ito::DataObject> oldSource = m_dataPointer["xVec"]; //possible backup for previous xVec, this backup must be alive until updateParam with the new one has been completely propagated
-                m_dataPointer["xVec"] = xObj;
+                m_dataPointer["xVec"] = obj;
             }
         }
         else
         {
-            m_dataPointer["xVec"] = xObj;
+            m_dataPointer["xVec"] = obj;
         }
-        ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)xObj.data());
+        ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)obj.data());
         retval += updateParam(&thisParam, 1);
     }
 
