@@ -262,16 +262,14 @@ void Shape::setTransform(const QTransform &trafo)
 //----------------------------------------------------------------------------------------------
 double Shape::rotationAngleDeg() const
 {
-    //careful: the internal rotation matrix (QTransform) has a structure, optimized for screen coordinate transformations.
-    //therefore, the m21 and m12 component is swapt (y-axis is inverted).
+    //careful: m12 is the first column in the 2nd row (based on the QTransform definition)!
     return (std::atan2(d->m_transform.m12(), d->m_transform.m11()) * 180 / M_PI);
 }
 
 //----------------------------------------------------------------------------------------------
 double Shape::rotationAngleRad() const
 {
-    //careful: the internal rotation matrix (QTransform) has a structure, optimized for screen coordinate transformations.
-    //therefore, the m21 and m12 component is swapt (y-axis is inverted).
+    //careful: m12 is the first column in the 2nd row (based on the QTransform definition)!
     return std::atan2(d->m_transform.m12(), d->m_transform.m11());
 }
 

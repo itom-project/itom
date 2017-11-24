@@ -137,7 +137,7 @@ namespace ito
 
         void point1MoveTo(const QPointF &newPoint1);
 
-		QPointF centerPoint() const;
+		QPointF centerPoint() const; /*!< center point of this shape, */
 
         double area() const;
         double circumference() const;

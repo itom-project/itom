@@ -836,8 +836,8 @@ int PythonShape::PyShape_setAngleRad(PyShape *self, PyObject *value, void * /*cl
     if (ok)
     {
         QTransform &transform = self->shape->rtransform();
-        qreal dx = transform.dx();
-        qreal dy = transform.dy();
+        qreal dx = transform.dx(); //equal to transform.m31()
+        qreal dy = transform.dy(); //equal to transform.m32()
         transform.reset();
         transform.rotateRadians(angle);
         transform.translate(dx,dy);
@@ -1233,16 +1233,18 @@ PyObject* PythonShape::PyShape_getTransform(PyShape *self, void * /*closure*/)
     ito::DataObject trafo(2, 3, ito::tFloat64);
     ito::float64 *ptr = trafo.rowPtr<ito::float64>(0, 0);
     ptr[0] = t.m11();
-    ptr[1] = t.m12();
+    ptr[1] = t.m21(); //m21() is the 2nd value in the first row. QTransform has a different indice notation than usual!
     ptr[2] = t.dx();
     ptr = trafo.rowPtr<ito::float64>(0, 1);
-    ptr[0] = t.m21();
+    ptr[0] = t.m12(); //m12() is the 1st value in the second row. QTransform has a different indice notation than usual!
     ptr[1] = t.m22();
     ptr[2] = t.dy();
 
     ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
     if (obj)
+    {
         obj->dataObject = new DataObject(trafo);
+    }
 
     return (PyObject*)obj;
 }
@@ -1267,7 +1269,7 @@ int PythonShape::PyShape_setTransform(PyShape *self, PyObject *value, void * /*c
             const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
             const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
             ok = true;
-            QTransform trafo(ptr1[0], ptr1[1], ptr2[0], ptr2[1], ptr1[2], ptr2[2]);
+            QTransform trafo(ptr1[0], ptr2[0], ptr1[1], ptr2[1], ptr1[2], ptr2[2]);
             if (trafo.isAffine() && !trafo.isScaling())
             {
                 self->shape->setTransform(trafo);
@@ -1306,7 +1308,16 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(array-like object) -> Rotate shape by given angle in degree around center point of shape (counterclockwise).");
+PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(angle) -> Rotate shape by given angle in degree around the center point of this shape (counterclockwise). \n\
+\n\
+Parameters \n\
+----------- \n\
+angle : {float} \n\
+    is the rotation angle (in degrees) by which the shape is rotated by its center. \n\
+\n\
+See Also \n\
+--------- \n\
+translate, rotateRad");
 PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
@@ -1329,7 +1340,16 @@ PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(array-like object) -> Rotate shape by given angle in radians around center point of shape (counterclockwise).");
+PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(angle) -> Rotate shape by given angle in radians around the center point of this shape (counterclockwise). \n\
+\n\
+Parameters \n\
+----------- \n\
+angle : {float} \n\
+    is the rotation angle (in radians) by which the shape is rotated by its center. \n\
+\n\
+See Also \n\
+--------- \n\
+translate, rotateDeg");
 PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
@@ -1352,7 +1372,19 @@ PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_translate_doc, "translate(array-like object) -> Translate shape by given (dx,dy) value.");
+PyDoc_STRVAR(shape_translate_doc, "translate(dxy) -> Translate shape by given (dx,dy) value. \n\
+\n\
+Moves the shape by dx and dy along the x- and y-axis of the base coordinate system. \n\
+This means, that dx and dy are added to the existing tx and ty values of the current transformation matrix. \n\
+\n\
+Parameters \n\
+----------- \n\
+dxy : array-like object, 2 elements \n\
+    tuple, np.array or dataObject with two elements, which are the dx and dy components of the translation \n\
+\n\
+See Also \n\
+--------- \n\
+rotateRad, rotateDeg");
 PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 {
     PyObject *obj = NULL;
@@ -1362,6 +1394,8 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
     }
 
     bool ok = true; //true since PyArray_ContiguousFromAny may throw its own error.
+    double dx = 0.0;
+    double dy = 0.0;
     PyObject *arr = PyArray_ContiguousFromAny(obj, NPY_DOUBLE, 1, 2);
     PyArrayObject* npArray = (PyArrayObject*)arr;
     if (arr)
@@ -1372,12 +1406,14 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
             const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
             if (PyArray_DIM(npArray, 0) == 2 && PyArray_DIM(npArray, 1) == 1) //2d, two rows, one col
             {
-                self->shape->rtransform().translate(ptr1[0], ((npy_double*)PyArray_GETPTR1(npArray, 1))[0]);
+                dx = ptr1[0];
+                dy = ((npy_double*)PyArray_GETPTR1(npArray, 1))[0];
                 ok = true;
             }
             else if (PyArray_DIM(npArray, 0) == 1 && PyArray_DIM(npArray, 1) == 2) //2d, one row, two cols
             {
-                self->shape->rtransform().translate(ptr1[0], ptr1[1]);
+                dx = ptr1[0];
+                dy = ptr1[1];
                 ok = true;
             }
         }
@@ -1386,11 +1422,21 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
             const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
             if (PyArray_DIM(npArray, 0) == 2) //1d
             {
-                self->shape->rtransform().translate(ptr1[0], ptr1[1]);
+                dx = ptr1[0];
+                dy = ptr1[1];
                 ok = true;
             }
         }
+
+        if (ok)
+        {
+            const QTransform &trafo = self->shape->rtransform();
+            QTransform new_trafo(trafo.m11(), trafo.m12(), trafo.m21(), trafo.m22(), trafo.dx() + dx, trafo.dy() + dy);
+            self->shape->setTransform(new_trafo);
+        }
     }
+
+    
 
     Py_XDECREF(arr);
 
@@ -1446,11 +1492,7 @@ PyDoc_STRVAR(shape_region_doc, "region() -> Return a region object from this sha
 \n\
 The region object only contains valid regions if the shape has an area > 0. \n\
 A region object is an integer based object (pixel raster), therefore the shapes \n\
-are rounded to the nearest fixed-point coordinates. \n\
-\n\
-Note \n\
-------- \n\
-Transformed shapes are currently not supported.");
+are rounded to the nearest fixed-point coordinates.");
 PyObject* PythonShape::PyShape_region(PyShape *self)
 {
     if (!self || self->shape == NULL)
