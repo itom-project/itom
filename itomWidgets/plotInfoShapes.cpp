@@ -76,7 +76,12 @@ void PlotInfoShapes::adjustNumberOfChildItems(QTreeWidgetItem* curItem, int coun
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, tr("Point %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -86,14 +91,19 @@ void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &e
     adjustNumberOfChildItems(curItem, 1);
 
 	QPointF center = element.centerPoint();
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Position"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 }
 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, tr("Line %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -104,18 +114,23 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
 
 	const QPolygonF points = element.rbasePoints();
 	double length = std::sqrt(std::pow(points[0].x() - points[1].x(), 2) + std::pow(points[0].y() - points[1].y(), 2));
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Start");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Start"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(points[0].x()), QString::number(points[0].y())));
-	curItem->child(1)->setData(0, Qt::DisplayRole, "End");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("End"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(points[1].x()), QString::number(points[1].y())));
-	curItem->child(2)->setData(0, Qt::DisplayRole, "Length");
+	curItem->child(2)->setData(0, Qt::DisplayRole, tr("Length"));
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(length)));
 }
 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, tr("Circle %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -126,18 +141,23 @@ void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &
 
 	QPointF center = element.centerPoint();
 	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Center"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
-	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("Radius"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
-    curItem->child(2)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(2)->setData(0, Qt::DisplayRole, tr("Rotation"));
     curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, tr("Ellipse %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -147,22 +167,27 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
     adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Center"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
-	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius1");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("Radius 1"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
 	radius = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y()) / 2;
-	curItem->child(2)->setData(0, Qt::DisplayRole, "Radius2");
+	curItem->child(2)->setData(0, Qt::DisplayRole, tr("Radius 2"));
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
-    curItem->child(3)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(3)->setData(0, Qt::DisplayRole, tr("Rotation"));
     curItem->child(3)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Square %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, QString("Square %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -172,12 +197,12 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
     adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Center"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
-	curItem->child(1)->setData(0, Qt::DisplayRole, "Side Length");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("Side Length"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
-    curItem->child(2)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(2)->setData(0, Qt::DisplayRole, tr("Rotation"));
     curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
 
@@ -185,6 +210,12 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
 void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -194,22 +225,27 @@ void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &el
     adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
 
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Center"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
-	curItem->child(1)->setData(0, Qt::DisplayRole, "Width");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("Width"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
 	side = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y());
-	curItem->child(2)->setData(0, Qt::DisplayRole, "Height");
+	curItem->child(2)->setData(0, Qt::DisplayRole, tr("Height"));
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
-    curItem->child(3)->setData(0, Qt::DisplayRole, "Rotation");
+    curItem->child(3)->setData(0, Qt::DisplayRole, tr("Rotation"));
     curItem->child(3)->setData(1, Qt::DisplayRole, QString("%1%2").arg(QString::number(element.rotationAngleDeg())).arg(QChar(0xB0, 0x00)));
 }
 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
+    curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
+    if (element.name() != "")
+    {
+        curItem->setData(1, Qt::DisplayRole, element.name());
+    }
+
 #if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 #else
@@ -218,11 +254,11 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
 
     adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();
-	curItem->child(0)->setData(0, Qt::DisplayRole, "Center");
+	curItem->child(0)->setData(0, Qt::DisplayRole, tr("Center"));
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
-	curItem->child(1)->setData(0, Qt::DisplayRole, "Length");
+	curItem->child(1)->setData(0, Qt::DisplayRole, tr("Length"));
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.circumference())));
-	curItem->child(2)->setData(0, Qt::DisplayRole, "Nodes");
+	curItem->child(2)->setData(0, Qt::DisplayRole, tr("Nodes"));
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().size())));
 }
 
@@ -245,6 +281,7 @@ void PlotInfoShapes::updateShape(const ito::Shape element)
 	{
 		curItem = new QTreeWidgetItem();
 		curItem->setData(0, Qt::UserRole, element.index());
+        curItem->setFirstColumnSpanned(true);
 
 		addTopLevelItem(curItem);
 		curItem->setExpanded(true);
@@ -322,6 +359,7 @@ void PlotInfoShapes::updateShapes(const QVector< ito::Shape > elements)
 		{
 			curItem = new QTreeWidgetItem();
 			curItem->setData(0, Qt::UserRole, element.index());
+            curItem->setFirstColumnSpanned(true);
 
 			addTopLevelItem(curItem);
 			curItem->setExpanded(true);

@@ -263,7 +263,7 @@ void Shape::setTransform(const QTransform &trafo)
 double Shape::rotationAngleDeg() const
 {
     //careful: m12 is the first column in the 2nd row (based on the QTransform definition)!
-    return (std::atan2(d->m_transform.m12(), d->m_transform.m11()) * 180 / M_PI);
+    return (std::atan2(d->m_transform.m12(), d->m_transform.m11()) * 180.0 / M_PI);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -273,6 +273,61 @@ double Shape::rotationAngleRad() const
     return std::atan2(d->m_transform.m12(), d->m_transform.m11());
 }
 
+//----------------------------------------------------------------------------------------------
+void Shape::setRotationAngleDeg(double degree)
+{
+    qreal dx = d->m_transform.dx(); //equal to transform.m31()
+    qreal dy = d->m_transform.dy(); //equal to transform.m32()
+    d->m_transform.reset();
+    d->m_transform.translate(dx,dy);
+    d->m_transform.rotate(degree);
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setRotationAngleRad(double radians)
+{
+    qreal dx = d->m_transform.dx(); //equal to transform.m31()
+    qreal dy = d->m_transform.dy(); //equal to transform.m32()
+    d->m_transform.reset();
+    d->m_transform.translate(dx,dy);
+    d->m_transform.rotateRadians(radians);
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::rotateByCenterDeg(double degree)
+{
+    rotateByCenterRad(degree * M_PI / 180.0);
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::rotateByCenterRad(double radians)
+{
+    //derived from https://de.serlo.org/44216/drehung-um-beliebigen-punkt-z
+    QPointF center_base = baseCenterPoint();
+    QPointF center = d->m_transform.map(center_base);
+
+    double cosa = std::cos(radians);
+    double sina = std::sin(radians);
+
+    const QTransform &cur = d->m_transform;
+
+    double m11 = cosa * cur.m11() - sina * cur.m12(); // = m22
+    double m21 = cosa * cur.m21() - sina * cur.m22(); // = -m12
+
+    QTransform rotation_only(m11, -m21, m21, m11, 0, 0);
+    QPointF translate = center - rotation_only.map(center_base);
+
+    d->m_transform = QTransform(m11, -m21, m21, m11, translate.x(), translate.y());
+
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::translate(const QPointF &delta)
+{
+    QTransform &t = d->m_transform;
+    QTransform new_trafo(t.m11(), t.m12(), t.m21(), t.m22(), t.dx() + delta.x(), t.dy() + delta.y());
+    d->m_transform = new_trafo;
+}
 
 //----------------------------------------------------------------------------------------------
 ito::float64 Shape::userData1() const
@@ -734,17 +789,12 @@ QRegion Shape::region() const
 //----------------------------------------------------------------------------------------------
 QPointF Shape::centerPoint() const
 {
-	/*
-	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
-	if (applyTrafo)
-	{
-		d->m_transform.mapToPolygon(rect.toRect());
-	}
-	else
-	{
-		
-	}
-	*/
+    return d->m_transform.map(baseCenterPoint());
+}
+
+//----------------------------------------------------------------------------------------------
+QPointF Shape::baseCenterPoint() const
+{
 	switch (type())
 	{
 	
@@ -758,7 +808,7 @@ QPointF Shape::centerPoint() const
 		{
 			sum += curPoint;
 		}
-		return sum / d->m_polygon.size();
+		return sum / (qreal)d->m_polygon.size();
 	}
 	case Line:
 	case Rectangle:
@@ -777,19 +827,6 @@ QPointF Shape::centerPoint() const
 //----------------------------------------------------------------------------------------------
 double Shape::area() const
 {
-   
-	/*
-	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
-	if (applyTrafo)
-	{
-	d->m_transform.mapToPolygon(rect.toRect());
-	}
-	else
-	{
-
-	}
-	*/
-
 	switch (type())
     {
     case MultiPointPick:
@@ -832,19 +869,6 @@ double Shape::area() const
 //----------------------------------------------------------------------------------------------
 double Shape::circumference() const
 {
-
-	/*
-	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
-	if (applyTrafo)
-	{
-	d->m_transform.mapToPolygon(rect.toRect());
-	}
-	else
-	{
-
-	}
-	*/
-
     switch (type())
     {
     case MultiPointPick:
@@ -906,18 +930,6 @@ double Shape::circumference() const
 //----------------------------------------------------------------------------------------------
 double Shape::distance(const Shape &otherShape) const
 {
-	/*
-	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
-	if (applyTrafo)
-	{
-	d->m_transform.mapToPolygon(rect.toRect());
-	}
-	else
-	{
-
-	}
-	*/
-
 	if (type() == Line && otherShape.type() == Line)
 	{
 		return distanceLine2Line2D(*this, otherShape);

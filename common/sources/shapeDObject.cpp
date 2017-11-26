@@ -66,8 +66,6 @@ namespace ito
     {
         int rows = dataObject.getSize(dims - 2);
         int cols = dataObject.getSize(dims - 1);
-        cv::Mat *mat;
-        ito::uint8 *ptr;
 
 		switch (shape.type())
         {
@@ -92,57 +90,34 @@ namespace ito
                 p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
                 p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
 
-                cv::Scalar col;
+                cv::Scalar color;
                 if (inverse)
-                    col = cv::Scalar(0, 0, 0);
+                    color = cv::Scalar(0, 0, 0);
                 else
-                    col = cv::Scalar(255, 255, 255);
+                    color = cv::Scalar(255, 255, 255);
 
-                cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
-                    cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), -shape.rotationAngleDeg());
-                cv::Rect brect = rRect.boundingRect();
-                cv::rectangle(*mask.getCvPlaneMat(0), brect, col, -1);
+                double angle = shape.rotationAngleDeg();
 
-    /*
-                QPointF p1 = shape.rtransform().map(shape.rbasePoints()[0]);
-                QPointF p2 = shape.rtransform().map(shape.rbasePoints()[1]);
-
-                //QPointF p1 = d->m_transform.map(d->m_polygon[0]);
-                //QPointF p2 = d->m_transform.map(d->m_polygon[1]);
-
-                p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-                p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-                p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-                p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-                int minRow = qBound(0, qRound(p1.y()), rows - 1);
-                int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-                if (maxRow < minRow)
+                if (angle == 0.0)
                 {
-                    std::swap(minRow, maxRow);
+                    cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
+                        cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), 0.0);
+                    cv::Rect brect = rRect.boundingRect();
+                    cv::rectangle(*mask.getCvPlaneMat(0), brect, color, -1);
                 }
-
-                int minCol = qBound(0, qRound(p1.x()), cols - 1);
-                int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-                if (maxCol < minCol)
+                else
                 {
-                    std::swap(minCol, maxCol);
-                }
-
-                for (int plane = 0; plane < numPlanes; ++plane)
-                {
-                    mat = mask.getCvPlaneMat(0);
-                    for (int row = minRow; row <= maxRow; ++row)
+                    cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
+                        cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), angle);
+                    cv::Point2f vertices[4];
+                    rRect.points(vertices);
+                    cv::Point vertices_int[4];
+                    for (int i = 0; i < 4; ++i)
                     {
-                        ptr = mat->ptr<ito::uint8>(row);
-                        for (int col = minCol; col <= maxCol; ++col)
-                        {
-                            ptr[col] = (inverse ? 0 : 255);
-                        }
+                        vertices_int[i] = cv::Point(qRound(vertices[i].x), qRound(vertices[i].y));
                     }
+                    cv::fillConvexPoly(*mask.getCvPlaneMat(0), vertices_int, 4, color);
                 }
-    */
             }
             break;
 
@@ -151,69 +126,24 @@ namespace ito
                 QPointF p;
                 std::vector<cv::Point> pts;
                 std::vector<std::vector<cv::Point> > cnt;
-                //cv::Point *pts = new cv::Point[shape.basePoints().size()];
-                for (int np = 0; np < shape.basePoints().size(); np++)
+
+                QPolygonF vertices = shape.transform().map(shape.basePoints());
+
+                for (int np = 0; np < vertices.size(); np++)
                 {
-                    p = shape.basePoints()[np];
+                    p = vertices[np];
                     p.setX(dataObject.getPhysToPix(dims - 1, p.x()));
                     p.setY(dataObject.getPhysToPix(dims - 2, p.y()));
-                    pts.push_back(cv::Point(p.x(), p.y()));
+                    pts.push_back(cv::Point(qRound(p.x()), qRound(p.y())));
                 }
                 cnt.push_back(pts);
 
-                cv::Scalar col;
+                cv::Scalar color;
                 if (inverse)
-                    col = cv::Scalar(0, 0, 0);
+                    color = cv::Scalar(0, 0, 0);
                 else
-                    col = cv::Scalar(255, 255, 255);
-                cv::fillPoly(*mask.getCvPlaneMat(0), cnt, col);
-
-/*
-			    QPolygonF cont = shape.contour(true);
-                //trafo from phys coords to pixel coords
-                for (int i = 0; i < cont.size(); ++i)
-                {
-                    cont[i].setX(dataObject.getPhysToPix(dims - 1, cont[i].x()));
-                    cont[i].setY(dataObject.getPhysToPix(dims - 2, cont[i].y()));
-                }
-
-                QRectF boundingRect = cont.boundingRect();
-                QPointF p1 = boundingRect.topLeft();
-                QPointF p2 = boundingRect.bottomRight();
-                QPointF test;
-
-                int minRow = qBound(0, qRound(p1.y()), rows - 1);
-                int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-                if (maxRow < minRow)
-                {
-                    std::swap(minRow, maxRow);
-                }
-
-                int minCol = qBound(0, qRound(p1.x()), cols - 1);
-                int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-                if (maxCol < minCol)
-                {
-                    std::swap(minCol, maxCol);
-                }
-
-                for (int plane = 0; plane < numPlanes; ++plane)
-                {
-                    mat = mask.getCvPlaneMat(0);
-                    for (int row = minRow; row <= maxRow; ++row)
-                    {
-                        ptr = mat->ptr<ito::uint8>(row);
-                        test.setY(row);
-                        for (int col = minCol; col <= maxCol; ++col)
-                        {
-                            test.setX(col);
-                            if (cont.containsPoint(test, Qt::OddEvenFill))
-                            {
-                                ptr[col] = (inverse ? 0 : 255);
-                            }
-                        }
-                    }
-                }
-*/
+                    color = cv::Scalar(255, 255, 255);
+                cv::fillPoly(*mask.getCvPlaneMat(0), cnt, color);
             }
             break;
 
@@ -233,66 +163,15 @@ namespace ito
                 p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
                 p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
 
-                cv::Scalar col;
+                cv::Scalar color;
                 if (inverse)
-                    col = cv::Scalar(0, 0, 0);
+                    color = cv::Scalar(0, 0, 0);
                 else
-                    col = cv::Scalar(255, 255, 255);
+                    color = cv::Scalar(255, 255, 255);
 
                 cv::ellipse(*mask.getCvPlaneMat(0), cv::Point2f(p3.x(), p3.y()), 
-                    cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), -shape.rotationAngleDeg(), 0, 360,
-                    col, -1);
-    /*
-                //QPointF p1 = d->m_transform.map(d->m_polygon[0]);
-                //QPointF p2 = d->m_transform.map(d->m_polygon[1]);
-			    QPointF p1 = shape.rtransform().map(shape.rbasePoints()[0]);
-			    QPointF p2 = shape.rtransform().map(shape.rbasePoints()[1]);
-
-                p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-                p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-                p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-                p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-                QPointF c = 0.5 * (p1 + p2);
-                QPointF r = 0.5 * (p2 - p1);
-                double x, y;
-                double a = r.x();
-                double b = r.y();
-
-                int minRow = qBound(0, qRound(p1.y()), rows - 1);
-                int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-                if (maxRow < minRow)
-                {
-                    std::swap(minRow, maxRow);
-                }
-
-                int minCol = qBound(0, qRound(p1.x()), cols - 1);
-                int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-                if (maxCol < minCol)
-                {
-                    std::swap(minCol, maxCol);
-                }
-
-                for (int plane = 0; plane < numPlanes; ++plane)
-                {
-                    mat = mask.getCvPlaneMat(0);
-                    for (int row = minRow; row <= maxRow; ++row)
-                    {
-                        ptr = mat->ptr<ito::uint8>(row);
-                        for (int col = minCol; col <= maxCol; ++col)
-                        {
-                            x = col - c.x();
-                            y = row - c.y();
-
-                            if ((((x*x) / (a*a)) + ((y*y) / (b*b))) <= 1.0)
-                            {
-                                ptr[col] = (inverse ? 0 : 255);
-                            }
-                        }
-                    }
-                }
-    */
+                    cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0)), shape.rotationAngleDeg(), 0, 360,
+                    color, -1);
             }
             break;
 

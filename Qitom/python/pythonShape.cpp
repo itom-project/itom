@@ -795,12 +795,7 @@ int PythonShape::PyShape_setAngleDeg(PyShape *self, PyObject *value, void * /*cl
     double angle = PythonQtConversion::PyObjGetDouble(value, false, ok);
     if (ok)
     {
-        QTransform &transform = self->shape->rtransform();
-        qreal dx = transform.dx();
-        qreal dy = transform.dy();
-        transform.reset();
-        transform.rotate(angle);
-        transform.translate(dx,dy);
+        self->shape->setRotationAngleDeg(angle);
         return 0;
     }
     else
@@ -835,12 +830,7 @@ int PythonShape::PyShape_setAngleRad(PyShape *self, PyObject *value, void * /*cl
     double angle = PythonQtConversion::PyObjGetDouble(value, false, ok);
     if (ok)
     {
-        QTransform &transform = self->shape->rtransform();
-        qreal dx = transform.dx(); //equal to transform.m31()
-        qreal dy = transform.dy(); //equal to transform.m32()
-        transform.reset();
-        transform.rotateRadians(angle);
-        transform.translate(dx,dy);
+        self->shape->setRotationAngleRad(angle);
         return 0;
     }
     else
@@ -1332,9 +1322,7 @@ PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
         return NULL;
     }
 
-    self->shape->rtransform().translate(self->shape->centerPoint().x(), self->shape->centerPoint().y());
-    self->shape->rtransform().rotate(rot, Qt::ZAxis);
-    self->shape->rtransform().translate(-self->shape->centerPoint().x(), -self->shape->centerPoint().y());
+    self->shape->rotateByCenterDeg(rot);
 
     Py_RETURN_NONE;
 }
@@ -1364,9 +1352,7 @@ PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
         return NULL;
     }
 
-    self->shape->rtransform().translate(self->shape->centerPoint().x(), self->shape->centerPoint().y());
-    self->shape->rtransform().rotateRadians(rot, Qt::ZAxis);
-    self->shape->rtransform().translate(-self->shape->centerPoint().x(), -self->shape->centerPoint().y());
+    self->shape->rotateByCenterRad(rot);
 
     Py_RETURN_NONE;
 }
@@ -1430,9 +1416,7 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 
         if (ok)
         {
-            const QTransform &trafo = self->shape->rtransform();
-            QTransform new_trafo(trafo.m11(), trafo.m12(), trafo.m21(), trafo.m22(), trafo.dx() + dx, trafo.dy() + dy);
-            self->shape->setTransform(new_trafo);
+            self->shape->translate(QPointF(dx,dy));
         }
     }
 
