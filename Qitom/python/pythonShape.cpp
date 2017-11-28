@@ -109,7 +109,7 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2, index, name]) -> creates a shape object of a specific type. \n\
+PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2, index = -1, name = '']) -> creates a shape object of a specific type. \n\
 \n\
 Depending on the type, the following parameters are allowed: \n\
 \n\
@@ -207,7 +207,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 return -1;
             }
 
-            PyObject *arr = PyArray_ContiguousFromAny(param1, NPY_DOUBLE, 2, 2);
+            PyObject *arr = PyArray_ContiguousFromAny(param1, NPY_DOUBLE, 2, 2); //new reference
             PyArrayObject* npArray = (PyArrayObject*)arr;
             if (arr)
             {
@@ -289,6 +289,593 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         Py_XDECREF(result);
         return NULL;
     }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Point.\n\
+\n\
+Parameters \n\
+-----------\n\
+point : {array-like object} \n\
+    (x,y) coordinate of the point, given as any type that can be interpreted as array with two values \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Point, point, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticPoint(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *point = NULL;
+    double radius = 0.0;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"point", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isi", const_cast<char**>(kwlist), &point, &radius, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    QPointF pt = PyObject2PointF(point, retval, "point");
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromPoint(pt, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2 [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Line.\n\
+\n\
+Parameters \n\
+-----------\n\
+point1 : {array-like object} \n\
+    (x,y) coordinate of the first point, given as any type that can be interpreted as array with two values \n\
+point2 : {array-like object} \n\
+    (x,y) coordinate of the 2nd point, given as any type that can be interpreted as array with two values \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Line, point1, point2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticLine(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *point1 = NULL;
+    PyObject *point2 = NULL;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"point1", "point2", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|isi", const_cast<char**>(kwlist), &point1, &point2, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    QPointF pt1 = PyObject2PointF(point1, retval, "point1");
+    QPointF pt2 = PyObject2PointF(point2, retval, "point2");
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromLine(pt1, pt2, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Circle.\n\
+\n\
+Parameters \n\
+-----------\n\
+center : {array-like object} \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
+radius : {float} \n\
+    radius of the circle \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Circle, center, radius, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticCircle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *center = NULL;
+    double radius = 0.0;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"center", "radius", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Od|isi", const_cast<char**>(kwlist), &center, &radius, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    QPointF c = PyObject2PointF(center, retval, "center");
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromCircle(c, radius, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticEllipse_doc,  "createEllipse([corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Ellipse.\n\
+\n\
+Basically, there are two different ways to construct the ellipse: Either by the top left and bottom right corner points of the outer bounding box (corner1 and corner2), \n\
+or by the center point (x,y) and the size, as array of (width, height). \n\
+\n\
+Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
+and corner1.y + height = corner2.y. \n\
+\n\
+Parameters \n\
+-----------\n\
+corner1 : {array-like object}, optional \n\
+    (x,y) coordinate of the top, left corner point of the bounding box, given as any type that can be interpreted as array with two values \n\
+corner2 : {array-like object}, optional \n\
+    (x,y) coordinate of the bottom, right corner point of the bounding box, given as any type that can be interpreted as array with two values \n\
+center : {array-like object}, optional \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
+size : {array-like object}, optional \n\
+    (width, height) of the rectangle, given as any type that can be interpreted as array with two values \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Ellipse, corner1, corner2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticEllipse(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *corner1 = NULL;
+    PyObject *corner2 = NULL;
+    PyObject *center = NULL;
+    PyObject *size = NULL;
+    double sideLength = 0.0;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"corner1", "corner2", "center", "size", "index", "name", "flags", NULL};
+
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOOisi", const_cast<char**>(kwlist), &corner1, &corner2, &center, &size, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    QPointF pt1, pt2;
+    QRectF rect;
+
+    if (corner1 && corner2)
+    {
+        if (center || size)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner1' and 'corner2' are given, the parameters 'center' or 'size' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner1, retval, "corner1");
+        pt2 = PyObject2PointF(corner2, retval, "corner2");
+        rect = QRectF(pt1, pt2);
+    }
+    else if (center && size)
+    {
+        if (corner1 || corner2)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'center' and 'size' are given, the parameters 'corner1' or 'corner2' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(center, retval, "center");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1 - pt2/2, size);
+    }
+    else if (corner1 && size)
+    {
+        if (corner2 || center)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner1' and 'size' are given, the parameters 'corner2' or 'center' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner1, retval, "corner1");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1, size);
+    }
+    else if (corner2 && size)
+    {
+        if (corner1 || center)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner2' and 'size' are given, the parameters 'corner1' or 'center' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner2, retval, "corner2");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1 - pt2, size);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "Invalid combination of parameters 'corner1', 'corner2', 'center' and 'size'.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromEllipse(rect, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Square.\n\
+\n\
+Parameters \n\
+-----------\n\
+center : {array-like object} \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
+sideLength : {float} \n\
+    side length of the square \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Square, center, sideLength, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticSquare(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *center = NULL;
+    double sideLength = 0.0;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"center", "sideLength", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Od|isi", const_cast<char**>(kwlist), &center, &sideLength, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    QPointF c = PyObject2PointF(center, retval, "center");
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromSquare(c, sideLength, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticRectangle_doc,  "createRectangle([corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Rectangle.\n\
+\n\
+Basically, there are two different ways to construct a rectangle: Either by the top left and bottom right corner points (corner1 and corner2), \n\
+or by the center point (x,y) and the size, as array of (width, height). \n\
+\n\
+Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
+and corner1.y + height = corner2.y. \n\
+\n\
+Parameters \n\
+-----------\n\
+corner1 : {array-like object}, optional \n\
+    (x,y) coordinate of the top, left corner point, given as any type that can be interpreted as array with two values \n\
+corner2 : {array-like object}, optional \n\
+    (x,y) coordinate of the bottom, right corner point, given as any type that can be interpreted as array with two values \n\
+center : {array-like object}, optional \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
+size : {array-like object}, optional \n\
+    (width, height) of the rectangle, given as any type that can be interpreted as array with two values \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Rectangle, corner1, corner2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticRectangle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *corner1 = NULL;
+    PyObject *corner2 = NULL;
+    PyObject *center = NULL;
+    PyObject *size = NULL;
+    double sideLength = 0.0;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"corner1", "corner2", "center", "size", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOOisi", const_cast<char**>(kwlist), &corner1, &corner2, &center, &size, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    QPointF pt1, pt2;
+    QRectF rect;
+
+    if (corner1 && corner2)
+    {
+        if (center || size)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner1' and 'corner2' are given, the parameters 'center' or 'size' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner1, retval, "corner1");
+        pt2 = PyObject2PointF(corner2, retval, "corner2");
+        rect = QRectF(pt1, pt2);
+    }
+    else if (center && size)
+    {
+        if (corner1 || corner2)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'center' and 'size' are given, the parameters 'corner1' or 'corner2' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(center, retval, "center");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1 - pt2/2, size);
+    }
+    else if (corner1 && size)
+    {
+        if (corner2 || center)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner1' and 'size' are given, the parameters 'corner2' or 'center' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner1, retval, "corner1");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1, size);
+    }
+    else if (corner2 && size)
+    {
+        if (corner1 || center)
+        {
+            PyErr_SetString(PyExc_TypeError, "If the parameters 'corner2' and 'size' are given, the parameters 'corner1' or 'center' are not allowed.");
+            return NULL;
+        }
+
+        pt1 = PyObject2PointF(corner2, retval, "corner2");
+        pt2 = PyObject2PointF(size, retval, "size");
+        QSize size(pt2.x(), pt2.y());
+        rect = QRectF(pt1 - pt2, size);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "Invalid combination of parameters 'corner1', 'corner2', 'center' and 'size'.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromRectangle(rect, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Polygon.\n\
+\n\
+Parameters \n\
+-----------\n\
+points : {array-like object} \n\
+    2xM, float64 array with the coordinates of M points (order: x,y) \n\
+index : {int}, optional \n\
+    index of this shape, if -1 (default), an automatic index is assigned \n\
+name : {str}, optional \n\
+    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
+flags : {int}, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
+    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
+\n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Polygon, points, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
+");
+/*static*/ PyObject* PythonShape::PyShape_StaticPolygon(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyObject *points = NULL;
+    int index = -1;
+    char* name = NULL;
+    int flags = 0;
+    ito::RetVal retval;
+    const char *kwlist[] = {"points", "index", "name", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isi", const_cast<char**>(kwlist), &points, &index, &name, &flags))
+    {
+        return NULL;
+    }
+
+    QPolygonF polygon;
+    PyObject *arr = PyArray_ContiguousFromAny(points, NPY_DOUBLE, 2, 2); //new reference
+    PyArrayObject* npArray = (PyArrayObject*)arr;
+    if (arr)
+    {
+        const npy_intp *shape = PyArray_SHAPE(npArray);
+        if (shape[0] == 2 && shape[1] >= 3)
+        {
+            polygon.reserve(shape[1]);
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
+            for (int i = 0; i < shape[1]; ++i)
+            {
+                polygon.push_back(QPointF(ptr1[i], ptr2[i]));
+            }
+        }
+        else
+        {
+            Py_XDECREF(arr);
+            PyErr_SetString(PyExc_RuntimeError, "points: 2xM float64 array like object with polygon data required.");
+            return NULL;
+        }
+    }
+    else
+    {
+        return NULL;
+    }
+
+    Py_XDECREF(arr);
+
+    quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+    if ((flags | allowedFlags) != allowedFlags)
+    {
+        PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return NULL;
+    }
+    else
+    {
+        PyShape* shape = (PyShape*)createPyShape(ito::Shape::fromPolygon(polygon, index, name));
+        shape->shape->setFlags(flags & ito::Shape::FlagMask);
+
+        return (PyObject*)shape;
+    }            
 }
 
 //-----------------------------------------------------------------------------
@@ -1762,6 +2349,14 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     { "contains", (PyCFunction)PyShape_contains, METH_VARARGS | METH_KEYWORDS, shape_contains_doc },
     { "normalized", (PyCFunction)PyShape_normalized, METH_NOARGS, shape_normalized_doc },
     { "copy", (PyCFunction)PyShape_copy, METH_NOARGS, shape_copy_doc },
+
+    { "createPoint", (PyCFunction)PyShape_StaticPoint, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticPoint_doc },
+    { "createLine", (PyCFunction)PyShape_StaticLine, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticLine_doc },
+    { "createCircle", (PyCFunction)PyShape_StaticCircle, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticCircle_doc },
+    { "createEllipse", (PyCFunction)PyShape_StaticEllipse, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticEllipse_doc },
+    { "createSquare", (PyCFunction)PyShape_StaticSquare, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticSquare_doc },
+    { "createRectangle", (PyCFunction)PyShape_StaticRectangle, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticRectangle_doc },
+    { "createPolygon", (PyCFunction)PyShape_StaticPolygon, METH_VARARGS | METH_KEYWORDS | METH_STATIC, shape_staticPolygon_doc },
     {NULL}  /* Sentinel */
 };
 
