@@ -203,8 +203,77 @@ PyObject* PythonAutoInterval::PyAutoInterval_RichCompare(PyAutoInterval *self, P
     }
 }
 
+//--------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_min_doc, "get/set absolute minimum value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getMin(PyAutoInterval *self, void *closure)
+{
+	return PyFloat_FromDouble(self->interval.minimum());
+}
+
+int PythonAutoInterval::PyAutoInterval_setMin(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	double minimum = PythonQtConversion::PyObjGetDouble(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rmin() = (float)minimum;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "minimum value must be a float");
+	return -1;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_max_doc, "get/set absolute maximum value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getMax(PyAutoInterval *self, void *closure)
+{
+	return PyFloat_FromDouble(self->interval.maximum());
+}
+
+int PythonAutoInterval::PyAutoInterval_setMax(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	double maximum = PythonQtConversion::PyObjGetDouble(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rmax() = (float)maximum;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "maximum value must be a float");
+	return -1;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_auto_doc, "get/set auto flag value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getAuto(PyAutoInterval *self, void *closure)
+{
+	return PyBool_FromLong(self->interval.isAuto() ? 1 : 0);
+}
+
+int PythonAutoInterval::PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	bool auto_flag = PythonQtConversion::PyObjGetBool(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rauto() = auto_flag;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "auto value must be a bool");
+	return -1;
+}
 
 
+//------------------------------------------------------------------------------------------------------
 PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
         {"name", (PyCFunction)PythonAutoInterval::PyAutoInterval_name, METH_NOARGS, ""},
         
@@ -215,11 +284,6 @@ PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
     };
 
 PyMemberDef PythonAutoInterval::PyAutoInterval_members[] = {
-    #ifdef WIN32 //TODO offsetof with member in GCC not possible
-        {"min", T_FLOAT, offsetof(PyAutoInterval, interval.rmin()), 0, "min"}, 
-        {"max", T_FLOAT, offsetof(PyAutoInterval, interval.rmax()), 0, "max"}, 
-        {"auto", T_BOOL, offsetof(PyAutoInterval, interval.rauto()), 0, "auto"},  
-    #endif
         {NULL}  /* Sentinel */
     };
 
@@ -232,7 +296,9 @@ PyModuleDef PythonAutoInterval::PyAutoIntervalModule = {
     };
 
 PyGetSetDef PythonAutoInterval::PyAutoInterval_getseters[] = {
-    
+	{ "min", (getter)PyAutoInterval_getMin,         (setter)PyAutoInterval_setMin,    autoInterval_min_doc, NULL },
+	{ "max", (getter)PyAutoInterval_getMax,         (setter)PyAutoInterval_setMax,    autoInterval_max_doc, NULL },
+	{ "auto", (getter)PyAutoInterval_getAuto,         (setter)PyAutoInterval_setAuto,    autoInterval_auto_doc, NULL },
     {NULL}  /* Sentinel */
 };
 

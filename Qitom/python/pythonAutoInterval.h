@@ -93,6 +93,18 @@ class PythonAutoInterval
         static PyObject* PyAutoInterval_Reduce(PyAutoInterval *self, PyObject *args);
         static PyObject* PyAutoInterval_SetState(PyAutoInterval *self, PyObject *args);
 
+		//-------------------------------------------------------------------------------------------------
+		// getter / setter
+		//------------------------------------------------------------------------------------------------- 
+		static PyObject* PyAutoInterval_getMin(PyAutoInterval *self, void *closure);
+		static int PyAutoInterval_setMin(PyAutoInterval *self, PyObject *value, void *closure);
+
+		static PyObject* PyAutoInterval_getMax(PyAutoInterval *self, void *closure);
+		static int PyAutoInterval_setMax(PyAutoInterval *self, PyObject *value, void *closure);
+
+		static PyObject* PyAutoInterval_getAuto(PyAutoInterval *self, void *closure);
+		static int PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *value, void *closure);
+
         
         //-------------------------------------------------------------------------------------------------
         // type structures
