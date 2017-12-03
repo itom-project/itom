@@ -23,6 +23,7 @@ from sphinx import directives
 from sphinx.writers.html import HTMLWriter
 from docutils import languages
 from sphinxext import numpydoc
+from sphinx import environment
 
 # remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
 #import numpy
@@ -81,9 +82,9 @@ def printPercent(value, maxim, config):
         config["oldPercentage"] = percentage
     return
 
-def openReport(config, openReport = True):
+def openReport(config, name, openReport = True):
     if openReport:
-        config["reportFile"] = open("HelpReport.txt","w")
+        config["reportFile"] = open("HelpReport_%s.txt" % name,"w")
         config["numWarnings"] = 0
         config["numErrors"] = 0
     else:
@@ -403,8 +404,14 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id, config, builtinList, do
             lines = ns['lines']
             # Linien wieder zusamensetzen
             cor = "\n".join(lines)
+            
+            if ".. only" in cor:
+                cor = cor.replace(".. only:: latex", "::")
             try:
-                sout =docutils.core.publish_string(cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                doctree = docutils.core.publish_doctree(cor, settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                ns["SphinxBuildEnvironment"].resolve_references(doctree, "", ns["SphinxApp"].builder)
+                sout = docutils.core.publish_from_doctree(doctree, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                #sout =docutils.core.publish_string(cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
             except Exception as ex:
                 try:
                     sout =docutils.core.publish_string(".\n" + cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
@@ -416,7 +423,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id, config, builtinList, do
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
             exec('value = ' + prefix + name, ns)
-            line[5] = itom.compressData(html.escape('constant: '+ str(ns["value"])))
+            line[5] = itom.compressData(html.escape('constant: \n'+ pprint.pformat(ns["value"])))
             line[6] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
@@ -546,7 +553,7 @@ def create_database(databasename, dbVersion, itomMinVersion, idList, dummyBuild 
         "oldPercentage": 0, \
         "remove_all_double_underscore":1 }  # ignore private methods, variables... that start with two underscores }
     
-    openReport(config, True)
+    openReport(config, databasename, True)
     
     if (databasename == 'itom') or \
        (databasename == 'numpy') or \
@@ -608,6 +615,8 @@ def create_database(databasename, dbVersion, itomMinVersion, idList, dummyBuild 
     ns['numpydoc'] = numpydoc
     ns['sys'] = sys
     ns['SphinxApp'] = SphinxApp
+    
+    ns["SphinxBuildEnvironment"] = environment.BuildEnvironment("","",{})
 
     # If you want the script to replace the file directly... not possible because of access violation
     #filename = 'F:\\itom-git\\build\\itom\\PythonHelp.db'
@@ -667,8 +676,8 @@ if __name__ == "__main__":
     '''
     
     task_list = []
-    task_list.append({"databasename":"builtins", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
-    task_list.append({"databasename":"itom", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    #task_list.append({"databasename":"builtins", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    #task_list.append({"databasename":"itom", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
     task_list.append({"databasename":"numpy", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
 
     for entry in task_list:
