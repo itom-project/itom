@@ -154,6 +154,28 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObject * /*args*/)
 {
+    //method to pickle (save to IDC) autoInterval objects
+    /*
+    This method is mapped to itom.autoInterval.__reduce__.
+
+    If this function exists, the pickle module is able to save autoInterval instances to pickled
+    files (e.g. idc files). This method is called, whenever an autoInterval object should be pickled.
+    Its purpose is to return a Python tuple, that only consists of basic python types, which can be pickled.
+
+    If an idc file is loaded, pickle knows if an autoInterval is contained. If so, the object, returned
+    by this function is used to reconstruct the object, also by the help of the method below, mapped to itom.autoInterval.__setstate__.
+
+    The meaning of the returned tuple is as follows:
+
+    (type of the autoInterval class, an arbitrary constructor-tuple, a user-defined object)
+
+    If the object is reconstructed, the constructor of autoInterval is called with the unpacked version of the arbitrary constructor tuple.
+    Afterwards the __setstate__ method is called (with the newly created instance and the user-defined object). The __setstate__ method
+    can then adapt the new instance using the content of the user-defined object.
+
+    Here, no user-defined object is necessary, since the autoInterval object can be fully reconstructed using the
+    three values (min, max, auto), passed to the constructor (__init__).
+    */
     PyObject *stateTuple = PyTuple_New(0);
 
     PyObject *tempOut = Py_BuildValue("(O(ffB)O)", Py_TYPE(self), self->interval.rmin(), self->interval.rmax(), self->interval.rauto(), stateTuple);
@@ -165,6 +187,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObje
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_SetState(PyAutoInterval *self, PyObject *args)
 {
+    /*documentation see method above*/
     Py_RETURN_NONE;
 }
 
