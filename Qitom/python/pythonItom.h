@@ -68,6 +68,8 @@ public:
     static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
 
     static PyObject* PyPlot1d(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
+    static PyObject* PyPlot2d(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
+    static PyObject* PyPlot25d(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
 
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);

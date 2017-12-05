@@ -7,9 +7,10 @@ yVec = np.sin(xVec)
 xVec = dataObject(xVec)
 yVec = dataObject(yVec)
 
-yVec.valueDescription = "yVec value description"
-yVec.valueUnit = "yVec value unit"
-yVec.setAxisDescription(1, "yVec x axis description")
-yVec.setAxisUnit(1, "yVec x unit")
+yVec.valueDescription = "amplitude"
+yVec.valueUnit = "a. u."
+yVec.setAxisDescription(1, "time")
+yVec.setAxisUnit(1, "s")
+yVec.setTag("title", "sin function")
 
 plot1(yVec, xVec)
