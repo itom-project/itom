@@ -125,6 +125,7 @@ itom.dataObject.valueScale
 itom.dataObject.valueUnit
 itom.dataObject.xyRotationalMatrix
 itom.dataObject.zeros(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with zeros.
+itom.dumpButtonsAndMenus() -> returns a dictionary with the set of user-defined toolbars, buttons, menus and actions.
 itom.figure([handle, [rows = 1, cols = 1]]) -> creates figure window.
 itom.figure.close(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.figure.docked

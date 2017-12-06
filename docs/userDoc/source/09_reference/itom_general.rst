@@ -35,7 +35,7 @@ Adding elements to the GUI
 You can add buttons and menus to the itom GUI. 
     
 .. automodule:: itom
-    :members: addButton, removeButton, addMenu, removeMenu
+    :members: addButton, removeButton, addMenu, removeMenu, dumpButtonsAndMenus
 
 For more information about using these methods, see :ref:`toolbar-start`.
 

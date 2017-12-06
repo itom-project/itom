@@ -91,6 +91,8 @@ public:
     static PyObject* PyAddMenu(PyObject* pSelf, PyObject* args, PyObject *kwds);
     static PyObject* PyRemoveMenu(PyObject* pSelf, PyObject* args, PyObject *kwds);
 
+	static PyObject* PyDumpMenusAndButtons(PyObject* pSelf);
+
     static PyObject* PyCheckSignals(PyObject* pSelf);
     static PyObject* PyProcessEvents(PyObject* pSelf);
 
