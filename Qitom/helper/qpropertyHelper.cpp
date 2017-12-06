@@ -203,7 +203,7 @@ namespace ito {
             if (list.size() == 2)
             {
                 bool ok2;
-                result = QVariant::fromValue<ito::AutoInterval>(ito::AutoInterval(list[0].toFloat(&ok), list[1].toFloat(&ok2)));
+                result = QVariant::fromValue<ito::AutoInterval>(ito::AutoInterval(list[0].toDouble(&ok), list[1].toDouble(&ok2)));
                 ok &= ok2;
 
                 if (!ok)

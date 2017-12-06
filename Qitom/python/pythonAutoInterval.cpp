@@ -43,8 +43,8 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
     PyAutoInterval* self = (PyAutoInterval *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->interval.rmin() = -std::numeric_limits<float>::infinity();
-        self->interval.rmax() = std::numeric_limits<float>::infinity();
+        self->interval.rmin() = -std::numeric_limits<double>::infinity();
+        self->interval.rmax() = std::numeric_limits<double>::infinity();
         self->interval.rauto() = true;
     }
 
@@ -77,8 +77,8 @@ Example:: \n\
 int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"min", "max", "auto", NULL};
-    self->interval.rmin() = -std::numeric_limits<float>::infinity();
-    self->interval.rmax() = std::numeric_limits<float>::infinity();
+    self->interval.rmin() = -std::numeric_limits<double>::infinity();
+    self->interval.rmax() = std::numeric_limits<double>::infinity();
     self->interval.rauto() = true;
 
     if (args == NULL && kwds == NULL)
@@ -86,7 +86,7 @@ int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args
         return 0; //call from createEmptyPyAutoInterval
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ffB", const_cast<char**>(kwlist), &(self->interval.rmin()), &(self->interval.rmax()), &(self->interval.rauto())))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ddB", const_cast<char**>(kwlist), &(self->interval.rmin()), &(self->interval.rmax()), &(self->interval.rauto())))
     {
         return -1;
     }
@@ -127,9 +127,9 @@ PyObject* PythonAutoInterval::PyAutoInterval_name(PyAutoInterval* /*self*/)
 PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
 {
     QString str;
-    if (self->interval.minimum() == std::numeric_limits<float>::min())
+    if (self->interval.minimum() == std::numeric_limits<double>::min())
     {
-        if (self->interval.maximum() == std::numeric_limits<float>::max())
+        if (self->interval.maximum() == std::numeric_limits<double>::max())
         {
             str = QString("autoInterval([-Inf,Inf], auto: %3)").arg(self->interval.isAuto());
         }
@@ -138,7 +138,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
             str = QString("autoInterval([-Inf,%1], auto: %3)").arg(self->interval.maximum()).arg(self->interval.isAuto());
         }
     }
-    else if (self->interval.maximum() == std::numeric_limits<float>::max())
+    else if (self->interval.maximum() == std::numeric_limits<double>::max())
     {
         str = QString("autoInterval([%,Inf], auto: %3)").arg(self->interval.minimum()).arg(self->interval.isAuto());
     }
@@ -178,7 +178,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObje
     */
     PyObject *stateTuple = PyTuple_New(0);
 
-    PyObject *tempOut = Py_BuildValue("(O(ffB)O)", Py_TYPE(self), self->interval.rmin(), self->interval.rmax(), self->interval.rauto(), stateTuple);
+    PyObject *tempOut = Py_BuildValue("(O(ddB)O)", Py_TYPE(self), self->interval.rmin(), self->interval.rmax(), self->interval.rauto(), stateTuple);
     Py_DECREF(stateTuple);
 
     return tempOut;

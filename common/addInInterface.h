@@ -1115,6 +1115,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.4.0", //outdated on 2016-07-12 due to new library itomCommonPlotLib.
     "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
     "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
+	"ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
     NULL
 };
 
@@ -1126,7 +1127,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define ITOM_ADDININTERFACE_MINOR 0
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3, 0, 0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3, 1, 0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

@@ -91,7 +91,7 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
             plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
         }
 
-        widget = dwo->createWidget(plotClassName, ui.groupPlot, "liveImagePlot", AbstractFigure::ModeStandaloneInUi);
+        widget = dwo->createWidget(plotClassName, ui.groupPlot, AbstractFigure::ModeStandaloneInUi);
         widget->setVisible(true);
         
         QVBoxLayout *layout = new QVBoxLayout();
