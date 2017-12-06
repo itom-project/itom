@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>847</width>
-    <height>659</height>
+    <width>859</width>
+    <height>652</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,12 +30,36 @@
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>8</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
       <item>
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="QGroupBox" name="groupSource">
         <property name="title">
          <string>Source</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>8</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="labelSource">
            <property name="text">
@@ -52,10 +76,22 @@
          <string>Save Data</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>8</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
          <item row="0" column="0" colspan="2">
           <widget class="QCheckBox" name="checkSaveAfterSnap">
            <property name="text">
-            <string>Save image after snap</string>
+            <string>Save Image After Snap</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -76,11 +112,26 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="groupDataType">
            <property name="title">
-            <string>Data type</string>
+            <string>Data Type</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
+            <property name="leftMargin">
+             <number>8</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>8</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <property name="spacing">
+             <number>6</number>
+            </property>
             <item row="0" column="0">
              <widget class="QComboBox" name="comboType">
               <property name="enabled">
@@ -105,17 +156,97 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_2">
+       <widget class="QGroupBox" name="groupTimestamp">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Add Timestamp</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>12</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="checkDataObjectTag">
+           <property name="text">
+            <string>Tag of DataObject</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkFilename">
+           <property name="text">
+            <string>Add to File Name</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupAcquire">
         <property name="title">
          <string>Acquire</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>8</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
          <item row="3" column="0">
           <widget class="QGroupBox" name="groupMultishot">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="title">
             <string>Multishot</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
+            <property name="leftMargin">
+             <number>8</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>8</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
             <item row="2" column="0">
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
@@ -132,7 +263,7 @@
             <item row="0" column="0" colspan="2">
              <widget class="QCheckBox" name="checkMulti">
               <property name="text">
-               <string>Multiple snapshots</string>
+               <string>Multiple Snapshots</string>
               </property>
               <property name="checked">
                <bool>false</bool>
@@ -214,18 +345,18 @@
          <item row="11" column="0">
           <widget class="QCheckBox" name="checkAutograbbing">
            <property name="text">
-            <string>Auto grabbing</string>
+            <string>Auto Grabbing</string>
            </property>
           </widget>
          </item>
-         <item row="12" column="0">
+         <item row="13" column="0">
           <widget class="QPushButton" name="btnSnap">
            <property name="text">
             <string>Snapshot</string>
            </property>
           </widget>
          </item>
-         <item row="14" column="0">
+         <item row="15" column="0">
           <widget class="QProgressBar" name="progress">
            <property name="maximum">
             <number>50</number>
@@ -250,7 +381,7 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="0">
+         <item row="16" column="0">
           <widget class="QLabel" name="lblProgress">
            <property name="text">
             <string>progress...</string>
@@ -267,7 +398,7 @@
          <item row="4" column="0">
           <widget class="QLabel" name="labelSource_2">
            <property name="text">
-            <string>File name</string>
+            <string>File Name</string>
            </property>
           </widget>
          </item>
@@ -303,7 +434,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>847</width>
+     <width>859</width>
      <height>18</height>
     </rect>
    </property>

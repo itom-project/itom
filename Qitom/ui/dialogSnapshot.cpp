@@ -45,6 +45,12 @@ bool cmpStringIntPair(const QPair<QString, int> &a, const QPair<QString, int> &b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::setGroupTimestampEnabled()
+{
+    ui.checkDataObjectTag->setEnabled(ui.comboType->itemData(ui.comboType->currentIndex()).toInt() == -3);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, ito::RetVal &retval) :
     QMainWindow(parent),
     m_path(""),
@@ -70,8 +76,22 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
         m_pCamera = new DataIOThreadCtrl(cam.data()); //increments the reference to the camera
 
         QWidget* widget = NULL;
-        QString plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
-        widget = dwo->createWidget(plotClassName, ui.groupPlot, AbstractFigure::ModeStandaloneInUi);
+        QString plotClassName = "";
+        int bpp = 0;
+        int sizex = 0;
+        int sizey = 0;
+        m_pCamera->getImageParams(bpp, sizex, sizey);
+
+        if (sizey>1)
+        {
+            plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
+        }
+        else
+        {
+            plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
+        }
+
+        widget = dwo->createWidget(plotClassName, ui.groupPlot, "liveImagePlot", AbstractFigure::ModeStandaloneInUi);
         widget->setVisible(true);
         
         QVBoxLayout *layout = new QVBoxLayout();
@@ -139,6 +159,8 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
     ui.btnFolder->setEnabled(false);
     ui.lblProgress->setVisible(false);
     ui.progress->setVisible(false);
+
+    setGroupTimestampEnabled();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -175,11 +197,13 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
     {
         bool acquireStack = (ui.comboType->itemData(ui.comboType->currentIndex()).toInt() < 0 && ui.comboSingleStack->currentIndex() == 1);
         ui.lblProgress->setText(tr("acquire image %1 from %2").arg(m_numSnapsDone+1).arg(m_totalSnaps));
+        uint dateTime = 0;
 
         if (!acquireStack)
         {
             ito::DataObject image;
             retval += m_pCamera->copyVal(image);
+            dateTime = QDateTime::currentDateTime().toTime_t();
 
             m_acquiredImages << image;
             //m_acquiredImages.append(image);
@@ -595,6 +619,7 @@ void DialogSnapshot::on_comboType_currentIndexChanged(int index)
         ui.comboSingleStack->setEnabled(index < 0 && ui.checkMulti->isChecked());
         ui.btnFolder->setEnabled(index != -3);
         setBtnOptions(ui.checkSaveAfterSnap->isChecked());
+        setGroupTimestampEnabled();
 
         ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 

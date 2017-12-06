@@ -57,6 +57,7 @@ protected:
 
     void timerEvent(QTimerEvent *event);
     void closeEvent(QCloseEvent *event);
+    void setGroupTimestampEnabled();
 
     QString m_path;
     QList<ito::AddInAlgo::FilterDef*> m_filterPlugins;
