@@ -2754,7 +2754,7 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 		else
 		{
 			PyObject *globals = PyDict_New();
-			QString totalString = QString("text = %1").arg(*dump);
+			QString totalString = QString("# coding=iso-8859-15 \n\ntext = %1").arg(*dump);
 			PyObject *result = PyRun_String(totalString.toLatin1().data(), Py_single_input, globals, NULL);
 			Py_XDECREF(result);
 			PyObject *text = PyDict_GetItemString(globals, "text"); //borrowed
