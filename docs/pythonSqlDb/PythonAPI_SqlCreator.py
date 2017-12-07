@@ -399,14 +399,14 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id, config, builtinList, do
             try:
                 exec('numpydoc.mangle_docstrings(SphinxApp,\''+types[int(nametype)]+'\', '+ prefix + name +'.__name__,'+ prefix + name +', None, lines)', ns)
             except Exception as ex:
-                reportMessage('Error in createSQLEntry \'numpydoc.mangle_docstrings\' (%s%s): %s' % (prefix, name, str(ex)),'e', config)
-                return
+                reportMessage('Error in createSQLEntry \'numpydoc.mangle_docstrings\' (%s%s): %s (text: %s...)' % (prefix, name, str(ex), str(lines[0])),'e', config)
+                ns['lines'] = lines
             lines = ns['lines']
             # Linien wieder zusamensetzen
             cor = "\n".join(lines)
             
-            if ".. only" in cor:
-                cor = cor.replace(".. only:: latex", "::")
+            #if ".. only" in cor:
+            #    cor = cor.replace(".. only:: latex", "::")
             try:
                 doctree = docutils.core.publish_doctree(cor, settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
                 ns["SphinxBuildEnvironment"].resolve_references(doctree, "", ns["SphinxApp"].builder)
@@ -414,7 +414,10 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id, config, builtinList, do
                 #sout =docutils.core.publish_string(cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
             except Exception as ex:
                 try:
-                    sout =docutils.core.publish_string(".\n" + cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                    doctree = docutils.core.publish_doctree(".\n" + cor, settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                    ns["SphinxBuildEnvironment"].resolve_references(doctree, "", ns["SphinxApp"].builder)
+                    sout = docutils.core.publish_from_doctree(doctree, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                    #sout =docutils.core.publish_string(".\n" + cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
                 except Exception as ex:
                     reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e', config)
                 return
@@ -676,9 +679,11 @@ if __name__ == "__main__":
     '''
     
     task_list = []
-    #task_list.append({"databasename":"builtins", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
-    #task_list.append({"databasename":"itom", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    task_list.append({"databasename":"builtins", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    task_list.append({"databasename":"itom", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
     task_list.append({"databasename":"numpy", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    #task_list.append({"databasename":"scipy", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    #task_list.append({"databasename":"matplotlib", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
 
     for entry in task_list:
         entry["idList"] = globalIDList
