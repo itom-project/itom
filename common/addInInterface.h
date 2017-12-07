@@ -1068,9 +1068,10 @@ namespace ito
 //
 // To add a new version, do the following steps
 //
-// 1. append the string behind the variable ito_AddInInterface_CurrentVersion (e.g. ito.AddIn.InterfaceBase/1.1) to the array ito_AddInInterface_OldVersions
-// 2. change the version number in the string ito_AddInInterface_CurrentVersion
-// 3. if the AddInInterface version number is incremented, the ito.AbstractItomDesignerPlugin number in AbstractItomDesignerPlugin.h must be incremented as well.
+// 1. change ITOM_ADDININTERFACE_MAJOR, ITOM_ADDININTERFACE_Minor and/or ITOM_ADDININTERFACE_Patch
+// 2. append the string behind the variable ito_AddInInterface_CurrentVersion (e.g. ito.AddIn.InterfaceBase/1.1) to the array ito_AddInInterface_OldVersions
+// 3. change the version number in the string ito_AddInInterface_CurrentVersion
+// 4. if the AddInInterface version number is incremented, the ito.AbstractItomDesignerPlugin number in AbstractItomDesignerPlugin.h must be incremented as well.
 //
 //
 // This helps, that deprecated or "future" plugins, which fit not to the current implementation of the interface will not be loaded
@@ -1124,7 +1125,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 3
-#define ITOM_ADDININTERFACE_MINOR 0
+#define ITOM_ADDININTERFACE_MINOR 1
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
 static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3, 1, 0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)

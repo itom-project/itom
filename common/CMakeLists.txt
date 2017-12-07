@@ -1,4 +1,4 @@
-SET (target_name itomCommonLib) 
+SET (target_name itomCommonLib)  
 project(${target_name}) 
 cmake_minimum_required(VERSION 2.8)
      
