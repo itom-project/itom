@@ -40,8 +40,8 @@ namespace ito
     class AutoIntervalProperty : public Property
     {
         Q_OBJECT
-        Q_PROPERTY(float minimum READ minimum WRITE setMinimum DESIGNABLE true USER true)
-        Q_PROPERTY(float maximum READ maximum WRITE setMaximum DESIGNABLE true USER true)
+        Q_PROPERTY(double minimum READ minimum WRITE setMinimum DESIGNABLE true USER true)
+        Q_PROPERTY(double maximum READ maximum WRITE setMaximum DESIGNABLE true USER true)
         Q_PROPERTY(bool autoScaling READ autoScaling WRITE setAutoScaling DESIGNABLE true USER true)
 
     public:
@@ -52,11 +52,11 @@ namespace ito
 
         void setEditorHints(const QString& hints);
 
-        float minimum() const;
-        void setMinimum(float minimum);
+        double minimum() const;
+        void setMinimum(double minimum);
 
-        float maximum() const;
-        void setMaximum(float maximum);
+        double maximum() const;
+        void setMaximum(double maximum);
 
         bool autoScaling() const;
         void setAutoScaling(bool autoScaling);

@@ -43,8 +43,8 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
     PyAutoInterval* self = (PyAutoInterval *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->interval.rmin() = -std::numeric_limits<float>::infinity();
-        self->interval.rmax() = std::numeric_limits<float>::infinity();
+        self->interval.rmin() = -std::numeric_limits<double>::infinity();
+        self->interval.rmax() = std::numeric_limits<double>::infinity();
         self->interval.rauto() = true;
     }
 
@@ -77,8 +77,8 @@ Example:: \n\
 int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"min", "max", "auto", NULL};
-    self->interval.rmin() = -std::numeric_limits<float>::infinity();
-    self->interval.rmax() = std::numeric_limits<float>::infinity();
+    self->interval.rmin() = -std::numeric_limits<double>::infinity();
+    self->interval.rmax() = std::numeric_limits<double>::infinity();
     self->interval.rauto() = true;
 
     if (args == NULL && kwds == NULL)
@@ -86,7 +86,7 @@ int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args
         return 0; //call from createEmptyPyAutoInterval
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ffB", const_cast<char**>(kwlist), &(self->interval.rmin()), &(self->interval.rmax()), &(self->interval.rauto())))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|ddB", const_cast<char**>(kwlist), &(self->interval.rmin()), &(self->interval.rmax()), &(self->interval.rauto())))
     {
         return -1;
     }
@@ -127,9 +127,9 @@ PyObject* PythonAutoInterval::PyAutoInterval_name(PyAutoInterval* /*self*/)
 PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
 {
     QString str;
-    if (self->interval.minimum() == std::numeric_limits<float>::min())
+    if (self->interval.minimum() == std::numeric_limits<double>::min())
     {
-        if (self->interval.maximum() == std::numeric_limits<float>::max())
+        if (self->interval.maximum() == std::numeric_limits<double>::max())
         {
             str = QString("autoInterval([-Inf,Inf], auto: %3)").arg(self->interval.isAuto());
         }
@@ -138,7 +138,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
             str = QString("autoInterval([-Inf,%1], auto: %3)").arg(self->interval.maximum()).arg(self->interval.isAuto());
         }
     }
-    else if (self->interval.maximum() == std::numeric_limits<float>::max())
+    else if (self->interval.maximum() == std::numeric_limits<double>::max())
     {
         str = QString("autoInterval([%,Inf], auto: %3)").arg(self->interval.minimum()).arg(self->interval.isAuto());
     }
@@ -154,9 +154,31 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObject * /*args*/)
 {
+    //method to pickle (save to IDC) autoInterval objects
+    /*
+    This method is mapped to itom.autoInterval.__reduce__.
+
+    If this function exists, the pickle module is able to save autoInterval instances to pickled
+    files (e.g. idc files). This method is called, whenever an autoInterval object should be pickled.
+    Its purpose is to return a Python tuple, that only consists of basic python types, which can be pickled.
+
+    If an idc file is loaded, pickle knows if an autoInterval is contained. If so, the object, returned
+    by this function is used to reconstruct the object, also by the help of the method below, mapped to itom.autoInterval.__setstate__.
+
+    The meaning of the returned tuple is as follows:
+
+    (type of the autoInterval class, an arbitrary constructor-tuple, a user-defined object)
+
+    If the object is reconstructed, the constructor of autoInterval is called with the unpacked version of the arbitrary constructor tuple.
+    Afterwards the __setstate__ method is called (with the newly created instance and the user-defined object). The __setstate__ method
+    can then adapt the new instance using the content of the user-defined object.
+
+    Here, no user-defined object is necessary, since the autoInterval object can be fully reconstructed using the
+    three values (min, max, auto), passed to the constructor (__init__).
+    */
     PyObject *stateTuple = PyTuple_New(0);
 
-    PyObject *tempOut = Py_BuildValue("(O(ffB)O)", Py_TYPE(self), self->interval.rmin(), self->interval.rmax(), self->interval.rauto(), stateTuple);
+    PyObject *tempOut = Py_BuildValue("(O(ddB)O)", Py_TYPE(self), self->interval.rmin(), self->interval.rmax(), self->interval.rauto(), stateTuple);
     Py_DECREF(stateTuple);
 
     return tempOut;
@@ -165,6 +187,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObje
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_SetState(PyAutoInterval *self, PyObject *args)
 {
+    /*documentation see method above*/
     Py_RETURN_NONE;
 }
 
@@ -203,8 +226,77 @@ PyObject* PythonAutoInterval::PyAutoInterval_RichCompare(PyAutoInterval *self, P
     }
 }
 
+//--------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_min_doc, "get/set absolute minimum value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getMin(PyAutoInterval *self, void *closure)
+{
+	return PyFloat_FromDouble(self->interval.minimum());
+}
+
+int PythonAutoInterval::PyAutoInterval_setMin(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	double minimum = PythonQtConversion::PyObjGetDouble(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rmin() = (float)minimum;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "minimum value must be a float");
+	return -1;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_max_doc, "get/set absolute maximum value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getMax(PyAutoInterval *self, void *closure)
+{
+	return PyFloat_FromDouble(self->interval.maximum());
+}
+
+int PythonAutoInterval::PyAutoInterval_setMax(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	double maximum = PythonQtConversion::PyObjGetDouble(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rmax() = (float)maximum;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "maximum value must be a float");
+	return -1;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_auto_doc, "get/set auto flag value of interval");
+
+PyObject* PythonAutoInterval::PyAutoInterval_getAuto(PyAutoInterval *self, void *closure)
+{
+	return PyBool_FromLong(self->interval.isAuto() ? 1 : 0);
+}
+
+int PythonAutoInterval::PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *value, void *closure)
+{
+	bool ok;
+	bool auto_flag = PythonQtConversion::PyObjGetBool(value, false, ok);
+
+	if (ok)
+	{
+		self->interval.rauto() = auto_flag;
+		return 0;
+	}
+
+	PyErr_SetString(PyExc_TypeError, "auto value must be a bool");
+	return -1;
+}
 
 
+//------------------------------------------------------------------------------------------------------
 PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
         {"name", (PyCFunction)PythonAutoInterval::PyAutoInterval_name, METH_NOARGS, ""},
         
@@ -215,11 +307,6 @@ PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
     };
 
 PyMemberDef PythonAutoInterval::PyAutoInterval_members[] = {
-    #ifdef WIN32 //TODO offsetof with member in GCC not possible
-        {"min", T_FLOAT, offsetof(PyAutoInterval, interval.rmin()), 0, "min"}, 
-        {"max", T_FLOAT, offsetof(PyAutoInterval, interval.rmax()), 0, "max"}, 
-        {"auto", T_BOOL, offsetof(PyAutoInterval, interval.rauto()), 0, "auto"},  
-    #endif
         {NULL}  /* Sentinel */
     };
 
@@ -232,7 +319,9 @@ PyModuleDef PythonAutoInterval::PyAutoIntervalModule = {
     };
 
 PyGetSetDef PythonAutoInterval::PyAutoInterval_getseters[] = {
-    
+	{ "min", (getter)PyAutoInterval_getMin,         (setter)PyAutoInterval_setMin,    autoInterval_min_doc, NULL },
+	{ "max", (getter)PyAutoInterval_getMax,         (setter)PyAutoInterval_setMax,    autoInterval_max_doc, NULL },
+	{ "auto", (getter)PyAutoInterval_getAuto,         (setter)PyAutoInterval_setAuto,    autoInterval_auto_doc, NULL },
     {NULL}  /* Sentinel */
 };
 

@@ -49,8 +49,8 @@ namespace ito
 class ITOMCOMMON_EXPORT AutoInterval
 {       
     private:
-        float m_min; /*!< minimum value that is included in the interval */
-        float m_max; /*!< maximum value that is included in the interval */
+        double m_min; /*!< minimum value that is included in the interval */
+        double m_max; /*!< maximum value that is included in the interval */
         bool m_auto; /*!< true if the interval can be automatically be adjusted by the code using it or if m_min and m_max are fixed boundaries */
 
     public:
@@ -62,21 +62,21 @@ class ITOMCOMMON_EXPORT AutoInterval
         \param max is the included maximum value
         \param autoInterval is the state of auto-flag.
         */
-        AutoInterval(float min, float max, bool autoInterval = false);
+        AutoInterval(double min, double max, bool autoInterval = false);
 
         virtual ~AutoInterval(); //!< destructor */
 
         //! return the minimum value of the interval (included)
-        inline float minimum() const { return m_min; }
+        inline double minimum() const { return m_min; }
 
         //! return the maximum value of the interval (included)
-        inline float maximum() const { return m_max; }
+        inline double maximum() const { return m_max; }
 
         //! return a reference to the minimum value of the interval. Assigning a float to this reference will change the minimum in the interval.
-        inline float & rmin() { return m_min; }
+        inline double & rmin() { return m_min; }
 
         //! return a reference to the maximum value of the interval. Assigning a float to this reference will change the maximum in the interval.
-        inline float & rmax() { return m_max; }
+        inline double & rmax() { return m_max; }
 
         //! return the state of the auto-flag as boolean variable
         inline bool isAuto() const { return m_auto; }
@@ -89,19 +89,19 @@ class ITOMCOMMON_EXPORT AutoInterval
         \param min is the new included minimum value
         \param max is the new included maximum value
         */
-        void setRange(float min, float max);
+        void setRange(double min, double max);
 
         //! change the included minimum value
         /*!
         \param min is the new included minimum value
         */
-        void setMinimum(float min);
+        void setMinimum(double min);
 
         //! change the included maximum value
         /*!
         \param max is the new included maximum value
         */
-        void setMaximum(float max);
+        void setMaximum(double max);
 
         //! set the auto-flag to a given boolean value
         /*!

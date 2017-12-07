@@ -11,15 +11,26 @@ that should be created
 '''
 
 #  Systemstuff
+import itom
+import pprint
+
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword, html
 from sphinx import environment
 from sphinx.application import Sphinx
-import itom
-import pprint
 import docutils
 from sphinx import addnodes
 from sphinx import directives
 from sphinx.writers.html import HTMLWriter
+from docutils import languages
+from sphinxext import numpydoc
+from sphinx import environment
+
+# remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
+#import numpy
+import time
+
+from sphinx import locale
+locale.init([], "en")
 
 docutils.nodes.NodeVisitor.optional = ('only', 'displaymath', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'toctree') #'pending_xref', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'displaymath', 'only', 'toctree')
 
@@ -37,8 +48,6 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
                      '__new__', '__init__', '__name__', '__cached__', '__ior__', '__isub__', '__and__',
                      '__sub__', '__xor__', '__main__','__repr__','itoDebugger','__path__','__file__']
 
-
-
 #------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------
@@ -49,162 +58,57 @@ blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turt
 # Make shure that your new ID is not already used by another module!!!
 idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib":1004}
 
-# --->>>Global simple Settings<<<---
-
-# Filename and DB-Name
-databasename = 'numpy'
-
-name = databasename
-
-# Always increase the version by one to allow automatic updates
-dbVersion = '5'
-
-# Only change if there was a SchemeID change in Itom
-itomMinVersion = '1'            # SchemeID
-
-# --->>>Global advanced Settings<<<---
-
-# Name of the Database
-id = idDict[name]
-
-# Date is automatically detected
-date = time.strftime("%d.%m.%Y")
-
-# Enter modules you ant to add manually
-# manualList = ['itom'] # advanced settings
-
-# which kinds of modules do you want to document # advanced settings
-#add_builtins =                      1      # e.g. open()
-#add_builtin_modules =           1      # e.g. sys
-#add_package_modules =        1      # modules which are directories with __init__.py files
-#add_manual_modules =          0      # modules from manuallist
-
-# This is how the DB is named! For singlepackage databases use their name as filename!
-#name = 'builtins' # advanced settings
-
-
-
-
-if (databasename == 'itom') or \
-   (databasename == 'numpy') or \
-   (databasename == 'scipy') or \
-   (databasename == 'matplotlib'):
-    manualList = [databasename]
-    add_builtins =               0      
-    add_builtin_modules =        0      
-    add_package_modules =        0  
-    add_manual_modules =         1
-    if databasename != 'numpy':
-        blacklist += ['numpy', ]
-    print(name)
-elif databasename == 'builtins':
-    add_builtins =                   1
-    add_builtin_modules =        1
-    add_package_modules =     0
-    add_manual_modules =       0
-    blacklist += ['itom','matlab','itomEnum','itomSyntaxCheck','itomUi']
-    print(name)
-else:
-    add_builtins =                0
-    add_builtin_modules =     0
-    add_package_modules =  0
-    add_manual_modules =    0
-    print('no source selected')
-
-
-# If you would like to have a Report File for your Databasecreation
-createReportFile = True
-reportFile = open("HelpReport.txt","w")
-# and what do you want to be in that file:
-reportE = 0
-reportW = 0
-oldPercentage = 0
-
-
 #------------------------------------------------------------------------------------------------------------------
 #-------------------------------Don´t make any changes below this Line-------------------------------
 #------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------
 
-
-
-# Filename is created by name and .db
-filename = "%s_v%s.db" % (name, dbVersion)
-
-# finished db-Info
-dbInfo = [id, name, dbVersion, date, itomMinVersion]
-
-remove_all_double_underscore = 1  # ignore private methods, variables... that start with two underscores
-
-
-
-
-# This is the path, where the file will be copied after itÂ´s created
+# This is the path, where the file will be copied after it is created
 autocopy = 1
 destination = os.path.abspath(os.path.join( itom.getAppPath(), "help" ))
 
-# remove this import if numpy is not used, else leave it here, because of ufunc in getPyType()
-import numpy
-import time
-
-from sphinx import locale
-locale.init([], "en")
-
-
-#def textDummy(text):
-    #'''overwrites local._ since this uses a translated text that is not available
-    #in this context'''
-    #return str(text)
-#
-#locale._ = textDummy
-
-from docutils import languages
 language = languages.get_language("en")
 language.labels.update(locale.admonitionlabels)
 if not "versionmodified" in locale.versionlabels:
     locale.versionlabels["versionmodified"] = ''
 language.labels.update(locale.versionlabels)
 
-from sphinxext import numpydoc
 
-
-stackList = []
-builtinList = []
-ns = {}
-doubleID = {}
-idList = {}
-doclist = []
-imglist = []
-
-def printPercent(value, maxim):
-    global oldPercentage
+def printPercent(value, maxim, config):
     percentage = value/maxim*100
-    if round(percentage) > round(oldPercentage):
+    if round(percentage) > round(config["oldPercentage"]):
         print("Writing to DB progress: %d%%   \r" % (percentage))
-        oldPercentage = percentage
+        config["oldPercentage"] = percentage
     return
 
-
-def closeReport():
-    if createReportFile:
-        reportFile.write('Timestamp: '+time.asctime(time.localtime())+'\n')
-        reportFile.write('Warnings:  '+format(reportW)+'\n')
-        reportFile.write('Errors:    '+format(reportE)+'\n')
-        reportFile.close()
-    return
-
-def reportMessage(message, typ):
-    global reportW
-    global reportE
-    global reportFile
-    if typ == 'w':
-        reportW += 1
-        reportFile.write('Warning'+format(reportW)+': '+message+'\n')
+def openReport(config, name, openReport = True):
+    if openReport:
+        config["reportFile"] = open("HelpReport_%s.txt" % name,"w")
+        config["numWarnings"] = 0
+        config["numErrors"] = 0
     else:
-        reportE += 1
-        reportFile.write('Error'+format(reportW)+': '+message+'\n')
-    return
+        config["reportFile"] = None
+        config["numWarnings"] = 0
+        config["numErrors"] = 0
+
+def closeReport(config):
+    if config["reportFile"]:
+        reportFile = config["reportFile"]
+        reportFile.write('Timestamp: '+time.asctime(time.localtime())+'\n')
+        reportFile.write('Warnings:  '+format(config["numWarnings"])+'\n')
+        reportFile.write('Errors:    '+format(config["numErrors"])+'\n')
+        reportFile.close()
+
+def reportMessage(message, typ, config):
+    if config["reportFile"]:
+        reportFile = config["reportFile"]
+        if typ == 'w':
+            config["numWarnings"] += 1
+            reportFile.write('Warning'+format(config["numWarnings"])+': '+message+'\n')
+        else:
+            config["numErrors"] += 1
+            reportFile.write('Error'+format(config["numErrors"])+': '+message+'\n')
 
 def ispackage(obj):
     """Guess whether a path refers to a package directory."""
@@ -270,43 +174,44 @@ def getPyType(path, ns):
     if inspect.ismemberdescriptor(ns['testFunc']):
         return('5')
         #return('memberdescriptor')
-    if isinstance(ns['testFunc'], numpy.ufunc):
+    if type(ns['testFunc']).__name__ == 'ufunc':
+        #if isinstance(ns['testFunc'], numpy.ufunc):
         # This only exists in Numpy
         return('5')
     return '6'
 
 
-def getAllModules(ns):
+def getAllModules(ns, config, stackList, builtinList):
     # add Python Modules
     exec('import inspect, pkgutil', ns)
     # add built in Modules
-    if add_builtins:
+    if config["add_builtins"]:
         for name in dir(__builtins__):
-            if name not in blacklist:
+            if name not in config["blacklist"]:
                 stackList.append(name)
                 builtinList.append(name)
                 try:
                     exec('import '+name,ns)
                 except:
-                    reportMessage('Modul '+name+' existiert nicht','w')
-    if add_builtin_modules:
+                    reportMessage('Modul '+name+' existiert nicht','w', config)
+    if config["add_builtin_modules"]:
         for name in sys.builtin_module_names:
-            if name not in blacklist:
+            if name not in config["blacklist"]:
                 stackList.append(name)
                 builtinList.append(name)
                 try:
                     exec('import '+name,ns)
                 except:
-                    reportMessage('Modul ',name,' existiert nicht','w')
-    if add_manual_modules:
-        for name in manualList :
-            if name not in blacklist:
+                    reportMessage('Modul ',name,' existiert nicht','w', config)
+    if config["add_manual_modules"]:
+        for name in config["manualList"] :
+            if name not in config["blacklist"]:
                 stackList.append(name)
                 try:
                     exec('import '+name,ns)
                 except:
-                    reportMessage('Modul '+name+' existiert nicht','w')
-    if add_package_modules:
+                    reportMessage('Modul '+name+' existiert nicht','w', config)
+    if config["add_package_modules"]:
         # remove the current directory from the list
         selPath = sys.path
         dirsToRemove = ['',os.getcwd().lower(), os.getcwd()]
@@ -314,17 +219,16 @@ def getAllModules(ns):
             if (dtr in selPath):
                 selPath.remove(dtr)
         for module_loader, name, ispkg in pkgutil.iter_modules(selPath):
-            if name not in blacklist:
+            if name not in config["blacklist"]:
                 stackList.append(name)
                 builtinList.append(name) # this line adds the module to buildin list to set python infront afterwards
                 try:
                     exec('import '+name,ns)
                 except:
-                    reportMessage('Modul '+name+' existiert nicht','w')
+                    reportMessage('Modul '+name+' existiert nicht','w', config)
     return len(stackList)
 
-def processModules(ns):
-    global stackList
+def processModules(ns, config, stackList, builtinList, idList, docList, imgList):
     start_time = time.time()
     while len(stackList)>0:
         
@@ -332,10 +236,10 @@ def processModules(ns):
             print("%i items on stack" % len(stackList))
             start_time = time.time()
         
-        if stackList[0].split('.')[-1:][0] not in blacklist and stackList[0] not in blacklist:
+        if stackList[0].split('.')[-1:][0] not in config["blacklist"] and stackList[0] not in config["blacklist"]:
             if not inspect.ismodule(stackList[0]):
                 if not stackList[0].startswith('__') or stackList[0][0] != '_':
-                    processName(stackList[0], ns)
+                    processName(stackList[0], ns, config, stackList, builtinList, idList, docList, imgList)
                     del stackList[0]
                 else:
                     del stackList[0]
@@ -345,10 +249,9 @@ def processModules(ns):
             del stackList[0]
 
 
-def processName(moduleP, ns, recLevel = 0):
+def processName(moduleP, ns, config, stackList, builtinList, idList, docList, imgList, recLevel = 0):
     print("process module '%s'" % moduleP)
     # extract prefix from name
-    global stackList
     prefixP = moduleP.split('.')[:-1]
     module = moduleP.split('.')[-1:][0]
     if len(prefixP) > 0:
@@ -359,17 +262,17 @@ def processName(moduleP, ns, recLevel = 0):
      
     if module[0] == '_' and not module.startswith('__'):
         return
-    if remove_all_double_underscore and module.startswith('__'):
+    if config["remove_all_double_underscore"] and module.startswith('__'):
         return
     if recLevel > 10 or module in keyword.kwlist:
         return
     try:
         exec('mID = id('+prefix+module+')', ns)
     except:
-        reportMessage('Module unknown: '+module,'e')
+        reportMessage('Module unknown: '+module,'e', config)
         return
     
-    if prefix+module in blacklist:
+    if prefix+module in config["blacklist"]:
         return
     nametype = getPyType(prefix+module, ns)
     
@@ -378,14 +281,14 @@ def processName(moduleP, ns, recLevel = 0):
         try:
             exec('hasdoc = hasattr('+prefix+module+', "__doc__")', ns)
         except:
-            reportMessage(prefix+module, 'e')
+            reportMessage(prefix+module, 'e', config)
         
         if ns['hasdoc']:
             exec('doc = '+prefix+module+'.__doc__', ns)
-            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'], config, builtinList, docList, imgList, ns)
         elif nametype == '6': #const
             exec('doc = str('+prefix+module+')', ns)
-            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'], config, builtinList, docList, imgList, ns)
         
         try:
             #this object can only have 'childs' if it is either a class, module or package
@@ -424,13 +327,13 @@ def processName(moduleP, ns, recLevel = 0):
                 doclink = '<a id=\"HiLink\" href=\"itom://python.'+prefixL+moduleL+'\">python.'+prefixL+moduleL+'</a>'
             else:
                 doclink = '<a id=\"HiLink\" href=\"itom://'+prefixL+moduleL+'\">'+prefixL+moduleL+'</a>'
-            createSQLEntry(doclink, prefix, module, '1'+nametype, 0)
+            createSQLEntry(doclink, prefix, module, '1'+nametype, 0, config, builtinList, docList, imgList, ns)
         except:
-            reportMessage('Error in: '+prefix+module,'e')
+            reportMessage('Error in: '+prefix+module,'e', config)
         return
     #exec('class test:\n    class config:\n        numpydoc_edit_link = False', ns)
 
-def createSQLEntry(docstrIn, prefix, name, nametype, id):
+def createSQLEntry(docstrIn, prefix, name, nametype, id, config, builtinList, docList, imgList, ns):
     #print(prefix+name)
     # Nametype can be a type or a string... nothing else!!!!
     # create one new Row in Database for every function
@@ -490,33 +393,41 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             lines = remainingDocStr.split('\n')
             ns["lines"] = lines
             # numpy docstring korrigieren
-            global types
+            
+            types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
+            
             try:
                 exec('numpydoc.mangle_docstrings(SphinxApp,\''+types[int(nametype)]+'\', '+ prefix + name +'.__name__,'+ prefix + name +', None, lines)', ns)
             except Exception as ex:
-                reportMessage('Error in createSQLEntry \'numpydoc.mangle_docstrings\' (%s%s): %s' % (prefix, name, str(ex)),'e')
+                reportMessage('Error in createSQLEntry \'numpydoc.mangle_docstrings\' (%s%s): %s' % (prefix, name, str(ex)),'e', config)
                 return
             lines = ns['lines']
             # Linien wieder zusamensetzen
             cor = "\n".join(lines)
+            
+            if ".. only" in cor:
+                cor = cor.replace(".. only:: latex", "::")
             try:
-                sout =docutils.core.publish_string(cor, writer=SphinxAppWriter, writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
+                doctree = docutils.core.publish_doctree(cor, settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                ns["SphinxBuildEnvironment"].resolve_references(doctree, "", ns["SphinxApp"].builder)
+                sout = docutils.core.publish_from_doctree(doctree, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
+                #sout =docutils.core.publish_string(cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
             except Exception as ex:
                 try:
-                    sout =docutils.core.publish_string(".\n" + cor, writer=SphinxAppWriter, writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
+                    sout =docutils.core.publish_string(".\n" + cor, writer=config["SphinxAppWriter"], writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':ns["SphinxApp"].env})
                 except Exception as ex:
-                    reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e')
+                    reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e', config)
                 return
             line[6] = '0'
-            extractImages(sout, line[1])
+            extractImages(sout, line[1], imgList)
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
             exec('value = ' + prefix + name, ns)
-            line[5] = itom.compressData(html.escape('constant: '+ str(ns["value"])))
+            line[5] = itom.compressData(html.escape('constant: \n'+ pprint.pformat(ns["value"])))
             line[6] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
-            extractImages(sout, line[1])
+            extractImages(sout, line[1], imgList)
             line[5] = itom.compressData(html.escape(docstr))
             line[6] = '3'
     else:
@@ -526,10 +437,10 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     
     # 7 HTML-Error
     # Wiird bereits bei #7 eingetragen
-    # Insert commands into doclist
-    doclist.append(line)
+    # Insert commands into docList
+    docList.append(line)
     
-def extractImages(docstr, prefix):
+def extractImages(docstr, prefix, imgList):
     basepath = os.path.join(itom.getCurrentPath(), "_images")
     result = re.findall(b'src=\"([a-zA-Z0-9\./]+\.[a-zA-Z0-9]+)\"',docstr,re.DOTALL)
     for path in result:
@@ -538,11 +449,11 @@ def extractImages(docstr, prefix):
         if os.path.exists(filename):
             with open(filename, 'rb') as fp:
                 content = fp.read()
-            imglist.append([prefix, path, content])
+            imgList.append([prefix, path, content])
 
 
 # writes doclist into the given sql-DB
-def createSQLDB(ns):
+def createSQLDB(ns, config, filename, doclist, imglist):
     #shortIfpossible(ns)
     try:
         conn = sqlite3.connect(filename)
@@ -558,7 +469,7 @@ def createSQLDB(ns):
                 c.execute('INSERT INTO itomCTL VALUES (?,?,?,?,?,?,?)',line)
             except:
                 print('ERROR_5: at line ['+str(j)+']: ',line)
-            printPercent(j,len(doclist))
+            printPercent(j,len(doclist), config)
         
         c.execute("DROP TABLE IF EXISTS itomIMG")
         c.execute('''CREATE TABLE itomIMG (prefix text, href text, blob text)''')
@@ -570,7 +481,7 @@ def createSQLDB(ns):
                 c.execute('INSERT INTO itomIMG VALUES (?,?,?)',line)
             except:
                 print('ERROR_5: at line ['+str(j)+']: ',line)
-            printPercent(j,len(imglist))
+            printPercent(j,len(imglist), config)
         
         # Save (commit) the changes
         conn.commit()
@@ -581,7 +492,7 @@ def createSQLDB(ns):
         c.close()
 
 
-def createSQLDBinfo(ns, info):
+def createSQLDBinfo(ns, info, config, filename):
     #shortIfpossible(ns)
     try:
         conn = sqlite3.connect(filename)
@@ -593,52 +504,10 @@ def createSQLDBinfo(ns, info):
         conn.commit()
         print("SQL-DB-Info succesful")
     except:
-        reportMessage("while writing the SQL-DB-Info", 'e')
+        reportMessage("while writing the SQL-DB-Info", 'e', config)
     finally:
         c.close()
-
-#####################
-##### Main Programm #####
-#####################
-
-
-print('')
-print('-------------START-------------')
-
-
-
-
-
-# funktion ispackage in namespace registrieren um sie mit exec ausfuehren zu koennen
-
-types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
-
-confoverrides = {"html_add_permalinks": ""}
-SphinxApp = Sphinx(".", ".", ".", ".", "html", confoverrides = confoverrides)
-SphinxApp.config.numpydoc_use_plots = False
-SphinxApp.config.numpydoc_edit_link = False
-SphinxApp.config.numpydoc_use_plots = False
-SphinxApp.config.numpydoc_show_class_members = True
-SphinxApp.config.numpydoc_show_inherited_class_members = True
-SphinxApp.config.numpydoc_class_members_toctree = True
-SphinxApp.config.numpydoc_citation_re = '[a-z0-9_.-]+'
-SphinxApp.config.numpydoc_edit_link = False
-#SphinxApp.env.read_doc("")
-
-SphinxApp.env.temp_data['docname'] = ""
-# defaults to the global default, but can be re-set in a document
-SphinxApp.env.temp_data['default_domain'] = SphinxApp.env.domains.get(SphinxApp.env.config.primary_domain)
-
-SphinxApp.env.settings['input_encoding'] = SphinxApp.env.config.source_encoding
-SphinxApp.env.settings['trim_footnote_reference_space'] = \
-    SphinxApp.env.config.trim_footnote_reference_space
-SphinxApp.env.settings['gettext_compact'] = SphinxApp.env.config.gettext_compact
-
-SphinxApp.env.app = SphinxApp
-
-SphinxAppWriter = HTMLWriter(SphinxApp.builder) #use sphinx html parser (math-ext works...)
-#SphinxAppWriter = None #use docutils html parser (internal links work better)
-
+        
 ## pseudo Klasse
 #class SphinxApp:
     #builder = None
@@ -654,54 +523,163 @@ SphinxAppWriter = HTMLWriter(SphinxApp.builder) #use sphinx html parser (math-ex
         #show_authors = True
     #env = environment.BuildEnvironment(srcdir = "", doctreedir = "", config = sphinx_env_config)
     #env.read_doc("")
+
+#####################
+##### Main Programm #####
+#####################
+
+def create_database(databasename, dbVersion, itomMinVersion, idList, dummyBuild = False):
+    print('')
+    print('-------------START-------------')
+    
+    # Date is automatically detected
+    date = time.strftime("%d.%m.%Y")
+
+    # finished db-Info
+    dbInfo = [idDict[databasename], databasename, dbVersion, date, itomMinVersion]
+    
+    stackList = []
+    builtinList = []
+    ns = {}
+    doclist = []
+    imglist = []
+    
+    config = {"manualList":[], \
+        "add_builtins": 0, \
+        "add_builtin_modules":0, \
+        "add_package_modules":0, \
+        "add_manual_modules":0, \
+        "blacklist": [], \
+        "oldPercentage": 0, \
+        "remove_all_double_underscore":1 }  # ignore private methods, variables... that start with two underscores }
+    
+    openReport(config, databasename, True)
+    
+    if (databasename == 'itom') or \
+       (databasename == 'numpy') or \
+       (databasename == 'scipy') or \
+       (databasename == 'matplotlib'):
+        config["manualList"] = [databasename]
+        config["add_builtins"] =               0      
+        config["add_builtin_modules"] =        0      
+        config["add_package_modules"] =        0  
+        config["add_manual_modules"] =         1
+        if databasename != 'numpy':
+            config["blacklist"] = blacklist + ['numpy', ]
+    elif databasename == 'builtins':
+        config["add_builtins"] =                   1
+        config["add_builtin_modules"] =        1
+        config["add_package_modules"] =     0
+        config["add_manual_modules"] =       0
+        config["blacklist"] = blacklist + ['itom','matlab','itomEnum','itomSyntaxCheck','itomUi']
+    else:
+        config["add_builtins"] =                0
+        config["add_builtin_modules"] =     0
+        config["add_package_modules"] =  0
+        config["add_manual_modules"] =    0
+        print('no source selected')
+    
+    # funktion ispackage in namespace registrieren um sie mit exec ausfuehren zu koennen
+
+    
+
+    confoverrides = {"html_add_permalinks": ""}
+    SphinxApp = Sphinx(".", ".", ".", ".", "html", confoverrides = confoverrides)
+    SphinxApp.config.numpydoc_use_plots = False
+    SphinxApp.config.numpydoc_edit_link = False
+    SphinxApp.config.numpydoc_use_plots = False
+    SphinxApp.config.numpydoc_show_class_members = True
+    SphinxApp.config.numpydoc_show_inherited_class_members = True
+    SphinxApp.config.numpydoc_class_members_toctree = True
+    SphinxApp.config.numpydoc_citation_re = '[a-z0-9_.-]+'
+    SphinxApp.config.numpydoc_edit_link = False
+    #SphinxApp.env.read_doc("")
+
+    SphinxApp.env.temp_data['docname'] = ""
+    # defaults to the global default, but can be re-set in a document
+    SphinxApp.env.temp_data['default_domain'] = SphinxApp.env.domains.get(SphinxApp.env.config.primary_domain)
+    
+    SphinxApp.env.settings['input_encoding'] = SphinxApp.env.config.source_encoding
+    SphinxApp.env.settings['trim_footnote_reference_space'] = \
+        SphinxApp.env.config.trim_footnote_reference_space
+    SphinxApp.env.settings['gettext_compact'] = SphinxApp.env.config.gettext_compact
+    
+    SphinxApp.env.app = SphinxApp
+    
+    SphinxAppWriter = HTMLWriter(SphinxApp.builder) #use sphinx html parser (math-ext works...)
+    #SphinxAppWriter = None #use docutils html parser (internal links work better)
+    config["SphinxAppWriter"] = SphinxAppWriter
+    
+    ns['ispackage'] = ispackage
+    
+    ns['numpydoc'] = numpydoc
+    ns['sys'] = sys
+    ns['SphinxApp'] = SphinxApp
+    
+    ns["SphinxBuildEnvironment"] = environment.BuildEnvironment("","",{})
+
+    # If you want the script to replace the file directly... not possible because of access violation
+    #filename = 'F:\\itom-git\\build\\itom\\PythonHelp.db'
+    #delete old Database
+    #os.remove(filename)
+    
+    
+    # Collect all Modules
+    
+    print('-> collecting all python-modules')
+    c = getAllModules(ns, config, stackList, builtinList)
+    
+    print('-> ',c,' Module werden bearbeitet')
+    
+    # work through them and get the DOC
+    print('-> getting the documentation')
+    processModules(ns, config, stackList, builtinList, idList, doclist, imglist)
+    
+    # Filename is created by databasename and .db
+    filename = "%s_v%s.db" % (databasename, dbVersion)
+    
+    if not dummyBuild:
+        # write the DOC into a DB
+        print('-> creating the DB')
+        createSQLDB(ns, config, filename, doclist, imglist)
+        createSQLDBinfo(ns, dbInfo, config, filename)
         
+        print('-> inserted objects: '+str(len(doclist)))
         
+        print('-> the db file can be found under:')
+        print('    '+filename)
         
-ns['ispackage'] = ispackage
+        # copy to destination
+        if (autocopy):
+            print('-> the File is now being copied to the destination folder')
+            import shutil
+            try:
+                shutil.copyfile(filename, os.path.abspath(os.path.join(destination,filename)))
+            except:
+                print('-> the File could not be copied to: '+destination)
+        else:
+            print('-> autocopy-File is turned off, for changes go to line 49')
+    
+    print('--------------DONE--------------')
+    
+    closeReport(config)
 
-ns['numpydoc'] = numpydoc
-ns['sys'] = sys
-ns['SphinxApp'] = SphinxApp
 
-# If you want the script to replace the file directly... not possible because of access violation
-#filename = 'F:\\itom-git\\build\\itom\\PythonHelp.db'
-#delete old Database
-#os.remove(filename)
+if __name__ == "__main__":
+    
+    globalIDList = {} #the id list is re-used for all elements in task_list
+    '''
+    database: filename and db-name, possible values: builtins, itom, numpy, scipy, matplotlib
+    dbVersion: Always increase the version by one to allow automatic updates
+    itomMinVersion: SchemeID, Only change if there was a SchemeID change in Itom
+    dummyBuild: only scan module (and create id list), but do not build documentation
+    '''
+    
+    task_list = []
+    #task_list.append({"databasename":"builtins", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    #task_list.append({"databasename":"itom", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
+    task_list.append({"databasename":"numpy", "dbVersion":"301", "itomMinVersion": "1", "dummyBuild":False})
 
-
-
-# Collect all Modules
-
-print('-> collecting all python-modules')
-c = getAllModules(ns)
-
-print('-> ',c,' Module werden bearbeitet')
-
-# work through them and get the DOC
-print('-> getting the documentation')
-processModules(ns)
-
-# write the DOC into a DB
-print('-> creating the DB')
-createSQLDB(ns)
-createSQLDBinfo(ns, dbInfo)
-
-print('-> inserted objects: '+str(len(doclist)))
-
-print('-> the db file can be found under:')
-print('    '+filename)
-
-# copy to destination
-if (autocopy):
-    print('-> the File is now being copied to the destination folder')
-    import shutil
-    try:
-        shutil.copyfile(filename, os.path.abspath(os.path.join(destination,filename)))
-    except:
-        print('-> the File could not be copied to: '+destination)
-else:
-    print('-> autocopy-File is turned off, for changes go to line 49')
-
-print('--------------DONE--------------')
-
-closeReport()
+    for entry in task_list:
+        entry["idList"] = globalIDList
+        create_database(**entry)

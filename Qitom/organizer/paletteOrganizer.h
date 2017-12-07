@@ -54,7 +54,7 @@ class ItomPaletteBase
             m_paletteData.inverseColorTwo = QColor();
             m_paletteData.invalidColor = QColor();
         }
-        ItomPaletteBase(const QString &name, const char type, const QColor &invCol1, QColor &invCol2,  const QColor &invalCol,  const QVector<QGradientStop> &colStops) 
+        ItomPaletteBase(const QString &name, const char type, const QColor &invCol1, const QColor &invCol2,  const QColor &invalCol,  const QVector<QGradientStop> &colStops) 
         { 
             m_paletteData.name = name;
             m_paletteData.type = type;

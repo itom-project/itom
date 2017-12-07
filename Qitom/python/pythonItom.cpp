@@ -3207,6 +3207,42 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dictionary with the set of user-defined toolbars, buttons, menus and actions.");
+/*static*/ PyObject* PythonItom::PyDumpMenusAndButtons(PyObject* pSelf)
+{
+	QObject *mainWindow = AppManagement::getMainWindow();
+	if (mainWindow)
+	{
+		QSharedPointer<QString > dump(new QString());
+		ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+		QMetaObject::invokeMethod(mainWindow, "dumpToolbarsAndButtons", Q_ARG(QSharedPointer<QString>, dump), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+		if (!locker->wait(2000))
+		{
+			PyErr_SetString(PyExc_RuntimeError, "Timeout.");
+			return NULL;
+		}
+		else
+		{
+			PyObject *globals = PyDict_New();
+			QString totalString = QString("# coding=iso-8859-15 \n\ntext = %1").arg(*dump);
+			PyObject *result = PyRun_String(totalString.toLatin1().data(), Py_single_input, globals, NULL);
+			Py_XDECREF(result);
+			PyObject *text = PyDict_GetItemString(globals, "text"); //borrowed
+			Py_XINCREF(text);
+			Py_DECREF(globals);
+			return text;
+		}
+	}
+	else
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Main window not available. Dump could not be generated.");
+		return NULL;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyCheckSignals(PyObject* /*pSelf*/)
 {
     int result = PythonEngine::isInterruptQueued() ? 1 : 0; //PyErr_CheckSignals();
@@ -5164,6 +5200,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"removeButton", (PyCFunction)PythonItom::PyRemoveButton, METH_VARARGS, pyRemoveButton_doc},
     {"addMenu", (PyCFunction)PythonItom::PyAddMenu, METH_VARARGS | METH_KEYWORDS, pyAddMenu_doc},
     {"removeMenu", (PyCFunction)PythonItom::PyRemoveMenu, METH_VARARGS | METH_KEYWORDS, pyRemoveMenu_doc},
+	{"dumpButtonsAndMenus", (PyCFunction)PythonItom::PyDumpMenusAndButtons, METH_NOARGS, pyDumpButtonsAndMenus_doc},
     {"saveMatlabMat", (PyCFunction)PythonItom::PySaveMatlabMat, METH_VARARGS, pySaveMatlabMat_doc},
     {"loadMatlabMat", (PyCFunction)PythonItom::PyLoadMatlabMat, METH_VARARGS, pyLoadMatlabMat_doc},
     {"scaleValueAndUnit", (PyCFunction)PythonItom::scaleValueAndUnit, METH_VARARGS | METH_KEYWORDS, scaleValueAndUnit_doc},

@@ -79,6 +79,18 @@ public:
     static PyObject* PyShape_normalized(PyShape *self);
     static PyObject* PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds);
     static PyObject* PyShape_contains(PyShape *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_copy(PyShape *self);
+
+    //-------------------------------------------------------------------------------------------------
+    // static members
+    //-------------------------------------------------------------------------------------------------
+    static PyObject* PyShape_StaticPoint(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticLine(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticCircle(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticEllipse(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticSquare(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticRectangle(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_StaticPolygon(PyObject *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // pickling

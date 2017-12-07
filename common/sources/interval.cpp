@@ -36,8 +36,8 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
     //doc in header file
 AutoInterval::AutoInterval()
-    : m_min(-std::numeric_limits<float>::infinity()),
-    m_max(std::numeric_limits<float>::infinity()),
+    : m_min(-std::numeric_limits<double>::infinity()),
+    m_max(std::numeric_limits<double>::infinity()),
     m_auto(true)
 {
     if (m_min > m_max)
@@ -48,7 +48,7 @@ AutoInterval::AutoInterval()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //doc in header file
-AutoInterval::AutoInterval(float min, float max, bool autoInterval)
+AutoInterval::AutoInterval(double min, double max, bool autoInterval)
     : m_min(min),
     m_max(max),
     m_auto(autoInterval)
@@ -67,7 +67,7 @@ AutoInterval::~AutoInterval()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //doc in header file
-void AutoInterval::setRange(float min, float max)
+void AutoInterval::setRange(double min, double max)
 {
     m_min = min;
     m_max = max;
@@ -80,7 +80,7 @@ void AutoInterval::setRange(float min, float max)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //doc in header file
-void AutoInterval::setMinimum(float min)
+void AutoInterval::setMinimum(double min)
 {
     m_min = min;
 
@@ -92,7 +92,7 @@ void AutoInterval::setMinimum(float min)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //doc in header file
-void AutoInterval::setMaximum(float max)
+void AutoInterval::setMaximum(double max)
 {
     m_max = max;
 

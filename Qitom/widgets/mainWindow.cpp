@@ -1771,6 +1771,99 @@ QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMen
     return NULL;
 }
 
+QString dumpChildMenus(const QString &baseKey, const QAction *parent)
+{
+	unsigned int id;
+	bool ok;
+	QStringList items;
+	QString key;
+
+	if (parent->menu())
+	{
+		foreach(const QAction *a, parent->menu()->actions())
+		{
+			id = a->property("itom__menuHandle").toUInt(&ok);
+			key = baseKey + "/" + a->data().toString();
+
+			if (ok)
+			{
+				items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(id).arg(key).arg(a->text()).arg(dumpChildMenus(key, a)));
+			}
+			else
+			{
+				items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(-1).arg(key).arg(a->text()).arg(dumpChildMenus(key, a)));
+			}
+		}
+	}
+	
+	return QString("[%1]").arg(items.join(","));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MainWindow::dumpToolbarsAndButtons(QSharedPointer<QString> pythonCodeString, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+	ito::RetVal retval;
+
+	QList<QString> toolbar_list;
+	QList<QString> menu_list;
+
+	QStringList actions;
+	unsigned int id;
+	bool ok;
+	QAction *act;
+
+
+	//toolbars
+	foreach(const QString &key, m_userDefinedToolBars.keys())
+	{
+		actions.clear();
+
+		foreach(const QAction *a, m_userDefinedToolBars[key]->actions())
+		{
+			id = a->property("itom__buttonHandle").toUInt(&ok);
+			if (ok)
+			{
+				actions.append(QString("{'id': %1, 'name': '%2'}").arg(id).arg(a->text()));
+			}
+			else
+			{
+				actions.append(QString("{'id': -1, 'name': '%1'}").arg(a->text()));
+			}
+		}
+
+		toolbar_list.append(QString("'%1':[%2]").arg(key).arg(actions.join(",")));
+	}
+
+	//menus
+	QMap<QString, QMenu *>::ConstIterator it = m_userDefinedRootMenus.constBegin();
+	while (it != m_userDefinedRootMenus.constEnd())
+	{
+		act = it.value()->menuAction();
+
+		id = act->property("itom__menuHandle").toUInt(&ok);
+		if (ok)
+		{
+			menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(id).arg(it.key()).arg(act->text()).arg(dumpChildMenus(it.key(), act)));
+		}
+		else
+		{
+			menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(-1).arg(it.key()).arg(act->text()).arg(dumpChildMenus(it.key(), act)));
+		}
+
+		it++;
+	}
+
+	*pythonCodeString = QString("{'toolbars':{%1}, 'menus':[%2]}").arg(toolbar_list.join(",")).arg(menu_list.join(","));
+
+	if (waitCond)
+	{
+		waitCond->returnValue = retval;
+		waitCond->release();
+	}
+
+	return retval;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonRunSelection(QString selectionText)
 {

@@ -55,4 +55,4 @@ namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
-#endif //SHAPE_H
+#endif //SHAPEDOBJECT_H

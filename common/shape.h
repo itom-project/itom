@@ -31,8 +31,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "typeDefs.h"
 #include "../shape/shapeCommon.h"
 
-//#include "../DataObject/dataobj.h"
-
 #include <qpolygon.h>
 #include <qtransform.h>
 #include <qregion.h>
@@ -119,8 +117,16 @@ namespace ito
         QTransform &rtransform() const;
         void setTransform(const QTransform &trafo);
 
-        double rotationAngleDeg() const;
-        double rotationAngleRad() const;
+        double rotationAngleDeg() const; /*!< return the current rotation angle (in degree, counterclockwise) of this shape (obtained by current transformation matrix) */
+        double rotationAngleRad() const; /*!< return the current rotation angle (in radians, counterclockwise) of this shape (obtained by current transformation matrix) */
+
+        void setRotationAngleDeg(double degree); /*!< set the current rotation angle (in degree, counterclockwise) of this shape without changing the translation values */
+        void setRotationAngleRad(double radians); /*!< set the current rotation angle (in radians, counterclockwise) of this shape without changing the translation values */
+
+        void rotateByCenterDeg(double degree); /*!< rotate this shape around its current center points by the given angle (in degree). This rotation changes the current transformation matrix, not the base points of the shape. */
+        void rotateByCenterRad(double radians); /*!< rotate this shape around its current center points by the given angle (in radians). This rotation changes the current transformation matrix, not the base points of the shape. */
+
+        void translate(const QPointF &delta); /*!< moves this shape by the given delta in the global coordinate system, which is the system where all base points are mapped using the current transformation matrix. This translation operation changes the current transformation matrix, not the base points of the shape. */
 
         ito::float64 userData1() const;
         void setUserData1(const ito::float64 &userData1);
@@ -137,9 +143,10 @@ namespace ito
 
         void point1MoveTo(const QPointF &newPoint1);
 
-		QPointF centerPoint() const;
+		QPointF centerPoint() const; /*!< center point of this shape (after applying the transformation assigned to this shape)*/
+        QPointF baseCenterPoint() const; /*!< center point of this shape */
 
-        double area() const;
+        double area() const; /*!< return the area of this shape, or zero if the shape is a point, multi-point or line */
         double circumference() const;
 		double distance(const Shape &otherShape) const;
 		double centerDistance(const Shape &otherShape) const;

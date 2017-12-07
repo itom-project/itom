@@ -164,6 +164,9 @@ public slots:
     ito::RetVal addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal removeMenuElement(const QString &key, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal removeMenuElement(const size_t menuHandle, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+
+	ito::RetVal dumpToolbarsAndButtons(QSharedPointer<QString> pythonCodeString, ItomSharedSemaphore *waitCond = NULL);
+
     void pythonRunSelection(QString selectionText);
 
     void setCursor(const Qt::CursorShape cursor);

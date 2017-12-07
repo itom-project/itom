@@ -85,8 +85,8 @@ namespace ito
         {
             QString v = value.toString();
             bool autoScaling;
-            float min = minimum();
-            float max = maximum();
+            double min = minimum();
+            double max = maximum();
 
             if (QString::compare(v, "auto", Qt::CaseInsensitive) == 0 || QString::compare(v, "<auto>", Qt::CaseInsensitive) == 0)
             {
@@ -144,22 +144,22 @@ namespace ito
         m_autoScaling->setEditorHints(""); //parseHints(hints, 'Z'));
     }
 
-    float AutoIntervalProperty::minimum() const
+    double AutoIntervalProperty::minimum() const
     {
         return value().value<ito::AutoInterval>().minimum();
     }
 
-    void AutoIntervalProperty::setMinimum(float minimum)
+    void AutoIntervalProperty::setMinimum(double minimum)
     {
         AutoIntervalProperty::setValue(QVariant::fromValue(ito::AutoInterval(minimum, maximum(), autoScaling())));
     }
 
-    float AutoIntervalProperty::maximum() const
+    double AutoIntervalProperty::maximum() const
     {
         return value().value<ito::AutoInterval>().maximum();
     }
 
-    void AutoIntervalProperty::setMaximum(float maximum)
+    void AutoIntervalProperty::setMaximum(double maximum)
     {
         AutoIntervalProperty::setValue(QVariant::fromValue(ito::AutoInterval(minimum(), maximum, autoScaling())));
     }

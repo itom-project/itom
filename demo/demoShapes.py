@@ -59,4 +59,7 @@ rect.flags = shape.MoveLock
 #don't allow the line to be resized
 line.flags = shape.ResizeLock
 
+#don't allow the line to be resized, moved and rotated
+line.flags = shape.MoveLock | shape.ResizeLock | shape.RotateLock
+
 h["geometricShapes"] = [point, line, rect, innerRect, square, ellipse, circle]
