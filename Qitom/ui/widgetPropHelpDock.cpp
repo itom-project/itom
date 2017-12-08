@@ -45,7 +45,7 @@ namespace ito
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
     m_pdbPath(qApp->applicationDirPath()+"/help/"),
-    m_downloadTimeout(10000),
+    m_downloadTimeout(20000),
     m_downloadTimeoutReached(false)
 {
     ui.setupUi(this);
@@ -126,6 +126,39 @@ void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropHelpDock::on_treeWidgetDB_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+	QVariant state = current ? current->data(0, m_urUD) : QVariant();
+	if (state.isValid())
+	{
+		switch (state.toInt())
+		{
+		case stateDownloadAvailable:
+			ui.btnDownload->setEnabled(true);
+			ui.btnLocateOnDisk->setEnabled(false);
+			ui.btnRemoveDatabase->setEnabled(false);
+			break;
+		case stateUpdateAvailable:
+			ui.btnDownload->setEnabled(true);
+			ui.btnLocateOnDisk->setEnabled(true);
+			ui.btnRemoveDatabase->setEnabled(true);
+			break;
+		case stateUnknown:
+		case stateUpToDate:
+			ui.btnDownload->setEnabled(false);
+			ui.btnLocateOnDisk->setEnabled(true);
+			ui.btnRemoveDatabase->setEnabled(true);
+		}
+	}
+	else
+	{
+		ui.btnDownload->setEnabled(false);
+		ui.btnLocateOnDisk->setEnabled(false);
+		ui.btnRemoveDatabase->setEnabled(false);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // get settings from ini
 void WidgetPropHelpDock::readSettings()
 {
@@ -139,7 +172,7 @@ void WidgetPropHelpDock::readSettings()
     ui.checkDataIO->setChecked( settings.value("showDataIO", false).toBool() );
     ui.checkModules->setChecked( settings.value("showModules", false).toBool() );
     ui.lineEdit->setText( settings.value("serverAdress", "http://sourceforge.net/projects/itom/files/repositories/helpDatabase/updateInfo.xml").toString());
-    m_downloadTimeout = settings.value("downloadTimeout", 10000).toInt();
+    m_downloadTimeout = settings.value("downloadTimeout", 20000).toInt();
     ui.spinTimeout->setValue(m_downloadTimeout/1000);
 
     if (ui.checkModules->isChecked())
@@ -732,9 +765,9 @@ void WidgetPropHelpDock::showErrorMessage(const QString &error)
 void WidgetPropHelpDock::initMenus()
 {
     m_pContextMenu = new QMenu(this);
-    contextMenuActions["update"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/downloadUpdate"), tr("&update"), this, SLOT(mnuDownloadUpdate()));
-    contextMenuActions["locateOnDisk"] = m_pContextMenu->addAction(QIcon(":/files/icons/browser.png"), tr("locate on disk"), this, SLOT(mnuLocateOnDisk()));
-    contextMenuActions["removeDatabase"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/deleteDatabase"), tr("remove from disk"), this, SLOT(mnuRemoveDatabase()));
+    contextMenuActions["update"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/downloadUpdate"), tr("Download update"), this, SLOT(mnuDownloadUpdate()));
+    contextMenuActions["locateOnDisk"] = m_pContextMenu->addAction(QIcon(":/files/icons/browser.png"), tr("Locate on disk"), this, SLOT(mnuLocateOnDisk()));
+    contextMenuActions["removeDatabase"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/deleteDatabase"), tr("Remove from disk"), this, SLOT(mnuRemoveDatabase()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -846,8 +879,14 @@ void WidgetPropHelpDock::mnuRemoveDatabase()
     QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
     if (item != NULL)
     {
-        QFile::remove(item->data(0, m_urFD).toString());
-        refreshButtonClicked();
+		QString filename = item->data(0, m_urFD).toString();
+		if (QMessageBox::question(this, tr("Remove script reference"), \
+			tr("Do you really want to delete the file '%s'?").arg(filename), \
+			QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes)
+		{
+			QFile::remove(filename);
+			refreshButtonClicked();
+		}
     }
 }
 
@@ -888,7 +927,6 @@ void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
         if (selItem->data(0, m_urUD) == stateDownloadAvailable)
         {
             contextMenuActions["update"]->setEnabled(true);
-            contextMenuActions["update"]->setText("download");
             contextMenuActions["locateOnDisk"]->setEnabled(false);
             contextMenuActions["removeDatabase"]->setEnabled(false);
             m_pContextMenu->exec(global);
@@ -896,17 +934,14 @@ void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
         else if (selItem->data(0, m_urUD) == stateUpdateAvailable)
         {
             contextMenuActions["update"]->setEnabled(true);
-            contextMenuActions["update"]->setText("update");
             contextMenuActions["locateOnDisk"]->setEnabled(true);
             contextMenuActions["removeDatabase"]->setEnabled(true);
             m_pContextMenu->exec(global);
         }
         else if (selItem->data(0, m_urUD) == stateUnknown ||
-                 selItem->data(0, m_urUD) == stateUpdateAvailable ||
                  selItem->data(0, m_urUD) == stateUpToDate)
         {
             contextMenuActions["update"]->setEnabled(false);
-            contextMenuActions["update"]->setText("update");
             contextMenuActions["locateOnDisk"]->setEnabled(true);
             contextMenuActions["removeDatabase"]->setEnabled(true);
             m_pContextMenu->exec(global);

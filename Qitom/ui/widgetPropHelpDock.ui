@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>646</width>
-    <height>500</height>
+    <width>730</width>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -159,6 +159,65 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QPushButton" name="btnLocateOnDisk">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Locate local script reference on disk</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qitom.qrc">
+            <normaloff>:/files/icons/browser.png</normaloff>:/files/icons/browser.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRemoveDatabase">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Remove local script reference</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qitom.qrc">
+            <normaloff>:/helpTreeDockWidget/deleteDatabase</normaloff>:/helpTreeDockWidget/deleteDatabase</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDownload">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Download update</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qitom.qrc">
+            <normaloff>:/helpTreeDockWidget/downloadUpdate</normaloff>:/helpTreeDockWidget/downloadUpdate</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QGroupBox" name="groupBox_3">
         <property name="minimumSize">
          <size>
@@ -224,7 +283,7 @@
               <number>3600</number>
              </property>
              <property name="value">
-              <number>10</number>
+              <number>20</number>
              </property>
             </widget>
            </item>
@@ -265,6 +324,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../qitom.qrc"/>
+ </resources>
  <connections/>
 </ui>
