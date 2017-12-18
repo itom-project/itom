@@ -416,9 +416,9 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xAxis, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xAxis, properties]) -> plots a dataObject in a new figure \n\
 \n\
-Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
+Plots an existing dataObject in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
 \n\
 If a xAxis vector is given, the plot uses this vector for the values of the x axis of the plot.\n\
@@ -432,9 +432,9 @@ Use the 'properties' argument to pass a dictionary with properties you want to s
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject, PointCloud, PolygonMesh} \n\
+data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
-xAxis : {DataObject, PointCloud, PloygonMesh}, optional \n\
+xAxis : {DataObject}, optional \n\
     Is the data object whose values are used for the axis.\n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
@@ -579,9 +579,9 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, [properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, [properties]) -> plots a dataObject in a new figure \n\
 \n\
-Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
+Plots an existing dataObject in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
 \n\
 The plot type of this function is '2D'.\n\
@@ -593,7 +593,7 @@ Use the 'properties' argument to pass a dictionary with properties you want to s
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject, PointCloud, PolygonMesh} \n\
+data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\

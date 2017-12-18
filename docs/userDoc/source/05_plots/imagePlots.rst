@@ -42,11 +42,12 @@ See section :ref:`primitives` for a short introduction.
 | .. figure:: images/plot2d_colorMap_blue.png         | .. figure:: images/plot2d_colorMap_green.png      | .. figure:: images/plot2d_colorMap_viridis.png    |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
 
-This example shows how the colorMap is set with the **itom** :py:meth:`~itom.plot` command: 
+This example shows how the colorMap is set with the **itom** :py:meth:`~itom.plot` or the **itom** :py:meth:`~itom.plot2` command: 
 
 .. code-block:: python
     
     plot(dataObject, properties ={"colorMap" : "viridis"})
+    plot2(dataObject, properties ={"colorMap" : "viridis"})
 
 .. _itom2dqwtplot-ref:
 

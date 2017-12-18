@@ -14,7 +14,7 @@ Plotting and camera
 Camera plugins have the special method *liveImage*. 
 
 .. automodule:: itom
-    :members: liveImage, plot, close
+    :members: liveImage, plot, plot1, plot2, plot25 ,close
 
 Using algorithms and filters
 ============================
@@ -96,4 +96,7 @@ small pages will be automatically created for each method in the following list 
     :nosignatures:
     
     generated/itom.liveImage.rst
-    generated/itom.plot.rstS
+    generated/itom.plot.rst
+    generated/itom.plot1.rst
+    generated/itom.plot2.rst
+    generated/itom.plot25.rst
