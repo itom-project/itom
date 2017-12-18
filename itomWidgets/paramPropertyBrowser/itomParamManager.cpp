@@ -256,6 +256,21 @@ QString ParamIntPropertyManager::valueText(const QtProperty *property) const
             static const QString falseText = tr("False");
             return param.getVal<int>() > 0 ? trueText : falseText;
         }
+		else if (meta->getRepresentation() == ito::ParamMeta::IPV4Address)
+		{
+			int val = param.getVal<int>();
+			return QString::number(val);
+		}
+		else if (meta->getRepresentation() == ito::ParamMeta::MACAddress)
+		{
+			int val = param.getVal<int>();
+			return QString::number(val);
+		}
+		else if (meta->getRepresentation() == ito::ParamMeta::HexNumber)
+		{
+			int val = param.getVal<int>();
+			return QString("0x%1").arg(QString::number(val, 16));
+		}
         else if (meta->getUnit().empty() == false)
         {
             return QString("%1 %2").arg(param.getVal<int>()).arg(meta->getUnit().data());
