@@ -416,12 +416,11 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xAxis, properties]) -> plots a dataObject in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xVector, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
 \n\
 Plots an existing dataObject in a dockable, not blocking window. \n\
-The style of the plot depends on the object dimensions.\n\
 \n\
-If a xAxis vector is given, the plot uses this vector for the values of the x axis of the plot.\n\
+If a xVector is given, the plot uses this vector for the values of the x axis of the plot.\n\
 \n\
 The plot type of this function is '1D'.\n\
 \n\
@@ -434,7 +433,7 @@ Parameters \n\
 ----------- \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
-xAxis : {DataObject}, optional \n\
+xVector : {DataObject}, optional \n\
     Is the data object whose values are used for the axis.\n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
@@ -453,7 +452,7 @@ liveImage, plotItem");
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = { "data", "xAxis", "properties", NULL };
+    const char *kwlist[] = { "data", "xVector", "properties", NULL };
     PyObject *data = NULL;
     PyObject *propDict = NULL;
     //    int areaIndex = 0;

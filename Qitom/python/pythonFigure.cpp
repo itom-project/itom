@@ -382,7 +382,420 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
     return (PyObject*)pyPlotItem;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, [xVector, areaIndex, properties]) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
+\n\
+The plot type of this function is '1D'. \n\
+If the 1D plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again.\n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+\n\
+\n\
+Parameters\n\
+-----------\n\
+data : {DataObject} \n\
+    Is the data object whose region of interest will be plotted.\n\
+xVector : {DataObject}, optional \n\
+    Is the data object whose values are used for the axis.\n\
+areaIndex: {int}, optional \n\
+    Area number where the plot should be put if subplots have been created\n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "data", "xVector", "areaIndex", "properties", NULL };
+    PyObject *data = NULL;
+    PyObject *xVector = NULL;
+    PyObject *propDict = NULL;
+    int areaIndex = self->currentSubplotIdx;
+    bool ok = false;
 
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|OisO!", const_cast<char**>(kwlist), &data, &xVector ,&areaIndex, &PyDict_Type, &propDict))
+    {
+        return NULL;
+    }
+
+    ito::UiDataContainer dataCont;
+    ito::RetVal retval2;
+
+    //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
+    //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
+#if ITOM_POINTCLOUDLIBRARY > 0
+    dataCont = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+    }
+#else
+    ok = false;
+#endif
+    ito::UiDataContainer xVectorCont;
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        if (xVector)
+        {
+            xVectorCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xVector, false, ok));
+        }
+    }
+
+    if (!ok)
+    {
+#if ITOM_POINTCLOUDLIBRARY > 0
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
+#else
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject (%s).", retval2.errorMessage());
+#endif
+    }
+
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->cols;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QVariantMap properties;
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
+        {
+            keyS = PythonQtConversion::PyObjGetString(key, true, ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if (valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+    QString defaultPlotClassName("1d");
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xVectorCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting object");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if (pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, [areaIndex, properties]) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
+\n\
+The plot type of this function is '2D'. \n\
+If the 2D plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again.\n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+\n\
+\n\
+Parameters\n\
+-----------\n\
+data : {DataObject} \n\
+    Is the data object whose region of interest will be plotted.\n\
+areaIndex: {int}, optional \n\
+    Area number where the plot should be put if subplots have been created\n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "data", "areaIndex", "properties", NULL };
+    PyObject *data = NULL;
+    PyObject *propDict = NULL;
+    int areaIndex = self->currentSubplotIdx;
+    bool ok = false;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isO!", const_cast<char**>(kwlist), &data, &areaIndex, &PyDict_Type, &propDict))
+    {
+        return NULL;
+    }
+
+    ito::UiDataContainer dataCont;
+    ito::RetVal retval2;
+
+    //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
+    //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
+#if ITOM_POINTCLOUDLIBRARY > 0
+    dataCont = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+    }
+#else
+    ok = false;
+#endif
+    ito::UiDataContainer xVectorCont;
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+
+    }
+
+    if (!ok)
+    {
+#if ITOM_POINTCLOUDLIBRARY > 0
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
+#else
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject (%s).", retval2.errorMessage());
+#endif
+    }
+
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->cols;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QVariantMap properties;
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
+        {
+            keyS = PythonQtConversion::PyObjGetString(key, true, ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if (valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+    QString defaultPlotClassName("2d");
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xVectorCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting object");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if (pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, [areaIndex, properties]) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+\n\
+The plot type of this function is '2.5D'. \n\
+If the 2.5D plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again.\n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+\n\
+\n\
+Parameters\n\
+-----------\n\
+data : {DataObject, PointCloud, PolygonMesh} \n\
+    Is the data object whose region of interest will be plotted.\n\
+areaIndex: {int}, optional \n\
+    Area number where the plot should be put if subplots have been created\n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "data", "areaIndex", "properties", NULL };
+    PyObject *data = NULL;
+    PyObject *propDict = NULL;
+    int areaIndex = self->currentSubplotIdx;
+    bool ok = false;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isO!", const_cast<char**>(kwlist), &data, &areaIndex, &PyDict_Type, &propDict))
+    {
+        return NULL;
+    }
+
+    ito::UiDataContainer dataCont;
+    ito::RetVal retval2;
+
+    //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
+    //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
+#if ITOM_POINTCLOUDLIBRARY > 0
+    dataCont = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+    }
+#else
+    ok = false;
+#endif
+    ito::UiDataContainer xVectorCont;
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+
+    }
+
+    if (!ok)
+    {
+#if ITOM_POINTCLOUDLIBRARY > 0
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
+#else
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject (%s).", retval2.errorMessage());
+#endif
+    }
+
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->cols;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QVariantMap properties;
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
+        {
+            keyS = PythonQtConversion::PyObjGetString(key, true, ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if (valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+    QString defaultPlotClassName("2.5d");
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xVectorCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting object");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if (pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure\n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
@@ -922,6 +1335,9 @@ PyMethodDef PythonFigure::PyFigure_methods[] = {
     {"show", (PyCFunction)PyFigure_show,     METH_VARARGS, pyFigureShow_doc},
     {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
     {"plot", (PyCFunction)PyFigure_plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
+    {"plot1",(PyCFunction)PyFigure_plot1, METH_VARARGS | METH_KEYWORDS, pyFigurePlot1_doc},
+    {"plot2",(PyCFunction)PyFigure_plot2, METH_VARARGS | METH_KEYWORDS, pyFigurePlot2_doc},
+    {"plot25",(PyCFunction)PyFigure_plot25, METH_VARARGS | METH_KEYWORDS, pyFigurePlot25_doc},
     {"liveImage", (PyCFunction)PyFigure_liveImage, METH_VARARGS | METH_KEYWORDS, pyFigureLiveImage_doc},
     {"matplotlibFigure", (PyCFunction)PyFigure_matplotlib, METH_VARARGS | METH_KEYWORDS, pyFigureMatplotlib_doc},
     {"subplot", (PyCFunction)PyFigure_getSubplot, METH_VARARGS, pyFigureSubplot_doc},
