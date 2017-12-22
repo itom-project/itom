@@ -32,7 +32,7 @@ namespace ito
 		ui.setupUi(this);
 		connect(ui.btnOk, SIGNAL(clicked()), this, SLOT(close()));
 		updateTimerList();
-
+		on_listWidget_itemSelectionChanged();
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------
 	DialogTimerManager::~DialogTimerManager()
@@ -132,13 +132,16 @@ namespace ito
 	void DialogTimerManager::on_listWidget_itemSelectionChanged()
 	{
 
-			bool sameState(true); //marks if the whole selection has the same state
-			bool first(false);
-			bool state;
-			UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-			QList<QListWidgetItem*> selection(ui.listWidget->selectedItems());
-			QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-			QListWidgetItem* item;
+		bool sameState(true); //marks if the whole selection has the same state
+		bool first(false);
+		bool state;
+		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+		QList<QListWidgetItem*> selection(ui.listWidget->selectedItems());
+		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
+		QListWidgetItem* item;
+
+		if (selection.size() > 0)
+		{
 			foreach(item, selection)
 			{
 				if (first)
@@ -151,7 +154,8 @@ namespace ito
 				first = true;
 				state = list.at(ui.listWidget->row(item)).timer->isActive();
 			}
-			if (sameState && first)//first as arguument to avióid crash if no curve is selected
+
+			if (sameState && first)//first as arguument to avoid crash if no item is selected
 			{
 				if (state)
 				{
@@ -170,8 +174,16 @@ namespace ito
 				ui.btnStart->setEnabled(true);
 				ui.btnStop->setEnabled(true);
 			}
-
 		}
+		else
+		{
+			ui.btnStart->setEnabled(false);
+			ui.btnStop->setEnabled(false);
+				
+		}
+
+		ui.btnStopAll->setEnabled(list.size() > 0);
+	}
 	
 }
 
