@@ -19,4 +19,4 @@ for theta in angle:
 plot1(y,x)
 
 fig=plot(y)
-fig[-1]['xVector']=x
+fig[-1]['xObject']=x
