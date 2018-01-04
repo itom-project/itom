@@ -16,7 +16,13 @@ for theta in angle:
     y[0,cnt]=(r*np.sin(theta))
     cnt+=1
 
+#alternative 1: use the itom.plot1 method
 plot1(y,x)
 
+#alternative 2: create a default line plot and then assign the 
+#x-coordinates to the xObject property
 fig=plot(y)
 fig[-1]['xObject']=x
+
+#alternative 3: like #2 but in one line
+plot(y, properties = {'xObject':x})
