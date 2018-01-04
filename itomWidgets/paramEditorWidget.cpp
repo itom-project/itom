@@ -67,7 +67,8 @@ public:
         m_timerID(-1),
         m_isChanging(false),
         m_readonly(false),
-        m_showinfo(false)
+        m_showinfo(false),
+        m_immediatelyModifyPluginParametersAfterChange(true)
     {};
 
     void clearGroups()
@@ -94,14 +95,17 @@ public:
         m_properties.clear();
     }
 
+    //-----------------------------------------------------------------------------
     void enqueue(const QSharedPointer<ito::ParamBase> param)
     {
         const char* name = param->getName();
 
+        //check if parameter already is part of the changed-parameter set
         for (int i = 0; i < m_changedParameters.size(); ++i)
         {
             if (memcmp(m_changedParameters[i]->getName(), name, sizeof(name)) == 0)
             {
+                //yes, it is part of the existing list... replace it
                 m_changedParameters[i] = param;
                 return;
             }
@@ -142,6 +146,7 @@ public:
     bool m_readonly;
     bool m_showinfo;
     QStringList m_filteredCategories;
+    bool m_immediatelyModifyPluginParametersAfterChange;
 };
 
 //-----------------------------------------------------------------------
@@ -490,6 +495,49 @@ QStringList ParamEditorWidget::filteredCategories() const
 }
 
 //-----------------------------------------------------------------------
+void ParamEditorWidget::setImmediatelyModifyPluginParamsAfterChange(bool immediateChange)
+{
+    Q_D(ParamEditorWidget);
+    if (d_ptr->m_immediatelyModifyPluginParametersAfterChange != immediateChange)
+    {
+        d_ptr->m_immediatelyModifyPluginParametersAfterChange = immediateChange;
+        
+        if (immediateChange)
+        {
+            if (d_ptr->m_timerID == -1 && d_ptr->m_changedParameters.size() > 0)
+            {
+                //there are still some queued changes -> apply them now
+                d_ptr->m_timerID = startTimer(0);
+            }
+        }
+    }
+}
+
+//-----------------------------------------------------------------------
+bool ParamEditorWidget::immediatelyModifyPluginParamsAfterChange() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_immediatelyModifyPluginParametersAfterChange;
+}
+
+//-----------------------------------------------------------------------
+int ParamEditorWidget::numberOfChangedParameters() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_changedParameters.size();
+}
+
+//-----------------------------------------------------------------------
+QVector<QSharedPointer<ito::ParamBase> > ParamEditorWidget::getAndResetChangedParameters()
+{
+    Q_D(ParamEditorWidget);
+    QVector<QSharedPointer<ito::ParamBase> > ret;
+    ret += d_ptr->m_changedParameters;
+    d_ptr->m_changedParameters.clear();
+    return ret;
+}
+
+//-----------------------------------------------------------------------
 void ParamEditorWidget::refresh()
 {
     loadPlugin(d_ptr->m_plugin);
@@ -835,7 +883,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, char value)
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Char, value)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -849,7 +897,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, double value)
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Double, value)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -863,7 +911,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int value)
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Int, value)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -877,7 +925,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int num, const char* valu
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::CharArray, num, values)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -891,7 +939,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int num, const ito::int32
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::IntArray, num, values)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -905,7 +953,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int num, const ito::float
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::DoubleArray, num, values)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -919,7 +967,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, const QByteArray &value)
     if (!d_ptr->m_isChanging)
     {
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::String, value.data())));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -934,7 +982,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int min, int max)
     {
         int vals[] = { min, max };
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::IntArray, 2, vals)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -949,7 +997,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int left, int top, int wi
     {
         int vals[] = { left, top, width, height };
         d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::IntArray, 4, vals)));
-        if (d->m_timerID == -1)
+        if (d->m_immediatelyModifyPluginParametersAfterChange && d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
         }
@@ -967,8 +1015,20 @@ void ParamEditorWidget::timerEvent(QTimerEvent *event)
     killTimer(d->m_timerID);
     d->m_timerID = -1;
 
-    setPluginParameters(d->m_changedParameters);
+    if (d->m_immediatelyModifyPluginParametersAfterChange)
+    {
+        setPluginParameters(d->m_changedParameters);
+        d->m_changedParameters.clear();
+    }
+}
+
+//-----------------------------------------------------------------------
+ito::RetVal ParamEditorWidget::applyChangedParameters()
+{
+    Q_D(ParamEditorWidget);
+    ito::RetVal retValue = setPluginParameters(d->m_changedParameters);
     d->m_changedParameters.clear();
+    return retValue;
 }
 
 
