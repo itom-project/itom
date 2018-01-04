@@ -107,6 +107,10 @@ void WidgetWrapper::initMethodHash()
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("takeItem(int)"), "QString", 2006, ok);
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("item(int)"), "QString", 2007, ok);
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("checkState(int)"), "Qt::CheckState", 2008, ok);
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,Qt::CheckState)"), "void", 2009, ok);
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("flags(int)"), "Qt::ItemFlags", 2010, ok);
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,Qt::ItemFlags)"), "void", 2011, ok);
         methodHash["QListWidget"] = qListWidgetList;
 
         //QComboBox
@@ -275,13 +279,11 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             {
                 case 2001: //addItem
                     object2->addItem((*reinterpret_cast< const QString(*)>(_a[1])));
-                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
                     return ito::retOk;
                 break;
             
                 case 2002: //addItems
                     object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
-                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
                     return ito::retOk;
                 break;
             
@@ -327,7 +329,6 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                         _item->setSelected(vals->contains(i));
                     }
                 }
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
                 return ito::retOk;
                 break;
 
@@ -335,8 +336,15 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 {
                     QListWidgetItem *_r;
                     _r = object2->takeItem((*reinterpret_cast< const int(*)>(_a[1])));
-                    (*reinterpret_cast< QString*>(_a[0])) = _r->text();
-//                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast< QString*>(_a[0])) = _r ? _r->text() : QString();
+                    if (_r)
+                    {
+                        (*reinterpret_cast< QString*>(_a[0])) = _r->text();
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
                 }
                 return ito::retOk;
                 break;
@@ -345,7 +353,80 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 {
                     QListWidgetItem *_r;
                     _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
-                    (*reinterpret_cast< QString*>(_a[0])) = _r->text();
+                    if (_r)
+                    {
+                        (*reinterpret_cast< QString*>(_a[0])) = _r->text();
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
+                }
+                return ito::retOk;
+                break;
+
+                case 2008: //checkState
+                {
+                    QListWidgetItem *_r;
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    if (_r)
+                    {
+                        (*reinterpret_cast< Qt::CheckState*>(_a[0])) = _r->checkState();
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
+                }
+                return ito::retOk;
+                break;
+
+                case 2009: //setCheckState
+                {
+                    QListWidgetItem *_r;
+                    Qt::CheckState state = *reinterpret_cast< const Qt::CheckState(*)>(_a[2]);
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    if (_r)
+                    {
+                        _r->setCheckState(state);
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
+                }
+                return ito::retOk;
+                break;
+
+                case 2010: //flags
+                {
+                    QListWidgetItem *_r;
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    if (_r)
+                    {
+                        (*reinterpret_cast< Qt::ItemFlags*>(_a[0])) = _r->flags();
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
+                }
+                return ito::retOk;
+                break;
+
+                case 2011: //setItemFlags
+                {
+                    QListWidgetItem *_r;
+                    Qt::ItemFlags flags = *reinterpret_cast< const Qt::ItemFlags(*)>(_a[2]);
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    if (_r)
+                    {
+                        _r->setFlags(flags);
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
                 }
                 return ito::retOk;
                 break;

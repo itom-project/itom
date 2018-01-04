@@ -124,7 +124,19 @@ namespace cv
     template<> inline ito::int32 saturate_cast(ito::Rgba32 v){return (ito::int32)(v.argb());};
     template<> inline ito::float32 saturate_cast(ito::Rgba32 v){return v.gray();};
     template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
-    
+
+    //from CV 3.3.1 on, the default implementation of DataType is dropped:
+    //Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
+    template<> class DataType<ito::uint32>
+    {
+    public:
+        typedef ito::uint32 value_type;
+        typedef value_type work_type;
+        typedef value_type channel_type;
+        typedef value_type vec_type;
+        enum { generic_type = 1, depth = -1, channels = 1, fmt=0,
+            type = CV_MAKETYPE(depth, channels) };
+    };
     
     template<> class DataType<ito::Rgba32>
     {

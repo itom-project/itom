@@ -2374,6 +2374,15 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                         *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&vec));
                     }
                 }
+                else if (type == QMetaType::type("Qt::ItemFlags"))
+                {
+                    bool ok;
+                    int d = PyObjGetInt(val, strict, ok);
+                    if (ok)
+                    {
+                        *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
+                    }
+                }
                 else
                 {
                     *retPtr = NULL;
@@ -3026,6 +3035,14 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         else if (strcmp(name, "ito::Shape") == 0)
         {
             return ito::PythonShape::createPyShape(*((ito::Shape*)data));
+        }
+        else if (strcmp(name, "Qt::CheckState") == 0)
+        {
+            return PyLong_FromLong(*((Qt::CheckState*)data));
+        }
+        else if (strcmp(name, "Qt::ItemFlags") == 0)
+        {
+            return PyLong_FromLong(*((Qt::ItemFlags*)data));
         }
     }
     else

@@ -5,6 +5,7 @@ gui = ui("paramEditorWidget.ui", ui.TYPEWINDOW)
 
 gui.plot["camera"] = cam
 gui.pewGrabber["plugin"] = cam
+gui.pewGrabber["immediatelyModifyPluginParamsAfterChange"] = False
 
 gui.motorController["actuator"] = mot
 gui.pewMotor1["plugin"] = mot

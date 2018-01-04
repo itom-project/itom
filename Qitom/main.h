@@ -49,7 +49,7 @@ public:
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught. OpenCV-Exception: %s", (exc.err).c_str());
 #endif
-            std::cerr << "Itom-Application has caught a cv::exception: " << (exc.err).c_str() << " from: " << receiver->objectName().toLatin1().data();
+            std::cerr << "Itom-Application has caught a cv::exception: " << (exc.err).c_str() << " from: " << receiver->objectName().toLatin1().data() << "\n" << std::endl;
         }
         catch(std::exception &exc)
         {
@@ -58,16 +58,17 @@ public:
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught. Exception: %s", exc.what());
 #endif
-            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << receiver->objectName().toLatin1().data();
+            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << receiver->objectName().toLatin1().data() << "\n" << std::endl;
         }
         catch (...)
         {
+			int type = event ? event->type() : -1;
             qWarning("Itom-Application has caught an exception");
-            qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
+			qWarning() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << type;
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught");
 #endif
-            std::cerr << "Itom-Application caught an exception from: " << receiver->objectName().toLatin1().data() << " from event type " << event->type();
+            std::cerr << "Itom-Application caught an exception from: " << receiver->objectName().toLatin1().data() << " from event type " << type << "\n" << std::endl;
         }
         return false;
     }

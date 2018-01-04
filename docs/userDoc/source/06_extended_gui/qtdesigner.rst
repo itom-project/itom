@@ -310,10 +310,10 @@ int, short, long  integer, floats are rounded to integer, True=1, False=0
 unsigned int ...  integer, floats are rounded to integer, True=1, False=0
 float, double     integer, floats, True=1.0, False=0.0
 QVector<int>      any sequence whose values are castable to int
-QVector<double>   any sequence whose values are castable to double
-QVector2D         any sequence with two values castable to double (x,y)
-QVector3D         any sequence with three values castable to double (x,y,z)
-QVector4D         any sequence with four values castable to double (x,y,z,w)
+QVector<double>   any sequence whose values are castable to float
+QVector2D         any sequence with two values castable to float (x,y)
+QVector3D         any sequence with three values castable to float (x,y,z)
+QVector4D         any sequence with four values castable to float (x,y,z,w)
 PCLPointCloud     :py:class:`~itom.pointCloud`
 PCLPoint          :py:class:`~itom.point`
 PCLPolygonMesh    :py:class:`~itom.polygonMesh`
@@ -330,6 +330,8 @@ QTime             datetime.time object
 QDate             datetime.date object
 QDateTime         datetime.datetime object
 QFont             :py:class:`~itom.font`
+Qt::CheckState    int (0: unchecked, 1: partially checked, 2: checked)
+Qt::ItemFlags     int, bitmask (see Qt::ItemFlags for definitions)
 ================= ===========================================================================
 
 If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converter for them. It only becomes a little bit more difficult for pointers to
@@ -457,22 +459,28 @@ Unfortunately, there are some methods of important widgets in |Qt|, which are no
 However, there are some exceptions defined in |itom| such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These exceptions are 
 contained in the following table:
 
-======================= ============================================================================================================================
+======================= =========================================================================================================================================================================================================
 Widget / ClassName       Public Method
-======================= ============================================================================================================================
+======================= =========================================================================================================================================================================================================
 QWidget                 void resize(int,int)
 QWidget                 void setGeometry(int,int,int,int)
 QListWidget             void addItem(QString)
 QListWidget             void addItems(QStringList)
-QListWidget             void selectedRows() returns a tuple of all selected row indices
-QListWidget             void selectedTexts() returns a tuple of all selected values (as strings)
-QListWidget             void selectRows(QVector<int>) select the rows with the given indices (ListWidget must be in multi-selection mode)
+QListWidget             void selectedRows() *returns a tuple of all selected row indices*
+QListWidget             void selectedTexts() *returns a tuple of all selected values (as strings)*
+QListWidget             void selectRows(QVector<int>) *select the rows with the given indices (ListWidget must be in multi-selection mode)*
+QListWidget             QString takeItem(int) *removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does not exist*
+QListWidget             QString item(int) *returns the text of the item from the given row or raises an exception if the item does not exist*
+QListWidget             Qt::CheckState checkState(int) *returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
+QListWidget             void setCheckState(int row,Qt::CheckState state) *set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state*
+QListWidget             Qt::ItemFlags flags(int) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
+QListWidget             void setFlags(int row,Qt::ItemFlags flags) *set the flags of the item in the given row based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
 QComboBox               void removeItem(int)
-QComboBox               void setItemData(int,QVariant) sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index
+QComboBox               void setItemData(int,QVariant) *sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index*
 QComboBox               void insertItem(int,QString)
-QComboBox               QString itemText(int) returns the text of the i-th item in the combo-box as string
+QComboBox               QString itemText(int) *returns the text of the i-th item in the combo-box as string*
 QTabWidget              int isTabEnabled(int)
 QTabWidget              void setTabEnabled(int,bool)
 QMainWindow             uiItem statusBar() *returns a reference to the statusbar widget*
@@ -485,7 +493,7 @@ QTableWidget            int currentColumn() *returns index of selected column*
 QTableWidget            int currentRow() *returns index of selected row*
 QTableView              uiItem horizontalHeader()
 QTableView              uiItem verticalHeader()
-======================= ============================================================================================================================
+======================= =========================================================================================================================================================================================================
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
 hold for every other widget, since every widget is derived from *QWidget*.

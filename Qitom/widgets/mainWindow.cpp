@@ -1804,8 +1804,8 @@ ito::RetVal MainWindow::dumpToolbarsAndButtons(QSharedPointer<QString> pythonCod
 {
 	ito::RetVal retval;
 
-	QList<QString> toolbar_list;
-	QList<QString> menu_list;
+	QStringList toolbar_list;
+	QStringList menu_list;
 
 	QStringList actions;
 	unsigned int id;

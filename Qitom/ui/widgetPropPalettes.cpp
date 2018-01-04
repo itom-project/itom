@@ -738,10 +738,11 @@ void WidgetPropPalettes::on_pbRemove_clicked()
             return;
         }
 
+		m_isDirty = 0;
+
         m_palettes.takeAt(idx);
         ui.lwPalettes->takeItem(idx);
-
-        m_isDirty = 0;
+        
         ui.pbPalSave->setEnabled(false);
     }
 }

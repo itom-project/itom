@@ -121,7 +121,8 @@ public slots:
 
 private slots:
     void on_treeWidgetDB_itemChanged(QTreeWidgetItem * item, int column);
-    void on_checkModules_stateChanged (int state);
+	void on_treeWidgetDB_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+	void on_checkModules_stateChanged (int state);
     void on_checkFilters_stateChanged (int state);
     void on_checkWidgets_stateChanged (int state);
     void on_checkDataIO_stateChanged (int state);
@@ -132,6 +133,21 @@ private slots:
     void mnuRemoveDatabase();
     void treeWidgetContextMenuRequested(const QPoint &pos);
     void downloadTimeoutReached();
+
+	void on_btnDownload_clicked() 
+	{
+		mnuDownloadUpdate();
+	};
+
+	void on_btnLocateOnDisk_clicked()
+	{
+		mnuLocateOnDisk();
+	}
+
+	void on_btnRemoveDatabase_clicked()
+	{
+		mnuRemoveDatabase();
+	}
 };
 
 } //end namespace ito
