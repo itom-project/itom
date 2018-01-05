@@ -362,7 +362,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = 0;
     int areaRow = 0;
-    ito::UiDataContainer xAxisCont;
+    ito::UiDataContainer xDataCont;
     QSharedPointer<unsigned int> figHandle(new unsigned int);
     *figHandle = 0; //new figure will be requested
 
@@ -372,7 +372,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
         PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
@@ -416,11 +416,11 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xObject, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xData, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
 \n\
 Plots an existing dataObject in a dockable, not blocking window. \n\
 \n\
-If a xObject is given, the plot uses this vector for the values of the x axis of the plot.\n\
+If a xData is given, the plot uses this vector for the values of the x axis of the plot.\n\
 \n\
 The plot type of this function is '1D'.\n\
 \n\
@@ -433,8 +433,10 @@ Parameters \n\
 ----------- \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
-xObject : {DataObject}, optional \n\
+xData : {DataObject}, optional \n\
     Is the data object whose values are used for the axis.\n\
+className : {str}, optional \n\
+    class name of the desired 1D plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
@@ -452,20 +454,21 @@ liveImage, plotItem");
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = { "data", "xObject", "properties", NULL };
+    const char *kwlist[] = { "data", "xData", "className","properties", NULL };
     PyObject *data = NULL;
     PyObject *propDict = NULL;
+    char* className = NULL;
     //    int areaIndex = 0;
     PyObject *xAxis = NULL;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OO!", const_cast<char**>(kwlist), &data, &xAxis, &PyDict_Type, &propDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OsO!", const_cast<char**>(kwlist), &data, &xAxis, &className,&PyDict_Type, &propDict))
     {
         return NULL;
     }
 
     ito::UiDataContainer dataCont;
-    ito::UiDataContainer xAxisCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
+    ito::UiDataContainer xDataCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
     //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
     //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -483,7 +486,7 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
         dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
         if (xAxis)
         {
-            xAxisCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xAxis, false, ok));
+            xDataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xAxis, false, ok));
         }
     }
 
@@ -529,12 +532,19 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     *figHandle = 0; //new figure will be requested
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QString defaultPlotClassName("1d");
-
-
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QString name(className);
+    if (name.compare("2d", Qt::CaseInsensitive) == 0 || name.compare("2.5d", Qt::CaseInsensitive) == 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "invalid className parameter %s. Use the plot, plot2 or plot25 command instead to get a other dimensional representation", className);
+        return NULL;
+    }
+    else if (name.length() == 0)
+    {
+        name = "1d";
+    }
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
         PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
@@ -594,6 +604,8 @@ Parameters \n\
 ----------- \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
+className : {str}, optional \n\
+    class name of the desired 2.5D plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
@@ -611,19 +623,20 @@ liveImage, plotItem");
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = { "data", "properties", NULL };
+    const char *kwlist[] = { "data", "className", "properties", NULL };
     PyObject *data = NULL;
     PyObject *propDict = NULL;
+    char* className = NULL;
     //    int areaIndex = 0;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OO!", const_cast<char**>(kwlist), &data, &PyDict_Type, &propDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|sO!", const_cast<char**>(kwlist), &data, &className, &PyDict_Type, &propDict))
     {
         return NULL;
     }
 
     ito::UiDataContainer dataCont;
-    ito::UiDataContainer xAxisCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
+    ito::UiDataContainer xDataCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
                                     //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
                                     //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -683,12 +696,20 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     *figHandle = 0; //new figure will be requested
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QString defaultPlotClassName("2d");
 
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
-
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QString name(className);
+    if (name.compare("1d", Qt::CaseInsensitive) == 0 || name.compare("2.5d", Qt::CaseInsensitive) == 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "invalid className parameter %s. Use the plot, plot1 or plot25 command instead to get a other dimensional representation", className);
+        return NULL;
+    }
+    else if (name.length() == 0)
+    {
+        name = "2d";
+    }
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
         PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
@@ -748,6 +769,8 @@ Parameters \n\
 ----------- \n\
 data : {DataObject, PointCloud, PolygonMesh} \n\
     Is the data object whose region of interest will be plotted.\n\
+className : {str}, optional \n\
+    class name of the desired 2.5D plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
@@ -765,19 +788,20 @@ liveImage, plotItem");
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
-    const char *kwlist[] = { "data", "properties", NULL };
+    const char *kwlist[] = { "data", "className","properties", NULL };
     PyObject *data = NULL;
     PyObject *propDict = NULL;
+    char* className = NULL;
     //    int areaIndex = 0;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OO!", const_cast<char**>(kwlist), &data, &PyDict_Type, &propDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|sO!", const_cast<char**>(kwlist), &data, &className, &PyDict_Type, &propDict))
     {
         return NULL;
     }
 
     ito::UiDataContainer dataCont;
-    ito::UiDataContainer xAxisCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
+    ito::UiDataContainer xDataCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
                                     //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
                                     //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -837,12 +861,21 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     *figHandle = 0; //new figure will be requested
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QString defaultPlotClassName("2.5d");
 
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QString name(className);
+    if (name.compare("1d", Qt::CaseInsensitive) == 0 || name.compare("2d", Qt::CaseInsensitive) == 0)
+    {
+        PyErr_Format(PyExc_RuntimeError, "invalid className parameter %s. Use the plot, plot1 or plot2 command instead to get a other dimensional representation", className);
+        return NULL;
+    }
+    else if (name.length() == 0)
+    {
+        name = "2.5d";
+    }
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
         PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
