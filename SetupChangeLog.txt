@@ -22,6 +22,14 @@ Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface vorkam. Dies f
 zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterface.h
 vergeben werden.
 
+Windows: OpenSSL Bibliotheken in das Hauptverzeichnis der qitom.exe durch das Setup kopieren:
+----------------------------------------------------------------------------------------------
+
+1. Die für 32bit oder 64bit korrekte Version der OpenSSL Bibliothek (Version 1.0.2 - LTS bis 31.12.2019)
+   in der letzten Version (größter Buchstabe nach der Version) von https://indy.fulgan.com/SSL/ herunterladen.
+2. Die beiden Dateien libeay32.dll und ssleay32.dll in das Setup aufnehmen und somit in das itom Verzeichnis kopieren.
+3. Die Lizenzdatei OpenSSL License.txt ebenfalls ins Setup aufnehmen und in das itom Verzeichnis kopieren.
+
 
 Doku erstellen:
 ---------------
