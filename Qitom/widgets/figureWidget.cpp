@@ -287,7 +287,13 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
 
 	if (dwo)
 	{
-		/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+        /* className can be 
+            
+            * an empty string, then the right category is guessed from the dimension of the dataObject
+            * 1D, 1d, 2D, 2d, 2.5D, or 2.5d -> then the default plot of the corresponding category is used
+            * a className, then the className is searched within the category, guessed from the dimension of the dataObject (if not found, a warning is returned and the default of the category is used)
+            * 1d:className, 2d:className, 2.5d:className -> the className is searched within the given category, if not found, the default class from the category is used
+        */
 		if (className.compare("1d", Qt::CaseInsensitive) == 0)
 		{
 			plotClassName = dwo->getFigureClass("DObjStaticLine", "", retval);
@@ -299,6 +305,18 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
 		else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
 		{
 			plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+		}
+        else if (className.startsWith("1d:", Qt::CaseInsensitive))
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticLine", className.mid(3), retval);
+		}
+		else if (className.startsWith("2d:", Qt::CaseInsensitive))
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticImage", className.mid(3), retval);
+		}
+		else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+		{
+			plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
 		}
 		else
 		{
@@ -324,7 +342,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
             {
                 ito::AbstractDObjFigure *dObjFigure = NULL;
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
-                if (xAxisObj)
+                if (xAxisObj) //here: the xAxis object is set first, the source is not set, yet, therefore the update() method of the plot will quit in this first run and will be executed, once the source is available (below)
                 {
                     dObjFigure->setAxisObj(xAxisObj, 1);
                 }
@@ -419,7 +437,13 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         
         if (!retval.containsError())
         {
-			/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+			/* className can be 
+            
+                * an empty string, then the right category is guessed from the dimension of the dataObject
+                * 1D, 1d, 2D, 2d, 2.5D, or 2.5d -> then the default plot of the corresponding category is used
+                * a className, then the className is searched within the category, guessed from the dimension of the dataObject (if not found, a warning is returned and the default of the category is used)
+                * 1d:className, 2d:className, 2.5d:className -> the className is searched within the given category, if not found, the default class from the category is used
+            */
 			if (className.compare("1d", Qt::CaseInsensitive) == 0)
 			{
 				plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
@@ -432,6 +456,18 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 			{
 				plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
 			}
+            else if (className.startsWith("1d:", Qt::CaseInsensitive))
+		    {
+			    plotClassName = dwo->getFigureClass("DObjLiveLine", className.mid(3), retval);
+		    }
+		    else if (className.startsWith("2d:", Qt::CaseInsensitive))
+		    {
+			    plotClassName = dwo->getFigureClass("DObjLiveImage", className.mid(3), retval);
+		    }
+		    else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+		    {
+			    plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
+		    }
 			else
 			{
 				if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)

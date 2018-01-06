@@ -268,29 +268,30 @@ polygonMesh only the alias '2.5D' is valid. \n\
 Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
 or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Use the 'properties' argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters \n\
 ----------- \n\
 data : {DataObject, PointCloud, PolygonMesh} \n\
-    Is the data object whose region of interest will be plotted.\n\
+    Is the data object, point cloud or polygonal mesh, that will be plotted.\n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)) \n\
 	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
-	the indicated categories. \n\
+	the indicated categories. If nothing is given, the plot category is guessed from 'data'.\n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
 index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the \n\
+    figure window of this plot. The plot can be closed by 'close(index)'. \n\
 plotHandle: {plotItem} \n\
     Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
-liveImage, plotItem");
+liveImage, plotItem, plot1, plot2, plot25");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"data", "className", "properties", NULL};
@@ -328,9 +329,9 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        return PyErr_Format(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
+        return PyErr_Format(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
 #else
-        return PyErr_Format(PyExc_RuntimeError, "First argument cannot be converted to dataObject (%s).", retval2.errorMessage());
+        return PyErr_Format(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject (%s).", retval2.errorMessage());
 #endif
     }
 
@@ -416,7 +417,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xData, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xData, className, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
 \n\
 Plots an existing dataObject in a dockable, not blocking window. \n\
 \n\
@@ -427,7 +428,7 @@ The plot type of this function is '1D'.\n\
 Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
 or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Use the 'properties' argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -443,13 +444,14 @@ properties : {dict}, optional \n\
 Returns \n\
 -------- \n\
 index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* \n\
+    to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
 plotHandle: {plotItem} \n\
     Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
-liveImage, plotItem");
+liveImage, plotItem, plot, plot2, plot25");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
@@ -459,10 +461,10 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     PyObject *propDict = NULL;
     char* className = NULL;
     //    int areaIndex = 0;
-    PyObject *xAxis = NULL;
+    PyObject *xData = NULL;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OsO!", const_cast<char**>(kwlist), &data, &xAxis, &className,&PyDict_Type, &propDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OsO!", const_cast<char**>(kwlist), &data, &xData, &className,&PyDict_Type, &propDict))
     {
         return NULL;
     }
@@ -484,18 +486,24 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     if (!ok)
     {
         dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
-        if (xAxis)
+        if (ok && xData)
         {
-            xDataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xAxis, false, ok));
+            xDataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xData, false, ok));
+
+            if (!ok)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "2nd parameter (xData) cannot be converted to dataObject.");
+                return NULL;
+            }
         }
     }
 
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject, pointCloud or polygonMesh.");
 #else
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject.");
 #endif
         return NULL;
     }
@@ -544,6 +552,11 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     {
         name = "1d";
     }
+    else
+    {
+        name = "1d:" + name; //to be sure, that only plots from the 1d category are used (className must be compatible to 1d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
@@ -605,20 +618,21 @@ Parameters \n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
-    class name of the desired 2.5D plot (if not indicated default plot will be used, see application settings) \n\
+    class name of the desired 2D plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
 index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a \n\
+    reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
 plotHandle: {plotItem} \n\
     Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
-liveImage, plotItem");
+liveImage, plotItem, plot, plot1, plot25");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
@@ -657,9 +671,9 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject, pointCloud or polygonMesh.");
 #else
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject.");
 #endif
         return NULL;
     }
@@ -702,13 +716,18 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     QString name(className);
     if (name.compare("1d", Qt::CaseInsensitive) == 0 || name.compare("2.5d", Qt::CaseInsensitive) == 0)
     {
-        PyErr_Format(PyExc_RuntimeError, "invalid className parameter %s. Use the plot, plot1 or plot25 command instead to get a other dimensional representation", className);
+        PyErr_Format(PyExc_RuntimeError, "invalid className parameter %s. Use the plot, plot1 or plot25 command instead to get another dimensional representation", className);
         return NULL;
     }
     else if (name.length() == 0)
     {
         name = "2d";
     }
+    else
+    {
+        name = "2d:" + name; //to be sure, that only plots from the 2d category are used (className must be compatible to 2d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
@@ -753,7 +772,7 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, [properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
 \n\
 Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
@@ -777,13 +796,14 @@ properties : {dict}, optional \n\
 Returns \n\
 -------- \n\
 index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a \n\
+    reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
 plotHandle: {plotItem} \n\
     Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
-liveImage, plotItem");
+liveImage, plotItem, plot, plot1, plot2");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
@@ -822,9 +842,9 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject, pointCloud or polygonMesh.");
 #else
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
+        PyErr_SetString(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject.");
 #endif
         return NULL;
     }
@@ -875,6 +895,11 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         name = "2.5d";
     }
+    else
+    {
+        name = "2.5d:" + name; //to be sure, that only plots from the 2.5d category are used (className must be compatible to 2.5d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {

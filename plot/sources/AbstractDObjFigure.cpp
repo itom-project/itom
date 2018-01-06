@@ -82,13 +82,14 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisObj(unsigned int axis
 {
     if (axisNum == 1)
     {
-        ito::DataObject *dobj = m_pInput["xVec"]->getVal<ito::DataObject*>();
+        ito::DataObject *dobj = m_pInput["xData"]->getVal<ito::DataObject*>();
         if (dobj)
         {
             return QSharedPointer<ito::DataObject>(new ito::DataObject(*dobj));
         }
     }
-        return QSharedPointer<ito::DataObject>();
+
+    return QSharedPointer<ito::DataObject>();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
@@ -106,24 +107,29 @@ void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> obj, unsigne
     ito::RetVal retval = ito::retOk;
     if (axisNum == 1)
     {
-        if (m_dataPointer.contains("xVec"))
+        if (m_dataPointer.contains("xData"))
         {
 
-            if (m_dataPointer["xVec"].data() != obj.data())
+            if (m_dataPointer["xData"].data() != obj.data())
             {
-                QSharedPointer<ito::DataObject> oldSource = m_dataPointer["xVec"]; //possible backup for previous xVec, this backup must be alive until updateParam with the new one has been completely propagated
-                m_dataPointer["xVec"] = obj;
+                QSharedPointer<ito::DataObject> oldSource = m_dataPointer["xData"]; //possible backup for previous xData, this backup must be alive until updateParam with the new one has been completely propagated
+                m_dataPointer["xData"] = obj;
             }
         }
         else
         {
-            m_dataPointer["xVec"] = obj;
+            m_dataPointer["xData"] = obj;
         }
-        ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)obj.data());
+        ito::ParamBase thisParam("xData", ito::ParamBase::DObjPtr, (const char*)obj.data());
         retval += updateParam(&thisParam, 1);
-    }
 
-    updatePropertyDock();
+        updatePropertyDock();
+    }
+    else
+    {
+        qWarning() << "AbstractDObjFigure::setAxisObj(...) ... invalid axis number " << axisNum;
+        std::cerr << "AbstractDObjFigure::setAxisObj(...) ... invalid axis number " << axisNum << "\n" << std::endl;
+    }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 

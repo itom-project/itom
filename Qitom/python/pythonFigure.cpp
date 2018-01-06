@@ -383,7 +383,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, [xData, areaIndex, properties]) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, [xData, areaIndex, className, properties]) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
 \n\
 The plot type of this function is '1D'. \n\
 If the 1D plot is not able to display the given object, a warning is returned and the default \n\
@@ -445,18 +445,24 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     if (!ok)
     {
         dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
-        if (xData)
+        if (ok && xData)
         {
             xDataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xData, false, ok));
+
+            if (!ok)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "2nd parameter (xData) cannot be converted to dataObject.");
+                return NULL;
+            }
         }
     }
 
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
+        return PyErr_Format(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
 #else
-        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject (%s).", retval2.errorMessage());
+        return PyErr_Format(PyExc_RuntimeError, "1st parameter (data) cannot be converted to dataObject (%s).", retval2.errorMessage());
 #endif
     }
 
@@ -506,6 +512,11 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     {
         name = "1d";
     }
+    else
+    {
+        name = "1d:" + name; //to be sure, that only plots from the 1d category are used (className must be compatible to 1d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
@@ -536,7 +547,7 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, [areaIndex, properties]) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, [areaIndex, className, properties]) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
 \n\
 The plot type of this function is '2D'. \n\
 If the 2D plot is not able to display the given object, a warning is returned and the default \n\
@@ -653,6 +664,11 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
     {
         name = "2d";
     }
+    else
+    {
+        name = "2d:" + name; //to be sure, that only plots from the 2d category are used (className must be compatible to 2d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
@@ -684,7 +700,7 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, [areaIndex, properties]) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, [areaIndex, className, properties]) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
 \n\
 The plot type of this function is '2.5D'. \n\
 If the 2.5D plot is not able to display the given object, a warning is returned and the default \n\
@@ -801,6 +817,11 @@ PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject
     {
         name = "2.5d";
     }
+    else
+    {
+        name = "2.5d:" + name; //to be sure, that only plots from the 2.5d category are used (className must be compatible to 2.5d -> checked in FigureWidget::plot
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xDataCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, name), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
