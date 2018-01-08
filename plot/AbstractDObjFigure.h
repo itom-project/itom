@@ -74,7 +74,7 @@ public:
     ito::RetVal update(void);
 
     virtual QSharedPointer<ito::DataObject> getSource(void) const;
-    virtual void setSource(QSharedPointer<ito::DataObject> source);
+    virtual ito::RetVal setSource(QSharedPointer<ito::DataObject> source);
 
     virtual void setAxisObj(QSharedPointer<ito::DataObject> xObj, unsigned int axisNum);
     virtual QSharedPointer<ito::DataObject> getAxisObj(unsigned int axisNum) const;
@@ -82,7 +82,7 @@ public:
     virtual QSharedPointer<ito::DataObject> getDisplayed(void); // { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
 
     virtual QPointer<ito::AddInDataIO> getCamera(void) const;
-    virtual void setCamera( QPointer<ito::AddInDataIO> camera );
+    virtual ito::RetVal setCamera( QPointer<ito::AddInDataIO> camera );
 
     virtual ito::AutoInterval getXAxisInterval(void) const;
     virtual void setXAxisInterval(ito::AutoInterval);

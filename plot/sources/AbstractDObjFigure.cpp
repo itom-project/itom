@@ -132,7 +132,7 @@ void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> obj, unsigne
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
+ito::RetVal AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
 { 
     ito::RetVal retval = ito::retOk;
     
@@ -163,6 +163,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
     retval += updateParam(&thisParam, 1);
 
     updatePropertyDock();
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -197,7 +198,7 @@ QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
+ito::RetVal AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 {
     ito::RetVal retval;
     if (camera && m_pInput.contains("liveSource"))
@@ -245,6 +246,7 @@ void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
     }
 
     updatePropertyDock();
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
