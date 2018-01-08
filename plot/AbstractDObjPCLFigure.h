@@ -80,7 +80,7 @@ public:
 
     ito::RetVal update(void);
 
-    virtual void setDataObject(QSharedPointer<ito::DataObject>);
+    virtual ito::RetVal setDataObject(QSharedPointer<ito::DataObject>);
     virtual QSharedPointer<ito::DataObject> getDataObject(void) const;
 
     virtual ito::AutoInterval getXAxisInterval(void) const;
@@ -99,10 +99,10 @@ public:
     virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
 #ifdef USEPCL
-    virtual void setPointCloud(QSharedPointer<ito::PCLPointCloud>);
+    virtual ito::RetVal setPointCloud(QSharedPointer<ito::PCLPointCloud>);
     virtual QSharedPointer<ito::PCLPointCloud> getPointCloud(void) const;
 
-    virtual void setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh>);
+    virtual ito::RetVal setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh>);
     virtual QSharedPointer<ito::PCLPolygonMesh> getPolygonMesh(void) const;
 #endif
 

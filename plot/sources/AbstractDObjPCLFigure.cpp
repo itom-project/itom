@@ -76,7 +76,7 @@ QSharedPointer<ito::DataObject> AbstractDObjPclFigure::getDataObject(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source) 
+ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source) 
 { 
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::DataObject> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
@@ -101,6 +101,8 @@ void AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source
     retval += updateParam(&thisParam, 1);
 
     updatePropertyDock();
+
+    return retval;
 }
 
 #ifdef USEPCL
@@ -116,7 +118,7 @@ QSharedPointer<ito::PCLPointCloud> AbstractDObjPclFigure::getPointCloud(void) co
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> source) 
+ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> source) 
 { 
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPointCloud> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
@@ -141,6 +143,8 @@ void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> sou
     retval += updateParam(&thisParam, 1);
 
     updatePropertyDock();
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +159,7 @@ QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> source) 
+ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> source) 
 { 
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPolygonMesh> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
@@ -181,6 +185,8 @@ void AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> s
     retval += updateParam(&thisParam, 1);
 
     updatePropertyDock();
+
+    return retval;
 }
 
 #endif // USEPCL

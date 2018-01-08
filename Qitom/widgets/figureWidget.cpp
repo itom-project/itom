@@ -344,7 +344,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
                 if (xAxisObj) //here: the xAxis object is set first, the source is not set, yet, therefore the update() method of the plot will quit in this first run and will be executed, once the source is available (below)
                 {
-                    dObjFigure->setAxisObj(xAxisObj, 1);
+                    dObjFigure->setAxisData(xAxisObj, Qt::XAxis);
                 }
                 dObjFigure->setSource(dataObj);
 
