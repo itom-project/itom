@@ -5,6 +5,8 @@
 ; Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
 ; Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
 ; Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
+English.PythonHomeText=If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
+Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
@@ -152,6 +154,15 @@ begin
       x:= x+1;
     end;
   end;
+end;
+
+function ExistsPythonHome(Value: String): Boolean;
+var  PythonPath: string;
+begin
+  Result := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment\PYTHONHOME', '', PythonPath);
+  
+  if Result then
+    MsgBox(CustomMessage('PythonHomeText'), mbConfirmation, MB_OK)
 end;
 
 procedure InitializeWizard();
