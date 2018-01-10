@@ -3,6 +3,9 @@
 line plots (1D)
 ******************
 
+Plot of an N x M dataObject
+===========================
+
 In order to plot a 1D line (1 x M or M x 1 DataObject) or multiple lines in a line plot, the designer plugin **Itom1DQwtPlot** is
 the recommended visualization tool. You can either use the :py:meth:`~itom.plot1` command or add this class name (*itom1dqwtplot*) to any :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage` command in order to force the data to be plotted in this plot type. Alternatively set this plugin to be the default plot for 1D static and live plots.
 
@@ -16,6 +19,8 @@ categories
     :scale: 100%
     :align: center
     
+	
+
 This plot has been created by the following code snippet:
 
 .. code-block:: python
@@ -27,6 +32,31 @@ This plot has been created by the following code snippet:
         properties = {"title":"sin(X/20)", "valueLabel":"Amplitude"})
         
 .. _itom1dqwtplot:
+
+Plot of an N x M dataObject with 1 x M x-vector
+===============================================
+
+It is also possible to set an optional x-vector to the plot. This can only be done by giving a second argument to the :py:meth:`~itom.plot1` function or by setting the property **xData** to an existing plot. 
+To plot an N x M dataObject, the x-vector has to be a 1 x M dataObject. 
+
+.. figure:: images/spiral.png
+    :scale: 100%
+    :align: center
+	
+This spiral plot has been created by the demo :file:`itom/demo/plots/plotXY.py`. The three methods to create such a plot are listed here:
+
+.. code-block:: python
+    
+	# method 1 
+	plot(yDataObject, xVector)
+	
+	# method 2
+	fig = plot(yDataObject)
+	fig[-1]['xData'] = xVector
+	
+	# method 3
+	plot(yDataObject, properties = {'xData', xVector}
+	
         
 Itom1dQwtPlot
 ==========================
