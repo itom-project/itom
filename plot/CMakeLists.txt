@@ -1,4 +1,4 @@
-SET (target_name itomCommonPlotLib)
+SET (target_name itomCommonPlotLib) 
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
 
