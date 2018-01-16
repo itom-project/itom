@@ -396,8 +396,20 @@ void DialogSnapshot::acquisitionEnd()
 
                 if (list->size() > 0)
                 {
-                    QString fn = list->at(list->size() - 1);
-                    fileIndex = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+                    if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique 
+                    {
+                        //find the highest number after name
+                        int prev = 0;
+                        for (int i = 0; i < list->length(); ++i)
+                        {
+                            QString fn = list->at(i);
+                            prev = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+                            if (prev > fileIndex)
+                            {
+                                fileIndex = prev;
+                            }
+                        }
+                    }  
                 }
 
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -442,8 +454,20 @@ void DialogSnapshot::acquisitionEnd()
 
             if (list.size() > 0)
             {
-                QString fn = list[list.size() - 1];
-                fileIndex = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+                if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique 
+                {
+                    //find the highest number after name
+                    int prev = 0;
+                    for (int i = 0; i < list.length(); ++i)
+                    {
+                        QString fn = list.at(i);
+                        prev = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+                        if (prev > fileIndex)
+                        {
+                            fileIndex = prev;
+                        }
+                    }
+                }
             }
 
             QString fileExt = ui.comboType->currentText();
