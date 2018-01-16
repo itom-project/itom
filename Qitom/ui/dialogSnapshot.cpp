@@ -47,7 +47,7 @@ bool cmpStringIntPair(const QPair<QString, int> &a, const QPair<QString, int> &b
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSnapshot::setGroupTimestampEnabled()
 {
-    ui.checkDataObjectTag->setEnabled(ui.comboType->itemData(ui.comboType->currentIndex()).toInt() == -3);
+    ui.checkDataObjectTag->setEnabled(ui.comboType->itemData(ui.comboType->currentIndex()).toInt() < 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -61,7 +61,8 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
     m_totalSnaps(0),
     m_numSnapsDone(0),
     m_timerID(-1),
-    m_wasAutoGrabbing(true)
+    m_wasAutoGrabbing(true),
+    m_stamp()
 {
     retval = ito::retOk;
     ui.setupUi(this);
@@ -191,19 +192,19 @@ void DialogSnapshot::checkRetval(const ito::RetVal retval)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSnapshot::timerEvent(QTimerEvent *event)
 {
+
     ito::RetVal retval = m_pCamera->acquire();
-    
+    m_stamp.append(QDateTime::currentMSecsSinceEpoch());
+
     if (!retval.containsError())
     {
         bool acquireStack = (ui.comboType->itemData(ui.comboType->currentIndex()).toInt() < 0 && ui.comboSingleStack->currentIndex() == 1);
         ui.lblProgress->setText(tr("acquire image %1 from %2").arg(m_numSnapsDone+1).arg(m_totalSnaps));
-        uint dateTime = 0;
 
         if (!acquireStack)
         {
             ito::DataObject image;
             retval += m_pCamera->copyVal(image);
-            dateTime = QDateTime::currentDateTime().toTime_t();
 
             m_acquiredImages << image;
             //m_acquiredImages.append(image);
@@ -296,6 +297,7 @@ void DialogSnapshot::acquisitionStart()
 
     m_totalSnaps = (ui.checkMulti->isChecked()) ? ui.spinMulti->value() : 1;
     m_numSnapsDone = 0;
+    m_stamp.clear();
 
     ui.progress->setVisible(m_totalSnaps > 1);
     ui.lblProgress->setVisible(true);
@@ -338,6 +340,27 @@ void DialogSnapshot::acquisitionEnd()
     if (m_totalSnaps == m_numSnapsDone && ui.checkSaveAfterSnap->isChecked() && m_acquiredImages.size() > 0)
     {
         ui.lblProgress->setText(tr("save image"));
+        if (ui.checkDataObjectTag->isChecked() && ui.checkDataObjectTag->isEnabled())
+        {
+            QList<ito::DataObject>::iterator i;
+            int cnt = 0;
+            if (m_acquiredImages.length() < m_stamp.length())
+            {
+                uint64 val;
+                foreach(val, m_stamp)
+                {
+                    m_acquiredImages[0].setTag(tr("UnixTimestamp%1").arg(cnt).toLatin1().data(), val*0.001);
+                    cnt += 1;
+                }
+            }
+            else {
+                for (i = m_acquiredImages.begin(); i != m_acquiredImages.end(); ++i)
+                {
+                    i->setTag("UnixTimestamp", m_stamp[cnt]*0.001);
+                    cnt += 1;
+                }
+            }
+        }
         QCoreApplication::processEvents();
 
         int index = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
@@ -379,12 +402,17 @@ void DialogSnapshot::acquisitionEnd()
 
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                 QStringList varNames;
+                QString baseName(imageName);
                 QVector<SharedParamBasePointer> values;
                 SharedParamBasePointer paramBasePointer;
-
                 for (int i = 0; i < m_acquiredImages.size(); ++i)
                 {
+                    
                     QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    if (ui.checkFilename->isEnabled() && ui.checkFilename->isChecked())
+                    {
+                        imageName = baseName + QString::number(m_stamp[i])+'_';
+                    }
                     varNames.append(imageName + fileNo);
                     paramBasePointer = QSharedPointer<ito::ParamBase>(new ito::ParamBase("image", ito::ParamBase::DObjPtr, (char*)&(m_acquiredImages[i])));
                     values.append(paramBasePointer);
@@ -410,6 +438,7 @@ void DialogSnapshot::acquisitionEnd()
             dir.setSorting(QDir::Name);
             QStringList list = dir.entryList();
             int fileIndex = 1;
+            QString baseName(imageName);
 
             if (list.size() > 0)
             {
@@ -429,6 +458,10 @@ void DialogSnapshot::acquisitionEnd()
                     ui.lblProgress->setText(tr("save image %1 from %2").arg(i + 1).arg(m_acquiredImages.size()));
 
                     QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    if (ui.checkFilename->isEnabled() && ui.checkFilename->isChecked())
+                    {
+                        imageName = baseName + QString::number(m_stamp[i]) + '_';
+                    }
                     QString fileName = m_path + "/" + imageName + fileNo + fileExt;
                     m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
                     m_paramsMand[0].setVal<ito::DataObject*>(&(m_acquiredImages[i]));
@@ -445,7 +478,7 @@ void DialogSnapshot::acquisitionEnd()
             }
             else
             {
-                // Workspace, idc & mat
+                // idc & mat
                 QObject *pyEngine = AppManagement::getPythonEngine();
                 if (!pyEngine)
                 {
@@ -470,6 +503,10 @@ void DialogSnapshot::acquisitionEnd()
                 {
                     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                     QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    if (ui.checkFilename->isEnabled() && ui.checkFilename->isChecked())
+                    {
+                        imageName = baseName + QString::number(m_stamp[i]) + '_';
+                    }
                     QString fileName = m_path + "/" + imageName + fileNo + fileExt;
 
                     param->setVal<ito::DataObject*>(&(m_acquiredImages[i]));

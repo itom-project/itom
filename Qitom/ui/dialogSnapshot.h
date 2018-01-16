@@ -68,6 +68,7 @@ protected:
     QVector<ito::ParamBase> m_paramsOpt;
     QVector<ito::ParamBase> m_paramsMand;
     QVector<ito::ParamBase> m_autoOut;
+    QList<int64> m_stamp;
     int m_totalSnaps;
     int m_numSnapsDone;
     int m_timerID;
