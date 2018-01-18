@@ -62,6 +62,8 @@ class ITOMWIDGETS_EXPORT ComboBox : public QComboBox
   /// ScrollOn by default.
   /// /sa scrollWheelEffect, setScrollWheelEffect
   Q_PROPERTY(ScrollEffect scrollWheelEffect READ scrollWheelEffect WRITE setScrollWheelEffect)
+  /// Current item's user data as string (Qt::UserRole role)
+  Q_PROPERTY(QString currentUserDataAsString READ currentUserDataAsString WRITE setCurrentUserDataAsString)
 
 #if QT_VERSION < 0x050500
   //for >= Qt 5.5.0 see Q_ENUM definition below
@@ -69,7 +71,7 @@ class ITOMWIDGETS_EXPORT ComboBox : public QComboBox
 #endif
 
 public:
-  /// Constructor, build a ComboBox that behave like QComboBox.
+  /// Constructor, build a ComboBox that behaves like QComboBox.
   explicit ComboBox(QWidget* parent = 0);
   virtual ~ComboBox();
 
@@ -101,7 +103,7 @@ public:
     /// Scrolling is only possible if the combobox has the focus.
     /// The focus policy is automatically set to Qt::StrongFocus
     ScrollWithFocus,
-    /// Scrolling is not possible when the combobox is inside a scrollarea with
+    /// Scrolling is not possible when the combobox is inside a scroll area with
     /// a visible vertical scrollbar.
     ScrollWithNoVScrollBar
   };
@@ -123,6 +125,13 @@ public:
   virtual QSize minimumSizeHint()const;
   /// Reimplemented for internal reasons
   virtual QSize sizeHint()const;
+
+  /// Get current item's user data as string
+  QString currentUserDataAsString()const;
+
+public slots:
+  /// Set current item based on user data
+  void setCurrentUserDataAsString(QString userData);
 
 protected:
   /// Reimplemented for internal reasons

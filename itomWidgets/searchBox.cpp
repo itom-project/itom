@@ -107,7 +107,11 @@ QRect SearchBoxPrivate::searchRect()const
   // the frame line width
   if (q->hasFrame())
     {
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QStyleOptionFrameV2 opt;
+#else
+    QStyleOptionFrame opt;
+#endif
     q->initStyleOption(&opt);
     sRect.adjust(opt.lineWidth, opt.lineWidth, -opt.lineWidth, -opt.lineWidth);
     }
@@ -236,7 +240,11 @@ void SearchBox::paintEvent(QPaintEvent * event)
   QRect r = rect();
   QPalette pal = palette();
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
   QStyleOptionFrameV2 panel;
+#else
+  QStyleOptionFrame panel;
+#endif
   initStyleOption(&panel);
   r = this->style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
   r.setX(r.x() + this->textMargins().left());

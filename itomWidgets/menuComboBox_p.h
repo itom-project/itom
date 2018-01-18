@@ -85,6 +85,7 @@ public:
 
 public Q_SLOTS:
   void setComboBoxEditable(bool editable = true);
+  void onCompletion(const QString& text);
 
 protected:
   QIcon         DefaultIcon;

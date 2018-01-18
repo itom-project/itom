@@ -85,6 +85,8 @@ ColorDialog::ColorDialog(QWidget* parent)
   , d_ptr(new ColorDialogPrivate(*this))
 {
   Q_D(ColorDialog);
+  // Force using Qt's standard color dialog to support adding new widgets
+  setOption(QColorDialog::DontUseNativeDialog);
   d->init();
 }
 
@@ -94,6 +96,8 @@ ColorDialog::ColorDialog(const QColor& initial, QWidget* parent)
   , d_ptr(new ColorDialogPrivate(*this))
 {
   Q_D(ColorDialog);
+  // Force using Qt's standard color dialog to support adding new widgets
+  setOption(QColorDialog::DontUseNativeDialog);
   d->init();
 }
 
