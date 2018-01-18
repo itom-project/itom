@@ -249,6 +249,7 @@ Source: "{#SourceDirQT}\Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs QT OpenCV
 Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs QT Plugins
@@ -422,7 +423,6 @@ Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea
 Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_videoio${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
