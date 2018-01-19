@@ -559,7 +559,7 @@ Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixe
 ;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x86) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
 ;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x86) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
 Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistr. x86 (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
-Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
+Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone; Check: ExistsPythonHome()
 Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\MATPLOTLIB"; Description: "{#NaPythonMatPlotLib} {#VePythonMatPlotLib}"; Types: Install; Flags: checkablealone

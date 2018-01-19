@@ -1,4 +1,4 @@
-; [CustomMessages]
+[CustomMessages]
 ; English.DirExistsText = This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?
 ; English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
 ; English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
@@ -7,6 +7,8 @@
 ; Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
 English.PythonHomeText=It is necessary to delete the existing PYTHONHOME environment variable before installing itom if you want to use Python from the subdirectory of itom (default).
 Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
+English.PythonHomeText = If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
+Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
@@ -157,6 +159,7 @@ begin
 end;
 
 function ExistsPythonHome(Value: String): Boolean;
+function ExistsPythonHome(): Boolean;
 var  PythonPath: string;
 begin
   Result := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment\PYTHONHOME', '', PythonPath);
