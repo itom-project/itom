@@ -400,6 +400,7 @@ Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugi
 Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PiezosystemJena_NV40_1\*.*"; DestDir: "{app}\plugins\PiezosystemJena_NV40_1"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PmdPico\*.*"; DestDir: "{app}\plugins\PmdPico"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\rawImport\*.*"; DestDir: "{app}\plugins\rawImport"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Roughness\*.*"; DestDir: "{app}\plugins\Roughness"; Flags: ignoreversion recursesubdirs
