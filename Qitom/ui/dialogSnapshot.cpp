@@ -54,8 +54,6 @@ void DialogSnapshot::setGroupTimestampEnabled()
 DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, ito::RetVal &retval) :
     QMainWindow(parent),
     m_path(""),
-    m_paramsOpt(NULL),
-    m_paramsMand(NULL),
     m_pCamera(NULL),
     addComboItem(false),
     m_totalSnaps(0),
@@ -638,6 +636,26 @@ void DialogSnapshot::on_btnOptions_clicked()
 
             if (userMand.size() > 0 || userOpt.size() > 0)
             {
+				//try to update userOpt and userMand to the values from a previous call of this function
+				for (int i = 0; i < qMin(m_paramsOpt.size(), userOpt.size()); ++i)
+				{
+					if ((userOpt[i].getType() == m_paramsOpt[i].getType()) && \
+						userOpt[i].getName() == m_paramsOpt[i].getName())
+					{
+						userOpt[i].copyValueFrom(&(m_paramsOpt[i]));
+					}
+				}
+
+				int offset = autoMand.size();
+				for (int i = 0; i < qMin(m_paramsMand.size() - offset, userMand.size()); ++i)
+				{
+					if ((userMand[i].getType() == m_paramsMand[i + offset].getType()) && \
+						userMand[i].getName() == m_paramsMand[i + offset].getName())
+					{
+						userMand[i].copyValueFrom(&(m_paramsMand[i + offset]));
+					}
+				}
+
                 DialogSaveFileWithFilter *dialog = new DialogSaveFileWithFilter(filename, filter, autoMand, m_autoOut, userMand, userOpt, false, this);
                 if (dialog->exec() == QDialog::Accepted)
                 {
