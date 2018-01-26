@@ -51,7 +51,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap) :
     bool hasSVN = false;
 
     ui.setupUi(this);
-    ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomIcon64.png")));
+    ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo3_64.png")));
     ui.ITOLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
     QMapIterator<QString, QString> i(versionMap);

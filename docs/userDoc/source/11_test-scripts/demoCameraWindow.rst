@@ -20,7 +20,7 @@ GUI overview
     :scale: 100%
     :align: center
 
-The GUI is build in *QT designer*. It basicly consist of an *Itom2dQwtPlot* widget, two *QPushButtons* for showing live images or taking snapshots, three QRadioButtons for different integration times and a QCheckBox for toggling autograbbing.
+The GUI is build in *QT designer*. It basically consist of an *Itom2dQwtPlot* widget, two *QPushButtons* for showing live images or taking snapshots, three QRadioButtons for different integration times and a QCheckBox for toggling autograbbing.
 
 
 Script overview
