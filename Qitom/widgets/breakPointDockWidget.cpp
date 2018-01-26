@@ -358,12 +358,15 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
 void BreakPointDockWidget::dataChanged()
 {
 	//this slot is only necessary until the span-method of AbstractItemModel will be automatically considered and changes the column span.
-	for (int row = 0; row < m_breakPointView->model()->rowCount(); row++)
+	// added if due to crash on itom startup ck 26/01/2018
+	if (m_breakPointView && m_breakPointView->model())
 	{
-		QSize span = m_breakPointView->model()->span(m_breakPointView->model()->index(row, 0));
-		m_breakPointView->setFirstColumnSpanned(row, QModelIndex(), span.width() > 1);
+		for (int row = 0; row < m_breakPointView->model()->rowCount(); row++)
+		{
+			QSize span = m_breakPointView->model()->span(m_breakPointView->model()->index(row, 0));
+			m_breakPointView->setFirstColumnSpanned(row, QModelIndex(), span.width() > 1);
+		}
 	}
-
 }
 
 } //end namespace ito
