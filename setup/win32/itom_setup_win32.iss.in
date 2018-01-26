@@ -217,6 +217,7 @@ Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5QuickWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: ignoreversion
