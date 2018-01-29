@@ -96,16 +96,16 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     switch (type) 
     {
         case QtDebugMsg:
-            (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
             break;
         case QtWarningMsg:
-            (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
             break;
         case QtCriticalMsg:
-            (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
             break;
         case QtFatalMsg:
-            (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
             abort();
     }
 
@@ -174,13 +174,17 @@ int main(int argc, char *argv[])
     if (args.contains("log", Qt::CaseInsensitive))
     {
         logfile.setFileName("itomlog.txt");
-        logfile.open(QIODevice::WriteOnly);
+        logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
         messageStream = new QTextStream(&logfile);
 #if QT_VERSION < 0x050000
         qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
 #else
         qInstallMessageHandler(myMessageOutput);
 #endif
+		//first lines in log file
+		logfile.write("------------------------------------------------------------------------------------------\n");
+		logfile.write(QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n").toLatin1().constData());
+		logfile.write("------------------------------------------------------------------------------------------\n");
     }    
 
 //#if defined _DEBUG

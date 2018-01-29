@@ -1751,7 +1751,10 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
     m_pMainFilterModel->sort(0, Qt::AscendingOrder);
 
     //disconnect earlier connections (if available)
-    disconnect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+	if (ui.treeView->selectionModel())
+	{
+		disconnect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+	}
 
     //model has been 
     ui.treeView->setModel(m_pMainFilterModel);

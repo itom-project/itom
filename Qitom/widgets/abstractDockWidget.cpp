@@ -410,8 +410,8 @@ void AbstractDockWidget::saveState(const QString &iniName) const
         {
             QByteArray geometry = m_pWindow->saveGeometry();
 
-#ifdef _DEBUG
-            {
+			if (iniName == "itomHelpDockWidget")
+			{
                 QDataStream stream(geometry);
                 stream.setVersion(QDataStream::Qt_4_0);
 
@@ -440,24 +440,9 @@ void AbstractDockWidget::saveState(const QString &iniName) const
                     >> maximized
                     >> fullScreen;
 
-                qDebug() << "saved geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
-				/*
-				QString outputFilename = "D:\\itom\\geometryLog.txt";
-				QFile outputFile(outputFilename);
-				outputFile.open(QIODevice::WriteOnly | QIODevice::Append);
-
-				QTextStream outStream(&outputFile);
-
-				outStream << "saved geometry: " << objectName() << "\n"
-					<< "restored frame geometry: " << " height: " << restoredFrameGeometry.height() << " width: " << restoredFrameGeometry.width()
-					<< " position bottom (x,y):" << restoredFrameGeometry.bottomLeft().x() << " : " << restoredFrameGeometry.bottomLeft().y() << "\n"
-					<< "restored normal geometry: " << " height: " << restoredNormalGeometry.height() << " width: " << restoredNormalGeometry.width()
-					<< " position bottom (x,y):" << restoredNormalGeometry.bottomLeft().x() << " : " << restoredNormalGeometry.bottomLeft().y() << "\n"
-					<< "restored Screen number: " << restoredScreenNumber << " maximized: " << maximized << " fullscreen: " << fullScreen << "\n\n";
-
-				outputFile.close();*/
+				qDebug() << "Save geometry of itomHelpDockWidget to ini: " << ", frame geometry: " << restoredFrameGeometry << ", normal geometry: " << \
+					restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen;
             }
-#endif
 
             settings.setValue("geometry", geometry);
             if (!docked())
@@ -483,11 +468,51 @@ void AbstractDockWidget::restoreState(const QString &iniName)
         settings.beginGroup(iniName);
 
         m_pWindow->restoreState(settings.value("state").toByteArray());
+
+		QByteArray geometry = settings.value("geometry").toByteArray();
+		QVariant docked = settings.value("docked");
+		QVariant visible_ = settings.value("visible");
+		bool visible = visible_.isValid() ? visible_.toBool() : true;
+
+		if (iniName == "itomHelpDockWidget")
+		{
+			QDataStream stream(geometry);
+			stream.setVersion(QDataStream::Qt_4_0);
+
+			const quint32 magicNumber = 0x1D9D0CB;
+			quint32 storedMagicNumber;
+			stream >> storedMagicNumber;
+
+			const quint16 currentMajorVersion = 2;
+			quint16 majorVersion = 0;
+			quint16 minorVersion = 0;
+
+			stream >> majorVersion >> minorVersion;
+
+			// (Allow all minor versions.)
+
+			QRect restoredFrameGeometry;
+			QRect restoredNormalGeometry;
+			qint32 restoredScreenNumber;
+			quint8 maximized;
+			quint8 fullScreen;
+			qint32 restoredScreenWidth = 0;
+
+			stream >> restoredFrameGeometry
+				>> restoredNormalGeometry
+				>> restoredScreenNumber
+				>> maximized
+				>> fullScreen;
+
+
+			qDebug() << "Load geometry of itomHelpDockWidget from ini: " << ", frame geometry: " << restoredFrameGeometry << ", normal geometry: " << \
+				restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen << \
+				", visible: " << visible << ", floating window?: " << (m_floatingStyle == floatingWindow) << ", visible valid?:" << visible_.isValid();
+		}
+
+
         if (m_floatingStyle == floatingWindow)
         {
-            QVariant docked = settings.value("docked");
-            QVariant visible_ = settings.value("visible");
-            bool visible = visible_.isValid() ? visible_.toBool() : true;
             if (docked.isValid())
             {
                 if (docked.toBool())
@@ -508,59 +533,6 @@ void AbstractDockWidget::restoreState(const QString &iniName)
 
             if (visible_.isValid())
             {
-                QByteArray geometry = settings.value("geometry").toByteArray();
-
-#ifdef _DEBUG
-                {
-                    QDataStream stream(geometry);
-                    stream.setVersion(QDataStream::Qt_4_0);
-
-                    const quint32 magicNumber = 0x1D9D0CB;
-                    quint32 storedMagicNumber;
-                    stream >> storedMagicNumber;
-
-                    const quint16 currentMajorVersion = 2;
-                    quint16 majorVersion = 0;
-                    quint16 minorVersion = 0;
-
-                    stream >> majorVersion >> minorVersion;
-
-                    // (Allow all minor versions.)
-
-                    QRect restoredFrameGeometry;
-                    QRect restoredNormalGeometry;
-                    qint32 restoredScreenNumber;
-                    quint8 maximized;
-                    quint8 fullScreen;
-                    qint32 restoredScreenWidth = 0;
-
-                    stream >> restoredFrameGeometry
-                        >> restoredNormalGeometry
-                        >> restoredScreenNumber
-                        >> maximized 
-                        >> fullScreen;
-
-
-					qDebug() << "restore geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
-					/*
-					QString outputFilename = "D:\\itom\\geometryLog.txt";
-					QFile outputFile(outputFilename);
-					outputFile.open(QIODevice::WriteOnly | QIODevice::Append);
-
-					QTextStream outStream(&outputFile);
-
-					outStream << "restored geometry: " << objectName() << "\n"
-						<< "restored frame geometry: " << " height: " << restoredFrameGeometry.height() << " width: " << restoredFrameGeometry.width() 
-						<< " position bottom (x,y):" << restoredFrameGeometry.bottomLeft().x() << " : " << restoredFrameGeometry.bottomLeft().y() << "\n"
-						<< "restored normal geometry: " << " height: " << restoredNormalGeometry.height() << " width: " << restoredNormalGeometry.width()
-						<< " position bottom (x,y):" << restoredNormalGeometry.bottomLeft().x() << " : " << restoredNormalGeometry.bottomLeft().y() << "\n"
-						<< "restored Screen number: " << restoredScreenNumber << " maximized: " << maximized << " fullscreen: " << fullScreen << "\n\n";
-
-					outputFile.close();
-*/
-                }
-#endif
-
                 if (visible)
                 {
                     setVisible(true);
