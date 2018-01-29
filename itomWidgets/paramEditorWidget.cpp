@@ -291,10 +291,12 @@ ito::RetVal ParamEditorWidget::loadPlugin(QPointer<ito::AddInBase> plugin)
             connect(d->m_plugin.data(), SIGNAL(parametersChanged(QMap<QString, ito::Param>)), this, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
 
-        if (d->m_filteredCategories.size() == 0 || d->m_filteredCategories.contains("General"))
+		QString generalName = tr("General");
+
+        if (d->m_filteredCategories.size() == 0 || d->m_filteredCategories.contains(generalName))
         {
-            d->m_groups["General"] = d->m_pGroupPropertyManager->addProperty("General");
-            d->m_pBrowser->addProperty(d->m_groups["General"]);
+            d->m_groups["General"] = d->m_pGroupPropertyManager->addProperty(generalName);
+            d->m_pBrowser->addProperty(d->m_groups[generalName]);
         }
 
         QMap<QString, ito::Param> *params;
@@ -553,7 +555,7 @@ ito::RetVal ParamEditorWidget::addParam(const ito::Param &param)
     ito::RetVal retval;
     ito::ParamMeta::MetaRtti metaType = meta ? meta->getType() : ito::ParamMeta::rttiUnknown;
 
-    QString group = "General";
+    QString group = tr("General");
     if (meta && meta->getCategory().empty() == false)
     {
         group = meta->getCategory().data();
