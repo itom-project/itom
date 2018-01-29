@@ -57,7 +57,7 @@ Qt5 either download the ready-to-use binaries from qt-project.org, compile it fr
 Create the following environment variables (Windows only - you need to log-off from your computer in order to activate changes to environment variables):
 
 * create an entry **QTDIR** and set it to the *Qt*-base directory (e.g. **C:\\Qt\\4.8.0**)
-* for Qt4.x create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
+* for Qt4.x create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec). For MSVC 2017 or newer **QMAKESPEC** must be set to **win32-msvc**.
 * add the following text to the Path variable: **;%QTDIR%\\bin** (please only **add** this string, **do not replace** the existing path-entry)
 
 .. note::
