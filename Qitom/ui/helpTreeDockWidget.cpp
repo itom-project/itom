@@ -1543,8 +1543,12 @@ void HelpTreeDockWidget::propertiesChanged()
                 settings.setArrayIndex(i);
                 QString nameID = settings.value("DB", QString()).toString();
                 QString name = nameID.left(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/));
-                //Add to m_pMainlist
-                m_includedDBs.append(name);
+
+				if (name != "" && !m_includedDBs.contains(name))
+				{
+					//Add to m_pMainlist
+					m_includedDBs.append(name);
+				}
             }
             settings.endArray();
             reloadDB();

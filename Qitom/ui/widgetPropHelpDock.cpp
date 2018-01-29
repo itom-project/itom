@@ -232,6 +232,12 @@ void WidgetPropHelpDock::writeSettings()
         }
     }
     settings.endArray();
+
+	if (i == 0)
+	{
+		settings.beginWriteArray("Databases", 0);
+		settings.endArray();
+	}
     settings.endGroup();
 }
 
