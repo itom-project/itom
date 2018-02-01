@@ -441,10 +441,14 @@ void AbstractDockWidget::saveState(const QString &iniName) const
                     >> fullScreen;
 
 				qDebug() << "Save geometry of itomHelpDockWidget to ini: " << ", frame geometry: " << restoredFrameGeometry << ", normal geometry: " << \
-					restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen;
+					restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen << ", docked: " << docked();
             }
 
-            settings.setValue("geometry", geometry);
+			if (!docked())
+			{
+				settings.setValue("geometry", geometry);
+			}
+
             if (!docked())
             {
                 settings.setValue("visible", isVisible());
