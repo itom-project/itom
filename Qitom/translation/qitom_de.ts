@@ -3096,12 +3096,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+19"/>
         <source>General style settings </source>
-        <translation type="unfinished">Allgemeine Style-Einstellungen</translation>
+        <translation type="unfinished">Allgemeine Style-Einstellungen </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides wheter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot).</source>
-        <translation type="unfinished">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot).</translation>
+        <translation>Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot).</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -3156,7 +3156,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+17"/>
         <source>Legend label width</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Legendenbreite</translation>
     </message>
     <message>
         <location line="+127"/>
@@ -3171,22 +3171,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+13"/>
         <source>Print and Export</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Druck und Export</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Clipboard resolution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auflösung beim Kopieren</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>This resolution is used, if the plot is copied to the clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Auflösung wird benutzt, wenn ein Plot in die Zwischenablage kopiert wird</translation>
     </message>
     <message>
         <location line="+3"/>
         <source> dpi</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-169"/>
@@ -5217,7 +5217,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-151"/>
         <source>file name filters (semicolon or space separated list)</source>
-        <translation type="unfinished">Dateinamen der Filter (mit Semikolon oder Leerzeichen separierte Liste)</translation>
+        <translation>Dateinamen der Filter (mit Semikolon oder Leerzeichen separierte Liste)</translation>
     </message>
     <message>
         <location line="+153"/>
@@ -5385,7 +5385,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+4"/>
         <location line="+4"/>
         <source>DataIO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-991"/>
@@ -5409,7 +5409,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+586"/>
         <location line="+384"/>
         <source>Raw IO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-922"/>
@@ -5486,7 +5486,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+83"/>
         <source>dataIO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -5572,17 +5572,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+6"/>
         <source>Wildcard: &apos;%1&apos;</source>
-        <translation type="unfinished">Platzhalter: &apos;%1&apos;</translation>
+        <translation>Platzhalter: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Wildcard: [%1]</source>
-        <translation type="unfinished">Platzhalter: [%1]</translation>
+        <translation>Platzhalter: [%1]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wildcard: &lt;no pattern given&gt;</source>
-        <translation type="unfinished">Platzhalter: &lt;keine Vorlage&gt;</translation>
+        <translation>Platzhalter: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
         <location line="+89"/>
@@ -6561,7 +6561,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+53"/>
         <source>%1 [Wildcard]</source>
-        <translation type="unfinished">%1 [Platzhalter]</translation>
+        <translation>%1 [Platzhalter]</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -8796,7 +8796,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+70"/>
         <source>Python engine not available</source>
-        <translation type="unfinished">Die Python-Engine ist nicht verfügbar</translation>
+        <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+4"/>
