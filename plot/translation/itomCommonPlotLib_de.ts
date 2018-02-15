@@ -110,12 +110,12 @@
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="128"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="175"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation>Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="266"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="315"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation>Der Plot besitzt keinen Slot für Live-Quellen</translation>
     </message>
@@ -123,7 +123,7 @@
 <context>
     <name>ito::AbstractDObjPclFigure</name>
     <message>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="193"/>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="199"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation>Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
