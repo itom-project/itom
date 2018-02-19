@@ -3,7 +3,7 @@
 from docutils import nodes, utils, statemachine
 from docutils.parsers.rst.roles import set_classes
 from docutils.parsers.rst import directives
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive
 import itom
 import __main__
 
