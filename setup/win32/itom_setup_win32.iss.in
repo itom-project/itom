@@ -346,7 +346,7 @@ Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignorevers
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
-Source: "{#SourceDirItomBuild}\SDK\lib\vc12_x86\*.*"; DestDir: "{app}\SDK\lib\vc12_x86"; Flags: ignoreversion; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\vc14_x86\*.*"; DestDir: "{app}\SDK\lib\vc14_x86"; Flags: ignoreversion; Components: SDK
 
 ; Python
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
@@ -452,7 +452,7 @@ Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC120_v3_0.dll"; DestDir: "{app
 Source: "{#SourceDirItomBuild}\lib\CLSerCOM.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleCore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v110.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -573,7 +573,7 @@ Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixe
 ;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x86) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
 ;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x86) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
 Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistr. x86 (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
-Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone; Check: ExistsPythonHome()
+Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
 ;Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\MATPLOTLIB"; Description: "{#NaPythonMatPlotLib} {#VePythonMatPlotLib}"; Types: Install; Flags: checkablealone

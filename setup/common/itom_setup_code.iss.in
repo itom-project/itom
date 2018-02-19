@@ -5,10 +5,10 @@
 ; Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
 ; Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
 ; Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
-English.PythonHomeText=It is necessary to delete the existing PYTHONHOME environment variable before installing itom if you want to use Python from the subdirectory of itom (default).
-Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
+; English.PythonHomeText=It is necessary to delete the existing PYTHONHOME environment variable before installing itom if you want to use Python from the subdirectory of itom (default).
+; Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 English.PythonHomeText = If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
-Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
+Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation gel&ouml;scht werden.
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
@@ -158,21 +158,17 @@ begin
   end;
 end;
 
-procedure ExistsPythonHome();
-var  PythonPath: string;
-     PyHomeExists: Boolean;
+function ExistsPythonHome(): Boolean;
 begin
-  PyHomeExists := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment\PYTHONHOME', '', PythonPath);
-  
-  if PyHomeExists then
-    MsgBox(CustomMessage('PythonHomeText'), mbConfirmation, MB_OK)
+  Result := RegValueExists(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment','PYTHONHOME');
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
+  if (CurPageID = wpSelectComponents) and ExistsPythonHome() then
+    MsgBox(CustomMessage('PythonHomeText'), mbError, MB_OK);
+
   Result := True;
-  if (CurPageID = wpSelectTasks) and not IsTaskSelected('CheckPythonHome') then
-    ExistsPythonHome;
 end;
 
 procedure InitializeWizard();

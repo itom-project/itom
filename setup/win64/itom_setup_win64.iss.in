@@ -346,7 +346,7 @@ Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignorevers
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
-Source: "{#SourceDirItomBuild}\SDK\lib\vc12_x64\*.*"; DestDir: "{app}\SDK\lib\vc12_x64"; Flags: ignoreversion; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\vc14_x64\*.*"; DestDir: "{app}\SDK\lib\vc14_x64"; Flags: ignoreversion; Components: SDK
 
 ; Python
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
@@ -452,7 +452,7 @@ Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC120_v3_0.dll"; DestDir: "{app
 Source: "{#SourceDirItomBuild}\lib\CLSerCOM.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v110.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
