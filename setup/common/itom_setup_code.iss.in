@@ -158,14 +158,21 @@ begin
   end;
 end;
 
-function ExistsPythonHome(Value: String): Boolean;
-function ExistsPythonHome(): Boolean;
+procedure ExistsPythonHome();
 var  PythonPath: string;
+     PyHomeExists: Boolean;
 begin
-  Result := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment\PYTHONHOME', '', PythonPath);
+  PyHomeExists := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment\PYTHONHOME', '', PythonPath);
   
-  if Result then
+  if PyHomeExists then
     MsgBox(CustomMessage('PythonHomeText'), mbConfirmation, MB_OK)
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  if (CurPageID = wpSelectTasks) and not IsTaskSelected('CheckPythonHome') then
+    ExistsPythonHome;
 end;
 
 procedure InitializeWizard();
