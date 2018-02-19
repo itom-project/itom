@@ -8,7 +8,7 @@
 ; English.PythonHomeText=It is necessary to delete the existing PYTHONHOME environment variable before installing itom if you want to use Python from the subdirectory of itom (default).
 ; Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 English.PythonHomeText = If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
-Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation gel&ouml;scht werden.
+Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation geloescht werden.
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
