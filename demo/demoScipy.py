@@ -1,7 +1,7 @@
 #this demo requires the python packages scipy and matplotlib
 
 '''
-opens the lena image from scipy.misc and shifts the image.
+opens the ascent image from scipy.misc and shifts the image.
 Finally the shift offsets are determined using cross-correlation
 '''
 
@@ -14,12 +14,12 @@ from numpy.fft import fftshift
 import pylab
 from matplotlib import cm, colors
 
-lena = scipy.misc.lena()
-print("The lena-image has a size of",lena.shape)
-print("The maximum value of this image is ", lena.max())
-print("Its data type is ", lena.dtype)
+ascent = scipy.misc.ascent()
+print("The ascent-image has a size of",ascent.shape)
+print("The maximum value of this image is ", ascent.max())
+print("Its data type is ", ascent.dtype)
 
-F = fft2(lena)
+F = fft2(ascent)
 F2 = fftshift(F)
 
 
@@ -27,33 +27,33 @@ F2 = fftshift(F)
 pylab.figure()
 pylab.gray()
 pylab.subplot(221)
-pylab.imshow(lena)
-pylab.title("Lena (Original)")
+pylab.imshow(ascent)
+pylab.title("ascent (Original)")
 
 pylab.subplot(222)
 img = pylab.imshow(numpy.real(F))
 img.set_clim(0,100)
-pylab.title("Lena (FFT)")
+pylab.title("ascent (FFT)")
 
 pylab.subplot(223)
 img = pylab.imshow(numpy.real(F2))
 img.set_clim(0,100)
-pylab.title("Lena (FFT), fftshift")
+pylab.title("ascent (FFT), fftshift")
 
 
 #cross-correlation
 pylab.figure()
 pylab.subplot(231)
-pylab.imshow(lena)
+pylab.imshow(ascent)
 
-lena_roll = numpy.roll(lena, 50, 1)
-lena_roll = numpy.roll(lena_roll, -150, 0)
+ascent_roll = numpy.roll(ascent, 50, 1)
+ascent_roll = numpy.roll(ascent_roll, -150, 0)
 
 pylab.subplot(232)
-pylab.imshow(lena_roll)
+pylab.imshow(ascent_roll)
 
-F = fftshift(fft2(lena))
-F2 = fftshift(fft2(lena_roll))
+F = fftshift(fft2(ascent))
+F2 = fftshift(fft2(ascent_roll))
 
 F3 = numpy.multiply(F,F2.conj())
 
