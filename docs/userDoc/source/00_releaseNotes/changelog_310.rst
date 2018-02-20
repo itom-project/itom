@@ -9,7 +9,7 @@ itom
 ********
 
 
-**Version 3.1.0 (2018-XX-XX)**
+**Version 3.1.0 (2018-02-20)**
 
 (more than 270 commits in itom repository)
 
