@@ -131,7 +131,7 @@ Compression=lzma
 SolidCompression=yes
 LicenseFile={#SourceDirItomSource}\COPYING.txt
 AlwaysRestart=False
-PrivilegesRequired=none
+PrivilegesRequired=admin
 RestartIfNeededByRun=False
 MinVersion=0,6.0
 
