@@ -5,7 +5,7 @@
     <name>QObject</name>
     <message>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget &apos;%1&apos; wurde abgelehnt, da es in der globalen Plugin-Widget-Liste bereits ein Widget mit dem selben Namen gibt</translation>
     </message>
     <message>
         <source>Widget %1 loaded</source>
@@ -45,19 +45,19 @@
     </message>
     <message>
         <source>Vectors paramsMand, paramsOpt and paramsOut must not be NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Vektoren paramsMand, paramsOpt und paramsOut dürfen nicht NULL sein</translation>
     </message>
     <message>
         <source>Filter parameters not found in hash table.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Filterparameter wurde nicht in der Hash-Tabelle gefunden.</translation>
     </message>
     <message>
         <source>Fatal error! Could not get addInManager instance!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fataler Fehler! Es wurde keine Instanz des AddInManagers gefunden!</translation>
     </message>
     <message>
         <source>No plugin name specified.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde kein Plugin-Name angegeben.</translation>
     </message>
     <message>
         <source>The data object &apos;%s&apos; must have %i dimensions (%i given)</source>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>Error invoking &apos;sendParameterRequest&apos; of the plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei Aufruf von &apos;sendParameterRequest&apos; des Plugins</translation>
     </message>
     <message>
         <source>The signal/slot &apos;parametersChanged&apos; could not be connected</source>
@@ -85,7 +85,7 @@
     </message>
     <message>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem erforderlichen Typ des Interface-Parameters &apos;%s&apos;</translation>
     </message>
     <message>
         <source>In/Out flags of parameter &apos;%s&apos; are unequal to required flags of interface parameter &apos;%s&apos;</source>
@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die beiden Parameter &apos;%s&apos; und Interface-Parameter &apos;%s&apos; erfordern unterschiedliche Plugins.</translation>
     </message>
     <message>
         <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
@@ -165,15 +165,15 @@
     </message>
     <message>
         <source>Exact string match: (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exakte Textübereinstimmung: (%1)</translation>
     </message>
     <message>
         <source>Wildcard match: (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wildcard-Übereinstimmung: (%1)</translation>
     </message>
     <message>
         <source>RegExp match: (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übereinstimmung des regulären Ausdrucks: (%1)</translation>
     </message>
     <message>
         <source>String &apos;%s&apos; does not fit to given string-constraints. %1</source>
@@ -185,23 +185,23 @@
     </message>
     <message>
         <source>value out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <source>value does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Wert entspricht nicht der angegebenen Schrittweite [%1:%2:%3]</translation>
     </message>
     <message>
         <source>AddIn does not fit to minimum required type(s).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn entspricht nicht den mindesterforderlichen Typ(en).</translation>
     </message>
     <message>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>AddIn must not be NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn darf nicht NULL sein</translation>
     </message>
     <message>
         <source>length of char array out of range [%1, %2]</source>
@@ -301,7 +301,7 @@
     </message>
     <message>
         <source>bottom side of roi exceeds maximal limit of %1 (reduce y0 or height)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Untergrenze des ROI überschreitet das Maximum von %1 (maximal y0 oder kleiner)</translation>
     </message>
     <message>
         <source>roi[1] (y0) does not fit to given step size [%1:%2:%3]</source>
@@ -337,11 +337,11 @@
     </message>
     <message>
         <source>Parameter %1: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter %1: </translation>
     </message>
     <message>
         <source>Index value is out of range [0, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Indexwert liegt außerhalb der Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <source>index-based parameter cannot be validated since non-index based parameter has an unhandled type</source>
@@ -353,7 +353,7 @@
     </message>
     <message>
         <source>Parameter could not be converted to destination type.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter wurde nicht in den Zieltyp konvertiert.</translation>
     </message>
     <message>
         <source>type of parameter does not fit to requested parameter type</source>
@@ -365,19 +365,19 @@
     </message>
     <message>
         <source>Name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Name der übergebenen Parameter ist leer.</translation>
     </message>
     <message>
         <source>Parameter &apos;%1&apos; is read only.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%1&apos; ist schreibgeschützt.</translation>
     </message>
     <message>
         <source>Parameter &apos;%1&apos; is (temporarily) not available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%1&apos; ist (temprär) nicht verfügbar.</translation>
     </message>
     <message>
         <source>Parameter &apos;%1&apos; not found.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
         <source>invalid parameter name</source>
@@ -385,66 +385,66 @@
     </message>
     <message>
         <source>index is ouf of range [0, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Index liegt außerhalb der Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <source>param is no array</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Param ist kein Array</translation>
     </message>
     <message>
         <source>Paramater is no array type. Indexing not possible.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
     </message>
     <message>
         <source>Parameter &apos;%s&apos; does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%s&apos; existiert nicht</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInManager</name>
     <message>
         <source>Directory &apos;%1&apos; could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <source>Plugins folder could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Plugin-Ordner wurde nicht gefunden</translation>
     </message>
     <message>
         <source>Invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiger Plugin-Typ. Nur typeDataIO, typeActuator oder typeAlgo sind erlaubt.</translation>
     </message>
     <message>
         <source>Plugin &apos;%1&apos; not found in list of given type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin &apos;%1&apos; wurde in der Liste des angegebenen Typs nicht gefunden</translation>
     </message>
     <message>
         <source>Caught exception during getPluginInfo of: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Aufruf von &apos;getPluginInfo&apos; wurde ein Exeption empfangen: %1</translation>
     </message>
     <message>
         <source>Caught exception during initAddIn of: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Aufruf von &apos;initAddIn&apos; wurde ein Exeption empfangen: %1</translation>
     </message>
     <message>
         <source>Caught exception during closeAddIn of: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Aufruf von &apos;closeAddIn&apos; wurde ein Exeption empfangen: %1</translation>
     </message>
     <message>
         <source>AddInManager already has an instance of mainWindow, ignoring new window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der AddInManager hat bereits eine Instanz des MainWindows. Ein neues Fenster wird ignoriert</translation>
     </message>
     <message>
         <source>Reference counter not zero. Only unused plugins can be reloaded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Referenzzähler ist nicht Null. Nur ungenutzte Plugins können neugeladen werden.</translation>
     </message>
     <message>
         <source>No configuration dialog available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es ist kein Konfigurationsdialog verfügbar</translation>
     </message>
     <message>
         <source>No suitable qapplication / window could be detected, not loading dockWidget</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde keine entsprechende QApplication/Window erkannt. Das DockWidget wurde nicht geladen</translation>
     </message>
     <message>
         <source>No toolbox available</source>
@@ -452,62 +452,62 @@
     </message>
     <message>
         <source>Plugin not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInManagerPrivate</name>
     <message>
         <source>Filename is no itom plugin library: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei ist keine itom-Plugin-Bibliothek: %1</translation>
     </message>
     <message>
         <source>Scan and load plugins (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sucht und läd Plugins (%1)</translation>
     </message>
     <message>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nicht möglich die Übersetzungsdatei &apos;%1&apos; zu laden. Die Datei ist leer.</translation>
     </message>
     <message>
         <source>Unable to find translation file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
         <source>Plugin with filename &apos;%1&apos; is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn &apos;%1&apos; benötigt das veraltete AddIn-Interface %2. Die aktuelle Interface-Version dieses itoms ist %3.</translation>
     </message>
     <message>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn &apos;%1&apos; benötigt ein neueres AddIn-Interface, welches mit dieser itom-Version nicht unterstützt wird. Die aktuelle Interface-Version dieses itoms ist %2.</translation>
     </message>
     <message>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn &apos;%1&apos; wird nicht von &apos;AddInInterfaceBase&apos; unterstützt</translation>
     </message>
     <message>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn &apos;%1&apos; ist keine Ableitung der Klasse QObject.</translation>
     </message>
     <message>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; ist kein gültiges Qt-Plugin.</translation>
     </message>
     <message>
         <source>Library &apos;%1&apos; was ignored. Message: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
     </message>
     <message>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
         <source>Caught exception during loading of plugin: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beim Laden des Plugins wurde ein Exeption empfangen: %1&apos;</translation>
     </message>
     <message>
         <source>%1 (DataIO) loaded</source>
@@ -515,7 +515,7 @@
     </message>
     <message>
         <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin %1 (DataIO) existiert bereits. Das Duplukat wurde zurückgewiesen.</translation>
     </message>
     <message>
         <source>%1 (Actuator) loaded</source>
@@ -523,39 +523,39 @@
     </message>
     <message>
         <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin %1 (Motor) existiert bereits. Das Duplukat wurde zurückgewiesen.</translation>
     </message>
     <message>
         <source>Error initializing plugin: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Plugin initialisieren: %1</translation>
     </message>
     <message>
         <source>Filter %1 loaded</source>
-        <translation type="unfinished">Filter %1 geladen</translation>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde geladen</translation>
     </message>
     <message>
         <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter %1 wurde zurückgewiese. Der Filterparameter konnte nicht geladen werden: %2</translation>
     </message>
     <message>
         <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter %1 wurde zurückgewiese. Der Filterparameter konnte nicht geladen werden.</translation>
     </message>
     <message>
         <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter %1 wurde zurückgewiese. Dieser deckt sich nicht mit dem Algorithmus-Interface: %2</translation>
     </message>
     <message>
         <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter %1 wurde zurückgewiese. Dieser deckt sich nicht mit dem Algorithmus-Interface.</translation>
     </message>
     <message>
         <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget &apos;%1&apos; wurde zurückgewiesen. Dieses deckt sich nicht mit dem Algorithmus-Interface: %2</translation>
     </message>
     <message>
         <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget &apos;%1&apos; wurde zurückgewiesen. Dieses deckt sich nicht mit dem Algorithmus-Interface.</translation>
     </message>
     <message>
         <source>Wrong plugin name</source>
@@ -563,40 +563,41 @@
     </message>
     <message>
         <source>Plugin instance is invalid (NULL)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Plugin-Instanz ist ungültig (NULL)</translation>
     </message>
     <message>
         <source>Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Referenzzähler des Plugins wurde mit Null initialisiert. Das sollte für dieses Plugin nicht der Fall sein (Bitte den Plugin-Entwickler kontaktieren!).</translation>
     </message>
     <message>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Base-Plugin oder der entsprechende Plugin-Typ diese Plugins ist nicht erkennbar.</translation>
     </message>
     <message>
         <source>Timeout while initializing dataIO</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Initialisieren des DataIOs</translation>
     </message>
     <message>
         <source>Timeout while initializing actuator</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Initialisieren des Motors</translation>
     </message>
     <message>
         <source>Timeout while pulling plugin back to main thread.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Zurücksetzen des Plugins in den Haupt-Thread.</translation>
     </message>
     <message>
         <source>Error invoking method &apos;moveBackToApplicationThread&apos; of plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der aufgerufenen Methode &apos;moveBackToApplicationThread&apos; des Plugins.</translation>
     </message>
     <message>
         <source>Timeout while closing plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Schließen des Plugins</translation>
     </message>
     <message>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter %1 wurde zurückgewiesen, da bereits ein Filter des gleichen Namens in der globalen Filterliste existiert.
+</translation>
     </message>
 </context>
 <context>
@@ -635,35 +636,35 @@
     </message>
     <message>
         <source>interface could not be added since its enumeration ID already has been added</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Interface konnte nicht hinzugefügt werden, da dessen ID bereits hinzugefügt wurde</translation>
     </message>
     <message>
         <source>The parameters of the filter does not fit to the requirements given by the specified filter interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Parameter des Filters entsprechen nicht den nach dem spezifischen Filter-Interface erforderlichen Parametern.</translation>
     </message>
     <message>
         <source>The filter does not have the required tags defined.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter hat nicht die erforderlichen &apos;Tags&apos; definiert.</translation>
     </message>
     <message>
         <source>The parameters of the widget does not fit to the requirements given by the specified widget interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Parameter des Widgets entsprechen nicht den nach dem spezifischen Widget-Interface erforderlichen Parametern.</translation>
     </message>
     <message>
         <source>The widget does not have the required tags defined.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget hat nicht die erforderlichen &apos;Tags&apos; definiert.</translation>
     </message>
     <message>
         <source>Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl der Plichtparameter des übergebenen Algorithmus&apos; überschreitet den Maximalwert des Algorithmus-Interface.</translation>
     </message>
     <message>
         <source>Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl der optionalen Parameter des übergebenen Algorithmus&apos; überschreitet den Maximalwert des Algorithmus-Interface.</translation>
     </message>
     <message>
         <source>Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl der Ausgabeparameter des übergebenen Algorithmus&apos; überschreitet den Maximalwert des Algorithmus-Interface.</translation>
     </message>
     <message>
         <source>The given algorithm interface is unknown</source>
@@ -718,7 +719,7 @@
     </message>
     <message>
         <source>Raw IO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Algorithm</source>
@@ -734,7 +735,7 @@
     </message>
     <message>
         <source>DataIO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>

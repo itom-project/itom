@@ -35,7 +35,7 @@
     <message>
         <location line="-419"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+38"/>
@@ -908,7 +908,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+39"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Passwort</translation>
     </message>
     <message>
         <location line="-116"/>
@@ -946,7 +946,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+18"/>
         <source>Save Image After Snap</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bild nach Aufnahme speichern</translation>
     </message>
     <message>
         <source>Save image after snap</source>
@@ -964,7 +964,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Data Type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateityp</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -974,17 +974,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+19"/>
         <source>Add Timestamp</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitstempel hinzufügen</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Tag of DataObject</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ins Tag des DataObjects</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Add to File Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zum Dateiname hinzufügen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -999,7 +999,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+31"/>
         <source>Multiple Snapshots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mehrere Aufnahmen</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -1009,7 +1009,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+53"/>
         <source>File Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateiname</translation>
     </message>
     <message>
         <source>Multiple snapshots</source>
@@ -3199,7 +3199,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+17"/>
         <source>Legend label width</source>
-        <translation type="unfinished">Legendenbreite</translation>
+        <translation type="unfinished">Breite der Legende</translation>
     </message>
     <message>
         <location line="-46"/>
@@ -3209,7 +3209,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-257"/>
         <source>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides whehter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot). Plots, that are integrated in an ui-file, only consider these settings above, that cannot be set in the QtDesigner properties.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot). Plots, die in eine UI-Datei integriert wurden, können nicht über die QtDesigner-Optionen gesetzt werden.</translation>
     </message>
     <message>
         <location line="+267"/>
@@ -3371,32 +3371,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+8"/>
         <source>Visible items in help viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">In der Hilfe angezeigte Objekte</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>show plugin algorithms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugins vom Typ Algorithmus anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show plugin dataIO and actuators</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugins vom Typ DataIO und Motor anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show plugin widgets</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pugins vom Typ Widget anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show script references of python packages (see below)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skript-Hinweise zu Python-Paketen anzeigen (siehe unten)</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>General options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemeine Einstellungen</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -3416,32 +3416,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+27"/>
         <source>Download update</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Update Download</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Update list of available help databases</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liste von verfügbaren Updates der Hilfedatenbank</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Timeout:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung:</translation>
     </message>
     <message>
         <location line="+25"/>
         <source> s</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Refresh list</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Liste aktualisieren</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Local: The .db-file is saved in the help directory of your itom installation. Check an entry to show it in the help viewer (if &apos;show script references for python packages&apos; is selected above).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lokal: Die Datenbankdatei liegt im Hilfe-Unterverzeichnis der itom-Installation. Durch Auswählen (Haken setzen) eines Eintrags wird dieser in der Hilfe angezeigt, falls er unter &apos;&apos; markiert ist</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3515,22 +3515,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+21"/>
         <source>Add New Palette</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Neue Palette hinzufügen</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Duplicate Selected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Duplikate auswählen</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Remove Selected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auswahl entfernen</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Import Palette</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Palette importieren</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3550,7 +3550,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+21"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hinzufügen</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -3575,17 +3575,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Red</source>
-        <translation type="unfinished"></translation>
+        <translation>Rot</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Grün</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Blau</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -3595,7 +3595,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übernehmen</translation>
     </message>
     <message>
         <location line="+68"/>
