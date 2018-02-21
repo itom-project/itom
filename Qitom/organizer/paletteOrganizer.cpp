@@ -247,8 +247,10 @@ QColor ItomPaletteBase::getColor(unsigned int index) const
 /*! \detail     This function returns the internal structur of the palette
 */
 ItomPalette ItomPaletteBase::getPalette() const
-{
-    return m_paletteData;
+{    
+    ItomPalette paletteOut = m_paletteData;
+    paletteOut.colorVector256 = QVector<ito::uint32>(get256Colors());
+    return paletteOut;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
