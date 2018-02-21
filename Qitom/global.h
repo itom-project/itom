@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -41,10 +41,10 @@
 
 /* definition and macros */
 #define ITOM_VERSION_MAJOR  0x03
-#define ITOM_VERSION_MINOR  0x00
+#define ITOM_VERSION_MINOR  0x01
 #define ITOM_VERSION_PATCH  0x00
 #define ITOM_VERSION        CREATEVERSION(ITOM_VERSION_MAJOR,ITOM_VERSION_MINOR,ITOM_VERSION_PATCH) //ITOM_VERSION is (major << 16) + (minor << 8) + patch
-#define ITOM_VERSION_STR    "3.0.0"
+#define ITOM_VERSION_STR    "3.1.0"
 
 #ifdef USEPCL
     #define ITOM_POINTCLOUDLIBRARY 1

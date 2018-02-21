@@ -179,6 +179,10 @@
         <source>Warning while execution</source>
         <translation type="unfinished">Bei der Ausführung ist eine Warnung aufgetreten</translation>
     </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PathLineEdit</name>
@@ -241,6 +245,74 @@
     <message>
         <source>Value</source>
         <translation>Wert</translation>
+    </message>
+    <message>
+        <source>Point %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Circle %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Center</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Radius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ellipse %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Radius 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Radius 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nodes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

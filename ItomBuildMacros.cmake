@@ -511,6 +511,8 @@ ENDMACRO()
 
 
 MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
+    message(STATUS "--------------------------------------------------------------------\nQT5_CREATE_TRANSLATION_ITOM: Create ts files for target ${target}\n--------------------------------------------------------------------")
+    
     set(options)
     set(oneValueArgs)
     set(multiValueArgs OPTIONS)
@@ -542,6 +544,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
         
         
         IF(EXISTS ${_abs_FILE})
+            message(STATUS "- Consider existing ts-file: ${_abs_FILE}")
             list(APPEND _my_tsfiles ${_abs_FILE})
         ELSE()
             #create new ts file
@@ -551,6 +554,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                 DEPENDS ${_my_sources} VERBATIM)
             list(APPEND _my_tsfiles ${_abs_FILE})
             set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
+            message(STATUS "- Create new ts-file (lupdate process): ${_abs_FILE}")
         ENDIF()
     endforeach()
     
@@ -586,9 +590,11 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
             ARGS ${_lupdate_options} "@${_ts_lst_file}" -ts "${_ts_file}"
             DEPENDS ${_my_sources} ${_ts_lst_file} VERBATIM)
         set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
+        message(STATUS "- Update (existing) ts-file (lupdate process): ${_ts_file}")
     endforeach()
 #    QT5_ADD_TRANSLATION_ITOM(${_qm_files} ${_my_tsfiles})
 #    set(${_qm_files} ${${_qm_files}} PARENT_SCOPE)
+    message(STATUS "--------------------------------------------------------------------")
 ENDMACRO()
 
 

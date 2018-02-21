@@ -134,6 +134,9 @@ itom.figure.hide() -> hides figure without deleting it
 itom.figure.liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure
 itom.figure.matplotlibFigure([areaIndex, properties]) -> create matplotlib canvas
 itom.figure.plot(data, [areaIndex, className, properties]) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure
+itom.figure.plot1(data, [xData, areaIndex, className, properties]) -> creates an 1d plot of an existing dataObject in the current or given area of this figure
+itom.figure.plot2(data, [areaIndex, className, properties]) -> creates an 2d plot of an existing dataObject in the current or given area of this figure
+itom.figure.plot25(data, [areaIndex, className, properties]) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure
 itom.figure.show() -> shows figure if it is currently hidden
 itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
@@ -170,6 +173,9 @@ itom.newScript() -> opens an empty, new script in the current script window.
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure
+itom.plot1(data, [xData, className, properties]) -> plots a dataObject as an 1d plot in a new figure
+itom.plot2(data, [properties]) -> plots a dataObject in a new figure
+itom.plot25
 itom.plotHelp([plotName , dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.PrimitiveCircle

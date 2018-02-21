@@ -1,0 +1,4 @@
+1. goto http://icoconvert.com/Multi_Image_to_one_icon/
+2. Add all png with 16px, 24px, 32px, 64px, 128px, 256px and 512px
+3. Download the resulting ico file
+4. execute compile_resource.bat to update to *.res file which are necessary as windows icon for the qitom.exe

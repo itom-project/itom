@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -92,11 +92,12 @@ type : {int}, optional \n\
 Notes\n\
 ----- \n\
 It is also possible to create an empty instance of the region.");
-int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwds*/)
+int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
 {
     int x,y,w,h;
     int t = QRegion::Rectangle;
     PyObject *other = NULL;
+	const char *kwlist[] = { "x", "y", "w", "h", "type", NULL };
 
     if(!args || PyTuple_Size(args) == 0)
     {
@@ -114,7 +115,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
         }
         self->r = new QRegion(*(otherRegion->r));
     }
-    else if(PyErr_Clear(), PyArg_ParseTuple(args,"iiii|i", &x, &y, &w, &h, &t))
+    else if(PyErr_Clear(), PyArg_ParseTupleAndKeywords(args, kwds, "iiii|i", const_cast<char**>(kwlist), &x, &y, &w, &h, &t))
     {
         if (w < 1 || h < 1)
         {

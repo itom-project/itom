@@ -346,7 +346,7 @@ For a full reference to all member function of class **ParamBase**, see :ref:`pl
 Class *Param*
 -------------
 
-The class **Param** is derived from :cpp:class`ParamBase`. Therefore it has all features of **ParamBase** including two additional
+The class **Param** is derived from :cpp:class`ito::ParamBase`. Therefore it has all features of **ParamBase** including two additional
 member variables:
 
     .. cpp:member:: ParamMeta *m_pMeta
@@ -398,7 +398,7 @@ member variables:
             
             p.setInfo("new information")
 
-The full reference of class :cpp:class:`Param` is available in :ref:`plugin-param-Ref`.
+The full reference of class :cpp:class: `ito::Param` is available in :ref:`plugin-param-Ref`.
 
 In the following, examples about how to create parameters and meta information of different types are shown:
 

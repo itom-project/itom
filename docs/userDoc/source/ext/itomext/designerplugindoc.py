@@ -2,9 +2,9 @@
 
 from docutils import nodes, utils, statemachine
 from docutils.parsers.rst.roles import set_classes
-from docutils.parsers.rst import directives
+from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.misc import Include
-from sphinx.util.compat import Directive
+
 import itom
 import __main__
 import os

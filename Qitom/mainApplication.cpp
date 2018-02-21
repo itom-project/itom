@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -386,6 +386,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     QCoreApplication::instance()->installTranslator(&m_commonPlotTranslator);
 
     m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
+
+    m_widgetsTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
     //3. set default encoding codec
