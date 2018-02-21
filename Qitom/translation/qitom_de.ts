@@ -946,7 +946,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+18"/>
         <source>Save Image After Snap</source>
-        <translation type="unfinished">Bild nach Aufnahme speichern</translation>
+        <translation>Bild nach Aufnahme speichern</translation>
     </message>
     <message>
         <source>Save image after snap</source>
@@ -964,7 +964,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Data Type</source>
-        <translation type="unfinished">Dateityp</translation>
+        <translation>Dateityp</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -974,17 +974,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+19"/>
         <source>Add Timestamp</source>
-        <translation type="unfinished">Zeitstempel hinzufügen</translation>
+        <translation>Zeitstempel hinzufügen</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Tag of DataObject</source>
-        <translation type="unfinished">Ins Tag des DataObjects</translation>
+        <translation>... zum Tag des DataObjects</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Add to File Name</source>
-        <translation type="unfinished">Zum Dateiname hinzufügen</translation>
+        <translation>... zum Dateinamen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -999,17 +999,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+31"/>
         <source>Multiple Snapshots</source>
-        <translation type="unfinished">Mehrere Aufnahmen</translation>
+        <translation>Mehrere Aufnahmen</translation>
     </message>
     <message>
         <location line="+82"/>
         <source>Auto Grabbing</source>
-        <translation type="unfinished">Auto-Grabbing</translation>
+        <translation>Auto-Grabbing</translation>
     </message>
     <message>
         <location line="+53"/>
         <source>File Name</source>
-        <translation type="unfinished">Dateiname</translation>
+        <translation>Dateiname</translation>
     </message>
     <message>
         <source>Multiple snapshots</source>
@@ -3371,27 +3371,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+8"/>
         <source>Visible items in help viewer</source>
-        <translation type="unfinished">In der Hilfe angezeigte Objekte</translation>
+        <translation type="unfinished">In der Hilfe angezeigte Elemente</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>show plugin algorithms</source>
-        <translation type="unfinished">Plugins vom Typ Algorithmus anzeigen</translation>
+        <translation type="unfinished">Algorithmus-Plugins anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show plugin dataIO and actuators</source>
-        <translation type="unfinished">Plugins vom Typ DataIO und Motor anzeigen</translation>
+        <translation type="unfinished">DataIO und Aktuator-Plugins anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show plugin widgets</source>
-        <translation type="unfinished">Pugins vom Typ Widget anzeigen</translation>
+        <translation type="unfinished">Widget-Plugins anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>show script references of python packages (see below)</source>
-        <translation type="unfinished">Skript-Hinweise zu Python-Paketen anzeigen (siehe unten)</translation>
+        <translation type="unfinished">Skript-Referenzen zu Python Paketen anzeigen (siehe unten)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3401,27 +3401,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+41"/>
         <source>Script references of python packages</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Verfügbare Skript-Referenzen von Python Paketen</translation>
     </message>
     <message>
         <location line="+69"/>
         <source>Locate local script reference on disk</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Speicherort der lokalen Skript-Referenz öffnen</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Remove local script reference</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lokale Skript-Referenz entfernen</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Download update</source>
-        <translation type="unfinished">Update Download</translation>
+        <translation type="unfinished">Update herunterladen</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Update list of available help databases</source>
-        <translation type="unfinished">Liste von verfügbaren Updates der Hilfedatenbank</translation>
+        <translation type="unfinished">Liste verfügbarer Updates der Hilfedatenbank</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -3431,7 +3431,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+25"/>
         <source> s</source>
-        <translation></translation>
+        <translation type="unfinished"> s</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -3441,12 +3441,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Local: The .db-file is saved in the help directory of your itom installation. Check an entry to show it in the help viewer (if &apos;show script references for python packages&apos; is selected above).</source>
-        <translation type="unfinished">Lokal: Die Datenbankdatei liegt im Hilfe-Unterverzeichnis der itom-Installation. Durch Auswählen (Haken setzen) eines Eintrags wird dieser in der Hilfe angezeigt, falls er unter &apos;&apos; markiert ist</translation>
+        <translation type="unfinished">Lokal: Die Datenbankdatei (.db) liegt im -Unterverzeichnis &apos;help&apos; der itom-Installation. Markierte Einträge werden in der Hilfe angezeigt, sofern der allgemeine Haken bei &apos;Skript-Referenzen zu Python Paketen anzeigen&apos; (oben) gesetzt  ist.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Remote: Available database files for script references of various python packages. Right click an entry and select &apos;download&apos; to get the database and save it locally in the help directory of your itom installation.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Online: Verfügbare Datenbank-Dateien für Skript Referenzen verschiedener Python Pakete. Nach einem Rechts-Klick auf einen Eintrag, kann die Option &apos;Herunterladen&apos; gewählt werden, um die jeweilige Datenbank herunterzuladen und lokal im Unterordner &apos;help&apos; der itom Installation zu speichern.</translation>
     </message>
     <message>
         <source>List of all Modules in help-directory</source>
@@ -3489,7 +3489,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+165"/>
         <source>Server:</source>
-        <translation></translation>
+        <translation type="unfinished">Server:</translation>
     </message>
     <message>
         <source>Download Timeout in sec:</source>
@@ -3704,17 +3704,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+29"/>
         <source>Move Up</source>
-        <translation type="unfinished">Nach Oben</translation>
+        <translation>Nach Oben</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Move Down</source>
-        <translation type="unfinished">Nach Unten</translation>
+        <translation>Nach Unten</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>Add new files relative to itom base path: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Neue Dateien relativ zum itom Hauptverzeichnis laden: %1</translation>
     </message>
     <message>
         <source>Base path: </source>
@@ -4222,17 +4222,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../ui/widgetPropPalettes.cpp" line="+176"/>
         <source>Context menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontextmenü</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete Color Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbstopp entfernen</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Add color stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbstopp hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -6328,7 +6328,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+52"/>
         <source>load themes and styles...</source>
         <translation>Themen und Stile werden geladen...</translation>
     </message>
@@ -6457,7 +6457,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+5"/>
         <source>Reload Modules...</source>
-        <translation type="unfinished">Neugeladene Module...</translation>
+        <translation>Module neu laden...</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -6653,7 +6653,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+15"/>
         <source>Reload Modules</source>
-        <translation type="unfinished">Neu zu ladende Module</translation>
+        <translation>Module neuladen</translation>
     </message>
     <message>
         <location line="+55"/>
@@ -6756,19 +6756,19 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
 <context>
     <name>ito::PaletteOrganizer</name>
     <message>
-        <location filename="../organizer/paletteOrganizer.cpp" line="+694"/>
+        <location filename="../organizer/paletteOrganizer.cpp" line="+696"/>
         <source>Palette %1 has a restricted access.</source>
-        <translation type="unfinished">Die Palette &apos;%1&apos; hat eine Zugangsbeschränkung.</translation>
+        <translation>Die Palette &apos;%1&apos; hat eine Zugangsbeschränkung.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Palette %1 has a write protection.</source>
-        <translation type="unfinished">Die Palette &apos;%1&apos; ist schreibgeschützt.</translation>
+        <translation>Die Palette &apos;%1&apos; ist schreibgeschützt.</translation>
     </message>
     <message>
         <location line="+33"/>
         <source>Palette %1 not found within palette list</source>
-        <translation type="unfinished">Die Palette &apos;%1&apos; wurde in der Palettenliste nicht gefunden</translation>
+        <translation>Die Palette &apos;%1&apos; wurde in der Palettenliste nicht gefunden</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -9102,7 +9102,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+8"/>
         <source>Download update</source>
-        <translation type="unfinished"></translation>
+        <translation>Update Download</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -9160,129 +9160,129 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+50"/>
         <location line="+150"/>
         <source>Color palette altered</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbpalette geändert</translation>
     </message>
     <message>
         <location line="-273"/>
         <location line="+74"/>
         <location line="+50"/>
         <source>The current color palette was altered and is currently unsaved. Save changes or discard?</source>
-        <translation type="unfinished"></translation>
+        <translation>Die aktuelle Farbpalette wurde geändert und derzeit nicht gespeichert. Änderungen speichern oder verwerfen?</translation>
     </message>
     <message>
         <location line="-40"/>
         <source>User Palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzerdefinierte Farbpalette</translation>
     </message>
     <message>
         <location line="+52"/>
         <source> - Copy</source>
-        <translation type="unfinished"></translation>
+        <translation> - Kopie</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Palette is read only</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbpalette ist schreibgeschützt</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Palette is read only and cannot be removed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Farbpalette ist schreibgeschützt und kann nicht entfernt werden!</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>name conflict</source>
-        <translation type="unfinished"></translation>
+        <translation>Namenskonflikt</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Another color palette with the same name already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine andere Farbpalette mit dem gleichen Namen existiert bereits.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>invalid name</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiger Name</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>An empty palette name is not valid.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine leere Farbpalette ist ungültig.</translation>
     </message>
     <message>
         <location line="+57"/>
         <source>The current color palette was altered and is currently unsaved. Save changes or ignore?</source>
-        <translation type="unfinished"></translation>
+        <translation>Die aktuelle Farbpalette wurde geändert und derzeit nicht gespeichert. Änderungen speichern oder ignorieren?</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error saving current color palette.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Speichern der aktuellen Farbpalette.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The current color palette could not be saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die aktuelle Farbpalette konnte nicht gespeichert werden.</translation>
     </message>
     <message>
         <location line="+106"/>
         <location line="+5"/>
         <source>Remove color stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbstopp entfernen</translation>
     </message>
     <message>
         <location line="-5"/>
         <source>A color palette must have at least two color stops.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Farbpalette muss mindestens zwei Farbstopps haben.</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+33"/>
         <source>No color stop has been selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Farbstopp wurde ausgewählt.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Add color stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbstopp hinzufügen</translation>
     </message>
     <message>
         <location line="+56"/>
         <source>Color palette import</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbpalette importieren</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+66"/>
         <source>Itom color palette (*.icp)</source>
-        <translation type="unfinished"></translation>
+        <translation>Itom Farbpalette (*.icp)</translation>
     </message>
     <message>
         <location line="-53"/>
         <location line="+8"/>
         <source>Wrong file format</source>
-        <translation type="unfinished"></translation>
+        <translation>Falsches Dateiformat</translation>
     </message>
     <message>
         <location line="-8"/>
         <location line="+8"/>
         <source>The color palette &apos;%1&apos; in the itom color palette file is no valid color palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Farbpalette &apos;%1&apos; in der Datei ist keine gültiges Format für Paletten</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Name already exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Name existiert bereits</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The name &apos;%1&apos; of the color palette already exists. Please indicate a new name to load the color palette:</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Name &apos;%1&apos; der Farbpalette existiert bereits. Bitte einen neuen Namen angeben um die Farbpalette zu laden:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Color palette export</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbpaletten Export</translation>
     </message>
 </context>
 <context>
@@ -9662,7 +9662,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+30"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Passwort</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -9737,22 +9737,22 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+35"/>
         <source>Add File</source>
-        <translation type="unfinished">Hinzufügen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Remove</source>
-        <translation type="unfinished">Entfernen</translation>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Move Up</source>
-        <translation type="unfinished">Nach Oben</translation>
+        <translation>Nach Oben</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Move Down</source>
-        <translation type="unfinished">Nach Unten</translation>
+        <translation>Nach Unten</translation>
     </message>
     <message>
         <location line="+24"/>
