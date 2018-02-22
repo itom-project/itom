@@ -462,6 +462,9 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory /*= false*/, const char* name /*= NULL*/)
     {
+        QLatin1String value_(value);
+
+
         if (meta && meta->getLen() > 0 && value)
         {
             bool found = false;
@@ -470,23 +473,43 @@ namespace ito {
             {
             case ito::StringMeta::String:
                 reg.setPatternSyntax(QRegExp::FixedString);
+
+                for (int i = 0; i < meta->getLen(); i++)
+                {
+                    reg.setPattern(QLatin1String(meta->getString(i)));
+                    if (reg.exactMatch(value_))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
                 break;
             case ito::StringMeta::Wildcard:
                 reg.setPatternSyntax(QRegExp::Wildcard);
+
+                for (int i = 0; i < meta->getLen(); i++)
+                {
+                    reg.setPattern(QLatin1String(meta->getString(i)));
+                    if (reg.exactMatch(value_))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
                 break;
             case ito::StringMeta::RegExp:
                 reg.setPatternSyntax(QRegExp::RegExp);
-                break;
-            }
 
-            for (int i = 0; i < meta->getLen(); i++)
-            {
-                reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.indexIn(QLatin1String(value), 0) > -1)
+                for (int i = 0; i < meta->getLen(); i++)
                 {
-                    found = true;
-                    break;
+                    reg.setPattern(QLatin1String(meta->getString(i)));
+                    if (reg.indexIn(value_, 0) > -1)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
+                break;
             }
 
             if (!found)
