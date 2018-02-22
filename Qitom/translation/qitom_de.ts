@@ -9757,7 +9757,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+24"/>
         <source>Add new files relative to itom base path: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Neue Dateien relativ zum itom Hauptverzeichnis laden: %1</translation>
     </message>
     <message>
         <location line="-161"/>
