@@ -25,14 +25,18 @@
         <translation>Aktuelle Ausgabedaten für Plot</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="116"/>
         <source>Parameter: does not exist in updateParam</source>
-        <translation>Der Parameter existiert nicht in &apos;updateParam&apos;</translation>
+        <translation type="vanished">Der Parameter existiert nicht in &apos;updateParam&apos;</translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractNode.cpp" line="116"/>
+        <source>Parameter name &apos;%1&apos; does not exist in updateParam</source>
+        <translation type="unfinished">Der Parameter &apos;%1&apos; existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
         <location filename="../sources/AbstractNode.cpp" line="125"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde versucht einen geblockten Parameter zu aktualisieren (evtl. ist das &apos;updatePending&apos;-Flag nicht gesetzt)</translation>
     </message>
     <message>
         <location filename="../sources/AbstractNode.cpp" line="130"/>

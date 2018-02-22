@@ -3381,7 +3381,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>show plugin dataIO and actuators</source>
-        <translation type="unfinished">DataIO und Aktuator-Plugins anzeigen</translation>
+        <translation type="unfinished">DataIO- und Motor-Plugins anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3510,7 +3510,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+18"/>
         <source>Edit an existing palette or create a new one</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eine vorhandene Palette bearbeiten oder eine neue erstellen</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -3535,17 +3535,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Export Selected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Auswahl exportieren</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Palette options:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Palettenoption:</translation>
     </message>
     <message>
         <location line="+38"/>
         <source>Color stops:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Knoten:</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -3560,17 +3560,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+11"/>
         <source>Equidistant</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Abstandsgetreu</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Inverse Color 1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Inverse Farbe 1</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Inverse Color 2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Inverse Farbe 2</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3590,7 +3590,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+13"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3600,7 +3600,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+68"/>
         <source>Invalid Color (NaN)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Farbe Ungültig (NaN)</translation>
     </message>
 </context>
 <context>
@@ -4227,12 +4227,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+6"/>
         <source>Delete Color Stop</source>
-        <translation>Farbstopp entfernen</translation>
+        <translation>Knoten entfernen</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Add color stop</source>
-        <translation>Farbstopp hinzufügen</translation>
+        <translation>Knoten hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -4985,12 +4985,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Palettes Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Paletteneinstellungen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Plots And Figures - Palettes Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plots und Grafiken - Paletteneinstellungen</translation>
     </message>
     <message>
         <location line="-13"/>
@@ -5140,13 +5140,13 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+69"/>
         <location line="+13"/>
         <source>Wrong password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Falsches Passwort</translation>
     </message>
     <message>
         <location line="-13"/>
         <location line="+13"/>
         <source>Wrong password, select user or try again</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Falsche Passwort. Bitte einen Benutzer wählen oder das Passwort nochmals eingeben</translation>
     </message>
 </context>
 <context>
@@ -5311,7 +5311,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+89"/>
         <source>Error retrieving user settings file name. Startup scripts not written to file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schreiben. Der Dateiname für die Benutzerdatei (*.ini) ist falsch.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -5583,12 +5583,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+91"/>
         <source>Error pasting or copying files</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Einfügen oder Kopieren von Dateien</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>At least one of the selected items could not be moved or copied. Maybe an existing file should have been overwritten, but could not be deleted first.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eines der ausgewählten Objekte kann nicht verschoben oder kopiert werden. Evtl. sollte eine vorhandene Datei überschrieben werden, die zuvor jedoch nicht gelöscht werden konnte.</translation>
     </message>
     <message>
         <source>Error pasting items</source>
@@ -6261,38 +6261,38 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location filename="../models/itomFileSystemModel.cpp" line="+79"/>
         <source>file does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei existiert nicht.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The source file &apos;%s&apos; does not exist and can not be moved or pasted</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Quelldatei &apos;%s&apos; ist nicht vorhanden und kann deshalb nicht verschoben oder eingefügt werden</translation>
     </message>
     <message>
         <location line="+23"/>
         <source> (copy)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> (Kopie)</translation>
     </message>
     <message>
         <location line="+22"/>
         <location line="+40"/>
         <source>Destination already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei bereits vorhanden.</translation>
     </message>
     <message>
         <location line="-40"/>
         <source>The file &apos;%s&apos; already exists. Should it be overwritten?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%s&apos; existiert bereits. Soll diese überschrieben werden?</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>- Copy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">- Kopie</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>The file &apos;%s&apos; already exists. Should it be overwritten by the new link?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%s&apos; existiert bereits. Soll diese überschrieben werden?</translation>
     </message>
 </context>
 <context>
@@ -6756,7 +6756,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
 <context>
     <name>ito::PaletteOrganizer</name>
     <message>
-        <location filename="../organizer/paletteOrganizer.cpp" line="+696"/>
+        <location filename="../organizer/paletteOrganizer.cpp" line="+553"/>
+        <source>Settings do not contain a color palette entry for the palette name &apos;%s&apos;</source>
+        <translation type="unfinished">Es existiert kein Farbpaletteneintrag mit dem Palettennamen &apos;%s&apos;</translation>
+    </message>
+    <message>
+        <location line="+143"/>
         <source>Palette %1 has a restricted access.</source>
         <translation>Die Palette &apos;%1&apos; hat eine Zugangsbeschränkung.</translation>
     </message>
@@ -7033,12 +7038,13 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+157"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das itom-Unterverzeichnis von Python &apos;%s&apos; existiert nicht.
+Bitte die Einstellungen unter &apos;Optionen&apos; ändern.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -7202,12 +7208,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="-4369"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das itom-Unterverzeichnis von Python &apos;%s&apos; existiert nicht.
+Bitte die Einstellungen unter &apos;Optionen&apos; ändern.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -7843,7 +7850,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+0"/>
         <source>F9</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -8152,7 +8159,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+0"/>
         <source>Ctrl+R</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -8163,18 +8170,18 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+0"/>
         <source>Ctrl+Shift+R</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skript starten</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>F5</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -8185,29 +8192,29 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+0"/>
         <source>F9</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Debug Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skript im Debug-Modus starten</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>F6</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skript stoppen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Shift+F5</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -8673,7 +8680,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+0"/>
         <source>password</source>
-        <translation type="unfinished"></translation>
+        <translation>Passwort</translation>
     </message>
     <message>
         <location line="+200"/>
@@ -9047,7 +9054,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="-413"/>
         <source>Download website seems to be in an temporary offline mode.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Download-Seite scheint momentan offline zu sein.</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -9107,22 +9114,22 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Locate on disk</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lokal auf die Festplatte</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Remove from disk</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Von der Festplatte löschen</translation>
     </message>
     <message>
         <location line="+113"/>
         <source>Remove script reference</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skriptreferenz löschen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you really want to delete the file &apos;%s&apos;?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Soll die Datei &apos;%s&apos; wirklich gelöscht werden?</translation>
     </message>
     <message>
         <source>&amp;update</source>
@@ -9182,7 +9189,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+40"/>
         <source>Palette is read only</source>
-        <translation>Farbpalette ist schreibgeschützt</translation>
+        <translation type="unfinished">Die Farbpalette ist schreibgeschützt</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -9228,23 +9235,23 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+106"/>
         <location line="+5"/>
         <source>Remove color stop</source>
-        <translation>Farbstopp entfernen</translation>
+        <translation type="unfinished">Knoten entfernen</translation>
     </message>
     <message>
         <location line="-5"/>
         <source>A color palette must have at least two color stops.</source>
-        <translation>Eine Farbpalette muss mindestens zwei Farbstopps haben.</translation>
+        <translation type="unfinished">Eine Farbpalette muss mindestens zwei Knoten haben.</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+33"/>
         <source>No color stop has been selected.</source>
-        <translation>Kein Farbstopp wurde ausgewählt.</translation>
+        <translation type="unfinished">Es wurde kein Knoten ausgewählt.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Add color stop</source>
-        <translation>Farbstopp hinzufügen</translation>
+        <translation type="unfinished">Knoten hinzufügen</translation>
     </message>
     <message>
         <location line="+56"/>
@@ -9255,7 +9262,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+0"/>
         <location line="+66"/>
         <source>Itom color palette (*.icp)</source>
-        <translation>Itom Farbpalette (*.icp)</translation>
+        <translation type="unfinished">itom Farbpalette (*.icp)</translation>
     </message>
     <message>
         <location line="-53"/>
@@ -9272,7 +9279,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+13"/>
         <source>Name already exists</source>
-        <translation>Name existiert bereits</translation>
+        <translation type="unfinished">Dieser Name existiert bereits</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -9667,7 +9674,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+10"/>
         <source>This password provides a basic protection from loading itom with this user profile.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Passwort stellt einen rudimentären Schutz zum Benutzen dieses Profils dar.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -9732,7 +9739,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+31"/>
         <source>Startup Scripts</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skripts im Autostart</translation>
     </message>
     <message>
         <location line="+35"/>

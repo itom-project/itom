@@ -113,7 +113,7 @@ RetVal AbstractNode::updateParam(const ito::ParamBase *input, int isSource /*=0*
 
     if (!m_pInput.contains(QLatin1String(input->getName())))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Parameter: does not exist in updateParam").toLatin1().data()); //Todo: add parameter name in error string
+        return ito::RetVal(ito::retError, 0, QObject::tr("Parameter name '%1' does not exist in updateParam").arg(QLatin1String(input->getName())).toLatin1().data()); //Todo: add parameter name in error string
     }
 
     Channel *inpChannel = getInputChannel(input->getName());

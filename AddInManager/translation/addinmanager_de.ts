@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>function removed from apiFunctions, check apiFunctionsGraph</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Funktion wurde aus der &apos;apiFunktion&apos; gelöscht. Bitte &apos;apiFunctionsGraph&apos; prüfen</translation>
     </message>
     <message>
         <source>Filter name empty</source>
@@ -61,19 +61,19 @@
     </message>
     <message>
         <source>The data object &apos;%s&apos; must have %i dimensions (%i given)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Datenobjekt &apos;%s&apos; muss %i Dimensionen haben, übergeben wurden jedoch %i</translation>
     </message>
     <message>
         <source>The given data object must have %i dimensions (%i given)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Datenobjekt muss %i Dimensionen haben, übergeben wurden jedoch %i</translation>
     </message>
     <message>
         <source>The size of the %i. dimension of data object &apos;%s&apos; exceeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe der %i Dimensionen des Datenobjekts &apos;%s&apos; übersteigt das zulässige Maximum [%i, %i]</translation>
     </message>
     <message>
         <source>The size of the %i. dimension exceeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe der %i Dimensionen übersteigt das zulässige Maximum [%i, %i]</translation>
     </message>
     <message>
         <source>Error invoking &apos;sendParameterRequest&apos; of the plugin</source>
@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>The signal/slot &apos;parametersChanged&apos; could not be connected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Signal/Slot-Verbindung &apos;parametersChanged&apos; konnte nicht hergestellt werden</translation>
     </message>
     <message>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
@@ -137,7 +137,7 @@
     </message>
     <message>
         <source>String &apos;%s&apos;, requested by meta data of interface parameter &apos;%s&apos; could not be found in meta data of parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der String &apos;%s&apos;, von den Metadaten des Interface-Parameters &apos;%s&apos; benötigt, wurde nicht in den Metadaten des Parameters &apos;%s&apos; gefunden.</translation>
     </message>
     <message>
         <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
@@ -177,11 +177,11 @@
     </message>
     <message>
         <source>String &apos;%s&apos; does not fit to given string-constraints. %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der String &apos;%s&apos; entspricht nicht der Vorgabe. %1</translation>
     </message>
     <message>
         <source>Mandatory string value is not given.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der notwendige String-Wert fehlt.</translation>
     </message>
     <message>
         <source>value out of range [%1, %2]</source>
@@ -269,35 +269,35 @@
     </message>
     <message>
         <source>roi[2] (width) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[2] (Breite) liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <source>roi[2] (width) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[2] (Breite) entspricht nicht der Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <source>roi[0] (x0) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[0] (x0) liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <source>right side of roi exceeds the maximal limit of %1 (reduce x0 or width)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die rechte Seite des ROIs übersteigt das Maximum von %1. Bitte x0 oder die Breite reduzieren</translation>
     </message>
     <message>
         <source>roi[0] (x0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[0] (x0) entspricht nicht der Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <source>roi[3] (height) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[3] (Höhe) liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <source>roi[3] (height) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[3] (Höhe) entspricht nicht der Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <source>roi[1] (y0) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[1] (y0) liegt außerhalb der Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <source>bottom side of roi exceeds maximal limit of %1 (reduce y0 or height)</source>
@@ -305,7 +305,7 @@
     </message>
     <message>
         <source>roi[1] (y0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ROI[1] (y0) entspricht nicht der Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <source>the given meta information does not fit a an array of integer values</source>
@@ -321,7 +321,7 @@
     </message>
     <message>
         <source>length of double array must be 2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Länge des Double-Arrays muss 2 betragen.</translation>
     </message>
     <message>
         <source>The first value of the given double interval [%1,%2] is bigger than the second value.</source>
@@ -381,7 +381,7 @@
     </message>
     <message>
         <source>invalid parameter name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiger Parametername</translation>
     </message>
     <message>
         <source>index is ouf of range [0, %i]</source>
