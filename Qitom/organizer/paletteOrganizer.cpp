@@ -550,7 +550,7 @@ ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &palett
 {
     if (! settings.childGroups().contains(paletteName))
     {
-        return ito::RetVal::format(ito::retError, 0, "Settings do not contain a color palette entry for the palette name '%s'", paletteName.toLatin1().constData());
+        return ito::RetVal::format(ito::retError, 0, tr("Settings do not contain a color palette entry for the palette name '%s'").toLatin1().data(), paletteName.toLatin1().constData());
     }
 
     settings.beginGroup(paletteName);

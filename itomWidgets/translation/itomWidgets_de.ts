@@ -181,7 +181,7 @@
     </message>
     <message>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemein</translation>
     </message>
 </context>
 <context>
@@ -248,71 +248,71 @@
     </message>
     <message>
         <source>Point %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Punkt &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Line %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Linie %1</translation>
     </message>
     <message>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>End</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ende</translation>
     </message>
     <message>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Länge</translation>
     </message>
     <message>
         <source>Circle %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kreis %1</translation>
     </message>
     <message>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zentrum</translation>
     </message>
     <message>
         <source>Radius</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Rotation</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Ellipse %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Radius 1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Radius 2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Side Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seitenlänge</translation>
     </message>
     <message>
         <source>Width</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Breite</translation>
     </message>
     <message>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Höhe</translation>
     </message>
     <message>
         <source>Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Knoten</translation>
     </message>
 </context>
 <context>
