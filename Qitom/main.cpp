@@ -59,11 +59,10 @@ QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
 
 //! Message handler that redirects qDebug, qWarning and qFatal streams to the global messageStream
-/*!
-    This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
+//!
+//!  This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
+//!  The redirection is enabled via args passed to the main function.
 
-    The redirection is enabled via args passed to the main function.
-*/
 #if QT_VERSION < 0x050000
 void myMessageOutput(QtMsgType type, const char *msg)
 {
@@ -115,11 +114,11 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 #endif
 
 //! OpenCV error handler
-/*!
-    In case of a call of cv::error in any OpenCV method or the dataObject,
-    this method is called. Afterwards the error is thrown. In this method, the
-    error message is print to the output window.
-*/
+//!
+//!  In case of a call of cv::error in any OpenCV method or the dataObject,
+//!  this method is called. Afterwards the error is thrown. In this method, the
+//!  error message is print to the output window.
+
 int itomCvError( int status, const char* func_name,
             const char* err_msg, const char* file_name,
             int line, void* userdata )
@@ -136,12 +135,13 @@ int itomCvError( int status, const char* func_name,
 }
 
 //! starts application
-/*!
-    Starts Application by instantiating MainApplication with a desired GuiType
-    \sa MainApplication, tGuiType
-*/
+//!
+//!  Starts Application by instantiating MainApplication with a desired GuiType
+//!  \sa MainApplication, tGuiType
+
 int main(int argc, char *argv[])
 {
+    int ret = 0;
 #if linux
 #if (((QT_VERSION & 0xFF0000) >= 0x40000) && ((QT_VERSION & 0X00FF0) >= 0x800))
     // http://labs.qt.nokia.com/2011/06/03/threaded-opengl-in-4-8/
@@ -153,15 +153,15 @@ int main(int argc, char *argv[])
     //startBenchmarks();
     
     //parse arguments passed to the executable
-    /*
-        possible arguments are:
 
-        *.py : opens the given python file in the script editor
-        log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
-               in the itom application directory.
-        name=anyUsername : tries to start itom with the given username (different setting file)
-        pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
-    */
+    //  possible arguments are:
+
+    //      *.py : opens the given python file in the script editor
+    //      log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
+    //              in the itom application directory.
+    //      name=anyUsername : tries to start itom with the given username (different setting file)
+    //pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
+
     QStringList args;
     for (int i = 0; i < argc; ++i)
     {
@@ -199,19 +199,18 @@ int main(int argc, char *argv[])
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
-    /*
-        These things are done:
 
-        * Prepend the subfolder 'lib' of the itom application directory to the PATH environment variable.
-             Plugins can place further required 3rd party libraries inside of this folder that is then
-             searched during the load of any plugins.
-        * Prepend the subfolder 'designer' of the itom application directory to the PATH environment variable.
-             This subfolder contains designer plugins that can then be loaded by the QtDesigner started via itom.
-        * Create the environment variable MPLCONFIGDIR whose value is the absolute path to the subfolder 'itom-packages/mpl_itom'.
-             If you use the python package matplotlib, you can place a modified matplotlib config file there that is then
-             used for matplotlib configurations. For instance it is recommended to modify the backend variable in this file,
-             such that matplotlib renders its content inside of an itom widget per default.
-    */
+    //      These things are done:
+
+    //      * Prepend the subfolder 'lib' of the itom application directory to the PATH environment variable.
+    //          Plugins can place further required 3rd party libraries inside of this folder that is then
+    //          searched during the load of any plugins.
+    //      * Prepend the subfolder 'designer' of the itom application directory to the PATH environment variable.
+    //          This subfolder contains designer plugins that can then be loaded by the QtDesigner started via itom.
+    //      * Create the environment variable MPLCONFIGDIR whose value is the absolute path to the subfolder 'itom-packages/mpl_itom'.
+    //          If you use the python package matplotlib, you can place a modified matplotlib config file there that is then
+    //          used for matplotlib configurations. For instance it is recommended to modify the backend variable in this file,
+    //          such that matplotlib renders its content inside of an itom widget per default.
     //parse lib path:
     QDir appLibPath = QDir(a.applicationDirPath());
     if(appLibPath.exists("lib"))
@@ -319,14 +318,14 @@ int main(int argc, char *argv[])
     }
 
     //now the main things for loading itom are done:
-    /*
-        1. create MainApplication
-        2. load the default or user defined setting file (*.ini)
-        3. setupApplication()
-        4. start the application's main loop
-        5. finalizeApplication() if itom is closed
-    */
-    int ret = QDialog::Accepted;
+
+    //  1. create MainApplication
+    //  2. load the default or user defined setting file (*.ini)
+    //  3. setupApplication()
+    //  4. start the application's main loop
+    //  5. finalizeApplication() if itom is closed
+
+    ret = QDialog::Accepted;
     ito::MainApplication m(ito::MainApplication::standard);
     if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != ito::retOk)
     {

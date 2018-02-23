@@ -282,15 +282,32 @@ FileSystemDockWidget::~FileSystemDockWidget()
 
     settings.endGroup();
 
-    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
-    DELETE_AND_SET_NULL(m_pFileSystemModel);
-    DELETE_AND_SET_NULL(m_pTreeView);
-    DELETE_AND_SET_NULL(m_pPathEdit);
-    DELETE_AND_SET_NULL(m_pLblFilter);
-    DELETE_AND_SET_NULL(m_pCmbFilter);
     DELETE_AND_SET_NULL(m_pShowDirListMenu);
     DELETE_AND_SET_NULL(m_pFileSystemSettingMenu);
+    DELETE_AND_SET_NULL(m_pContextMenu);
+    DELETE_AND_SET_NULL(m_pPathEdit);
+    DELETE_AND_SET_NULL(m_pMainToolbar);
+    DELETE_AND_SET_NULL(m_pTreeView);
+    DELETE_AND_SET_NULL(m_pLblFilter);
+    DELETE_AND_SET_NULL(m_pCmbFilter);
+    DELETE_AND_SET_NULL(m_pFileSystemModel);
     DELETE_AND_SET_NULL(m_newDirSelectedMapper);
+    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
+    DELETE_AND_SET_NULL(m_pActMoveCDUp);
+    DELETE_AND_SET_NULL(m_pActSelectCD);
+    DELETE_AND_SET_NULL(m_pActOpenFile);
+    DELETE_AND_SET_NULL(m_pActExecuteFile);
+    DELETE_AND_SET_NULL(m_pActLocateOnDisk);
+    DELETE_AND_SET_NULL(m_pActRenameItem);
+    DELETE_AND_SET_NULL(m_pActDeleteItems);
+    DELETE_AND_SET_NULL(m_pActCutItems);
+    DELETE_AND_SET_NULL(m_pActCopyItems);
+    DELETE_AND_SET_NULL(m_pActPasteItems);
+    DELETE_AND_SET_NULL(m_pActNewDir);
+    DELETE_AND_SET_NULL(m_pActNewPyFile);
+    DELETE_AND_SET_NULL(m_pViewList);
+    DELETE_AND_SET_NULL(m_pViewDetails);
+    DELETE_AND_SET_NULL(m_lastMovedShowDirAction);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

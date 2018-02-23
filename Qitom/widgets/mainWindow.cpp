@@ -133,7 +133,7 @@ MainWindow::MainWindow() :
 
     // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite))
+    if (uOrg && (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite)))
     {
         qDebug(".. before loading console widget");
         //console (central widget):
@@ -151,7 +151,7 @@ MainWindow::MainWindow() :
     centralWidget->setLayout(m_contentLayout);
     setCentralWidget(centralWidget); 
 
-    if (uOrg->hasFeature(featFileSystem))
+    if (uOrg && uOrg->hasFeature(featFileSystem))
     {
         // FileDir-Dock
         m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
@@ -160,7 +160,7 @@ MainWindow::MainWindow() :
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg && uOrg->hasFeature(featDeveloper))
     {
         // breakPointDock
         m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
@@ -173,9 +173,9 @@ MainWindow::MainWindow() :
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
         
         // pythonMessageDock
-/*        m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);*/
+        //m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+        //m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        //addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
 
         // helpDock
         m_helpDock = new HelpDockWidget(tr("Help Viewer"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
@@ -217,7 +217,7 @@ MainWindow::MainWindow() :
         m_globalWorkspaceDock->raise();
     }
 
-    if (uOrg->hasFeature(featPlugins))
+    if (uOrg && uOrg->hasFeature(featPlugins))
     {
         // AddIn-Manager
         m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
@@ -258,7 +258,8 @@ MainWindow::MainWindow() :
     else
     {
         showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way. \nStart itom again with the argument 'log' and look-up the error message in the file itomlog.txt."));
-        m_console->setReadOnly(true);
+        if (m_console)
+            m_console->setReadOnly(true);
     }
 
     // signal mapper for user defined actions
