@@ -29,13 +29,9 @@
         <translation>Schließen</translation>
     </message>
     <message>
-        <source>About itom</source>
-        <translation type="vanished">Über itom</translation>
-    </message>
-    <message>
         <location line="-419"/>
-        <source>Dialog</source>
-        <translation></translation>
+        <source>About itom</source>
+        <translation>Über itom</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -5449,7 +5445,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location line="+189"/>
+        <location line="+206"/>
         <source>F2</source>
         <translation></translation>
     </message>
@@ -5469,12 +5465,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="-502"/>
+        <location line="-519"/>
         <source>Last used directories</source>
         <translation>Zuletzt verwendete Verzeichnisse</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+256"/>
         <source>Rename</source>
         <translation>Umbenennen</translation>
     </message>
@@ -5511,12 +5507,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Neues Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location line="-168"/>
+        <location line="-185"/>
         <source>file name filters (semicolon or space separated list)</source>
         <translation>Dateinamen der Filter (mit Semikolon oder Leerzeichen separierte Liste)</translation>
     </message>
     <message>
-        <location line="+170"/>
+        <location line="+187"/>
         <source>Change To Parent Folder</source>
         <translation>Zum übergeordneten Verzeichnis wechseln</translation>
     </message>
@@ -6430,7 +6426,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+383"/>
+        <location line="+384"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -6554,7 +6550,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="vanished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-454"/>
+        <location line="-455"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
     </message>
@@ -6571,7 +6567,7 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
 Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
     </message>
     <message>
-        <location line="+368"/>
+        <location line="+369"/>
         <source>Loaded Plugins...</source>
         <translation>Geladene Plugins...</translation>
     </message>
