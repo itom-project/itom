@@ -307,7 +307,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActNewPyFile);
     DELETE_AND_SET_NULL(m_pViewList);
     DELETE_AND_SET_NULL(m_pViewDetails);
-    DELETE_AND_SET_NULL(m_lastMovedShowDirAction);
+    //DELETE_AND_SET_NULL(m_lastMovedShowDirAction);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
