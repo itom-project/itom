@@ -60,16 +60,16 @@ To allow more complex user interaction with scripts, e.g. script based element p
     [number, handle] = plot(myImage, "itom2dQwtPlot")
     
     # Blocking access which return the values for a single point in myElement
-    # Structure will be dataObject([8, 1], 'float32') with [[idx], [type], [x], [y], [0], [0], [0],[0]]
-    myElement = dataObject()
-    handle.drawAndPickElements(plotItem.PrimitivePoint, myElement, 1) 
+    shape = handle.drawAndPickElements(plotItem.PrimitivePoint, 1)
+    # get center of shape
+    shape[0].center
     
     # None blocking plot
     # Structure will be dataObject([1, 11], 'float32') with [idx, type, x, y, 0, 0, 0, 0]
     handle.call("userInteractionStart", plotItem.PrimitivePoint, True, 1)
     
     # --> Read out later after plot is finished
-    myGeometry = handle["geometricElements"]
+    myGeometry = handle["geometricShapes"]
     
     
 The blocking code will wait until the selection is done or the selection was aborted by user and will than return the corresponding object.
@@ -80,29 +80,22 @@ The geometric elements can also be set by script by calling the corresponding sl
 
 .. code-block:: python
     
-    myImage = dataObject.randN([200, 200], 'float32')    
-    [number, handle] = plot(myImage, "itom2dQwtPlot") 
-    
-    # Add the marker to the plot
-    # marker is filled according to marker style definition
-    marker = dataObject([8,1],'float32', data = [plotItem.PrimitivePoint, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0])
-    handle.call("plotMarkers", marker, "b", "")
+    obj = dataObject.zeros([1000,1000])
+    [nr,h] = plot(obj, "itom2dqwtplot")
+    element=shape(shape.Point,[50,50])
+    h['geometricShapes']=element
 
-    # Delete all marker and than plot new marker
-    # marker is filled according to marker style definition
-    myGeometry = dataObject([1,11],'float32', data = [plotItem.PrimitivePoint, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0, 0.0, 0.0, 0.0])
-    handle["geometricElements"] = myGeometry
-  
-The geometric elements can be read any time using the property "geometricElements".
+For more informations see also :ref:`plot-markers`
+
+The geometric elements can be read any time using the property "geometricShapes".
 
 .. code-block:: python
     
     # Reading geometric elements
-    myGeometry = handle["geometricElements"]
+    myGeometry = handle["geometricShapes"]
 
-The object "myGeometry" consists of all geometric elements with in the plot. Each row corresponds to one geometric element while the parameters for each element are align column-wise.
+The object "myGeometry" consists of all geometric elements with in the plot.
 This kind of reading differs from the blocking-variant ("drawAndPickElements"). The blocking-variant returns only the data created during the current function call and ignores old geometric elements.
-In this case the elements are aligned column-wise. This means each column corresponds to on element while its data is stored along the rows. 
 For the different definitions of the geometric elements see section "Indexing of Geometric Elements".
 
 Implemented Functions, Signals and Slots
