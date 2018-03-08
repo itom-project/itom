@@ -1,5 +1,5 @@
 # Initialisation of DummyMotor
-stage = actuator("DummyMotor")
+stage = actuator("DummyMotor",3)
 
 #show the toolbox
 stage.showToolbox()
