@@ -125,9 +125,11 @@ namespace ito
             QVariant getPluginNodeInfo(const QModelIndex &index, const int &role) const;
             QVariant getInstanceNodeInfo(const QModelIndex &index, const int &role) const;
             QVariant getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const;
+            QMimeData* mimeData(const QModelIndexList &indexes) const;
 
         private:
             QScopedPointer<PlugInModelPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+            QString getInitCommand(const QModelIndex & item) const;
             Q_DECLARE_PRIVATE(PlugInModel);
     };
 

@@ -68,6 +68,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pAIManagerView->setSortingEnabled(true);
+    m_pAIManagerView->setDragEnabled(true);
     connect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint&)));
 
     m_pContextMenu = new QMenu(this);

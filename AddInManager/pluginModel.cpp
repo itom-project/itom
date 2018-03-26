@@ -23,6 +23,7 @@
 #include "pluginModel.h"
 #include "addInManager.h"
 #include <qfileinfo.h>
+#include <qmimedata.h>
 
 namespace ito
 {
@@ -154,7 +155,10 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
             return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
         }
     }
-
+    if (!getIsAlgoPlugIn(itemType, itemInternalData) && (itemType & (itemPlugin|itemFilter|itemWidget)))
+    {
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+    }
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
@@ -1535,5 +1539,101 @@ bool PlugInModel::resetModel(bool beginOperation)
     }
     return true;
 }
+QString PlugInModel::getInitCommand(const QModelIndex &item) const
+{
+    Q_D(const PlugInModel);
+    tItemType type;
+    size_t internalData;
+    getModelIndexInfo(item, type, internalData);
+    QString command;
+    if (type & itemPlugin) //check if item is a plugin
+    {
+        ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
+        int aiibType = aiib->getType();
+        if (aiibType & d->m_treeFixNodes[0]) //dataIO
+        {
+            QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
+            QStringList listParam;
+            foreach(ito::Param item, *mandParam)
+            {
+                listParam.append(item.getName());
+            }
+            if (listParam.length() > 0)
+            {
+                listParam[0].prepend(", ");
+            }
+            command = tr("dataIO(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+        }
+        else if (aiibType & d->m_treeFixNodes[1]) //actuator
+        {
+            QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
+            QStringList listParam;
+            foreach(ito::Param item, *mandParam)
+            {
+                listParam.append(item.getName());
+            }
+            if (listParam.length() > 0)
+            {
+                listParam[0].prepend(", ");
+            }
+            command = tr("actuator(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+        }
+    }
+    else if(type & itemFilter)
+    {
+        ito::AddInAlgo::FilterDef *fd = (AddInAlgo::FilterDef*)(internalData);
 
+           QStringList listParam;
+           AddInAlgo::t_filterParam paramFunc = fd->m_paramFunc;
+           QVector<ito::Param> mandParams;
+           QVector<ito::Param> optParams;
+           QVector<ito::Param> outParams;
+           paramFunc(&mandParams, &optParams, &outParams);
+                
+            foreach(ito::Param item, mandParams)
+            {
+                listParam.append(item.getName());
+            }
+            if (listParam.length() > 0)
+            {
+                listParam[0].prepend(", ");
+            }
+            command = tr("filter(\"%1\"%2)").arg(fd->m_name, listParam.join(", ")).toLatin1().data();
+    }
+    else if (type & itemWidget)
+    {
+        QStringList listParam;
+        AddInAlgo::AlgoWidgetDef *aw = (AddInAlgo::AlgoWidgetDef*)(internalData);
+        AddInAlgo::t_filterParam paramFunc = aw->m_paramFunc;
+        QVector<ito::Param> mandParams;
+        QVector<ito::Param> optParams;
+        QVector<ito::Param> outParams;
+        paramFunc(&mandParams, &optParams, &outParams);
+        foreach(ito::Param item, mandParams)
+        {
+            listParam.append(item.getName());
+        }
+        if (listParam.length() > 0)
+        {
+            listParam[0].prepend(", ");
+        }
+        command = tr("ui.createNewPluginWidget(\"%1\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
+    }
+    return command;
+}
+QMimeData* PlugInModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = QAbstractItemModel::mimeData(indexes);
+    QStringList texts;
+    foreach(const QModelIndex item, indexes)
+    {
+        if (item.column() == 0)
+        {
+            
+            texts.append(getInitCommand(item));
+        }
+    }
+    mimeData->setData("text/plain", texts.join("\n").toLatin1());
+    return mimeData;
+}
 } //end namespace ito
