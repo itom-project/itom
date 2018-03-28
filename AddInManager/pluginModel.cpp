@@ -1617,7 +1617,7 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
         {
             listParam[0].prepend(", ");
         }
-        command = tr("ui.createNewPluginWidget(\"%1\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
+        command = tr("ui.createNewPluginWidget(\"%1%2\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
     }
     return command;
 }

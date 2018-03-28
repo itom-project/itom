@@ -61,6 +61,7 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
 
 Here, most important for us is to learn about the init paramaters, especially the mandatory ones.
 A more detailed description of the plugin may be found in the plugin documentation. 
+The fastest way to obtain the command used for initialisation is to drag the plugin into the command line or into the script editor.
 
 Once you got an instance of your plugin running, you can get an even more detailed class description including all member functions via |python|:
 
