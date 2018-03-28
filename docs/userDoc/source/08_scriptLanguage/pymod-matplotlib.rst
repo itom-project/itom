@@ -316,7 +316,7 @@ The bin folder of ffmpeg must be added to the path variables of your system::
 
 Finally start the command prompt and run the command::
 
-    C:\Proram files\ffmpeg\bin\ffmpeg.exe -codecs
+    C:\Program files\ffmpeg\bin\ffmpeg.exe -codecs
 
 or easier:: 
 
