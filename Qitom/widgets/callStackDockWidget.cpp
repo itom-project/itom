@@ -59,7 +59,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->setAlternatingRowColors(true);
     m_table->setCornerButtonEnabled(false);
 
-    m_headers << tr("File") << tr("Line") << tr("Method");
+    m_headers << tr("File") << tr("Method") << tr("Line");
     m_table->setHorizontalHeaderLabels(m_headers);
 
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(itemDoubleClicked(QTableWidgetItem*)));
@@ -180,11 +180,11 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
 
         item = new QTableWidgetItem(QString::number(lines[i]));
         item->setFlags(flags);
-        m_table->setItem(i,1,item);
+        m_table->setItem(i,2,item);
 
         item = new QTableWidgetItem(methods[i]);
         item->setFlags(flags);
-        m_table->setItem(i,2,item);
+        m_table->setItem(i,1,item);
     }
 }
 
