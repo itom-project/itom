@@ -2305,6 +2305,16 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
             }
         }
     }
+	else
+	{
+		//if PyArray_ContiguousFromAny could not convert the input to an array, it has raised an exception, 
+		//that is transformed here to a retval. If this is not the case, ok = false --> retval is set to error at the end of this function
+		retval += PythonCommon::checkForPyExceptions(true); 
+		if (!retval.containsError())
+		{
+			ok = false;
+		}
+	}
 
     Py_XDECREF(arr);
 
