@@ -3,6 +3,9 @@
 #include "qapplication.h"
 #include "qevent.h"
 
+#include "managers/panelsManager.h"
+#include "managers/textDecorationsManager.h"
+
 CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*= true*/)
     : QPlainTextEdit(parent),
     m_showCtxMenu(true),
@@ -16,7 +19,9 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_selectLineOnCopyEmpty(true),
     m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "),
     m_dirty(false),
-    m_cleaning(false)
+    m_cleaning(false),
+    m_pPanels(NULL),
+    m_pDecorations(NULL)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -31,11 +36,40 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     setCenterOnScroll(true);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setCursorWidth(2);
+
+    m_pPanels = new PanelsManager(this);
+    m_pDecorations = new TextDecorationsManager(this);
 }
 
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
+    delete m_pPanels;
+    m_pPanels = NULL;
+
+    delete m_pDecorations;
+    m_pDecorations = NULL;
+}
+
+//-----------------------------------------------------------
+/*
+Returns a reference to the :class:`pyqode.core.managers.PanelsManager`
+used to manage the collection of installed panels
+*/
+PanelsManager* CodeEditor::panels() const
+{
+    return m_pPanels;
+}
+
+//-----------------------------------------------------------
+/*
+Returns a reference to the
+:class:`pyqode.core.managers.TextDecorationManager` used to manage the
+list of :class:`pyqode.core.api.TextDecoration`
+*/
+TextDecorationsManager* CodeEditor::decorations() const
+{
+    return m_pDecorations;
 }
 
 //-----------------------------------------------------------

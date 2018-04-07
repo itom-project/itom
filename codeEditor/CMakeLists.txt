@@ -25,12 +25,16 @@ add_executable(codeEditor WIN32
     include/manager.h
     include/panel.h
     include/mode.h
+    include/textDecoration.h
     codeEditor.cpp
     mode.cpp
     managers/manager.cpp
     managers/panelsManager.h
     managers/panelsManager.cpp
+    managers/textDecorationsManager.h
+    managers/textDecorationsManager.cpp
     panels/panel.cpp
+    decorations/textDecoration.cpp
     ${RES_SOURCES} )
 
 # Use the Widgets module from Qt 5.

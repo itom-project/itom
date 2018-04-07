@@ -14,6 +14,9 @@ struct VisibleBlock
     QTextBlock textBlock;
 };
 
+class PanelsManager; //forward declaration
+class TextDecorationsManager; //forward declaration
+
 /*
 The editor widget is a simple extension to QPlainTextEdit.
 It adds a few utility signals/methods and introduces the concepts of
@@ -87,6 +90,9 @@ public:
 
     void setViewportMargins(int left, int top, int right, int bottom);
 
+    PanelsManager* panels() const;
+    TextDecorationsManager* decorations() const;
+
 protected:
     void initSettings();
     void initStyle();
@@ -123,6 +129,9 @@ private:
     QSet<int> m_modifiedLines; //(line)
     bool m_dirty;
     QList<VisibleBlock> m_visibleBlocks;
+
+    PanelsManager *m_pPanels;
+    TextDecorationsManager *m_pDecorations;
 
 private slots:
     void emitDirtyChanged(bool state);

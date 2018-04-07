@@ -43,6 +43,7 @@ public:
     bool scrollable() const;
     void setScrollable(bool value);
 
+    int orderInZone() const;
     void setOrderInZone(int orderInZone);
 
     Position position() const;
@@ -63,7 +64,9 @@ private:
     QPen m_foregroundPen;
 
     //!< position in the editor (top, left, right, bottom)
-    int m_position;
+    Position m_position;
+
+    Q_DISABLE_COPY(Panel)
 };
 
 

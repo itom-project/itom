@@ -11,7 +11,7 @@ Panel::Panel(const QString &name, bool dynamic, const QString &description /*= "
     m_dynamic(dynamic),
     m_orderInZone(-1),
     m_scrollable(false),
-    m_position(-1)
+    m_position(Left)
 {
 }
 
@@ -39,7 +39,11 @@ void Panel::setScrollable(bool value)
     m_scrollable = value;
 }
 
-
+//-------------------------------------------------------
+int Panel::orderInZone() const
+{
+    return m_orderInZone;
+}
 
 //-------------------------------------------------------
 void Panel::setOrderInZone(int orderInZone)
@@ -48,7 +52,7 @@ void Panel::setOrderInZone(int orderInZone)
 }
 
 //-------------------------------------------------------
-Position Panel::position() const
+Panel::Position Panel::position() const
 {
     return m_position;
 }
