@@ -30,11 +30,11 @@ Here are some examples about the natively supported. At first, let us create som
     #left side: transparent, in the middle three horizontal bars in red,
     #green and blue.
     obj3 = dataObject([768,1024],'rgba32')
-    obj3[:,0:512] = rgba32(255,255,255,0) #transparent (alpha=0)
-    obj3[:,512:1024] = rgba32(255,255,255,255)
-    obj3[100:300,200:800] = rgba32(255,0,0,255) #red
-    obj3[300:500,200:800] = rgba32(0,255,0,255) #green
-    obj3[500:700,200:800] = rgba32(0,0,255,255) #blue
+    obj3[:,0:512] = rgba(255,255,255,0) #transparent (alpha=0)
+    obj3[:,512:1024] = rgba(255,255,255,255)
+    obj3[100:300,200:800] = rgba(255,0,0,255) #red
+    obj3[300:500,200:800] = rgba(0,255,0,255) #green
+    obj3[500:700,200:800] = rgba(0,0,255,255) #blue
         
 Now, we want to save all these three data objects together into one **idc** file using the method :py:meth:`itom.saveIDC`. 
 **idc** files always contain a dictionary where you can save whatever you want to (not only data objects). When loading 
