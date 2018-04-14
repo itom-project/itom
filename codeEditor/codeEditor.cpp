@@ -9,7 +9,6 @@
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
 #include "managers/modesManager.h"
-#include "syntaxHighlighterBase.h"
 #include "delayJobRunner.h"
 
 CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*= true*/)
@@ -53,6 +52,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_pModes = new ModesManager(this);
 
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700); //(this, &CodeEditor::showTooltipDelayJobRunner, 700);
+
+    initStyle();
 }
 
 //-----------------------------------------------------------
@@ -112,9 +113,10 @@ Returns a reference to the syntax highlighter mode currently used to
 SyntaxHighlighterBase* CodeEditor::syntaxHighlighter() const
 {
     SyntaxHighlighterBase* out = NULL;
-    foreach (Mode::Ptr mode, m_pModes)
+    ModesManager::const_iterator it = m_pModes->constBegin();
+    while (it != m_pModes->constEnd())
     {
-        out = static_cast<SyntaxHighlighterBase*>(mode.data());
+        out = static_cast<SyntaxHighlighterBase*>(it.value().data());
         if (out)
         {
             break;
@@ -951,7 +953,7 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, QList<ColorScheme::K
             const ColorScheme &ref_formats = sh->colorScheme();
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
-                if (r.start <= pos < (r.start + r.length))
+                if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
                     foreach (int fmtType, formats)
                     {

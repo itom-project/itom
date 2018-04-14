@@ -22,10 +22,11 @@ SET (HEADERS
     include/manager.h
     include/panel.h
     include/mode.h
-    include/syntaxHighlighterBase.h
     include/textDecoration.h
     include/foldDetector.h
     include/delayJobRunner.h
+    syntaxHighlighter/syntaxHighlighterBase.h
+    syntaxHighlighter/pythonSyntaxHighlighter.h
     managers/panelsManager.h
     managers/textDecorationsManager.h
     managers/modesManager.h
@@ -38,7 +39,8 @@ SET (SOURCES
     codeEditor.cpp
     mode.cpp
     foldDetector.cpp
-    syntaxHighlighterBase.cpp
+    syntaxHighlighter/syntaxHighlighterBase.cpp
+    syntaxHighlighter/pythonSyntaxHighlighter.cpp
     delayJobRunner.cpp
     managers/manager.cpp
     managers/panelsManager.cpp

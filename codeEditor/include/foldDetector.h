@@ -22,7 +22,7 @@ To use a FoldDetector, simply set it on a syntax_highlighter::
 
     editor.syntax_highlighter.fold_detector = my_fold_detector
 */
-class FoldDetector : QObject
+class FoldDetector : public QObject
 {
     Q_OBJECT
 public:

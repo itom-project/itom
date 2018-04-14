@@ -1,5 +1,5 @@
-#ifndef SHMODE_H
-#define SHMODE_H
+#ifndef SYNTAXHIGHLIGHTERBASE_H
+#define SYNTAXHIGHLIGHTERBASE_H
 
 #include <qstring.h>
 #include <qtextedit.h>
@@ -7,6 +7,7 @@
 #include <qregexp.h>
 #include <qpointer.h>
 #include <qmap.h>
+#include <QTextBlockUserData>
 
 #include "mode.h"
 #include "foldDetector.h"
@@ -41,13 +42,16 @@ public:
         KeyFunction = 20,
         KeyOperator = 21,
         KeyOperatorWord = 22,
-        Last = 23 /*always the highest number*/
+        KeyClass = 23,
+        Last = 24 /*always the highest number*/
     };
 
     ColorScheme();
     virtual ~ColorScheme();
 
     QTextCharFormat operator[](int idx) const;
+
+    QTextCharFormat createFormat(const QBrush &color, const QBrush &bgcolor = QBrush(), bool bold = false, bool italic = false, bool underline = false, QFont::StyleHint styleHint = QFont::SansSerif);
 
     QColor background() const;
     QColor highlight() const;
@@ -57,13 +61,34 @@ private:
 };
 
 /*
+Custom text block user data, mainly used to store checker messages and
+    markers.
+*/
+class TextBlockUserData : public QTextBlockUserData
+{
+public:
+    TextBlockUserData() :
+       QTextBlockUserData()
+    {
+    }
+
+    //List of checker messages associated with the block.
+    QStringList m_messages;
+
+    //List of markers draw by a marker panel.
+    QStringList m_markers;
+
+    QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
+};
+
+/*
 Syntax Highlighters should derive from this mode instead of mode directly.
 */
 class SyntaxHighlighterBase : public QSyntaxHighlighter, public Mode
 {
     Q_OBJECT
 public:
-    SyntaxHighlighterBase(const QString &name, const QString &description = "", const ColorScheme &colorScheme = ColorScheme(), QObject *parent = NULL);
+    SyntaxHighlighterBase(const QString &name, QTextDocument *parent, const QString &description = "", const ColorScheme &colorScheme = ColorScheme());
 
     virtual ~SyntaxHighlighterBase();
 
@@ -89,7 +114,7 @@ public:
     :param text: Line of text to highlight.
     :param block: current block
     */
-    virtual void highlight_block(const QString &text, const QTextBlock &block) = 0;
+    virtual void highlight_block(const QString &text, QTextBlock &block) = 0;
 
     virtual void rehighlight();
 

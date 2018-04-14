@@ -10,7 +10,7 @@
 #include <qpoint.h>
 
 #include "textDecoration.h"
-#include "syntaxHighlighterBase.h"
+#include "syntaxHighlighter/syntaxHighlighterBase.h"
 
 struct VisibleBlock
 {

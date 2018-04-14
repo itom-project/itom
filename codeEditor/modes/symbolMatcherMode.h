@@ -7,6 +7,7 @@ This module contains the symbol matcher mode
 
 #include "textDecoration.h"
 #include "mode.h"
+#include "utils/utils.h"
 
 #include <qcolor.h>
 #include <qbrush.h>
@@ -27,28 +28,41 @@ class SymbolMatcherMode : public QObject, public Mode
 public:
 
     // symbols indices
-    enum Symbols { Paren = 0, Square = 1, Brace = 2 };
+    enum Symbols { Paren = 0, Square = 2, Brace = 4 }; //Position of Symbol in chars bytearray
 
-    enum SymbolsSubtype { Open = 0, Close = 1};
+    enum CharType { Open = 0, Close = 1}; //Sub-Position of Symbol in chars bytearray
+
+    static const QByteArray chars;
 
     SymbolMatcherMode(QObject *parent = NULL);
     virtual ~SymbolMatcherMode();
 
-    void doSymbolsMatching();
+    QBrush matchBackground() const;
+    void setMatchBackground(const QBrush &value);
 
-    QColor background() const;
-    void setBackground(const QColor &color);
+    QColor matchForeground() const;
+    void setMatchForeground(const QColor &value);
 
-    virtual void onInstall(CodeEditor *editor);
+    QBrush unmatchBackground() const;
+    void setUnmatchBackground(const QBrush &value);
+
+    QColor unmatchForeground() const;
+    void setUnmatchForeground(const QColor &value);
+
     virtual void onStateChanged(bool state);
 
-public slots:
-    void refresh();
+    QPoint symbolPos(const QTextCursor &cursor, CharType charType = Open, Symbols symbolType =Paren); //!< return value is line (x) and column (y)
+
+private slots:
+    void doSymbolsMatching();
 
 protected:
     QTextCursor createDecoration(int pos, bool match = true);
     void clearDecorations();
-    void match(SymbolMatcherMode::Symbols symbol, QList<Utils::ParenthesisInfo> &data, int cursorPos);
+    void match(Symbols symbol, QList<Utils::ParenthesisInfo> &data, int cursorPos);
+    bool matchLeft(SymbolMatcherMode::Symbols symbol, const QTextBlock &currentBlock, int i, int cpt);
+    bool matchRight(SymbolMatcherMode::Symbols symbol, const QTextBlock &currentBlock, int i, int nbRightParen);
+    void refreshDecorations();
 
     QBrush m_matchBackground;
     QColor m_matchForeground;

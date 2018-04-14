@@ -46,7 +46,7 @@ public:
     bool enabled() const;
     void setEnabled(bool enabled);
 
-    CodeEditor *editor() const { return m_editor; }
+    inline CodeEditor *editor() const { return m_editor; }
     bool onClose() const { return m_onClose; }
 
 private:

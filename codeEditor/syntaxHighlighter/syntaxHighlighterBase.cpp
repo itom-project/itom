@@ -11,11 +11,19 @@
 //------------------------------------------------------------------
 ColorScheme::ColorScheme()
 {
+    QBrush bgcolor;
+    bgcolor.setColor("white");
+
     //create defaults
     for (int i = 0; i < Last; ++i)
     {
-        m_formats[i] = (QTextCharFormat());
+        m_formats[i] = createFormat(QBrush("green"), bgcolor);
     }
+
+    m_formats[KeyClass] = createFormat(QBrush("blue"));
+    m_formats[KeyNumber] = createFormat(QBrush("red"));
+    m_formats[KeyOperator] = createFormat(QBrush("cyan"));
+
 }
 
 //------------------------------------------------------------------
@@ -53,15 +61,35 @@ QTextCharFormat ColorScheme::operator[](int idx) const
     return QTextCharFormat();
 }
 
-//-------------------------------------------------------------------
-SyntaxHighlighterBase::SyntaxHighlighterBase(const QString &name, const QString &description /*= ""*/, const ColorScheme &colorScheme /*=  = ColorScheme()*/, QObject *parent /*= NULL*/) :
-    QSyntaxHighlighter(parent),
-    Mode(name, description),
-    m_colorScheme(colorScheme),
-    m_regSpacesPtrn(QRegExp("[ \\t]+")),
-    m_regWhitespaces(QRegExp("\\s+")),
-    m_foldDetector(NULL)
+//------------------------------------------------------------------
+QTextCharFormat ColorScheme::createFormat(const QBrush &color, const QBrush &bgcolor /*= QBrush()*/, bool bold /*= false*/, \
+    bool italic /*= false*/, bool underline /*= false*/, QFont::StyleHint styleHint /* = QFont::SansSerif*/)
 {
+    QTextCharFormat f;
+    f.setForeground(color);
+    f.setBackground(bgcolor);
+    if (bold)
+    {
+        f.setFontWeight(QFont::Bold);
+    }
+    f.setFontItalic(italic);
+    if (underline)
+    {
+        f.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+    }
+    f.setFontStyleHint(styleHint);
+    return f;
+}
+
+//-------------------------------------------------------------------
+SyntaxHighlighterBase::SyntaxHighlighterBase(const QString &name, QTextDocument *parent, const QString &description /*= ""*/, const ColorScheme &colorScheme /*=  = ColorScheme()*/) :
+    QSyntaxHighlighter(parent),
+    Mode(name, description)
+{
+    m_colorScheme =(colorScheme);
+    m_regSpacesPtrn=(QRegExp("[ \\t]+"));
+    m_regWhitespaces=(QRegExp("\\s+"));
+    m_foldDetector=(NULL);
 }
 
 //-------------------------------------------------------------------
@@ -187,7 +215,7 @@ void SyntaxHighlighterBase::refreshEditor(const ColorScheme &colorScheme)
     Panel* panel = editor()->panels()->get("FoldingPanel");
     if (panel)
     {
-        static_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);
+        //todo: static_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);
     }
     editor()->resetStylesheet();
 }

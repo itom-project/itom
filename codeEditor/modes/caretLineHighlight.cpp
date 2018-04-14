@@ -7,8 +7,8 @@
 #include <qbrush.h>
 
 
-CaretLineHighlighterMode::CaretLineHighlighterMode(QObject *parent /*= NULL*/) :
-    Mode("CaretLineHighlighterMode"),
+CaretLineHighlighterMode::CaretLineHighlighterMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+    Mode("CaretLineHighlighterMode", description),
     QObject(parent),
     m_decoration(NULL),
     m_pos(-1),
@@ -31,13 +31,13 @@ automatic color by setting up this property
 */
 QColor CaretLineHighlighterMode::background() const
 {
-    if (m_color.isValid() || !m_editor)
+    if (m_color.isValid() || !editor())
     {
         return m_color;
     }
     else
     {
-        return Utils::driftColor(m_editor->background(), 110);
+        return Utils::driftColor(editor()->background(), 110);
     }
 }
 
@@ -67,14 +67,14 @@ void CaretLineHighlighterMode::onStateChanged(bool state)
 {
     if (state)
     {
-        connect(m_editor, SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
-        connect(m_editor, SIGNAL(newTextSet()), this, SLOT(refresh()));
+        connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
+        connect(editor(), SIGNAL(newTextSet()), this, SLOT(refresh()));
         refresh();
     }
     else
     {
-        disconnect(m_editor, SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
-        disconnect(m_editor, SIGNAL(newTextSet()), this, SLOT(refresh()));
+        disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
+        disconnect(editor(), SIGNAL(newTextSet()), this, SLOT(refresh()));
         clearDeco();
     }
             
@@ -86,7 +86,7 @@ Updates the current line decoration
 */
 void CaretLineHighlighterMode::refresh()
 {
-    if (m_enabled)
+    if (enabled())
     {
         QBrush brush;
 
@@ -97,13 +97,13 @@ void CaretLineHighlighterMode::refresh()
         }
         else
         {
-            brush = Utils::driftColor(m_editor->background(), 110);
+            brush = Utils::driftColor(editor()->background(), 110);
         }
 
-        m_decoration = TextDecoration::Ptr(new TextDecoration(m_editor->textCursor()));
+        m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->textCursor()));
         m_decoration->setBackground(brush);
         m_decoration->setFullWidth();
-        m_editor->decorations()->append(m_decoration);
+        editor()->decorations()->append(m_decoration);
     }
 }
 
@@ -115,7 +115,7 @@ void CaretLineHighlighterMode::clearDeco()
 {
     if (m_decoration.isNull() == false)
     {
-        m_editor->decorations()->remove(m_decoration);
+        editor()->decorations()->remove(m_decoration);
     }
 
     m_decoration.clear();

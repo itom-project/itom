@@ -17,7 +17,7 @@ class CaretLineHighlighterMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    CaretLineHighlighterMode(QObject *parent = NULL);
+    CaretLineHighlighterMode(const QString &description = "", QObject *parent = NULL);
     virtual ~CaretLineHighlighterMode();
 
     QColor background() const;
