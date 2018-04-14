@@ -11,14 +11,68 @@ Mode::Mode(const QString &name, const QString &description /*= ""*/) :
 }
 
 //-------------------------------------------------------------------
+Mode::Mode() :
+    m_name(""),
+    m_description(""),
+    m_enabled(false),
+    m_editor(NULL),
+    m_onClose(false)
+{
+}
+//-------------------------------------------------------------------
+Mode::Mode(const Mode &copy) :
+    m_name(copy.m_name),
+    m_description(copy.m_description),
+    m_enabled(copy.m_enabled),
+    m_editor(copy.m_editor),
+    m_onClose(copy.m_onClose)
+{
+}
+
+//-------------------------------------------------------------------
 Mode::~Mode()
 {
+}
+
+//-------------------------------------------------------------------
+bool Mode::operator==(const Mode &other) const
+{
+    return ((m_name == other.m_name) && \
+        (m_description == other.m_description) && \
+        (m_enabled == other.m_enabled) && \
+        (m_editor == other.m_editor) && \
+        (m_onClose == other.m_onClose));
 }
 
 //-------------------------------------------------------
 QString Mode::name() const
 {
     return m_name;
+}
+
+//-------------------------------------------------------------------
+/*
+Tells if the mode is enabled,
+:meth:`pyqode.core.api.Mode.on_state_changed` will be called as soon
+as the mode state changed.
+
+:type: bool
+*/
+bool Mode::enabled() const
+{
+    return m_enabled;
+}
+
+//-------------------------------------------------------------------
+/*
+*/
+void Mode::setEnabled(bool enabled)
+{
+    if (enabled != m_enabled)
+    {
+        m_enabled = enabled;
+        onStateChanged(enabled);
+    }
 }
 
 //-------------------------------------------------------------------
@@ -36,7 +90,7 @@ Installs the extension on the editor.
 void Mode::onInstall(CodeEditor *editor)
 {
     m_editor = editor;
-    m_enabled = true;
+    setEnabled(true);
 }
 
 //-------------------------------------------------------------------
@@ -47,7 +101,7 @@ void Mode::onUninstall()
 {
     m_onClose = true;
     m_editor = NULL;
-    m_enabled = true;
+    setEnabled(false);
 }
 
 //-------------------------------------------------------------------

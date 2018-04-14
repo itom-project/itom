@@ -1,11 +1,16 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
-#include "qplaintextedit.h"
-#include "qcolor.h"
-#include "qset.h"
-#include "qpair.h"
-#include "qtextobject.h"
+#include <qplaintextedit.h>
+#include <qcolor.h>
+#include <qset.h>
+#include <qpair.h>
+#include <qtextobject.h>
+#include <qevent.h>
+#include <qpoint.h>
+
+#include "textDecoration.h"
+#include "syntaxHighlighterBase.h"
 
 struct VisibleBlock
 {
@@ -16,6 +21,9 @@ struct VisibleBlock
 
 class PanelsManager; //forward declaration
 class TextDecorationsManager; //forward declaration
+class DelayJobRunnerBase; //forward declaration
+class ModesManager; //forward declaration
+class SyntaxHighlighterBase; //forward declaration
 
 /*
 The editor widget is a simple extension to QPlainTextEdit.
@@ -56,6 +64,7 @@ should define the mime types they support!**
 */
 class CodeEditor : public QPlainTextEdit
 {
+    Q_OBJECT
 public:
     CodeEditor(QWidget *parent = NULL, bool createDefaultActions = true);
     virtual ~CodeEditor();
@@ -81,6 +90,18 @@ public:
     int tabLength() const;
     void setTabLength(int value);
 
+    QColor background() const;
+    void setBackground(const QColor &value);
+
+    QColor foreground() const;
+    void setForeground(const QColor &value);
+
+    QColor whitespacesForeground() const;
+    void setWhitespacesForeground(const QColor &value);
+
+    bool saveOnFocusOut() const;
+    void setSaveOnFocusOut(bool value);
+
     QList<VisibleBlock> visibleBlocks() const;
     bool dirty() const;
 
@@ -92,20 +113,61 @@ public:
 
     PanelsManager* panels() const;
     TextDecorationsManager* decorations() const;
+    ModesManager* modes() const;
+
+    SyntaxHighlighterBase *syntaxHighlighter() const;
+
+    int currentLineNumber() const;
+    int currentColumnNumber() const;
+
+    void indent();
+    void unindent();
+
+    void resetStylesheet();
+
+    void showTooltip(const QPoint &pos, const QString &tooltip);
+    void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
+
+    void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
+
+    bool isCommentOrString(const QTextCursor &cursor, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
+    bool isCommentOrString(const QTextBlock &block, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
 
 protected:
+
+    CodeEditor &operator =(const CodeEditor &) { return *this; };
+
+    void showTooltipDelayJobRunner(QList<QVariant> args);
+
     void initSettings();
     void initStyle();
     void initActions(bool createStandardActions);
+    
 
     void setWhitespacesFlags(bool show);
+
+    void updateVisibleBlocks();
+
+    void doHomeKey(QEvent *event = NULL, bool select = false);
+
+    int lineIndent(int lineNbr = -1);
+    int lineIndent(const QTextBlock *lineNbr);
+    QString lineText(int lineNbr);
 
     virtual void resizeEvent(QResizeEvent *e);
     virtual void closeEvent(QCloseEvent *e);
     virtual void keyPressEvent(QKeyEvent *e);
     virtual void keyReleaseEvent(QKeyEvent *e);
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual void mouseMoveEvent(QMouseEvent* e);
     virtual void showEvent(QShowEvent *e);
+    virtual void paintEvent(QPaintEvent *e);
+    virtual void wheelEvent(QWheelEvent *e);
+
+    virtual void focusInEvent(QFocusEvent *e);
+    virtual void focusOutEvent(QFocusEvent *e);
 
 private:
     bool m_showCtxMenu;
@@ -123,6 +185,9 @@ private:
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
     QByteArray m_wordSeparators;
+    bool m_saveOnFocusOut;
+    QPoint m_lastMousePos;
+    int m_prevTooltipBlockNbr;
 
     //flags/working variables
     bool m_cleaning;
@@ -132,6 +197,9 @@ private:
 
     PanelsManager *m_pPanels;
     TextDecorationsManager *m_pDecorations;
+    ModesManager *m_pModes;
+
+    DelayJobRunnerBase *m_pTooltipsRunner;
 
 private slots:
     void emitDirtyChanged(bool state);
@@ -147,9 +215,17 @@ signals:
     void mousePressed(QMouseEvent *e); // Signal emitted when a mouse button is pressed
     void mouseReleased(QMouseEvent *e); //Signal emitted when a key is released
     void mouseMoved(QMouseEvent *e); // Signal emitted when the mouse_moved
+    void mouseWheelActivated(QWheelEvent *e);
+
+    void focusedIn(QFocusEvent *e); //Signal emitted when focusInEvent is is called
+
+    void indentRequested(); //Signal emitted when the user press the TAB key
+    void unindentRequested(); //Signal emitted when the user press the BACK-TAB (Shift+TAB) key
 
     void blockCountChanged();
     void updateRequest();
+
+    void newTextSet(); //!< Signal emitted when a new text is set on the widget
 };
 
 #endif

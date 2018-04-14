@@ -2,6 +2,7 @@
 #define MODE_H
 
 #include <qstring.h>
+#include <qsharedpointer.h>
 
 class CodeEditor; //forware declaration
 
@@ -27,8 +28,14 @@ Subclasses may/should override the following methods:
 class Mode
 {
 public:
+    typedef QSharedPointer<Mode> Ptr;
+
+    Mode();
+    Mode(const Mode &copy);
     Mode(const QString &name, const QString &description = "");
     virtual ~Mode();
+
+    bool operator==(const Mode &other) const;
 
     virtual void onInstall(CodeEditor *editor);
     virtual void onUninstall();
@@ -36,8 +43,11 @@ public:
 
     QString name() const;
 
-protected:
-    
+    bool enabled() const;
+    void setEnabled(bool enabled);
+
+    CodeEditor *editor() const { return m_editor; }
+    bool onClose() const { return m_onClose; }
 
 private:
     QString m_name;

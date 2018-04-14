@@ -16,25 +16,45 @@ include_directories(
 )
 
 #QT5_ADD_RESOURCES( RES_SOURCES customcompleter.qrc)
-
-# Tell CMake to create the helloworld executable
-add_executable(codeEditor WIN32 
-    main.cpp 
-     
+SET (HEADERS
+    utils/utils.h
     include/codeEditor.h 
     include/manager.h
     include/panel.h
     include/mode.h
+    include/syntaxHighlighterBase.h
     include/textDecoration.h
+    include/foldDetector.h
+    include/delayJobRunner.h
+    managers/panelsManager.h
+    managers/textDecorationsManager.h
+    managers/modesManager.h
+    modes/caretLineHighlight.h
+    modes/symbolMatcherMode.h
+)
+
+SET (SOURCES
+    main.cpp 
     codeEditor.cpp
     mode.cpp
+    foldDetector.cpp
+    syntaxHighlighterBase.cpp
+    delayJobRunner.cpp
     managers/manager.cpp
-    managers/panelsManager.h
     managers/panelsManager.cpp
-    managers/textDecorationsManager.h
     managers/textDecorationsManager.cpp
+    managers/modesManager.cpp
     panels/panel.cpp
+    modes/caretLineHighlight.cpp
+    modes/symbolMatcherMode.cpp
     decorations/textDecoration.cpp
+    utils/utils.cpp
+)
+
+# Tell CMake to create the helloworld executable
+add_executable(codeEditor WIN32 
+    ${HEADERS}
+    ${SOURCES}
     ${RES_SOURCES} )
 
 # Use the Widgets module from Qt 5.

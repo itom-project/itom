@@ -2,6 +2,15 @@
 
 #include <QTextBlock>
 
+TextDecoration::TextDecoration()
+    :
+    QTextEdit::ExtraSelection(),
+    m_signals(new TextDecorationsSignals()),
+    m_drawOrder(-1),
+    m_tooltip("")
+{
+}
+
 //-----------------------------------------------------------
 /*Creates a text decoration.
 
@@ -65,7 +74,7 @@ TextDecoration::~TextDecoration()
 {
 }
 
-bool TextDecoration::operator==(const TextDecoration &other)
+bool TextDecoration::operator==(const TextDecoration &other) const
 {
     bool f = (format == other.format);
     return ((cursor == other.cursor) && \
@@ -81,7 +90,7 @@ Checks if the textCursor is in the decoration
 :type cursor: QtGui.QTextCursor
 :returns: True if the cursor is over the selection
 */
-bool TextDecoration::containsCursor(const QTextCursor &cursor)
+bool TextDecoration::containsCursor(const QTextCursor &cursor) const
 {
     int start = cursor.selectionStart();
     int end = cursor.selectionEnd();
@@ -225,4 +234,11 @@ void TextDecoration::setAsWarning(const QColor &color /*= QColor("orange")*/)
 {
     format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
     format.setUnderlineColor(color);
+}
+
+
+//-----------------------------------------------
+void TextDecoration::emitClicked(TextDecoration::Ptr selection) const
+{
+    emit m_signals->clicked(selection);
 }

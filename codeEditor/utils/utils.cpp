@@ -1,0 +1,200 @@
+#include "utils.h"
+
+#include "codeEditor.h"
+
+
+namespace Utils
+{
+    //------------------------------------------------------------------------
+    /*
+    Retuns  a list of symbols found in the block text
+
+    :param editor: code edit instance
+    :param block: block to parse
+    :param character: character to look for.
+    */
+    QList<ParenthesisInfo> listSymbols(CodeEditor *editor, const QTextBlock &block, const QChar &character)
+    {
+        QString text = block.text();
+        QList<ParenthesisInfo> symbols;
+        QTextCursor cursor(block);
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        int pos = text.indexOf(character, 0);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
+
+        while (pos != -1)
+        {
+            if (!editor->isCommentOrString(cursor))
+            {
+                //skips symbols in string literal or comment
+                ParenthesisInfo info(pos, character);
+                symbols.append(info);
+            }
+            pos = text.indexOf(character, pos + 1);
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
+        }
+        return symbols;
+    }
+
+    bool sortParenthesisInfo(const ParenthesisInfo &a, const ParenthesisInfo &b)
+    {
+        return a.position < b.position;
+    }
+
+    //-----------------------------------------------------------
+    /*
+    Gets the list of ParenthesisInfo for specific text block.
+
+    :param editor: Code edit instance
+    :param block: block to parse
+    */
+    void getBlockSymbolData(CodeEditor *editor, const QTextBlock &block, QList<ParenthesisInfo> &parentheses, QList<ParenthesisInfo> &squareBrackets, QList<ParenthesisInfo> &braces)
+    {
+        parentheses = listSymbols(editor, block, '(') + listSymbols(editor, block, ')');
+        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        squareBrackets = listSymbols(editor, block, '[') + listSymbols(editor, block, ']');
+        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        braces = listSymbols(editor, block, '{') + listSymbols(editor, block, '}');
+        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+    }
+
+
+    //-------------------------------------------------------------
+    /*
+    Gets the block fold level
+
+    :param block: block to access.
+    :returns: The block fold level
+    */
+    int getFoldLvl(const QTextBlock &block)
+    {
+        if (!block.isValid())
+        {
+            return 0;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        return (state & 0x03FF0000) >> 16;
+    }
+
+    //-------------------------------------------------------------
+    /*
+    Sets the block fold level.
+
+    :param block: block to modify
+    :param val: The new fold level [0-7]
+    */
+    void setFoldLvl(QTextBlock &block, int val)
+    {
+        if (!block.isValid())
+        {
+            return;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        if (val >= 0x3FF)
+        {
+            val = 0x3FF;
+        }
+        state &= 0x7C00FFFF;
+        state |= val << 16;
+        block.setUserState(state);
+    }
+
+    //-------------------------------------------------------------
+    /*
+    Checks if the block is a fold trigger.
+
+    :param block: block to check
+    :return: True if the block is a fold trigger (represented as a node in
+        the fold panel)
+    */
+    bool isFoldTrigger(const QTextBlock &block)
+    {
+        if (!block.isValid())
+        {
+            return false;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        return (bool)(state & 0x04000000);
+    }
+
+    //-------------------------------------------------------------
+    /*
+    Set the block fold trigger flag (True means the block is a fold
+    trigger).
+
+    :param block: block to set
+    :param val: value to set
+    */
+    void setFoldTrigger(QTextBlock &block, int val)
+    {
+        if (!block.isValid())
+        {
+            return;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        state &= 0x7BFFFFFF;
+        state |= int(val) << 26;
+        block.setUserState(state);
+    }
+
+    //-------------------------------------------------------------
+    /*
+     Checks if the block is expanded or collased.
+
+    :param block: QTextBlock
+    :return: False for an open trigger, True for for closed trigger
+    */
+    bool isCollapsed(const QTextBlock &block)
+    {
+        if (!block.isValid())
+        {
+            return false;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        return (bool)(state & 0x08000000);
+    }
+
+    //-------------------------------------------------------------
+    /*
+    Sets the fold trigger state (collapsed or expanded).
+
+    :param block: The block to modify
+    :param val: The new trigger state (True=collapsed, False=expanded)
+    */
+    void setCollapsed(QTextBlock &block, int val)
+    {
+        if (!block.isValid())
+        {
+            return;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            state = 0;
+        }
+        state &= 0x77FFFFFF;
+        state |= int(val) << 27;
+        block.setUserState(state);
+    }
+};

@@ -3,6 +3,7 @@
 #include <qapplication.h>
 #include <qpainter.h>
 #include "codeEditor.h"
+#include "managers/panelsManager.h"
 
 //-------------------------------------------------------
 Panel::Panel(const QString &name, bool dynamic, const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
@@ -96,4 +97,21 @@ void Panel::onInstall(CodeEditor *editor)
     setParent(editor);
     setPalette(qApp->palette());
 
+}
+
+//-------------------------------------------------------
+/*
+Shows/Hides the panel
+
+Automatically call CodeEdit.refresh_panels.
+
+:param visible: Visible state
+*/
+void Panel::setVisible(bool visible)
+{
+    QWidget::setVisible(visible);
+    if (m_pEditor)
+    {
+        m_pEditor->panels()->refresh();
+    }
 }

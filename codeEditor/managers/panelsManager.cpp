@@ -62,6 +62,11 @@ PanelsManager::PanelsManager(CodeEditor *editor, QObject *parent /*= NULL*/) :
     
 }
 
+
+PanelsManager::~PanelsManager()
+{
+}
+
 //-----------------------------------------------------------
 /*< Gets the list of panels attached to the specified zone.*/
 QList<Panel*> PanelsManager::panelsForZone(Panel::Position zone) const

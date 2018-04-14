@@ -40,6 +40,11 @@ public:
     Panel* remove(const QString &nameOrClass);
     void clear();
 
+    void resize();
+    void refresh();
+
+    Panel* get(const QString &nameOrClass);
+
 private:
     struct ZoneItems
     {
@@ -61,10 +66,9 @@ private:
     int m_right;
     QList<ZoneItems> m_panels;
 
-    Panel* get(const QString &nameOrClass);
-    void refresh();
+    
     QVector<int> computeZonesSizes();
-    void resize();
+    
 
 private slots:
     void updateViewportMargins();

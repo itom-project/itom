@@ -5,7 +5,7 @@
 #include <qvariant.h>
 #include <qtimer.h>
 
-#define DJR(base,T1,T2) ((DelayJobRunner<T1,T2>*)(base))
+#define DELAY_JOB_RUNNER(base,T1,T2) ((DelayJobRunner<T1,T2>*)(base))
 
 class DelayJobRunnerBase : public QObject
 {
@@ -42,9 +42,20 @@ class DelayJobRunner : public DelayJobRunnerBase
     
 
 public:
-    DelayJobRunner(OBJECT obj = NULL, FUNC f = NULL, int delay = 500, QObject *parent = NULL);
+    //DelayJobRunner(OBJECT obj = NULL, FUNC f = NULL, int delay = 500, QObject *parent = NULL);
+    //-------------------------------------------
+    /*
+    :param delay: Delay to wait before running the job. This delay applies
+    to all requests and cannot be changed afterwards.
+    */
+    DelayJobRunner(int delay = 500, QObject *parent = NULL) :
+        DelayJobRunnerBase(delay, parent),
+        m_func(NULL)
+    {
+        int i = 0;
+    }
 
-    virtual ~DelayJobRunner();
+    virtual ~DelayJobRunner() {}
 
     void requestJob(OBJECT* obj, FUNC f, const QList<QVariant> &args)
     {
@@ -55,13 +66,27 @@ public:
         m_timer.start(m_delay);
     }
 
-    virtual void cancelRequests();
+    virtual void cancelRequests()
+    {
+        m_timer.stop();
+        m_obj = NULL;
+        m_func = NULL;
+        m_args.clear();
+    }
 
 private:
     OBJECT* m_obj;
     FUNC m_func;
 
-    virtual void execRequestedJob();
+    //-------------------------------------------
+    /*
+    Execute the requested job after the timer has timeout.
+    */
+    virtual void execRequestedJob()
+    {
+        m_timer.stop();
+        (m_obj->*m_func)(m_args);
+    }
 };
 
 

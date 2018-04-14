@@ -3,6 +3,7 @@
 #include "codeEditor.h"
 #include "panel.h"
 
+
 #include <assert.h>
 #include <vector>
 
@@ -26,14 +27,17 @@ QList<QTextEdit::ExtraSelection> TextDecorationsManager::getExtraSelections() co
     QList<QTextEdit::ExtraSelection> s;
     for (int i = 0; i < m_decorations.size(); ++i)
     {
-        s << *(static_cast<const QTextEdit::ExtraSelection*>(&m_decorations[i]));
+        if (m_decorations[i].isNull() == false)
+        {
+            s << *(static_cast<const QTextEdit::ExtraSelection*>(m_decorations[i].data()));
+        }
     }
     return s;
 }
 
-bool sortDecorationsByDrawOrder(const TextDecoration &a, const TextDecoration &b)
+bool sortDecorationsByDrawOrder(const TextDecoration::Ptr &a, const TextDecoration::Ptr &b)
 {
-    return a.drawOrder() < b.drawOrder();
+    return a->drawOrder() < b->drawOrder();
 }
 
 //---------------------------------------------------------------------
@@ -43,7 +47,7 @@ Adds a text decoration on a CodeEdit instance
 :param decoration: Text decoration to add
 :type decoration: pyqode.core.api.TextDecoration
 */
-bool TextDecorationsManager::append(const TextDecoration &decoration)
+bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
 {
     if (m_decorations.contains(decoration))
     {
@@ -64,7 +68,7 @@ Removes a text decoration from the editor.
 :param decoration: Text decoration to remove
 :type decoration: pyqode.core.api.TextDecoration
 */
-bool TextDecorationsManager::remove(const TextDecoration &decoration)
+bool TextDecorationsManager::remove(TextDecoration::Ptr decoration)
 {
    if (m_decorations.removeOne(decoration))
    {
