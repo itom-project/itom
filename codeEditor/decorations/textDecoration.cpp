@@ -49,23 +49,23 @@ TextDecoration::TextDecoration(QTextCursor cursor, int startPos /*=-1*/, int end
 
     if (startPos >= 0)
     {
-        cursor.setPosition(startPos);
+        this->cursor.setPosition(startPos);
     }
 
     if (endPos >= 0)
     {
-        cursor.setPosition(endPos, QTextCursor::KeepAnchor);
+        this->cursor.setPosition(endPos, QTextCursor::KeepAnchor);
     }
 
     if (startLine >= 0)
     {
-        cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+        this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
     }
 
     if (endLine >= 0)
     {
-        cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
+        this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
     }
 }
 

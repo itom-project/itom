@@ -133,6 +133,8 @@ public:
     bool isCommentOrString(const QTextCursor &cursor, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
     bool isCommentOrString(const QTextBlock &block, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
 
+    QTextCursor wordUnderCursor(bool selectWholeWord);
+
 protected:
 
     CodeEditor &operator =(const CodeEditor &) { return *this; };
@@ -184,7 +186,7 @@ private:
     int m_fontSize;
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
-    QByteArray m_wordSeparators;
+    QString m_wordSeparators;
     bool m_saveOnFocusOut;
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;

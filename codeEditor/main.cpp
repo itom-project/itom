@@ -5,6 +5,8 @@
 
 #include "codeEditor.h"
 #include "modes/caretLineHighlight.h"
+#include "modes/symbolMatcherMode.h"
+#include "modes/occurrences.h"
 #include "syntaxHighlighter/pythonSyntaxHighlighter.h"
 #include "managers/modesManager.h"
 
@@ -18,8 +20,10 @@ int main(int argv, char **args)
     CodeEditor editor;
 
     editor.resize(800, 600);
-    //editor.modes()->append(Mode::Ptr(new CaretLineHighlighterMode("description of caret line highlighter mode")));
+    editor.modes()->append(Mode::Ptr(new CaretLineHighlighterMode("description of caret line highlighter mode")));
     editor.modes()->append(Mode::Ptr(new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter")));
+    editor.modes()->append(Mode::Ptr(new SymbolMatcherMode("description of SymbolMatcherMode")));
+    editor.modes()->append(Mode::Ptr(new OccurrencesHighlighterMode("description of OccurrencesHighlighterMode")));
     //editor.appendPlainText("\n\n\n\n\n\n\n\n\n\n");
     //editor.appendPlainText("(----(j\njj)\n)");
 

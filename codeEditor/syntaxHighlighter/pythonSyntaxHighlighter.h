@@ -68,7 +68,7 @@ private:
     QList<LexerResult> execLexer(const QString &text);
  
     //! Highlights multi-line strings, returns true if after processing we are still within the multi-line section.
-    bool matchMultiline(const QString &text, const QRegExp &delimiter, const int inState, const QTextCharFormat &style);
+    bool matchMultiline(const QString &text, const QRegExp &delimiter, const int inState, ColorScheme::Keys token, QList<LexerResult> &tokens);
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
     QList<HighlightingRule> m_rules;

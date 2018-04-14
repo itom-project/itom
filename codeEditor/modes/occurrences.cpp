@@ -1,0 +1,307 @@
+#include "occurrences.h"
+
+#include "codeEditor.h"
+#include "managers/textDecorationsManager.h"
+#include "utils/utils.h"
+
+#include <qbrush.h>
+#include <qregexp.h>
+#include <QtConcurrent\qtconcurrentrun.h>
+
+
+OccurrencesHighlighterMode::OccurrencesHighlighterMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+    Mode("OccurrencesHighlighterMode", description),
+    QObject(parent),
+    m_background(QColor("#CCFFCC")),
+    m_foreground(QColor("magenta")),
+    m_underlined(false),
+    m_caseSensitive(false),
+    m_wholeWord(true)
+{
+    // Timer used to run the search request with a specific delay
+    m_pTimer = new DelayJobRunnerNoArgs<OccurrencesHighlighterMode, void(OccurrencesHighlighterMode::*)()>(1000);
+    connect(&m_asyncFindAllWatcher, SIGNAL(finished()), this, SLOT(asyncFindAllWatcherFinished()));
+}
+
+//----------------------------------------------------------
+/*
+*/
+OccurrencesHighlighterMode::~OccurrencesHighlighterMode()
+{
+    delete m_pTimer;
+    m_pTimer = NULL;
+}
+
+//----------------------------------------------------------
+/*
+Background or underline color (if underlined is True).
+*/
+QColor OccurrencesHighlighterMode::background() const
+{
+    return m_background;
+}
+
+//----------------------------------------------------------
+/*
+*/
+void OccurrencesHighlighterMode::setBackground(const QColor &color)
+{
+    m_background = color;
+}
+
+//----------------------------------------------------------
+/*
+Foreground color of occurences, not used if underlined is True.
+*/
+QColor OccurrencesHighlighterMode::foreground() const
+{
+    return m_foreground;
+}
+
+//----------------------------------------------------------
+/*
+*/
+void OccurrencesHighlighterMode::setForeground(const QColor &color)
+{
+    m_foreground = color;
+}
+
+//----------------------------------------------------------
+/*
+Delay before searching for occurrences. The timer is rearmed as soon
+as the cursor position changed.
+*/
+int OccurrencesHighlighterMode::delay() const
+{
+    return m_pTimer->delay();
+}
+
+void OccurrencesHighlighterMode::setDelay(int delay)
+{
+    m_pTimer->setDelay(delay);
+}
+
+//----------------------------------------------------------
+/*
+True to use to underlined occurrences instead of
+changing the background. Default is True.
+
+If this mode is ON, the foreground color is ignored, the
+background color is then used as the underline color.
+*/
+bool OccurrencesHighlighterMode::underlined() const
+{
+    return m_underlined;
+}
+
+void OccurrencesHighlighterMode::setUnderlined(bool value)
+{
+    m_underlined = value;
+}
+
+//----------------------------------------------------------
+/*
+*/
+bool OccurrencesHighlighterMode::wholeWord() const
+{
+    return m_wholeWord;
+}
+
+void OccurrencesHighlighterMode::setWholeWord(bool value)
+{
+    m_wholeWord = value;
+}
+
+//----------------------------------------------------------
+/*
+*/
+bool OccurrencesHighlighterMode::caseSensitive() const
+{
+    return m_caseSensitive;
+}
+
+void OccurrencesHighlighterMode::setCaseSensitive(bool value)
+{
+    m_caseSensitive = value;
+}
+
+//----------------------------------------------------------
+/*
+*/
+void OccurrencesHighlighterMode::onStateChanged(bool state)
+{
+    if (state)
+    {
+        connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlight()));
+    }
+    else
+    {
+        disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlight()));
+        m_pTimer->cancelRequests();
+    }       
+}
+
+//----------------------------------------------------------
+/*
+Updates the current line decoration
+*/
+void OccurrencesHighlighterMode::requestHighlight()
+{
+    if (editor())
+    {
+        QString sub = editor()->wordUnderCursor(true).selectedText();
+        if (sub != m_sub)
+        {
+            clearDecorations();
+            if (sub.size() > 1)
+            {
+                DELAY_JOB_RUNNER_NOARGS(m_pTimer, OccurrencesHighlighterMode, void(OccurrencesHighlighterMode::*)())->requestJob( \
+                this, &OccurrencesHighlighterMode::sendRequest);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------
+void OccurrencesHighlighterMode::sendRequest()
+{
+    if (!editor())
+    {
+        return;
+    }
+
+    QTextCursor cursor = editor()->textCursor();
+    m_sub = editor()->wordUnderCursor(true).selectedText();
+    if (!cursor.hasSelection() || cursor.selectedText() == m_sub)
+    {
+        if (m_sub != "")
+        {
+            if (1)
+            {
+                //concurrent
+                if (!m_asyncFindAllWatcher.isRunning())
+                {
+                    m_asyncFindAllWatcher.setFuture(QtConcurrent::run(this, &OccurrencesHighlighterMode::findAll, editor()->toPlainText(), m_sub, m_wholeWord, m_caseSensitive));
+                }
+                else
+                {
+                    m_sub == "";
+                    requestHighlight();
+                }
+            }
+            else
+            {
+                //or: direct
+                QList<QPair<int,int> > matches = findAll(editor()->toPlainText(), m_sub, m_wholeWord, m_caseSensitive);
+                onResultsAvailable(matches);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------
+void OccurrencesHighlighterMode::asyncFindAllWatcherFinished()
+{
+    onResultsAvailable(m_asyncFindAllWatcher.future().result());
+}
+
+//----------------------------------------------------------
+void OccurrencesHighlighterMode::onResultsAvailable(QList<QPair<int,int> > results)
+{
+    if (results.size() > 500)
+    {
+        /*limit number of results (on very big file where a lots of
+        # occurrences can be found, this would totally freeze the editor
+        # during a few seconds, with a limit of 500 we can make sure
+        # the editor will always remain responsive).*/
+        results = results.mid(0, 500);
+    }
+
+    m_sub == ""; //todo: is it good to delete the recently detected word?
+
+    int current = editor()->textCursor().position();
+    if (results.size() > 1)
+    {
+        int start, end;
+        TextDecoration::Ptr deco;
+        for (int i = 0; i < results.size(); ++i)
+        {
+            start = results[i].first;
+            end = results[i].second;
+
+            if ((start <= current) && (current <= end))
+            {
+                continue;
+            }
+
+            deco = TextDecoration::Ptr(new TextDecoration(editor()->textCursor(), start, end,-1,-1,3));
+            if (m_underlined)
+            {
+                deco->setAsUnderlined(m_background);
+            }
+            else
+            {
+                deco->setBackground(QBrush(m_background));
+                if (m_foreground.isValid())
+                {
+                    deco->setForeground(m_foreground);
+                }
+            }
+
+            editor()->decorations()->append(deco);
+            m_decorations.append(deco);
+        }
+    }
+
+
+}
+
+//----------------------------------------------------------
+/*
+Clear line decoration
+*/
+//-------------------------------------------------------------
+void OccurrencesHighlighterMode::clearDecorations()
+{
+    foreach(TextDecoration::Ptr deco, m_decorations)
+    {
+        editor()->decorations()->remove(deco);
+    }
+    m_decorations.clear();
+}
+
+//----------------------------------------------------------
+/*
+Clear line decoration
+*/
+//-------------------------------------------------------------
+QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive)
+{
+    QList<QPair<int, int> > results;
+
+    if (sub != "")
+    {
+        QRegExp rx;
+        int offset = 0;
+        Qt::CaseSensitivity cs = caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        if (wholeWord)
+        {
+            rx = QRegExp(QString("\\b%1\\b").arg(sub), cs);
+            offset = -1;
+        }
+        else
+        {
+            rx = QRegExp(sub, cs);
+        }
+
+        int pos = 0;
+        int length = sub.size();
+        while ((pos = rx.indexIn(text, pos)) != -1)
+        {
+            results.append(QPair<int,int>(pos, pos+length));
+            pos += (rx.matchedLength() + offset);
+        }
+    }
+
+    return results;
+}

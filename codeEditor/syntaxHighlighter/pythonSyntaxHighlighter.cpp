@@ -214,19 +214,19 @@ QList<PythonSyntaxHighlighter::LexerResult> PythonSyntaxHighlighter::execLexer(c
         }
     }
     
-    //setCurrentBlockState(0);
+    setCurrentBlockState(0);
 
     // Do multi-line strings
-    /*bool isInMultilne = matchMultiline(text, m_triSingleQuote, 1, m_basicStyles.value("string2"));
-    if (!isInMultilne)
+    bool isInMultiline = matchMultiline(text, m_triSingleQuote, 1, ColorScheme::KeyDocstring, tokens);
+    if (!isInMultiline)
     {
-        isInMultilne = matchMultiline(text, m_triDoubleQuote, 2, m_basicStyles.value("string2"));
-    }*/
+        isInMultiline = matchMultiline(text, m_triDoubleQuote, 2, ColorScheme::KeyDocstring, tokens);
+    }
     return tokens;
 }
 
 //-------------------------------------------------------------------
-bool PythonSyntaxHighlighter::matchMultiline(const QString &text, const QRegExp &delimiter, const int inState, const QTextCharFormat &style)
+bool PythonSyntaxHighlighter::matchMultiline(const QString &text, const QRegExp &delimiter, const int inState, ColorScheme::Keys token, QList<PythonSyntaxHighlighter::LexerResult> &tokens)
 {
     int start = -1;
     int add = -1;
@@ -265,7 +265,8 @@ bool PythonSyntaxHighlighter::matchMultiline(const QString &text, const QRegExp 
             length = text.length() - start + add;
         }
         // Apply formatting and look for next
-        setFormat(start, length, style);        
+
+        tokens.append(LexerResult(start, length, token));       
         start = delimiter.indexIn(text, start + length);
     }
 

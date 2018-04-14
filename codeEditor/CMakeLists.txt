@@ -32,6 +32,7 @@ SET (HEADERS
     managers/modesManager.h
     modes/caretLineHighlight.h
     modes/symbolMatcherMode.h
+    modes/occurrences.h
 )
 
 SET (SOURCES
@@ -49,6 +50,7 @@ SET (SOURCES
     panels/panel.cpp
     modes/caretLineHighlight.cpp
     modes/symbolMatcherMode.cpp
+    modes/occurrences.cpp
     decorations/textDecoration.cpp
     utils/utils.cpp
 )

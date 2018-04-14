@@ -51,7 +51,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_pDecorations = new TextDecorationsManager(this);
     m_pModes = new ModesManager(this);
 
-    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700); //(this, &CodeEditor::showTooltipDelayJobRunner, 700);
+    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700);
 
     initStyle();
 }
@@ -968,6 +968,76 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, QList<ColorScheme::K
         }
     }
     return false;
+}
+
+//------------------------------------------------------------
+/*
+Gets the word under cursor using the separators defined by
+:attr:`pyqode.core.api.CodeEdit.word_separators`.
+
+.. note: Instead of returning the word string, this function returns
+    a QTextCursor, that way you may get more information than just the
+    string. To get the word, just call ``selectedText`` on the returned
+    value.
+
+:param select_whole_word: If set to true the whole word is selected,
+    else the selection stops at the cursor position.
+:param text_cursor: Optional custom text cursor (e.g. from a
+    QTextDocument clone)
+:returns: The QTextCursor that contains the selected word.
+*/
+QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord)
+{
+    QTextCursor text_cursor = textCursor();
+    int endPos, startPos;
+    endPos = startPos = text_cursor.position();
+    QString selectedText;
+    QChar firstChar;
+    //select char by char until we are at the original cursor position.
+    while (!text_cursor.atStart())
+    {
+        text_cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, 1);
+        selectedText = text_cursor.selectedText();
+        if (selectedText.size() > 0)
+        {
+            firstChar = selectedText[0];
+            if (m_wordSeparators.contains(firstChar) &&
+                    (selectedText != "n" && selectedText != "t") ||
+                    firstChar.isSpace())
+            {
+                break;  //start boundary found
+            }
+        }
+        startPos = text_cursor.position();
+        text_cursor.setPosition(startPos);
+    }
+
+    if (selectWholeWord)
+    {
+        //select the resot of the word
+        text_cursor.setPosition(endPos);
+        while (!text_cursor.atEnd())
+        {
+            text_cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+            selectedText = text_cursor.selectedText();
+            if (selectedText.size() > 0)
+            {
+                firstChar = selectedText[0];
+                if (m_wordSeparators.contains(selectedText) &&
+                        (selectedText != "n" && selectedText != "t") ||
+                        firstChar.isSpace())
+                {
+                    break;  //end boundary found
+                }
+                endPos = text_cursor.position();
+                text_cursor.setPosition(endPos);
+            }
+        }
+    }
+    //now that we habe the boundaries, we can select the text
+    text_cursor.setPosition(startPos);
+    text_cursor.setPosition(endPos, QTextCursor::KeepAnchor);
+    return text_cursor;
 }
 
 //------------------------------------------------------------

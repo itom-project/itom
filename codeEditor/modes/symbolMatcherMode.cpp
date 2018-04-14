@@ -8,10 +8,14 @@
 
 /*static*/ const QByteArray SymbolMatcherMode::chars = "()[]{}";
 
-SymbolMatcherMode::SymbolMatcherMode(QObject *parent /*= NULL*/) :
-    Mode("SymbolMatcherMode"),
+//----------------------------------------------------------
+/*
+*/
+SymbolMatcherMode::SymbolMatcherMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+    Mode("SymbolMatcherMode", description),
     QObject(parent)
 {
+    setMatchForeground("red");
 }
 
 //----------------------------------------------------------

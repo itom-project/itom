@@ -34,7 +34,7 @@ public:
 
     static const QByteArray chars;
 
-    SymbolMatcherMode(QObject *parent = NULL);
+    SymbolMatcherMode(const QString &description = "", QObject *parent = NULL);
     virtual ~SymbolMatcherMode();
 
     QBrush matchBackground() const;

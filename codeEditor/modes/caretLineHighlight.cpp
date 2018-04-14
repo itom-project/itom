@@ -100,7 +100,7 @@ void CaretLineHighlighterMode::refresh()
             brush = Utils::driftColor(editor()->background(), 110);
         }
 
-        m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->textCursor()));
+        m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->textCursor(),-1,-1,-1,-1,100));
         m_decoration->setBackground(brush);
         m_decoration->setFullWidth();
         editor()->decorations()->append(m_decoration);

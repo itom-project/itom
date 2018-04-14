@@ -7,6 +7,7 @@
 #include "managers/modesManager.h"
 #include "managers/panelsManager.h"
 #include "modes/caretLineHighlight.h"
+#include "utils/utils.h"
 
 //------------------------------------------------------------------
 ColorScheme::ColorScheme()
@@ -20,9 +21,18 @@ ColorScheme::ColorScheme()
         m_formats[i] = createFormat(QBrush("green"), bgcolor);
     }
 
-    m_formats[KeyClass] = createFormat(QBrush("blue"));
-    m_formats[KeyNumber] = createFormat(QBrush("red"));
-    m_formats[KeyOperator] = createFormat(QBrush("cyan"));
+    m_formats[KeyKeyword] = createFormat(QBrush("blue"));
+    m_formats[KeyOperator] = createFormat(QBrush("red"));
+    
+    //m_formats[Keybrace] = createFormat(QBrush("darkGray"));
+    m_formats[KeyClass] = createFormat(QBrush("black"), QBrush(), true);
+    m_formats[KeyString] = createFormat(QBrush("magenta"));
+    //m_formats[KeyString2] = createFormat(QBrush("darkMagenta"));
+    m_formats[KeyComment] = createFormat(QBrush("darkGreen"), QBrush(), false, true);
+    m_formats[KeySelf] = createFormat(QBrush("black"), QBrush(), false, true);
+    m_formats[KeyNumber] = createFormat(QBrush("brown"));
+    m_formats[KeyHighlight] = createFormat(QBrush(), Utils::driftColor(bgcolor.color(), 110));
+    
 
 }
 

@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <vector>
+#include <qdebug.h>
 
 
 
@@ -57,6 +58,12 @@ bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
     m_decorations.append(decoration);
     std::sort(m_decorations.begin(), m_decorations.end(), sortDecorationsByDrawOrder);
     editor()->setExtraSelections(getExtraSelections());
+
+    QList<QTextEdit::ExtraSelection> sels = editor()->extraSelections();
+    foreach (QTextEdit::ExtraSelection s, sels)
+    {
+        qDebug() << "sel " << s.cursor.position() << s.cursor.selectedText() << s.format.property(QTextFormat::FullWidthSelection);
+    }
     return true;
 }
 
