@@ -18,20 +18,36 @@ ColorScheme::ColorScheme()
     //create defaults
     for (int i = 0; i < Last; ++i)
     {
-        m_formats[i] = createFormat(QBrush("green"), bgcolor);
+        m_formats[i] = createFormat(QBrush("black"), bgcolor);
     }
 
     m_formats[KeyKeyword] = createFormat(QBrush("blue"));
+    m_formats[KeyInstance] = createFormat(QBrush("gray"));
     m_formats[KeyOperator] = createFormat(QBrush("red"));
+    m_formats[KeyConstant] = createFormat(QBrush("blue"), QBrush(), true);
+    m_formats[KeyNamespace] = createFormat(QBrush("red"), QBrush(), false, true);
     
     //m_formats[Keybrace] = createFormat(QBrush("darkGray"));
     m_formats[KeyClass] = createFormat(QBrush("black"), QBrush(), true);
     m_formats[KeyString] = createFormat(QBrush("magenta"));
     //m_formats[KeyString2] = createFormat(QBrush("darkMagenta"));
     m_formats[KeyComment] = createFormat(QBrush("darkGreen"), QBrush(), false, true);
-    m_formats[KeySelf] = createFormat(QBrush("black"), QBrush(), false, true);
-    m_formats[KeyNumber] = createFormat(QBrush("brown"));
+    m_formats[KeySelf] = createFormat(QBrush("gray"), QBrush(), false, true);
+    m_formats[KeyNumber] = createFormat(QBrush("darkYellow"));
+    m_formats[KeyDecorator] = createFormat(QBrush("darkYellow"), QBrush(), true, true);
     m_formats[KeyHighlight] = createFormat(QBrush(), Utils::driftColor(bgcolor.color(), 110));
+    m_formats[KeyBuiltin] = createFormat(QBrush("yellow"));
+    m_formats[KeyOperatorWord] = createFormat(QBrush("pink"));
+    m_formats[KeyFunction] = createFormat(QBrush("darkBlue"), QBrush(), true);
+    m_formats[KeyDefinition] = createFormat(QBrush("darkRed"), QBrush(), true);
+    m_formats[KeyDocstring] = createFormat(QBrush("darkCyan"), QBrush(), false, true);
+
+    /*regExpressions["builtin_fct"] = QRegExp(builtin_fct);
+    regExpressions["uf_sqstring"] = QRegExp(ufstring1);
+    regExpressions["uf_dqstring"] = QRegExp(ufstring2);
+    regExpressions["uf_sq3string"] = QRegExp(ufstring3);
+    regExpressions["uf_dq3string"] = QRegExp(ufstring4);
+    regExpressions["SYNC"] = QRegExp(any("SYNC", QStringList("\\n")));*/
     
 
 }

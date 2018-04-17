@@ -52,7 +52,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
 {
     Q_D(FoldDetector);
 
-    int prev_fold_level = Utils::getFoldLvl(previousBlock);
+    int prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
     int fold_level;
     if (text.trimmed() == "")
     {
@@ -68,7 +68,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
         }
     }
 
-    prev_fold_level = Utils::getFoldLvl(previousBlock);
+    prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
 
     if (fold_level > prev_fold_level)
     {
@@ -76,31 +76,31 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
         QTextBlock block = currentBlock.previous();
         while (block.isValid() && block.text().trimmed() == "")
         {
-            Utils::setFoldLvl(block, fold_level);
+            Utils::TextBlockHelper::setFoldLvl(block, fold_level);
             block = block.previous();
         }
-        Utils::setFoldTrigger(block, true);
+        Utils::TextBlockHelper::setFoldTrigger(block, true);
     }
 
     // update block fold level
     if (text.trimmed() != "")
     {
-        Utils::setFoldTrigger(previousBlock, fold_level > prev_fold_level);
+        Utils::TextBlockHelper::setFoldTrigger(previousBlock, fold_level > prev_fold_level);
     }
-    Utils::setFoldLvl(currentBlock, fold_level);
+    Utils::TextBlockHelper::setFoldLvl(currentBlock, fold_level);
 
     // user pressed enter at the beginning of a fold trigger line
     // the previous blank line will keep the trigger state and the new line
     // (which actually contains the trigger) must use the prev state (
     // and prev state must then be reset).
     QTextBlock prev = currentBlock.previous();  // real prev block (may be blank)
-    if (prev.isValid() && prev.text().trimmed() == "" & Utils::isFoldTrigger(prev))
+    if (prev.isValid() && prev.text().trimmed() == "" & Utils::TextBlockHelper::isFoldTrigger(prev))
     {
         // prev line has the correct trigger fold state
-        Utils::setCollapsed(currentBlock, Utils::isCollapsed(prev));
+        Utils::TextBlockHelper::setCollapsed(currentBlock, Utils::TextBlockHelper::isCollapsed(prev));
         // make empty line not a trigger
-        Utils::setFoldTrigger(prev, false);
-        Utils::setCollapsed(prev, false);
+        Utils::TextBlockHelper::setFoldTrigger(prev, false);
+        Utils::TextBlockHelper::setCollapsed(prev, false);
     }
 }
 

@@ -68,7 +68,8 @@ class TextBlockUserData : public QTextBlockUserData
 {
 public:
     TextBlockUserData() :
-       QTextBlockUserData()
+       QTextBlockUserData(),
+        m_importStmt(false)
     {
     }
 
@@ -79,6 +80,10 @@ public:
     QStringList m_markers;
 
     QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
+
+    bool m_docstring; //special item for python-related code editor
+
+    bool m_importStmt;
 };
 
 /*

@@ -61,12 +61,58 @@ namespace Utils
 
     //-------------------------------------------------------------
     /*
+    Gets the user state, generally used for syntax highlighting.
+
+    :param block: block to access
+    :return: The block state
+    */
+    int TextBlockHelper::getState(const QTextBlock &block)
+    {
+        if (!block.isValid())
+        {
+            return -1;
+        }
+        int state = block.userState();
+        if (state == -1)
+        {
+            return state;
+        }
+        return state & 0x0000FFFF;
+    }
+
+    //-------------------------------------------------------------
+    /*
+    Sets the user state, generally used for syntax highlighting.
+
+    :param block: block to modify
+    :param state: new state value.
+    :return:
+    */
+    void TextBlockHelper::setState(QTextBlock &block, int state)
+    {
+        if (!block.isValid())
+        {
+            return;
+        }
+        int user_state = block.userState();
+        if (user_state == -1)
+        {
+            user_state = 0;
+        }
+        int higher_part = user_state & 0x7FFF0000;
+        state &= 0x0000FFFF;
+        state |= higher_part;
+        block.setUserState(state);
+    }
+
+    //-------------------------------------------------------------
+    /*
     Gets the block fold level
 
     :param block: block to access.
     :returns: The block fold level
     */
-    int getFoldLvl(const QTextBlock &block)
+    int TextBlockHelper::getFoldLvl(const QTextBlock &block)
     {
         if (!block.isValid())
         {
@@ -87,7 +133,7 @@ namespace Utils
     :param block: block to modify
     :param val: The new fold level [0-7]
     */
-    void setFoldLvl(QTextBlock &block, int val)
+    void TextBlockHelper::setFoldLvl(QTextBlock &block, int val)
     {
         if (!block.isValid())
         {
@@ -115,7 +161,7 @@ namespace Utils
     :return: True if the block is a fold trigger (represented as a node in
         the fold panel)
     */
-    bool isFoldTrigger(const QTextBlock &block)
+    bool TextBlockHelper::isFoldTrigger(const QTextBlock &block)
     {
         if (!block.isValid())
         {
@@ -137,7 +183,7 @@ namespace Utils
     :param block: block to set
     :param val: value to set
     */
-    void setFoldTrigger(QTextBlock &block, int val)
+    void TextBlockHelper::setFoldTrigger(QTextBlock &block, int val)
     {
         if (!block.isValid())
         {
@@ -160,7 +206,7 @@ namespace Utils
     :param block: QTextBlock
     :return: False for an open trigger, True for for closed trigger
     */
-    bool isCollapsed(const QTextBlock &block)
+    bool TextBlockHelper::isCollapsed(const QTextBlock &block)
     {
         if (!block.isValid())
         {
@@ -181,7 +227,7 @@ namespace Utils
     :param block: The block to modify
     :param val: The new trigger state (True=collapsed, False=expanded)
     */
-    void setCollapsed(QTextBlock &block, int val)
+    void TextBlockHelper::setCollapsed(QTextBlock &block, int val)
     {
         if (!block.isValid())
         {

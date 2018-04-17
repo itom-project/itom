@@ -5,26 +5,13 @@
 #include <qregexp.h>
 #include <qtextformat.h>
 
-//! Container to describe a highlighting rule. Based on a regular expression, a relevant match # and the format.
-class HighlightingRule
-{
-public: 
-    HighlightingRule(const QString &patternStr, int n, ColorScheme::Keys token) :
-        m_originalRuleStr(patternStr),
-        m_pattern(QRegExp(patternStr)),
-        m_nth(n),
-        m_token(token)
-    {
-    } 
-
-    QString m_originalRuleStr;
-    QRegExp m_pattern;
-    int m_nth;
-    ColorScheme::Keys m_token;
-};
-
 /*
-Python Syntax Highlighter
+This module contains a native python syntax highlighter, strongly inspired from
+spyderlib.widgets.source_code.syntax_higlighter.PythonSH but modified to
+highlight docstrings with a different color than the string color and to
+highlight decorators and self parameters.
+
+It is approximately 3 time faster then :class:`pyqode.core.modes.PygmentsSH`.
 */
 class PythonSyntaxHighlighter : public SyntaxHighlighterBase
 {
@@ -34,8 +21,6 @@ public:
 
     virtual ~PythonSyntaxHighlighter();
 
-    virtual void onInstall(CodeEditor *editor);
-
     /*
     Abstract method. Override this to apply syntax highlighting.
     
@@ -44,36 +29,31 @@ public:
     */
     void highlight_block(const QString &text, QTextBlock &block);
 
-private:
-    QStringList m_keywords;
-    QStringList m_operators;
-    QStringList m_braces;
- 
-    void initializeRules();
-    void clearCaches();
+    virtual void rehighlight();
 
-    struct LexerResult
+private:
+    enum State //!< Syntax highlighting states (from one text block to another):
     {
-        LexerResult(int idx, int len, ColorScheme::Keys t) : index(idx), length(len), token(t) {}
-        int index;
-        int length;
-        ColorScheme::Keys token;
+        Normal = 0,
+        InsideSq3String = 1,
+        InsideDq3String = 2,
+        InsideSqString = 3,
+        InsideDqString = 4
     };
 
-    QTextBlock m_previousBlock;
-    QSharedPointer<TextBlockUserData> m_savedStateStack;
+    //syntax highlighting rules
+    static QMap<QString,QRegExp> regExpProg;
+    static QRegExp regExpIdProg;
+    static QRegExp regExpAsProg;
+    static QRegExp regExpOeComment; //comments suitable for outline explorer
+
+    QList<QTextBlock> m_docstrings;
+    QList<QTextBlock> m_importStatements;
 
     QTextCharFormat getFormatFromStyle(ColorScheme::Keys token) const;
-
-    QList<LexerResult> execLexer(const QString &text);
- 
-    //! Highlights multi-line strings, returns true if after processing we are still within the multi-line section.
-    bool matchMultiline(const QString &text, const QRegExp &delimiter, const int inState, ColorScheme::Keys token, QList<LexerResult> &tokens);
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
-    QList<HighlightingRule> m_rules;
-    QRegExp m_triSingleQuote;
-    QRegExp m_triDoubleQuote;
+    static QMap<QString,QRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };
 
 #endif
