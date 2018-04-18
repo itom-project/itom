@@ -1393,7 +1393,7 @@ int DataObject::getStep(int index) const
     
     if (index > 2) // steps of 3D Objekt from plane to plane
         step *= osize.height * osize.width;
-    else if (m_dims == 2 && index == 0)
+    else if ((m_dims == 2 && index == 0) || (m_dims > 2 && (m_dims - index) == 2))
         step *= osize.width;
 
     return step;
