@@ -84,6 +84,7 @@ MainWindow::MainWindow() :
 	m_appFileOpen(NULL),
 	m_aboutQt(NULL),
 	m_aboutQitom(NULL),
+    m_pMenuFigure(NULL),
 	m_pMenuHelp(NULL),
 	m_pMenuFile(NULL),
 	m_pMenuPython(NULL),
@@ -650,6 +651,15 @@ void MainWindow::createActions()
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
+        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("close all floatable plots"), this);
+        connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
+
+        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("show all floatable plots"), this);
+        connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
+        
+        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("minimize all floatable figures"), this);
+        connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
+
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -768,6 +778,11 @@ void MainWindow::createMenus()
 
     m_pMenuView = menuBar()->addMenu(tr("View"));
     connect(m_pMenuView, SIGNAL(aboutToShow()), this, SLOT(mnuViewAboutToShow()));
+
+    m_pMenuFigure = menuBar()->addMenu(tr("Figure"));
+    m_pMenuFigure->addAction(m_actions["close_all_plots"]);
+    m_pMenuFigure->addAction(m_actions["show_all_plots"]);
+    m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
 
     if (uOrg->hasFeature(featDeveloper))
     {
@@ -1210,6 +1225,66 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuCloseAllPlots()
+{
+    ito:RetVal retval = ito::retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+        return;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+    QMetaObject::invokeMethod(uiOrga, "closeAllFloatableFigures", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
+    if (!locker.getSemaphore()->wait(-1))
+    {
+        retval += ito::RetVal(ito::retError,0, tr("timeout while closing figures").toLatin1().data());
+        return;
+    }
+
+    retval = locker.getSemaphore()->returnValue;
+    return;
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuShowAllPlots()
+{
+    ito::RetVal retval = ito::retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+
+    }
+    if (!retval.containsError())
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "figureShowAll", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    }
+    return;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuMinimizeAllPlots()
+{
+    ito::RetVal retval = ito::retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+
+    }
+    if (!retval.containsError())
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "figureMinimizeAll", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    }
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowScriptReference()
 {

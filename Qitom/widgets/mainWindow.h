@@ -118,6 +118,7 @@ private:
 
     QMap<QString, QAction*> m_actions;
 
+    QMenu *m_pMenuFigure;
     QMenu *m_pMenuHelp;
     QMenu *m_pMenuFile;
     QMenu *m_plastFilesMenu;
@@ -190,6 +191,9 @@ private slots:
     void mnuShowProperties();
     void mnuShowUserManagement();
     void mnuToggleExecPyCodeByDebugger(bool checked);
+    void mnuCloseAllPlots();
+    void mnuShowAllPlots();
+    void mnuMinimizeAllPlots();
 
     void mnuScriptStop();
     void mnuScriptContinue();

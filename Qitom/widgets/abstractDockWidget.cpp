@@ -1163,7 +1163,11 @@ void AbstractDockWidget::mnuStayOnTopOfApp(bool checked)
         setTopLevel(topLevelNothing);
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::mini()
+{
+    m_pWindow->setWindowState(Qt::WindowMinimized);
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 //! activates this dock widget or window and raises it on top of all opened windows
 /*!

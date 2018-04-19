@@ -3683,7 +3683,34 @@ RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned 
 
     return retval;
 }
+RetVal UiOrganizer::closeAllFloatableFigures(ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+    QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
+    while (i != m_dialogList.end())
+    {
+        fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
+        if (fig && !fig->docked())
+        {
+            fig->setFigHandle(0);
+            delete i.value().container;
+            i = m_dialogList.erase(i);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
 
+    return retval;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
@@ -3741,7 +3768,66 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
 
     return retval;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figureShowAll(ItomSharedSemaphore *semaphore /*=NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+    QSharedPointer<unsigned int> empty;
 
+        QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
+
+        while (i != m_dialogList.end())
+        {
+            fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
+            if (fig)
+            {
+                fig->raiseAndActivate();
+
+            }
+            ++i;
+        }
+    
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::figureMinimizeAll(ItomSharedSemaphore *semaphore /*=NULL*/)
+{
+    RetVal retval;
+    ItomSharedSemaphoreLocker locker(semaphore);
+    FigureWidget *fig = NULL;
+    QSharedPointer<unsigned int> empty;
+
+    QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
+
+    while (i != m_dialogList.end())
+    {
+        fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
+        if (fig)
+        {
+            fig->mini();
+
+        }
+        ++i;
+    }
+
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+    }
+
+    return retval;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {

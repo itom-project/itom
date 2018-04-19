@@ -489,6 +489,9 @@ public slots:
     RetVal figureDesignerWidget(QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
+    RetVal closeAllFloatableFigures(ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureShowAll(ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureMinimizeAll(ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
