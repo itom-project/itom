@@ -651,10 +651,10 @@ void MainWindow::createActions()
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("close all floatable plots"), this);
+        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("close all floatable figures"), this);
         connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
 
-        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("show all floatable plots"), this);
+        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("show all floatable figures"), this);
         connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
         
         a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("minimize all floatable figures"), this);
