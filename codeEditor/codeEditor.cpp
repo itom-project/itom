@@ -1041,6 +1041,123 @@ QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord)
 }
 
 //------------------------------------------------------------
+/*
+Returns the line number from the y_pos
+
+:param y_pos: Y pos in the editor
+:return: Line number (0 based), -1 if out of range
+*/
+int CodeEditor::lineNbrFromPosition(int yPos) const
+{
+    int height = fontMetrics().height();
+    foreach(const VisibleBlock &vb, visibleBlocks())
+    {
+        if ((vb.topPosition <= yPos) && \
+            (yPos <= (vb.topPosition + height)))
+        {
+            return vb.lineNumber;
+        }
+    }
+    return -1;
+}
+
+//------------------------------------------------------------
+/*
+Returns the line count
+*/
+int CodeEditor::lineCount() const
+{
+    return document()->blockCount();
+}
+
+//------------------------------------------------------------
+/*
+Selects entire lines between start and end line numbers.
+
+This functions apply the selection and returns the text cursor that
+contains the selection.
+
+Optionally it is possible to prevent the selection from being applied
+on the code editor widget by setting ``apply_selection`` to False.
+
+:param start: Start line number (0 based)
+:param end: End line number (0 based). Use -1 to select up to the
+    end of the document
+:param apply_selection: True to apply the selection before returning
+    the QTextCursor.
+:returns: A QTextCursor that holds the requested selection
+*/
+QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool applySelection /*= true*/)
+{
+    if (end == -1)
+    {
+        end = lineCount() - 1;
+    }
+    if (start < 0)
+    {
+        start = 0;
+    }
+    QTextCursor text_cursor = moveCursorTo(start);
+    if (end > start)  //Going down
+    {
+        text_cursor.movePosition(QTextCursor::Down,
+                                    QTextCursor::KeepAnchor, end - start);
+        text_cursor.movePosition(QTextCursor::EndOfLine,
+                                    QTextCursor::KeepAnchor);
+    }
+    else if (end < start)  //going up
+    {
+        // don't miss end of line !
+        text_cursor.movePosition(QTextCursor::EndOfLine,
+                                    QTextCursor::MoveAnchor);
+        text_cursor.movePosition(QTextCursor::Up,
+                                    QTextCursor::KeepAnchor, start - end);
+        text_cursor.movePosition(QTextCursor::StartOfLine,
+                                    QTextCursor::KeepAnchor);
+    }
+    else
+    {
+        text_cursor.movePosition(QTextCursor::EndOfLine,
+                                    QTextCursor::KeepAnchor);
+    }
+    if (applySelection)
+    {
+        setTextCursor(text_cursor);
+    }
+    return text_cursor;
+}
+
+//------------------------------------------------------------
+/*
+Returns the selected lines boundaries (start line, end line)
+
+:return: tuple(int, int)
+*/
+QPair<int,int> CodeEditor::selectionRange() const
+{        
+    int start = document()->findBlock(
+        textCursor().selectionStart()).blockNumber();
+    int end = document()->findBlock(
+        textCursor().selectionEnd()).blockNumber();
+    QTextCursor text_cursor = textCursor();
+    text_cursor.setPosition(textCursor().selectionEnd());
+    if ((text_cursor.columnNumber() == 0) && (start != end))
+    {
+        end -= 1;
+    }
+    return QPair<int,int>(start, end);
+}
+
+//------------------------------------------------------------
+QTextCursor CodeEditor::moveCursorTo(int line)
+{
+    QTextCursor cursor = textCursor();
+    QTextBlock block = document()->findBlockByNumber(line);
+    cursor.setPosition(block.position());
+    return cursor;
+}
+
+//------------------------------------------------------------
 void CodeEditor::showTooltipDelayJobRunner(QList<QVariant> args)
 {
     qDebug() << "showTooltipDelayJobRunner";

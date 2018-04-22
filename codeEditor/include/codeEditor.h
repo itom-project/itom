@@ -119,6 +119,10 @@ public:
 
     int currentLineNumber() const;
     int currentColumnNumber() const;
+    int lineNbrFromPosition(int yPos) const;
+    int lineCount() const;
+    QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
+    QPair<int,int> selectionRange() const; //start, end
 
     void indent();
     void unindent();
@@ -155,6 +159,7 @@ protected:
     int lineIndent(int lineNbr = -1);
     int lineIndent(const QTextBlock *lineNbr);
     QString lineText(int lineNbr);
+    QTextCursor moveCursorTo(int line);
 
     virtual void resizeEvent(QResizeEvent *e);
     virtual void closeEvent(QCloseEvent *e);

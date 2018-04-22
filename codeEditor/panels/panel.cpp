@@ -110,8 +110,8 @@ Automatically call CodeEdit.refresh_panels.
 void Panel::setVisible(bool visible)
 {
     QWidget::setVisible(visible);
-    if (m_pEditor)
+    if (editor())
     {
-        m_pEditor->panels()->refresh();
+        editor()->panels()->refresh();
     }
 }

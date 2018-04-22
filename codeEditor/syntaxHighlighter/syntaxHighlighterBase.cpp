@@ -238,7 +238,7 @@ void SyntaxHighlighterBase::refreshEditor(const ColorScheme &colorScheme)
         clh->refresh();
     }
 
-    Panel* panel = editor()->panels()->get("FoldingPanel");
+    Panel::Ptr panel = editor()->panels()->get("FoldingPanel");
     if (panel)
     {
         //todo: static_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);

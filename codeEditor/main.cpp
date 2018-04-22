@@ -7,8 +7,10 @@
 #include "modes/caretLineHighlight.h"
 #include "modes/symbolMatcherMode.h"
 #include "modes/occurrences.h"
+#include "panels/lineNumber.h"
 #include "syntaxHighlighter/pythonSyntaxHighlighter.h"
 #include "managers/modesManager.h"
+#include "managers/panelsManager.h"
 
 int main(int argv, char **args)
 {
@@ -24,6 +26,9 @@ int main(int argv, char **args)
     editor.modes()->append(Mode::Ptr(new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter")));
     editor.modes()->append(Mode::Ptr(new SymbolMatcherMode("description of SymbolMatcherMode")));
     editor.modes()->append(Mode::Ptr(new OccurrencesHighlighterMode("description of OccurrencesHighlighterMode")));
+    
+    editor.panels()->append(Panel::Ptr(new LineNumberPanel("description of LineNumberPanel")));
+    
     //editor.appendPlainText("\n\n\n\n\n\n\n\n\n\n");
     //editor.appendPlainText("(----(j\njj)\n)");
 

@@ -7,16 +7,16 @@
 #include <vector>
 
 //---------------------------------------------------------------------
-void PanelsManager::ZoneItems::add(Panel* p, const QString &name) 
+void PanelsManager::ZoneItems::add(Panel::Ptr p, const QString &name) 
 { 
     panels.append(p); 
     names.append(name); 
 }
 
 //---------------------------------------------------------------------
-Panel* PanelsManager::ZoneItems::removeFirst(const QString &name)
+Panel::Ptr PanelsManager::ZoneItems::removeFirst(const QString &name)
 {
-    Panel *p = NULL;
+    Panel::Ptr p;
     for (int j = 0; j < panels.size(); ++j)
     {
         if (names[j] == name)
@@ -31,7 +31,7 @@ Panel* PanelsManager::ZoneItems::removeFirst(const QString &name)
 }
 
 //---------------------------------------------------------------------
-Panel* PanelsManager::ZoneItems::get(const QString &name) const
+Panel::Ptr PanelsManager::ZoneItems::get(const QString &name) const
 {
     for (int j = 0; j < panels.size(); ++j)
     {
@@ -40,7 +40,7 @@ Panel* PanelsManager::ZoneItems::get(const QString &name) const
             return panels[j];
         }
     }
-    return NULL;
+    return Panel::Ptr();
 }
 
 //---------------------------------------------------------------------
@@ -69,29 +69,29 @@ PanelsManager::~PanelsManager()
 
 //-----------------------------------------------------------
 /*< Gets the list of panels attached to the specified zone.*/
-QList<Panel*> PanelsManager::panelsForZone(Panel::Position zone) const
+QList<Panel::Ptr> PanelsManager::panelsForZone(Panel::Position zone) const
 {
     return m_panels[zone].panels;
 }
 
-bool cmpPanelByOrderInZoneReverse(const std::pair<Panel*,int> &a, const std::pair<Panel*,int> &b)
+bool cmpPanelByOrderInZoneReverse(const std::pair<Panel::Ptr,int> &a, const std::pair<Panel::Ptr,int> &b)
 {
     return a.second > b.second; //todo: verify
 }
 
 //-----------------------------------------------------------
-QList<Panel*> PanelsManager::panelsForZoneSortedByOrderReverse(Panel::Position zone) const
+QList<Panel::Ptr> PanelsManager::panelsForZoneSortedByOrderReverse(Panel::Position zone) const
 {
-    QList<Panel*> panels = m_panels[zone].panels;
-    std::vector<std::pair<Panel*, int> > sortlist;
-    foreach(Panel* p, panels)
+    QList<Panel::Ptr> panels = m_panels[zone].panels;
+    std::vector<std::pair<Panel::Ptr, int> > sortlist;
+    foreach(Panel::Ptr p, panels)
     {
-        sortlist.push_back(std::pair<Panel*,int>(p, p->orderInZone()));
+        sortlist.push_back(std::pair<Panel::Ptr,int>(p, p->orderInZone()));
     }
 
     std::sort(sortlist.begin(), sortlist.end(), cmpPanelByOrderInZoneReverse);
 
-    QList<Panel*> panelsOut;
+    QList<Panel::Ptr> panelsOut;
     panelsOut.reserve(sortlist.size());
     
     for (int i = 0; i < sortlist.size(); ++i)
@@ -113,7 +113,7 @@ void PanelsManager::updateViewportMargins()
 
         int width, height;
 
-        foreach (const Panel* p, panelsForZone(Panel::Left))
+        foreach (const Panel::Ptr &p, panelsForZone(Panel::Left))
         {
             if (p->isVisible())
             {
@@ -122,7 +122,7 @@ void PanelsManager::updateViewportMargins()
             }
         }
         
-        foreach (const Panel* p, panelsForZone(Panel::Right))
+        foreach (const Panel::Ptr &p, panelsForZone(Panel::Right))
         {
             if (p->isVisible())
             {
@@ -131,7 +131,7 @@ void PanelsManager::updateViewportMargins()
             }
         }
         
-        foreach (const Panel* p, panelsForZone(Panel::Top))
+        foreach (const Panel::Ptr &p, panelsForZone(Panel::Top))
         {
             if (p->isVisible())
             {
@@ -140,7 +140,7 @@ void PanelsManager::updateViewportMargins()
             }
         }
         
-        foreach (const Panel* p, panelsForZone(Panel::Bottom))
+        foreach (const Panel::Ptr &p, panelsForZone(Panel::Bottom))
         {
             if (p->isVisible())
             {
@@ -182,7 +182,7 @@ void PanelsManager::update(const QRect & rect, int dy, bool forceUpdateMargins /
             continue;
         }
 
-        foreach (Panel* p, m_panels[zones_id].panels)
+        foreach (const Panel::Ptr &p, m_panels[zones_id].panels)
         {
             if (p->scrollable() && dy)
             {
@@ -216,7 +216,7 @@ Installs a panel on the editor.
 :param position: Position where the panel must be installed.
 :return: The installed panel
 */
-Panel* PanelsManager::append(Panel *panel, Panel::Position pos /*= Panel::Left*/)
+Panel::Ptr PanelsManager::append(Panel::Ptr panel, Panel::Position pos /*= Panel::Left*/)
 {
     assert(panel != NULL);
 
@@ -236,9 +236,9 @@ Removes the specified panel.
 :return: The removed panel
 """
 */
-Panel* PanelsManager::remove(const QString &nameOrClass)
+Panel::Ptr PanelsManager::remove(const QString &nameOrClass)
 {
-    Panel* panel = get(nameOrClass);
+    Panel::Ptr panel = get(nameOrClass);
     panel->onUninstall();
     panel->hide();
     panel->setParent(NULL);
@@ -252,9 +252,9 @@ Gets a specific panel instance.
 
 :return: The specified panel instance.
 */
-Panel* PanelsManager::get(const QString &nameOrClass)
+Panel::Ptr PanelsManager::get(const QString &nameOrClass)
 {
-    Panel *p = NULL;
+    Panel::Ptr p;
 
     foreach (const ZoneItems &item, m_panels)
     {
@@ -274,15 +274,18 @@ Removes all panel from the editor.
 */
 void PanelsManager::clear()
 {
-    Panel *p = NULL;
+    Panel::Ptr p;
     for (int i = 0; i < m_panels.size(); ++i)
     {
         ZoneItems &item = m_panels[i];
         while (item.len() > 0)
         {
             p = item.removeFirst(item.names[0]);
-            p->setParent(NULL);
-            p->deleteLater();
+            if (p)
+            {
+                p->setParent(NULL);
+                p->deleteLater();
+            }
         }
     }
 
@@ -310,7 +313,7 @@ QVector<int> PanelsManager::computeZonesSizes()
 {
     //Left panels
     int left = 0;
-    foreach (Panel *p, panelsForZone(Panel::Left))
+    foreach (const Panel::Ptr &p, panelsForZone(Panel::Left))
     {
         if (p->isVisible())
         {
@@ -320,7 +323,7 @@ QVector<int> PanelsManager::computeZonesSizes()
 
     //Right panels
     int right = 0;
-    foreach (Panel *p, panelsForZone(Panel::Right))
+    foreach (const Panel::Ptr &p, panelsForZone(Panel::Right))
     {
         if (p->isVisible())
         {
@@ -330,7 +333,7 @@ QVector<int> PanelsManager::computeZonesSizes()
 
     //Top panels
     int top = 0;
-    foreach (Panel *p, panelsForZone(Panel::Top))
+    foreach (const Panel::Ptr &p, panelsForZone(Panel::Top))
     {
         if (p->isVisible())
         {
@@ -340,7 +343,7 @@ QVector<int> PanelsManager::computeZonesSizes()
 
     //Bottom panels
     int bottom = 0;
-    foreach (Panel *p, panelsForZone(Panel::Bottom))
+    foreach (const Panel::Ptr &p, panelsForZone(Panel::Bottom))
     {
         if (p->isVisible())
         {
@@ -379,9 +382,9 @@ void PanelsManager::resize()
     
     //Left
     int left = 0;
-    QList<Panel*> panels = panelsForZoneSortedByOrderReverse(Panel::Left);
+    QList<Panel::Ptr> panels = panelsForZoneSortedByOrderReverse(Panel::Left);
     
-    foreach(Panel *p, panels)
+    foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
         {
@@ -399,7 +402,7 @@ void PanelsManager::resize()
     int right = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Right);
     
-    foreach(Panel *p, panels)
+    foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
         {
@@ -416,7 +419,7 @@ void PanelsManager::resize()
     int top = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Top);
 
-    foreach(Panel *p, panels)
+    foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
         {
@@ -433,7 +436,7 @@ void PanelsManager::resize()
     int bottom = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Bottom);
     
-    foreach(Panel *p, panels)
+    foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
         {

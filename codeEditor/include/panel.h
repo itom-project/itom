@@ -35,6 +35,8 @@ public:
         Bottom = 3
     };
 
+    typedef QSharedPointer<Panel> Ptr;
+
     Panel(const QString &name, bool dynamic, const QString &description = "", QWidget *parent = NULL);
     virtual ~Panel();
 
@@ -49,6 +51,9 @@ public:
     Position position() const;
     void setPosition(Position pos);
 
+    QBrush backgroundBrush() const { return m_backgroundBrush; }
+    QPen foregroundPen() const { return m_foregroundPen; }
+
     virtual void onInstall(CodeEditor *editor);
 
 protected:
@@ -56,7 +61,6 @@ protected:
     
 
 private:
-    CodeEditor* m_pEditor;
     bool m_dynamic;
     int m_orderInZone;
     bool m_scrollable;

@@ -32,18 +32,18 @@ public:
     PanelsManager(CodeEditor *editor, QObject *parent = NULL);
     virtual ~PanelsManager();
 
-    QList<Panel*> panelsForZone(Panel::Position zone) const;
-    QList<Panel*> panelsForZoneSortedByOrderReverse(Panel::Position zone) const;
+    QList<Panel::Ptr> panelsForZone(Panel::Position zone) const;
+    QList<Panel::Ptr> panelsForZoneSortedByOrderReverse(Panel::Position zone) const;
     int marginSize(Panel::Position zone = Panel::Left);
 
-    Panel* append(Panel *panel, Panel::Position pos = Panel::Left);
-    Panel* remove(const QString &nameOrClass);
+    Panel::Ptr append(Panel::Ptr panel, Panel::Position pos = Panel::Left);
+    Panel::Ptr remove(const QString &nameOrClass);
     void clear();
 
     void resize();
     void refresh();
 
-    Panel* get(const QString &nameOrClass);
+    Panel::Ptr get(const QString &nameOrClass);
 
 private:
     struct ZoneItems
@@ -51,12 +51,12 @@ private:
         ZoneItems(int margin) : marginSize(margin) {}
         int marginSize;
         QStringList names;
-        QList<Panel*> panels;
+        QList<Panel::Ptr> panels;
 
         int len() const { return panels.size(); }
-        void add(Panel* p, const QString &name);
-        Panel* removeFirst(const QString &name);
-        Panel* get(const QString &name) const;
+        void add(Panel::Ptr p, const QString &name);
+        Panel::Ptr removeFirst(const QString &name);
+        Panel::Ptr get(const QString &name) const;
     };
 
     QPoint m_cachedCursorPos;
