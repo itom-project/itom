@@ -33,6 +33,7 @@ SET (HEADERS
     modes/caretLineHighlight.h
     modes/symbolMatcherMode.h
     modes/occurrences.h
+    modes/autoindent.h
     panels/lineNumber.h
 )
 
@@ -53,6 +54,7 @@ SET (SOURCES
     modes/caretLineHighlight.cpp
     modes/symbolMatcherMode.cpp
     modes/occurrences.cpp
+    modes/autoindent.cpp
     decorations/textDecoration.cpp
     utils/utils.cpp
 )

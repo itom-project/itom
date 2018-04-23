@@ -2,6 +2,12 @@
 #define PYSYNTAXHIGHLIGHER_H
 
 #include "syntaxHighlighterBase.h"
+
+#define MIN_QT_REGULAREXPRESSION_VERSION 0x050100
+#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
+    #include <qregularexpression.h>
+#endif
+
 #include <qregexp.h>
 #include <qtextformat.h>
 
@@ -17,6 +23,13 @@ class PythonSyntaxHighlighter : public SyntaxHighlighterBase
 {
     Q_OBJECT
 public:
+
+#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
+    typedef QRegularExpression QQRegExp;
+#else
+    typedef QRegExp QQRegExp;
+#endif
+
     PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", const ColorScheme &colorScheme = ColorScheme());
 
     virtual ~PythonSyntaxHighlighter();
@@ -42,10 +55,10 @@ private:
     };
 
     //syntax highlighting rules
-    static QMap<QString,QRegExp> regExpProg;
+    static QMap<QString,QQRegExp> regExpProg;
     static QRegExp regExpIdProg;
     static QRegExp regExpAsProg;
-    static QRegExp regExpOeComment; //comments suitable for outline explorer
+    static QQRegExp regExpOeComment; //comments suitable for outline explorer
 
     QList<QTextBlock> m_docstrings;
     QList<QTextBlock> m_importStatements;
@@ -53,7 +66,7 @@ private:
     QTextCharFormat getFormatFromStyle(ColorScheme::Keys token) const;
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
-    static QMap<QString,QRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
+    static QMap<QString,QQRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };
 
 #endif

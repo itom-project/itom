@@ -33,8 +33,8 @@ ColorScheme::ColorScheme()
     //m_formats[KeyString2] = createFormat(QBrush("darkMagenta"));
     m_formats[KeyComment] = createFormat(QBrush("darkGreen"), QBrush(), false, true);
     m_formats[KeySelf] = createFormat(QBrush("gray"), QBrush(), false, true);
-    m_formats[KeyNumber] = createFormat(QBrush("darkYellow"));
-    m_formats[KeyDecorator] = createFormat(QBrush("darkYellow"), QBrush(), true, true);
+    m_formats[KeyNumber] = createFormat(QBrush("yellow"), QBrush(), true);
+    m_formats[KeyDecorator] = createFormat(QBrush("yellow"), QBrush(), true, true);
     m_formats[KeyHighlight] = createFormat(QBrush(), Utils::driftColor(bgcolor.color(), 110));
     m_formats[KeyBuiltin] = createFormat(QBrush("yellow"));
     m_formats[KeyOperatorWord] = createFormat(QBrush("pink"));

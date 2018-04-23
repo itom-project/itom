@@ -124,6 +124,10 @@ public:
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
     QPair<int,int> selectionRange() const; //start, end
 
+    int lineIndent(int lineNumber = -1) const;
+    int lineIndent(const QTextBlock *lineNbr) const;
+    QString lineText(int lineNbr) const;
+
     void indent();
     void unindent();
 
@@ -156,9 +160,7 @@ protected:
 
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
-    int lineIndent(int lineNbr = -1);
-    int lineIndent(const QTextBlock *lineNbr);
-    QString lineText(int lineNbr);
+    
     QTextCursor moveCursorTo(int line);
 
     virtual void resizeEvent(QResizeEvent *e);

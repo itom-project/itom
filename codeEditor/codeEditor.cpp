@@ -764,14 +764,14 @@ Returns the indent level of the specified line
     :return: Number of spaces that makes the indentation level of the
                 current line
 */
-int CodeEditor::lineIndent(int lineNbr /*= -1*/)
+int CodeEditor::lineIndent(int lineNumber /*= -1*/) const
 {
-    if (lineNbr == -1)
+    if (lineNumber == -1)
     {
-        lineNbr = currentLineNumber();
+        lineNumber = currentLineNumber();
     }
 
-    QString line = lineText(lineNbr);
+    QString line = lineText(lineNumber);
 
     int lindent = 0;
     while (lindent < line.size() && line[lindent].isSpace())
@@ -783,7 +783,7 @@ int CodeEditor::lineIndent(int lineNbr /*= -1*/)
 }
 
 //-------------------------------------------------------------
-int CodeEditor::lineIndent(const QTextBlock *lineNbr)
+int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
 {
     if (lineNbr == NULL)
     {
@@ -803,7 +803,7 @@ Gets the text of the specified line
 :return: Entire line's text
 :rtype: str
 */
-QString CodeEditor::lineText(int lineNbr)
+QString CodeEditor::lineText(int lineNbr) const
 {
     const QTextBlock &block = document()->findBlockByNumber(lineNbr);
     return block.text();

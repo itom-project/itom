@@ -60,10 +60,10 @@ bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
     editor()->setExtraSelections(getExtraSelections());
 
     QList<QTextEdit::ExtraSelection> sels = editor()->extraSelections();
-    foreach (QTextEdit::ExtraSelection s, sels)
+    /*foreach (QTextEdit::ExtraSelection s, sels)
     {
         qDebug() << "sel " << s.cursor.position() << s.cursor.selectedText() << s.format.property(QTextFormat::FullWidthSelection);
-    }
+    }*/
     return true;
 }
 

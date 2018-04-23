@@ -11,10 +11,10 @@
 
 #include <qdebug.h>
 
-/*static*/ QMap<QString,QRegExp> PythonSyntaxHighlighter::regExpProg = PythonSyntaxHighlighter::makePythonPatterns();
+/*static*/ QMap<QString,PythonSyntaxHighlighter::QQRegExp> PythonSyntaxHighlighter::regExpProg = PythonSyntaxHighlighter::makePythonPatterns();
 /*static*/ QRegExp PythonSyntaxHighlighter::regExpIdProg = QRegExp("\\s+(\\w+)");
 /*static*/ QRegExp PythonSyntaxHighlighter::regExpAsProg = QRegExp(".*?\\b(as)\\b");
-/*static*/ QRegExp PythonSyntaxHighlighter::regExpOeComment = QRegExp("^(// ?--[-]+|##[#]+ )[ -]*[^- ]+");
+/*static*/ PythonSyntaxHighlighter::QQRegExp PythonSyntaxHighlighter::regExpOeComment = PythonSyntaxHighlighter::QQRegExp("^(// ?--[-]+|##[#]+ )[ -]*[^- ]+");
 
 
 //-------------------------------------------------------------------
@@ -106,37 +106,74 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 
     State state = Normal;
 
-    QMapIterator<QString, QRegExp> it( PythonSyntaxHighlighter::regExpProg );
+    QMap<QString, QQRegExp>::const_iterator it = PythonSyntaxHighlighter::regExpProg.constBegin();
     QString key;
-    QRegExp rx;
-    int count = 0;
     int pos = 0;
     int length;
     int start;
     int end;
     QString value;
 
-    while (it.hasNext())
+#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
+    QQRegExp regExpProg_ = it.value();
+    QStringList namedCaptureGroups;
+    foreach (const QString &key, regExpProg_.namedCaptureGroups())
     {
-        it.next();
-        key = it.key();
-        rx = it.value();
-        count = 0;
-        pos = 0;
-
-        qDebug() << key << rx.pattern();
-
-
-        while ((pos = rx.indexIn(text2, pos)) != -1)
+        if (key != "")
         {
-            ++count;
-            length = rx.matchedLength();
-            value = text2.mid(pos, length);
-            start = pos;
-            end = start + length;
-            pos += length;
+            namedCaptureGroups << key;
+        }
+    }
+
+    QRegularExpressionMatch match;
+    match = regExpProg_.match(text2);
+    while (match.hasMatch())
+    {
+        pos = 0;
+        foreach(const QString &key, namedCaptureGroups)
+        {
+            start = match.capturedStart(key);
+            if (start == -1)
+            {
+                continue;
+            }
+            value = match.captured(key);
+            end = match.capturedEnd(key);
+            pos = std::max(pos, end);
             start = std::max(0, start + offset);
             end = std::max(0, end + offset);
+            length = match.capturedLength(key);
+
+#else
+    pos = 0;
+    bool found = true;
+    int pos_;
+
+    while (found && (pos < text2.size()))
+    {
+        found = false;
+        pos_ = pos;
+        while (it != PythonSyntaxHighlighter::regExpProg.constEnd())
+        {
+            key = it.key();
+            start = it->indexIn(text2, pos_);
+            if (start == -1)
+            {
+                ++it;
+                continue;
+            }
+
+            found = true;
+            length = it->matchedLength();
+            value = text2.mid(start, length);
+            end = start + length;
+            pos = std::max(pos, end);
+            start = std::max(0, start + offset);
+            end = std::max(0, end + offset);
+            ++it;
+#endif
+
+            qDebug() << key << start << end << value.toHtmlEscaped() << QString::number(value.right(1)[0].cell(),16) << QString::number(value.right(1)[0].row(),16);
 
             if (key == "uf_sq3string")
             {
@@ -222,6 +259,11 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     setFormat(start, length,
                                     getFormatFromStyle(ColorScheme::KeyNamespace));
                 }
+                else if (key == "builtin")
+                {
+                    setFormat(start, length,
+                                    getFormatFromStyle(ColorScheme::KeyBuiltin));
+                }
                 else
                 {
                     // highlight all other tokens
@@ -267,8 +309,15 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     }
                 }
             }
+#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
+        }
+
+        match = regExpProg_.match(text2, pos);
+    }
+#else
         }
     }
+#endif
 
     Utils::TextBlockHelper::setState(block, state);
 
@@ -308,16 +357,19 @@ QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(ColorScheme::Keys to
 //----------------------------------------------------------------
 QString any(const QString &name, const QStringList &alternates)
 {
+#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
     //Return a named group pattern matching list of alternates.
+    return QString("(?<%1>%2)").arg(name).arg(alternates.join("|"));
+#else
     return QString("(%1)").arg(alternates.join("|"));
-    return QString("(?P<%1>%2)").arg(name).arg(alternates.join("|"));
+#endif
 }
 
 
 //----------------------------------------------------------------
-/*static*/ QMap<QString, QRegExp> PythonSyntaxHighlighter::makePythonPatterns(const QStringList &additionalKeywords, const QStringList &additionalBuiltins)
+/*static*/ QMap<QString, PythonSyntaxHighlighter::QQRegExp> PythonSyntaxHighlighter::makePythonPatterns(const QStringList &additionalKeywords, const QStringList &additionalBuiltins)
 {
-    QMap<QString, QRegExp> regExpressions;
+    QMap<QString, QQRegExp> regExpressions;
 
     QStringList kwlist = QStringList() << "self" << "False" << "None" << "True" << "assert" << "break" \
         << "class" << "continue" << "def" << "del" << "elif" << "else" << "except" << "finally" << "for" \
@@ -376,12 +428,11 @@ QString any(const QString &name, const QStringList &alternates)
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
     QString sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";
-    
-    QString dqstring = QString("(\\b(%1))?\"(.[^\"\\\\\\n]*)*\"?").arg(prefix); //"(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?";
-    QString uf_sqstring = QString("(\\b(%1))?'[^\\\\\\n]*(\\\\.[^'\\\\\\n]*)*(\\\\)$(?!')$").arg(prefix);
-    QString uf_dqstring = QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*(\\\\)$(?!\")$").arg(prefix);
-    QString sq3string = QString("(\\b(%1))?'''[^'\\\\]*((\\\\.|'(?!''))[^'\\\\]*)*(''')?").arg(prefix);
-    QString dq3string = QString("(\\b(%1))?\"\"\"[^\"\\\\]*((\\\\.|\"(?!\"\"))[^\"\\\\]*)*(\"\"\")?").arg(prefix);
+    QString dqstring = QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?").arg(prefix); //"(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?";
+    QString uf_sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*(\\\\)\\n(?!')$").arg(prefix);
+    QString uf_dqstring = QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*(\\\\)\\n(?!\")$").arg(prefix);
+    QString sq3string =    QString("(\\b(%1))?'''[^'\\\\]*((\\\\.|'(?!''))[^'\\\\]*)*(''')?").arg(prefix);
+    QString dq3string =    QString("(\\b(%1))?\"\"\"[^\"\\\\]*((\\\\.|\"(?!\"\"))[^\"\\\\]*)*(\"\"\")?").arg(prefix);
     QString uf_sq3string = QString("(\\b(%1))?'''[^'\\\\]*((\\\\.|'(?!''))[^'\\\\]*)*(\\\\)?(?!''')$").arg(prefix);
     QString uf_dq3string = QString("(\\b(%1))?\"\"\"[^\"\\\\]*((\\\\.|\"(?!\"\"))[^\"\\\\]*)*(\\\\)?(?!\"\"\")$").arg(prefix);
     QString string = any("string", QStringList() << sq3string << dq3string << sqstring << dqstring);
@@ -391,21 +442,28 @@ QString any(const QString &name, const QStringList &alternates)
     QString ufstring3 = any("uf_sq3string", QStringList(uf_sq3string));
     QString ufstring4 = any("uf_dq3string", QStringList(uf_dq3string));
 
-    regExpressions["instance"] = QRegExp(instance);
-    regExpressions["decorator"] = QRegExp(decorator);
-    regExpressions["keyword"] = QRegExp(kw);
-    regExpressions["namespace"] = QRegExp(kw_namespace);
-    regExpressions["builtin"] = QRegExp(builtin);
-    regExpressions["operator_word"] = QRegExp(word_operators);
-    regExpressions["builtin_fct"] = QRegExp(builtin_fct);
-    regExpressions["comment"] = QRegExp(comment);
-    regExpressions["uf_sqstring"] = QRegExp(ufstring1);
-    regExpressions["uf_dqstring"] = QRegExp(ufstring2);
-    regExpressions["uf_sq3string"] = QRegExp(ufstring3);
-    regExpressions["uf_dq3string"] = QRegExp(ufstring4);
-    regExpressions["string"] = QRegExp(string);
-    regExpressions["number"] = QRegExp(number);
-    regExpressions["SYNC"] = QRegExp(any("SYNC", QStringList("\\n")));
+#if QT_VERSION > MIN_QT_REGULAREXPRESSION_VERSION
+    QStringList all;
+    all << instance << decorator << kw << kw_namespace << builtin << word_operators << builtin_fct << comment;
+    all << ufstring1 << ufstring2 << ufstring3 << ufstring4 << string << number << any("SNYC", QStringList("\\n"));
+    regExpressions["all"] = QQRegExp(all.join("|"));
+#else
+    regExpressions["instance"] = QQRegExp(instance);
+    regExpressions["decorator"] = QQRegExp(decorator);
+    regExpressions["keyword"] = QQRegExp(kw);
+    regExpressions["namespace"] = QQRegExp(kw_namespace);
+    regExpressions["builtin"] = QQRegExp(builtin);
+    regExpressions["operator_word"] = QQRegExp(word_operators);
+    regExpressions["builtin_fct"] = QQRegExp(builtin_fct);
+    regExpressions["comment"] = QQRegExp(comment);
+    regExpressions["uf_sqstring"] = QQRegExp(ufstring1);
+    regExpressions["uf_dqstring"] = QQRegExp(ufstring2);
+    regExpressions["uf_sq3string"] = QQRegExp(ufstring3);
+    regExpressions["uf_dq3string"] = QQRegExp(ufstring4);
+    regExpressions["string"] = QQRegExp(string);
+    regExpressions["number"] = QQRegExp(number);
+    regExpressions["SYNC"] = QQRegExp(any("SYNC", QStringList("\\n")));
+#endif
 
     return regExpressions;
 }
