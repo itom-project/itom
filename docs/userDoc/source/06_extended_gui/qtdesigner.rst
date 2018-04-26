@@ -459,9 +459,9 @@ Unfortunately, there are some methods of important widgets in |Qt|, which are no
 However, there are some exceptions defined in |itom| such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These exceptions are 
 contained in the following table:
 
-======================= =========================================================================================================================================================================================================
+======================= ================================================================================================================================================================================================================================
 Widget / ClassName       Public Method
-======================= =========================================================================================================================================================================================================
+======================= ================================================================================================================================================================================================================================
 QWidget                 void resize(int,int)
 QWidget                 void setGeometry(int,int,int,int)
 QListWidget             void addItem(QString)
@@ -469,11 +469,11 @@ QListWidget             void addItems(QStringList)
 QListWidget             void selectedRows() *returns a tuple of all selected row indices*
 QListWidget             void selectedTexts() *returns a tuple of all selected values (as strings)*
 QListWidget             void selectRows(QVector<int>) *select the rows with the given indices (ListWidget must be in multi-selection mode)*
-QListWidget             QString takeItem(int) *removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does not exist*
-QListWidget             QString item(int) *returns the text of the item from the given row or raises an exception if the item does not exist*
-QListWidget             Qt::CheckState checkState(int) *returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
+QListWidget             QString takeItem(int row) *removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does not exist*
+QListWidget             QString item(int row) *returns the text of the item from the given row or raises an exception if the item does not exist*
+QListWidget             Qt::CheckState checkState(int row) *returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
 QListWidget             void setCheckState(int row,Qt::CheckState state) *set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state*
-QListWidget             Qt::ItemFlags flags(int) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
+QListWidget             Qt::ItemFlags flags(int row) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
 QListWidget             void setFlags(int row,Qt::ItemFlags flags) *set the flags of the item in the given row based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
@@ -491,9 +491,13 @@ QTableWidget            QVariant getItem(int,int)
 QTableWidget            void setItem(int,int,QVariant)
 QTableWidget            int currentColumn() *returns index of selected column*
 QTableWidget            int currentRow() *returns index of selected row*
+QTableWidget            Qt::CheckState checkState(int row, int column) *returns the check state of the item from the given row and column (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
+QTableWidget            void setCheckState(int row, int column,Qt::CheckState state) *set the check state of the item in the given row and column (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state*
+QTableWidget            Qt::ItemFlags flags(int row, int column) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
+QTableWidget            void setFlags(int row, int column,Qt::ItemFlags flags) *set the flags of the item in the given row and column based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
 QTableView              uiItem horizontalHeader()
 QTableView              uiItem verticalHeader()
-======================= =========================================================================================================================================================================================================
+======================= ================================================================================================================================================================================================================================
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
 hold for every other widget, since every widget is derived from *QWidget*.
