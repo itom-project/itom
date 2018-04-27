@@ -294,6 +294,7 @@ class PythonDataObject
         //static PyObject* PyDataObj_StaticArange(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_StaticZeros(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticOnes(PyObject *self, PyObject *args, PyObject *kwds);
+		static PyObject* PyDataObj_StaticNans(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticRand(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticRandN(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);

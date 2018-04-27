@@ -1087,6 +1087,13 @@ namespace ito {
         RetVal ones(const int sizeY, const int sizeX, const int type);
         RetVal ones(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0);
         RetVal ones(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);
+
+		// allocates matrix with all values set to one
+		RetVal nans(const int type);
+		RetVal nans(const int size, const int type);
+		RetVal nans(const int sizeY, const int sizeX, const int type);
+		RetVal nans(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous = 0);
+		RetVal nans(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);
         
         // allocates matrix with uniform distributed noise
         RetVal rand(const int type, const bool randMode = false);
