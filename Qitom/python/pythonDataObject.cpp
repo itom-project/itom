@@ -7928,7 +7928,7 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 	RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
 
 	if (retValue.containsError()) return NULL;
-	if (typeno == ito::tUInt8 || typeno == ito::tUInt16 || typeno == ito::tUInt32 || typeno == ito::tInt8 || typeno == ito::tInt16 || typeno == ito::tInt32)
+	if (!(typeno == ito::tFloat32 || typeno == ito::tFloat64 || typeno == ito::tComplex64 || typeno == ito::tComplex128)) //NaN values can only fill arrays float and complex dtypes! 
 	{
 		PyErr_SetString(PyExc_TypeError, "This function is not supported for the given dtype!");
 		return NULL;

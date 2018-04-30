@@ -3113,7 +3113,7 @@ template<typename _Tp> RetVal NansFunc(const int sizeY, const int sizeX, uchar *
 		_Tp* pt = (*((cv::Mat_<_Tp> *)(*dstMat))).ptr<_Tp>(y);
 		for (int x = 0; x < (*((cv::Mat_<_Tp> *)(*dstMat))).cols; x++)
 		{
-			pt[x] = std::numeric_limits<ito::float32>::quiet_NaN();
+			pt[x] = std::numeric_limits<_Tp>::quiet_NaN();
 		}
 
 	}
