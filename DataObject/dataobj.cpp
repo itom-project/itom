@@ -3177,6 +3177,11 @@ MAKEFUNCLIST(NansFunc);
 */
 RetVal DataObject::nans(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous)
 {
+    if(type != ito::tFloat32 && type != ito::tFloat64 && type != ito::tComplex64 && type != ito::tComplex128)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"nans method is only allowed for float32, float64, complex64 or complex128","", __FILE__, __LINE__));
+    }
+
 	freeData();
 	create(dimensions, sizes, type, continuous);
 

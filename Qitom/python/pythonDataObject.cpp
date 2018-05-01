@@ -162,6 +162,7 @@ See Also \n\
 ---------- \n\
 ones() : Static method to construct a data object filled with ones. \n\
 zeros() : Static method to construct a data object filled with zeros. \n\
+nans() : Static method to construct a data object (float or complex only) with NaNs. \n\
 rand() : Static method to construct a randomly filled data object (uniform distribution). \n\
 randN() : Static method to construct a randomly filled data object (gaussian distribution).");
 int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds)
@@ -7920,7 +7921,7 @@ zeros: method for creating a matrix filled with zeros \n\
 ones: method for creating a matrix filled with ones.");
 PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
-	int typeno = -1;
+	int typeno = typeNameToNumber("float32");
 	std::vector<unsigned int> sizes;
 	sizes.clear();
 	unsigned char continuous = 0;
@@ -7930,7 +7931,7 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 	if (retValue.containsError()) return NULL;
 	if (!(typeno == ito::tFloat32 || typeno == ito::tFloat64 || typeno == ito::tComplex64 || typeno == ito::tComplex128)) //NaN values can only fill arrays float and complex dtypes! 
 	{
-		PyErr_SetString(PyExc_TypeError, "This function is not supported for the given dtype!");
+		PyErr_SetString(PyExc_TypeError, "This function is only supported for float32, float64, complex64 and complex128!");
 		return NULL;
 	}
 
