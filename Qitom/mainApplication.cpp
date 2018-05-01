@@ -163,7 +163,6 @@ QString getSplashScreenFileName()
     QDate currentDate = QDate::currentDate();
     int currentMonth = currentDate.month();
     int currentYear = currentDate.year();
-    int currentDay = currentDate.day();
 
     /*easter date calculation*/
     uint easterMonth, easterDay;
@@ -201,12 +200,14 @@ QString getSplashScreenFileName()
     }
     /*easter date calculation*/
 
+	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
+
     if (currentMonth == 12)
     {
         //Christmas splashScreen whole december of each year
         fileName = ":/application/icons/itomicon/splashScreen2Christmas.png";
     }
-    else if (currentDate.addDays(-7).month() <= easterMonth && easterMonth <= currentDate.addDays(7).month() && currentDate.addDays(-7).day() <= easterDay && easterDay <= currentDate.addDays(7).day())
+    else if (qAbs(daysDiffToEaster) <= 7)
     {
         //Easter splashScreen one week before and after easter day
         fileName = ":/application/icons/itomicon/splashScreen2Easter.png";

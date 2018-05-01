@@ -162,6 +162,7 @@ See Also \n\
 ---------- \n\
 ones() : Static method to construct a data object filled with ones. \n\
 zeros() : Static method to construct a data object filled with zeros. \n\
+nans() : Static method to construct a data object (float or complex only) with NaNs. \n\
 rand() : Static method to construct a randomly filled data object (uniform distribution). \n\
 randN() : Static method to construct a randomly filled data object (gaussian distribution).");
 int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds)
@@ -7895,6 +7896,64 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectStaticNans_doc, "nans(dims [, dtype='float32'[, continuous = 0]]) -> creates new dataObject filled with NaNs.  \n\
+\n\
+Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with NaNs. \n\
+\n\
+Parameters \n\
+----------- \n\
+dims : {integer list} \n\
+    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
+dtype : {str}, optional \n\
+    'dtype' is the data type of each element, possible values: 'float32', 'float64', 'complex64', 'complex128'\n\
+continuous : {int}, optional \n\
+    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+\n\
+Returns \n\
+------- \n\
+I : {dataObject} of shape (size,size)\n\
+    An array where all elements are equal to NaNs. \n\
+\n\
+See Also \n\
+--------- \n\
+eye: method for creating an eye matrix \n\
+zeros: method for creating a matrix filled with zeros \n\
+ones: method for creating a matrix filled with ones.");
+PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+	int typeno = typeNameToNumber("float32");
+	std::vector<unsigned int> sizes;
+	sizes.clear();
+	unsigned char continuous = 0;
+
+	RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
+
+	if (retValue.containsError()) return NULL;
+	if (!(typeno == ito::tFloat32 || typeno == ito::tFloat64 || typeno == ito::tComplex64 || typeno == ito::tComplex128)) //NaN values can only fill arrays float and complex dtypes! 
+	{
+		PyErr_SetString(PyExc_TypeError, "This function is only supported for float32, float64, complex64 and complex128!");
+		return NULL;
+	}
+
+	PyDataObject* selfDO = createEmptyPyDataObject();
+	selfDO->dataObject = new ito::DataObject();
+
+	if (selfDO->dataObject != NULL)
+	{
+		int *sizes2 = new int[sizes.size()];
+		for (unsigned int i = 0; i < sizes.size(); i++)
+			sizes2[i] = sizes[i];
+		//no lock is necessary since eye is allocating the data block and no other access is possible at this moment
+		selfDO->dataObject->nans(sizes.size(), sizes2, typeno, continuous);
+		DELETE_AND_SET_NULL_ARRAY(sizes2);
+	}
+
+	sizes.clear();
+
+	return (PyObject*)selfDO;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniformly distributed random values.  \n\
 \n\
 Static method to create a new itom.dataObject filled with uniformly distributed random numbers.\n\
@@ -8292,6 +8351,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"reshape", (PyCFunction)PythonDataObject::PyDataObject_reshape, METH_VARARGS, pyDataObjectReshape_doc},
         {"zeros", (PyCFunction)PythonDataObject::PyDataObj_StaticZeros, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticZeros_doc},
         {"ones",(PyCFunction)PythonDataObject::PyDataObj_StaticOnes, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticOnes_doc},
+		{"nans",(PyCFunction)PythonDataObject::PyDataObj_StaticNans, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticNans_doc },
         {"rand",(PyCFunction)PythonDataObject::PyDataObj_StaticRand, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRand_doc},
         {"randN",(PyCFunction)PythonDataObject::PyDataObj_StaticRandN, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRandN_doc},
         { "eye", (PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc },

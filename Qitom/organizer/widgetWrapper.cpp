@@ -99,19 +99,19 @@ void WidgetWrapper::initMethodHash()
 
 
         //QListWidget
-        MethodDescriptionList qListWidgetList;
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString)"), "void", 2001, ok );
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("addItems(QStringList)"), "void", 2002, ok );
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedRows()"), "QVector<int>", 2003, ok );
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedTexts()"), "QStringList", 2004, ok );
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("takeItem(int)"), "QString", 2006, ok);
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("item(int)"), "QString", 2007, ok);
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("checkState(int)"), "Qt::CheckState", 2008, ok);
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,Qt::CheckState)"), "void", 2009, ok);
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("flags(int)"), "Qt::ItemFlags", 2010, ok);
-        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,Qt::ItemFlags)"), "void", 2011, ok);
-        methodHash["QListWidget"] = qListWidgetList;
+        MethodDescriptionList qListWidget;
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString)"), "void", 2001, ok );
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("addItems(QStringList)"), "void", 2002, ok );
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("selectedRows()"), "QVector<int>", 2003, ok );
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("selectedTexts()"), "QStringList", 2004, ok );
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("takeItem(int)"), "QString", 2006, ok);
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("item(int)"), "QString", 2007, ok);
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("checkState(int)"), "Qt::CheckState", 2008, ok);
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,Qt::CheckState)"), "void", 2009, ok);
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("flags(int)"), "Qt::ItemFlags", 2010, ok);
+		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,Qt::ItemFlags)"), "void", 2011, ok);
+        methodHash["QListWidget"] = qListWidget;
 
         //QComboBox
         MethodDescriptionList qComboBoxList;
@@ -143,6 +143,10 @@ void WidgetWrapper::initMethodHash()
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setItem(int,int,QVariant)"), "void", 6004, ok );
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("currentColumn()"), "int", 6005, ok );
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("currentRow()"), "int", 6006, ok );
+		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("checkState(int,int)"), "Qt::CheckState", 6007, ok);
+		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,int,Qt::CheckState)"), "void", 6008, ok);
+		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("flags(int,int)"), "Qt::ItemFlags", 6009, ok);
+		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,int,Qt::ItemFlags)"), "void", 6010, ok);
         methodHash["QTableWidget"] = qTableWidget;
 
         //QTableView
@@ -588,6 +592,71 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     (*reinterpret_cast<int*>(_a[0])) = object2->currentRow();
                     return ito::retOk;
                 }
+
+				case 6007: //checkState
+				{
+					QTableWidgetItem *_r;
+					_r = object2->item((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
+					if (_r)
+					{
+						(*reinterpret_cast< Qt::CheckState*>(_a[0])) = _r->checkState();
+					}
+					else
+					{
+						return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+					}
+				}
+				return ito::retOk;
+				break;
+
+				case 6008: //setCheckState
+				{
+					QTableWidgetItem *_r;
+					Qt::CheckState state = *reinterpret_cast< const Qt::CheckState(*)>(_a[3]);
+					_r = object2->item((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
+					if (_r)
+					{
+						_r->setCheckState(state);
+					}
+					else
+					{
+						return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+					}
+				}
+				return ito::retOk;
+				break;
+
+				case 6009: //flags
+				{
+					QTableWidgetItem *_r;
+					_r = object2->item((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
+					if (_r)
+					{
+						(*reinterpret_cast< Qt::ItemFlags*>(_a[0])) = _r->flags();
+					}
+					else
+					{
+						return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+					}
+				}
+				return ito::retOk;
+				break;
+
+				case 6010: //setItemFlags
+				{
+					QTableWidgetItem *_r;
+					Qt::ItemFlags flags = *reinterpret_cast< const Qt::ItemFlags(*)>(_a[3]);
+					_r = object2->item((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
+					if (_r)
+					{
+						_r->setFlags(flags);
+					}
+					else
+					{
+						return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+					}
+				}
+				return ito::retOk;
             }
         }
         else if(QString::compare(className, "QTableView", Qt::CaseInsensitive) == 0)

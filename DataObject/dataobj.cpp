@@ -1393,7 +1393,7 @@ int DataObject::getStep(int index) const
     
     if (index > 2) // steps of 3D Objekt from plane to plane
         step *= osize.height * osize.width;
-    else if (m_dims == 2 && index == 0)
+    else if ((m_dims == 2 && index == 0) || (m_dims > 2 && (m_dims - index) == 2))
         step *= osize.width;
 
     return step;
@@ -3031,6 +3031,177 @@ RetVal DataObject::ones(const unsigned char dimensions, const int *sizes, const 
 
    return 0;
 }
+
+//###############################
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! allocates a one-value matrix of size 1x1 with the given type
+/*!
+\param type is the desired type-number
+\return retOk
+\sa zeros, ZerosFunc
+*/
+RetVal DataObject::nans(const int type)
+{
+	int sizes[2] = { 1, 1 };
+	return nans(2, sizes, type);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! allocates a one-value matrix of size 1 x size with the given type
+/*!
+\param size is the desired length of the vector
+\param type is the desired type-number
+\return retOk
+\sa zeros, ZerosFunc
+*/
+RetVal DataObject::nans(const int size, const int type)
+{
+	int sizes[2] = { 1, size };
+	return nans(2, sizes, type);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! allocates a one-value matrix of size sizeY x sizeX with the given type
+/*!
+\param sizeY are the number of rows
+\param sizeX are the number of columns
+\param type is the desired type-number
+\return retOk
+\sa zeros, ZerosFunc
+*/
+RetVal DataObject::nans(const int sizeY, const int sizeX, const int type)
+{
+	int sizes[2] = { sizeY, sizeX };
+	return nans(2, sizes, type);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! allocates a one-valued, 3D- matrix of size sizeZ x sizeY x sizeX with the given type
+/*!
+\param sizeZ are the number of matrix-planes
+\param sizeY are the number of rows
+\param sizeX are the number of columns
+\param type is the desired type-number
+\param unsigned char continuous indicates wether the data should be in one continuous block (true) or not (false)
+\return retOk
+\sa zeros, ZerosFunc
+*/
+RetVal DataObject::nans(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous)
+{
+	int sizes[3] = { sizeZ, sizeY, sizeX };
+	return nans(3, sizes, type, continuous);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method for creation of one-valued matrix-plane
+/*!
+
+\param sizeY are the number of rows
+\param sizeX are the number of columns
+\param **dstMat is the pointer to the already allocated cv::Mat_<type>-matrix-plane
+\return retOk
+\sa zeros
+*/
+template<typename _Tp> RetVal NansFunc(const int sizeY, const int sizeX, uchar **dstMat)
+{
+
+	(*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+	
+	for (int y = 0; y < (*((cv::Mat_<_Tp> *)(*dstMat))).rows; y++)
+	{
+		_Tp* pt = (*((cv::Mat_<_Tp> *)(*dstMat))).ptr<_Tp>(y);
+		for (int x = 0; x < (*((cv::Mat_<_Tp> *)(*dstMat))).cols; x++)
+		{
+			pt[x] = std::numeric_limits<_Tp>::quiet_NaN();
+		}
+
+	}
+	
+	return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, overloaded template method for creation of one-valued matrix-plane of complex64, complex128
+/*!
+
+\param sizeY are the number of rows
+\param sizeX are the number of columns
+\param **dstMat is the pointer to the already allocated cv::Mat_<type>-matrix-plane
+\return retOk
+\sa zeros
+*/
+template<> RetVal NansFunc<ito::complex64>(const int sizeY, const int sizeX, uchar **dstMat)
+{
+	(*((cv::Mat_<ito::complex64> *)(*dstMat))) = cv::Mat_<ito::complex64>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+
+	for (int y = 0; y < (*((cv::Mat_<ito::complex64> *)(*dstMat))).rows; y++)
+	{
+		ito::complex64* pt = (*((cv::Mat_<ito::complex64> *)(*dstMat))).ptr<ito::complex64>(y);
+		for (int x = 0; x < (*((cv::Mat_<ito::complex64> *)(*dstMat))).cols; x++)
+		{
+			pt[x] = std::numeric_limits<ito::float32>::quiet_NaN();
+		}
+
+	}
+	return 0;
+}
+
+template<> RetVal NansFunc<ito::complex128>(const int sizeY, const int sizeX, uchar **dstMat)
+{
+	(*((cv::Mat_<ito::complex128> *)(*dstMat))) = cv::Mat_<ito::complex128>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+
+	for (int y = 0; y < (*((cv::Mat_<ito::complex128> *)(*dstMat))).rows; y++)
+	{
+		ito::complex128* pt = (*((cv::Mat_<ito::complex128> *)(*dstMat))).ptr<ito::complex128>(y);
+		for (int x = 0; x < (*((cv::Mat_<ito::complex128> *)(*dstMat))).cols; x++)
+		{
+			pt[x] = std::numeric_limits<ito::float64>::quiet_NaN();
+		}
+
+	}
+	return 0;
+}
+
+typedef RetVal(*tNansFunc)(const int sizeY, const int sizeX, uchar **dstMat);
+MAKEFUNCLIST(NansFunc);
+
+//! high-level, non-templated base function for allocation of new matrix whose elements are all set to one
+/*!
+\param dimensions indicates the number of dimensions
+\param *sizes is a vector with the same length than dimensions. Every element indicates the size of the specific dimension
+\param type is the desired data-element-type
+\param continuous indicates wether the data should be in one continuous block (true) or not (false)
+\return retOk
+\sa OnesFunc
+*/
+RetVal DataObject::nans(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous)
+{
+    if(type != ito::tFloat32 && type != ito::tFloat64 && type != ito::tComplex64 && type != ito::tComplex128)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"nans method is only allowed for float32, float64, complex64 or complex128","", __FILE__, __LINE__));
+    }
+
+	freeData();
+	create(dimensions, sizes, type, continuous);
+
+	int numMats = getNumPlanes();
+
+	int sizeX = sizes[dimensions - 1];
+	int sizeY = 1;
+	if (dimensions > 1)
+	{
+		sizeY = sizes[dimensions - 2];
+	}
+
+	for (int matn = 0; matn < numMats; matn++)
+	{
+		fListNansFunc[type](sizeY, sizeX, &(m_data[matn]));
+	}
+
+	return 0;
+}
+//###############################
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! allocates a random-value matrix of size 1x1 with the given type

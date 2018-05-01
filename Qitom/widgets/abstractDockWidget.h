@@ -372,6 +372,7 @@ namespace ito
             virtual void pythonStateChanged(tPythonTransitions pyTransition);
 
             void raiseAndActivate();  /*!< activates this dock widget or window and raises it on top of all opened windows (if possible) */
+            void mini();
 
             void setDockSize(int newWidth, int newHeight);
 
