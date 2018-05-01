@@ -3683,18 +3683,21 @@ RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned 
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::closeAllFloatableFigures(ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
     FigureWidget *fig = NULL;
+    QSharedPointer<unsigned int> empty;
     QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
     while (i != m_dialogList.end())
     {
         fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
         if (fig && !fig->docked())
         {
-            fig->setFigHandle(0);
+            fig->setFigHandle(empty);
             delete i.value().container;
             i = m_dialogList.erase(i);
         }
@@ -3711,6 +3714,7 @@ RetVal UiOrganizer::closeAllFloatableFigures(ItomSharedSemaphore *semaphore /*= 
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore /*= NULL*/)
 {

@@ -1228,7 +1228,7 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuCloseAllPlots()
 {
-    ito:RetVal retval = ito::retOk;
+    ito::RetVal retval = ito::retOk;
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if (uiOrga == NULL)
     {
