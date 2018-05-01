@@ -34,6 +34,8 @@ SET (HEADERS
     modes/symbolMatcherMode.h
     modes/occurrences.h
     modes/autoindent.h
+    modes/indenter.h
+    modes/pyAutoIndent.h
     panels/lineNumber.h
 )
 
@@ -55,6 +57,8 @@ SET (SOURCES
     modes/symbolMatcherMode.cpp
     modes/occurrences.cpp
     modes/autoindent.cpp
+    modes/indenter.cpp
+    modes/pyAutoIndent.cpp
     decorations/textDecoration.cpp
     utils/utils.cpp
 )

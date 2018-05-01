@@ -4,6 +4,7 @@
 #include "managers/textDecorationsManager.h"
 #include "utils/utils.h"
 
+
 #include <qbrush.h>
 
 /*static*/ const QByteArray SymbolMatcherMode::chars = "()[]{}";

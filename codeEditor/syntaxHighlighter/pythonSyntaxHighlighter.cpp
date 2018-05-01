@@ -93,7 +93,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
     QString import_stmt;
         
     //set docstring dynamic attribute, used by the fold detector.
-    TextBlockUserData *userData = static_cast<TextBlockUserData*>(block.userData());
+    TextBlockUserData *userData = dynamic_cast<TextBlockUserData*>(block.userData());
     if (userData == NULL)
     {
         userData = new TextBlockUserData();

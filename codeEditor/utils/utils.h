@@ -69,6 +69,11 @@ namespace Utils
     QList<ParenthesisInfo> listSymbols(CodeEditor *editor, const QTextBlock &block, const char* character);
     void getBlockSymbolData(CodeEditor *editor, const QTextBlock &block, QList<ParenthesisInfo> &parentheses, QList<ParenthesisInfo> &squareBrackets, QList<ParenthesisInfo> &braces);
 
+    QString lstrip(const QString &string);
+    QString rstrip(const QString &string);
+    QString strip(const QString &string);
+    int numlines(const QString &string);
+
     
 };
 

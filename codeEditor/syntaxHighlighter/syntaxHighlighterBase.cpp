@@ -233,7 +233,7 @@ void SyntaxHighlighterBase::refreshEditor(const ColorScheme &colorScheme)
     Mode::Ptr mode = editor()->modes()->get("CaretLineHighlighterMode");
     if (mode)
     {
-        CaretLineHighlighterMode* clh = static_cast<CaretLineHighlighterMode*>(mode.data());
+        CaretLineHighlighterMode* clh = dynamic_cast<CaretLineHighlighterMode*>(mode.data());
         clh->setBackground(colorScheme.highlight());
         clh->refresh();
     }
@@ -241,7 +241,7 @@ void SyntaxHighlighterBase::refreshEditor(const ColorScheme &colorScheme)
     Panel::Ptr panel = editor()->panels()->get("FoldingPanel");
     if (panel)
     {
-        //todo: static_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);
+        //todo: dynamic_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);
     }
     editor()->resetStylesheet();
 }

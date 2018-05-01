@@ -24,7 +24,7 @@ class AutoIndentMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    AutoIndentMode(const QString &description = "", QObject *parent = NULL);
+    AutoIndentMode(const QString &name, const QString &description = "", QObject *parent = NULL);
     virtual ~AutoIndentMode();
 
     virtual void onStateChanged(bool state);

@@ -7,6 +7,9 @@
 #include "modes/caretLineHighlight.h"
 #include "modes/symbolMatcherMode.h"
 #include "modes/occurrences.h"
+#include "modes/autoindent.h"
+#include "modes/pyAutoIndent.h"
+#include "modes/indenter.h"
 #include "panels/lineNumber.h"
 #include "syntaxHighlighter/pythonSyntaxHighlighter.h"
 #include "managers/modesManager.h"
@@ -26,6 +29,8 @@ int main(int argv, char **args)
     editor.modes()->append(Mode::Ptr(new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter")));
     editor.modes()->append(Mode::Ptr(new SymbolMatcherMode("description of SymbolMatcherMode")));
     editor.modes()->append(Mode::Ptr(new OccurrencesHighlighterMode("description of OccurrencesHighlighterMode")));
+    editor.modes()->append(Mode::Ptr(new PyAutoIndentMode("description of PyAutoIndentMode")));
+    editor.modes()->append(Mode::Ptr(new IndenterMode("description of IndenterMode")));
     
     editor.panels()->append(Panel::Ptr(new LineNumberPanel("description of LineNumberPanel")));
     

@@ -243,6 +243,7 @@ namespace Utils
         block.setUserState(state);
     }
 
+    //---------------------------------------------------------------------------
     /*
     Return color that is lighter or darker than the base color.
 
@@ -270,5 +271,55 @@ namespace Utils
                 return baseColor.lighter(factor + 10);
             }
         }
+    }
+
+    //---------------------------------------------------------------------------
+    QString lstrip(const QString &string)
+    {
+        //remove whitespaces from the beginning
+        for (int n = 0; n < string.size(); ++n)
+        {
+            if (!string.at(n).isSpace())
+            {
+                return string.mid(n);
+            }
+        }
+        return "";
+    }
+
+    //---------------------------------------------------------------------------
+    QString rstrip(const QString &string)
+    {
+        //remove whitespaces from the end
+        int n = string.size() - 1;
+        for (; n >= 0; --n) 
+        {
+            if (!string.at(n).isSpace()) 
+            {
+                return string.left(n + 1);
+            }
+        }
+        return "";
+    }
+
+    //---------------------------------------------------------------------------
+    QString strip(const QString &string)
+    {
+        return string.trimmed();
+    }
+
+    //---------------------------------------------------------------------------
+    int numlines(const QString &string)
+    {
+        int num = 1;
+        QString str(string);
+        int l = str.size();
+        str.replace("\r\n", "");
+        num += (l - str.size()) / 2;
+        l = str.size();
+        str.replace("\r", "");
+        str.replace("\n", "");
+        num += (l - str.size());
+        return num;
     }
 };

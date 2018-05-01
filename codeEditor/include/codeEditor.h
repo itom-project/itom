@@ -121,6 +121,7 @@ public:
     int currentColumnNumber() const;
     int lineNbrFromPosition(int yPos) const;
     int lineCount() const;
+    QTextCursor selectWholeLine(int line = -1, bool applySelection = true);
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
     QPair<int,int> selectionRange() const; //start, end
 
@@ -130,6 +131,9 @@ public:
 
     void indent();
     void unindent();
+
+    void cut();
+    void copy();
 
     void resetStylesheet();
 
@@ -152,7 +156,9 @@ protected:
     void initSettings();
     void initStyle();
     void initActions(bool createStandardActions);
-    
+
+    QString previousLineText() const;
+    QString currentLineText() const;    
 
     void setWhitespacesFlags(bool show);
 
@@ -177,6 +183,8 @@ protected:
 
     virtual void focusInEvent(QFocusEvent *e);
     virtual void focusOutEvent(QFocusEvent *e);
+
+    virtual bool eventFilter(QObject *obj, QEvent *e);
 
 private:
     bool m_showCtxMenu;

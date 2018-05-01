@@ -3,8 +3,8 @@
 #include "codeEditor.h"
 
 
-AutoIndentMode::AutoIndentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
-    Mode("AutoIndentMode", description),
+AutoIndentMode::AutoIndentMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+    Mode(name, description),
     QObject(parent)
 {
 }

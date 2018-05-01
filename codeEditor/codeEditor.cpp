@@ -116,11 +116,13 @@ SyntaxHighlighterBase* CodeEditor::syntaxHighlighter() const
     ModesManager::const_iterator it = m_pModes->constBegin();
     while (it != m_pModes->constEnd())
     {
-        out = static_cast<SyntaxHighlighterBase*>(it.value().data());
+        out = dynamic_cast<SyntaxHighlighterBase*>(it.value().data());
         if (out)
         {
             break;
         }
+
+        it++;
     }
 
     return out;
@@ -409,13 +411,19 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
     if (!e->isAccepted())
     {
         if (e->key() == Qt::Key_Tab && e->modifiers() == \
-                Qt::NoModifier)
+            Qt::NoModifier)
         {
             indent();
             e->accept();
         }
         else if (e->key() == Qt::Key_Backtab && \
-                e->modifiers() == Qt::NoModifier)
+            e->modifiers() == Qt::NoModifier)
+        {
+            unindent();
+            e->accept();
+        }
+        else if (e->key() == Qt::Key_Backtab && \
+            e->modifiers() == Qt::ShiftModifier)
         {
             unindent();
             e->accept();
@@ -795,6 +803,71 @@ int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
     }
 }
 
+//-------------------------------------------------------------
+/*virtual*/ bool CodeEditor::eventFilter(QObject *obj, QEvent *e)
+{
+    if ((obj == this) && (e->type() == QEvent::KeyPress))
+    {
+        QKeyEvent *ke = dynamic_cast<QKeyEvent*>(e);
+        if (ke->matches(QKeySequence::Cut))
+        {
+            cut();
+            return true;
+        }
+        else if (ke->matches(QKeySequence::Copy))
+        {
+            copy();
+            return true;
+        }
+    }
+    return false;
+}
+
+//-------------------------------------------------------------
+/*
+Cuts the selected text or the whole line if no text was selected.
+*/
+void CodeEditor::cut()
+{
+    QTextCursor tc = textCursor();
+    tc.beginEditBlock();
+    bool no_selection = false;
+    if (currentLineText() != "")
+    {
+        tc.deleteChar();
+    }
+    else
+    {
+        if (!textCursor().hasSelection())
+        {
+            no_selection = true;
+            selectWholeLine();
+        }
+        QPlainTextEdit::cut();
+        if (no_selection)
+        {
+            tc.deleteChar();
+        }
+    }
+    tc.endEditBlock();
+    setTextCursor(tc);
+}
+
+//-------------------------------------------------------------
+/*
+Copy the selected text to the clipboard. If no text was selected, the
+entire line is copied (this feature can be turned off by
+setting :attr:`select_line_on_copy_empty` to False.
+*/
+void CodeEditor::copy()
+{
+    if (selectLineOnCopyEmpty() && !textCursor().hasSelection())
+    {
+            selectWholeLine();
+    }
+    QPlainTextEdit::copy();
+}
+
 //-----------------------------------------------------------
 /*
 Gets the text of the specified line
@@ -828,6 +901,31 @@ Returns the text cursor's column number.
 int CodeEditor::currentColumnNumber() const
 {
     return textCursor().columnNumber();
+}
+
+//------------------------------------------------------------
+/*
+Gets the previous line text (relative to the current cursor pos).
+:return: previous line text (str)
+*/
+QString CodeEditor::previousLineText() const
+{
+    if (currentLineNumber() > 0)
+    {
+        return lineText(currentLineNumber() - 1);
+    }
+    return "";
+}
+
+//------------------------------------------------------------
+/*
+Returns the text of the current line.
+
+:return: Text of the current line
+*/
+QString CodeEditor::currentLineText() const
+{
+    return lineText(currentLineNumber());
 }
 
 //------------------------------------------------------------
@@ -1125,6 +1223,25 @@ QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool ap
         setTextCursor(text_cursor);
     }
     return text_cursor;
+}
+
+//------------------------------------------------------------
+/*
+Selects an entire line.
+
+:param line: Line to select. If -1, the current line will be selected
+:param apply_selection: True to apply selection on the text editor
+    widget, False to just return the text cursor without setting it
+    on the editor.
+:return: QTextCursor
+*/
+QTextCursor CodeEditor::selectWholeLine(int line /*= -1*/, bool applySelection /*= true*/)
+{
+    if (line == -1)
+    {
+        line = currentLineNumber();
+    }
+    return selectLines(line, line, applySelection);
 }
 
 //------------------------------------------------------------

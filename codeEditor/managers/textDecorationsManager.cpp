@@ -30,7 +30,7 @@ QList<QTextEdit::ExtraSelection> TextDecorationsManager::getExtraSelections() co
     {
         if (m_decorations[i].isNull() == false)
         {
-            s << *(static_cast<const QTextEdit::ExtraSelection*>(m_decorations[i].data()));
+            s << *(dynamic_cast<const QTextEdit::ExtraSelection*>(m_decorations[i].data()));
         }
     }
     return s;
