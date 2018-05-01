@@ -24,6 +24,9 @@ SET (HEADERS
     include/mode.h
     include/textDecoration.h
     include/foldDetector.h
+    include/charBasedFoldDetector.h
+    include/indentFoldDetector.h
+    include/folding.h
     include/delayJobRunner.h
     syntaxHighlighter/syntaxHighlighterBase.h
     syntaxHighlighter/pythonSyntaxHighlighter.h
@@ -44,6 +47,9 @@ SET (SOURCES
     codeEditor.cpp
     mode.cpp
     foldDetector.cpp
+    charBasedFoldDetector.cpp
+    indentFoldDetector.cpp
+    folding.cpp
     syntaxHighlighter/syntaxHighlighterBase.cpp
     syntaxHighlighter/pythonSyntaxHighlighter.cpp
     delayJobRunner.cpp
