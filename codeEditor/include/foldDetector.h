@@ -3,6 +3,8 @@
 
 #include <qtextedit.h>
 #include <qstring.h>
+#include <qsharedpointer.h>
+#include <QTextBlock>
 
 /*
 This module contains the code folding API.
@@ -53,6 +55,36 @@ public:
 private:
     FoldDetectorPrivate *d_ptr;
     Q_DECLARE_PRIVATE(FoldDetector);
+};
+
+
+/*
+Utility class for manipulating fold-able code scope (fold/unfold,
+get range, child and parent scopes and so on).
+
+A scope is built from a fold trigger (QTextBlock).
+*/
+class FoldScope
+{
+public:
+    FoldScope(const QTextBlock &block);
+    virtual ~FoldScope();
+
+    int triggerLevel() const;
+    int scopeLevel() const;
+    bool collapsed() const;
+    QPair<int, int> getRange(bool ignoreBlankLines = true) const;
+    void fold();
+    void unfold();
+    QString text(int maxLines) const;
+    QSharedPointer<FoldScope> parent() const;
+    QList<FoldScope> childRegions() const;
+    QList<QTextBlock> blocks(bool ignoreBlankLines = true) const;
+
+    static QTextBlock findParentScope(QTextBlock block);
+
+private:
+    QTextBlock m_trigger;
 };
 
 
