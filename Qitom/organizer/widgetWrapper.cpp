@@ -31,6 +31,7 @@
 #include <qheaderview.h>
 #include <qtreeview.h>
 #include <qtableview.h>
+#include <qsplitter.h>
 
 namespace ito
 {
@@ -154,6 +155,15 @@ void WidgetWrapper::initMethodHash()
         qTableView << buildMethodDescription(QMetaObject::normalizedSignature("horizontalHeader()"), "ito::PythonQObjectMarshal", 7001, ok );
         qTableView << buildMethodDescription(QMetaObject::normalizedSignature("verticalHeader()"), "ito::PythonQObjectMarshal", 7002, ok );
         methodHash["QTableView"] = qTableView;
+
+		//QSplitter
+		MethodDescriptionList qSplitter;
+		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("setStretchFactor(int,int)"), "void", 8001, ok);
+		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("sizes()"), "QList<int>", 8002, ok);
+		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("setSizes(QList<int>)"), "void", 8003, ok);
+		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("isCollapsible(int)"), "bool", 8004, ok);
+		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("setCollapsible(int,bool)"), "void", 8005, ok);
+		methodHash["QSplitter"] = qSplitter;
     }
 }
 
@@ -677,6 +687,44 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                     return ito::retOk;
                 }
+            }
+        }
+		else if(QString::compare(className, "QSplitter", Qt::CaseInsensitive) == 0)
+        {
+            QSplitter *object2 = qobject_cast<QSplitter*>(object);
+            if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
+            switch(methodIndex)
+            {
+                case 8001: //setStretchFactor
+                {
+					object2->setStretchFactor((*reinterpret_cast< int(*)>(_a[1])), (*reinterpret_cast< int(*)>(_a[2])));
+					//(*reinterpret_cast< bool*>(_a[0])) = _r;
+					return ito::retOk;
+                }
+				case 8002: //sizes
+				{
+					QList<int> _r = object2->sizes();
+					(*reinterpret_cast< QList<int>*>(_a[0])) = _r;
+					return ito::retOk;
+				}
+				case 8003: //setSizes
+				{
+					object2->setSizes(*reinterpret_cast< QList<int>(*)>(_a[1]));
+					//(*reinterpret_cast< bool*>(_a[0])) = _r;
+					return ito::retOk;
+				}
+				case 8004: //isCollapsible
+				{
+					bool _r = object2->isCollapsible(*reinterpret_cast< int(*)>(_a[1]));
+					(*reinterpret_cast< bool*>(_a[0])) = _r;
+					return ito::retOk;
+				}
+				case 8005: //setCollapsible
+				{
+					object2->setCollapsible((*reinterpret_cast< int(*)>(_a[1])), (*reinterpret_cast< bool(*)>(_a[2])));
+					//(*reinterpret_cast< bool*>(_a[0])) = _r;
+					return ito::retOk;
+				}
             }
         }
 
