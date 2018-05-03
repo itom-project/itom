@@ -99,7 +99,8 @@ MainWindow::MainWindow() :
 	m_isFullscreen(false),
 	m_userDefinedActionCounter(0),
 	m_lastFilesMapper(NULL),
-	m_openScriptsMapper(NULL)
+	m_openScriptsMapper(NULL),
+    m_openFigureMapper(NULL)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -277,6 +278,9 @@ MainWindow::MainWindow() :
 
     m_openScriptsMapper = new QSignalMapper(this);
     connect(m_openScriptsMapper, SIGNAL(mapped(const QString &)), this, SLOT(openScript(const QString &)));
+
+    m_openFigureMapper = new QSignalMapper(this);
+    connect(m_openFigureMapper, SIGNAL(mapped(int)), this, SLOT(raiseFigureByHandle(int)));
 
     //
     createActions();
@@ -783,6 +787,8 @@ void MainWindow::createMenus()
     m_pMenuFigure->addAction(m_actions["close_all_plots"]);
     m_pMenuFigure->addAction(m_actions["show_all_plots"]);
     m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
+    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("show open figure"));
+    connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
     if (uOrg->hasFeature(featDeveloper))
     {
@@ -863,7 +869,7 @@ void MainWindow::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    a = new QAction(QIcon(":/icons/filePython.png"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
                     connect(a, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
                     m_lastFilesMapper->setMapping(a, path);
@@ -872,7 +878,52 @@ void MainWindow::menuLastFilesAboutToShow()
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuFigureAboutToShow()
+{
+    if (m_pMenuView)
+    {
+        // Delete old actions
+        for (int i = 0; i < m_pShowOpenFigure->actions().length(); ++i)
+        {
+            m_pShowOpenFigure->actions().at(i)->deleteLater();
+        }
+        m_pShowOpenFigure->clear();
+    }
+    ito::RetVal retval = ito::retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
 
+    }
+    if (!retval.containsError())
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<QList<unsigned int> > widgetNames(new QList<unsigned int>);
+        QMetaObject::invokeMethod(uiOrga, "getAllAvailableHandles", Q_ARG(QSharedPointer<QList<unsigned int> >, widgetNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        unsigned int val;
+        QAction *a;
+        if (widgetNames->isEmpty())
+        {
+            a = new QAction(QString("no figures available"), this);
+            m_pShowOpenFigure->addAction(a);
+        }
+        else
+        {
+            qSort(*widgetNames);
+            foreach(val, *widgetNames)
+            {
+                a = new QAction(QString("Figure %1").arg(val), this);
+                m_pShowOpenFigure->addAction(a);
+                connect(a, SIGNAL(triggered()), m_openFigureMapper, SLOT(map()));
+                m_openFigureMapper->setMapping(a, val);
+            }
+        }
+
+    }
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 /*Slot aboutToOpen*/
 void MainWindow::mnuViewAboutToShow()
@@ -919,7 +970,6 @@ void MainWindow::mnuViewAboutToShow()
         }
     }
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // Slot that is invoked by the lastfile Buttons over the signalmapper
 void MainWindow::lastFileOpen(const QString &path)
@@ -944,7 +994,22 @@ void MainWindow::openScript(const QString &filename)
         sew->openScript(filename);
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::raiseFigureByHandle(int handle)
+{
+    ito::RetVal retval = ito::retOk;
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
 
+    }
+    if (!retval.containsError())
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(uiOrga, "figureShow",Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    }
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
 void MainWindow::createStatusBar()
@@ -1262,7 +1327,7 @@ void MainWindow::mnuShowAllPlots()
     if (!retval.containsError())
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureShowAll", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, 0),Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     }
     return;

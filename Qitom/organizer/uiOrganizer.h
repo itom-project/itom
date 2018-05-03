@@ -490,12 +490,13 @@ public slots:
 
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal closeAllFloatableFigures(ItomSharedSemaphore *semaphore = NULL);
-    RetVal figureShowAll(ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureShow(const unsigned int& handle = 0, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureMinimizeAll(ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
     RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
+    RetVal getAllAvailableHandles(QSharedPointer<QList<unsigned int> > list, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 

@@ -99,7 +99,8 @@ private:
     AIManagerWidget* m_pAIManagerWidget;
 
     QSignalMapper *m_lastFilesMapper;       /*!<  Maps signal from the "last opened files" buttons */
-    QSignalMapper *m_openScriptsMapper;       /*!<  Maps signal from the opened scripts" actions */
+    QSignalMapper *m_openScriptsMapper;     /*!<  Maps signal from the opened scripts" actions */
+    QSignalMapper *m_openFigureMapper;      /*!<  Maps signal from the opened figure actions */
 
     QToolBar* m_aboutToolBar;
     QToolBar* m_appToolBar;
@@ -119,6 +120,7 @@ private:
     QMap<QString, QAction*> m_actions;
 
     QMenu *m_pMenuFigure;
+    QMenu *m_pShowOpenFigure;
     QMenu *m_pMenuHelp;
     QMenu *m_pMenuFile;
     QMenu *m_plastFilesMenu;
@@ -219,6 +221,8 @@ private slots:
     void openScript(const QString &filename);
     
     void mnuViewAboutToShow();
+    void mnuFigureAboutToShow();
+    void raiseFigureByHandle(int handle);
 
 };
 
