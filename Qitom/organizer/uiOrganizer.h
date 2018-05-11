@@ -497,6 +497,7 @@ public slots:
     RetVal figurePickPointsInterrupt(unsigned int objectID);
     RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
     RetVal getAllAvailableHandles(QSharedPointer<QList<unsigned int> > list, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getPlotWindowTitlebyHandle(const unsigned int& objectID, QSharedPointer<QString> title, ItomSharedSemaphore * semaphore = NULL);
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 

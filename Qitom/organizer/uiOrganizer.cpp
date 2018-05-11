@@ -1,4 +1,4 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2018, Institut fuer Technische Optik (ITO),
@@ -4132,7 +4132,7 @@ RetVal UiOrganizer::getAllAvailableHandles(QSharedPointer<QList<unsigned int> > 
     ito::RetVal retval;
     list->clear();
     QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
-    FigureWidget *fig;
+    FigureWidget *fig = NULL;
     while (i != m_dialogList.end())
     {
         fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
@@ -4144,6 +4144,31 @@ RetVal UiOrganizer::getAllAvailableHandles(QSharedPointer<QList<unsigned int> > 
         {
             ++i;
         }
+    }
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
+RetVal UiOrganizer::getPlotWindowTitlebyHandle(const unsigned int& objectID, QSharedPointer<QString> title, ItomSharedSemaphore * semaphore /*=NULL*/)
+{
+    ito::RetVal retval;
+    FigureWidget *fig = NULL;
+    if (m_dialogList.contains(objectID))
+    {
+        fig = qobject_cast<FigureWidget*>(m_dialogList[objectID].container->getUiWidget());
+        if (fig)
+        {
+            *title = fig->windowTitle();
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("could not find figure with given handle %1").arg(objectID).toLatin1().data());
     }
     if (semaphore)
     {

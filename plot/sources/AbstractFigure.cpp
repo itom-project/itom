@@ -714,5 +714,10 @@ void AbstractFigure::actionChanged()
         d->shortcutActions[a]->setEnabled(a->isEnabled());
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::setWindowTitleExtension(const QString& title)
+{
+    emit windowTitleModified(title);
+}
 
 } //end namespace ito

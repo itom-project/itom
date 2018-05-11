@@ -655,13 +655,13 @@ void MainWindow::createActions()
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("close all floatable figures"), this);
+        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close all floatable Figures"), this);
         connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
 
-        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("show all floatable figures"), this);
+        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show all floatable Figures"), this);
         connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
         
-        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("minimize all floatable figures"), this);
+        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize all floatable Figures"), this);
         connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
 
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
@@ -787,7 +787,7 @@ void MainWindow::createMenus()
     m_pMenuFigure->addAction(m_actions["close_all_plots"]);
     m_pMenuFigure->addAction(m_actions["show_all_plots"]);
     m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
-    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("show open figure"));
+    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Show open Figure"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
     if (uOrg->hasFeature(featDeveloper))
@@ -901,20 +901,26 @@ void MainWindow::mnuFigureAboutToShow()
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QSharedPointer<QList<unsigned int> > widgetNames(new QList<unsigned int>);
+        QSharedPointer<QString> title(new QString);
         QMetaObject::invokeMethod(uiOrga, "getAllAvailableHandles", Q_ARG(QSharedPointer<QList<unsigned int> >, widgetNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         unsigned int val;
         QAction *a;
         if (widgetNames->isEmpty())
         {
-            a = new QAction(QString("no figures available"), this);
+            a = new QAction(QString("No Figures available"), this);
             m_pShowOpenFigure->addAction(a);
         }
         else
         {
             qSort(*widgetNames);
+            
             foreach(val, *widgetNames)
             {
-                a = new QAction(QString("Figure %1").arg(val), this);
+                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                QMetaObject::invokeMethod(uiOrga, "getPlotWindowTitlebyHandle", Q_ARG(unsigned int, val), Q_ARG(QSharedPointer<QString>, title), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+                
+                a = new QAction(*title, this);
+                
                 m_pShowOpenFigure->addAction(a);
                 connect(a, SIGNAL(triggered()), m_openFigureMapper, SLOT(map()));
                 m_openFigureMapper->setMapping(a, val);

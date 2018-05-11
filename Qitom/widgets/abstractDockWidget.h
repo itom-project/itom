@@ -84,9 +84,6 @@ namespace ito
             virtual ~AbstractDockWidget();
 
             inline bool docked() const { return m_docked; }    /*!<  returns if docking widget is docked (true) or undocked (false) */
-
-            RetVal setAdvancedWindowTitle( QString newCompleteTitle = QString(), bool appendToBasicTitle = true );
-
             RetVal setTopLevel( tTopLevelStyle topLevel, bool showWindow = true );
 
             void setParent ( QWidget * parent ) { m_overallParent = parent; QDockWidget::setParent(parent); }
@@ -162,7 +159,6 @@ namespace ito
 
             QString windowTitle();
             void setWindowTitle(const QString &title);
-
             bool isEnabled() const;
             bool isVisible() const;
 
@@ -378,6 +374,8 @@ namespace ito
 
             void dockWidget();
             void undockWidget(bool show_it = true);
+
+            RetVal setAdvancedWindowTitle(QString newCompleteTitle = QString(), bool appendToBasicTitle = true);
 
         private slots:
             void mnuStayOnTop(bool checked);
