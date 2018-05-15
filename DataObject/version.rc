@@ -74,7 +74,7 @@ BEGIN
 #else
             VALUE   "OriginalFilename", "dataobject.dll\0"
 #endif
-            VALUE   "ProductName",      "itom measurement programm\0"
+            VALUE   "ProductName",      "itom measurement program\0"
             VALUE   "ProductVersion",   DATAOBJ_VER_STRING "\0"
         END
     END

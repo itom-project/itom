@@ -73,7 +73,7 @@ BEGIN
 #else
             VALUE   "OriginalFilename", "pointcloud.dll\0"
 #endif
-            VALUE   "ProductName",      "itom measurement programm\0"
+            VALUE   "ProductName",      "itom measurement program\0"
             VALUE   "ProductVersion",   PCL_WRAPPER_VER_STRING "\0"
         END
     END

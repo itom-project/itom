@@ -8309,7 +8309,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+17"/>
-        <source>The file &apos;%1&apos; has been modified by another programm.</source>
+        <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
     <message>
