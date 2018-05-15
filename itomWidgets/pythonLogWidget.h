@@ -51,6 +51,8 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
     Q_PROPERTY(int maxMessages READ getMaxMessages WRITE setMaxMessages NOTIFY maxMessagesChanged)
     Q_PROPERTY(bool outputStream READ getOutputStream WRITE setOutputStream)
     Q_PROPERTY(bool errorStream READ getErrorStream WRITE setErrorStream)
+    Q_PROPERTY(int verticalSizeHint READ getVerticalSizeHint WRITE setVerticalSizeHint)
+    Q_PROPERTY(bool autoScroll READ getAutoScroll WRITE setAutoScroll)
 
     WIDGET_ITOM_API
 
@@ -58,6 +60,10 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
         void setMaxMessages(const int newMaxMessages);
         ito::RetVal setOutputStream(bool enabled);
         ito::RetVal setErrorStream(bool enabled);
+        void setVerticalSizeHint(int value);
+        void clear();
+        void setAutoScroll(bool autoScroll);
+
 
     Q_SIGNALS:
         void maxMessagesChanged(const int newMaxMessages);
@@ -69,15 +75,21 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
         int getMaxMessages() const;
         bool getOutputStream() const;
         bool getErrorStream() const;
+        int getVerticalSizeHint() const;
+        bool getAutoScroll() const;
 
     protected:
 //        void createActions();
         virtual ito::RetVal init();
+        QSize sizeHint() const;
 
         QScopedPointer<PythonLogWidgetPrivate> d_ptr;
 
     public slots:
         void messageReceived(QString message, ito::tStreamMessageType messageType);
+
+    private Q_SLOTS:
+        void showContextMenu(const QPoint &pt);
 
     private:
         Q_DECLARE_PRIVATE(PythonLogWidget);
