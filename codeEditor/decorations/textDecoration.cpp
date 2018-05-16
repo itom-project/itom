@@ -32,7 +32,7 @@ TextDecoration::TextDecoration()
 :param full_width: True to select the full line width.
 .. note:: Use the cursor selection if startPos and endPos are none.
 */
-TextDecoration::TextDecoration(QTextCursor cursor, int startPos /*=-1*/, int endPos /*=-1*/, \
+TextDecoration::TextDecoration(const QTextCursor &cursor, int startPos /*=-1*/, int endPos /*=-1*/, \
     int startLine /*=-1*/, int endLine /*=-1*/, int drawOrder /*=0*/, const QString &tooltip /*= ""*/, \
     bool fullWidth /*= false*/) :
     QTextEdit::ExtraSelection(),
@@ -41,6 +41,64 @@ TextDecoration::TextDecoration(QTextCursor cursor, int startPos /*=-1*/, int end
     m_tooltip(tooltip)
 {
     this->cursor = cursor;
+
+    if (fullWidth)
+    {
+        setFullWidth(fullWidth);
+    }
+
+    if (startPos >= 0)
+    {
+        this->cursor.setPosition(startPos);
+    }
+
+    if (endPos >= 0)
+    {
+        this->cursor.setPosition(endPos, QTextCursor::KeepAnchor);
+    }
+
+    if (startLine >= 0)
+    {
+        this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+    }
+
+    if (endLine >= 0)
+    {
+        this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
+    }
+}
+
+//-----------------------------------------------------------
+/*Creates a text decoration.
+
+.. note:: start_pos/end_pos and start_line/end_line pairs let you
+    easily specify the selected text. You should use one pair or the
+    other or they will conflict between each others. If you don't
+    specify any values, the selection will be based on the cursor.
+
+:param cursor_or_bloc_or_doc: Reference to a valid
+    QTextCursor/QTextBlock/QTextDocument
+:param start_pos: Selection start position
+:param end_pos: Selection end position
+:param start_line: Selection start line.
+:param end_line: Selection end line.
+:param draw_order: The draw order of the selection, highest values will
+    appear on top of the lowest values.
+:param tooltip: An optional tooltips that will be automatically shown
+    when the mouse cursor hover the decoration.
+:param full_width: True to select the full line width.
+.. note:: Use the cursor selection if startPos and endPos are none.
+*/
+TextDecoration::TextDecoration(QTextDocument *document, int startPos /*=-1*/, int endPos /*=-1*/, \
+    int startLine /*=-1*/, int endLine /*=-1*/, int drawOrder /*=0*/, const QString &tooltip /*= ""*/, \
+    bool fullWidth /*= false*/) :
+    QTextEdit::ExtraSelection(),
+    m_signals(new TextDecorationsSignals()),
+    m_drawOrder(drawOrder),
+    m_tooltip(tooltip)
+{
+    this->cursor = QTextCursor(document);
 
     if (fullWidth)
     {
@@ -241,4 +299,10 @@ void TextDecoration::setAsWarning(const QColor &color /*= QColor("orange")*/)
 void TextDecoration::emitClicked(TextDecoration::Ptr selection) const
 {
     emit m_signals->clicked(selection);
+}
+
+//-----------------------------------------------
+QMetaObject::Connection TextDecoration::connect(const char* signal, QObject *receiver, const char *slot)
+{
+    return QObject::connect(m_signals.data(), signal, receiver, slot);
 }

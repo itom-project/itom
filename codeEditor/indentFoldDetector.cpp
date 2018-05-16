@@ -24,7 +24,7 @@ Detects fold level by looking at the block indentation.
 :param prev_block: previous text block
 :param block: current block to highlight
 */
-int FoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block)
+int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block)
 {
     QString text = block.text();
     // round down to previous indentation guide to ensure contiguous block

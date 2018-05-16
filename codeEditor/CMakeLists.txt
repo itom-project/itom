@@ -39,6 +39,7 @@ SET (HEADERS
     modes/indenter.h
     modes/pyAutoIndent.h
     panels/lineNumber.h
+    panels/foldingPanel.h
 )
 
 SET (SOURCES
@@ -57,6 +58,7 @@ SET (SOURCES
     managers/modesManager.cpp
     panels/panel.cpp
     panels/lineNumber.cpp
+    panels/foldingPanel.cpp
     modes/caretLineHighlight.cpp
     modes/symbolMatcherMode.cpp
     modes/occurrences.cpp

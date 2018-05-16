@@ -1266,12 +1266,51 @@ QPair<int,int> CodeEditor::selectionRange() const
 }
 
 //------------------------------------------------------------
+/*
+Computes line position on Y-Axis (at the center of the line) from line
+number.
+
+:param line_number: The line number for which we want to know the
+                    position in pixels.
+:return: The center position of the line.
+*/
+int CodeEditor::linePosFromNumber(int lineNumber) const
+{
+    QTextBlock block = document()->findBlockByNumber(lineNumber);
+    if (block.isValid())
+    {
+        return (int)(blockBoundingGeometry(block).translated(contentOffset()).top());
+    }
+
+    if (lineNumber <= 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return (int)(blockBoundingGeometry(block.previous()).translated(contentOffset()).bottom());
+    }
+}
+
+//------------------------------------------------------------
 QTextCursor CodeEditor::moveCursorTo(int line)
 {
     QTextCursor cursor = textCursor();
     QTextBlock block = document()->findBlockByNumber(line);
     cursor.setPosition(block.position());
     return cursor;
+}
+
+//------------------------------------------------------------
+/*
+Marks the whole document as dirty to force a full refresh. **SLOW**
+*/
+void CodeEditor::markWholeDocDirty()
+{
+    QTextCursor text_cursor = textCursor();
+    text_cursor.select(QTextCursor::Document);
+    document()->markContentsDirty(text_cursor.selectionStart(),
+                                                text_cursor.selectionEnd());
 }
 
 //------------------------------------------------------------

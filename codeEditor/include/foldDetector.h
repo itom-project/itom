@@ -67,17 +67,20 @@ A scope is built from a fold trigger (QTextBlock).
 class FoldScope
 {
 public:
+    FoldScope();
     FoldScope(const QTextBlock &block);
     virtual ~FoldScope();
 
     int triggerLevel() const;
     int scopeLevel() const;
     bool collapsed() const;
+    bool isValid() const;
     QPair<int, int> getRange(bool ignoreBlankLines = true) const;
     void fold();
     void unfold();
     QString text(int maxLines) const;
     QSharedPointer<FoldScope> parent() const;
+    QTextBlock trigger() const;
     QList<FoldScope> childRegions() const;
     QList<QTextBlock> blocks(bool ignoreBlankLines = true) const;
 

@@ -10,7 +10,9 @@
 #include "modes/autoindent.h"
 #include "modes/pyAutoIndent.h"
 #include "modes/indenter.h"
+#include "indentFoldDetector.h"
 #include "panels/lineNumber.h"
+#include "panels/foldingPanel.h"
 #include "syntaxHighlighter/pythonSyntaxHighlighter.h"
 #include "managers/modesManager.h"
 #include "managers/panelsManager.h"
@@ -26,13 +28,16 @@ int main(int argv, char **args)
 
     editor.resize(800, 600);
     editor.modes()->append(Mode::Ptr(new CaretLineHighlighterMode("description of caret line highlighter mode")));
-    editor.modes()->append(Mode::Ptr(new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter")));
+    PythonSyntaxHighlighter *pythonSyntaxHighlighter = new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter");
+    pythonSyntaxHighlighter->setFoldDetector(QSharedPointer<FoldDetector>(new IndentFoldDetector()));
+    editor.modes()->append(Mode::Ptr(pythonSyntaxHighlighter));
     editor.modes()->append(Mode::Ptr(new SymbolMatcherMode("description of SymbolMatcherMode")));
     editor.modes()->append(Mode::Ptr(new OccurrencesHighlighterMode("description of OccurrencesHighlighterMode")));
     editor.modes()->append(Mode::Ptr(new PyAutoIndentMode("description of PyAutoIndentMode")));
     editor.modes()->append(Mode::Ptr(new IndenterMode("description of IndenterMode")));
     
     editor.panels()->append(Panel::Ptr(new LineNumberPanel("description of LineNumberPanel")));
+    editor.panels()->append(Panel::Ptr(new FoldingPanel("description of FoldingPanel")));
     
     //editor.appendPlainText("\n\n\n\n\n\n\n\n\n\n");
     //editor.appendPlainText("(----(j\njj)\n)");

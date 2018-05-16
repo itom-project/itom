@@ -33,7 +33,7 @@ public:
     :param block: The block to process.
     :return: Fold level
     */
-    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block) = 0;
+    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block);
 private:
 };
 

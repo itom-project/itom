@@ -13,6 +13,7 @@ class CodeEditor;
 #include <qsharedpointer.h>
 #include <qmap.h>
 #include <qvariant.h>
+#include <QTextBlock>
 
 class QTextDecoration;
 class TextDecorationsSignals;
@@ -41,7 +42,10 @@ public:
     typedef QSharedPointer<TextDecoration> Ptr;
 
     TextDecoration();
-    TextDecoration(QTextCursor cursor, int startPos = -1, int endPos = -1, \
+    TextDecoration(const QTextCursor &cursor, int startPos = -1, int endPos = -1, \
+        int startLine = -1, int endLine =-1, int drawOrder = 0, const QString &tooltip = "", \
+        bool fullWidth = false);
+    TextDecoration(QTextDocument *document, int startPos = -1, int endPos = -1, \
         int startLine = -1, int endLine =-1, int drawOrder = 0, const QString &tooltip = "", \
         bool fullWidth = false);
     virtual ~TextDecoration();
@@ -49,6 +53,7 @@ public:
     bool operator==(const TextDecoration &other) const;
 
     int drawOrder() const { return m_drawOrder; }
+    void setDrawOrder(int order) { m_drawOrder = order; }
 
     QVariantMap &properties() { return m_properties; }
 
@@ -69,14 +74,21 @@ public:
     void emitClicked(TextDecoration::Ptr selection) const;
 
     QString tooltip() const { return m_tooltip; }
+    void setTooltip(const QString &tooltip) { m_tooltip = tooltip; }
 
     bool isValid() const { return m_drawOrder >= 0; }
+
+    QTextBlock block() const { return m_block; }
+    void setBlock(const QTextBlock &block) { m_block = block; }
+
+    QMetaObject::Connection connect(const char* signal, QObject *receiver, const char *slot);
 
 protected:
     QSharedPointer<TextDecorationsSignals> m_signals;
     int m_drawOrder;
     QString m_tooltip;
     QVariantMap m_properties;
+    QTextBlock m_block;
 
 private:
     

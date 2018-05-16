@@ -115,12 +115,18 @@ SyntaxHighlighterBase::SyntaxHighlighterBase(const QString &name, QTextDocument 
     m_colorScheme =(colorScheme);
     m_regSpacesPtrn=(QRegExp("[ \\t]+"));
     m_regWhitespaces=(QRegExp("\\s+"));
-    m_foldDetector=(NULL);
+    m_foldDetector.clear();
 }
 
 //-------------------------------------------------------------------
 SyntaxHighlighterBase::~SyntaxHighlighterBase()
 {
+}
+
+//-------------------------------------------------------------------
+void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDetector)
+{
+    m_foldDetector = foldDetector;
 }
 
 //-------------------------------------------------------------------

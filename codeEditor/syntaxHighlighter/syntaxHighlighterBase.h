@@ -97,6 +97,8 @@ public:
 
     virtual ~SyntaxHighlighterBase();
 
+    void setFoldDetector(QSharedPointer<FoldDetector> foldDetector);
+
     virtual void onStateChanged(bool state);
     virtual void onInstall(CodeEditor *editor);
 
@@ -131,7 +133,7 @@ protected:
     QRegExp m_regWhitespaces;
     QRegExp m_regSpacesPtrn;
     ColorScheme m_colorScheme;
-    QPointer<FoldDetector> m_foldDetector;
+    QSharedPointer<FoldDetector> m_foldDetector;
 };
 
 #endif

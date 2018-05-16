@@ -139,6 +139,11 @@ FoldScope::FoldScope(const QTextBlock &block)
 }
 
 //------------------------------------------------
+FoldScope::FoldScope()
+{
+}
+
+//------------------------------------------------
 FoldScope::~FoldScope()
 {
 }
@@ -163,6 +168,14 @@ just after the trigger)
 int FoldScope::scopeLevel() const
 {
     return Utils::TextBlockHelper::getFoldLvl(m_trigger.next());
+}
+
+//------------------------------------------------
+/*
+*/
+bool FoldScope::isValid() const
+{
+    return m_trigger.isValid();
 }
 
 //------------------------------------------------
@@ -392,3 +405,8 @@ Find parent scope, if the block is not a fold trigger.
     return QTextBlock();
 }
 
+//------------------------------------------------
+QTextBlock FoldScope::trigger() const
+{
+    return m_trigger;
+}

@@ -124,10 +124,13 @@ public:
     QTextCursor selectWholeLine(int line = -1, bool applySelection = true);
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
     QPair<int,int> selectionRange() const; //start, end
+    int linePosFromNumber(int lineNumber) const;
 
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
     QString lineText(int lineNbr) const;
+    void markWholeDocDirty();
+    void callResizeEvent(QResizeEvent *evt) { resizeEvent(evt); }
 
     void indent();
     void unindent();
