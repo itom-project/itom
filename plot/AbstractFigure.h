@@ -227,7 +227,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void refreshPlot() { update(); }
         
     signals:
-       void windowTitleModified(QString windowTitle);
+       void windowTitleModified(QString windowTitleSuffix); /*!< this signal is emitted if the title of the plot has been changed. windowTitleSuffix is the new suffix that should be appended to the base window title*/
 };
 
 } // namespace ito

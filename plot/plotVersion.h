@@ -25,4 +25,4 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define PLOT_VER_STRING  "1.0.0.0"
+#define PLOT_VER_STRING  "1.1.0.0"
