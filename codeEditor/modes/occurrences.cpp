@@ -272,7 +272,14 @@ void OccurrencesHighlighterMode::clearDecorations()
 
 //----------------------------------------------------------
 /*
-Clear line decoration
+Generator that finds all occurrences of ``sub`` in  ``string``
+
+:param string: string to parse
+:param sub: string to search
+:param regex: True to search using regex
+:param case_sensitive: True to match case, False to ignore case
+:param whole_word: True to returns only whole words
+:return:
 */
 //-------------------------------------------------------------
 QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive)
@@ -282,12 +289,12 @@ QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, 
     if (sub != "")
     {
         QRegExp rx;
-        int offset = 0;
+        //int offset = 0;
         Qt::CaseSensitivity cs = caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
         if (wholeWord)
         {
             rx = QRegExp(QString("\\b%1\\b").arg(sub), cs);
-            offset = -1;
+            //offset = -1;
         }
         else
         {
@@ -299,7 +306,8 @@ QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, 
         while ((pos = rx.indexIn(text, pos)) != -1)
         {
             results.append(QPair<int,int>(pos, pos+length));
-            pos += (rx.matchedLength() + offset);
+            //qDebug() << rx.pattern() << rx.matchedLength();
+            pos += (rx.matchedLength()); // + offset);
         }
     }
 

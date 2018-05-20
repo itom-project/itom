@@ -173,7 +173,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
             ++it;
 #endif
 
-            qDebug() << key << start << end << value.toHtmlEscaped() << QString::number(value.right(1)[0].cell(),16) << QString::number(value.right(1)[0].row(),16);
+            //qDebug() << key << start << end << value.toHtmlEscaped() << QString::number(value.right(1)[0].cell(),16) << QString::number(value.right(1)[0].row(),16);
 
             if (key == "uf_sq3string")
             {

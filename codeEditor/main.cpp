@@ -27,7 +27,7 @@ int main(int argv, char **args)
     CodeEditor editor;
 
     editor.resize(800, 600);
-    editor.modes()->append(Mode::Ptr(new CaretLineHighlighterMode("description of caret line highlighter mode")));
+    //editor.modes()->append(Mode::Ptr(new CaretLineHighlighterMode("description of caret line highlighter mode")));
     PythonSyntaxHighlighter *pythonSyntaxHighlighter = new PythonSyntaxHighlighter(editor.document(), "description of PythonSyntaxHighlighter");
     pythonSyntaxHighlighter->setFoldDetector(QSharedPointer<FoldDetector>(new IndentFoldDetector()));
     editor.modes()->append(Mode::Ptr(pythonSyntaxHighlighter));
@@ -37,7 +37,7 @@ int main(int argv, char **args)
     editor.modes()->append(Mode::Ptr(new IndenterMode("description of IndenterMode")));
     
     editor.panels()->append(Panel::Ptr(new LineNumberPanel("description of LineNumberPanel")));
-    editor.panels()->append(Panel::Ptr(new FoldingPanel("description of FoldingPanel")));
+    editor.panels()->append(Panel::Ptr(new FoldingPanel(false, "description of FoldingPanel")));
     
     //editor.appendPlainText("\n\n\n\n\n\n\n\n\n\n");
     //editor.appendPlainText("(----(j\njj)\n)");

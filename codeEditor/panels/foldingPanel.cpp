@@ -8,6 +8,7 @@
 #include <qtextdocument.h>
 #include <qapplication.h>
 #include <QStyleOptionViewItem>
+#include <qdebug.h>
 
 #include "managers/textDecorationsManager.h"
 
@@ -20,7 +21,7 @@ FoldingPanel::FoldingPanel(bool highlightCaretScope /*= false*/, const QString &
     m_highlightCaretScope(highlightCaretScope),
     m_highlightCaret(false),
     m_native(true),
-    m_customColor(QColor('gray')),
+    m_customColor(QColor("green")),
     m_blockNbr(-1),
     m_indicSize(16),
     m_pHighlightRunner(NULL),
@@ -279,7 +280,13 @@ void FoldingPanel::paintEvent(QPaintEvent *e)
     if (m_mouseOverLine != -1)
     {
         block = editor()->document()->findBlockByNumber(m_mouseOverLine);
-        drawFoldRegionBackground(block, painter);
+        try
+        {
+            drawFoldRegionBackground(block, painter);
+        }
+        catch(...)
+        {
+        }
     }
 
     int top_position, line_number;
@@ -352,6 +359,7 @@ indicator.
 */
 void FoldingPanel::drawFoldRegionBackground(const QTextBlock &block, QPainter &painter) const
 {
+    qDebug() << block.text();
     FoldScope r(block);
     QPair<int,int> start_end = r.getRange(true);
     int top = 0;
@@ -796,6 +804,36 @@ Show the block previous blank lines
 
 //----------------------------------------------------------
 /*
+Find parent scope, if the block is not a fold trigger.
+*/
+/*static*/ QTextBlock FoldingPanel::findParentScope(const QTextBlock &block)
+{
+    QTextBlock block2 = block;
+    QTextBlock original = block;
+    int ref_lvl;
+
+    if (!Utils::TextBlockHelper::isFoldTrigger(block))
+    {
+        // search level of next non blank line
+        while ((Utils::strip(block2.text()) == "") && block2.isValid())
+        {
+            block2 = block2.next();
+        }
+        ref_lvl = Utils::TextBlockHelper::getFoldLvl(block2) - 1;
+        block2 = original;
+        while (block2.blockNumber() && \
+                (!Utils::TextBlockHelper::isFoldTrigger(block2) || \
+                (Utils::TextBlockHelper::getFoldLvl(block2) > ref_lvl)))
+        {
+            block2 = block2.previous();
+        }
+    }
+
+    return block2;
+}
+
+//----------------------------------------------------------
+/*
 Folds/unfolds the pressed indicator if any.
 */
 void FoldingPanel::mousePressEvent(QMouseEvent *e)
@@ -903,7 +941,7 @@ void FoldingPanel::leaveEvent(QEvent *e)
     else
     {
         m_blockNbr = -1;
-        highlightCaretScope();
+        highlightCaretScopeSlot();
     }
     editor()->repaint();
 }
@@ -946,7 +984,7 @@ void FoldingPanel::onKeyPressed(QKeyEvent *e)
                 toggleFoldTrigger(block);
                 if (delete_request && cursor.hasSelection())
                 {
-                    scope = FoldScope(FoldScope::findParentScope(block));
+                    scope = FoldScope(FoldingPanel::findParentScope(block));
                     start_end = scope.getRange();
                     tc = editor()->selectLines(start_end.first, start_end.second);
                     if (tc.selectionStart() > cursor.selectionStart())

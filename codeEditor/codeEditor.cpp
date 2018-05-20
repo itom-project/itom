@@ -1314,7 +1314,25 @@ void CodeEditor::markWholeDocDirty()
 }
 
 //------------------------------------------------------------
+/*
+Show a tool tip at the specified position
+
+:param pos: QPoint Tooltip position
+:param tooltip: Tooltip text
+
+:param _sender_deco: TextDecoration which is the sender of the show
+    tooltip request. (for internal use only).
+*/
 void CodeEditor::showTooltipDelayJobRunner(QList<QVariant> args)
 {
-    qDebug() << "showTooltipDelayJobRunner";
+    QPoint pos = args[0].toPoint();
+    QString tooltip = args[1].toString();
+    TextDecoration::Ptr senderDeco = args[2].value<TextDecoration::Ptr>();
+
+    if (senderDeco && !this->decorations()->contains(senderDeco))
+    {
+        return;
+    }
+
+    QToolTip::showText(pos, tooltip.left(1024));
 }

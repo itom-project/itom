@@ -79,6 +79,7 @@ protected:
 
     static QColor getSystemBckColor();
     static void showPreviousBlankLines(const QTextBlock &block);
+    static QTextBlock findParentScope(const QTextBlock &block);
 
     void highlightSurroundingScopes(QTextBlock block);
 
