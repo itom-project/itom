@@ -96,11 +96,26 @@ public:
     QColor foreground() const;
     void setForeground(const QColor &value);
 
+    QColor selectionForeground() const;
+    void setSelectionForeground(const QColor &value);
+
+    QColor selectionBackground() const;
+    void setSelectionBackground(const QColor &value);
+
     QColor whitespacesForeground() const;
     void setWhitespacesForeground(const QColor &value);
 
     bool saveOnFocusOut() const;
     void setSaveOnFocusOut(bool value);
+
+    bool edgeLineVisible() const;
+    void setEdgeLineVisible(bool value);
+
+    int edgeLineColumn() const;
+    void setEdgeLineColumn(int column);
+
+    QColor edgeLineColor() const;
+    void setEdgeLineColor(const QColor &color);
 
     QList<VisibleBlock> visibleBlocks() const;
     bool dirty() const;
@@ -139,6 +154,7 @@ public:
     void copy();
 
     void resetStylesheet();
+    void rehighlight();
 
     void showTooltip(const QPoint &pos, const QString &tooltip);
     void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
@@ -149,6 +165,8 @@ public:
     bool isCommentOrString(const QTextBlock &block, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
 
     QTextCursor wordUnderCursor(bool selectWholeWord);
+
+    void callWheelEvent(QWheelEvent *e);
 
 protected:
 
@@ -169,7 +187,6 @@ protected:
 
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
-    
     QTextCursor moveCursorTo(int line);
 
     virtual void resizeEvent(QResizeEvent *e);
@@ -208,6 +225,10 @@ private:
     bool m_saveOnFocusOut;
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;
+
+    bool m_edgeLineShow;
+    int m_edgeLineColumn;
+    QColor m_edgeLineColor;
 
     //flags/working variables
     bool m_cleaning;

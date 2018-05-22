@@ -2,6 +2,7 @@
 
 #include "codeEditor.h"
 #include <qpainter.h>
+#include <qapplication.h>
 
 
 //----------------------------------------------------------
@@ -171,4 +172,13 @@ Cancels selection
 void LineNumberPanel::mouseReleaseEvent(QMouseEvent *e)
 {
     cancelSelection();
+}
+
+//----------------------------------------------------------
+/*
+Override Qt method
+*/
+void LineNumberPanel::wheelEvent(QWheelEvent *e)
+{
+    editor()->callWheelEvent(e);
 }

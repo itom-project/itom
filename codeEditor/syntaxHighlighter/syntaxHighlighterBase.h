@@ -7,8 +7,8 @@
 #include <qregexp.h>
 #include <qpointer.h>
 #include <qmap.h>
-#include <QTextBlockUserData>
 
+#include "textBlockUserData.h"
 #include "mode.h"
 #include "foldDetector.h"
 
@@ -60,31 +60,7 @@ private:
     QHash<int, QTextCharFormat> m_formats;
 };
 
-/*
-Custom text block user data, mainly used to store checker messages and
-    markers.
-*/
-class TextBlockUserData : public QTextBlockUserData
-{
-public:
-    TextBlockUserData() :
-       QTextBlockUserData(),
-        m_importStmt(false)
-    {
-    }
 
-    //List of checker messages associated with the block.
-    QStringList m_messages;
-
-    //List of markers draw by a marker panel.
-    QStringList m_markers;
-
-    QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
-
-    bool m_docstring; //special item for python-related code editor
-
-    bool m_importStmt;
-};
 
 /*
 Syntax Highlighters should derive from this mode instead of mode directly.

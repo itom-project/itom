@@ -29,6 +29,7 @@ SET (HEADERS
     include/delayJobRunner.h
     syntaxHighlighter/syntaxHighlighterBase.h
     syntaxHighlighter/pythonSyntaxHighlighter.h
+    syntaxHighlighter/textBlockUserData.h
     managers/panelsManager.h
     managers/textDecorationsManager.h
     managers/modesManager.h
@@ -40,6 +41,7 @@ SET (HEADERS
     modes/pyAutoIndent.h
     panels/lineNumber.h
     panels/foldingPanel.h
+    panels/checkerBookmarkPanel.h
 )
 
 SET (SOURCES
@@ -59,6 +61,7 @@ SET (SOURCES
     panels/panel.cpp
     panels/lineNumber.cpp
     panels/foldingPanel.cpp
+    panels/checkerBookmarkPanel.cpp
     modes/caretLineHighlight.cpp
     modes/symbolMatcherMode.cpp
     modes/occurrences.cpp

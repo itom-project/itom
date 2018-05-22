@@ -5,6 +5,7 @@
 #include <qtooltip.h>
 #include <qtextdocument.h>
 #include <qdebug.h>
+#include <qpainter.h>
 
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
@@ -31,7 +32,10 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_saveOnFocusOut(false),
     m_lastMousePos(QPoint(0,0)),
     m_prevTooltipBlockNbr(-1),
-    m_pTooltipsRunner(NULL)
+    m_pTooltipsRunner(NULL),
+    m_edgeLineShow(false),
+    m_edgeLineColumn(79),
+    m_edgeLineColor(Qt::darkGray)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -170,6 +174,36 @@ void CodeEditor::setForeground(const QColor &value)
 }
 
 //-----------------------------------------------------------
+/*
+The editor selection's foreground color.
+*/
+QColor CodeEditor::selectionForeground() const
+{
+    return m_selForeground;
+}
+
+void CodeEditor::setSelectionForeground(const QColor &value)
+{
+    m_selForeground = value;
+    resetStylesheet();
+}
+
+//-----------------------------------------------------------
+/*
+The editor selection's background color.
+*/
+QColor CodeEditor::selectionBackground() const
+{
+    return m_selBackground;
+}
+
+void CodeEditor::setSelectionBackground(const QColor &value)
+{
+    m_selBackground = value;
+    resetStylesheet();
+}
+
+//-----------------------------------------------------------
 bool CodeEditor::selectLineOnCopyEmpty() const
 {
     return m_selectLineOnCopyEmpty;
@@ -178,6 +212,51 @@ bool CodeEditor::selectLineOnCopyEmpty() const
 void CodeEditor::setSelectLineOnCopyEmpty(bool value)
 {
     m_selectLineOnCopyEmpty = value;
+}
+
+//-----------------------------------------------------------
+bool CodeEditor::edgeLineVisible() const
+{
+    return m_edgeLineShow;
+}
+
+void CodeEditor::setEdgeLineVisible(bool value)
+{
+    if (m_edgeLineShow != value)
+    {
+        m_edgeLineShow = value;
+        update();
+    }
+}
+
+//-----------------------------------------------------------
+int CodeEditor::edgeLineColumn() const
+{
+    return m_edgeLineColumn;
+}
+
+void CodeEditor::setEdgeLineColumn(int column)
+{
+    if (m_edgeLineColumn != column)
+    {
+        m_edgeLineColumn = column;
+        update();
+    }
+}
+
+//-----------------------------------------------------
+QColor CodeEditor::edgeLineColor() const
+{
+    return m_edgeLineColor;
+}
+
+void CodeEditor::setEdgeLineColor(const QColor &color)
+{
+    if (m_edgeLineColor != color)
+    {
+        m_edgeLineColor = color;
+        update();
+    }
 }
 
 //-----------------------------------------------------------
@@ -199,7 +278,12 @@ bool CodeEditor::showWhitespaces() const
 
 void CodeEditor::setShowWhitespaces(bool value)
 {
-    m_showWhitespaces = value;
+    if (m_showWhitespaces != value)
+    {
+        m_showWhitespaces = value;
+        setWhitespacesFlags(value);
+        rehighlight();
+    }
 }
 
 //-----------------------------------------------------------
@@ -386,9 +470,20 @@ the painted e->
 */
 void CodeEditor::paintEvent(QPaintEvent *e)
 {
-    
     updateVisibleBlocks(); //_update_visible_blocks
     QPlainTextEdit::paintEvent(e);
+
+    if (m_edgeLineShow)
+    {
+        QPainter painter(viewport());
+        QColor color(m_edgeLineColor);
+        color.setAlphaF(.5);
+        painter.setPen(color);
+
+        int x = fontMetrics().width(QString(m_edgeLineColumn, '9'));
+        painter.drawLine(x, 0, x, size().height());
+    }
+
     emit painted(e);
 }
 
@@ -559,6 +654,12 @@ void CodeEditor::mouseReleaseEvent(QMouseEvent* e)
         e->setAccepted(initialState);
         QPlainTextEdit::mouseReleaseEvent(e);
     }
+}
+
+//-----------------------------------------------------------
+void CodeEditor::callWheelEvent(QWheelEvent *e)
+{
+    wheelEvent(e);
 }
 
 //-----------------------------------------------------------
@@ -1311,6 +1412,18 @@ void CodeEditor::markWholeDocDirty()
     text_cursor.select(QTextCursor::Document);
     document()->markContentsDirty(text_cursor.selectionStart(),
                                                 text_cursor.selectionEnd());
+}
+
+//------------------------------------------------------------
+/*
+Calls ``rehighlight`` on the installed syntax highlighter mode.
+*/
+void CodeEditor::rehighlight()
+{
+    if (syntaxHighlighter())
+    {
+        syntaxHighlighter()->rehighlight();
+    }
 }
 
 //------------------------------------------------------------

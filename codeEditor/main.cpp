@@ -13,6 +13,7 @@
 #include "indentFoldDetector.h"
 #include "panels/lineNumber.h"
 #include "panels/foldingPanel.h"
+#include "panels/checkerBookmarkPanel.h"
 #include "syntaxHighlighter/pythonSyntaxHighlighter.h"
 #include "managers/modesManager.h"
 #include "managers/panelsManager.h"
@@ -36,6 +37,7 @@ int main(int argv, char **args)
     editor.modes()->append(Mode::Ptr(new PyAutoIndentMode("description of PyAutoIndentMode")));
     editor.modes()->append(Mode::Ptr(new IndenterMode("description of IndenterMode")));
     
+    editor.panels()->append(Panel::Ptr(new CheckerBookmarkPanel("description of checkerBookmarkPanel")));
     editor.panels()->append(Panel::Ptr(new LineNumberPanel("description of LineNumberPanel")));
     editor.panels()->append(Panel::Ptr(new FoldingPanel(false, "description of FoldingPanel")));
     
@@ -44,6 +46,7 @@ int main(int argv, char **args)
 
     editor.setWindowTitle("Code Editor Example");
     editor.show();
+    editor.setEdgeLineVisible(true);
 
     return app.exec();
 }
