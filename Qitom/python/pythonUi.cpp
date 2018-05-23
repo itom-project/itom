@@ -1579,8 +1579,12 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
     //UiItem has no __dict__ attribute and this is no widget either, therefore filter it out and raise an exception
     if (PyUnicode_CompareWithASCIIString(name, "__dict__") == 0)
     {
-        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U'", self->objName, name);
+        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U'.", self->objName, name);
     }
+	else if (PyUnicode_CompareWithASCIIString(name, "__getstate__") == 0)
+	{
+		return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U' (e.g. it cannot be pickled).", self->objName, name);
+	}
 
     PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name);
     if(ret != NULL)
