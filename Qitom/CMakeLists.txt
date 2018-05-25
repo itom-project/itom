@@ -337,6 +337,31 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/delayJobRunner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/manager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/modesManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/panelsManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
 )
 
 IF (QT5_FOUND)
@@ -542,6 +567,30 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/delayJobRunner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/modesManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/panelsManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
 )
 
 if(MSVC)
@@ -563,6 +612,13 @@ ADD_SOURCE_GROUP(python)
 ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 ADD_SOURCE_GROUP(helpViewer)
+ADD_SOURCE_GROUP(codeEditor)
+ADD_SOURCE_GROUP(codeEditor/foldDetector)
+ADD_SOURCE_GROUP(codeEditor/managers)
+ADD_SOURCE_GROUP(codeEditor/modes)
+ADD_SOURCE_GROUP(codeEditor/panels)
+ADD_SOURCE_GROUP(codeEditor/syntaxHighlighter)
+ADD_SOURCE_GROUP(codeEditor/utils)
 #end add filters to visual studio
 
 if(MSVC)
