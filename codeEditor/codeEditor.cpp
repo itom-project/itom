@@ -1089,7 +1089,7 @@ void CodeEditor::resetStylesheet()
             /*on linux/osx we just have to set an empty stylesheet to
             cancel any previous stylesheet and still keep a correct
             style for scrollbars*/
-            self.setStyleSheet('');
+            setStyleSheet("");
 #endif
         }
     }
@@ -1116,7 +1116,7 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextCursor &cursor, QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
+bool CodeEditor::isCommentOrString(const QTextCursor &cursor, const QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
 {
     return isCommentOrString(cursor.block(), formats);
 }
@@ -1130,11 +1130,12 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextBlock &block, QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
+bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
 {
-    if (formats.size() == 0)
+    QList<ColorScheme::Keys> formats_ = formats;
+    if (formats_.size() == 0)
     {
-        formats << ColorScheme::KeyComment << ColorScheme::KeyString << ColorScheme::KeyDocstring;
+        formats_ << ColorScheme::KeyComment << ColorScheme::KeyString << ColorScheme::KeyDocstring;
     }
 
     QTextLayout *layout = NULL;
@@ -1154,7 +1155,7 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, QList<ColorScheme::K
             {
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
-                    foreach (int fmtType, formats)
+                    foreach (int fmtType, formats_)
                     {
                         is_user_obj = (r.format.objectType() == r.format.UserObject);
                         if ((ref_formats[fmtType] == r.format) && is_user_obj)

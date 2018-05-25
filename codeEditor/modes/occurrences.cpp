@@ -6,7 +6,7 @@
 
 #include <qbrush.h>
 #include <qregexp.h>
-#include <QtConcurrent\qtconcurrentrun.h>
+#include <QtConcurrent/QtConcurrentRun>
 
 
 OccurrencesHighlighterMode::OccurrencesHighlighterMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :

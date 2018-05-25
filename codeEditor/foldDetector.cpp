@@ -3,6 +3,7 @@
 #include "codeEditor.h"
 #include <qpointer.h>
 #include "utils/utils.h"
+#include <limits>
 
 class FoldDetectorPrivate
 {

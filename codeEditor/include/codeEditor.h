@@ -161,8 +161,8 @@ public:
 
     void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
 
-    bool isCommentOrString(const QTextCursor &cursor, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
-    bool isCommentOrString(const QTextBlock &block, QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
+    bool isCommentOrString(const QTextCursor &cursor, const QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
+    bool isCommentOrString(const QTextBlock &block, const QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
 
     QTextCursor wordUnderCursor(bool selectWholeWord);
 

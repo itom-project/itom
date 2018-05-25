@@ -533,13 +533,13 @@ void PyAutoIndentMode::handleIndentAfterParen(const QTextCursor &cursor, QString
 //----------------------------------------------------------------------------
 /*static*/ bool PyAutoIndentMode::isParenOpen(const Utils::ParenthesisInfo &paren)
 {
-    return (paren.character == "(" || paren.character == "[" || paren.character == '{');
+    return (paren.character == '(' || paren.character == '[' || paren.character == '{');
 }
 
 //----------------------------------------------------------------------------
 /*static*/ bool PyAutoIndentMode::isParenClosed(const Utils::ParenthesisInfo &paren)
 {
-    return (paren.character == ")" || paren.character == "]" || paren.character == '}');
+    return (paren.character == ')' || paren.character == ']' || paren.character == '}');
 }
 
 //----------------------------------------------------------------------------
@@ -574,13 +574,13 @@ void PyAutoIndentMode::handleIndentAfterParen(const QTextCursor &cursor, QString
 {
     QTextCursor tc2 = QTextCursor(cursor);
     tc2.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-    QString c = tc2.selectedText()[0];
-    while (c == " ")
+    QCharRef c = tc2.selectedText()[0];
+    while (c == ' ')
     {
         tc2.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
         c = tc2.selectedText()[0];
     }
-    return Utils::strip(c)[0];
+    return c; //TODO: check this //Utils::strip(c)[0];
 }
 
 //----------------------------------------------------------------------------
