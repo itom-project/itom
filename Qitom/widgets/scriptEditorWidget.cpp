@@ -77,7 +77,9 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_errorMarkerVisible(false),
     m_errorMarkerNr(-1)
 {
+#ifndef USE_PYQODE
     bookmarkErrorHandles.clear();
+#endif
     bookmarkMenuActions.clear();
 
     m_syntaxTimer = new QTimer(this);
@@ -170,6 +172,10 @@ RetVal ScriptEditorWidget::initEditor()
 
     m_foldingPanel = QSharedPointer<FoldingPanel>(new FoldingPanel(false, "FoldingPanel"));
     panels()->append(m_foldingPanel.dynamicCast<ito::Panel>());
+
+    m_checkerBookmarkPanel = QSharedPointer<CheckerBookmarkPanel>(new CheckerBookmarkPanel("CheckerBookmarkPanel"));
+    panels()->append(m_checkerBookmarkPanel.dynamicCast<ito::Panel>());
+
 #else
     setPaper(QColor(1, 81, 107));
 #endif
@@ -194,7 +200,7 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginSensitivity(3, true);
 #ifndef USE_PYQODE
     autoAdaptLineNumberColumnWidth();
-#endif
+
     setMarginLineNumbers(2, true);
 
     setMarginType(1, QsciScintilla::SymbolMargin); //!< bookmark margin
@@ -220,7 +226,6 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
 
-#ifndef USE_PYQODE
     setBraceMatching(QsciScintilla::StrictBraceMatch); 
     setMatchedBraceBackgroundColor(QColor("lightGray"));
     setMatchedBraceForegroundColor(QColor("blue"));
@@ -408,6 +413,23 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
     storage.filename = getFilename().toLatin1();
     storage.firstVisibleLine = firstVisibleLine();
 
+#ifdef USE_PYQODE
+    QTextBlock block = document()->firstBlock();
+    TextBlockUserData *userData;
+
+    while (block.isValid())
+    {
+        if (block.userData())
+        {
+            userData = (TextBlockUserData*)(block.userData());
+            if (userData->m_bookmark)
+            {
+                storage.bookmarkLines << block.blockNumber();
+            }
+        }
+        block = block.next();
+    }
+#else
     foreach(const BookmarkErrorEntry &e, bookmarkErrorHandles)
     {
         if (e.type & markerBookmark)
@@ -415,6 +437,7 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
             storage.bookmarkLines << markerLine(e.handle);
         }
     }
+#endif
 
     return storage;
 }
@@ -1350,8 +1373,38 @@ void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
 */
 void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 { 
-    QList<BookmarkErrorEntry>::iterator it;
-    it = bookmarkErrorHandles.begin();
+#ifdef USE_PYQODE
+    //at first: remove all errors... from existing blocks
+    foreach (TextBlockUserData *userData, textBlockUserDataList())
+    {
+        userData->m_checkerMessages.clear();
+    }
+
+    //2nd: add new errors...
+    int line;
+    QString errorMessage;
+    TextBlockUserData *userData;
+
+    for (int i = 0; i < errorList.length(); i++)
+    {
+        QRegExp regError(":(\\d+):(.*)");
+        regError.indexIn(errorList.at(i),0);
+        line = regError.cap(1).toInt();
+        errorMessage = regError.cap(2);
+        userData = getOrCreateUserData(line);
+
+        if (userData)
+        {
+            CheckerMessage msg(errorMessage, CheckerMessage::StatusError);
+            userData->m_checkerMessages.append(msg);
+        }
+    }
+
+    panels()->refresh();
+#else
+    
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
+    
     while (it != bookmarkErrorHandles.end())
     {
         if (it->type == markerPyBug)
@@ -1401,11 +1454,23 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
             bookmarkErrorHandles.append(newE);
         }
     }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::isBookmarked() const
 {
+#ifdef USE_PYQODE
+    //at first: remove all errors... from existing blocks
+    foreach (TextBlockUserData *userData, textBlockUserDataList())
+    {
+        if (userData->m_bookmark)
+        {
+            return true;
+        }
+    }
+    return false;
+#else
 	int count = 0;
 
 	foreach (const BookmarkErrorEntry &e, bookmarkErrorHandles)
@@ -1417,6 +1482,7 @@ bool ScriptEditorWidget::isBookmarked() const
 	}
 
 	return count > 0;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1519,13 +1585,22 @@ void ScriptEditorWidget::mouseReleaseEvent(QMouseEvent *event)
         m_errorMarkerVisible = false;
     }
 
+#ifdef USE_PYQODE
+    AbstractCodeEditorWidget::mouseReleaseEvent(event);
+#else
     AbstractPyScintillaWidget::mouseReleaseEvent(event);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
 RetVal ScriptEditorWidget::toggleBookmark(int line)
 {
+#ifdef USE_PYQODE
+    TextBlockUserData *userData = getTextBlockUserData(line);
+    userData->m_bookmark = !userData->m_bookmark;
+    panels()->refresh();
+#else
     QList<BookmarkErrorEntry>::iterator it;
     bool createNew = true;
 
@@ -1573,13 +1648,19 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
         newE.handle = markerAdd(line, markBookmark);
         bookmarkErrorHandles.append(newE);
     }
-
+#endif
     return RetVal(retOk);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBookmarks()
 {
+#ifdef USE_PYQODE
+    foreach (TextBlockUserData *userData, textBlockUserDataList())
+    {
+        userData->m_bookmark = false;
+    }
+#else
     QList<BookmarkErrorEntry>::iterator it;
     bool createNew = true;
 
@@ -1606,7 +1687,7 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
             ++it;
         }
     }
-
+#endif
     return RetVal(retOk);
 }
 
@@ -1616,9 +1697,7 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     int line, index;
     int closestLine = lines();
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
 	bool found = false;
-
     line += 1;
 
     if (line == lines())
@@ -1626,6 +1705,41 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
         line = 0;
     }
 
+#ifdef USE_PYQODE
+    const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
+    QTextBlock block = currentBlock.next();
+
+    //look from currentBlock to the end...
+    while (block.isValid())
+    {
+        if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+        {
+            closestLine = block.blockNumber();
+            found = true;
+            break;
+        }
+        block = block.next();
+    }
+
+    if (!found)
+    {
+        //start from the beginning to currentBlock
+        block = document()->firstBlock();
+
+        while (block.isValid() && block != currentBlock)
+        {
+            if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+            {
+                closestLine = block.blockNumber();
+                found = true;
+                break;
+            }
+            block = block.next();
+        }
+    }
+    
+#else
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
     while (it != bookmarkErrorHandles.end())
     {
         if ((it->type & markerBookmark) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
@@ -1636,6 +1750,7 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
         
 		++it;
     }
+#endif
 
 	if (found)
 	{
@@ -1651,7 +1766,6 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
     int line, index;
     int closestLine = 0;
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
 	bool found = false;
 
     if (line == 0)
@@ -1663,6 +1777,41 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         line -= 1;
     }
 
+#ifdef USE_PYQODE
+    const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
+    QTextBlock block = currentBlock.previous();
+
+    //look from currentBlock to the beginning
+    while (block.isValid())
+    {
+        if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+        {
+            closestLine = block.blockNumber();
+            found = true;
+            break;
+        }
+        block = block.previous();
+    }
+
+    if (!found)
+    {
+        //start from the end to currentBlock
+        block = document()->lastBlock();
+
+        while (block.isValid() && block != currentBlock)
+        {
+            if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+            {
+                closestLine = block.blockNumber();
+                found = true;
+                break;
+            }
+            block = block.previous();
+        }
+    }
+    
+#else
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
     while (it != bookmarkErrorHandles.end())
     {
         if ((it->type & markerBookmark) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
@@ -1673,6 +1822,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 
         ++it;
     }
+#endif
 
 	if (found)
 	{
@@ -2033,9 +2183,11 @@ void ScriptEditorWidget::print()
     }
     else
     {
-        ItomQsciPrinter printer(QPrinter::HighResolution);
+        ScriptEditorPrinter printer(QPrinter::HighResolution);
+#ifndef USE_PYQODE
         printer.setWrapMode(WrapWord);
-
+#endif
+       
         if (hasNoFilename() == false)
         {
             printer.setDocName(getFilename());
@@ -2046,7 +2198,9 @@ void ScriptEditorWidget::print()
         }
 
         printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);
+#ifndef USE_PYQODE
         printer.setMagnification(-1); //size one point smaller than the one displayed in itom.
+#endif
         QPrintPreviewDialog printPreviewDialog(&printer);
         printPreviewDialog.setWindowFlags(Qt::Window);
         connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreviewRequested(QPrinter*)));
@@ -2060,7 +2214,11 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
     ScriptEditorPrinter *p = static_cast<ScriptEditorPrinter*>(printer);
     if (p)
     {
+#ifdef USE_PYQODE
+        p->printRange();
+#else
         p->printRange(this);
+#endif
     }
 }
 
@@ -2295,9 +2453,13 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
                 }
                 else
                 {
+#if USE_PYQODE
+                    document()->setModified(true);
+#else
                     insertAt("a", 0, 0); //workaround in order to set the modified-flag of QScintilla to TRUE (can not be done manually)
                     setSelection(0, 0, 0, 1);
                     removeSelectedText();
+#endif
                 }
             }
             else //file changed
@@ -2312,9 +2474,13 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
                 }
                 else
                 {
+#if USE_PYQODE
+                    document()->setModified(true);
+#else
                     insertAt("a", 0, 0); //workaround in order to set the modified-flag of QScintilla to TRUE (can not be done manually)
                     setSelection(0, 0, 0, 1);
                     removeSelectedText();
+#endif
                 }
             }
         }

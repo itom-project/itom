@@ -101,7 +101,7 @@ public:
 
     StyleItem& operator= (const StyleItem &rhs);
 
-    bool valid() const { return m_valid; }
+    bool isValid() const { return m_valid; }
     QString name() const { return m_name; }
     StyleType type() const { return m_type; }
     QTextCharFormat format() const { return m_format; }

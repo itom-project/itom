@@ -575,6 +575,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.cpp

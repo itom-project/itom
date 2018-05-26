@@ -30,6 +30,7 @@
 #ifdef USE_PYQODE
     #include "abstractCodeEditorWidget.h"
     #include "../codeEditor/panels/foldingPanel.h"
+    #include "../codeEditor/panels/checkerBookmarkPanel.h"
 #else
     #include "abstractPyScintillaWidget.h"
 #endif
@@ -163,6 +164,7 @@ private:
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex fileSystemWatcherMutex;
 
+#ifndef USE_PYQODE
     //!< marker handling
     struct BookmarkErrorEntry
     {
@@ -174,6 +176,7 @@ private:
     };
     QList<BookmarkErrorEntry> bookmarkErrorHandles;
     int syntaxErrorHandle;
+#endif
 
     bool m_syntaxCheckerEnabled;
     int m_syntaxCheckerInterval;
@@ -188,6 +191,7 @@ private:
 
     QList<BPMarker> m_breakPointMap; //!< <int bpHandle, int lineNo>
 
+#ifndef USE_PYQODE
     unsigned int markBreakPoint;
     unsigned int markCBreakPoint;
     unsigned int markBreakPointDisabled;
@@ -202,6 +206,7 @@ private:
     unsigned int markMask1;
     unsigned int markMask2;
     unsigned int markMaskBreakpoints;
+#endif
 
     //!< menus
     QMenu *bookmarkMenu;
@@ -225,6 +230,7 @@ private:
 
 #ifdef USE_PYQODE
     QSharedPointer<FoldingPanel> m_foldingPanel;
+    QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
 #endif
 
     static const QString lineBreak;

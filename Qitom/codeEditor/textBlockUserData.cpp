@@ -35,67 +35,33 @@
 
 *********************************************************************** */
 
-#ifndef CHECKERBOOKMARKPANEL_H
-#define CHECKERBOOKMARKPANEL_H
+#include "textBlockUserData.h"
 
-/*
-Checker panels:
-
-- CheckerPanel: draw checker messages in front of each line
-- GlobalCheckerPanel: draw all checker markers as colored rectangle to
-  offer a global view of all errors
-*/
-
-#include "../panel.h"
-#include "../utils/utils.h"
-#include "../textBlockUserData.h"
-
-#include <qevent.h>
-#include <qsize.h>
-#include <qcolor.h>
-#include <qicon.h>
+#include "codeEditor.h"
 
 namespace ito {
 
-class DelayJobRunnerBase;
+//------------------------------------------------------------------------
 /*
-Shows messages collected by one or more checker modes
 */
-class CheckerBookmarkPanel : public Panel
+TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
+    QTextBlockUserData(),
+    m_importStmt(false),
+    m_breakpointType(TypeNoBp),
+    m_bookmark(false),
+    m_pCodeEditor(editor)
 {
-    Q_OBJECT
-public:
-    CheckerBookmarkPanel(const QString &description = "", QWidget *parent = NULL);
-    virtual ~CheckerBookmarkPanel();
+    m_pCodeEditor->textBlockUserDataList() << this;
+}
 
-    virtual QSize sizeHint() const;
-    
-    virtual void onUninstall();
-
-    QList<CheckerMessage> markersForLine(int line) const;
-
-    static QIcon iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CheckerMessage::CheckerStatus checkerStatus);
-
-protected:
-    virtual void paintEvent(QPaintEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void leaveEvent(QEvent *e);
-
-protected:
-    void displayTooltip(QList<QVariant> args);
-
-private:
-    int m_previousLine;
-    DelayJobRunnerBase *m_pJobRunner;
-
-signals:
-    void removeBookmarkRequested(int line);
-    void addBookmarkRequested(int line);
-};
+//------------------------------------------------------------------------
+/*
+*/
+TextBlockUserData::~TextBlockUserData()
+{
+    m_pCodeEditor->textBlockUserDataList().remove(this);
+}
 
 } //end namespace ito
 
 #endif
-
-

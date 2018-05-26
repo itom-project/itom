@@ -46,6 +46,8 @@
 #include "../codeEditor.h"
 #include "../delayJobRunner.h"
 
+#include "helper/guiHelper.h"
+
 namespace ito {
 
 //----------------------------------------------------------
@@ -85,12 +87,15 @@ void CheckerBookmarkPanel::onUninstall()
 Returns the panel size hint. (fixed with of 16px)
 */
 QSize CheckerBookmarkPanel::sizeHint() const
-{       
+{   
+    int dpi = GuiHelper::getScreenLogicalDpi();
+    int size = 16 * dpi / 96;
+
     QFontMetricsF metrics(editor()->font());
     QSize size_hint(metrics.height(), metrics.height());
-    if (size_hint.width() > 16)
+    if (size_hint.width() > size)
     {
-        size_hint.setWidth(16);
+        size_hint.setWidth(size);
     }
     return size_hint;
 }
@@ -127,27 +132,27 @@ QList<CheckerMessage> CheckerBookmarkPanel::markersForLine(int line) const
         switch (checkerStatus)
         {
         case CheckerMessage::StatusInfo:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\dialog-info.png");
+            return QIcon(":/script/icons/syntaxError.png");
         case CheckerMessage::StatusWarning:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\dialog-warning.png");
+            return QIcon(":/script/icons/syntaxError.png");
         case CheckerMessage::StatusError:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\dialog-error.png");
+            return QIcon(":/script/icons/syntaxError.png");
         }
     }
     else if (hasBookmark && !hasCheckerMessages)
     {
-        return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\bookmark.png");
+        return QIcon(":/bookmark/icons/bookmark.png");
     }
     else if (hasBookmark && hasCheckerMessages)
     {
         switch (checkerStatus)
         {
         case CheckerMessage::StatusInfo:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkSyntaxError.png");
         case CheckerMessage::StatusWarning:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkSyntaxError.png");
         case CheckerMessage::StatusError:
-            return QIcon("D:\\itom-git2\\sources\\itom\\codeEditor\\pysources\\pyqode.core-master\\forms\\rc\\bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkSyntaxError.png");
         }
     }
 
@@ -233,7 +238,7 @@ void CheckerBookmarkPanel::mouseMoveEvent(QMouseEvent *e)
         {
             if (m_previousLine != line)
             {
-                int top = editor()->linePosFromNumber(markers[0].m_line);
+                int top = editor()->linePosFromNumber(line);
                 if (top > 0)
                 {
                     QList<QVariant> args;

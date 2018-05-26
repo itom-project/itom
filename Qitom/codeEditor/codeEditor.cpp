@@ -1490,6 +1490,35 @@ void CodeEditor::getCursorPosition(int *line, int *column) const
 
 //------------------------------------------------------------
 /*
+Returns a pointer to the TextBlockUserData, assigned to line 'lineNbr'.
+If no userData is currently assigned to this line, a new TextBlockUserData
+structure is allocated, attached to the line and returned.
+
+Returns NULL if the line does not exist
+*/
+TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNotExist /*= true*/)
+{
+    QTextBlock block = document()->findBlockByLineNumber(lineNbr);
+
+    if (block.isValid())
+    {
+        //set docstring dynamic attribute, used by the fold detector.
+        TextBlockUserData *userData = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (userData == NULL && createIfNotExist)
+        {
+            userData = new TextBlockUserData(this);
+            block.setUserData(userData);
+        }
+        return userData;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//------------------------------------------------------------
+/*
 Returns the line count
 */
 int CodeEditor::lineCount() const

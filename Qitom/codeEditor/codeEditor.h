@@ -63,6 +63,7 @@ class TextDecorationsManager; //forward declaration
 class DelayJobRunnerBase; //forward declaration
 class ModesManager; //forward declaration
 class SyntaxHighlighterBase; //forward declaration
+class TextBlockUserData;
 
 /*
 The editor widget is a simple extension to QPlainTextEdit.
@@ -236,6 +237,10 @@ public:
     QTextCursor wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const;
     QString wordAtPosition(int line, int index, bool selectWholeWord) const;
 
+    TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
+    QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
+    const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }
+
     void callWheelEvent(QWheelEvent *e);
 
 protected:
@@ -308,6 +313,7 @@ private:
     QSet<int> m_modifiedLines; //(line)
     bool m_dirty;
     QList<VisibleBlock> m_visibleBlocks;
+    QSet<TextBlockUserData*> m_textBlockUserDataList;
 
     PanelsManager *m_pPanels;
     TextDecorationsManager *m_pDecorations;

@@ -276,7 +276,7 @@ void AbstractCodeEditorWidget::loadSettings()
     {
         StyleItem &item = defaultStyle[styleType];
 
-        if (item.valid())
+        if (item.isValid())
         {
             settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(item.type()));
 
