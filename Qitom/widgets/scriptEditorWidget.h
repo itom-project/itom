@@ -23,9 +23,17 @@
 #ifndef SCRIPTEDITORWIDGET_H
 #define SCRIPTEDITORWIDGET_H
 
+#define USE_PYQODE 1
+
 #include "../models/breakPointModel.h"
 
-#include "abstractPyScintillaWidget.h"
+#ifdef USE_PYQODE
+    #include "abstractCodeEditorWidget.h"
+    #include "../codeEditor/panels/foldingPanel.h"
+#else
+    #include "abstractPyScintillaWidget.h"
+#endif
+
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
@@ -35,6 +43,7 @@
 #include <qmenu.h>
 #include <qevent.h>
 #include <qmetaobject.h>
+#include <qsharedpointer.h>
 #include "../models/classNavigatorItem.h"
 
 #if QT_VERSION >= 0x050000
@@ -43,7 +52,9 @@
     #include <qprinter.h>
 #endif
 
-#include <Qsci/qsciprinter.h>
+#ifndef USE_PYQODE
+    #include <Qsci/qsciprinter.h>
+#endif
 
 QT_BEGIN_NAMESPACE
 
@@ -69,7 +80,11 @@ Q_DECLARE_METATYPE(QList<ito::ScriptEditorStorage>) //must be outside of namespa
 namespace ito
 {
 
-class ScriptEditorWidget : public AbstractPyScintillaWidget
+#ifdef USE_PYQODE
+    class ScriptEditorWidget : public AbstractCodeEditorWidget
+#else
+    class ScriptEditorWidget : public AbstractPyScintillaWidget
+#endif
 {
     Q_OBJECT
 
@@ -102,8 +117,11 @@ public:
 protected:
     //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
+
+#ifndef USE_PYQODE
     void autoAdaptLineNumberColumnWidth();
-//    void dragEnterEvent(QDragEnterEvent *event);
+#endif
+
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
@@ -160,7 +178,6 @@ private:
     bool m_syntaxCheckerEnabled;
     int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
-    // int m_lastTipLine; // TODO: not used anymore?
 
     struct BPMarker
     {
@@ -186,9 +203,6 @@ private:
     unsigned int markMask2;
     unsigned int markMaskBreakpoints;
 
-    //QsciLexerPython* qSciLex;
-    //QsciAPIs* qSciApi;
-
     //!< menus
     QMenu *bookmarkMenu;
     QMenu *syntaxErrorMenu;
@@ -208,6 +222,10 @@ private:
     bool m_pythonExecutable;
 
     bool canCopy;
+
+#ifdef USE_PYQODE
+    QSharedPointer<FoldingPanel> m_foldingPanel;
+#endif
 
     static const QString lineBreak;
     static int unnamedAutoIncrement;
@@ -295,10 +313,24 @@ private slots:
     void printPreviewRequested(QPrinter *printer);
 };
 
-class ItomQsciPrinter : public QsciPrinter
+#ifdef USE_PYQODE
+    class ScriptEditorPrinter : public QPrinter
+#else
+    class ScriptEditorPrinter : public QsciPrinter
+#endif
 {
 public:
-    ItomQsciPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
+
+#ifdef USE_PYQODE
+    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QPrinter(mode)
+    {
+        setColorMode(QPrinter::Color);
+        setPageOrder(QPrinter::FirstPageFirst);
+    }
+#else
+    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
+#endif
+
     virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
 };
 

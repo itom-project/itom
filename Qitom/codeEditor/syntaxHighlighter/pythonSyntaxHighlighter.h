@@ -1,3 +1,40 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Further hints:
+    ------------------------
+
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
 #ifndef PYSYNTAXHIGHLIGHER_H
 #define PYSYNTAXHIGHLIGHER_H
 
@@ -10,6 +47,8 @@
 
 #include <qregexp.h>
 #include <qtextformat.h>
+
+namespace ito {
 
 /*
 This module contains a native python syntax highlighter, strongly inspired from
@@ -30,7 +69,7 @@ public:
     typedef QRegExp QQRegExp;
 #endif
 
-    PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", const ColorScheme &colorScheme = ColorScheme());
+    PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", QSharedPointer<CodeEditorStyle> editorStyle = QSharedPointer<CodeEditorStyle>());
 
     virtual ~PythonSyntaxHighlighter();
 
@@ -63,10 +102,12 @@ private:
     QList<QTextBlock> m_docstrings;
     QList<QTextBlock> m_importStatements;
 
-    QTextCharFormat getFormatFromStyle(ColorScheme::Keys token) const;
+    QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
     static QMap<QString,QQRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };
+
+} //end namespace ito
 
 #endif

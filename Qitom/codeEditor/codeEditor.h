@@ -1,3 +1,40 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Further hints:
+    ------------------------
+
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
@@ -11,6 +48,8 @@
 
 #include "textDecoration.h"
 #include "syntaxHighlighter/syntaxHighlighterBase.h"
+
+namespace ito {
 
 struct VisibleBlock
 {
@@ -66,6 +105,14 @@ class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
 public:
+
+    enum EdgeMode
+    {
+        EdgeNone, //!< Long lines are not marked. 
+        EdgeLine, //!< A vertical line is drawn at the column set by setEdgeColumn(). This is recommended for monospace fonts.
+        EdgeBackground //!< The background color of characters after the column limit is changed to the color set by setEdgeColor(). This is recommended for proportional fonts. 
+    };
+
     CodeEditor(QWidget *parent = NULL, bool createDefaultActions = true);
     virtual ~CodeEditor();
 
@@ -108,17 +155,29 @@ public:
     bool saveOnFocusOut() const;
     void setSaveOnFocusOut(bool value);
 
-    bool edgeLineVisible() const;
-    void setEdgeLineVisible(bool value);
+    EdgeMode edgeMode() const;
+    void setEdgeMode(EdgeMode mode);
 
-    int edgeLineColumn() const;
-    void setEdgeLineColumn(int column);
+    int edgeColumn() const;
+    void setEdgeColumn(int column);
 
-    QColor edgeLineColor() const;
-    void setEdgeLineColor(const QColor &color);
+    QColor edgeColor() const;
+    void setEdgeColor(const QColor &color);
+
+    bool showIndentationGuides() const;
+    void setShowIndentationGuides(bool value);
+
+    QColor indentationGuidesColor() const;
+    void setIndentationGuidesColor(const QColor &color);
 
     QList<VisibleBlock> visibleBlocks() const;
     bool dirty() const;
+
+    int firstVisibleLine() const;
+    void setFirstVisibleLine(int line);
+
+    bool isModified() const;
+    void setModified(bool modified);
 
     void setMouseCursor(const QCursor &cursor);
 
@@ -136,14 +195,22 @@ public:
     int currentColumnNumber() const;
     int lineNbrFromPosition(int yPos) const;
     int lineCount() const;
+    int lines() const { return lineCount(); } //TODO: remove this, if QScintilla is removed!
+    int lineLength(int line) const;
     QTextCursor selectWholeLine(int line = -1, bool applySelection = true);
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
     QPair<int,int> selectionRange() const; //start, end
     int linePosFromNumber(int lineNumber) const;
+    void lineIndexFromPosition(const QPoint &pos, int *line, int *column) const;
+    void getCursorPosition(int *line, int *column) const;
+    
+    QString selectedText() const;
 
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
     QString lineText(int lineNbr) const;
+    QString text(int lineNbr) const { return lineText(lineNbr); } //TODO: remove this, if QScintilla is removed!
+    QString text() const { return toPlainText(); } //TODO: remove this, if QScintilla is removed!
     void markWholeDocDirty();
     void callResizeEvent(QResizeEvent *evt) { resizeEvent(evt); }
 
@@ -160,11 +227,14 @@ public:
     void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
 
     void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
+    void setText(const QString &text) { setPlainText(text); } //TODO: remove this, if QScintilla is removed!
 
-    bool isCommentOrString(const QTextCursor &cursor, const QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
-    bool isCommentOrString(const QTextBlock &block, const QList<ColorScheme::Keys> &formats = QList<ColorScheme::Keys>());
+    bool isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
+    bool isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
 
-    QTextCursor wordUnderCursor(bool selectWholeWord);
+    QTextCursor wordUnderCursor(bool selectWholeWord) const;
+    QTextCursor wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const;
+    QString wordAtPosition(int line, int index, bool selectWholeWord) const;
 
     void callWheelEvent(QWheelEvent *e);
 
@@ -226,9 +296,12 @@ private:
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;
 
-    bool m_edgeLineShow;
-    int m_edgeLineColumn;
-    QColor m_edgeLineColor;
+    EdgeMode m_edgeMode;
+    int m_edgeColumn;
+    QColor m_edgeColor;
+
+    bool m_showIndentationGuides;
+    QColor m_indentationGuidesColor;
 
     //flags/working variables
     bool m_cleaning;
@@ -268,5 +341,7 @@ signals:
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget
 };
+
+} //end namespace ito
 
 #endif

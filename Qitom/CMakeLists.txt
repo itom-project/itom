@@ -313,6 +313,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h    
@@ -361,6 +362,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
 )
 
@@ -549,6 +551,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
@@ -590,6 +593,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
 )
 

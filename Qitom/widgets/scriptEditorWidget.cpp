@@ -32,7 +32,6 @@
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
 
-#include <Qsci/qsciprinter.h>
 #include <qmessagebox.h>
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/qprintpreviewdialog.h>
@@ -46,6 +45,10 @@
 #include <qtextcodec.h>
 #include <qinputdialog.h>
 
+#ifdef USE_PYQODE
+    #include "../codeEditor/managers/panelsManager.h"
+#endif
+
 namespace ito 
 {
 
@@ -56,7 +59,12 @@ int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
+
+#ifdef USE_PYQODE
+    AbstractCodeEditorWidget(parent),
+#else
     AbstractPyScintillaWidget(parent), 
+#endif
     m_pFileSysWatcher(NULL), 
     contextMenuLine(-1), 
     m_filename(QString()),
@@ -146,13 +154,6 @@ ScriptEditorWidget::~ScriptEditorWidget()
         disconnect(bpModel, SIGNAL(breakPointAdded(BreakPointItem, int)), this, SLOT(breakPointAdd(BreakPointItem, int)));
         disconnect(bpModel, SIGNAL(breakPointDeleted(QString, int, int)), this, SLOT(breakPointDelete(QString, int, int)));
         disconnect(bpModel, SIGNAL(breakPointChanged(BreakPointItem, BreakPointItem)), this, SLOT(breakPointChange(BreakPointItem, BreakPointItem)));
-
-        //!< delete remaining break-points (not neccesary)
-        /*if (0)
-        {
-            QModelIndexList list = bpModel->getBreakPointIndizes(getFilename());
-            bpModel->deleteBreakPoints(list);
-        }*/
     }   
 
     disconnect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
@@ -164,7 +165,14 @@ ScriptEditorWidget::~ScriptEditorWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::initEditor()
 {
+#ifdef USE_PYQODE
+    setBackground(QColor(1,81,107));
+
+    m_foldingPanel = QSharedPointer<FoldingPanel>(new FoldingPanel(false, "FoldingPanel"));
+    panels()->append(m_foldingPanel.dynamicCast<ito::Panel>());
+#else
     setPaper(QColor(1, 81, 107));
+#endif
 
     //reset standard margins settings
     for (int i = 1; i <= 4; i++)
@@ -184,7 +192,9 @@ RetVal ScriptEditorWidget::initEditor()
 
     setMarginSensitivity(1, true);
     setMarginSensitivity(3, true);
+#ifndef USE_PYQODE
     autoAdaptLineNumberColumnWidth();
+#endif
     setMarginLineNumbers(2, true);
 
     setMarginType(1, QsciScintilla::SymbolMargin); //!< bookmark margin
@@ -210,9 +220,14 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginMarkerMask(1, markMask2);
     setMarginMarkerMask(3, markMask1);
 
+#ifndef USE_PYQODE
     setBraceMatching(QsciScintilla::StrictBraceMatch); 
     setMatchedBraceBackgroundColor(QColor("lightGray"));
     setMatchedBraceForegroundColor(QColor("blue"));
+#else
+    m_symbolMatcher->setMatchBackground(QColor("lightGray"));
+    m_symbolMatcher->setMatchForeground(QColor("blue"));
+#endif
 
     connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(marginClicked(int, int, Qt::KeyboardModifiers)));
 
@@ -229,11 +244,19 @@ void ScriptEditorWidget::loadSettings()
 
     if (settings.value("showWhitespace", true).toBool())
     {
+#ifdef USE_PYQODE
+        setShowWhitespaces(true);
+#else
         setWhitespaceVisibility(QsciScintilla::WsVisible);
+#endif
     }
     else
     {
+#ifdef USE_PYQODE
+        setShowWhitespaces(false);
+#else
         setWhitespaceVisibility(QsciScintilla::WsInvisible);
+#endif
     }
 
     // SyntaxChecker
@@ -261,6 +284,25 @@ void ScriptEditorWidget::loadSettings()
     // Fold Style
     QString foldStyle = settings.value("foldStyle", "plus_minus").toString();
     if (foldStyle == "") foldStyle = "none";
+
+#ifdef USE_PYQODE
+    switch (foldStyle.toLatin1()[0])
+    {
+    default:
+    case 'n':
+        m_foldingPanel->setVisible(false);
+        break;
+    case 'p':
+        m_foldingPanel->setVisible(true);
+        break;
+    case 's':
+        m_foldingPanel->setVisible(true);
+        break;
+    case 'c':
+        m_foldingPanel->setVisible(true);
+        break;
+    }
+#else
     switch (foldStyle.toLatin1()[0])
     {
     default:
@@ -268,6 +310,7 @@ void ScriptEditorWidget::loadSettings()
         setFolding(QsciScintilla::NoFoldStyle, 4);
         break;
     case 'p':
+
         setFolding(QsciScintilla::PlainFoldStyle, 4);
         break;
     case 's':
@@ -277,14 +320,23 @@ void ScriptEditorWidget::loadSettings()
         setFolding(foldStyle == "circles" ? QsciScintilla::CircledFoldStyle : QsciScintilla::CircledTreeFoldStyle, 4);
         break;
     }
+#endif
 
+#ifdef USE_PYQODE
+    setEdgeMode((CodeEditor::EdgeMode)(settings.value("edgeMode", edgeMode()).toInt()));
+#else
     setEdgeMode((QsciScintilla::EdgeMode)(settings.value("edgeMode", edgeMode()).toInt()));
+#endif
     setEdgeColumn(settings.value("edgeColumn", edgeColumn()).toInt());
     setEdgeColor(settings.value("edgeColor", edgeColor()).value<QColor>());
 
     settings.endGroup();
 
+#ifdef USE_PYQODE
+    AbstractCodeEditorWidget::loadSettings();
+#else
     AbstractPyScintillaWidget::loadSettings();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -368,6 +420,7 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#ifndef USE_PYQODE
 void ScriptEditorWidget::autoAdaptLineNumberColumnWidth()
 {
     int l = lines();
@@ -396,6 +449,7 @@ void ScriptEditorWidget::autoAdaptLineNumberColumnWidth()
 
     setMarginWidth(2, s);
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
@@ -424,8 +478,12 @@ void ScriptEditorWidget::contextMenuEvent (QContextMenuEvent * event)
     int line, index;
     int lineFrom, indexFrom, lineTo, indexTo;
 
+#ifndef USE_PYQODE
     long chpos = SendScintilla(SCI_POSITIONFROMPOINT, event->pos().x(), event->pos().y());
     lineIndexFromPosition(chpos, &line, &index);
+#else
+    lineIndexFromPosition(event->pos(), &line, &index);
+#endif
 
     switch (getMarginNumber(event->x()))
     {
@@ -557,7 +615,11 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     }
     else
     {
+#ifdef USE_PYQODE
+        return AbstractCodeEditorWidget::canInsertFromMimeData(source);
+#else
         return AbstractPyScintillaWidget::canInsertFromMimeData(source);
+#endif
     }
 
     return false;
@@ -584,7 +646,11 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
         }
         else
         {
+#ifdef USE_PYQODE
+            AbstractCodeEditorWidget::dropEvent(event);
+#else
             AbstractPyScintillaWidget::dropEvent(event);
+#endif
 
             //this snipped is based on a QScintilla mailing list thread:
             //http://www.riverbankcomputing.com/pipermail/qscintilla/2014-September/000996.html
@@ -788,6 +854,9 @@ void ScriptEditorWidget::menuIndent()
 {
     if (isReadOnly() == false)
     {
+#if USE_PYQODE
+        indent();
+#else
         int lineFrom, lineTo, indexFrom, indexTo;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -802,6 +871,7 @@ void ScriptEditorWidget::menuIndent()
         {
             indent(i);
         }
+#endif
     }
 }
 
@@ -810,6 +880,9 @@ void ScriptEditorWidget::menuUnindent()
 {
     if (isReadOnly() == false)
     {
+#if USE_PYQODE
+        unindent();
+#else
         int lineFrom, lineTo, indexFrom, indexTo;
 
         getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -824,6 +897,7 @@ void ScriptEditorWidget::menuUnindent()
         {
             unindent(i);
         }
+#endif
     }
 }
 
@@ -1030,7 +1104,11 @@ void ScriptEditorWidget::menuInsertCodec()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuUnfoldAll()
 {
+#ifdef USE_PYQODE
+    m_foldingPanel->expandAll();
+#else
     clearFolds();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1979,7 +2057,7 @@ void ScriptEditorWidget::print()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
 {
-    ItomQsciPrinter *p = static_cast<ItomQsciPrinter*>(printer);
+    ScriptEditorPrinter *p = static_cast<ScriptEditorPrinter*>(printer);
     if (p)
     {
         p->printRange(this);
@@ -2122,7 +2200,9 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         m_classNavigatorTimer->start(); //starts or restarts the timer
     }
+#ifndef USE_PYQODE
     autoAdaptLineNumberColumnWidth();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2412,42 +2492,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//void ScriptEditorWidget::keyPressEvent (QKeyEvent *event)
-//{
-//    int key = event->key();
-//    Qt::KeyboardModifiers modifiers = event->modifiers();
-//    bool acceptEvent = true;
-//    bool forwardEvent = true;
-//
-//    if (key != Qt::Key_Control && (modifiers & Qt::ControlModifier))
-//    {
-//        if (key == Qt::Key_T)
-//        {
-//            acceptEvent = false;
-//        }
-//        else if (key == Qt::Key_R)
-//        {
-//            forwardEvent = false;
-//        }
-//    }
-//
-//    if (acceptEvent && forwardEvent)
-//    {
-//        QsciScintilla::keyPressEvent(event);
-//    }
-//    else if (!acceptEvent)
-//    {
-//        event->ignore();
-//    }
-//    else if (acceptEvent && !forwardEvent)
-//    {
-//        event->accept();
-//    }
-//
-//}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
+void ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
 {
     QString filename = this->docName();
     QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);

@@ -1,53 +1,39 @@
-#include "delayJobRunner.h"
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
-////-------------------------------------------
-///*
-//:param delay: Delay to wait before running the job. This delay applies
-//to all requests and cannot be changed afterwards.
-//*/
-//template <typename OBJECT, typename FUNC>
-//DelayJobRunner<OBJECT,FUNC>::DelayJobRunner(OBJECT obj /*= NULL*/, FUNC f /*= NULL*/, int delay /*= 500*/, QObject *parent /*= NULL*/) :
-//    DelayJobRunnerBase(delay, obj),
-//    m_func(f)
-//{
-//    
-//}
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
 
-//-------------------------------------------
-//template <typename OBJECT, typename FUNC>
-//DelayJobRunner<OBJECT,FUNC>::~DelayJobRunner()
-//{
-//}
-//
-////-------------------------------------------
-//template <typename OBJECT, typename FUNC>
-//void DelayJobRunner<OBJECT,FUNC>::cancelRequests()
-//{
-//    m_timer.stop();
-//    m_obj = NULL;
-//    m_funcs = NULL;
-//    m_args.clear();
-//}
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
 
-//-------------------------------------------
-//template <typename OBJECT, typename FUNC>
-//void DelayJobRunner<OBJECT,FUNC>::requestJob(OBJECT obj, FUNC f, const QList<QVariant> &args)
-//{
-//    cancelRequests();
-//    m_obj = obj;
-//    m_func = f;
-//    m_args = args;
-//    m_timer.start(m_delay);
-//}
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+    Further hints:
+    ------------------------
 
-//-------------------------------------------
-/*
-Execute the requested job after the timer has timeout.
-*/
-//template <typename OBJECT, typename FUNC>
-//void DelayJobRunner<OBJECT,FUNC>::execRequestedJob()
-//{
-//    m_timer.stop();
-//    (m_obj->*m_func)(m_args);
-//}
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
+namespace ito {
+} //end namespace ito

@@ -1,3 +1,40 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Further hints:
+    ------------------------
+
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
 #ifndef SYNTAXHIGHLIGHTERBASE_H
 #define SYNTAXHIGHLIGHTERBASE_H
 
@@ -11,56 +48,11 @@
 #include "../textBlockUserData.h"
 #include "../mode.h"
 #include "../foldDetector/foldDetector.h"
+#include "codeEditorStyle.h"
+
+namespace ito {
 
 class CodeEditor; //forware declaration
-
-class ColorScheme
-{
-public:
-    enum Keys
-    {
-        KeyBackground = 0,
-        KeyHighlight = 1,
-        KeyNormal = 2,
-        KeyKeyword = 3,
-        KeyNamespace = 4,
-        KeyType = 5,
-        KeyKeywordReserved = 6,
-        KeyBuiltin = 7,
-        KeyDefinition = 8,
-        KeyComment = 9,
-        KeyString = 10,
-        KeyDocstring = 11,
-        KeyNumber = 12,
-        KeyInstance = 13,
-        KeyWhitespace = 14,
-        KeyTag = 15,
-        KeySelf = 16,
-        KeyDecorator = 17,
-        KeyPunctuation = 18,
-        KeyConstant = 19,
-        KeyFunction = 20,
-        KeyOperator = 21,
-        KeyOperatorWord = 22,
-        KeyClass = 23,
-        Last = 24 /*always the highest number*/
-    };
-
-    ColorScheme();
-    virtual ~ColorScheme();
-
-    QTextCharFormat operator[](int idx) const;
-
-    QTextCharFormat createFormat(const QBrush &color, const QBrush &bgcolor = QBrush(), bool bold = false, bool italic = false, bool underline = false, QFont::StyleHint styleHint = QFont::SansSerif);
-
-    QColor background() const;
-    QColor highlight() const;
-
-private:
-    QHash<int, QTextCharFormat> m_formats;
-};
-
-
 
 /*
 Syntax Highlighters should derive from this mode instead of mode directly.
@@ -69,7 +61,7 @@ class SyntaxHighlighterBase : public QSyntaxHighlighter, public Mode
 {
     Q_OBJECT
 public:
-    SyntaxHighlighterBase(const QString &name, QTextDocument *parent, const QString &description = "", const ColorScheme &colorScheme = ColorScheme());
+    SyntaxHighlighterBase(const QString &name, QTextDocument *parent, const QString &description = "", QSharedPointer<CodeEditorStyle> editorStyle = QSharedPointer<CodeEditorStyle>());
 
     virtual ~SyntaxHighlighterBase();
 
@@ -78,7 +70,7 @@ public:
     virtual void onStateChanged(bool state);
     virtual void onInstall(CodeEditor *editor);
 
-    const ColorScheme& colorScheme() const { return m_colorScheme; }
+    QSharedPointer<CodeEditorStyle> editorStyle() const { return m_editorStyle; }
     
     /*
     Highlights a block of text. Please do not override, this method.
@@ -89,7 +81,7 @@ public:
     */
     void highlightBlock(const QString &text);
 
-    void refreshEditor(const ColorScheme &colorScheme);
+    void refreshEditor(QSharedPointer<CodeEditorStyle> editorStyle);
     
     /*
     Abstract method. Override this to apply syntax highlighting.
@@ -108,8 +100,10 @@ protected:
 
     QRegExp m_regWhitespaces;
     QRegExp m_regSpacesPtrn;
-    ColorScheme m_colorScheme;
+    QSharedPointer<CodeEditorStyle> m_editorStyle;
     QSharedPointer<FoldDetector> m_foldDetector;
 };
+
+} //end namespace ito
 
 #endif

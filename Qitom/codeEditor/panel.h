@@ -5,13 +5,17 @@
 This module contains the Panel API.
 */
 
-class CodeEditor;
+
 
 #include <qwidget.h>
 #include <qevent.h>
 #include <qbrush.h>
 #include <qpen.h>
 #include "mode.h"
+
+namespace ito {
+
+class CodeEditor;
 
 /*
 Base class for editor panels.
@@ -74,5 +78,6 @@ private:
     Q_DISABLE_COPY(Panel)
 };
 
+} //end namespace ito
 
 #endif

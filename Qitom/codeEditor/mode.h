@@ -4,6 +4,8 @@
 #include <qstring.h>
 #include <qsharedpointer.h>
 
+namespace ito {
+
 class CodeEditor; //forware declaration
 
 /*
@@ -56,5 +58,7 @@ private:
     CodeEditor *m_editor;
     bool m_onClose;
 };
+
+} //end namespace ito
 
 #endif

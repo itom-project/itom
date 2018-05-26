@@ -10,6 +10,8 @@
 #define DELAY_JOB_RUNNER_ARGTEXTBLOCK(base,T1,T2) ((DelayJobRunnerArgTextBlock<T1,T2>*)(base))
 #define DELAY_JOB_RUNNER_NOARGS(base,T1,T2) ((DelayJobRunnerNoArgs<T1,T2>*)(base))
 
+namespace ito {
+
 class DelayJobRunnerBase : public QObject
 {
     Q_OBJECT
@@ -208,6 +210,8 @@ private:
         (m_obj->*m_func)();
     }
 };
+
+} //end namespace ito
 
 
 #endif

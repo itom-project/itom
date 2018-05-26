@@ -5,6 +5,8 @@
 #include <qtextedit.h>
 #include <qchar.h>
 
+namespace ito {
+
 class CodeEditor;
 
 namespace Utils
@@ -76,5 +78,7 @@ namespace Utils
 
     
 };
+
+} //end namespace ito
 
 #endif

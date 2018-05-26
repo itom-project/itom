@@ -5,8 +5,6 @@
 This module contains the text decoration API.
 */
 
-class CodeEditor;
-
 #include <qwidget.h>
 #include <qtextedit.h>
 #include <qtextcursor.h>
@@ -16,8 +14,11 @@ class CodeEditor;
 #include <QTextBlock>
 
 class QTextDecoration;
-class TextDecorationsSignals;
 
+namespace ito {
+
+class TextDecorationsSignals;
+class CodeEditor;
 
 /*
 Helper class to quickly create a text decoration. The text decoration is an
@@ -94,8 +95,12 @@ private:
     
 };
 
-Q_DECLARE_METATYPE(TextDecoration)
-Q_DECLARE_METATYPE(TextDecoration::Ptr)
+} //end namespace ito
+
+Q_DECLARE_METATYPE(ito::TextDecoration)
+Q_DECLARE_METATYPE(ito::TextDecoration::Ptr)
+
+namespace ito {
 
 
 /*
@@ -113,6 +118,8 @@ signals:
     //Signal emitted when a TextDecoration has been clicked.
     void clicked(TextDecoration::Ptr selection);
 };
+
+} //end namespace ito
 
 
 #endif

@@ -5,6 +5,8 @@
 
 #include <QTextBlockUserData>
 
+namespace ito {
+
 //------------------------------------------------------
 /*
 Holds data for a message displayed by the
@@ -153,6 +155,6 @@ public:
     bool m_importStmt;
 };
 
-
+} //end namespace ito
 
 #endif

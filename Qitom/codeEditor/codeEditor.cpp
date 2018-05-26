@@ -1,3 +1,40 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Further hints:
+    ------------------------
+
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
 #include "codeEditor.h"
 
 #include <qapplication.h>
@@ -11,6 +48,9 @@
 #include "managers/textDecorationsManager.h"
 #include "managers/modesManager.h"
 #include "delayJobRunner.h"
+#include "utils/utils.h"
+
+namespace ito {
 
 CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*= true*/)
     : QPlainTextEdit(parent),
@@ -33,9 +73,11 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_lastMousePos(QPoint(0,0)),
     m_prevTooltipBlockNbr(-1),
     m_pTooltipsRunner(NULL),
-    m_edgeLineShow(false),
-    m_edgeLineColumn(79),
-    m_edgeLineColor(Qt::darkGray)
+    m_edgeMode(EdgeNone),
+    m_edgeColumn(79),
+    m_edgeColor(Qt::darkGray),
+    m_showIndentationGuides(true),
+    m_indentationGuidesColor(Qt::darkGray)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -215,46 +257,76 @@ void CodeEditor::setSelectLineOnCopyEmpty(bool value)
 }
 
 //-----------------------------------------------------------
-bool CodeEditor::edgeLineVisible() const
+CodeEditor::EdgeMode CodeEditor::edgeMode() const
 {
-    return m_edgeLineShow;
+    return m_edgeMode;
 }
 
-void CodeEditor::setEdgeLineVisible(bool value)
+void CodeEditor::setEdgeMode(CodeEditor::EdgeMode mode)
 {
-    if (m_edgeLineShow != value)
+    if (m_edgeMode != mode)
     {
-        m_edgeLineShow = value;
+        m_edgeMode = mode;
         update();
     }
 }
 
 //-----------------------------------------------------------
-int CodeEditor::edgeLineColumn() const
+int CodeEditor::edgeColumn() const
 {
-    return m_edgeLineColumn;
+    return m_edgeColumn;
 }
 
-void CodeEditor::setEdgeLineColumn(int column)
+void CodeEditor::setEdgeColumn(int column)
 {
-    if (m_edgeLineColumn != column)
+    if (m_edgeColumn != column)
     {
-        m_edgeLineColumn = column;
+        m_edgeColumn = column;
         update();
     }
 }
 
 //-----------------------------------------------------
-QColor CodeEditor::edgeLineColor() const
+QColor CodeEditor::edgeColor() const
 {
-    return m_edgeLineColor;
+    return m_edgeColor;
 }
 
-void CodeEditor::setEdgeLineColor(const QColor &color)
+void CodeEditor::setEdgeColor(const QColor &color)
 {
-    if (m_edgeLineColor != color)
+    if (m_edgeColor != color)
     {
-        m_edgeLineColor = color;
+        m_edgeColor = color;
+        update();
+    }
+}
+
+//-----------------------------------------------------
+bool CodeEditor::showIndentationGuides() const
+{
+    return m_showIndentationGuides;
+}
+
+void CodeEditor::setShowIndentationGuides(bool value)
+{
+    if (m_showIndentationGuides != value)
+    {
+        m_showIndentationGuides = value;
+        update();
+    }
+}
+
+//-----------------------------------------------------
+QColor CodeEditor::indentationGuidesColor() const
+{
+    return m_indentationGuidesColor;
+}
+
+void CodeEditor::setIndentationGuidesColor(const QColor &color)
+{
+    if (m_indentationGuidesColor != color)
+    {
+        m_indentationGuidesColor = color;
         update();
     }
 }
@@ -268,6 +340,17 @@ bool CodeEditor::showContextMenu() const
 void CodeEditor::setShowContextMenu(bool value)
 {
     m_showCtxMenu = value;
+}
+
+//-----------------------------------------------------------
+bool CodeEditor::isModified() const
+{
+    return document()->isModified();
+}
+
+void CodeEditor::setModified(bool modified)
+{
+    document()->setModified(modified);
 }
 
 //-----------------------------------------------------------
@@ -322,12 +405,26 @@ void CodeEditor::setTabLength(int value)
 //-----------------------------------------------------------
 QColor CodeEditor::whitespacesForeground() const
 {
-    return m_whitespacesForeground;
+    if (syntaxHighlighter())
+    {
+        return syntaxHighlighter()->editorStyle()->format(StyleItem::KeyWhitespace).foreground().color();
+    }
+    else
+    {
+        return m_whitespacesForeground;
+    }
 }
 
 void CodeEditor::setWhitespacesForeground(const QColor &value)
 {
-    m_whitespacesForeground = value;
+    if (syntaxHighlighter())
+    {
+        syntaxHighlighter()->editorStyle()->format(StyleItem::KeyWhitespace).setForeground(value);
+    }
+    else
+    {
+        m_whitespacesForeground = value;
+    }
 }
 
 //-----------------------------------------------------------
@@ -473,15 +570,54 @@ void CodeEditor::paintEvent(QPaintEvent *e)
     updateVisibleBlocks(); //_update_visible_blocks
     QPlainTextEdit::paintEvent(e);
 
-    if (m_edgeLineShow)
+    switch (m_edgeMode)
     {
+    case EdgeNone:
+        break;
+    case EdgeLine:
+        {
         QPainter painter(viewport());
-        QColor color(m_edgeLineColor);
+        QColor color(m_edgeColor);
         color.setAlphaF(.5);
         painter.setPen(color);
 
-        int x = fontMetrics().width(QString(m_edgeLineColumn, '9'));
+        int x = fontMetrics().width(QString(m_edgeColumn, '9'));
         painter.drawLine(x, 0, x, size().height());
+        }
+    case EdgeBackground:
+        {
+        QPainter painter(viewport());
+        QColor color(m_edgeColor);
+        color.setAlphaF(.5);
+        painter.setBrush(color);
+
+        int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+        painter.drawRect(x, 0, size().width() - x, size().height());
+        }
+    }
+
+    if (m_showIndentationGuides)
+    {
+        QPainter painter(viewport());
+
+        QColor color = m_indentationGuidesColor;
+        color.setAlphaF(.5);
+        painter.setPen(color);
+        int bottom;
+        int indentation;
+
+        QString tab_text = useSpacesInsteadOfTabs() ? QString(tabLength(), ' ') : "\t";
+        int x = fontMetrics().width(tab_text);
+
+        foreach (const VisibleBlock &block, visibleBlocks())
+        {
+            bottom = block.topPosition + blockBoundingRect(block.textBlock).height();
+            indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
+            for (int i = 1; i < indentation; ++i)
+            {
+                painter.drawLine(x * i, block.topPosition, x * i, bottom);
+            }
+        }
     }
 
     emit painted(e);
@@ -865,6 +1001,34 @@ void CodeEditor::updateVisibleBlocks()
 
 //-----------------------------------------------------------
 /*
+return the line number of the first visible line (or -1 if no line available)
+*/
+int CodeEditor::firstVisibleLine() const
+{
+    QTextBlock block = firstVisibleBlock();
+    if (block.isValid())
+    {
+        return block.blockNumber();
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+//-----------------------------------------------------------
+/*
+Set the number of the first visible line to line.
+*/
+void CodeEditor::setFirstVisibleLine(int line)
+{
+    moveCursor(QTextCursor::End);
+    QTextCursor cursor(document()->findBlockByLineNumber(line));
+    setTextCursor(cursor);
+}
+
+//-----------------------------------------------------------
+/*
 Returns the indent level of the specified line
 
     :param line_nbr: Number of the line to get indentation (1 base).
@@ -1051,6 +1215,14 @@ void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= "
     emit undoAvailable(false);
 }
 
+//------------------------------------------------------------
+/*
+*/
+QString CodeEditor::selectedText() const
+{
+    return textCursor().selectedText();
+}
+
 //--------------------------------------------------------------
 /*
 Resets stylesheet
@@ -1116,7 +1288,7 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextCursor &cursor, const QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
+bool CodeEditor::isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats /*= QList<StyleItem::StyleType>()*/)
 {
     return isCommentOrString(cursor.block(), formats);
 }
@@ -1130,12 +1302,12 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<ColorScheme::Keys> &formats /*= QList<ColorScheme::Keys>()*/)
+bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats /*= QList<StyleItem::StyleType>()*/)
 {
-    QList<ColorScheme::Keys> formats_ = formats;
+    QList<StyleItem::StyleType> formats_ = formats;
     if (formats_.size() == 0)
     {
-        formats_ << ColorScheme::KeyComment << ColorScheme::KeyString << ColorScheme::KeyDocstring;
+        formats_ << StyleItem::KeyComment << StyleItem::KeyString << StyleItem::KeyDocstring;
     }
 
     QTextLayout *layout = NULL;
@@ -1150,15 +1322,15 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<ColorSch
         SyntaxHighlighterBase *sh = syntaxHighlighter();
         if (sh)
         {
-            const ColorScheme &ref_formats = sh->colorScheme();
+            QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
-                    foreach (int fmtType, formats_)
+                    foreach (StyleItem::StyleType fmtType, formats_)
                     {
                         is_user_obj = (r.format.objectType() == r.format.UserObject);
-                        if ((ref_formats[fmtType] == r.format) && is_user_obj)
+                        if ((ref_formats->format(fmtType) == r.format) && is_user_obj)
                         {
                             return true;
                         }
@@ -1186,9 +1358,15 @@ Gets the word under cursor using the separators defined by
     QTextDocument clone)
 :returns: The QTextCursor that contains the selected word.
 */
-QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord)
+QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord) const
 {
-    QTextCursor text_cursor = textCursor();
+    return wordUnderCursor(textCursor(), selectWholeWord);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QTextCursor CodeEditor::wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const
+{
+    QTextCursor text_cursor = cursor;
     int endPos, startPos;
     endPos = startPos = text_cursor.position();
     QString selectedText;
@@ -1214,7 +1392,7 @@ QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord)
 
     if (selectWholeWord)
     {
-        //select the resot of the word
+        //select the rest of the word
         text_cursor.setPosition(endPos);
         while (!text_cursor.atEnd())
         {
@@ -1240,6 +1418,27 @@ QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord)
     return text_cursor;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString CodeEditor::wordAtPosition(int line, int index, bool selectWholeWord) const
+{
+    if (line < 0 || line >= lineCount())
+    {
+        return "";
+    }
+
+    if (index < 0 || index >= lineLength(line))
+    {
+        return "";
+    }
+
+    QTextCursor text_cursor = textCursor();
+    text_cursor.movePosition(QTextCursor::Start);
+    text_cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line); //go down y-times
+    text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, index); //go right x-times
+    return wordUnderCursor(text_cursor, selectWholeWord).selectedText();
+}
+
 //------------------------------------------------------------
 /*
 Returns the line number from the y_pos
@@ -1262,12 +1461,61 @@ int CodeEditor::lineNbrFromPosition(int yPos) const
 }
 
 //------------------------------------------------------------
+void CodeEditor::lineIndexFromPosition(const QPoint &pos, int *line, int *column) const
+{
+    QTextCursor cursor = cursorForPosition(pos);
+    if (line)
+    {
+        *line = cursor.blockNumber();
+    }
+    if (column)
+    {
+        *column = cursor.columnNumber();
+    }
+}
+
+//------------------------------------------------------------
+void CodeEditor::getCursorPosition(int *line, int *column) const
+{
+    QTextCursor cursor = textCursor();
+    if (line)
+    {
+        *line = cursor.blockNumber();
+    }
+    if (column)
+    {
+        *column = cursor.columnNumber();
+    }
+}
+
+//------------------------------------------------------------
 /*
 Returns the line count
 */
 int CodeEditor::lineCount() const
 {
     return document()->blockCount();
+}
+
+//------------------------------------------------------------
+/*
+Returns the length of line \a line int bytes or -1 if there is no such
+line.  In order to get the length in characters use text(line).length().
+*/
+int CodeEditor::lineLength(int line) const
+{
+    if (line < 0 || line >= lineCount())
+    {
+        return -1;
+    }
+
+    QTextBlock block = document()->findBlockByLineNumber(line);
+    if (block.isValid())
+    {
+        return block.length();
+    }
+
+    return -1;
 }
 
 //------------------------------------------------------------
@@ -1450,3 +1698,5 @@ void CodeEditor::showTooltipDelayJobRunner(QList<QVariant> args)
 
     QToolTip::showText(pos, tooltip.left(1024));
 }
+
+} //end namespace ito

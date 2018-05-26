@@ -1,3 +1,40 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom.
+  
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Further hints:
+    ------------------------
+
+    This file belongs to the code editor of itom. The code editor is
+    in major parts a fork / rewritten version of the python-based source 
+    code editor PyQode from Colin Duquesnoy and others 
+    (see https://github.com/pyQode). PyQode itself is licensed under 
+    the MIT License (MIT).
+
+    Some parts of the code editor of itom are also inspired by the
+    source code editor of the Spyder IDE (https://github.com/spyder-ide),
+    also licensed under the MIT License and developed by the Spyder Project
+    Contributors. 
+
+*********************************************************************** */
+
 #include "pythonSyntaxHighlighter.h"
 
 #include "../codeEditor.h"
@@ -11,6 +48,8 @@
 
 #include <qdebug.h>
 
+namespace ito {
+
 /*static*/ QMap<QString,PythonSyntaxHighlighter::QQRegExp> PythonSyntaxHighlighter::regExpProg = PythonSyntaxHighlighter::makePythonPatterns();
 /*static*/ QRegExp PythonSyntaxHighlighter::regExpIdProg = QRegExp("\\s+(\\w+)");
 /*static*/ QRegExp PythonSyntaxHighlighter::regExpAsProg = QRegExp(".*?\\b(as)\\b");
@@ -18,8 +57,8 @@
 
 
 //-------------------------------------------------------------------
-PythonSyntaxHighlighter::PythonSyntaxHighlighter(QTextDocument *parent, const QString &description /*= ""*/, const ColorScheme &colorScheme /*=  = ColorScheme()*/) :
-    SyntaxHighlighterBase("PythonSyntaxHighlighter", parent, description, colorScheme)
+PythonSyntaxHighlighter::PythonSyntaxHighlighter(QTextDocument *parent, const QString &description /*= ""*/, QSharedPointer<CodeEditorStyle> editorStyle /*= QSharedPointer<CodeEditorStyle>()*/ ) :
+    SyntaxHighlighterBase("PythonSyntaxHighlighter", parent, description, editorStyle)
 {
 
 }
@@ -102,7 +141,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 
     userData->m_docstring = false;
 
-    setFormat(0, text2.size(), getFormatFromStyle(ColorScheme::KeyNormal));
+    setFormat(0, text2.size(), getFormatFromStyle(StyleItem::KeyNormal));
 
     State state = Normal;
 
@@ -178,27 +217,27 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
             if (key == "uf_sq3string")
             {
                 setFormat(start, length,
-                                getFormatFromStyle(ColorScheme::KeyDocstring));
+                                getFormatFromStyle(StyleItem::KeyDocstring));
                 userData->m_docstring = true;
                 state = InsideSq3String;
             }
             else if (key == "uf_dq3string")
             {
                 setFormat(start, length,
-                                getFormatFromStyle(ColorScheme::KeyDocstring));
+                                getFormatFromStyle(StyleItem::KeyDocstring));
                 userData->m_docstring = true;
                 state = InsideDq3String;
             }
             else if (key == "uf_sqstring")
             {
                 setFormat(start, length,
-                                getFormatFromStyle(ColorScheme::KeyString));
+                                getFormatFromStyle(StyleItem::KeyString));
                 state = InsideSqString;
             }
             else if (key == "uf_dqstring")
             {
                 setFormat(start, length,
-                                getFormatFromStyle(ColorScheme::KeyString));
+                                getFormatFromStyle(StyleItem::KeyString));
                 state = InsideDqString;
             }
             else if (key == "builtin_fct")
@@ -206,7 +245,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 //trick to highlight __init__, __add__ and so on with
                 //builtin color
                 setFormat(start, length,
-                                getFormatFromStyle(ColorScheme::KeyConstant));
+                                getFormatFromStyle(StyleItem::KeyConstant));
             }
             else
             {
@@ -215,60 +254,60 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     // highlight docstring with a different color
                     userData->m_docstring = true;
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyDocstring));
+                                    getFormatFromStyle(StyleItem::KeyDocstring));
                 }
                 else if (key == "decorator")
                 {
                     // highlight decorators
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyDecorator));
+                                    getFormatFromStyle(StyleItem::KeyDecorator));
                 }
                 else if (value == "self" || value == "cls")
                 {
                     // highlight self attribute
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeySelf));
+                                    getFormatFromStyle(StyleItem::KeySelf));
                 }
                 else if (key == "number")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyNumber));
+                                    getFormatFromStyle(StyleItem::KeyNumber));
                 }
                 else if (key == "keyword")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyKeyword));
+                                    getFormatFromStyle(StyleItem::KeyKeyword));
                 }
                 else if (key == "comment")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyComment));
+                                    getFormatFromStyle(StyleItem::KeyComment));
                 }
                 else if (key == "operator_word")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyOperatorWord));
+                                    getFormatFromStyle(StyleItem::KeyOperatorWord));
                 }
                 else if (key == "string")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyString));
+                                    getFormatFromStyle(StyleItem::KeyString));
                 }
                 else if (key == "namespace")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyNamespace));
+                                    getFormatFromStyle(StyleItem::KeyNamespace));
                 }
                 else if (key == "builtin")
                 {
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyBuiltin));
+                                    getFormatFromStyle(StyleItem::KeyBuiltin));
                 }
                 else
                 {
                     // highlight all other tokens
                     setFormat(start, length,
-                                    getFormatFromStyle(ColorScheme::KeyTag /*key*/)); //TODO
+                                    getFormatFromStyle(StyleItem::KeyTag /*key*/)); //TODO
                 }
 
                 if (key == "keyword")
@@ -280,7 +319,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                         {
                             int start1 = pos2;
                             int end1 = start1 + PythonSyntaxHighlighter::regExpIdProg.matchedLength();
-                            QTextCharFormat fmt = getFormatFromStyle(value == "class" ? ColorScheme::KeyDefinition : ColorScheme::KeyFunction);
+                            QTextCharFormat fmt = getFormatFromStyle(value == "class" ? StyleItem::KeyDefinition : StyleItem::KeyFunction);
                             setFormat(start1, end1 - start1, fmt);
                         }
                     }
@@ -304,7 +343,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     int pos3 = 0;
                     while ((pos3 = PythonSyntaxHighlighter::regExpAsProg.indexIn(text2.left(endpos), end)) != -1)
                     {
-                        setFormat(pos3, pos3 + PythonSyntaxHighlighter::regExpAsProg.matchedLength(), getFormatFromStyle(ColorScheme::KeyNamespace));
+                        setFormat(pos3, pos3 + PythonSyntaxHighlighter::regExpAsProg.matchedLength(), getFormatFromStyle(StyleItem::KeyNamespace));
                         pos3 += PythonSyntaxHighlighter::regExpAsProg.matchedLength();
                     }
                 }
@@ -341,9 +380,9 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 /*
 Returns a QTextCharFormat for token
 */
-QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(ColorScheme::Keys token) const
+QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(StyleItem::StyleType token) const
 {
-    return m_colorScheme[token];
+    return m_editorStyle->format(token);
 }
 
 //--------------------------------------------------------------------
@@ -470,3 +509,5 @@ QString any(const QString &name, const QStringList &alternates)
 
 
 
+
+} //end namespace ito
