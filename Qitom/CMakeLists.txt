@@ -353,11 +353,13 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
@@ -585,11 +587,13 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp

@@ -201,9 +201,13 @@ public:
     QTextCursor selectWholeLine(int line = -1, bool applySelection = true);
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
     QPair<int,int> selectionRange() const; //start, end
+    void getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *indexTo);
+    void setSelection(int lineFrom, int indexFrom, int lineTo, int indexTo);
     int linePosFromNumber(int lineNumber) const;
     void lineIndexFromPosition(const QPoint &pos, int *line, int *column) const;
     void getCursorPosition(int *line, int *column) const;
+    QTextCursor setCursorPosition(int line, int column, bool applySelection = true);
+    void ensureLineVisible(int line);
     
     QString selectedText() const;
 
@@ -240,6 +244,7 @@ public:
     TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
     const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }
+    bool bookmarksAvailable() const;
 
     void callWheelEvent(QWheelEvent *e);
 
@@ -263,6 +268,7 @@ protected:
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
     QTextCursor moveCursorTo(int line);
+    
 
     virtual void resizeEvent(QResizeEvent *e);
     virtual void closeEvent(QCloseEvent *e);

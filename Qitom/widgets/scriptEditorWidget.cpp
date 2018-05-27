@@ -47,6 +47,8 @@
 
 #ifdef USE_PYQODE
     #include "../codeEditor/managers/panelsManager.h"
+    #include "../codeEditor/managers/modesManager.h"
+    #include "../codeEditor/textBlockUserData.h"
 #endif
 
 namespace ito 
@@ -73,9 +75,12 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_pythonExecutable(true),
     canCopy(false),
     m_syntaxTimer(NULL),
-    m_classNavigatorTimer(NULL),
+    m_classNavigatorTimer(NULL)
+#ifndef USE_PYQODE
+    ,
     m_errorMarkerVisible(false),
     m_errorMarkerNr(-1)
+#endif
 {
 #ifndef USE_PYQODE
     bookmarkErrorHandles.clear();
@@ -176,10 +181,17 @@ RetVal ScriptEditorWidget::initEditor()
     m_checkerBookmarkPanel = QSharedPointer<CheckerBookmarkPanel>(new CheckerBookmarkPanel("CheckerBookmarkPanel"));
     panels()->append(m_checkerBookmarkPanel.dynamicCast<ito::Panel>());
 
+    m_breakpointPanel = QSharedPointer<BreakpointPanel>(new BreakpointPanel("BreakpointPanel"));
+    panels()->append(m_breakpointPanel.dynamicCast<ito::Panel>());
+
+    m_errorLineHighlighterMode = QSharedPointer<ErrorLineHighlighterMode>(new ErrorLineHighlighterMode("ErrorLineHighlighterMode"));
+    modes()->append(m_errorLineHighlighterMode.dynamicCast<ito::Mode>());
+
 #else
     setPaper(QColor(1, 81, 107));
 #endif
 
+#ifndef USE_PYQODE
     //reset standard margins settings
     for (int i = 1; i <= 4; i++)
     {
@@ -198,7 +210,7 @@ RetVal ScriptEditorWidget::initEditor()
 
     setMarginSensitivity(1, true);
     setMarginSensitivity(3, true);
-#ifndef USE_PYQODE
+
     autoAdaptLineNumberColumnWidth();
 
     setMarginLineNumbers(2, true);
@@ -229,12 +241,15 @@ RetVal ScriptEditorWidget::initEditor()
     setBraceMatching(QsciScintilla::StrictBraceMatch); 
     setMatchedBraceBackgroundColor(QColor("lightGray"));
     setMatchedBraceForegroundColor(QColor("blue"));
+
+    connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(marginClicked(int, int, Qt::KeyboardModifiers)));
 #else
     m_symbolMatcher->setMatchBackground(QColor("lightGray"));
     m_symbolMatcher->setMatchForeground(QColor("blue"));
-#endif
 
-    connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(marginClicked(int, int, Qt::KeyboardModifiers)));
+    connect(m_checkerBookmarkPanel.data(), SIGNAL(toggleBookmarkRequested(int)), this, SLOT(toggleBookmarkRequested(int)));
+    connect(m_breakpointPanel.data(), SIGNAL(toggleBreakpointRequested(int)), this, SLOT(toggleBreakpointRequested(int)));
+#endif
 
     loadSettings();
 
@@ -400,8 +415,12 @@ RetVal ScriptEditorWidget::initMenus()
 
     connect(editorMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuEditor()));
 
+#ifdef USE_PYQODE
+    m_errorLineHighlighterMode->setBackground(QColor(255, 192, 192));
+#else
     m_errorMarkerNr = markerDefine(QsciScintilla::Background);
     setMarkerBackgroundColor(QColor(255, 192, 192), m_errorMarkerNr);
+#endif
 
     return RetVal(retOk);
 }
@@ -421,8 +440,8 @@ const ScriptEditorStorage ScriptEditorWidget::saveState() const
     {
         if (block.userData())
         {
-            userData = (TextBlockUserData*)(block.userData());
-            if (userData->m_bookmark)
+            userData = dynamic_cast<TextBlockUserData*>(block.userData());
+            if (userData && userData->m_bookmark)
             {
                 storage.bookmarkLines << block.blockNumber();
             }
@@ -556,7 +575,11 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["copy"]->setEnabled(lineFrom != -1);
     //editorMenuActions["iconBrowser"]->setEnabled(!pythonBusy);
     //editorMenuActions["save"]->setEnabled(isModified());
+#ifdef USE_PYQODE
+    editorMenuActions["paste"]->setEnabled(contextMenuLine >= 0 && canPaste());
+#else
     editorMenuActions["paste"]->setEnabled(contextMenuLine >= 0 && SendScintilla(SCI_CANPASTE));
+#endif
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
@@ -567,9 +590,18 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["insertCodec"]->setEnabled(!pythonBusy);
 
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
+
+#ifdef USE_PYQODE
+    bool avail = bookmarksAvailable();
+    bookmarkMenuActions["nextBM"]->setEnabled(avail);
+    bookmarkMenuActions["prevBM"]->setEnabled(avail);
+    bookmarkMenuActions["clearAllBM"]->setEnabled(avail);
+#else
     bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
+#endif
+    
 
     return RetVal(retOk);
 }
@@ -578,9 +610,16 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
 RetVal ScriptEditorWidget::preShowContextMenuMargin()
 {
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
+#ifdef USE_PYQODE
+    bool avail = bookmarksAvailable();
+    bookmarkMenuActions["nextBM"]->setEnabled(avail);
+    bookmarkMenuActions["prevBM"]->setEnabled(avail);
+    bookmarkMenuActions["clearAllBM"]->setEnabled(avail);
+#else
     bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["clearAllBM"]->setEnabled(!bookmarkErrorHandles.empty());
+#endif
 
     breakpointMenuActions["nextBP"]->setEnabled(!m_breakPointMap.empty());
     breakpointMenuActions["prevBP"]->setEnabled(!m_breakPointMap.empty());
@@ -588,13 +627,23 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
 
     if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
     {
+#ifdef USE_PYQODE
+        QTextBlock block = document()->findBlockByLineNumber(contextMenuLine);
+        TextBlockUserData *tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (block.isValid() && tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+#else
         if (markersAtLine(contextMenuLine) & markMaskBreakpoints)
+#endif
         {
             breakpointMenuActions["toggleBP"]->setEnabled(true);
             breakpointMenuActions["toggleBPEnabled"]->setEnabled(true);
             breakpointMenuActions["editConditionBP"]->setEnabled(true);
 
+#ifdef USE_PYQODE
+            if (tbud->m_breakpointType & (TextBlockUserData::TypeBp | TextBlockUserData::TypeBpEdit))
+#else
             if (markersAtLine(contextMenuLine) & ((1 << markBreakPoint) | (1 << markCBreakPoint)))
+#endif
             {
                 breakpointMenuActions["toggleBPEnabled"]->setText(tr("&Disable Breakpoint"));
             }
@@ -723,6 +772,10 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool err
 
     if (errorMessageClick)
     {
+#ifdef USE_PYQODE
+        m_errorLineHighlighterMode->setErrorLine(line);
+#else
+        editor()->decorations()->remove(m_decoration);
         if (m_errorMarkerVisible)
         {
             markerDeleteAll(m_errorMarkerNr);
@@ -730,6 +783,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool err
 
         m_errorMarkerVisible = true;
         markerAdd(line, m_errorMarkerNr);
+#endif
     }
 
     this->setFocus();
@@ -950,7 +1004,12 @@ void ScriptEditorWidget::menuComment()
             searchIndex = lineText.indexOf(lineTextTrimmed);
             if (searchIndex >= 0)
             {
+#ifdef USE_PYQODE
+                QTextCursor cursor = setCursorPosition(i, searchIndex, false);
+                cursor.insertText("#");
+#else
                 insertAt(QString("#"), i, searchIndex);
+#endif
                 if (i == lineFrom)
                 {
                     indexFrom++;
@@ -1002,7 +1061,11 @@ void ScriptEditorWidget::menuUncomment()
                 if (searchIndex >= 0)
                 {
                     setSelection(i, searchIndex, i, searchIndex + 1);
+#ifdef USE_PYQODE
+                    textCursor().removeSelectedText();
+#else
                     removeSelectedText();
+#endif
                 }
             }
         }
@@ -1258,7 +1321,9 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
         return RetVal(retError);
     }
 
+#ifndef USE_PYQODE
     convertEols(QsciScintilla::EolUnix);
+#endif
     
     QString t = text();
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
@@ -1323,7 +1388,9 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     m_pFileSysWatcher->removePath(getFilename());
 
+#ifndef USE_PYQODE
     convertEols(QsciScintilla::EolUnix);
+#endif
     
     QString t = text();
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
@@ -1391,7 +1458,7 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
         regError.indexIn(errorList.at(i),0);
         line = regError.cap(1).toInt();
         errorMessage = regError.cap(2);
-        userData = getOrCreateUserData(line);
+        userData = getTextBlockUserData(line);
 
         if (userData)
         {
@@ -1515,7 +1582,9 @@ void ScriptEditorWidget::updateSyntaxCheck()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::event(QEvent *event)
-{ // This function is called when staying over an error icon to display the hint
+{ 
+#ifndef USE_PYQODE
+    // This function is called when staying over an error icon to display the hint
     if (event->type() == QEvent::ToolTip)
     {
         //see http://www.riverbankcomputing.com/pipermail/qscintilla/2008-November/000381.html
@@ -1552,6 +1621,9 @@ bool ScriptEditorWidget::event(QEvent *event)
             }
         }
     }
+#else
+    if (0) {}
+#endif
     else if (event->type() == QEvent::KeyRelease)
     {
         // SyntaxCheck   
@@ -1564,6 +1636,12 @@ bool ScriptEditorWidget::event(QEvent *event)
             m_classNavigatorTimer->start();
         }
     }
+#ifdef USE_PYQODE
+    else if (m_errorLineHighlighterMode->errorLineAvailable())
+    {
+        m_errorLineHighlighterMode->clearErrorLine();
+    }
+#else
     else if (m_errorMarkerVisible)
     {
         if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::KeyPress)
@@ -1572,22 +1650,34 @@ bool ScriptEditorWidget::event(QEvent *event)
             m_errorMarkerVisible = false;
         }
     }
+#endif
 
+#ifdef USE_PYQODE
+    return AbstractCodeEditorWidget::event(event);
+#else
     return AbstractPyScintillaWidget::event(event);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    
+
+#ifdef USE_PYQODE
+    if (m_errorLineHighlighterMode->errorLineAvailable())
+    {
+        m_errorLineHighlighterMode->clearErrorLine();
+    }
+
+    AbstractCodeEditorWidget::mouseReleaseEvent(event);
+#else
     if (m_errorMarkerVisible)
     {
         markerDeleteAll(m_errorMarkerNr);
         m_errorMarkerVisible = false;
     }
 
-#ifdef USE_PYQODE
-    AbstractCodeEditorWidget::mouseReleaseEvent(event);
-#else
     AbstractPyScintillaWidget::mouseReleaseEvent(event);
 #endif
 }
@@ -1708,11 +1798,13 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
 #ifdef USE_PYQODE
     const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
     QTextBlock block = currentBlock.next();
+    TextBlockUserData *tbud;
 
     //look from currentBlock to the end...
     while (block.isValid())
     {
-        if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+        tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (tbud && tbud->m_bookmark)
         {
             closestLine = block.blockNumber();
             found = true;
@@ -1728,7 +1820,8 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
 
         while (block.isValid() && block != currentBlock)
         {
-            if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+            tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+            if (tbud && tbud->m_bookmark)
             {
                 closestLine = block.blockNumber();
                 found = true;
@@ -1780,11 +1873,13 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 #ifdef USE_PYQODE
     const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
     QTextBlock block = currentBlock.previous();
+    TextBlockUserData *tbud;
 
     //look from currentBlock to the beginning
     while (block.isValid())
     {
-        if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+        tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (tbud && tbud->m_bookmark)
         {
             closestLine = block.blockNumber();
             found = true;
@@ -1800,7 +1895,8 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 
         while (block.isValid() && block != currentBlock)
         {
-            if (block.userData() && dynamic_cast<TextBlockUserData*>(block.userData())->m_bookmark)
+            tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+            if (tbud && tbud->m_bookmark)
             {
                 closestLine = block.blockNumber();
                 found = true;
@@ -1929,7 +2025,13 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
         BreakPointItem item;
         RetVal retValue(retOk);
 
+#ifdef USE_PYQODE
+        QTextBlock block = document()->findBlockByLineNumber(line);
+        TextBlockUserData *tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (block.isValid() && tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+#else
         if (markersAtLine(line) & markMaskBreakpoints)
+#endif
         {
             index = bpModel->getFirstBreakPointIndex(getFilename(), line);
 
@@ -1960,7 +2062,10 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBreakpoints()
 {
-    if (getFilename() == "") return RetVal(retError);
+    if (getFilename() == "") 
+    {
+        return RetVal(retError);
+    }
 
     BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
 
@@ -1976,7 +2081,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
 RetVal ScriptEditorWidget::gotoNextBreakPoint()
 {
     int line, index;
-    int breakPointLine;
+    int breakPointLine = -1;
     getCursorPosition(&line, &index);
 
     line += 1;
@@ -1986,11 +2091,46 @@ RetVal ScriptEditorWidget::gotoNextBreakPoint()
         line = 0;
     }
 
+#ifndef USE_PYQODE
     breakPointLine = markerFindNext(line, markMaskBreakpoints);
     if (breakPointLine < 0)
     {
         breakPointLine = markerFindNext(0, markMaskBreakpoints);
     }
+#else
+    const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
+    QTextBlock block = currentBlock.next();
+    TextBlockUserData *tbud;
+
+    //look from currentBlock to the end
+    while (block.isValid())
+    {
+        tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+        {
+            breakPointLine = block.blockNumber();
+            break;
+        }
+        block = block.next();
+    }
+
+    if (breakPointLine == -1)
+    {
+        //start from the beginning to currentBlock
+        block = document()->firstBlock();
+
+        while (block.isValid() && block != currentBlock)
+        {
+            tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+            if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+            {
+                breakPointLine = block.blockNumber();
+                break;
+            }
+            block = block.next();
+        }
+    }
+#endif
 
     if (breakPointLine >= 0)
     {
@@ -2005,7 +2145,7 @@ RetVal ScriptEditorWidget::gotoNextBreakPoint()
 RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
 {
     int line, index;
-    int breakPointLine;
+    int breakPointLine = -1;
     getCursorPosition(&line, &index);
 
     if (line == 0)
@@ -2017,11 +2157,46 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
         line -= 1;
     }
 
+#ifndef USE_PYQODE
     breakPointLine = markerFindPrevious(line, markMaskBreakpoints);
     if (breakPointLine < 0)
     {
         breakPointLine = markerFindPrevious(lines() - 1, markMaskBreakpoints);
     }
+#else
+    const QTextBlock &currentBlock = document()->findBlockByLineNumber(line);
+    QTextBlock block = currentBlock.previous();
+    TextBlockUserData *tbud;
+
+    //look from currentBlock to the beginning
+    while (block.isValid())
+    {
+        tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+        {
+            breakPointLine = block.blockNumber();
+            break;
+        }
+        block = block.previous();
+    }
+
+    if (breakPointLine == -1)
+    {
+        //start from the end to currentBlock
+        block = document()->lastBlock();
+
+        while (block.isValid() && block != currentBlock)
+        {
+            tbud = dynamic_cast<TextBlockUserData*>(block.userData());
+            if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+            {
+                breakPointLine = block.blockNumber();
+                break;
+            }
+            block = block.previous();
+        }
+    }
+#endif
 
     if (breakPointLine >= 0)
     {
@@ -2031,6 +2206,7 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
     return RetVal(retError);
 }
 
+#ifndef USE_PYQODE
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::marginClicked(int margin, int line, Qt::KeyboardModifiers /*state*/)
 {
@@ -2044,6 +2220,24 @@ void ScriptEditorWidget::marginClicked(int margin, int line, Qt::KeyboardModifie
     }
     emit marginChanged();
 }
+
+#else
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::toggleBookmarkRequested(int line)
+{
+    toggleBookmark(line);
+    emit marginChanged();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::toggleBreakpointRequested(int line)
+{
+    toggleBreakpoint(line);
+    emit marginChanged();
+}
+
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< slot, invoked by BreakPointModel
@@ -2072,31 +2266,66 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 
         if (found) return; //!< there is already a breakpoint in this line, do not add the new one
 
+#ifdef USE_PYQODE
+        TextBlockUserData::BreakpointType markId;
         if (bp.enabled)
         {
             if (bp.conditioned)
             {
-                newHandle = markerAdd(bp.lineno, markCBreakPoint);
+                markId = TextBlockUserData::TypeBpEdit;
             }
             else
             {
-                newHandle = markerAdd(bp.lineno, markBreakPoint);
+                markId =  TextBlockUserData::TypeBp;
             }
         }
         else
         {
             if (bp.conditioned)
             {
-                newHandle = markerAdd(bp.lineno, markCBreakPointDisabled);
+                markId = TextBlockUserData::TypeBpEditDisabled;
             }
             else
             {
-                newHandle = markerAdd(bp.lineno, markBreakPointDisabled);
+                markId = TextBlockUserData::TypeBpDisabled;
             }
         }
-
+#else
+        unsigned int markId;
+        if (bp.enabled)
+        {
+            if (bp.conditioned)
+            {
+                markId = markCBreakPoint;
+            }
+            else
+            {
+                markId = markBreakPoint;
+            }
+        }
+        else
+        {
+            if (bp.conditioned)
+            {
+                markId = markCBreakPointDisabled;
+            }
+            else
+            {
+                markId = markBreakPointDisabled;
+            }
+        }
+#endif
+        
         BPMarker m;
+#ifdef USE_PYQODE
+        TextBlockUserData * tbud = getTextBlockUserData(bp.lineno, true);
+        tbud->m_breakpointType = markId;
+        m.userData = tbud;
+#else
+        newHandle = markerAdd(bp.lineno, markId);
         m.bpHandle = newHandle;
+#endif
+
         m.lineNo = bp.lineno;
         m.markedForDeletion = false;
         m_breakPointMap.append(m);
@@ -2122,7 +2351,15 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
         {
             if (it->lineNo == lineNo && it->markedForDeletion == true)
             {
+#ifdef USE_PYQODE
+                textBlockUserDataList().contains((TextBlockUserData*)it->userData);
+                if (textBlockUserDataList().contains((TextBlockUserData*)it->userData))
+                {
+                    ((TextBlockUserData*)it->userData)->m_breakpointType = TextBlockUserData::TypeNoBp;
+                }
+#else
                 markerDeleteHandle(it->bpHandle);
+#endif
                 it = m_breakPointMap.erase(it);
                 found = true;
             }
@@ -2139,7 +2376,15 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
             {
                 if (it->lineNo == lineNo)
                 {
+#ifdef USE_PYQODE
+                    textBlockUserDataList().contains((TextBlockUserData*)it->userData);
+                    if (textBlockUserDataList().contains((TextBlockUserData*)it->userData))
+                    {
+                        ((TextBlockUserData*)it->userData)->m_breakpointType = TextBlockUserData::TypeNoBp;
+                    }
+#else
                     markerDeleteHandle(it->bpHandle);
+#endif
                     it = m_breakPointMap.erase(it);
                 }
                 else

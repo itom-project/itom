@@ -35,15 +35,11 @@
 
 *********************************************************************** */
 
-#ifndef CHECKERBOOKMARKPANEL_H
-#define CHECKERBOOKMARKPANEL_H
+#ifndef BREAKPOINTPANEL_H
+#define BREAKPOINTPANEL_H
 
 /*
-Checker panels:
-
-- CheckerPanel: draw checker messages in front of each line
-- GlobalCheckerPanel: draw all checker markers as colored rectangle to
-  offer a global view of all errors
+Breakpoint panels
 */
 
 #include "../panel.h"
@@ -57,40 +53,29 @@ Checker panels:
 
 namespace ito {
 
-class DelayJobRunnerBase;
 /*
 Shows messages collected by one or more checker modes
 */
-class CheckerBookmarkPanel : public Panel
+class BreakpointPanel : public Panel
 {
     Q_OBJECT
 public:
-    CheckerBookmarkPanel(const QString &description = "", QWidget *parent = NULL);
-    virtual ~CheckerBookmarkPanel();
+    BreakpointPanel(const QString &description = "", QWidget *parent = NULL);
+    virtual ~BreakpointPanel();
 
     virtual QSize sizeHint() const;
-    
-    virtual void onUninstall();
-
-    QList<CheckerMessage> markersForLine(int line) const;
-
-    static QIcon iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CheckerMessage::CheckerStatus checkerStatus);
 
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void leaveEvent(QEvent *e);
 
 protected:
-    void displayTooltip(QList<QVariant> args);
 
 private:
-    int m_previousLine;
-    DelayJobRunnerBase *m_pJobRunner;
+    QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
 
 signals:
-    void toggleBookmarkRequested(int line);
+    void toggleBreakpointRequested(int line);
 };
 
 } //end namespace ito

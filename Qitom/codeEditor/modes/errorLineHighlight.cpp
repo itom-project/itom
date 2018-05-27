@@ -35,7 +35,7 @@
 
 *********************************************************************** */
 
-#include "caretLineHighlight.h"
+#include "errorLineHighlight.h"
 
 #include "../codeEditor.h"
 #include "../managers/textDecorationsManager.h"
@@ -45,18 +45,18 @@
 
 namespace ito {
 
-CaretLineHighlighterMode::CaretLineHighlighterMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
-    Mode("CaretLineHighlighterMode", description),
+ErrorLineHighlighterMode::ErrorLineHighlighterMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+    Mode("ErrorLineHighlighterMode", description),
     QObject(parent),
     m_decoration(NULL),
-    m_color(QColor())
+    m_color(QColor(255, 192, 192))
 {
 }
 
 //----------------------------------------------------------
 /*
 */
-CaretLineHighlighterMode::~CaretLineHighlighterMode()
+ErrorLineHighlighterMode::~ErrorLineHighlighterMode()
 {
 }
 
@@ -66,89 +66,45 @@ Background color of the caret line. Default is to use a color slightly
 darker/lighter than the background color. You can override the
 automatic color by setting up this property
 */
-QColor CaretLineHighlighterMode::background() const
+QColor ErrorLineHighlighterMode::background() const
 {
-    if (m_color.isValid() || !editor())
-    {
-        return m_color;
-    }
-    else
-    {
-        return Utils::driftColor(editor()->background(), 110);
-    }
+    return m_color;
 }
 
 //----------------------------------------------------------
 /*
 */
-void CaretLineHighlighterMode::setBackground(const QColor &color)
+void ErrorLineHighlighterMode::setBackground(const QColor &color)
 {
     m_color = color;
+
+    if (m_decoration)
+    {
+        m_decoration->setBackground(QBrush(m_color));
+    }
     refresh();
 }
 
 //----------------------------------------------------------
 /*
 */
-
-void CaretLineHighlighterMode::onInstall(CodeEditor *editor)
+void ErrorLineHighlighterMode::setErrorLine(int line)
 {
-    Mode::onInstall(editor);
-    refresh();
+    if (m_decoration)
+    {
+        editor()->decorations()->remove(m_decoration);
+    }
+
+    m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101));
+    m_decoration->setBackground(QBrush(m_color));
+    m_decoration->setFullWidth();
+    editor()->decorations()->remove(m_decoration);
 }
 
 //----------------------------------------------------------
 /*
 */
-void CaretLineHighlighterMode::onStateChanged(bool state)
-{
-    if (state)
-    {
-        connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
-        connect(editor(), SIGNAL(newTextSet()), this, SLOT(refresh()));
-        refresh();
-    }
-    else
-    {
-        disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
-        disconnect(editor(), SIGNAL(newTextSet()), this, SLOT(refresh()));
-        clearDeco();
-    }
-            
-}
-
-//----------------------------------------------------------
-/*
-Updates the current line decoration
-*/
-void CaretLineHighlighterMode::refresh()
-{
-    if (enabled())
-    {
-        QBrush brush;
-
-        clearDeco();
-        if (m_color.isValid())
-        {
-            brush = QBrush(m_color);
-        }
-        else
-        {
-            brush = Utils::driftColor(editor()->background(), 110);
-        }
-
-        m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->textCursor(),-1,-1,-1,-1,100));
-        m_decoration->setBackground(brush);
-        m_decoration->setFullWidth();
-        editor()->decorations()->append(m_decoration);
-    }
-}
-
-//----------------------------------------------------------
-/*
-Clear line decoration
-*/
-void CaretLineHighlighterMode::clearDeco()
+void ErrorLineHighlighterMode::clearErrorLine()
 {
     if (m_decoration.isNull() == false)
     {
@@ -157,5 +113,32 @@ void CaretLineHighlighterMode::clearDeco()
 
     m_decoration.clear();
 }
+
+//----------------------------------------------------------
+/*
+*/
+
+void ErrorLineHighlighterMode::onInstall(CodeEditor *editor)
+{
+    Mode::onInstall(editor);
+    refresh();
+}
+
+//----------------------------------------------------------
+/*
+*/
+void ErrorLineHighlighterMode::onStateChanged(bool state)
+{
+    if (state)
+    {
+        refresh();
+    }
+    else
+    {
+        clearErrorLine();
+    }
+            
+}
+
 
 } //end namespace ito

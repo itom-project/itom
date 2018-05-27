@@ -269,18 +269,12 @@ void CheckerBookmarkPanel::mouseReleaseEvent(QMouseEvent *e)
     #   the mouse cursor.*/
     int line = editor()->lineNbrFromPosition(e->pos().y());
 
-    QTextBlock block = editor()->document()->findBlockByLineNumber(line);
-    TextBlockUserData* tbud = dynamic_cast<TextBlockUserData*>(block.userData());
-    if (tbud)
+    if (line != -1)
     {
         if (e->button() == Qt::LeftButton)
         {
-            emit removeBookmarkRequested(line);
+            emit toggleBookmarkRequested(line);
         }
-    }
-    else
-    {
-        emit addBookmarkRequested(line);
     }
 }
 

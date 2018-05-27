@@ -1484,8 +1484,28 @@ void CodeEditor::getCursorPosition(int *line, int *column) const
     }
     if (column)
     {
-        *column = cursor.columnNumber();
+        *column = cursor.positionInBlock();
     }
+}
+
+//------------------------------------------------------------
+QTextCursor CodeEditor::setCursorPosition(int line, int column, bool applySelection /*= true*/)
+{
+    QTextCursor cursor = textCursor();
+    QTextBlock block = document()->findBlockByNumber(line);
+    cursor.setPosition(block.position() + column);
+    if (applySelection)
+    {
+        setTextCursor(cursor);
+    }
+    return cursor;
+}
+
+//------------------------------------------------------------
+void CodeEditor::ensureLineVisible(int line)
+{
+    setCursorPosition(line, 0);
+    ensureCursorVisible();
 }
 
 //------------------------------------------------------------
@@ -1515,6 +1535,22 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNo
     {
         return NULL;
     }
+}
+
+//------------------------------------------------------------
+/*
+Returns true if at least one bookmark is set, else false
+*/
+bool CodeEditor::bookmarksAvailable() const
+{
+    foreach (TextBlockUserData *tbud, textBlockUserDataList())
+    {
+        if (tbud->m_bookmark)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 //------------------------------------------------------------
@@ -1642,6 +1678,59 @@ QPair<int,int> CodeEditor::selectionRange() const
         end -= 1;
     }
     return QPair<int,int>(start, end);
+}
+
+//------------------------------------------------------------
+/*
+If there is a selection, *lineFrom is set to the line number in which the selection 
+begins and *lineTo is set to the line number in which the selection ends. 
+(They could be the same.) *indexFrom is set to the index at which the selection 
+begins within *lineFrom, and *indexTo is set to the index at which the selection ends within *lineTo. 
+If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to -1.
+*/
+void CodeEditor::getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *indexTo)
+{
+    const QTextCursor &cursor = textCursor();
+    if (!cursor.hasSelection())
+    {
+        if (lineFrom) *lineFrom = -1;
+        if (lineTo) *lineTo = -1;
+        if (indexFrom) *indexFrom = -1;
+        if (indexTo) *indexTo = -1;
+    }
+    else
+    {
+        int start = cursor.selectionStart();
+        int end = cursor.selectionEnd();
+        QTextBlock block = document()->findBlock(start);
+        
+        if (lineFrom) *lineFrom = block.blockNumber();
+        if (indexFrom) *indexFrom = start - block.position();
+
+        while (start < end)
+        {
+            block = block.next();
+            start += block.length();
+        }
+
+        if (lineTo) *lineTo = block.blockNumber();
+        if (indexTo) *indexTo = end - block.position();
+    }
+}
+
+//------------------------------------------------------------
+void CodeEditor::setSelection(int lineFrom, int indexFrom, int lineTo, int indexTo)
+{
+    QTextCursor cursor = textCursor();
+    QTextBlock firstBlock = document()->findBlockByNumber(lineFrom);
+    QTextBlock lastBlock = document()->findBlockByNumber(lineTo);
+
+    if (firstBlock.isValid() && lastBlock.isValid())
+    {
+        cursor.setPosition(firstBlock.position() + indexFrom, QTextCursor::MoveAnchor);
+        cursor.setPosition(lastBlock.position() + indexTo, QTextCursor::KeepAnchor);
+        setTextCursor(cursor);
+    }
 }
 
 //------------------------------------------------------------

@@ -35,66 +35,48 @@
 
 *********************************************************************** */
 
-#ifndef CHECKERBOOKMARKPANEL_H
-#define CHECKERBOOKMARKPANEL_H
+#ifndef ERRORLINEHIGHLIGHT_H
+#define ERRORLINEHIGHLIGHT_H
 
 /*
-Checker panels:
-
-- CheckerPanel: draw checker messages in front of each line
-- GlobalCheckerPanel: draw all checker markers as colored rectangle to
-  offer a global view of all errors
+This module contains the error line highlighter mode
 */
 
-#include "../panel.h"
-#include "../utils/utils.h"
-#include "../textBlockUserData.h"
+#include "../textDecoration.h"
+#include "../mode.h"
 
-#include <qevent.h>
-#include <qsize.h>
 #include <qcolor.h>
-#include <qicon.h>
 
 namespace ito {
 
-class DelayJobRunnerBase;
 /*
-Shows messages collected by one or more checker modes
+Highlights the caret line
 */
-class CheckerBookmarkPanel : public Panel
+class ErrorLineHighlighterMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    CheckerBookmarkPanel(const QString &description = "", QWidget *parent = NULL);
-    virtual ~CheckerBookmarkPanel();
+    ErrorLineHighlighterMode(const QString &description = "", QObject *parent = NULL);
+    virtual ~ErrorLineHighlighterMode();
 
-    virtual QSize sizeHint() const;
+    QColor background() const;
+    void setBackground(const QColor &color);
+
+    bool errorLineAvailable() const { return m_decoration.isNull() == false; }
     
-    virtual void onUninstall();
+    void setErrorLine(int line);
+    void clearErrorLine();
 
-    QList<CheckerMessage> markersForLine(int line) const;
+    virtual void onInstall(CodeEditor *editor);
+    virtual void onStateChanged(bool state);
 
-    static QIcon iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CheckerMessage::CheckerStatus checkerStatus);
-
-protected:
-    virtual void paintEvent(QPaintEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void leaveEvent(QEvent *e);
+public slots:
 
 protected:
-    void displayTooltip(QList<QVariant> args);
-
-private:
-    int m_previousLine;
-    DelayJobRunnerBase *m_pJobRunner;
-
-signals:
-    void toggleBookmarkRequested(int line);
+    QColor m_color;
+    TextDecoration::Ptr m_decoration;
 };
 
 } //end namespace ito
 
 #endif
-
-

@@ -31,6 +31,8 @@
     #include "abstractCodeEditorWidget.h"
     #include "../codeEditor/panels/foldingPanel.h"
     #include "../codeEditor/panels/checkerBookmarkPanel.h"
+    #include "../codeEditor/panels/breakpointPanel.h"
+    #include "../codeEditor/modes/errorLineHighlight.h"
 #else
     #include "abstractPyScintillaWidget.h"
 #endif
@@ -93,8 +95,10 @@ public:
     ScriptEditorWidget(QWidget* parent = NULL);
     ~ScriptEditorWidget();
 
+#ifndef USE_PYQODE
     bool m_errorMarkerVisible;
-    int m_errorMarkerNr; //number of indicator which marks the line with current error
+    int m_errorMarkerNr; //number of indicator which marks the line with current erro
+#endif
 
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
@@ -184,7 +188,11 @@ private:
 
     struct BPMarker
     {
+#ifdef USE_PYQODE
+        const TextBlockUserData *userData;
+#else
         int bpHandle;
+#endif
         int lineNo;
         bool markedForDeletion;
     };
@@ -231,6 +239,8 @@ private:
 #ifdef USE_PYQODE
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
+    QSharedPointer<BreakpointPanel> m_breakpointPanel;
+    QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
 #endif
 
     static const QString lineBreak;
@@ -305,7 +315,14 @@ public slots:
     void print();
 
 private slots:
+
+#ifdef USE_PYQODE
+    void toggleBookmarkRequested(int line);
+    void toggleBreakpointRequested(int line);
+#else
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
+#endif
+
     void copyAvailable(const bool yes);
 
     void classNavTimerElapsed();

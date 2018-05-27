@@ -72,7 +72,6 @@ protected:
     void clearDeco();
 
     QColor m_color;
-    int m_pos;
     TextDecoration::Ptr m_decoration;
 };
 
