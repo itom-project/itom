@@ -31,6 +31,11 @@
 #include "commonQt/commonQtVersion.h"
 #include "PointCloud/pclVersion.h"
 #include "DataObject/dataobjVersion.h"
+#include "plot/plotVersion.h"
+#include "itomWidgets/itomWidgetsVersion.h"
+#include "shape/shapeVersion.h"
+#include "AddInManager/addInManagerVersion.h"
+#include "QPropertyEditor/propertyEditorVersion.h"
 
 #include <QSysInfo>
 
@@ -71,7 +76,9 @@ QMap<QString, QString> ito::getItomVersionMap()
 
 
 #if (defined ITOMLIBS_SHARED)
-    items["itom_sharedLibs"] = QString("dataobject v.%1; itomCommonLib v.%2; itomCommonQtLib v.%3; pointcloud v.%4").arg(DATAOBJ_VER_STRING, COMMON_VER_STRING , COMMON_QT_VER_STRING, PCL_WRAPPER_VER_STRING);
+	items["itom_sharedLibs"] = QString("dataobject v.%1; itomCommonLib v.%2; itomCommonQtLib v.%3; pointcloud v.%4; plot v.%5; widgets v.%6; shape v.%7; addInManager v.%8; property editor v.%9").arg(\
+		DATAOBJ_VERSION_STRING, COMMON_VERSION_STRING, COMMON_QT_VERSION_STRING, PCL_WRAPPER_VERSION_STRING, \
+		COMMON_PLOT_VERSION_STRING, ITOM_WIDGETS_VERSION_STRING, SHAPE_VERSION_STRING, ADDINMANAGER_VERSION_STRING, PROPERTYEDITOR_VERSION_STRING);
 #else
     items["itom_sharedLibs"] = QObject::tr("none");
 #endif

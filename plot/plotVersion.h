@@ -25,4 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define PLOT_VER_STRING  "1.1.0.0"
+#define COMMON_PLOT_VERSION_MAJOR 1
+#define COMMON_PLOT_VERSION_MINOR 1
+#define COMMON_PLOT_VERSION_PATCH 0
+#define COMMON_PLOT_VERSION_REVISION 0
+#define COMMON_PLOT_VERSION_STRING  "1.1.0.0"

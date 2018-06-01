@@ -25,10 +25,11 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define ADDINMANAGER_VERSION_MAJOR 0
-#define ADDINMANAGER_VERSION_MINOR 0
-#define ADDINMANAGER_VERSION_PATCH 0
-#define ADDINMANAGER_VERSION_REVISION 1
-#define ADDINMANAGER_VERSION_STRING  "0.0.0.1"
-
-
+#define ITOM_WIDGETS_VERSION_MAJOR 1
+#define ITOM_WIDGETS_VERSION_MINOR 8
+#define ITOM_WIDGETS_VERSION_PATCH 2
+#define ITOM_WIDGETS_VERSION_REVISION 0
+#define ITOM_WIDGETS_VERSION_STRING "1.8.2.0"
+#define ITOM_WIDGETS_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
+#define ITOM_WIDGETS_COPYRIGHT      "(C) 2018, ITO, University Stuttgart"
+#define ITOM_WIDGETS_NAME           "itomWidgets"

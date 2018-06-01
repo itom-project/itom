@@ -145,6 +145,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
