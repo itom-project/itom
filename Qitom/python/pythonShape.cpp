@@ -27,6 +27,7 @@
 #include "pythonDataObject.h"
 #include "pythonRegion.h"
 #include "pythonCommon.h"
+#include "pythonRgba.h"
 #include "../common/shape.h"
 #include "../DataObject/dataobj.h"
 #include "../DataObject/dataObjectFuncs.h"
@@ -1006,7 +1007,7 @@ This static method is equal to the command:: \n\
     }
 
     //the stateTuple is simply a byte array with the stream data of the QRegion.
-    PyObject *tempOut = Py_BuildValue("(O()O)", Py_TYPE(self), stateTuple);
+    PyObject *tempOut = Py_BuildValue("(O(i)O)", Py_TYPE(self), Shape::Invalid, stateTuple);
     Py_XDECREF(stateTuple);
 
     return tempOut;
@@ -1030,10 +1031,12 @@ This static method is equal to the command:: \n\
         QByteArray ba(PyBytes_AS_STRING(data), PyBytes_GET_SIZE(data));
         QDataStream d(&ba, QIODevice::ReadOnly);
 
-        if (self->shape)
-        {
-            d >> *(self->shape);
-        }
+		if (!self->shape)
+		{
+			self->shape = new ito::Shape();
+		}
+
+        d >> *(self->shape);
     }
 
     Py_RETURN_NONE;
@@ -1797,6 +1800,66 @@ int PythonShape::PyShape_setName(PyShape *self, PyObject *value, void * /*closur
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getColor_doc,  "Get/set color of the shape (default: invalid color (None). In this case the default color for shapes is used for visualization.)");
+PyObject* PythonShape::PyShape_getColor(PyShape *self, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+	QColor c = self->shape->color();
+	if (c.isValid())
+	{
+		PythonRgba::PyRgba* retRgba = PythonRgba::createEmptyPyRgba();
+		retRgba->rgba.r = c.red();
+		retRgba->rgba.g = c.green();
+		retRgba->rgba.b = c.blue();
+		retRgba->rgba.a = c.alpha();
+		return (PyObject*)retRgba;
+	}
+	else
+	{
+		Py_RETURN_NONE;
+	}
+}
+
+int PythonShape::PyShape_setColor(PyShape *self, PyObject *value, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return -1;
+    }
+
+	QColor color;
+	bool ok;
+
+	if (value == Py_None)
+	{
+		ok = true;
+	}
+	else if (PyRgba_Check(value))
+	{
+		ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)value;
+		color = QColor(rgba->rgba.r, rgba->rgba.g, rgba->rgba.b, rgba->rgba.a);
+		ok = true;
+	}    
+    
+    if (ok)
+    {
+        self->shape->setColor(color);
+        return 0;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "error interpreting the color as itom.rgba or None (invalid color).");
+        return -1;
+    }
+}
+
+//-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_getTransform_doc,  "Get/set the affine, non scaled 2D transformation matrix (2x3, float64, [2x2 Rot, 2x1 trans])");
 PyObject* PythonShape::PyShape_getTransform(PyShape *self, void * /*closure*/)
 {
@@ -2266,7 +2329,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 {
     if (!value)
     {
-        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s missing", paramName).toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%1 missing", paramName).toLatin1().data());
         return QPointF();
     }
 
@@ -2320,7 +2383,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
     if (!ok)
     {
-        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s: float64 array with two elements required (x,y)").toLatin1().data(), paramName);
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%1: float64 array with two elements required (x,y)").toLatin1().data(), paramName);
     }
 
     return point;
@@ -2328,22 +2391,23 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
-    {"valid",  (getter)PyShape_getValid,          (setter)NULL,                   shape_getValid_doc, NULL },
-    {"type",  (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
-    {"flags", (getter)PyShape_getFlags,         (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
-    {"index", (getter)PyShape_getIndex,         (setter)PyShape_setIndex,       shape_getIndex_doc, NULL},
-    {"name",  (getter)PyShape_getName,         (setter)PyShape_setName,         shape_getName_doc, NULL},
-    {"transform", (getter)PyShape_getTransform, (setter)PyShape_setTransform,   shape_getTransform_doc, NULL}, //only affine transformation, 2d, allowed
-    {"area", (getter)PyShape_getArea,           (setter)NULL,                   shape_getArea_doc, NULL},
-    {"basePoints", (getter)PyShape_getBasePoints, (setter)NULL,                 shape_basePoints_doc, NULL},
-    {"point1", (getter)PyShape_getPoint1,         (setter)PyShape_setPoint1,    shape_point1_doc, NULL},
-    {"point2", (getter)PyShape_getPoint2,         (setter)PyShape_setPoint2,    shape_point2_doc, NULL},
-    {"center", (getter)PyShape_getCenter,         (setter)PyShape_setCenter,    shape_center_doc, NULL},
-    {"angleDeg", (getter)PyShape_getAngleDeg,         (setter)PyShape_setAngleDeg,    shape_angleDeg_doc, NULL},
-    {"angleRad", (getter)PyShape_getAngleRad,         (setter)PyShape_setAngleRad,    shape_angleRad_doc, NULL},
-    {"radius", (getter)PyShape_getRadius,         (setter)PyShape_setRadius,    shape_radius_doc, NULL},
-    {"width", (getter)PyShape_getWidth,         (setter)PyShape_setWidth,    shape_width_doc, NULL},
-    {"height", (getter)PyShape_getHeight,         (setter)PyShape_setHeight,    shape_height_doc, NULL},
+    {"valid",     (getter)PyShape_getValid,       (setter)NULL,                   shape_getValid_doc, NULL },
+    {"type",      (getter)PyShape_getType,        (setter)NULL,                   shape_getType_doc, NULL },
+    {"flags",     (getter)PyShape_getFlags,       (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
+    {"index",     (getter)PyShape_getIndex,       (setter)PyShape_setIndex,       shape_getIndex_doc, NULL},
+    {"name",      (getter)PyShape_getName,        (setter)PyShape_setName,        shape_getName_doc, NULL},
+    {"transform", (getter)PyShape_getTransform,   (setter)PyShape_setTransform,   shape_getTransform_doc, NULL}, //only affine transformation, 2d, allowed
+    {"area",      (getter)PyShape_getArea,        (setter)NULL,                   shape_getArea_doc, NULL},
+    {"basePoints", (getter)PyShape_getBasePoints, (setter)NULL,                   shape_basePoints_doc, NULL},
+    {"point1",    (getter)PyShape_getPoint1,      (setter)PyShape_setPoint1,      shape_point1_doc, NULL},
+    {"point2",    (getter)PyShape_getPoint2,      (setter)PyShape_setPoint2,      shape_point2_doc, NULL},
+    {"center",    (getter)PyShape_getCenter,      (setter)PyShape_setCenter,      shape_center_doc, NULL},
+    {"angleDeg",  (getter)PyShape_getAngleDeg,    (setter)PyShape_setAngleDeg,    shape_angleDeg_doc, NULL},
+    {"angleRad",  (getter)PyShape_getAngleRad,    (setter)PyShape_setAngleRad,    shape_angleRad_doc, NULL},
+    {"radius",    (getter)PyShape_getRadius,      (setter)PyShape_setRadius,      shape_radius_doc, NULL},
+    {"width",     (getter)PyShape_getWidth,       (setter)PyShape_setWidth,       shape_width_doc, NULL},
+    {"height",    (getter)PyShape_getHeight,      (setter)PyShape_setHeight,      shape_height_doc, NULL},
+	{"color",     (getter)PyShape_getColor,       (setter)PyShape_setColor,       shape_getColor_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
