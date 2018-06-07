@@ -41,6 +41,7 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qicon.h>
+#include <qmenu.h>
 #include <qtooltip.h>
 #include "../textBlockUserData.h"
 #include "../codeEditor.h"
@@ -56,12 +57,19 @@ namespace ito {
 CheckerBookmarkPanel::CheckerBookmarkPanel(const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
     Panel("CheckerBookmarkPanel", false, description, parent),
     m_previousLine(-1),
-    m_pJobRunner(NULL)
+    m_pJobRunner(NULL),
+    m_contextMenuLine(-1)
 {
     setScrollable(true);
     setMouseTracking(true);
 
     m_pJobRunner = new DelayJobRunner<CheckerBookmarkPanel, void(CheckerBookmarkPanel::*)(QList<QVariant>)>(100);
+
+    m_pContextMenu = new QMenu(this);
+    m_contextMenuActions["toggleBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this, SLOT(menuToggleBookmark()));
+    m_contextMenuActions["nextBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("Next Bookmark"), this, SLOT(menuGotoNextBookmark()));
+    m_contextMenuActions["prevBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("Previous Bookmark"), this, SLOT(menuGotoPreviousBookmark()));
+    m_contextMenuActions["clearAllBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("Clear All Bookmarks"), this, SLOT(menuClearAllBookmarks()));
 }
 
 //----------------------------------------------------------
@@ -112,7 +120,7 @@ any.
 */
 QList<CheckerMessage> CheckerBookmarkPanel::markersForLine(int line) const
 {
-    QTextBlock block = editor()->document()->findBlockByLineNumber(line);
+    QTextBlock block = editor()->document()->findBlockByNumber(line);
     TextBlockUserData* tbud = dynamic_cast<TextBlockUserData*>(block.userData());
     if (tbud)
     {
@@ -282,13 +290,66 @@ void CheckerBookmarkPanel::mouseReleaseEvent(QMouseEvent *e)
 /*
 Display tooltip at the specified top position.
 */
+/*virtual*/ void CheckerBookmarkPanel::contextMenuEvent (QContextMenuEvent * e)
+{
+    e->accept();
+
+    bool bookmarksAvailable = editor()->bookmarksAvailable();
+
+    m_contextMenuActions["nextBM"]->setEnabled(bookmarksAvailable);
+    m_contextMenuActions["prevBM"]->setEnabled(bookmarksAvailable);
+    m_contextMenuActions["clearAllBM"]->setEnabled(bookmarksAvailable);
+
+
+    int line = editor()->lineNbrFromPosition(e->pos().y());
+
+    if (line != -1)
+    {
+        m_contextMenuLine = line;
+        m_pContextMenu->exec(e->globalPos());
+    }
+
+    m_contextMenuLine = -1;
+}
+
+//----------------------------------------------------------
+/*
+Display tooltip at the specified top position.
+*/
 void CheckerBookmarkPanel::displayTooltip(QList<QVariant> args)
 {
     QString tooltip = args[0].toString();
     int top = args[1].toInt();
 
-    QToolTip::showText(mapToGlobal(QPoint(
-            sizeHint().width(), top)), tooltip, this);
+    QToolTip::showText(mapToGlobal(QPoint(sizeHint().width(), top)), tooltip, this);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CheckerBookmarkPanel::menuToggleBookmark()
+{
+    if (m_contextMenuLine >= 0)
+    {
+        emit toggleBookmarkRequested(m_contextMenuLine);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CheckerBookmarkPanel::menuClearAllBookmarks()
+{
+    emit clearAllBookmarksRequested();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CheckerBookmarkPanel::menuGotoNextBookmark()
+{
+    emit gotoBookmarkRequested(true);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CheckerBookmarkPanel::menuGotoPreviousBookmark()
+{
+    emit gotoBookmarkRequested(false);
 }
 
 

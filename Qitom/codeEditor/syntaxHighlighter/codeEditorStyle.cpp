@@ -190,7 +190,11 @@ QTextCharFormat StyleItem::createFormat(const QString &familyName, int pointSize
 /*static*/ QMetaEnum StyleItem::styleTypeEnum()
 {
     const QMetaObject &mo = StyleItem::staticMetaObject;
-    int idx = mo.indexOfEnumerator("StyleType");
+    int idx = mo.indexOfEnumerator("ito::StyleType");
+    if (idx == -1)
+    {
+        idx = mo.indexOfEnumerator("StyleType");
+    }
     return mo.enumerator(idx);
 }
 
@@ -229,23 +233,23 @@ CodeEditorStyle::CodeEditorStyle()
     
 
     m_formats[StyleItem::KeyKeyword] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#808080", Qt::white, true));
-    m_formats[StyleItem::KeyOperator] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
-    m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
-    m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::red, Qt::white));
+    m_formats[StyleItem::KeyOperator] = StyleItem(StyleItem::KeyOperator, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
+    m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyConstant, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
+    m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyNamespace, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
     
-    m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true));
-    m_formats[StyleItem::KeyString] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat("Courier New", defaultPointSize, "#7f007f", Qt::white, false));
-    m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false));
-    m_formats[StyleItem::KeySelf] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, false));
-    m_formats[StyleItem::KeyNumber] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, false));
-    m_formats[StyleItem::KeyDocstring] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#7f0000", Qt::white, false));
-    m_formats[StyleItem::KeyDecorator] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#805000", Qt::white, false));
-    m_formats[StyleItem::KeyFunction] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
+    m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyClass, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true));
+    m_formats[StyleItem::KeyString] = StyleItem(StyleItem::KeyString, StyleItem::createFormat("Courier New", defaultPointSize, "#7f007f", Qt::white, false));
+    m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyComment, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false));
+    m_formats[StyleItem::KeySelf] = StyleItem(StyleItem::KeySelf, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, false));
+    m_formats[StyleItem::KeyNumber] = StyleItem(StyleItem::KeyNumber, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, false));
+    m_formats[StyleItem::KeyDocstring] = StyleItem(StyleItem::KeyDocstring, StyleItem::createFormat(defaultFontName, defaultPointSize, "#7f0000", Qt::white, false));
+    m_formats[StyleItem::KeyDecorator] = StyleItem(StyleItem::KeyDecorator, StyleItem::createFormat(defaultFontName, defaultPointSize, "#805000", Qt::white, false));
+    m_formats[StyleItem::KeyFunction] = StyleItem(StyleItem::KeyFunction, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
 
-    m_formats[StyleItem::KeyHighlight] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, false));
-    m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::magenta, Qt::white, false));
-    m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, true));
-    m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::magenta, Qt::white, true));
+    m_formats[StyleItem::KeyHighlight] = StyleItem(StyleItem::KeyHighlight, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, false));
+    m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyBuiltin, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
+    m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, true));
+    m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::magenta, Qt::white, true));
 }
 
 
@@ -283,20 +287,22 @@ QColor CodeEditorStyle::highlight() const
 //------------------------------------------------------------------
 StyleItem CodeEditorStyle::operator[](StyleItem::StyleType type) const
 {
-    if (type >= 0 && type < m_formats.size())
+    if (m_formats.contains(type))
     {
         return m_formats[type];
     }
+
     return StyleItem();
 }
 
 //------------------------------------------------------------------
 QTextCharFormat CodeEditorStyle::format(StyleItem::StyleType type) const
 {
-    if (type >= 0 && type < m_formats.size())
+    if (m_formats.contains(type))
     {
         return m_formats[type].format();
     }
+
     return QTextCharFormat();
 }
 

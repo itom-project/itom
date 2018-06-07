@@ -41,6 +41,7 @@
 #include <qstring.h>
 
 #include <QTextBlockUserData>
+#include <qpointer.h>
 
 namespace ito {
 
@@ -126,6 +127,7 @@ public:
         case StatusWarning:
             return QColor("#DDDD40");
         case StatusError:
+        default:
             return QColor("#DD4040");
         }
     }
@@ -163,13 +165,17 @@ public:
         TypeNoBp = 0,
         TypeBp = 0x0001,
         TypeBpEdit = 0x0002,
-        TypeBpDisabled = TypeBp | 0x0004,
-        TypeBpEditDisabled = TypeBpEdit | 0x0004
+        TypeFlagDisabled = 0x0004,
+        TypeBpDisabled = TypeBp | TypeFlagDisabled,
+        TypeBpEditDisabled = TypeBpEdit | TypeFlagDisabled
+        
     };
 
     TextBlockUserData(CodeEditor *editor);
 
     virtual ~TextBlockUserData();
+
+    void removeCodeEditorRef();
 
     //List of checker messages associated with the block.
     QList<CheckerMessage> m_checkerMessages;
@@ -187,8 +193,10 @@ public:
 
     bool m_importStmt;
 
+    int m_currentLineNr;
+
 private:
-    CodeEditor *m_pCodeEditor;
+    QPointer<CodeEditor> m_codeEditor;
 };
 
 } //end namespace ito

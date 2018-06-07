@@ -55,6 +55,8 @@ Checker panels:
 #include <qcolor.h>
 #include <qicon.h>
 
+class QMenu;
+
 namespace ito {
 
 class DelayJobRunnerBase;
@@ -82,15 +84,28 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void leaveEvent(QEvent *e);
 
+    virtual void contextMenuEvent (QContextMenuEvent * e);
+
 protected:
     void displayTooltip(QList<QVariant> args);
 
 private:
     int m_previousLine;
     DelayJobRunnerBase *m_pJobRunner;
+    QMenu *m_pContextMenu;
+    QMap<QString, QAction*> m_contextMenuActions;
+    int m_contextMenuLine;
 
 signals:
     void toggleBookmarkRequested(int line);
+    void gotoBookmarkRequested(bool next);
+    void clearAllBookmarksRequested();
+
+private slots:
+    void menuToggleBookmark();
+    void menuClearAllBookmarks();
+    void menuGotoNextBookmark();
+    void menuGotoPreviousBookmark();
 };
 
 } //end namespace ito

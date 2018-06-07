@@ -65,6 +65,8 @@ public:
 
     virtual QSize sizeHint() const;
 
+    void setCurrentLine(int line); //!< line = -1 removes the current line icon
+
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
@@ -73,6 +75,8 @@ protected:
 
 private:
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
+    QIcon m_currentLineIcon;
+    int m_currentLine;
 
 signals:
     void toggleBreakpointRequested(int line);

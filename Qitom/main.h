@@ -39,36 +39,49 @@ public:
     {
         try
         {
+            int type = event ? event->type() : -1;
+
+            if (type == 68 || type == 74 || type == 69)
+            {
+                QString className =  receiver->metaObject()->className();
+                if (className == "ito::ScriptDockWidget")
+                {
+                    int j = 1;
+                }
+            }
             return QApplication::notify(receiver,event);
         }
         catch (cv::Exception &exc)
         {
+            QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught a cv::exception");
-            qWarning() << (exc.err).c_str() << " from" << receiver->objectName();
+            qWarning() << (exc.err).c_str() << " from" << name;
             //qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught. OpenCV-Exception: %s", (exc.err).c_str());
 #endif
-            std::cerr << "Itom-Application has caught a cv::exception: " << (exc.err).c_str() << " from: " << receiver->objectName().toLatin1().data() << "\n" << std::endl;
+            std::cerr << "Itom-Application has caught a cv::exception: " << (exc.err).c_str() << " from: " << name.toLatin1().constData() << "\n" << std::endl;
         }
         catch(std::exception &exc)
         {
+            QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught an exception");
-            qWarning() << "Message:" << exc.what() << " from" << receiver->objectName();
+            qWarning() << "Message:" << exc.what() << " from" << name;
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught. Exception: %s", exc.what());
 #endif
-            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << receiver->objectName().toLatin1().data() << "\n" << std::endl;
+            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << name.toLatin1().constData() << "\n" << std::endl;
         }
         catch (...)
         {
 			int type = event ? event->type() : -1;
+            QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught an exception");
-			qWarning() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << type;
+			qWarning() << "Itom-Application caught an exception from" <<  name << "from event type" << type;
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught");
 #endif
-            std::cerr << "Itom-Application caught an exception from: " << receiver->objectName().toLatin1().data() << " from event type " << type << "\n" << std::endl;
+            std::cerr << "Itom-Application caught an exception from: " << name.toLatin1().constData() << " from event type " << type << "\n" << std::endl;
         }
         return false;
     }

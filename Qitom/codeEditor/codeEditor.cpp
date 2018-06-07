@@ -77,7 +77,9 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_edgeColumn(79),
     m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true),
-    m_indentationGuidesColor(Qt::darkGray)
+    m_indentationGuidesColor(Qt::darkGray),
+    m_redoAvailable(false),
+    m_undoAvailable(false)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -87,6 +89,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     connect(this, SIGNAL(blockCountChanged()), this, SLOT(update()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(update()));
+    connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailable(bool)));
+    connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailable(bool)));
 
     setMouseTracking(true);
     setCenterOnScroll(true);
@@ -105,6 +109,11 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
+    foreach (TextBlockUserData *tbud, m_textBlockUserDataList)
+    {
+        tbud->removeCodeEditorRef();
+    }
+
     delete m_pPanels;
     m_pPanels = NULL;
 
@@ -114,7 +123,8 @@ CodeEditor::~CodeEditor()
     delete m_pModes;
     m_pModes = NULL;
 
-    m_pTooltipsRunner->deleteLater();
+    m_pTooltipsRunner->cancelRequests();
+    delete m_pTooltipsRunner;
     m_pTooltipsRunner = NULL;
 }
 
@@ -1023,7 +1033,7 @@ Set the number of the first visible line to line.
 void CodeEditor::setFirstVisibleLine(int line)
 {
     moveCursor(QTextCursor::End);
-    QTextCursor cursor(document()->findBlockByLineNumber(line));
+    QTextCursor cursor(document()->findBlockByNumber(line));
     setTextCursor(cursor);
 }
 
@@ -1246,7 +1256,7 @@ void CodeEditor::resetStylesheet()
             setStyleSheet(QString("QPlainTextEdit \
             { \
                 background-color: %1; \
-                color: %1; \
+                color: %2; \
             }").arg(m_background.name(), m_foreground.name()));
         }
         else
@@ -1255,7 +1265,7 @@ void CodeEditor::resetStylesheet()
             setStyleSheet(QString("QPlainTextEdit \
             { \
                 background-color: %1; \
-                color: %1; \
+                color: %2; \
             }").arg(m_background.name(), m_foreground.name()));
 #else
             /*on linux/osx we just have to set an empty stylesheet to
@@ -1518,7 +1528,7 @@ Returns NULL if the line does not exist
 */
 TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNotExist /*= true*/)
 {
-    QTextBlock block = document()->findBlockByLineNumber(lineNbr);
+    QTextBlock block = document()->findBlockByNumber(lineNbr);
 
     if (block.isValid())
     {
@@ -1527,6 +1537,7 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNo
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
+            userData->m_currentLineNr = lineNbr;
             block.setUserData(userData);
         }
         return userData;
@@ -1555,6 +1566,31 @@ bool CodeEditor::bookmarksAvailable() const
 
 //------------------------------------------------------------
 /*
+Returns true if at least one bookmark is set, else false
+*/
+bool CodeEditor::breakpointsAvailable() const
+{
+    foreach (TextBlockUserData *tbud, textBlockUserDataList())
+    {
+        if (tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+//------------------------------------------------------------
+/*
+
+*/
+/*virtual*/ bool CodeEditor::removeTextBlockUserData(TextBlockUserData* userData)
+{
+    return m_textBlockUserDataList.remove(userData);
+}
+
+//------------------------------------------------------------
+/*
 Returns the line count
 */
 int CodeEditor::lineCount() const
@@ -1574,7 +1610,7 @@ int CodeEditor::lineLength(int line) const
         return -1;
     }
 
-    QTextBlock block = document()->findBlockByLineNumber(line);
+    QTextBlock block = document()->findBlockByNumber(line);
     if (block.isValid())
     {
         return block.length();
@@ -1816,5 +1852,18 @@ void CodeEditor::showTooltipDelayJobRunner(QList<QVariant> args)
 
     QToolTip::showText(pos, tooltip.left(1024));
 }
+
+//------------------------------------------------------------
+void CodeEditor::undoAvailable(bool available)
+{
+    m_undoAvailable = available;
+}
+
+//------------------------------------------------------------
+void CodeEditor::redoAvailable(bool available)
+{
+    m_redoAvailable = available;
+}
+
 
 } //end namespace ito

@@ -2076,6 +2076,8 @@ void ScriptDockWidget::mnuReplaceTextExpr()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuGoto()
 {
+    //TODO CodeEditor
+    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew == NULL) return;
 
@@ -2103,6 +2105,7 @@ void ScriptDockWidget::mnuGoto()
     }
 
     DELETE_AND_SET_NULL(d);
+    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2111,7 +2114,7 @@ void ScriptDockWidget::mnuToggleBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuToggleBookmark();
+        sew->toggleBookmark(-1);
         updateEditorActions();
     }
 }
@@ -2122,7 +2125,7 @@ void ScriptDockWidget::mnuClearAllBookmarks()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuClearAllBookmarks();
+        sew->clearAllBookmarks();
         updateEditorActions();
     }
 }
@@ -2133,7 +2136,7 @@ void ScriptDockWidget::mnuGotoNextBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuGotoNextBookmark();
+        sew->gotoNextBookmark();
         updateEditorActions();
     }
 }
@@ -2144,7 +2147,7 @@ void ScriptDockWidget::mnuGotoPreviousBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuGotoPreviousBookmark();
+        sew->gotoPreviousBookmark();
         updateEditorActions();
     }
 }
@@ -2187,6 +2190,8 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach)
 {
+    //TODO CodeEditor
+    /*
     ScriptEditorWidget* sew = getCurrentEditor();
 
     if (sew != NULL)
@@ -2213,16 +2218,20 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
             }
         }
     }
+    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 {
+    //TODO CodeEditor
+    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew != NULL)
     {
         sew->replace(replace);
     }
+    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2232,6 +2241,9 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     bool inRange = true;
     int count = 0;
 
+    //TODO CodeEditor
+
+    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew != NULL)
     {
@@ -2296,7 +2308,15 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
         }
     }
 
-    QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("%1 occurrence(s) was replaced").arg(count));
+    if (count == 1)
+    {
+        QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("One occurrence was replaced"));
+    }
+    else
+    {
+        QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("%1 occurrences were replaced").arg(count));
+    }
+    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

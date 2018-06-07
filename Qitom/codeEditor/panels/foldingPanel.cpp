@@ -826,6 +826,15 @@ void FoldingPanel::expandAll()
 
 //----------------------------------------------------------
 /*
+toggles all folds
+*/
+void FoldingPanel::toggleFold(bool topLevelOnly)
+{
+    //todo
+}
+
+//----------------------------------------------------------
+/*
 Show the block previous blank lines
 */
 /*static*/ void FoldingPanel::showPreviousBlankLines(const QTextBlock &block)

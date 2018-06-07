@@ -49,9 +49,17 @@ TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
     m_importStmt(false),
     m_breakpointType(TypeNoBp),
     m_bookmark(false),
-    m_pCodeEditor(editor)
+    m_codeEditor(editor)
 {
-    m_pCodeEditor->textBlockUserDataList() << this;
+    m_codeEditor->textBlockUserDataList() << this;
+}
+
+//------------------------------------------------------------------------
+/*
+*/
+void TextBlockUserData::removeCodeEditorRef()
+{
+    m_codeEditor = NULL;
 }
 
 //------------------------------------------------------------------------
@@ -59,9 +67,10 @@ TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
 */
 TextBlockUserData::~TextBlockUserData()
 {
-    m_pCodeEditor->textBlockUserDataList().remove(this);
+    if (m_codeEditor)
+    {
+        m_codeEditor->removeTextBlockUserData(this);
+    }
 }
 
 } //end namespace ito
-
-#endif

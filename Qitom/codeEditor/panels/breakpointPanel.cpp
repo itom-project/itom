@@ -54,7 +54,8 @@ namespace ito {
 /*
 */
 BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
-    Panel("BreakpointPanel", false, description, parent)
+    Panel("BreakpointPanel", false, description, parent),
+    m_currentLine(-1)
 {
     setScrollable(true);
     setMouseTracking(true);
@@ -64,6 +65,8 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
     m_icons[TextBlockUserData::TypeBpDisabled] = QIcon(":/breakpoints/icons/itomBreakDisabled.png");
     m_icons[TextBlockUserData::TypeBpEdit] = QIcon(":/breakpoints/icons/itomcBreak.png");
     m_icons[TextBlockUserData::TypeBpEditDisabled] = QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
+
+    m_currentLineIcon = QIcon(":/script/icons/currentLine.png");
 }
 
 //----------------------------------------------------------
@@ -74,7 +77,18 @@ BreakpointPanel::~BreakpointPanel()
 
 }
 
+//------------------------------------------------------------
+/*
 
+*/
+void BreakpointPanel::setCurrentLine(int line)
+{
+    if (m_currentLine != line)
+    {
+        m_currentLine = line;
+        update();
+    }
+}
 
 //------------------------------------------------------------
 /*
@@ -119,6 +133,16 @@ void BreakpointPanel::paintEvent(QPaintEvent *e)
                 rect.setHeight(sizeHint().height());
                 icon.paint(&painter, rect);
             }
+        }
+
+        if (m_currentLine >= 0 && m_currentLine == b.lineNumber)
+        {
+            rect = QRect();
+            rect.setX(0);
+            rect.setY(b.topPosition);
+            rect.setWidth(sizeHint().width());
+            rect.setHeight(sizeHint().height());
+            m_currentLineIcon.paint(&painter, rect);
         }
     }
 }

@@ -51,6 +51,8 @@ namespace ito {
 */
 class StyleItem : public QObject
 {
+    Q_OBJECT
+
 #if QT_VERSION < 0x050500
     //for >= Qt 5.5.0 see Q_ENUM definition below
     Q_ENUMS(StyleType)

@@ -180,6 +180,9 @@ public:
     bool isModified() const;
     void setModified(bool modified);
 
+    bool isUndoAvailable() const { return m_undoAvailable; } 
+    bool isRedoAvailable() const { return m_redoAvailable; } 
+
     void setMouseCursor(const QCursor &cursor);
 
     void cursorPosition(int &line, int &column) const;
@@ -210,6 +213,7 @@ public:
     void ensureLineVisible(int line);
     
     QString selectedText() const;
+    int length() const { return toPlainText().size(); }
 
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
@@ -233,6 +237,7 @@ public:
 
     void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
     void setText(const QString &text) { setPlainText(text); } //TODO: remove this, if QScintilla is removed!
+    void insert(const QString &text) { insertPlainText(text); } //TODO: remove this, if QScintilla is removed!
 
     bool isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
     bool isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
@@ -244,7 +249,11 @@ public:
     TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
     const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }
+    
+    virtual bool removeTextBlockUserData(TextBlockUserData* userData);
+    
     bool bookmarksAvailable() const;
+    bool breakpointsAvailable() const;
 
     void callWheelEvent(QWheelEvent *e);
 
@@ -314,6 +323,9 @@ private:
     bool m_showIndentationGuides;
     QColor m_indentationGuidesColor;
 
+    bool m_redoAvailable;
+    bool m_undoAvailable;
+
     //flags/working variables
     bool m_cleaning;
     QSet<int> m_modifiedLines; //(line)
@@ -330,6 +342,8 @@ private:
 private slots:
     void emitDirtyChanged(bool state);
     void onTextChanged();
+    void undoAvailable(bool available);
+    void redoAvailable(bool available);
 
 signals:
     void dirtyChanged(bool state); //Signal emitted when the dirty state changed

@@ -91,6 +91,7 @@ public:
 
     void collapseAll();
     void expandAll();
+    void toggleFold(bool topLevelOnly);
 
     void toggleFoldTrigger(const QTextBlock &block);
 

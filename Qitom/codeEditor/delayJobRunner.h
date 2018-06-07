@@ -95,7 +95,8 @@ public:
     */
     DelayJobRunner(int delay = 500, QObject *parent = NULL) :
         DelayJobRunnerBase(delay, parent),
-        m_func(NULL)
+        m_func(NULL),
+        m_obj(NULL)
     {
         int i = 0;
     }
@@ -131,7 +132,10 @@ private:
     virtual void execRequestedJob()
     {
         m_timer.stop();
-        (m_obj->*m_func)(m_args);
+        if (m_obj)
+        {
+            (m_obj->*m_func)(m_args);
+        }
     }
 };
 
@@ -156,7 +160,8 @@ public:
     */
     DelayJobRunnerArgTextBlock(int delay = 500, QObject *parent = NULL) :
         DelayJobRunnerBase(delay, parent),
-        m_func(NULL)
+        m_func(NULL),
+        m_obj(NULL)
     {
         int i = 0;
     }
@@ -192,7 +197,10 @@ private:
     virtual void execRequestedJob()
     {
         m_timer.stop();
-        (m_obj->*m_func)(m_block);
+        if (m_obj)
+        {
+            (m_obj->*m_func)(m_block);
+        }
     }
 };
 
@@ -211,7 +219,8 @@ public:
     */
     DelayJobRunnerNoArgs(int delay = 500, QObject *parent = NULL) :
         DelayJobRunnerBase(delay, parent),
-        m_func(NULL)
+        m_func(NULL),
+        m_obj(NULL)
     {
         int i = 0;
     }
@@ -244,7 +253,10 @@ private:
     virtual void execRequestedJob()
     {
         m_timer.stop();
-        (m_obj->*m_func)();
+        if (m_obj)
+        {
+            (m_obj->*m_func)();
+        }
     }
 };
 

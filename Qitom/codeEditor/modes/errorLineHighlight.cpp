@@ -82,7 +82,7 @@ void ErrorLineHighlighterMode::setBackground(const QColor &color)
     {
         m_decoration->setBackground(QBrush(m_color));
     }
-    refresh();
+    //refresh();
 }
 
 //----------------------------------------------------------
@@ -121,7 +121,7 @@ void ErrorLineHighlighterMode::clearErrorLine()
 void ErrorLineHighlighterMode::onInstall(CodeEditor *editor)
 {
     Mode::onInstall(editor);
-    refresh();
+    //refresh();
 }
 
 //----------------------------------------------------------
@@ -131,7 +131,7 @@ void ErrorLineHighlighterMode::onStateChanged(bool state)
 {
     if (state)
     {
-        refresh();
+        //refresh();
     }
     else
     {

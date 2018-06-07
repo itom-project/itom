@@ -33,6 +33,7 @@
     #include "../codeEditor/panels/checkerBookmarkPanel.h"
     #include "../codeEditor/panels/breakpointPanel.h"
     #include "../codeEditor/modes/errorLineHighlight.h"
+#include "../codeEditor/panels/lineNumber.h"
 #else
     #include "abstractPyScintillaWidget.h"
 #endif
@@ -119,6 +120,15 @@ public:
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
 
+    RetVal toggleBookmark(int line);
+    RetVal clearAllBookmarks();
+    RetVal gotoNextBookmark();
+    RetVal gotoPreviousBookmark();
+
+#ifdef USE_PYQODE
+    virtual bool removeTextBlockUserData(TextBlockUserData* userData);
+#endif
+
 protected:
     //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
@@ -148,11 +158,6 @@ private:
     int getMarginNumber(int xPos);
 
     RetVal initMenus();
-
-    RetVal toggleBookmark(int line);
-    RetVal clearAllBookmarks();
-    RetVal gotoNextBookmark();
-    RetVal gotoPreviousBookmark();
 
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);
@@ -186,20 +191,16 @@ private:
     int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
 
+#ifndef USE_PYQODE
     struct BPMarker
     {
-#ifdef USE_PYQODE
-        const TextBlockUserData *userData;
-#else
         int bpHandle;
-#endif
         int lineNo;
         bool markedForDeletion;
     };
 
     QList<BPMarker> m_breakPointMap; //!< <int bpHandle, int lineNo>
 
-#ifndef USE_PYQODE
     unsigned int markBreakPoint;
     unsigned int markCBreakPoint;
     unsigned int markBreakPointDisabled;
@@ -217,8 +218,9 @@ private:
 #endif
 
     //!< menus
+#ifndef USE_PYQODE
     QMenu *bookmarkMenu;
-    QMenu *syntaxErrorMenu;
+#endif
     QMenu *breakpointMenu;
     QMenu *editorMenu;
 
@@ -241,6 +243,7 @@ private:
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
     QSharedPointer<BreakpointPanel> m_breakpointPanel;
     QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
+    QSharedPointer<LineNumberPanel> m_lineNumberPanel;
 #endif
 
     static const QString lineBreak;
@@ -266,13 +269,18 @@ signals:
     void requestModelRebuild(ScriptEditorWidget *editor);
 
 public slots:
-    void menuToggleBookmark();
+    
     void checkSyntax();
     void syntaxCheckResult(QString a, QString b);
     void errorListChange(const QStringList &errorList);
+
+#ifndef USE_PYQODE
+    void menuToggleBookmark();
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();
+#endif
+
 
     void menuToggleBreakpoint();
     void menuToggleEnableBreakpoint();
@@ -318,6 +326,8 @@ private slots:
 
 #ifdef USE_PYQODE
     void toggleBookmarkRequested(int line);
+    void gotoBookmarkRequested(bool next);
+    void clearAllBookmarksRequested();
     void toggleBreakpointRequested(int line);
 #else
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);

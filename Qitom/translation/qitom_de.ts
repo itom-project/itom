@@ -2324,7 +2324,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../codeEditor/textBlockUserData.h" line="+104"/>
+        <location filename="../codeEditor/textBlockUserData.h" line="+105"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4346,6 +4346,29 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+0"/>
         <source>Method</source>
         <translation>Methode</translation>
+    </message>
+</context>
+<context>
+    <name>ito::CheckerBookmarkPanel</name>
+    <message>
+        <location filename="../codeEditor/panels/checkerBookmarkPanel.cpp" line="+69"/>
+        <source>&amp;Toggle Bookmark</source>
+        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Next Bookmark</source>
+        <translation type="unfinished">Nächstes Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Previous Bookmark</source>
+        <translation type="unfinished">Vorheriges Lesezeichen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Clear All Bookmarks</source>
+        <translation type="unfinished">Alle Lesezeichen löschen</translation>
     </message>
 </context>
 <context>
@@ -7814,23 +7837,19 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+890"/>
         <source>&apos;%1&apos; was not found</source>
-        <translation>&apos;%1&apos; wurde nicht gefunden</translation>
+        <translation type="vanished">&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+0"/>
-        <location line="+87"/>
         <source>Find And Replace</source>
-        <translation>Suchen und Ersetzen</translation>
+        <translation type="vanished">Suchen und Ersetzen</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>%1 occurrence(s) was replaced</source>
-        <translation>%1 Vorkommen ersetzt</translation>
+        <translation type="vanished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-974"/>
+        <location line="+3"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -8172,12 +8191,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1119"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1232"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
-        <location line="+1169"/>
+        <location line="+1329"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -8187,7 +8206,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-1933"/>
+        <location line="-2176"/>
         <source>&amp;Toggle Bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -8207,18 +8226,18 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Alle Lesezeichen löschen</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>&amp;Toggle Breakpoint</source>
         <translation>Haltepunkt ein-/aus&amp;schalten</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+239"/>
+        <location line="+281"/>
         <source>&amp;Disable Breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-280"/>
         <source>&amp;Edit Condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -8398,30 +8417,30 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+248"/>
         <source>&amp;Enable Breakpoint</source>
         <translation>Haltepunkt &amp;aktivieren</translation>
     </message>
     <message>
-        <location line="+512"/>
+        <location line="+552"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+50"/>
         <location line="+84"/>
-        <location line="+48"/>
+        <location line="+50"/>
         <source>Unsaved Changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-132"/>
-        <location line="+132"/>
+        <location line="-134"/>
+        <location line="+134"/>
         <source>There are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-115"/>
+        <location line="-117"/>
         <source>Error while opening file</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
@@ -8437,13 +8456,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+63"/>
+        <location line="+65"/>
         <source>Error while accessing file</source>
         <translation>Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location line="-63"/>
-        <location line="+63"/>
+        <location line="-65"/>
+        <location line="+65"/>
         <source>File %1 could not be accessed</source>
         <translation>Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
@@ -8453,12 +8472,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+993"/>
+        <location line="+1143"/>
         <source>Unnamed</source>
         <translation>Unbenannt</translation>
     </message>
     <message>
-        <location line="+248"/>
+        <location line="+320"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -8483,7 +8502,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+108"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+113"/>
         <source>Untitled%1</source>
         <translation>Unbenannt%1</translation>
     </message>
