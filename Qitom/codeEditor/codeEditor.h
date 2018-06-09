@@ -362,7 +362,6 @@ signals:
     void indentRequested(); //Signal emitted when the user press the TAB key
     void unindentRequested(); //Signal emitted when the user press the BACK-TAB (Shift+TAB) key
 
-    void blockCountChanged();
     void updateRequest();
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget

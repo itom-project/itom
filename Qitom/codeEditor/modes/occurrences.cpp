@@ -196,6 +196,10 @@ void OccurrencesHighlighterMode::requestHighlight()
                 DELAY_JOB_RUNNER_NOARGS(m_pTimer, OccurrencesHighlighterMode, void(OccurrencesHighlighterMode::*)())->requestJob( \
                 this, &OccurrencesHighlighterMode::sendRequest);
             }
+            else
+            {
+                m_sub = "";
+            }
         }
     }
 }

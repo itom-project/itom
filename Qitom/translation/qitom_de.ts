@@ -4331,6 +4331,45 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
+    <name>ito::BreakpointPanel</name>
+    <message>
+        <location filename="../codeEditor/panels/breakpointPanel.cpp" line="+76"/>
+        <source>&amp;Toggle Breakpoint</source>
+        <translation type="unfinished">Haltepunkt ein-/aus&amp;schalten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+138"/>
+        <source>&amp;Disable Breakpoint</source>
+        <translation type="unfinished">Haltepunkt &amp;deaktivieren</translation>
+    </message>
+    <message>
+        <location line="-137"/>
+        <source>&amp;Edit Condition</source>
+        <translation type="unfinished">Bedingungen &amp;bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Next Breakpoint</source>
+        <translation type="unfinished">&amp;Nächster Haltepunkt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Previous Breakpoint</source>
+        <translation type="unfinished">&amp;Vorheriger Haltepunkt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Delete All Breakpoints</source>
+        <translation type="unfinished">Alle Haltepunkte &amp;löschen</translation>
+    </message>
+    <message>
+        <location line="+130"/>
+        <source>&amp;Enable Breakpoint</source>
+        <translation type="unfinished">Haltepunkt &amp;aktivieren</translation>
+    </message>
+</context>
+<context>
     <name>ito::CallStackDockWidget</name>
     <message>
         <location filename="../widgets/callStackDockWidget.cpp" line="+62"/>
@@ -4351,7 +4390,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::CheckerBookmarkPanel</name>
     <message>
-        <location filename="../codeEditor/panels/checkerBookmarkPanel.cpp" line="+69"/>
+        <location filename="../codeEditor/panels/checkerBookmarkPanel.cpp" line="+70"/>
         <source>&amp;Toggle Bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -8191,12 +8230,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1232"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1239"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
-        <location line="+1329"/>
+        <location line="+1292"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -8206,7 +8245,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2176"/>
+        <location line="-2136"/>
         <source>&amp;Toggle Bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -8232,12 +8271,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+281"/>
+        <location line="+275"/>
         <source>&amp;Disable Breakpoint</source>
         <translation>Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-280"/>
+        <location line="-274"/>
         <source>&amp;Edit Condition</source>
         <translation>Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -8301,7 +8340,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="vanished">Skript sto&amp;ppen</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Cut</source>
         <translation type="unfinished">Ausschneiden</translation>
     </message>
@@ -8413,21 +8452,26 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+2"/>
+        <source>&amp;Fold All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>&amp;Insert Codec...</source>
         <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
-        <location line="+248"/>
+        <location line="+238"/>
         <source>&amp;Enable Breakpoint</source>
         <translation>Haltepunkt &amp;aktivieren</translation>
     </message>
     <message>
-        <location line="+552"/>
+        <location line="+555"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+58"/>
         <location line="+84"/>
         <location line="+50"/>
         <source>Unsaved Changes</source>
@@ -8472,12 +8516,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+1143"/>
+        <location line="+1098"/>
         <source>Unnamed</source>
         <translation>Unbenannt</translation>
     </message>
     <message>
-        <location line="+320"/>
+        <location line="+328"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>

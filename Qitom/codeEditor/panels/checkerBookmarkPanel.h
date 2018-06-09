@@ -54,8 +54,10 @@ Checker panels:
 #include <qsize.h>
 #include <qcolor.h>
 #include <qicon.h>
+#include <qmap.h>
 
 class QMenu;
+class QAction;
 
 namespace ito {
 
@@ -83,8 +85,7 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void leaveEvent(QEvent *e);
-
-    virtual void contextMenuEvent (QContextMenuEvent * e);
+    virtual void contextMenuEvent (QContextMenuEvent *e);
 
 protected:
     void displayTooltip(QList<QVariant> args);

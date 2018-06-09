@@ -159,13 +159,6 @@ private:
 
     RetVal initMenus();
 
-    RetVal toggleBreakpoint(int line);
-    RetVal toggleEnableBreakpoint(int line);
-    RetVal editBreakpoint(int line);
-    RetVal clearAllBreakpoints();
-    RetVal gotoNextBreakPoint();
-    RetVal gotoPreviousBreakPoint();
-    
     bool lineAcceptsBPs(int line);
 
     RetVal changeFilename(const QString &newFilename);
@@ -279,8 +272,6 @@ public slots:
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
     void menuGotoPreviousBookmark();
-#endif
-
 
     void menuToggleBreakpoint();
     void menuToggleEnableBreakpoint();
@@ -288,6 +279,7 @@ public slots:
     void menuClearAllBreakpoints();
     void menuGotoNextBreakPoint();
     void menuGotoPreviousBreakPoint();
+#endif
 
     void menuCut();
     void menuCopy();
@@ -297,6 +289,9 @@ public slots:
     void menuComment();
     void menuUncomment();
 
+#ifdef USE_PYQODE
+    void menuFoldAll();
+#endif
     void menuUnfoldAll();
     void menuFoldUnfoldToplevel();
     void menuFoldUnfoldAll();
@@ -328,7 +323,13 @@ private slots:
     void toggleBookmarkRequested(int line);
     void gotoBookmarkRequested(bool next);
     void clearAllBookmarksRequested();
-    void toggleBreakpointRequested(int line);
+
+    RetVal toggleBreakpoint(int line);
+    RetVal toggleEnableBreakpoint(int line);
+    RetVal editBreakpoint(int line);
+    RetVal clearAllBreakpoints();
+    RetVal gotoNextBreakPoint();
+    RetVal gotoPreviousBreakPoint();
 #else
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
 #endif

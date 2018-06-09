@@ -397,7 +397,7 @@ indicator.
 */
 void FoldingPanel::drawFoldRegionBackground(const QTextBlock &block, QPainter &painter) const
 {
-    qDebug() << block.text();
+    //qDebug() << block.text();
     FoldScope r(block);
     QPair<int,int> start_end = r.getRange(true);
     int top = 0;
@@ -830,7 +830,42 @@ toggles all folds
 */
 void FoldingPanel::toggleFold(bool topLevelOnly)
 {
-    //todo
+    if (topLevelOnly)
+    {
+        QTextBlock block = editor()->document()->firstBlock();
+        int lvl;
+        bool trigger;
+        while (block.isValid())
+        {
+            lvl = Utils::TextBlockHelper::getFoldLvl(block);
+            trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+            if (lvl == 0 && trigger)
+            {
+                toggleFoldTrigger(block); 
+            }
+            block = block.next();
+        }
+
+        clearBlockDeco();
+        refreshEditorAndScrollbars();
+    }
+    else
+    {
+        QTextBlock block = editor()->document()->firstBlock();
+        bool trigger;
+        while (block.isValid())
+        {
+            trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+            if (trigger)
+            {
+                toggleFoldTrigger(block); 
+            }
+            block = block.next();
+        }
+
+        clearBlockDeco();
+        refreshEditorAndScrollbars();
+    }
 }
 
 //----------------------------------------------------------

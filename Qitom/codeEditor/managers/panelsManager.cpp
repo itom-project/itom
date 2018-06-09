@@ -96,7 +96,7 @@ PanelsManager::PanelsManager(CodeEditor *editor, QObject *parent /*= NULL*/) :
     //foreach entry in enum Position:
     m_panels << ZoneItems(0) << ZoneItems(0) << ZoneItems(0) << ZoneItems(0);
 
-    connect(this->editor(), SIGNAL(blockCountChanged()), this, SLOT(updateViewportMargins()));
+    connect(this->editor(), SIGNAL(blockCountChanged(int)), this, SLOT(updateViewportMargins()));
     connect(this->editor(), SIGNAL(updateRequest(QRect,int)), this, SLOT(update(QRect,int)));
     
 }

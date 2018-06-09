@@ -86,7 +86,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 
     // connect slots
     connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
-    connect(this, SIGNAL(blockCountChanged()), this, SLOT(update()));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(update()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailable(bool)));
@@ -1743,12 +1743,7 @@ void CodeEditor::getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *i
         if (lineFrom) *lineFrom = block.blockNumber();
         if (indexFrom) *indexFrom = start - block.position();
 
-        while (start < end)
-        {
-            block = block.next();
-            start += block.length();
-        }
-
+        block = document()->findBlock(end);
         if (lineTo) *lineTo = block.blockNumber();
         if (indexTo) *indexTo = end - block.position();
     }

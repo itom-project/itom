@@ -62,6 +62,7 @@ CheckerBookmarkPanel::CheckerBookmarkPanel(const QString &description /*= ""*/, 
 {
     setScrollable(true);
     setMouseTracking(true);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 
     m_pJobRunner = new DelayJobRunner<CheckerBookmarkPanel, void(CheckerBookmarkPanel::*)(QList<QVariant>)>(100);
 
@@ -288,7 +289,7 @@ void CheckerBookmarkPanel::mouseReleaseEvent(QMouseEvent *e)
 
 //----------------------------------------------------------
 /*
-Display tooltip at the specified top position.
+
 */
 /*virtual*/ void CheckerBookmarkPanel::contextMenuEvent (QContextMenuEvent * e)
 {

@@ -50,6 +50,10 @@ Breakpoint panels
 #include <qsize.h>
 #include <qcolor.h>
 #include <qicon.h>
+#include <qmap.h>
+
+class QMenu;
+class QAction;
 
 namespace ito {
 
@@ -70,6 +74,7 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual void contextMenuEvent (QContextMenuEvent *e);
 
 protected:
 
@@ -78,8 +83,25 @@ private:
     QIcon m_currentLineIcon;
     int m_currentLine;
 
+    QMenu *m_pContextMenu;
+    QMap<QString, QAction*> m_contextMenuActions;
+    int m_contextMenuLine;
+
 signals:
-    void toggleBreakpointRequested(int line);
+    void toggleBreakpointRequested(int);
+    void toggleEnableBreakpointRequested(int);
+    void editBreakpointRequested(int);
+    void clearAllBreakpointsRequested();
+    void gotoNextBreakPointRequested();
+    void gotoPreviousBreakRequested();
+
+private slots:
+    void menuToggleBreakpoint();
+    void menuToggleEnableBreakpoint();
+    void menuEditBreakpoint();
+    void menuGotoNextBreakPoint();
+    void menuGotoPreviousBreakPoint();
+    void menuClearAllBreakpoints();
 };
 
 } //end namespace ito

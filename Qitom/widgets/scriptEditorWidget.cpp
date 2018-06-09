@@ -136,7 +136,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     }    
 
 #ifdef USE_PYQODE
-    connect(this, SIGNAL(blockCountChanged()), this, SLOT(nrOfLinesChanged()));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
 #else
     connect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
 #endif
@@ -168,7 +168,7 @@ ScriptEditorWidget::~ScriptEditorWidget()
     }   
 
 #ifdef USE_PYQODE
-    disconnect(this, SIGNAL(blockCountChanged()), this, SLOT(nrOfLinesChanged()));
+    disconnect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
 #else
     disconnect(this, SIGNAL(linesChanged()), this, SLOT(nrOfLinesChanged()));
 #endif
@@ -265,7 +265,13 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_checkerBookmarkPanel.data(), SIGNAL(toggleBookmarkRequested(int)), this, SLOT(toggleBookmarkRequested(int)));
     connect(m_checkerBookmarkPanel.data(), SIGNAL(gotoBookmarkRequested(bool)), this, SLOT(gotoBookmarkRequested(bool)));
     connect(m_checkerBookmarkPanel.data(), SIGNAL(clearAllBookmarksRequested()), this, SLOT(clearAllBookmarksRequested()));
-    connect(m_breakpointPanel.data(), SIGNAL(toggleBreakpointRequested(int)), this, SLOT(toggleBreakpointRequested(int)));
+    
+    connect(m_breakpointPanel.data(), SIGNAL(toggleBreakpointRequested(int)), this, SLOT(toggleBreakpoint(int)));
+    connect(m_breakpointPanel.data(), SIGNAL(toggleEnableBreakpointRequested(int)), this, SLOT(toggleEnableBreakpoint(int)));
+    connect(m_breakpointPanel.data(), SIGNAL(editBreakpointRequested(int)), this, SLOT(editBreakpoint(int)));
+    connect(m_breakpointPanel.data(), SIGNAL(clearAllBreakpointsRequested()), this, SLOT(clearAllBreakpoints()));
+    connect(m_breakpointPanel.data(), SIGNAL(gotoNextBreakPointRequested()), this, SLOT(gotoNextBreakPoint()));
+    connect(m_breakpointPanel.data(), SIGNAL(gotoPreviousBreakRequested()), this, SLOT(gotoPreviousBreakPoint()));
 #endif
 
     loadSettings();
@@ -392,7 +398,7 @@ RetVal ScriptEditorWidget::initMenus()
     bookmarkMenuActions["clearAllBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("Clear All Bookmarks"), this, SLOT(menuClearAllBookmarks()));
 
     connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
-#endif
+
 
     breakpointMenu = new QMenu(this);
     breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&Toggle Breakpoint"), this, SLOT(menuToggleBreakpoint()));
@@ -403,6 +409,7 @@ RetVal ScriptEditorWidget::initMenus()
     breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 
     connect(breakpointMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
+#endif
 
     editorMenu = new QMenu(this);
     editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, SLOT(menuCut()), QKeySequence::Cut);
@@ -432,6 +439,9 @@ RetVal ScriptEditorWidget::initMenus()
     editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
     editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
     editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
+#ifdef USE_PYQODE
+    editorMenuActions["foldAll"] = foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
+#endif
     editorMenu->addSeparator();
     editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
 
@@ -641,10 +651,10 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
 #endif
 
 #ifdef USE_PYQODE
-    bool breakpointsAvail = breakpointsAvailable();
+    /*bool breakpointsAvail = breakpointsAvailable();
     breakpointMenuActions["nextBP"]->setEnabled(breakpointsAvail);
     breakpointMenuActions["prevBP"]->setEnabled(breakpointsAvail);
-    breakpointMenuActions["clearALLBP"]->setEnabled(breakpointsAvail);
+    breakpointMenuActions["clearALLBP"]->setEnabled(breakpointsAvail);*/
 #else
     bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
     bookmarkMenuActions["prevBM"]->setEnabled(!bookmarkErrorHandles.empty());
@@ -656,26 +666,16 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
 #endif
 
     
-
-    if (contextMenuLine >= 0 && getFilename()!="") //!< breakpoints only if filename != ""
+#ifndef USE_PYQODE
+    if (contextMenuLine >= 0 && getFilename() != "") //!< breakpoints only if filename != ""
     {
-#ifdef USE_PYQODE
-        QTextBlock block = document()->findBlockByNumber(contextMenuLine);
-        TextBlockUserData *tbud = dynamic_cast<TextBlockUserData*>(block.userData());
-        if (block.isValid() && tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
-#else
         if (markersAtLine(contextMenuLine) & markMaskBreakpoints)
-#endif
         {
             breakpointMenuActions["toggleBP"]->setEnabled(true);
             breakpointMenuActions["toggleBPEnabled"]->setEnabled(true);
             breakpointMenuActions["editConditionBP"]->setEnabled(true);
 
-#ifdef USE_PYQODE
-            if (tbud->m_breakpointType & (TextBlockUserData::TypeBp | TextBlockUserData::TypeBpEdit))
-#else
             if (markersAtLine(contextMenuLine) & ((1 << markBreakPoint) | (1 << markCBreakPoint)))
-#endif
             {
                 breakpointMenuActions["toggleBPEnabled"]->setText(tr("&Disable Breakpoint"));
             }
@@ -698,6 +698,7 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
         breakpointMenuActions["toggleBPEnabled"]->setEnabled(false);
         breakpointMenuActions["editConditionBP"]->setEnabled(false);
     }
+#endif
 
     return RetVal(retOk);
 }
@@ -903,6 +904,7 @@ void ScriptEditorWidget::clearAllBookmarksRequested()
 
 #endif
 
+#ifndef USE_PYQODE
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuToggleBreakpoint()
 {
@@ -965,6 +967,7 @@ void ScriptEditorWidget::menuGotoPreviousBreakPoint()
 {
     gotoPreviousBreakPoint();
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuCut()
@@ -1254,6 +1257,14 @@ void ScriptEditorWidget::menuUnfoldAll()
     clearFolds();
 #endif
 }
+
+#ifdef USE_PYQODE
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuFoldAll()
+{
+    m_foldingPanel->collapseAll();
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuFoldUnfoldToplevel()
@@ -2039,13 +2050,6 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
         if (indexList.size() > 0)
         {
             bpModel->deleteBreakPoints(indexList);
-#ifdef USE_PYQODE
-            TextBlockUserData *tbud = getTextBlockUserData(line, false);
-            if (tbud)
-            {
-                tbud->m_breakpointType = TextBlockUserData::TypeNoBp;
-            }
-#endif
         }
         else if (lineAcceptsBPs(line))
         {
@@ -2058,11 +2062,6 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
             bp.temporary = false;
             bp.ignoreCount = 0;
             bpModel->addBreakPoint(bp);
-
-#ifdef USE_PYQODE
-            TextBlockUserData *tbud = getTextBlockUserData(line, true);
-            tbud->m_breakpointType = TextBlockUserData::TypeBp;
-#endif
         }
 
 #ifdef USE_PYQODE
@@ -2097,21 +2096,6 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
                 item = bpModel->getBreakPoint(indexList.at(i));
                 item.enabled = !item.enabled;
                 bpModel->changeBreakPoint(indexList.at(i), item);
-
-#ifdef USE_PYQODE
-                tbud = getTextBlockUserData(line, false);
-                if (tbud)
-                {
-                    if (tbud->m_breakpointType & TextBlockUserData::TypeBp)
-                    {
-                        tbud->m_breakpointType = (TextBlockUserData::BreakpointType)(tbud->m_breakpointType ^ TextBlockUserData::TypeFlagDisabled);
-                    }
-                    else if (tbud->m_breakpointType & TextBlockUserData::TypeBpEdit)
-                    {
-                        tbud->m_breakpointType = (TextBlockUserData::BreakpointType)(tbud->m_breakpointType ^ TextBlockUserData::TypeFlagDisabled);
-                    }
-                }
-#endif
             }
 
 #ifdef USE_PYQODE
@@ -2151,7 +2135,8 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
             {
                 item = bpModel->getBreakPoint(index);
 
-                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(item.filename, line + 1, item.enabled, item.temporary, item.ignoreCount, item.condition);
+                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(item.filename, line + 1, item.enabled, item.temporary, item.ignoreCount, item.condition, this);
+                dlg->setModal(true);
                 dlg->exec();
                 if (dlg->result() == QDialog::Accepted)
                 {
@@ -2159,17 +2144,6 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                     item.conditioned = (item.condition != "") || (item.ignoreCount > 0) || item.temporary;
 
                     bpModel->changeBreakPoint(index, item);
-
-#ifdef USE_PYQODE
-                    if (item.conditioned)
-                    {
-                        tbud->m_breakpointType = item.enabled ? TextBlockUserData::TypeBpEdit : TextBlockUserData::TypeBpEditDisabled;
-                    }
-                    else
-                    {
-                        tbud->m_breakpointType = item.enabled ? TextBlockUserData::TypeBp : TextBlockUserData::TypeBpDisabled;
-                    }
-#endif
                 }
 
                 DELETE_AND_SET_NULL(dlg);
@@ -2200,14 +2174,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
 
-#ifdef USE_PYQODE
-    foreach (TextBlockUserData* tbud, textBlockUserDataList())
-    {
-        tbud->m_breakpointType = TextBlockUserData::TypeNoBp;
-    }
-
     m_breakpointPanel->update();
-#endif
 
     return RetVal(retOk);
 }
@@ -2365,13 +2332,6 @@ void ScriptEditorWidget::toggleBookmarkRequested(int line)
     emit marginChanged();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::toggleBreakpointRequested(int line)
-{
-    toggleBreakpoint(line);
-    emit marginChanged();
-}
-
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2390,6 +2350,12 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 
 #ifdef USE_PYQODE
         TextBlockUserData * tbud = getTextBlockUserData(bp.lineno, true);
+
+        if (!tbud) //line does not exist
+        {
+            return;
+        }
+
         if (tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
         {
             return;//!< there is already a breakpoint in this line, do not add the new one
@@ -2689,6 +2655,8 @@ void ScriptEditorWidget::nrOfLinesChanged()
     QSet<TextBlockUserData*>::iterator it;
     QModelIndex index;
     ito::BreakPointItem item;
+    QModelIndexList changedIndices;
+    QList<ito::BreakPointItem> changedBpItems;
 
     while (block.isValid())
     {
@@ -2702,12 +2670,13 @@ void ScriptEditorWidget::nrOfLinesChanged()
                 {
                     if (block.blockNumber() != userData->m_currentLineNr)
                     {
-                        if (bpModel)
+                        if (bpModel && userData->m_breakpointType != TextBlockUserData::TypeNoBp)
                         {
                             index = bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineNr);
                             item = bpModel->getBreakPoint(index);
                             item.lineno = block.blockNumber(); //new line
-                            bpModel->changeBreakPoint(index, item);
+                            changedIndices << index;
+                            changedBpItems << item;
                         }
 
                         userData->m_currentLineNr = block.blockNumber();
@@ -2716,6 +2685,11 @@ void ScriptEditorWidget::nrOfLinesChanged()
             }
         }
         block = block.next();
+    }
+
+    if (changedIndices.size() > 0 && bpModel)
+    {
+        bpModel->changeBreakPoints(changedIndices, changedBpItems);
     }
     
 

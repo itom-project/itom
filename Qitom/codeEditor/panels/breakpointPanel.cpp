@@ -42,6 +42,8 @@
 #include <qapplication.h>
 #include <qicon.h>
 #include <qtooltip.h>
+#include <qmenu.h>
+#include <qaction.h>
 #include "../textBlockUserData.h"
 #include "../codeEditor.h"
 #include "../delayJobRunner.h"
@@ -59,6 +61,7 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
 {
     setScrollable(true);
     setMouseTracking(true);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 
     m_icons[TextBlockUserData::TypeNoBp] = QIcon();
     m_icons[TextBlockUserData::TypeBp] = QIcon(":/breakpoints/icons/itomBreak.png");
@@ -67,6 +70,15 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
     m_icons[TextBlockUserData::TypeBpEditDisabled] = QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
 
     m_currentLineIcon = QIcon(":/script/icons/currentLine.png");
+
+    m_pContextMenu = new QMenu(this);
+
+    m_contextMenuActions["toggleBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&Toggle Breakpoint"), this, SLOT(menuToggleBreakpoint()));
+    m_contextMenuActions["toggleBPEnabled"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&Disable Breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    m_contextMenuActions["editConditionBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&Edit Condition"), this, SLOT(menuEditBreakpoint()));
+    m_contextMenuActions["nextBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&Next Breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
+    m_contextMenuActions["prevBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&Previous Breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
+    m_contextMenuActions["clearALLBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 }
 
 //----------------------------------------------------------
@@ -167,6 +179,124 @@ void BreakpointPanel::mouseReleaseEvent(QMouseEvent *e)
         }
     }
 }
+
+//----------------------------------------------------------
+/*
+
+*/
+/*virtual*/ void BreakpointPanel::contextMenuEvent (QContextMenuEvent * e)
+{
+    e->accept();
+
+    bool breakpointsAvail = editor()->breakpointsAvailable();
+    m_contextMenuActions["nextBP"]->setEnabled(breakpointsAvail);
+    m_contextMenuActions["prevBP"]->setEnabled(breakpointsAvail);
+    m_contextMenuActions["clearALLBP"]->setEnabled(breakpointsAvail);
+
+    int line = editor()->lineNbrFromPosition(e->pos().y());
+
+    if (line > -1)
+    {
+        m_contextMenuLine = line;
+
+        TextBlockUserData *tbud = editor()->getTextBlockUserData(line, false);
+        if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
+        {
+            m_contextMenuActions["toggleBP"]->setEnabled(true);
+            m_contextMenuActions["toggleBPEnabled"]->setEnabled(true);
+            m_contextMenuActions["editConditionBP"]->setEnabled(true);
+
+            if (tbud->m_breakpointType & (TextBlockUserData::TypeFlagDisabled))
+            {
+                m_contextMenuActions["toggleBPEnabled"]->setText(tr("&Enable Breakpoint"));
+            }
+            else
+            {
+                m_contextMenuActions["toggleBPEnabled"]->setText(tr("&Disable Breakpoint"));
+            }
+        }
+        else
+        {
+            m_contextMenuActions["toggleBP"]->setEnabled(true);
+            m_contextMenuActions["toggleBPEnabled"]->setEnabled(false);
+            m_contextMenuActions["editConditionBP"]->setEnabled(false);
+        }
+    }
+    else
+    {
+        m_contextMenuActions["toggleBP"]->setEnabled(false);
+        m_contextMenuActions["toggleBPEnabled"]->setEnabled(false);
+        m_contextMenuActions["editConditionBP"]->setEnabled(false);
+    }
+
+    m_pContextMenu->exec(e->globalPos());
+
+    m_contextMenuLine = -1;
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuToggleBreakpoint()
+{
+    if (m_contextMenuLine >= 0)
+    {
+        emit toggleBreakpointRequested(m_contextMenuLine);
+    }
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuToggleEnableBreakpoint()
+{
+    if (m_contextMenuLine >= 0)
+    {
+        emit toggleEnableBreakpointRequested(m_contextMenuLine);
+    }
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuEditBreakpoint()
+{
+    if (m_contextMenuLine >= 0)
+    {
+        emit editBreakpointRequested(m_contextMenuLine);
+    }
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuGotoNextBreakPoint()
+{
+    emit gotoNextBreakPointRequested();
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuGotoPreviousBreakPoint()
+{
+    emit gotoPreviousBreakRequested();
+}
+
+//----------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::menuClearAllBreakpoints()
+{
+    emit clearAllBreakpointsRequested();
+}
+
 
 
 

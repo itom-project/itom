@@ -53,6 +53,7 @@ Panel::Panel(const QString &name, bool dynamic, const QString &description /*= "
     m_scrollable(false),
     m_position(Left)
 {
+    setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
 //-------------------------------------------------------
