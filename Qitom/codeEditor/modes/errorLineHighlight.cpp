@@ -98,7 +98,7 @@ void ErrorLineHighlighterMode::setErrorLine(int line)
     m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101));
     m_decoration->setBackground(QBrush(m_color));
     m_decoration->setFullWidth();
-    editor()->decorations()->remove(m_decoration);
+    editor()->decorations()->append(m_decoration);
 }
 
 //----------------------------------------------------------

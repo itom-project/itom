@@ -802,9 +802,12 @@ void ScriptEditorWidget::copyAvailable(const bool yes)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool errorMessageClick /*= false*/)
 {
-    setCursorPosition(line, 0);
     ensureLineVisible(line);
+
+    setCursorPosition(line, 0);
+#ifndef USE_PYQODE
     ensureCursorVisible();
+#endif
 
     if (errorMessageClick)
     {
@@ -1718,7 +1721,10 @@ bool ScriptEditorWidget::event(QEvent *event)
 #ifdef USE_PYQODE
     else if (m_errorLineHighlighterMode && m_errorLineHighlighterMode->errorLineAvailable())
     {
-        m_errorLineHighlighterMode->clearErrorLine();
+        if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::KeyPress)
+        {
+            m_errorLineHighlighterMode->clearErrorLine();
+        }
     }
 #else
     else if (m_errorMarkerVisible)
@@ -2085,9 +2091,6 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
         BreakPointModel *bpModel = pyEngine->getBreakPointModel();
         QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
         BreakPointItem item;
-#ifdef USE_PYQODE
-        TextBlockUserData *tbud;
-#endif
 
         if (indexList.size() > 0)
         {

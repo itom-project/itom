@@ -208,12 +208,22 @@ public:
     void setSelection(int lineFrom, int indexFrom, int lineTo, int indexTo);
     int linePosFromNumber(int lineNumber) const;
     void lineIndexFromPosition(const QPoint &pos, int *line, int *column) const;
+    void lineIndexFromPosition(int pos, int *line, int *column) const;
     void getCursorPosition(int *line, int *column) const;
     QTextCursor setCursorPosition(int line, int column, bool applySelection = true);
     void ensureLineVisible(int line);
     
+    bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
+		bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
+    bool findNext();
+    void replace(const QString &text);
+
+    void endUndoAction() { textCursor().endEditBlock(); } //TODO: remove this if QScintilla is removed
+    void beginUndoAction() { textCursor().beginEditBlock(); } //TODO: remove this if QScintilla is removed
+    
     QString selectedText() const;
     int length() const { return toPlainText().size(); }
+    int positionFromLineIndex(int line, int column) const;
 
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
@@ -297,6 +307,21 @@ protected:
     virtual bool eventFilter(QObject *obj, QEvent *e);
 
 private:
+    struct FindOptions
+    {
+        FindOptions() : valid(false), forward(true) {};
+        bool valid;
+        QString expr;
+        bool re;
+        bool cs;
+        bool wo;
+        bool wrap;
+        bool forward;
+        bool show;
+        bool posix;
+    };
+
+    FindOptions m_lastFindOptions;
     bool m_showCtxMenu;
     int m_defaultFontSize;
     bool m_useSpacesInsteadOfTabs;

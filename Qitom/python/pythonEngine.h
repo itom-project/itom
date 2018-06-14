@@ -149,6 +149,7 @@ public:
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
+    bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
@@ -237,6 +238,8 @@ private:
     PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
     PyObject *m_pyModSyntaxCheck;
+    PyObject *m_pyModJedi;         //!< Python package Jedi for auto completion and calltips (Jedi is tried to be loaded as late as possible)
+    bool     m_pyModJediChecked;   //!< defines, if it is already checked if Jedi could be loaded on this computer.
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
     Qt::HANDLE m_pythonThreadId;

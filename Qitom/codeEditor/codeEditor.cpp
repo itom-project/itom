@@ -621,7 +621,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
 
         foreach (const VisibleBlock &block, visibleBlocks())
         {
-            bottom = block.topPosition + blockBoundingRect(block.textBlock).height();
+            bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
             for (int i = 1; i < indentation; ++i)
             {
@@ -1194,6 +1194,27 @@ QString CodeEditor::previousLineText() const
 
 //------------------------------------------------------------
 /*
+QScintilla uses the combination of a line number and a character 
+index from the start of that line to specify the position of a 
+character within the text. The underlying Scintilla instead uses 
+a byte index from the start of the text. This will return the byte 
+index corresponding to the line line number and index character index.
+*/
+int CodeEditor::positionFromLineIndex(int line, int column) const
+{
+    QTextBlock block = document()->findBlockByNumber(line);
+    if (block.isValid())
+    {
+        if (block.length() >= column)
+        {
+            return block.position() + column;
+        }
+    }
+    return -1;
+}
+
+//------------------------------------------------------------
+/*
 Returns the text of the current line.
 
 :return: Text of the current line
@@ -1231,6 +1252,141 @@ void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= "
 QString CodeEditor::selectedText() const
 {
     return textCursor().selectedText();
+}
+
+//------------------------------------------------------------
+/*
+Replace the current selection, set by a previous call to 
+findFirst(), findFirstInSelection() or findNext(), with replaceStr.
+*/
+void CodeEditor::replace(const QString &text)
+{
+    QTextCursor cursor = textCursor();
+     
+    int start = cursor.selectionStart();
+    int end = cursor.selectionEnd();
+     
+    if(!cursor.hasSelection())
+    {
+        return;
+    }
+     
+    cursor.setPosition(end, QTextCursor::KeepAnchor);
+    QTextBlock endBlock = cursor.block();
+     
+    cursor.setPosition(start, QTextCursor::KeepAnchor);
+    QTextBlock block = cursor.block();
+     
+    for(; block.isValid() && !(endBlock < block); block = block.next())
+    {
+        if (!block.isValid())
+        {
+            continue;
+        }
+     
+        cursor.movePosition(QTextCursor::StartOfLine);
+        cursor.clearSelection();
+        cursor.insertText(text);
+        cursor.movePosition(QTextCursor::NextBlock);
+    }
+}
+
+//--------------------------------------------------------------
+/*
+*/
+bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
+		bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/, bool posix /*= false*/)
+{
+    QTextCursor current_cursor = textCursor();
+
+    if (line >= 0 && index >= 0)
+    {
+        current_cursor = setCursorPosition(line, index, false);
+    }
+
+    QTextCursor cursor;
+
+    QTextDocument::FindFlags flags;
+    if (!forward)
+    {
+        flags |= QTextDocument::FindBackward;
+    }
+    if (wo)
+    {
+        flags |= QTextDocument::FindWholeWords;
+    }
+    if (cs)
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+
+    if (re)
+    {
+        QRegExp regExp(expr);
+        regExp.setCaseSensitivity(cs ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        
+        cursor = document()->find(regExp, current_cursor, flags);
+
+        if (cursor.isNull() && wrap)
+        {
+            if (forward)
+            {
+                current_cursor.setPosition(0);
+                cursor = document()->find(regExp, current_cursor, flags);
+            }
+            else
+            {
+                QTextBlock block = document()->lastBlock();
+                current_cursor.setPosition(block.position() + block.length());
+                cursor = document()->find(regExp, current_cursor, flags);
+            }
+        }
+    }
+    else
+    {
+        cursor = document()->find(expr, current_cursor, flags);
+
+        if (cursor.isNull() && wrap)
+        {
+            if (forward)
+            {
+                current_cursor.setPosition(0);
+                cursor = document()->find(expr, current_cursor, flags);
+            }
+            else
+            {
+                current_cursor.movePosition(QTextCursor::End);
+                cursor = document()->find(expr, current_cursor, flags);
+            }
+        }
+    }
+
+    if (cursor.isNull() == false)
+    {
+        setTextCursor(cursor);
+
+        if (show)
+        {
+            ensureCursorVisible();
+        }
+        
+        return true;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------
+/*
+*/
+bool CodeEditor::findNext()
+{
+    const FindOptions &f = m_lastFindOptions;
+    if (f.valid)
+    {
+        return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show, f.posix);
+    }
+    return false;
 }
 
 //--------------------------------------------------------------
@@ -1481,6 +1637,35 @@ void CodeEditor::lineIndexFromPosition(const QPoint &pos, int *line, int *column
     if (column)
     {
         *column = cursor.columnNumber();
+    }
+}
+
+//------------------------------------------------------------
+void CodeEditor::lineIndexFromPosition(int pos, int *line, int *column) const
+{
+    QTextBlock block = document()->findBlock(pos);
+    if (block.isValid())
+    {
+        if (line)
+        {
+            *line = block.blockNumber();
+        }
+        if (column)
+        {
+            *column = pos - block.position();
+        }
+    }
+    else
+    {
+        if (line)
+        {
+            *line = -1;
+        }
+
+        if (column)
+        {
+            *column = -1;
+        }
     }
 }
 

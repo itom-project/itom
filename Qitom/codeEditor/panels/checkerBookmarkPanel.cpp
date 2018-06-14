@@ -229,7 +229,7 @@ void CheckerBookmarkPanel::mouseMoveEvent(QMouseEvent *e)
 {
     // Requests a tooltip if the cursor is currently over a marker.
     int line = editor()->lineNbrFromPosition(e->pos().y());
-    if (line)
+    if (line != -1)
     {
         QList<CheckerMessage> markers = markersForLine(line);
         QStringList texts;

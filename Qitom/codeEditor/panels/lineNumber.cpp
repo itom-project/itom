@@ -169,7 +169,10 @@ void LineNumberPanel::mousePressEvent(QMouseEvent *e)
     int end;
     start = end = editor()->lineNbrFromPosition(m_selStart);
     m_startLine = start;
-    editor()->selectLines(start, end);
+    if (start >= 0)
+    {
+        editor()->selectLines(start, end);
+    }
 }
 
 //----------------------------------------------------------

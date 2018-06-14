@@ -112,6 +112,7 @@ namespace Utils
     QString rstrip(const QString &string);
     QString strip(const QString &string);
     int numlines(const QString &string);
+    QStringList splitlines(const QString &string);
 
     
 };

@@ -7325,7 +7325,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+990"/>
+        <location filename="../python/pythonEngine.cpp" line="+996"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -7368,7 +7368,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2232"/>
+        <location line="+2264"/>
         <source>It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7423,7 +7423,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4369"/>
+        <location line="-4405"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished">Das itom-Unterverzeichnis von Python &apos;%s&apos; existiert nicht.
@@ -7494,7 +7494,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+244"/>
+        <location line="+245"/>
         <source>The module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7519,7 +7519,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
     <message>
-        <location line="+496"/>
+        <location line="+499"/>
         <source>Main dictionary is empty</source>
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
@@ -7539,7 +7539,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
     </message>
     <message>
-        <location line="+644"/>
+        <location line="+676"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7876,19 +7876,23 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
+        <location line="+892"/>
         <source>&apos;%1&apos; was not found</source>
-        <translation type="vanished">&apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
+        <location line="+0"/>
+        <location line="+89"/>
+        <location line="+4"/>
         <source>Find And Replace</source>
-        <translation type="vanished">Suchen und Ersetzen</translation>
+        <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
         <source>%1 occurrence(s) was replaced</source>
         <translation type="vanished">%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-982"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -8208,6 +8212,16 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <source>Bookmark Toolbar</source>
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
+    <message>
+        <location line="+728"/>
+        <source>One occurrence was replaced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1 occurrences were replaced</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::ScriptEditorOrganizer</name>
@@ -8230,7 +8244,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1239"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1242"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
@@ -8245,7 +8259,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2136"/>
+        <location line="-2139"/>
         <source>&amp;Toggle Bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -8466,7 +8480,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Haltepunkt &amp;aktivieren</translation>
     </message>
     <message>
-        <location line="+555"/>
+        <location line="+558"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>

@@ -360,6 +360,15 @@ namespace Utils
         num += (l - str.size());
         return num;
     }
+
+    //---------------------------------------------------------------------------
+    QStringList splitlines(const QString &string)
+    {
+        QString text = string;
+        text.replace("\r\n", "\n");
+        text.replace("\r", "\n");
+        return text.split("\n");
+    }
 };
 
 } //end namespace ito

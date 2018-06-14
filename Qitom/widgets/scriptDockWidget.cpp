@@ -2076,8 +2076,6 @@ void ScriptDockWidget::mnuReplaceTextExpr()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuGoto()
 {
-    //TODO CodeEditor
-    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew == NULL) return;
 
@@ -2105,7 +2103,6 @@ void ScriptDockWidget::mnuGoto()
     }
 
     DELETE_AND_SET_NULL(d);
-    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2190,8 +2187,6 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach)
 {
-    //TODO CodeEditor
-    /*
     ScriptEditorWidget* sew = getCurrentEditor();
 
     if (sew != NULL)
@@ -2200,8 +2195,10 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
         {
             int lineFrom, indexFrom, lineTo, indexTo;
             sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-            //            if (lineFrom != -1 && !forward) sew->setCursorPosition(lineTo, indexTo);
-            if (lineFrom != -1) sew->setCursorPosition(lineFrom, indexFrom);
+            if (lineFrom != -1) 
+            {
+                sew->setCursorPosition(lineFrom, indexFrom);
+            }
         }
 
         bool success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, wrap, forward, -1, -1, true);
@@ -2218,20 +2215,16 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
             }
         }
     }
-    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 {
-    //TODO CodeEditor
-    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew != NULL)
     {
         sew->replace(replace);
     }
-    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2241,9 +2234,6 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     bool inRange = true;
     int count = 0;
 
-    //TODO CodeEditor
-
-    /*
     ScriptEditorWidget* sew = getCurrentEditor();
     if (sew != NULL)
     {
@@ -2316,7 +2306,6 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     {
         QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("%1 occurrences were replaced").arg(count));
     }
-    */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

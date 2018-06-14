@@ -178,7 +178,9 @@ PythonEngine::PythonEngine() :
     dictUnicode(NULL),
     m_pythonThreadId(0),
     m_includeItomImportString(""),
-    m_pUserDefinedPythonHome(NULL)
+    m_pUserDefinedPythonHome(NULL),
+    m_pyModJedi(NULL),
+    m_pyModJediChecked(false)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -725,6 +727,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 
             //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
+
             //try to add the module 'frosted' for syntax check
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
@@ -972,6 +975,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 
         Py_XDECREF(m_pyModSyntaxCheck);
         m_pyModSyntaxCheck = NULL;
+
+        Py_XDECREF(m_pyModJedi);
+        m_pyModJedi = NULL;
 
         Py_XDECREF(m_pyModGC);
         m_pyModGC = NULL;
@@ -2025,6 +2031,38 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool PythonEngine::tryToLoadJediIfNotYetDone()
+{
+    if (m_pyModJediChecked)
+    {
+        return m_pyModJedi != NULL;
+    }
+    else
+    {
+#if defined _DEBUG && (PY_VERSION_HEX >= 0x03040000)
+        if (!PyGILState_Check())
+        {
+            std::cerr << "Python GIL must be locked when calling pyJediAvailable\n" << std::endl;
+            return false;
+        }
+#endif
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
+        m_pyModJediChecked = true;
+        m_pyModJedi = PyImport_ImportModule("jedi"); //new reference
+
+        if (m_pyModJedi == NULL)
+        {
+            PyErr_Clear();
+            return false;
+        }
+        return true;
+
+        PyGILState_Release(gstate);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

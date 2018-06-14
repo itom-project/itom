@@ -512,9 +512,9 @@ QString PyAutoIndentMode::handleNewScopeIndentation(const QTextCursor &cursor, c
 //----------------------------------------------------------------------------
 void PyAutoIndentMode::handleIndentInStatement(const QString &fullline, const QString &lastword, QString &post, QString &pre) const
 {
-    if (lastword[-1] != ':')
+    if (lastword.right(1) != ":")
     {
-        if (lastword != "" && lastword.right(0) != " ")
+        if (lastword != "" && lastword.right(1) != " ")
         {
             pre += " \\";
         }
