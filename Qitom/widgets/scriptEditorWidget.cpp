@@ -202,6 +202,9 @@ RetVal ScriptEditorWidget::initEditor()
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
 
+    m_pyCallbackMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode"));
+    modes()->append(m_pyCallbackMode.dynamicCast<ito::Mode>());
+
 #else
     setPaper(QColor(1, 81, 107));
 #endif
@@ -1640,7 +1643,7 @@ void ScriptEditorWidget::checkSyntax()
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), Q_ARG(QByteArray, "syntaxCheckResult"));
     }
 }
 

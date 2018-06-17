@@ -45,6 +45,7 @@
 #include "pythonFont.h"
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
+#include "pythonJedi.h"
 
 #include "../../AddInManager/addInManager.h"
 #include "common/interval.h"
@@ -250,6 +251,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
+    qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
+    qRegisterMetaType<QVector<ito::JediCalltip>>("QVector<ito::JediCalltip>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -2042,13 +2045,6 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
     }
     else
     {
-#if defined _DEBUG && (PY_VERSION_HEX >= 0x03040000)
-        if (!PyGILState_Check())
-        {
-            std::cerr << "Python GIL must be locked when calling pyJediAvailable\n" << std::endl;
-            return false;
-        }
-#endif
         PyGILState_STATE gstate = PyGILState_Ensure();
 
         m_pyModJediChecked = true;
@@ -2057,11 +2053,59 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
         if (m_pyModJedi == NULL)
         {
             PyErr_Clear();
+            PyGILState_Release(gstate);
             return false;
         }
-        return true;
-
         PyGILState_Release(gstate);
+        return true;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &encoding, QByteArray callbackFctName)
+{
+    QVector<ito::JediCalltip> calltips;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+    //...
+
+    /*
+    int index = args["call.index"].toInt();
+    int col = args["column"].toInt();
+
+    // create a formatted calltip (current index appear in bold)
+    QString calltip = QString("<p style='white-space:pre'>%1.%2(").arg(args["call.module.name"].toString()).arg(args["call.call_name"].toString());
+    QStringList callParams = args["call.params"].toString().split(";;");
+    for (int i = 0; i < callParams.size(); ++i)
+    {
+        QString param = callParams[i];
+        if ((i < callParams.size() - 1) && !param.endsWith(','))
+        {
+            param += ", ";
+        }
+        if (param.endsWith(','))
+        {
+            param += " ";  // pep8 calltip
+        }
+        if (i == index)
+        {
+            calltip += "<b>";
+        }
+        calltip += param;
+        if (i == index)
+        {
+            calltip += "</b>";
+        }
+    calltip += ")</p>";
+    */
+
+    PyGILState_Release(gstate);
+
+    QObject *s = sender();
+    if (s && callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+        
     }
 }
 
@@ -2076,7 +2120,7 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
 */
-void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
+void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName)
 {
     if (m_pyModSyntaxCheck)
     {
@@ -2138,9 +2182,9 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
                 }   // if not, no correction is nessesary
             }
             QObject *s = sender.data();
-            if (s)
+            if (s && callbackFctName != "")
             {
-                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
+                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
             }
         }
 #ifdef _DEBUG

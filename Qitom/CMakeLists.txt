@@ -243,6 +243,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h

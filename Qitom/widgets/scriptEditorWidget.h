@@ -33,7 +33,8 @@
     #include "../codeEditor/panels/checkerBookmarkPanel.h"
     #include "../codeEditor/panels/breakpointPanel.h"
     #include "../codeEditor/modes/errorLineHighlight.h"
-#include "../codeEditor/panels/lineNumber.h"
+    #include "../codeEditor/panels/lineNumber.h"
+    #include "../codeEditor/modes/pyCalltips.h"
 #else
     #include "abstractPyScintillaWidget.h"
 #endif
@@ -237,6 +238,7 @@ private:
     QSharedPointer<BreakpointPanel> m_breakpointPanel;
     QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
+    QSharedPointer<PyCalltipsMode> m_pyCallbackMode;
 #endif
 
     static const QString lineBreak;

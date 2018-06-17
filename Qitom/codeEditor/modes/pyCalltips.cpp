@@ -39,7 +39,11 @@
 
 #include "../codeEditor.h"
 #include "../utils/utils.h"
+#include "../managers/panelsManager.h"
 #include "AppManagement.h"
+
+#include "../../python/pythonEngine.h"
+
 
 #include <qtooltip.h>
 
@@ -52,6 +56,11 @@ PyCalltipsMode::PyCalltipsMode(const QString &name, const QString &description /
     m_requestCount(0)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
+    if (m_pPythonEngine)
+    {
+        connect(this, SIGNAL(jediCalltipRequested(QString,int,int,QString,QByteArray)), m_pPythonEngine, SLOT(jediCalltipRequested(QString,int,int,QString,QByteArray)));
+    }
+
     m_disablingKeys << Qt::Key_ParenRight << \
             Qt::Key_Return << \
             Qt::Key_Left << \
@@ -148,11 +157,86 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
-    if (m_requestCount == 0)
+    PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
+    if (pyEng && pyEng->tryToLoadJediIfNotYetDone() && (m_requestCount == 0))
     {
         m_requestCount += 1;
-        emit jediCalltipRequested(source, line, col, encoding);
+        emit jediCalltipRequested(source, line, col, encoding, "onJediCalltipResultAvailable");
     }
+}
+
+//--------------------------------------------------------------------------------
+bool PyCalltipsMode::isLastChardEndOfWord() const
+{
+    QTextCursor tc = editor()->wordUnderCursor(false);
+    tc.setPosition(tc.position());
+    tc.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+    QString l = tc.selectedText();
+    if (l.size() > 0)
+    {
+        QChar lastChar = l[l.size() - 1];
+        QString seps = editor()->wordSeparators();
+        QString symbols = ", (";
+        return (seps.contains(lastChar)) && !(symbols.contains(lastChar));
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
+{
+    m_requestCount--;
+
+    if (isLastChardEndOfWord() || calltips.size() == 0)
+    {
+        return;
+    }
+
+    JediCalltip calltip = calltips[0];
+
+    /*
+    int index = args["call.index"].toInt();
+    int col = args["column"].toInt();
+
+    // create a formatted calltip (current index appear in bold)
+    QString calltip = QString("<p style='white-space:pre'>%1.%2(").arg(args["call.module.name"].toString()).arg(args["call.call_name"].toString());
+    QStringList callParams = args["call.params"].toString().split(";;");
+    for (int i = 0; i < callParams.size(); ++i)
+    {
+        QString param = callParams[i];
+        if ((i < callParams.size() - 1) && !param.endsWith(','))
+        {
+            param += ", ";
+        }
+        if (param.endsWith(','))
+        {
+            param += " ";  // pep8 calltip
+        }
+        if (i == index)
+        {
+            calltip += "<b>";
+        }
+        calltip += param;
+        if (i == index)
+        {
+            calltip += "</b>";
+        }
+    calltip += ")</p>";
+    */
+
+    // set tool tip position at the start of the bracket
+    int char_width = editor()->fontMetrics().width('A');
+    int w_offset = (calltip.column - calltip.bracketStartCol) * char_width;
+    QPoint position(
+        editor()->cursorRect().x() - w_offset,
+        editor()->cursorRect().y() + char_width +
+        editor()->panels()->marginSize(ito::Panel::Top));
+    position = editor()->mapToGlobal(position);
+    // show tooltip
+    QToolTip::showText(position, calltip.calltipText, editor());
 }
 
 } //end namespace ito

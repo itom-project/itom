@@ -38,6 +38,9 @@
 #ifndef PYCALLTIPS_H
 #define PYCALLTIPS_H
 
+
+#include "../../python/pythonJedi.h"
+
 #include "../utils/utils.h"
 #include "../mode.h"
 #include <qevent.h>
@@ -45,6 +48,8 @@
 #include <qpair.h>
 #include <qstring.h>
 #include <qlist.h>
+
+
 
 namespace ito {
 
@@ -70,13 +75,14 @@ public:
 
 private slots:
     void onKeyReleased(QKeyEvent *e);
-    void onJediCalltipResultAvailable(/*...args*/) {};
+    void onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
 
 signals:
-    void jediCalltipRequested(const QString &source, int line, int col, const QString &encoding);
+    void jediCalltipRequested(const QString &source, int line, int col, const QString &encoding, QByteArray callbackFctName);
 
 protected:
     void requestCalltip(const QString &source, int line, int col, const QString &encoding);
+    bool isLastChardEndOfWord() const;
 
 private:
     QObject *m_pPythonEngine;

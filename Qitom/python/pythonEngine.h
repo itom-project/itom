@@ -40,7 +40,13 @@
     #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #if (defined linux) | (defined CMAKE)
-            #include "Python.h"
+            #ifdef slots
+                #undef slots
+                #include "Python.h"
+                #define slots
+            #else
+                #include "Python.h"
+            #endif
             #include "node.h"
             #include "numpy/arrayobject.h"
         #elif (defined __APPLE__) | (defined CMAKE)
@@ -328,7 +334,8 @@ public slots:
     void readSettings();
     void propertiesChanged();
 
-    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender);
+    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
+    void jediCalltipRequested(const QString &source, int line, int col, const QString &encoding, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 

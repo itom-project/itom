@@ -180,6 +180,8 @@ public:
     bool isModified() const;
     void setModified(bool modified);
 
+    QString wordSeparators() const { return m_wordSeparators; }
+
     bool isUndoAvailable() const { return m_undoAvailable; } 
     bool isRedoAvailable() const { return m_redoAvailable; } 
 
