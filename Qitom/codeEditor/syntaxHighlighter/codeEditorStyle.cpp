@@ -222,7 +222,7 @@ CodeEditorStyle::CodeEditorStyle()
     QString defaultFontName = "Verdana";
     int defaultPointSize = 10;
 
-    QTextCharFormat defaultFormat = StyleItem::createFormat(defaultFontName, defaultPointSize, "#808080", Qt::white);
+    QTextCharFormat defaultFormat = StyleItem::createFormat(defaultFontName, defaultPointSize, "#000000" /*808080"*/, Qt::white);
 
     //create defaults
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())

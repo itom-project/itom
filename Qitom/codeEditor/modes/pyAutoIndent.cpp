@@ -77,7 +77,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
     int ln, column;
     editor()->cursorPosition(ln, column);
     QString fullline = getFullLine(cursor);
-    QString line = fullline.left(column - 1); //todo: maybe column and not column - 1
+    QString line = fullline.left(column);
     QPair<QString, QString> pre_post =AutoIndentMode::getIndent(cursor);
     
     if (atBlockStart(cursor, line))

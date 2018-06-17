@@ -66,7 +66,7 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
     QString text = block.text();
     // round down to previous indentation guide to ensure contiguous block
     // fold level evolution.
-    return (text.size() - Utils::lstrip(text).size()); // self.editor.tab_length
+    return (text.size() - Utils::lstrip(text).size()) / editor()->tabLength();
 }
 
 } //end namespace ito

@@ -2048,7 +2048,7 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
         PyGILState_STATE gstate = PyGILState_Ensure();
 
         m_pyModJediChecked = true;
-        m_pyModJedi = PyImport_ImportModule("jedi"); //new reference
+        m_pyModJedi = PyImport_ImportModule("itomJediLib"); //new reference
 
         if (m_pyModJedi == NULL)
         {
@@ -2067,37 +2067,61 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     QVector<ito::JediCalltip> calltips;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
-    //...
 
-    /*
-    int index = args["call.index"].toInt();
-    int col = args["column"].toInt();
+    PyObject *result = NULL;
 
-    // create a formatted calltip (current index appear in bold)
-    QString calltip = QString("<p style='white-space:pre'>%1.%2(").arg(args["call.module.name"].toString()).arg(args["call.call_name"].toString());
-    QStringList callParams = args["call.params"].toString().split(";;");
-    for (int i = 0; i < callParams.size(); ++i)
+    if (m_includeItomImportBeforeSyntaxCheck)
     {
-        QString param = callParams[i];
-        if ((i < callParams.size() - 1) && !param.endsWith(','))
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", source.toUtf8().constData(), line, col, encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycalltip = NULL;
+        const char* calltip;
+        int column;
+        int bracketStartCol;
+        int bracketStartLine;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
         {
-            param += ", ";
+            pycalltip = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycalltip))
+            {
+                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                {
+                    calltips.append(ito::JediCalltip(QLatin1String(calltip), column, bracketStartLine, bracketStartCol));
+                }
+                else
+                {
+                    std::cerr << "Error in calltip: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in calltip: list of tuples required\n" << std::endl;
+            }
         }
-        if (param.endsWith(','))
-        {
-            param += " ";  // pep8 calltip
-        }
-        if (i == index)
-        {
-            calltip += "<b>";
-        }
-        calltip += param;
-        if (i == index)
-        {
-            calltip += "</b>";
-        }
-    calltip += ")</p>";
-    */
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+#ifdef _DEBUG
+        std::cerr << "Error when getting calltips from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+#endif
+    }
+
+    
 
     PyGILState_Release(gstate);
 
@@ -2136,7 +2160,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().constData());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {

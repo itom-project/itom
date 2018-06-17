@@ -158,10 +158,17 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
     PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
-    if (pyEng && pyEng->tryToLoadJediIfNotYetDone() && (m_requestCount == 0))
+    if (pyEng && (m_requestCount == 0))
     {
-        m_requestCount += 1;
-        emit jediCalltipRequested(source, line, col, encoding, "onJediCalltipResultAvailable");
+        if (pyEng->tryToLoadJediIfNotYetDone())
+        {
+            m_requestCount += 1;
+            emit jediCalltipRequested(source, line + 1, col, encoding, "onJediCalltipResultAvailable");
+        }
+        else
+        {
+            onStateChanged(false);
+        }
     }
 }
 
@@ -188,7 +195,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
 {
-    m_requestCount--;
+     m_requestCount--;
 
     if (isLastChardEndOfWord() || calltips.size() == 0)
     {
@@ -229,14 +236,14 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
 
     // set tool tip position at the start of the bracket
     int char_width = editor()->fontMetrics().width('A');
-    int w_offset = (calltip.column - calltip.bracketStartCol) * char_width;
+    int w_offset = (calltip.m_column - calltip.m_bracketStartCol) * char_width;
     QPoint position(
         editor()->cursorRect().x() - w_offset,
         editor()->cursorRect().y() + char_width +
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
     // show tooltip
-    QToolTip::showText(position, calltip.calltipText, editor());
+    QToolTip::showText(position, calltip.m_calltipText, editor());
 }
 
 } //end namespace ito

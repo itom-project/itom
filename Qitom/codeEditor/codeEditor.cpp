@@ -61,7 +61,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_tabLength(4),
     m_zoomLevel(0),
     m_fontSize(10),
-    m_fontFamily("Arial"),
+    m_fontFamily("Verdana"),
     m_selectLineOnCopyEmpty(true),
     m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "),
     m_dirty(false),
@@ -387,7 +387,14 @@ QString CodeEditor::fontName() const
 
 void CodeEditor::setFontName(const QString& value)
 {
-    m_fontFamily = value;
+    if (value == "")
+    {
+        m_fontFamily = "Verdana";
+    }
+    else
+    {
+        m_fontFamily = value;
+    }
 }
 
 //-----------------------------------------------------------

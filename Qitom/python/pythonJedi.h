@@ -30,11 +30,18 @@ namespace ito
 {
     struct JediCalltip
     {
-        JediCalltip() : column(-1), bracketStartCol(-1), bracketStartLine(-1) {};
-        QString calltipText;
-        int column;
-        int bracketStartCol;
-        int bracketStartLine;
+        JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1) {};
+        JediCalltip(const QString &calltip, int column, int bracketStartLine, int bracketStartCol) :
+            m_calltipText(calltip), 
+            m_column(column),
+            m_bracketStartCol(bracketStartCol),
+            m_bracketStartLine(bracketStartLine)
+        {}
+
+        QString m_calltipText;
+        int m_column;
+        int m_bracketStartCol;
+        int m_bracketStartLine;
     };
 
     Q_DECLARE_METATYPE(JediCalltip)
