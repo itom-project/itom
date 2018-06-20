@@ -1483,10 +1483,8 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
         formats_ << StyleItem::KeyComment << StyleItem::KeyString << StyleItem::KeyDocstring;
     }
 
-    QTextLayout *layout = NULL;
-
     int pos = block.text().size() - 1;
-    layout = block.layout();
+    QTextLayout *layout = block.layout();
     bool is_user_obj;
 
     if (layout)
@@ -1502,11 +1500,61 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
                 {
                     foreach (StyleItem::StyleType fmtType, formats_)
                     {
-                        is_user_obj = (r.format.objectType() == r.format.UserObject);
+                        is_user_obj = (r.format.objectType() == StyleItem::GroupCommentOrString);
                         if ((ref_formats->format(fmtType) == r.format) && is_user_obj)
                         {
                             return true;
                         }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+//------------------------------------------------------------
+/*
+Checks if a block/cursor is a number (int, float, complex...).
+
+:param cursor_or_block: QTextCursor or QTextBlock
+:param formats: the list of color scheme formats to consider. By
+    default, it will consider the following keys: 'comment', 'string',
+    'docstring'.
+*/
+bool CodeEditor::isNumber(const QTextCursor &cursor) const
+{
+    return isNumber(cursor.block());
+}
+
+//------------------------------------------------------------
+/*
+Checks if a block/cursor is a number (int, float, complex...).
+
+:param cursor_or_block: QTextCursor or QTextBlock
+*/
+bool CodeEditor::isNumber(const QTextBlock &block) const
+{
+    int pos = block.text().size() - 1;
+    QTextLayout *layout = block.layout();
+    bool is_user_obj;
+
+    if (layout)
+    {
+        QList<QTextLayout::FormatRange> additional_formats = layout->additionalFormats();
+        SyntaxHighlighterBase *sh = syntaxHighlighter();
+        if (sh)
+        {
+            QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
+            foreach (const QTextLayout::FormatRange &r, additional_formats)
+            {
+                if ((r.start <= pos) && (pos < (r.start + r.length)))
+                {
+                    is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
+                    if ((ref_formats->format(StyleItem::KeyNumber) == r.format) && is_user_obj)
+                    {
+                        return true;
                     }
                 }
             }

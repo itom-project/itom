@@ -46,6 +46,23 @@ namespace ito
 
     Q_DECLARE_METATYPE(JediCalltip)
 
+
+    struct JediCompletion
+    {
+        JediCompletion() {};
+        JediCompletion(const QString &name, const QString &tooltip, const QString &icon = QString()) :
+            m_name(name),
+            m_tooltip(tooltip),
+            m_icon(icon)
+        {}
+
+        QString m_name;
+        QString m_tooltip;
+        QString m_icon;
+    };
+
+    Q_DECLARE_METATYPE(JediCompletion)
+
 } //end namespace ito
 
 #endif

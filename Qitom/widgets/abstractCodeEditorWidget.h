@@ -31,6 +31,8 @@
 #include "../codeEditor/syntaxHighlighter/syntaxHighlighterBase.h"
 #include "../codeEditor/modes/symbolMatcherMode.h"
 #include "../codeEditor/modes/caretLineHighlight.h"
+#include "../codeEditor/modes/pyCalltips.h"
+#include "../codeEditor/modes/codeCompletion.h"
 #include <qstringlist.h>
 #include <qrect.h>
 #include <qpixmap.h>

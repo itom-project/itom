@@ -253,6 +253,8 @@ public:
 
     bool isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
     bool isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
+    bool isNumber(const QTextCursor &cursor) const;
+    bool isNumber(const QTextBlock &block) const;
 
     QTextCursor wordUnderCursor(bool selectWholeWord) const;
     QTextCursor wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const;

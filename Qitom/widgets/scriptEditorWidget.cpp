@@ -202,8 +202,7 @@ RetVal ScriptEditorWidget::initEditor()
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
 
-    m_pyCallbackMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode"));
-    modes()->append(m_pyCallbackMode.dynamicCast<ito::Mode>());
+    
 
 #else
     setPaper(QColor(1, 81, 107));

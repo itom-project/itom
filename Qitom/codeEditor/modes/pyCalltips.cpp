@@ -143,6 +143,10 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
         if (l.endsWith(")"))
         {
             lines[line] = l.left(l.size() - 1);
+            if (col > lines[line].size())
+            {
+                col = lines[line].size();
+            }
         }
 
         source = lines.join("\n");
@@ -163,7 +167,7 @@ void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, co
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
             m_requestCount += 1;
-            emit jediCalltipRequested(source, line + 1, col, encoding, "onJediCalltipResultAvailable");
+            emit jediCalltipRequested(source, line, col, encoding, "onJediCalltipResultAvailable");
         }
         else
         {

@@ -73,6 +73,9 @@ void AbstractCodeEditorWidget::init()
     occHighlighterMode->setCaseSensitive(true);
     modes()->append(Mode::Ptr(occHighlighterMode));
 
+    modes()->append(Mode::Ptr(new CodeCompletionMode("CodeCompletionMode")));
+    modes()->append(Mode::Ptr(new PyCalltipsMode("CalltipsMode")));
+
     modes()->append(Mode::Ptr(new PyAutoIndentMode("PyAutoIndentMode")));
     modes()->append(Mode::Ptr(new IndenterMode("IndenterMode")));
 

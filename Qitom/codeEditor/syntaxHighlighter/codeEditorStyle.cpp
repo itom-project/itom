@@ -77,15 +77,19 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         break;
     case KeyComment:
         m_name = QObject::tr("Comment");
+        m_format.setObjectType(GroupCommentOrString);
         break;
     case KeyString:
         m_name = QObject::tr("String");
+        m_format.setObjectType(GroupCommentOrString);
         break;
     case KeyDocstring:
         m_name = QObject::tr("Docstring");
+        m_format.setObjectType(GroupCommentOrString);
         break;
     case KeyNumber:
         m_name = QObject::tr("Number");
+        m_format.setObjectType(GroupNumber);
         break;
     case KeyInstance:
         m_name = QObject::tr("Instance");
@@ -250,6 +254,8 @@ CodeEditorStyle::CodeEditorStyle()
     m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyBuiltin, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
     m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, true));
     m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::magenta, Qt::white, true));
+
+    
 }
 
 

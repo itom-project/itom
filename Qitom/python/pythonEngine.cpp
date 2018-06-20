@@ -253,6 +253,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
     qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
     qRegisterMetaType<QVector<ito::JediCalltip>>("QVector<ito::JediCalltip>");
+    qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
+    qRegisterMetaType<QVector<ito::JediCompletion>>("QVector<ito::JediCompletion>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -2129,6 +2131,78 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     if (s && callbackFctName != "")
     {
         QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+        
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName)
+{
+    QVector<ito::JediCompletion> completions;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", source.toUtf8().constData(), line + 1, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycompletion = NULL;
+        const char* calltip;
+        const char* tooltip;
+        const char* icon;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pycompletion = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycompletion))
+            {
+                if (PyArg_ParseTuple(pycompletion, "sss", &calltip, &tooltip, &icon))
+                {
+                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), QLatin1String(icon)));
+                }
+                else
+                {
+                    std::cerr << "Error in completion: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in completion: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+#ifdef _DEBUG
+        std::cerr << "Error when getting completions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = sender();
+    if (s && callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(int, line), Q_ARG(int, col), Q_ARG(int, requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
         
     }
 }

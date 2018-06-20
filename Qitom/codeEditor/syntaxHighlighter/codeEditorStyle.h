@@ -59,6 +59,12 @@ class StyleItem : public QObject
 #endif
 
 public:
+    enum StyleGroup
+    {
+        GroupCommentOrString = QTextFormat::UserObject,
+        GroupNumber = QTextFormat::UserObject + 1
+    };
+
     enum StyleType
     {
         //the pre-defined indices are used to provide a backward-compatibility with old Scintilla styles!
@@ -118,6 +124,8 @@ public:
 
     static QTextCharFormat createFormat(const QString &familyName, int pointSize, const QColor &color, \
         const QColor &bgcolor = QColor(), bool bold = false, QFont::StyleHint styleHint = QFont::SansSerif);
+
+    void setObjectType(int type) { m_format.setObjectType(type); }
 
 private:
     StyleType m_type;
