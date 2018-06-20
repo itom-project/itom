@@ -114,6 +114,9 @@ public:
     static PyObject* PyShape_getName(PyShape *self, void *closure);
     static int PyShape_setName(PyShape *self, PyObject *value, void *closure);
 
+	static PyObject* PyShape_getColor(PyShape *self, void *closure);
+	static int PyShape_setColor(PyShape *self, PyObject *value, void *closure);
+
     static PyObject* PyShape_getTransform(PyShape *self, void *closure);
     static int PyShape_setTransform(PyShape *self, PyObject *value, void *closure);
 

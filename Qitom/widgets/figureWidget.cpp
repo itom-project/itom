@@ -335,7 +335,10 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
 		}
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
-
+        if (destWidget->inherits("ito::AbstractFigure"))
+        {
+            connect((ito::AbstractFigure*)destWidget, SIGNAL(windowTitleModified(QString)), this, SLOT(setAdvancedWindowTitle(QString)));
+        }
         if (!retval.containsError() && destWidget)
         {
             if (destWidget->inherits("ito::AbstractDObjFigure"))
@@ -866,5 +869,4 @@ void FigureWidget::mnu_subplotActionsTriggered(QAction *action)
         
     }
 }
-
 } //end namespace ito

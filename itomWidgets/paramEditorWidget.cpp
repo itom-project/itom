@@ -68,7 +68,8 @@ public:
         m_isChanging(false),
         m_readonly(false),
         m_showinfo(false),
-        m_immediatelyModifyPluginParametersAfterChange(true)
+        m_immediatelyModifyPluginParametersAfterChange(true),
+		m_collapsed(false)
     {};
 
     void clearGroups()
@@ -147,6 +148,7 @@ public:
     bool m_showinfo;
     QStringList m_filteredCategories;
     bool m_immediatelyModifyPluginParametersAfterChange;
+	bool m_collapsed;
 };
 
 //-----------------------------------------------------------------------
@@ -317,6 +319,7 @@ ito::RetVal ParamEditorWidget::loadPlugin(QPointer<ito::AddInBase> plugin)
             {
                 d->m_pBrowser->setExpanded(i2, false);
             }
+			d->m_pBrowser->setExpanded(i, !d->m_collapsed);
         }
     }
 
@@ -392,6 +395,28 @@ void ParamEditorWidget::setIndentation(int i)
 {
     Q_D(ParamEditorWidget);
     d_ptr->m_pBrowser->setIndentation(i);
+}
+
+//-----------------------------------------------------------------------
+bool ParamEditorWidget::collapsed() const
+{
+	Q_D(const ParamEditorWidget);
+	return d_ptr->m_collapsed;
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setCollapsed(bool c)
+{
+	Q_D(ParamEditorWidget);
+	if (c != d_ptr->m_collapsed)
+	{
+		foreach(QtBrowserItem *item, d_ptr->m_pBrowser->topLevelItems())
+		{
+			d_ptr->m_pBrowser->setExpanded(item, !c);
+		}
+
+		d_ptr->m_collapsed = c;
+	}
 }
 
 //-----------------------------------------------------------------------

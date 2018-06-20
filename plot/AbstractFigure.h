@@ -172,6 +172,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
         QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
+        void setWindowTitleExtension(const QString& title); /*< call this method if the window title should be changed. This emits the signal windowTitleChanged which is connected to the plot window.*/
 
     protected:
 
@@ -224,6 +225,9 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
     public slots:
         int getPlotID();
         void refreshPlot() { update(); }
+        
+    signals:
+       void windowTitleModified(QString windowTitleSuffix); /*!< this signal is emitted if the title of the plot has been changed. windowTitleSuffix is the new suffix that should be appended to the base window title*/
 };
 
 } // namespace ito

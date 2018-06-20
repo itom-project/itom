@@ -34,6 +34,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qpolygon.h>
 #include <qtransform.h>
 #include <qregion.h>
+#include <qcolor.h>
 #include <qdatastream.h>
 
 #if !defined(Q_MOC_RUN) || defined(ITOMSHAPE_MOC) //only moc this file in itomShapeLib but not in other libraries or executables linking against this itomCommonQtLib
@@ -112,6 +113,9 @@ namespace ito
 
         unsigned int type() const;
         void setType(const unsigned int &type);
+
+		QColor color() const;
+		void setColor(const QColor &color);
 
         QTransform transform() const;
         QTransform &rtransform() const;

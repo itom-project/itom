@@ -25,4 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define COMMON_VER_STRING "1.8.2.0"
+#define COMMON_VERSION_MAJOR 1
+#define COMMON_VERSION_MINOR 8
+#define COMMON_VERSION_PATCH 2
+#define COMMON_VERSION_REVISION 0
+#define COMMON_VERSION_STRING  "1.8.2.0"

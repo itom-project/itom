@@ -29,8 +29,8 @@
 #include "commonQtVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         0x01, 0x01, 0x00, 0x00
-PRODUCTVERSION      0x01, 0x01, 0x00, 0x00
+FILEVERSION         COMMON_QT_VERSION_MAJOR, COMMON_QT_VERSION_MINOR, COMMON_QT_VERSION_PATCH, COMMON_QT_VERSION_REVISION
+PRODUCTVERSION      COMMON_QT_VERSION_MAJOR, COMMON_QT_VERSION_MINOR, COMMON_QT_VERSION_PATCH, 0x00
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
 #ifdef _DEBUG
@@ -65,7 +65,7 @@ BEGIN
             VALUE   "FileDescription", "common Qt library for itom (x86, release)\0"
     #endif
 #endif
-            VALUE   "FileVersion",      COMMON_QT_VER_STRING "\0"
+            VALUE   "FileVersion",      COMMON_QT_VERSION_STRING "\0"
             VALUE   "InternalName",     "itomCommonQtLib.dll\0"
             VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
 #ifdef _DEBUG
@@ -74,7 +74,7 @@ BEGIN
             VALUE   "OriginalFilename", "itomCommonQtLib.dll\0"
 #endif
             VALUE   "ProductName",      "itom measurement software\0"
-            VALUE   "ProductVersion",   COMMON_QT_VER_STRING "\0"
+            VALUE   "ProductVersion",   COMMON_QT_VERSION_STRING "\0"
         END
     END
 END

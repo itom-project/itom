@@ -29,8 +29,8 @@
 #include "pclVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         0x01, 0x01, 0x00, 0x00
-PRODUCTVERSION      0x01, 0x01, 0x00, 0x00
+FILEVERSION         PCL_WRAPPER_VERSION_MAJOR, PCL_WRAPPER_VERSION_MINOR, PCL_WRAPPER_VERSION_PATCH, PCL_WRAPPER_VERSION_REVISION
+PRODUCTVERSION      PCL_WRAPPER_VERSION_MAJOR, PCL_WRAPPER_VERSION_MINOR, PCL_WRAPPER_VERSION_PATCH, 0x00
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
 #ifdef _DEBUG
@@ -65,7 +65,7 @@ BEGIN
             VALUE   "FileDescription", "pointcloud wrapper dll for itom (x86, release)\0"
     #endif
 #endif
-            VALUE   "FileVersion",      PCL_WRAPPER_VER_STRING "\0"
+            VALUE   "FileVersion", PCL_WRAPPER_VERSION_STRING "\0"
             VALUE   "InternalName",     "pointcloud.dll\0"
             VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
 #ifdef _DEBUG
@@ -73,8 +73,8 @@ BEGIN
 #else
             VALUE   "OriginalFilename", "pointcloud.dll\0"
 #endif
-            VALUE   "ProductName",      "itom measurement programm\0"
-            VALUE   "ProductVersion",   PCL_WRAPPER_VER_STRING "\0"
+            VALUE   "ProductName",      "itom measurement program\0"
+            VALUE   "ProductVersion", PCL_WRAPPER_VERSION_STRING "\0"
         END
     END
 END

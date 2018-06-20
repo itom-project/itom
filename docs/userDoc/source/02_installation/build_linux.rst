@@ -45,10 +45,39 @@ for Ubuntu 16.04 based distributions the following command should install all ne
 
 .. code-block:: bash
 
-    sudo apt-get install cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 libqt5scintilla2-dev qttools5-dev-tools qttools5-dev
-    sudo apt-get update && sudo apt-get install build-essential
-    sudo apt-get install libopencv-dev libv4l-dev xsdcxx libxerces-c3.1 libxerces-c-dev
+    sudo apt install cmake cmake-gui git
+    sudo apt install python3 python3-dev python3-numpy python3-pip python3-apt-dbg
+    sudo apt install libopencv-dev
+    sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
+    sudo apt install libqt5scintilla2-dev #this will install libqt5scintilla2-xx
+    sudo apt install qttools5-dev-tools qttools5-dev
+    sudo apt-get install libv4l-dev #this is optional to get the video for linux drivers
+    sudo apt-get install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
 
+for Ubuntu 18.04 based distributtions the following command should install all necessary packages and its dependancies:
+
+.. code-block:: bash
+
+    sudo apt install cmake cmake-gui git
+    sudo apt install python3 python3-dev python3-numpy python3-pip python3-apt-dbg
+    sudo apt install libopencv-dev
+    sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
+    sudo apt install qtwebengine5-dev libqt5webenginewidgets5 libqt5webengine-data
+    sudo apt install libqscintilla2-qt5-dev libqscintilla2-qt5-13-dbg
+    sudo apt install qttools5-dev-tools qttools5-dev
+    sudo apt update && sudo apt-get install build-essential
+    sudo apt install fftw-dev libfftw3-single3 libfftw3-double3 libfftw3-long3 libfftw3-dev #this is optional for being able to compile fftw plugins
+    sudo apt install libv4l-dev #this is optional to get the video for linux drivers
+    sudo apt install xsdcxx libxerces-c3.2 libxerces-c-dev #this is optional for being able to compile the x3p plugin
+
+If you want to compile with support from Point Cloud Library, also get the following packages:
+
+.. code-block:: bash
+
+    sudo apt-get install libpcl-dev libproj-dev
+    
+
+    
 
 Recommended folder structure
 -----------------------------

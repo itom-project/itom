@@ -75,6 +75,7 @@ set(qpropertyeditor_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.h
+	${CMAKE_CURRENT_SOURCE_DIR}/propertyEditorVersion.h
 )
 
 set(qpropertyeditor_SOURCES 
@@ -112,6 +113,10 @@ else (QT5_FOUND)
     QT4_WRAP_UI_ITOM(qpropertyeditor_UI_MOC ${qpropertyeditor_UI})
     QT4_ADD_RESOURCES(qpropertyeditor_RCC_MOC ${qpropertyeditor_RCC})
 endif (QT5_FOUND)
+
+if(MSVC)
+    list(APPEND qpropertyeditor_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 

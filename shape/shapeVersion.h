@@ -25,4 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define SHAPE_VER_STRING  "1.5.0.0"
+#define SHAPE_VERSION_MAJOR 1
+#define SHAPE_VERSION_MINOR 6
+#define SHAPE_VERSION_PATCH 0
+#define SHAPE_VERSION_REVISION 0
+#define SHAPE_VERSION_STRING  "1.6.0.0"

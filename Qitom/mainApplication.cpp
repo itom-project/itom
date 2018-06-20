@@ -890,7 +890,7 @@ void MainApplication::mainWindowCloseRequest()
 
 		DELETE_AND_SET_NULL(dialog);
 	}
-	else if (settings->value("askBeforeClose", false).toBool() && !pythonStopped)
+	else if (settings->value("askBeforeClose", true).toBool() && !pythonStopped)
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Do you really want to exit the application?"));

@@ -56,7 +56,8 @@ public:
         propertyDock(NULL),
         propertyEditorWidget(NULL),
         propertyObservedObject(NULL),
-        toolbarsVisible(true)
+        toolbarsVisible(true),
+		windowTitleSuffix("")
     {}
 
     QList<QMenu*> menus;
@@ -69,6 +70,7 @@ public:
 	
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
+	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -713,6 +715,23 @@ void AbstractFigure::actionChanged()
     {
         d->shortcutActions[a]->setEnabled(a->isEnabled());
     }
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::setWindowTitleExtension(const QString& title)
+{
+	if (d->windowTitleSuffix != title)
+	{
+		d->windowTitleSuffix = title;
+
+		if (title != "")
+		{
+			emit windowTitleModified(tr(" - ") + title);
+		}
+		else
+		{
+			emit windowTitleModified("");
+		}
+	}
 }
 
 } //end namespace ito

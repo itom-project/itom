@@ -2354,6 +2354,26 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                         *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&arr));
                     }
                 }
+				else if (type == QMetaType::type("QList<double>"))
+				{
+					bool ok;
+					QVector<double> arr = PyObjGetDoubleArray(val, strict, ok);
+					if (ok)
+					{
+						QList<double> arr2 = arr.toList();
+						*retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&arr2));
+					}
+				}
+				else if (type == QMetaType::type("QList<int>"))
+				{
+					bool ok;
+					QVector<int> arr = PyObjGetIntArray(val, strict, ok);
+					if (ok)
+					{
+						QList<int> arr2 = arr.toList();
+						*retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&arr2));
+					}
+				}
                 else if (type == QMetaType::type("ito::Shape"))
                 {
                     if (PyShape_Check(val))
@@ -2975,6 +2995,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+		else if (strcmp(name, "QList<int>") == 0)
+		{
+			QList<int> *temp2 = (QList<int>*)data;
+			PyObject *temp = PyTuple_New(temp2->size());
+			for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+			{
+				PyTuple_SetItem(temp, i, PyLong_FromLong(temp2->at(i)));
+			}
+			return temp;
+		}
         else if (strcmp(name, "QVector<double>") == 0)
         {
             QVector<double> *temp2 = (QVector<double>*)data;
@@ -2985,6 +3015,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+		else if (strcmp(name, "QList<double>") == 0)
+		{
+			QList<double> *temp2 = (QList<double>*)data;
+			PyObject *temp = PyTuple_New(temp2->size());
+			for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+			{
+				PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
+			}
+			return temp;
+		}
         else if (strcmp(name, "QVector<float>") == 0)
         {
             QVector<float> *temp2 = (QVector<float>*)data;
@@ -2995,6 +3035,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+		else if (strcmp(name, "QList<float>") == 0)
+		{
+			QList<float> *temp2 = (QList<float>*)data;
+			PyObject *temp = PyTuple_New(temp2->size());
+			for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+			{
+				PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
+			}
+			return temp;
+		}
         else if (strcmp(name, "QVector2D") == 0)
         {
             QVector2D *temp2 = (QVector2D*)data;

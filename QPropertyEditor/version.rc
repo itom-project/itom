@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -26,12 +26,11 @@
 *********************************************************************** */
 
 #include <windows.h>
-
-#include "dataobjVersion.h"
+#include "propertyEditorVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         DATAOBJ_VERSION_MAJOR, DATAOBJ_VERSION_MINOR, DATAOBJ_VERSION_PATCH, DATAOBJ_VERSION_REVISION
-PRODUCTVERSION      DATAOBJ_VERSION_MAJOR, DATAOBJ_VERSION_MINOR, DATAOBJ_VERSION_PATCH, 0x00
+FILEVERSION         PROPERTYEDITOR_VERSION_MAJOR, PROPERTYEDITOR_VERSION_MINOR, PROPERTYEDITOR_VERSION_PATCH, PROPERTYEDITOR_VERSION_REVISION
+PRODUCTVERSION      PROPERTYEDITOR_VERSION_MAJOR, PROPERTYEDITOR_VERSION_MINOR, PROPERTYEDITOR_VERSION_PATCH, 0x00
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
 #ifdef _DEBUG
@@ -55,27 +54,27 @@ BEGIN
             VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
 #ifdef _WIN64
     #ifdef _DEBUG
-            VALUE   "FileDescription", "dataObject library for itom (x64, debug)\0"
+            VALUE   "FileDescription", "property editor widget for itom (x64, debug)\0"
     #else
-            VALUE   "FileDescription", "dataObject library  dll for itom (x64, release)\0"
+            VALUE   "FileDescription", "property editor widget for itom (x64, release)\0"
     #endif
 #else
     #ifdef _DEBUG
-            VALUE   "FileDescription", "dataObject library  dll for itom (x86, debug)\0"
+            VALUE   "FileDescription", "property editor widget for itom (x86, debug)\0"
     #else
-            VALUE   "FileDescription", "dataObject library  dll for itom (x86, release)\0"
+            VALUE   "FileDescription", "property editor widget for itom (x86, release)\0"
     #endif
 #endif
-            VALUE   "FileVersion", DATAOBJ_VERSION_STRING "\0"
-            VALUE   "InternalName",     "dataobject.dll\0"
+            VALUE   "FileVersion",      PROPERTYEDITOR_VERSION_STRING "\0"
+            VALUE   "InternalName",     "qpropertyeditor.dll\0"
             VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
 #ifdef _DEBUG
-            VALUE   "OriginalFilename", "dataobjectd.dll\0"
+            VALUE   "OriginalFilename", "qpropertyeditord.dll\0"
 #else
-            VALUE   "OriginalFilename", "dataobject.dll\0"
+            VALUE   "OriginalFilename", "qpropertyeditor.dll\0"
 #endif
-            VALUE   "ProductName",      "itom measurement program\0"
-            VALUE   "ProductVersion", DATAOBJ_VERSION_STRING "\0"
+            VALUE   "ProductName",      "itom measurement software\0"
+            VALUE   "ProductVersion",   PROPERTYEDITOR_VERSION_STRING "\0"
         END
     END
 END

@@ -36,6 +36,7 @@
 
 #include "abstractAddInDockWidget.h"
 #include "opencv/cv.h"
+#include <iostream>
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -723,17 +724,20 @@ namespace ito
         {
             retValue += startDevice(NULL);
 
-            if (!retValue.containsError() && m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
-            {
-                m_timerID = startTimer(m_timerIntervalMS);
+			if (!retValue.containsError())
+			{
+				if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+				{
+					m_timerID = startTimer(m_timerIntervalMS);
 
-                if (m_timerID == 0)
-                {
-                    retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
-                }
-            }
+					if (m_timerID == 0)
+					{
+						retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
+					}
+				}
 
-            m_autoGrabbingListeners.insert(obj);
+				m_autoGrabbingListeners.insert(obj);
+			}
         }
 
         if (waitCond)
@@ -741,42 +745,52 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
+		else if (retValue.containsError())
+		{
+			std::cout << "Error binding / starting camera: " << retValue.errorMessage() << "\n" << std::endl;
+		}
+
         qDebug("end: startDeviceAndRegisterListener");
         return retValue;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
-    {
-        qDebug("start: stopDeviceAndUnregisterListener");
-        ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retValue(ito::retOk);
+	ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
+	{
+		qDebug("start: stopDeviceAndUnregisterListener");
+		ItomSharedSemaphoreLocker locker(waitCond);
+		ito::RetVal retValue(ito::retOk);
 
-        if (!m_autoGrabbingListeners.remove(obj))
-        {
-            retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toLatin1().data());
-        }
-        else
-        {
-            qDebug("live image has been removed from listener list");
-        }
+		if (!m_autoGrabbingListeners.remove(obj))
+		{
+			retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toLatin1().data());
+		}
+		else
+		{
+			qDebug("live image has been removed from listener list");
 
-        if (m_autoGrabbingListeners.size() <= 0)
-        {
-            if (m_timerID) //stop timer if no other listeners are registered
-            {
-                killTimer(m_timerID);
-                m_timerID = 0;
-            }
+			if (m_autoGrabbingListeners.size() <= 0)
+			{
+				if (m_timerID) //stop timer if no other listeners are registered
+				{
+					killTimer(m_timerID);
+					m_timerID = 0;
+				}
+			}
 
-            retValue += stopDevice(NULL);
-        }
+			retValue += stopDevice(NULL);
+		}
 
         if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
         }
+		else if (retValue.containsError())
+		{
+			std::cout << "Error unbinding / stopping camera: " << retValue.errorMessage() << "\n" << std::endl;
+		}
+
         qDebug("end: stopDeviceAndUnregisterListener");
         return retValue;
     }

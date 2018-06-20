@@ -25,4 +25,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define PCL_WRAPPER_VER_STRING  "1.8.1.0"
+#define PCL_WRAPPER_VERSION_MAJOR 1
+#define PCL_WRAPPER_VERSION_MINOR 8
+#define PCL_WRAPPER_VERSION_PATCH 1
+#define PCL_WRAPPER_VERSION_REVISION 0
+#define PCL_WRAPPER_VERSION_STRING "1.8.1.0"
+

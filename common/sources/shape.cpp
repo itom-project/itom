@@ -29,6 +29,7 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include <qrect.h>
+#include <qcolor.h>
 
 #include "numeric.h"
 
@@ -36,7 +37,7 @@ namespace ito {
 
     QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
     {
-        out << obj.type() << obj.flags() << obj.basePoints() << obj.transform() << obj.index() << obj.name();
+        out << obj.type() << obj.flags() << obj.basePoints() << obj.transform() << obj.index() << obj.name() << obj.color();
         return out;
     }
 
@@ -45,10 +46,12 @@ namespace ito {
         unsigned int type, flags;
         QPolygonF polygons;
         QTransform transform;
+		QColor color;
         int index;
         QString name;
-        in >> type >> flags >> polygons >> transform >> index >> name;
+        in >> type >> flags >> polygons >> transform >> index >> name >> color;
         obj = Shape(type, flags, polygons, index, name, transform);
+		obj.setColor(color);
         return in;
     }
 
@@ -77,6 +80,7 @@ public:
     QString m_name; /*!< name (label) of shape */
     ito::float64 m_userData[2]; /*!< two user defined value for further meta information */
     bool m_unclosed; /*!< true if this shape is currently created and hence unclosed, e.g. an open polygon which is closed after the final corner point */
+	QColor m_color; /*!< color of shape, if the color is invalid (default), the standard shape color of plots is used for visualization */
 };
 
 //----------------------------------------------------------------------------------------------
@@ -239,6 +243,18 @@ QString Shape::name() const
 void Shape::setName(const QString &name)
 {
     d->m_name = name;
+}
+
+//----------------------------------------------------------------------------------------------
+QColor Shape::color() const
+{
+	return d->m_color;
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setColor(const QColor &color)
+{
+	d->m_color = color;
 }
 
 //----------------------------------------------------------------------------------------------

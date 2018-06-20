@@ -3089,8 +3089,8 @@ RetVal DataObject::nans(const int sizeY, const int sizeX, const int type)
 */
 RetVal DataObject::nans(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous)
 {
-	int sizes[3] = { sizeZ, sizeY, sizeX };
-	return nans(3, sizes, type, continuous);
+    int sizes[3] = { sizeZ, sizeY, sizeX };
+    return nans(3, sizes, type, continuous);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3105,20 +3105,21 @@ RetVal DataObject::nans(const int sizeZ, const int sizeY, const int sizeX, const
 */
 template<typename _Tp> RetVal NansFunc(const int sizeY, const int sizeX, uchar **dstMat)
 {
+    cv::Mat *dstMat_ = (cv::Mat*)(*dstMat);
+    *dstMat_ = cv::Mat_<_Tp>(static_cast<int>(sizeY), static_cast<int>(sizeX));
 
-	(*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>(static_cast<int>(sizeY), static_cast<int>(sizeX));
-	
-	for (int y = 0; y < (*((cv::Mat_<_Tp> *)(*dstMat))).rows; y++)
-	{
-		_Tp* pt = (*((cv::Mat_<_Tp> *)(*dstMat))).ptr<_Tp>(y);
-		for (int x = 0; x < (*((cv::Mat_<_Tp> *)(*dstMat))).cols; x++)
-		{
-			pt[x] = std::numeric_limits<_Tp>::quiet_NaN();
-		}
+    _Tp *pt = NULL;
+    for (int y = 0; y < dstMat_->rows; y++)
+    {
+        pt = dstMat_->ptr<_Tp>(y);
+        for (int x = 0; x < dstMat_->cols; x++)
+        {
+            pt[x] = std::numeric_limits<_Tp>::quiet_NaN();
+        }
 
-	}
-	
-	return 0;
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3133,34 +3134,34 @@ template<typename _Tp> RetVal NansFunc(const int sizeY, const int sizeX, uchar *
 */
 template<> RetVal NansFunc<ito::complex64>(const int sizeY, const int sizeX, uchar **dstMat)
 {
-	(*((cv::Mat_<ito::complex64> *)(*dstMat))) = cv::Mat_<ito::complex64>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    (*((cv::Mat_<ito::complex64> *)(*dstMat))) = cv::Mat_<ito::complex64>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    
+    for (int y = 0; y < (*((cv::Mat_<ito::complex64> *)(*dstMat))).rows; y++)
+    {
+        ito::complex64* pt = (*((cv::Mat_<ito::complex64> *)(*dstMat))).ptr<ito::complex64>(y);
+        for (int x = 0; x < (*((cv::Mat_<ito::complex64> *)(*dstMat))).cols; x++)
+        {
+            pt[x] = std::numeric_limits<ito::float32>::quiet_NaN();
+        }
 
-	for (int y = 0; y < (*((cv::Mat_<ito::complex64> *)(*dstMat))).rows; y++)
-	{
-		ito::complex64* pt = (*((cv::Mat_<ito::complex64> *)(*dstMat))).ptr<ito::complex64>(y);
-		for (int x = 0; x < (*((cv::Mat_<ito::complex64> *)(*dstMat))).cols; x++)
-		{
-			pt[x] = std::numeric_limits<ito::float32>::quiet_NaN();
-		}
-
-	}
-	return 0;
+    }
+    return ito::retOk;
 }
 
 template<> RetVal NansFunc<ito::complex128>(const int sizeY, const int sizeX, uchar **dstMat)
 {
-	(*((cv::Mat_<ito::complex128> *)(*dstMat))) = cv::Mat_<ito::complex128>(static_cast<int>(sizeY), static_cast<int>(sizeX));
+    (*((cv::Mat_<ito::complex128> *)(*dstMat))) = cv::Mat_<ito::complex128>(static_cast<int>(sizeY), static_cast<int>(sizeX));
 
-	for (int y = 0; y < (*((cv::Mat_<ito::complex128> *)(*dstMat))).rows; y++)
-	{
-		ito::complex128* pt = (*((cv::Mat_<ito::complex128> *)(*dstMat))).ptr<ito::complex128>(y);
-		for (int x = 0; x < (*((cv::Mat_<ito::complex128> *)(*dstMat))).cols; x++)
-		{
-			pt[x] = std::numeric_limits<ito::float64>::quiet_NaN();
-		}
+    for (int y = 0; y < (*((cv::Mat_<ito::complex128> *)(*dstMat))).rows; y++)
+    {
+        ito::complex128* pt = (*((cv::Mat_<ito::complex128> *)(*dstMat))).ptr<ito::complex128>(y);
+        for (int x = 0; x < (*((cv::Mat_<ito::complex128> *)(*dstMat))).cols; x++)
+        {
+            pt[x] = std::numeric_limits<ito::float64>::quiet_NaN();
+        }
 
-	}
-	return 0;
+    }
+    return ito::retOk;
 }
 
 typedef RetVal(*tNansFunc)(const int sizeY, const int sizeX, uchar **dstMat);
@@ -3199,7 +3200,7 @@ RetVal DataObject::nans(const unsigned char dimensions, const int *sizes, const 
 		fListNansFunc[type](sizeY, sizeX, &(m_data[matn]));
 	}
 
-	return 0;
+	return ito::retOk;
 }
 //###############################
 

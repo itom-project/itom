@@ -25,19 +25,5 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PLUGINVERSION_H
-#define PLUGINVERSION_H
-
-#define ITOM_WIDGETS_VERSION_MAJOR 1
-#define ITOM_WIDGETS_VERSION_MINOR 8
-#define ITOM_WIDGETS_VERSION_PATCH 0
-#define ITOM_WIDGETS_VERSION_REVISION 0
-#define ITOM_WIDGETS_VERSION_PATCH_SMALL 0
-#define ITOM_WIDGETS_VERSION_STRING "1.8.0"
-#define ITOM_WIDGETS_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define ITOM_WIDGETS_COPYRIGHT      "(C) 2018, ITO, University Stuttgart"
-#define ITOM_WIDGETS_NAME           "itomWidgets"
-
-//----------------------------------------------------------------------------------------------------------------------------------
-
-#endif // PLUGINVERSION_H
+//this file is deprecated and is replaced by the file below. If possible, directly include the file below.
+#include "itomWidgetsVersion.h"

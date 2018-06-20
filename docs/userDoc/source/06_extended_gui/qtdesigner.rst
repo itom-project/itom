@@ -311,6 +311,8 @@ unsigned int ...  integer, floats are rounded to integer, True=1, False=0
 float, double     integer, floats, True=1.0, False=0.0
 QVector<int>      any sequence whose values are castable to int
 QVector<double>   any sequence whose values are castable to float
+QList<int>        any sequence whose values are castable to int
+QList<double>     any sequence whose values are castable to float
 QVector2D         any sequence with two values castable to float (x,y)
 QVector3D         any sequence with three values castable to float (x,y,z)
 QVector4D         any sequence with four values castable to float (x,y,z,w)
@@ -497,6 +499,11 @@ QTableWidget            Qt::ItemFlags flags(int row, int column) *returns the fl
 QTableWidget            void setFlags(int row, int column,Qt::ItemFlags flags) *set the flags of the item in the given row and column based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
 QTableView              uiItem horizontalHeader()
 QTableView              uiItem verticalHeader()
+QSplitter               setStretchFactor(int section, int factor) *sets the stretch factor (size policy) for the given section*
+QSplitter               sizes() *returns the sizes (in pixel) of each section as tuple*
+QSplitter               setSizes(QList<int> sizes) *sets the sizes of all sections (in pixels). Pass sizes as tuple or list of integers*
+QSplitter               isCollapsible(int section) *returns True if the given section is collapsible, else False*
+QSplitter               setCollapsible(int section, bool value) *set if the given section should be collapsible (True) or not (False)*
 ======================= ================================================================================================================================================================================================================================
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*

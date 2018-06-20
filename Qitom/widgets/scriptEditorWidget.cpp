@@ -2898,7 +2898,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
             }
             else //file changed
             {
-                msgBox.setText(tr("The file '%1' has been modified by another programm.").arg(path));
+                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
                 msgBox.setInformativeText(tr("Do you want to reload it?"));
                 int ret = msgBox.exec();
 

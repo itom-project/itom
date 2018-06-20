@@ -33,6 +33,7 @@
 #include <qplaintextedit.h>
 #include <qlayout.h>
 #include <qscrollbar.h>
+#include <qmenu.h>
 
 #include "common/sharedStructures.h"
 #include "common/apiFunctionsGraphInc.h"
@@ -54,7 +55,9 @@ public:
         tempText(""),
         tempType(ito::msgStreamOut),
         outputStream(true),
-        errorStream(true)
+        errorStream(true),
+        sizeHint(300, 120),
+        autoScroll(true)
     {
     }
     
@@ -63,6 +66,8 @@ public:
     ito::tStreamMessageType tempType;
     bool outputStream;
     bool errorStream;
+    QSize sizeHint;
+    bool autoScroll;
 };
 
 
@@ -91,6 +96,11 @@ PythonLogWidget::PythonLogWidget(QWidget* parent /*= NULL*/) :
     layout->addWidget(d->textEdit);
     layout->setContentsMargins(0,0,0,0);
     setLayout(layout);
+
+    d->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(d->textEdit, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(showContextMenu(const QPoint &)));
+
+
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -103,6 +113,28 @@ void PythonLogWidget::setMaxMessages(const int newMaxMessages)
 {
     Q_D(PythonLogWidget);
     d->textEdit->setMaximumBlockCount(newMaxMessages);
+}
+
+//---------------------------------------------------------------------------------------------------------
+void PythonLogWidget::setVerticalSizeHint(int value)
+{
+    Q_D(PythonLogWidget);
+    d->sizeHint.setHeight(value);
+    updateGeometry();
+}
+
+//---------------------------------------------------------------------------------------------------------
+void PythonLogWidget::setAutoScroll(bool autoScroll)
+{
+    Q_D(PythonLogWidget);
+    if (d->autoScroll != autoScroll)
+    {
+        d->autoScroll = autoScroll;
+        if (d->autoScroll)
+        {
+            d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -124,6 +156,33 @@ bool PythonLogWidget::getErrorStream() const
 {
     Q_D(const PythonLogWidget);
     return d->errorStream;
+}
+
+//---------------------------------------------------------------------------------------------------------
+int PythonLogWidget::getVerticalSizeHint() const
+{
+    return sizeHint().height();
+}
+
+//---------------------------------------------------------------------------------------------------------
+bool PythonLogWidget::getAutoScroll() const
+{
+    Q_D(const PythonLogWidget);
+    return d->autoScroll;
+}
+
+//---------------------------------------------------------------------------------------------------------
+QSize PythonLogWidget::sizeHint() const
+{
+    Q_D(const PythonLogWidget);
+    return d->sizeHint;
+}
+
+//---------------------------------------------------------------------------------------------------------
+void PythonLogWidget::clear()
+{
+    Q_D(PythonLogWidget);
+    d->textEdit->clear();
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -237,7 +296,10 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
             }
         }
 
-        d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
+        if (d->autoScroll)
+        {
+            d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
+        }
         
         d->tempText = "";
     }
@@ -266,7 +328,10 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
             }
         }
 
-        d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
+        if (d->autoScroll)
+        {
+            d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
+        }
         
         d->tempText = message.mid(lastIndex+1);
         d->tempType = messageType;
@@ -276,4 +341,31 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         d->tempText += message;
         d->tempType = messageType;
     }
+}
+
+
+//---------------------------------------------------------------------------------------------------------
+void PythonLogWidget::showContextMenu(const QPoint &pt)
+{
+    Q_D(PythonLogWidget);
+
+    QMenu *menu = d->textEdit->createStandardContextMenu();
+    menu->addSeparator();
+
+    QAction *actionClear = new QAction(tr("Clear"), menu);
+    connect(actionClear, SIGNAL(triggered()), this, SLOT(clear()));
+    menu->addAction(actionClear);
+
+    QAction *actionAutoScroll = new QAction(tr("Auto Scroll"), menu);
+    actionAutoScroll->setCheckable(true);
+    actionAutoScroll->setChecked(d->autoScroll);
+    connect(actionAutoScroll, SIGNAL(triggered(bool)), this, SLOT(setAutoScroll(bool)));
+
+    menu->addAction(actionAutoScroll);
+
+    menu->exec(d->textEdit->mapToGlobal(pt));
+    
+    DELETE_AND_SET_NULL(menu);
+
+
 }
