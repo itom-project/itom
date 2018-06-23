@@ -1639,6 +1639,19 @@ QTextCursor CodeEditor::wordUnderCursor(QTextCursor cursor, bool selectWholeWord
     return text_cursor;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+Selects the word under the **mouse** cursor.
+
+:return: A QTextCursor with the word under mouse cursor selected.
+*/
+QTextCursor CodeEditor::wordUnderMouseCursor() const
+{
+    QTextCursor text_cursor = cursorForPosition(m_lastMousePos);
+    text_cursor = wordUnderCursor(text_cursor, true);
+    return text_cursor;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QString CodeEditor::wordAtPosition(int line, int index, bool selectWholeWord) const

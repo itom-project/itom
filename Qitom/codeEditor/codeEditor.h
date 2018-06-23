@@ -259,6 +259,7 @@ public:
     QTextCursor wordUnderCursor(bool selectWholeWord) const;
     QTextCursor wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const;
     QString wordAtPosition(int line, int index, bool selectWholeWord) const;
+    QTextCursor wordUnderMouseCursor() const;
 
     TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
