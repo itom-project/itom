@@ -99,6 +99,26 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
             icon_from_typename(completion.name, completion.type)) \
             )
     return result
+
+def goto_definitions(code, line, column, path):
+    '''
+    '''
+    encoding = 'utf-8'
+    script = jedi.Script(code, line + 1, column, path, encoding)
+    try:
+        definitions = script.goto_assignments()
+    except jedi.NotFoundError:
+        definitions = []
+    result = []
+    for definition in definitions:
+        result.append( \
+            (definition.module_path, \
+            definition.line - 1 if definition.line else -1, \
+            definition.column, \
+            definition.full_name, \
+            ) \
+            )
+    return result
     
 if __name__ == "__main__":
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
@@ -107,6 +127,10 @@ if __name__ == "__main__":
     print(completions("from itom import dataObject\ndataO, 'u",1,5, "", "", "utf-8"))
     print(completions("1", 0, 1, "", "", "utf-8"))
     print(completions("import numpy as np\nnp.arr", 1, 6, "", "", "utf-8"))
+    print(goto_definitions("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
+    
+
+    
 
 #script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None, "Utf-8")
 #script = jedi.Script(text,4,5,None, "Utf-8")
