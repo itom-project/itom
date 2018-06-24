@@ -44,6 +44,7 @@
 #include "../managers/modesManager.h"
 #include "../managers/panelsManager.h"
 #include "../modes/caretLineHighlight.h"
+#include "../panels/foldingPanel.h"
 #include "../utils/utils.h"
 
 namespace ito {
@@ -193,7 +194,11 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
     Panel::Ptr panel = editor()->panels()->get("FoldingPanel");
     if (panel)
     {
-        //todo: dynamic_cast<FoldingPanel*>(panel)->refreshDecorations(force=true);
+        QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+        if (fp)
+        {
+            fp->refreshDecorations(true);
+        }
     }
     editor()->resetStylesheet();
 }

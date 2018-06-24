@@ -47,9 +47,9 @@ namespace ito {
 //----------------------------------------------------------
 /*
 */
-WordClickMode::WordClickMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
+WordClickMode::WordClickMode(const QString &name /*="WordClickMode"*/, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     QObject(parent),
-    Mode("WordClickMode", description),
+    Mode(name, description),
     m_previousCursorStart(-1),
     m_previousCursorEnd(-1),
     m_pTimer(NULL)

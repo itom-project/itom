@@ -72,14 +72,14 @@ class WordClickMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    WordClickMode(const QString &description = "", QObject *parent = NULL);
+    WordClickMode(const QString &name = "WordClickMode", const QString &description = "", QObject *parent = NULL);
     virtual ~WordClickMode();
 
     virtual void onStateChanged(bool state);
 
 protected:
     void selectWordCursor();
-    void clearSelection();
+    virtual void clearSelection();
     virtual void checkWordCursor(const QTextCursor &cursor) = 0;
     void addDecoration(const QTextCursor &cursor);
     void removeDecoration();
@@ -101,8 +101,6 @@ private slots:
     void onMouseMoved(QMouseEvent *e);
     void onMouseReleased(QMouseEvent *e);
     void onKeyReleased(QKeyEvent *e);
-
-    void unindent() const;
 
 signals:
     void wordClicked(const QTextCursor &cursor);

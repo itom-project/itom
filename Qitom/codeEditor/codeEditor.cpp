@@ -47,6 +47,7 @@
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
 #include "managers/modesManager.h"
+#include "panels/foldingPanel.h"
 #include "delayJobRunner.h"
 #include "utils/utils.h"
 
@@ -1042,6 +1043,52 @@ void CodeEditor::setFirstVisibleLine(int line)
     moveCursor(QTextCursor::End);
     QTextCursor cursor(document()->findBlockByNumber(line));
     setTextCursor(cursor);
+}
+
+//-----------------------------------------------------------
+/*
+Moves the text cursor to the specified position..
+
+:param line: Number of the line to go to (0 based)
+:param column: Optional column number. Default is 0 (start of line).
+:param move: True to move the cursor. False will return the cursor
+                without setting it on the editor.
+:return: The new text cursor
+:rtype: QtGui.QTextCursor
+*/
+QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
+{
+    QTextCursor text_cursor = moveCursorTo(line);
+    if (column >= 0)
+    {
+        text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column);
+    }
+    if (move)
+    {
+        QTextBlock block = text_cursor.block();
+        // unfold parent fold trigger if the block is collapsed
+
+        Panel::Ptr panel = panels()->get("FoldingPanel");
+        if (panel)
+        {
+            QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+            if (fp)
+            {
+                if (!block.isVisible())
+                {
+                    block = FoldScope::findParentScope(block);
+                    if (Utils::TextBlockHelper::isCollapsed(block))
+                    {
+                        fp->toggleFoldTrigger(block);
+                    }
+                }
+            }
+        }
+
+        setTextCursor(text_cursor);
+    }
+
+    return text_cursor;
 }
 
 //-----------------------------------------------------------
@@ -2045,7 +2092,7 @@ int CodeEditor::linePosFromNumber(int lineNumber) const
 }
 
 //------------------------------------------------------------
-QTextCursor CodeEditor::moveCursorTo(int line)
+QTextCursor CodeEditor::moveCursorTo(int line) const
 {
     QTextCursor cursor = textCursor();
     QTextBlock block = document()->findBlockByNumber(line);

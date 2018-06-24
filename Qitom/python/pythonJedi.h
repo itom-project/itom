@@ -63,6 +63,24 @@ namespace ito
 
     Q_DECLARE_METATYPE(JediCompletion)
 
+    struct JediDefinition
+    {
+        JediDefinition() {};
+        JediDefinition(const QString &path, int line, int column, const QString &fullName) :
+            m_path(path),
+            m_line(line),
+            m_column(column),
+            m_fullName(fullName)
+        {}
+
+        QString m_path; // File path of the module where the assignment can be found
+        int m_line; //line number
+        int m_column; //column number
+        QString m_fullName; //assignement full name
+    };
+
+    Q_DECLARE_METATYPE(JediDefinition)
+
 } //end namespace ito
 
 #endif

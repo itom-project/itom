@@ -42,7 +42,7 @@
 #include "../managers/panelsManager.h"
 #include "AppManagement.h"
 
-#include "../../python/pythonEngine.h"
+#include "python/pythonEngine.h"
 
 
 #include <qtooltip.h>

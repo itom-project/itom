@@ -255,6 +255,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QVector<ito::JediCalltip>>("QVector<ito::JediCalltip>");
     qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
     qRegisterMetaType<QVector<ito::JediCompletion>>("QVector<ito::JediCompletion>");
+    qRegisterMetaType<ito::JediDefinition>("ito::JediDefinition");
+    qRegisterMetaType<QVector<ito::JediDefinition>>("QVector<ito::JediDefinition>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -2135,6 +2137,78 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediDefinitionRequested(const QString &source, int line, int col, const QString &path, QByteArray callbackFctName)
+{
+    QVector<ito::JediDefinition> definitions;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siis", source.toUtf8().constData(), line, col, path.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pydefinition = NULL;
+        const char* path;
+        const char* fullName;
+        int column;
+        int line;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pydefinition = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pydefinition))
+            {
+                if (PyArg_ParseTuple(pydefinition, "siis", &path, &line, &column, &fullName))
+                {
+                    definitions.append(ito::JediDefinition(QLatin1String(path), line, column, QLatin1String(fullName)));
+                }
+                else
+                {
+                    std::cerr << "Error in definition: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in definition: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+#ifdef _DEBUG
+        std::cerr << "Error when getting definitions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = sender();
+    if (s && callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediDefinition>, definitions));
+        
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName)

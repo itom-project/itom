@@ -95,6 +95,8 @@ public:
 
     void toggleFoldTrigger(const QTextBlock &block);
 
+    void refreshDecorations(bool force = false);
+
 signals:
     void triggerStateChanged(QTextBlock, bool);
     void collapseAllTriggered();
@@ -116,6 +118,7 @@ protected:
     
     void addScopeDeco(int start, int end, int parentStart, int parentEnd, const QColor &baseColor, int factor);
     void refreshEditorAndScrollbars();
+    
 
     static QColor getSystemBckColor();
     static void showPreviousBlankLines(const QTextBlock &block);
@@ -142,6 +145,7 @@ private:
     QList<TextDecoration::Ptr> m_blockDecos;
     int m_mouseOverLine; //-1 -> invalid
     DelayJobRunnerBase *m_pHighlightRunner;
+    QTextCursor m_prevCursor;
 };
 
 } //end namespace ito

@@ -214,6 +214,7 @@ public:
     void getCursorPosition(int *line, int *column) const;
     QTextCursor setCursorPosition(int line, int column, bool applySelection = true);
     void ensureLineVisible(int line);
+    QTextCursor gotoLine(int line, int column, bool move = true);
     
     bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
 		bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
@@ -291,7 +292,7 @@ protected:
 
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
-    QTextCursor moveCursorTo(int line);
+    QTextCursor moveCursorTo(int line) const;
     
 
     virtual void resizeEvent(QResizeEvent *e);
