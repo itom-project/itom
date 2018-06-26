@@ -2145,10 +2145,12 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
+    int lineOffset = 0;
     PyObject *result = NULL;
 
     if (m_includeItomImportBeforeSyntaxCheck)
     {
+        lineOffset = 1;
         //add from itom import * as first line (this is afterwards removed from results)
         result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData()); //new ref
     }
@@ -2160,7 +2162,7 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     if (result && PyList_Check(result))
     {
         PyObject *pydefinition = NULL;
-        const char* path;
+        const char* path2;
         const char* fullName;
         int column;
         int line;
@@ -2171,9 +2173,18 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
             
             if (PyTuple_Check(pydefinition))
             {
-                if (PyArg_ParseTuple(pydefinition, "siis", &path, &line, &column, &fullName))
+                if (PyArg_ParseTuple(pydefinition, "siis", &path2, &line, &column, &fullName))
                 {
-                    definitions.append(ito::JediDefinition(QLatin1String(path), line, column, QLatin1String(fullName)));
+                    QFileInfo filepath2 = QLatin1String(path2);
+                    if (lineOffset == 1)
+                    {
+                        QFileInfo filepath = path;
+                        if (filepath != filepath2)
+                        {
+                            lineOffset = 0;
+                        }
+                    }
+                    definitions.append(ito::JediDefinition(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
                 }
                 else
                 {

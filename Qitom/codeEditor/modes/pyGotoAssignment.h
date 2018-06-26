@@ -54,6 +54,12 @@ Defines an assignment. Used by :class:`PyGotoAssignmentsMode`.
 */
 struct PyAssignment
 {
+    PyAssignment() :
+        m_line(-1),
+        m_column(-1)
+    {
+    }
+
     PyAssignment(const QString &path, int line, int column, const QString &fullName) :
         m_line(line),
         m_column(column),

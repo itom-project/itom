@@ -33,6 +33,7 @@
     #include "../codeEditor/panels/checkerBookmarkPanel.h"
     #include "../codeEditor/panels/breakpointPanel.h"
     #include "../codeEditor/modes/errorLineHighlight.h"
+    #include "../codeEditor/modes/pyGotoAssignment.h"
     #include "../codeEditor/panels/lineNumber.h"
 #else
     #include "abstractPyScintillaWidget.h"
@@ -237,6 +238,7 @@ private:
     QSharedPointer<BreakpointPanel> m_breakpointPanel;
     QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
+    QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
 #endif
 
     static const QString lineBreak;
@@ -330,6 +332,8 @@ private slots:
     RetVal clearAllBreakpoints();
     RetVal gotoNextBreakPoint();
     RetVal gotoPreviousBreakPoint();
+
+    void gotoAssignmentOutOfDoc(PyAssignment ref);
 #else
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
 #endif

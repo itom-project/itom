@@ -77,15 +77,15 @@ WordClickMode::~WordClickMode()
     if (state)
     {
         connect(editor(), SIGNAL(mouseMoved(QMouseEvent*)), this, SLOT(onMouseMoved(QMouseEvent*)));
-        connect(editor(), SIGNAL(mouse_released(QMouseEvent*)), this, SLOT(onMouseReleased(QMouseEvent*)));
-        connect(editor(), SIGNAL(key_released(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+        connect(editor(), SIGNAL(mouseReleased(QMouseEvent*)), this, SLOT(onMouseReleased(QMouseEvent*)));
+        connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
         connect(editor(), SIGNAL(mouseDoubleClicked(QMouseEvent*)), this, SLOT(onMouseDoubleClicked(QMouseEvent*)));
     }
     else
     {
         disconnect(editor(), SIGNAL(mouseMoved(QMouseEvent*)), this, SLOT(onMouseMoved(QMouseEvent*)));
-        disconnect(editor(), SIGNAL(mouse_released(QMouseEvent*)), this, SLOT(onMouseReleased(QMouseEvent*)));
-        disconnect(editor(), SIGNAL(key_released(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+        disconnect(editor(), SIGNAL(mouseReleased(QMouseEvent*)), this, SLOT(onMouseReleased(QMouseEvent*)));
+        disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
         disconnect(editor(), SIGNAL(mouseDoubleClicked(QMouseEvent*)), this, SLOT(onMouseDoubleClicked(QMouseEvent*)));
     }
 }
@@ -168,7 +168,7 @@ mouse pressed callback
 */
 void WordClickMode::onMouseReleased(QMouseEvent *e)
 {
-    if (e->button() == 1 && m_deco)
+    if (e->button() == Qt::LeftButton && m_deco)
     {
         QTextCursor cursor = editor()->wordUnderMouseCursor();
         if (cursor.isNull() == false && cursor.selectedText() != "")

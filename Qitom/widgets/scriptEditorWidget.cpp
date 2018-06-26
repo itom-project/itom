@@ -202,7 +202,9 @@ RetVal ScriptEditorWidget::initEditor()
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
 
-    
+    m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
+    connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
+    modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
 #else
     setPaper(QColor(1, 81, 107));
@@ -854,6 +856,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int l
 }
 
 #ifndef USE_PYQODE
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuToggleBookmark()
 {
@@ -888,6 +891,16 @@ void ScriptEditorWidget::menuGotoPreviousBookmark()
 }
 
 #else
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::gotoAssignmentOutOfDoc(PyAssignment ref)
+{
+    QObject *seo = AppManagement::getScriptEditorOrganizer();
+    if (seo)
+    {
+        QMetaObject::invokeMethod(seo, "openScript", Q_ARG(QString, ref.m_modulePath), Q_ARG(ItomSharedSemaphore*, NULL), Q_ARG(int, ref.m_line), Q_ARG(bool, false));
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::gotoBookmarkRequested(bool next)
 {

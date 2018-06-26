@@ -58,6 +58,8 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_gotoRequested(false),
     m_pPythonEngine(NULL)
 {
+    qRegisterMetaType<PyAssignment>("PyAssignment");
+
     connect(this, SIGNAL(wordClicked(QTextCursor)), this, SLOT(onWordClicked(QTextCursor)));
 
     m_pPythonEngine = AppManagement::getPythonEngine();
@@ -161,7 +163,7 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &definition)
     {
         int line = definition.m_line;
         int col = definition.m_column;
-        editor()->gotoLine(line, true, col);
+        editor()->gotoLine(line, col, true);
         //_logger().debug("Go to %s" % definition)
     }
     else
