@@ -2177,16 +2177,19 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
             {
                 if (PyArg_ParseTuple(pydefinition, "siis", &path2, &line, &column, &fullName))
                 {
-                    QFileInfo filepath2 = QLatin1String(path2);
-                    if (lineOffset == 1)
+                    if (line >= 0)
                     {
-                        QFileInfo filepath = path;
-                        if (filepath != filepath2)
+                        QFileInfo filepath2 = QLatin1String(path2);
+                        if (lineOffset == 1)
                         {
-                            lineOffset = 0;
+                            QFileInfo filepath = path;
+                            if (filepath != filepath2)
+                            {
+                                lineOffset = 0;
+                            }
                         }
+                        definitions.append(ito::JediDefinition(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
                     }
-                    definitions.append(ito::JediDefinition(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
                 }
                 else
                 {

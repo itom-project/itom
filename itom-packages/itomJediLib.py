@@ -113,7 +113,6 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
 def goto_definitions(code, line, column, path):
     '''
     '''
-    #print(code, line, column, path)
     encoding = 'utf-8'
     if jedi.__version__ >= '0.12.0':
         script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
@@ -126,10 +125,11 @@ def goto_definitions(code, line, column, path):
         definitions = []
     result = []
     for definition in definitions:
+        #print("Definition::", str(definition), definition.module_path, definition.line, definition.column, definition.full_name)
         result.append( \
-            (definition.module_path, \
+            (definition.module_path if definition.module_path is not None else "", \
             definition.line - 1 if definition.line else -1, \
-            definition.column, \
+            definition.column if definition.column else -1, \
             definition.full_name, \
             ) \
             )

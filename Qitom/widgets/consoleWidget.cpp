@@ -113,10 +113,6 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     }
 
     startNewCommand(true);
-
-    /*freopen ("D:\\test.txt","w",stdout);
-    fprintf(stdout, "Test");
-    fclose(stdout);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

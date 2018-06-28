@@ -108,9 +108,11 @@ void IndenterMode::indentSelection(QTextCursor cursor) const
             cursor2.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
             //qDebug() << cursor2.position() << block.text();
             cursor2.insertText(tab_text);
+
             block = block.next();
             i += 1;
         }
+
         cursor.endEditBlock();
 }
 
@@ -248,7 +250,7 @@ int IndenterMode::countDeletableSpaces(const QTextCursor &cursor, int maxSpaces)
 {
     // count the number of spaces deletable, stop at tab len
     int max_spaces = std::abs(maxSpaces);
-    max_spaces = std::max(max_spaces, editor()->tabLength());
+    max_spaces = std::min(max_spaces, editor()->tabLength());
     int spaces = 0;
     QTextCursor trav_cursor = QTextCursor(cursor);
     int pos;

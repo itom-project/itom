@@ -159,7 +159,7 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &definition)
         filename.replace(".pyc", ".py");
     }
 
-    if (definition.m_modulePath == filename)
+    if (definition.m_modulePath == "" || definition.m_modulePath == filename) //module path is empty if this script currently has no filename
     {
         int line = definition.m_line;
         int col = definition.m_column;
