@@ -112,6 +112,7 @@ public:
     bool isValid() const { return m_valid; }
     QString name() const { return m_name; }
     StyleType type() const { return m_type; }
+    QTextCharFormat& format() { return m_format; }
     QTextCharFormat format() const { return m_format; }
 
     static QMetaEnum styleTypeEnum();

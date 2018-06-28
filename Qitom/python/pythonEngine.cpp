@@ -2073,10 +2073,12 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *result = NULL;
+    int lineOffset = 0;
 
     if (m_includeItomImportBeforeSyntaxCheck)
     {
         //add from itom import * as first line (this is afterwards removed from results)
+        lineOffset = 1;
         result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, encoding.toUtf8().constData()); //new ref
     }
     else
@@ -2100,7 +2102,7 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
             {
                 if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
                 {
-                    calltips.append(ito::JediCalltip(QLatin1String(calltip), column, bracketStartLine, bracketStartCol));
+                    calltips.append(ito::JediCalltip(QLatin1String(calltip), column, bracketStartLine - lineOffset, bracketStartCol));
                 }
                 else
                 {
@@ -2119,10 +2121,10 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     else
     {
         Py_XDECREF(result);
-#ifdef _DEBUG
+//#ifdef _DEBUG
         std::cerr << "Error when getting calltips from jedi\n" << std::endl;
         PyErr_PrintEx(0);
-#endif
+//#endif
     }
 
     
@@ -2203,10 +2205,10 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     else
     {
         Py_XDECREF(result);
-#ifdef _DEBUG
+//#ifdef _DEBUG
         std::cerr << "Error when getting definitions from jedi\n" << std::endl;
         PyErr_PrintEx(0);
-#endif
+//#endif
     }
 
     
@@ -2237,7 +2239,7 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", source.toUtf8().constData(), line + 1, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2274,10 +2276,10 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
     else
     {
         Py_XDECREF(result);
-#ifdef _DEBUG
+//#ifdef _DEBUG
         std::cerr << "Error when getting completions from jedi\n" << std::endl;
         PyErr_PrintEx(0);
-#endif
+//#endif
     }
 
     

@@ -73,7 +73,7 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = QObject::tr("Builtin");
         break;
     case KeyDefinition:
-        m_name = QObject::tr("Definition");
+        m_name = QObject::tr("Definition"); //class name only
         break;
     case KeyComment:
         m_name = QObject::tr("Comment");
@@ -110,10 +110,10 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = QObject::tr("Punctuation");
         break;
     case KeyConstant:
-        m_name = QObject::tr("Constant");
+        m_name = QObject::tr("Constant"); //all methods starting and ending with two underlines
         break;
     case KeyFunction:
-        m_name = QObject::tr("Function");
+        m_name = QObject::tr("Function"); //method name
         break;
     case KeyOperator:
         m_name = QObject::tr("Operator");
@@ -236,24 +236,25 @@ CodeEditorStyle::CodeEditorStyle()
 
     
 
-    m_formats[StyleItem::KeyKeyword] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#808080", Qt::white, true));
+    m_formats[StyleItem::KeyKeyword] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyOperator] = StyleItem(StyleItem::KeyOperator, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
-    m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyConstant, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
-    m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyNamespace, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
+    m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyConstant, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
+    m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyNamespace, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     
     m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyClass, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true));
     m_formats[StyleItem::KeyString] = StyleItem(StyleItem::KeyString, StyleItem::createFormat("Courier New", defaultPointSize, "#7f007f", Qt::white, false));
-    m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyComment, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false));
-    m_formats[StyleItem::KeySelf] = StyleItem(StyleItem::KeySelf, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, false));
-    m_formats[StyleItem::KeyNumber] = StyleItem(StyleItem::KeyNumber, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, false));
-    m_formats[StyleItem::KeyDocstring] = StyleItem(StyleItem::KeyDocstring, StyleItem::createFormat(defaultFontName, defaultPointSize, "#7f0000", Qt::white, false));
+    m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyComment, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false)); //pygments, vs style
+    m_formats[StyleItem::KeySelf] = StyleItem(StyleItem::KeySelf, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007020", Qt::white, false)); //pygments, vs style
+    m_formats[StyleItem::KeyNumber] = StyleItem(StyleItem::KeyNumber, StyleItem::createFormat(defaultFontName, defaultPointSize, "#40a070", Qt::white, false)); //pygments, vs style
+    m_formats[StyleItem::KeyDocstring] = StyleItem(StyleItem::KeyDocstring, StyleItem::createFormat(defaultFontName, defaultPointSize, "#a31515", Qt::white, false)); //pygments, vs style
+    m_formats[StyleItem::KeyDocstring].format().setFontItalic(true);
     m_formats[StyleItem::KeyDecorator] = StyleItem(StyleItem::KeyDecorator, StyleItem::createFormat(defaultFontName, defaultPointSize, "#805000", Qt::white, false));
     m_formats[StyleItem::KeyFunction] = StyleItem(StyleItem::KeyFunction, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
 
     m_formats[StyleItem::KeyHighlight] = StyleItem(StyleItem::KeyHighlight, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, false));
-    m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyBuiltin, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
-    m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, true));
-    m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::magenta, Qt::white, true));
+    m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyBuiltin, StyleItem::createFormat(defaultFontName, defaultPointSize, "#06287e", Qt::white, true)); //pygments, vs style
+    m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
+    m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
 
     
 }

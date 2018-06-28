@@ -1,9 +1,16 @@
 import jedi
+import sys
 
-def calltips(code, line, column, encoding = "uft-8"):
+if jedi.__version__ >= '0.12.0':
+    jedienv = jedi.api.environment.InterpreterEnvironment()
+
+def calltips(code, line, column, encoding = "utf-8"):
     '''
     '''
-    script = jedi.Script(code, line + 1, column, None, encoding)
+    if jedi.__version__ >= '0.12.0':
+        script = jedi.Script(code, line + 1, column, None, encoding, environment = jedienv)
+    else:
+        script = jedi.Script(code, line + 1, column, None, encoding)
     signatures = script.call_signatures()
     result = []
     for sig in signatures:
@@ -89,7 +96,10 @@ def icon_from_typename(name, icon_type):
 def completions(code, line, column, path, prefix, encoding = "utf-8"):
     '''
     '''
-    script = jedi.Script(code, line + 1, column, path, encoding)
+    if jedi.__version__ >= '0.12.0':
+        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+    else:
+        script = jedi.Script(code, line + 1, column, path, encoding)
     completions = script.completions()
     result = []
     for completion in completions:
@@ -103,8 +113,13 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
 def goto_definitions(code, line, column, path):
     '''
     '''
+    #print(code, line, column, path)
     encoding = 'utf-8'
-    script = jedi.Script(code, line + 1, column, path, encoding)
+    if jedi.__version__ >= '0.12.0':
+        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+    else:
+        script = jedi.Script(code, line + 1, column, path, encoding)
+    
     try:
         definitions = script.goto_assignments()
     except jedi.NotFoundError:
@@ -128,6 +143,7 @@ if __name__ == "__main__":
     print(completions("1", 0, 1, "", "", "utf-8"))
     print(completions("import numpy as np\nnp.arr", 1, 6, "", "", "utf-8"))
     print(goto_definitions("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
+    print(goto_definitions("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
     
 
     
