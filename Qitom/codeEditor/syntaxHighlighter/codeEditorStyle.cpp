@@ -313,6 +313,17 @@ QTextCharFormat CodeEditorStyle::format(StyleItem::StyleType type) const
     return QTextCharFormat();
 }
 
+//------------------------------------------------------------------
+QTextCharFormat& CodeEditorStyle::rformat(StyleItem::StyleType type)
+{
+    if (m_formats.contains(type))
+    {
+        return m_formats[type].format();
+    }
+
+    return QTextCharFormat();
+}
+
 
 
 } //end namespace ito

@@ -146,6 +146,7 @@ public:
 
     StyleItem operator[](StyleItem::StyleType type) const;
     QTextCharFormat format(StyleItem::StyleType type) const;
+    QTextCharFormat& rformat(StyleItem::StyleType type);
 
     QColor background() const;
     void setBackground(const QColor &color);

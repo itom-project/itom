@@ -437,7 +437,7 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
 {
     if (syntaxHighlighter())
     {
-        syntaxHighlighter()->editorStyle()->format(StyleItem::KeyWhitespace).setForeground(value);
+        syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(value);
     }
     else
     {

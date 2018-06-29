@@ -241,8 +241,8 @@ void AbstractCodeEditorWidget::loadSettings()
     //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
 
 
-    m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace).setBackground(QColor()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
-    m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+    m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
+    m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
 
     m_symbolMatcher->setMatchBackground(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
     m_symbolMatcher->setMatchForeground(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
