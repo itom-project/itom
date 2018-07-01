@@ -1309,6 +1309,27 @@ QString CodeEditor::selectedText() const
 }
 
 //------------------------------------------------------------
+void CodeEditor::removeSelectedText()
+{ 
+    textCursor().removeSelectedText();
+}
+
+//------------------------------------------------------------
+void CodeEditor::append(const QString &text)
+{
+    moveCursor(QTextCursor::End);
+    insertPlainText(text);
+    moveCursor(QTextCursor::End);
+}
+
+//------------------------------------------------------------
+void CodeEditor::insertAt(const QString &text, int line, int index)
+{
+    setCursorPosition(line, index, true);
+    insertPlainText(text);
+}
+
+//------------------------------------------------------------
 /*
 Replace the current selection, set by a previous call to 
 findFirst(), findFirstInSelection() or findNext(), with replaceStr.
@@ -2062,6 +2083,13 @@ void CodeEditor::setSelection(int lineFrom, int indexFrom, int lineTo, int index
         cursor.setPosition(lastBlock.position() + indexTo, QTextCursor::KeepAnchor);
         setTextCursor(cursor);
     }
+}
+
+//------------------------------------------------------------
+bool CodeEditor::hasSelectedText() const
+{
+    const QTextCursor &cursor = textCursor();
+    return cursor.hasSelection();
 }
 
 //------------------------------------------------------------

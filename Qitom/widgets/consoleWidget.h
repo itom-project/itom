@@ -23,6 +23,8 @@
 #ifndef CONSOLEWIDGET_H
 #define CONSOLEWIDGET_H
 
+#define USE_PYQODE 1
+
 #include <queue>
 
 #include "common/sharedStructures.h"
@@ -30,7 +32,14 @@
 #include "../python/qDebugStream.h"
 #include "../global.h"
 
-#include "abstractPyScintillaWidget.h"
+#ifdef USE_PYQODE
+    #include "abstractCodeEditorWidget.h"
+    #include "../codeEditor/modes/lineBackgroundMarker.h"
+    #include "../codeEditor/modes/pyGotoAssignment.h"
+    #include "../codeEditor/panels/lineNumber.h"
+#else
+    #include "abstractPyScintillaWidget.h"
+#endif
 
 #include <QKeyEvent>
 #include <QDropEvent>
@@ -49,7 +58,11 @@ namespace ito
 
 class DequeCommandList;
 
-class ConsoleWidget : public AbstractPyScintillaWidget
+#ifdef USE_PYQODE
+    class ConsoleWidget : public AbstractCodeEditorWidget
+#else
+    class ConsoleWidget : public AbstractPyScintillaWidget
+#endif
 {
     Q_OBJECT
 
@@ -61,7 +74,9 @@ public:
 
 protected:
     virtual void loadSettings();
+#ifndef USE_PYQODE
     void autoAdaptLineNumberColumnWidth();
+#endif
 
 public slots:
     virtual void copy();
@@ -127,9 +142,17 @@ private:
     bool m_canCopy;
     bool m_canCut;
 
+#ifdef USE_PYQODE
+    QSharedPointer<LineBackgroundMarkerMode> m_markErrorLineMode;
+    QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;
+    QSharedPointer<LineBackgroundMarkerMode> m_markInputLineMode;
+    QSharedPointer<LineNumberPanel> m_lineNumberPanel;
+    //QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
+#else
     unsigned int m_markErrorLine;
     unsigned int m_markCurrentLine;
     unsigned int m_markInputLine;
+#endif
 
     bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...

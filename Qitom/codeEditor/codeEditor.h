@@ -208,6 +208,7 @@ public:
     QPair<int,int> selectionRange() const; //start, end
     void getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *indexTo);
     void setSelection(int lineFrom, int indexFrom, int lineTo, int indexTo);
+    bool hasSelectedText() const;
     int linePosFromNumber(int lineNumber) const;
     void lineIndexFromPosition(const QPoint &pos, int *line, int *column) const;
     void lineIndexFromPosition(int pos, int *line, int *column) const;
@@ -215,6 +216,8 @@ public:
     QTextCursor setCursorPosition(int line, int column, bool applySelection = true);
     void ensureLineVisible(int line);
     QTextCursor gotoLine(int line, int column, bool move = true);
+
+    void removeSelectedText();
     
     bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
 		bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
@@ -251,6 +254,8 @@ public:
     void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
     void setText(const QString &text) { setPlainText(text); } //TODO: remove this, if QScintilla is removed!
     void insert(const QString &text) { insertPlainText(text); } //TODO: remove this, if QScintilla is removed!
+    void insertAt(const QString &text, int line, int index);
+    void append(const QString &text);
 
     bool isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
     bool isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats = QList<StyleItem::StyleType>());
