@@ -23,6 +23,8 @@
 import sys
 import inspect
 import gc
+import __main__
+from types import ModuleType, FunctionType, MethodType, BuiltinMethodType, BuiltinFunctionType
 
 def getModules():
     mods = sys.modules
@@ -101,3 +103,42 @@ def importMatlabMatAsDataObject(value):
     
     return res
     
+def clearAll():
+    '''
+    Clears all the global variables from the workspace except for all function, modules, classes, itom variables and items stored in clearAllState...
+    '''
+    if not clearAllState:
+        raise RuntimeError('No initial state found')
+        return
+    else:
+        deleted_keywords = []
+        
+        for var in __main__.__dict__:
+            if var[0] == '_':
+                continue
+            #ignore the three constants defined by the itom module
+            if var in ['BUTTON', 'MENU', 'SEPARATOR'] or var in clearAllState:
+                continue
+                
+            item = __main__.__dict__[var]
+            if isinstance(item, ModuleType) or \
+            isinstance(item, FunctionType) or \
+            isinstance(item, MethodType) or \
+            isinstance(item, BuiltinMethodType) or \
+            isinstance(item, BuiltinFunctionType) or \
+            isinstance(item, type):
+                continue
+               
+            deleted_keywords.append(var)
+           
+        for key in deleted_keywords:
+            del __main__.__dict__[key]
+        #call garbage collector to really and immediately remove all flaged variables
+        gc.collect()
+        
+clearAllState = None
+def getClearAllValues():
+    global clearAllState
+    clearAllState = []
+    for var in __main__.__dict__:
+        clearAllState.append(var)

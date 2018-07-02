@@ -164,6 +164,9 @@ void WorkspaceDockWidget::createActions()
     m_actUnpack->setCheckable(true);
     connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));
     checkToggleUnpack();
+
+    m_actClearAll = new ShortcutAction(QIcon(":/workspace/icons/closeAll.png"), tr("Clear All Varaibles"), this);
+    m_actClearAll->connectTrigger(this, SLOT(mnuClearAll()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -186,6 +189,7 @@ void WorkspaceDockWidget::createToolBars()
     m_pMainToolBar->addAction(m_actUnpack);
     m_pMainToolBar->addSeparator();
     m_pMainToolBar->addAction(m_actDelete->action());
+    m_pMainToolBar->addAction(m_actClearAll->action());
     m_pMainToolBar->addAction(m_actRename->action());
     m_separatorSpecialActionsToolBar = m_pMainToolBar->addSeparator();
     m_pMainToolBar->addAction(m_dObjPlot1d->action());
@@ -276,7 +280,20 @@ void WorkspaceDockWidget::mnuDeleteItem()
          }
     }
 }
-
+void WorkspaceDockWidget::mnuClearAll()
+{
+    RetVal retVal;
+    PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (eng == NULL)
+    {
+        retVal += RetVal(retError, 1, tr("Python engine not available").toLatin1().data());
+    }
+    else if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
+    {
+        retVal += RetVal(retError, 2, tr("Variables cannot be plot since python is busy right now").toLatin1().data());
+    }
+    QMetaObject::invokeMethod(eng, "pythonClearAll");
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if the import button has been clicked
 /*!
@@ -710,6 +727,7 @@ void WorkspaceDockWidget::updateActions()
             m_actExport->setEnabled(num > 0 && pythonFree);
             m_actImport->setEnabled(pythonFree);
             m_actRename->setEnabled(numToBeRenamed == 1 && pythonFree);
+            m_actClearAll->setEnabled(pythonFree);
         }
         else
         {
@@ -718,6 +736,7 @@ void WorkspaceDockWidget::updateActions()
             m_actImport->setEnabled(pythonInWaitingMode());
             m_actRename->setEnabled(numToBeRenamed == 1 && pythonInWaitingMode());
             m_pWorkspaceWidget->setEnabled(pythonInWaitingMode());
+            m_actClearAll->setEnabled(pythonInWaitingMode());
         }
     }
 }
