@@ -1921,8 +1921,7 @@ int CodeEditor::lineCount() const
 
 //------------------------------------------------------------
 /*
-Returns the length of line \a line int bytes or -1 if there is no such
-line.  In order to get the length in characters use text(line).length().
+Returns the length of line \a line in characters.
 */
 int CodeEditor::lineLength(int line) const
 {
@@ -1934,7 +1933,7 @@ int CodeEditor::lineLength(int line) const
     QTextBlock block = document()->findBlockByNumber(line);
     if (block.isValid())
     {
-        return block.length();
+        return block.text().length(); //length();
     }
 
     return -1;

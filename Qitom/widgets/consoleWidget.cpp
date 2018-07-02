@@ -460,18 +460,20 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
             cmd = m_pCmdList->getNext();
         }
 
-        //delete possible commands after m_startLineBeginCmd:
-        lineFrom = m_startLineBeginCmd;
-        lineTo = lines() - 1;
-        indexFrom = 2;
-        indexTo = lineLength(lineTo);
-        setSelection(lineFrom, indexFrom, lineTo, indexTo);
-        removeSelectedText();
-        setCursorPosition(lineFrom, indexFrom);
-        append(cmd);
+        if (cmd != "")
+        {
+            //delete possible commands after m_startLineBeginCmd:
+            lineFrom = m_startLineBeginCmd;
+            lineTo = lines() - 1;
+            indexFrom = 2;
+            indexTo = lineLength(lineTo);
+            setSelection(lineFrom, indexFrom, lineTo, indexTo);
+            removeSelectedText();
+            setCursorPosition(lineFrom, indexFrom);
+            append(cmd);
 
-        moveCursorToEnd();
-        //m_startLineBeginCmd = lines()-1;
+            moveCursorToEnd();
+        }
     }
 
     return RetVal(retOk);
@@ -1152,6 +1154,9 @@ RetVal ConsoleWidget::executeCmdQueue()
         else if (value.singleLine == "clc" || value.singleLine == "clear")
         {
             clear();
+#ifdef USE_PYQODE
+            m_markErrorLineMode->clearAllMarkers();
+#endif
             m_autoWheel = true;
             m_startLineBeginCmd = -1; 
             m_pCmdList->add(value.singleLine);
