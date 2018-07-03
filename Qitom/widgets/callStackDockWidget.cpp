@@ -176,15 +176,15 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
         item = new QTableWidgetItem(filename);
         item->setFlags(flags);
         item->setData(Qt::ToolTipRole, info.canonicalFilePath());
-        m_table->setItem(i,0, item);
+        m_table->setItem(i, ColFilename, item);
 
         item = new QTableWidgetItem(QString::number(lines[i]));
         item->setFlags(flags);
-        m_table->setItem(i,2,item);
+        m_table->setItem(i, ColLine, item);
 
         item = new QTableWidgetItem(methods[i]);
         item->setFlags(flags);
-        m_table->setItem(i,1,item);
+        m_table->setItem(i, ColMethod, item);
     }
 }
 
@@ -209,7 +209,7 @@ void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
         {
             canonicalPath = item2->data(Qt::ToolTipRole).toString();
 
-            item2 = m_table->item(item->row(), 1);
+            item2 = m_table->item(item->row(), ColLine);
             if (item2)
             {
                 lineNr = item2->text().toInt() - 1;

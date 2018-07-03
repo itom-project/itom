@@ -57,6 +57,13 @@ private:
     QTableWidget *m_table;
     QStringList m_headers;
 
+    enum CallStackColumns
+    {
+        ColFilename = 0,
+        ColMethod = 1,
+        ColLine = 2
+    };
+
 private slots:
     void itemDoubleClicked(QTableWidgetItem *item);
 
