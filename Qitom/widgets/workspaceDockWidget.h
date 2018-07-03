@@ -65,6 +65,7 @@ private:
     ShortcutAction *m_actExport;
     ShortcutAction *m_actImport;
     QAction *m_actUnpack;
+    ShortcutAction *m_actClearAll;
 
     //special actions
     QAction *m_separatorSpecialActionsToolBar;
@@ -90,6 +91,7 @@ private slots:
     void mnuPlot1D();
     void mnuPlot2D();
     void mnuPlot25D();
+    void mnuClearAll();
 
     void treeWidgetItemSelectionChanged() { updateActions(); };
     void treeWidgetItemChanged(QTreeWidgetItem * item, int column);

@@ -167,6 +167,7 @@
     <file>icons/document-import.png</file>
     <file>icons/edit-rename.png</file>
     <file>icons/import-prop-icon.png</file>
+    <file>icons/closeAll.png</file>
   </qresource>
   <qresource prefix="/plots">
     <file>icons/zoom-3.png</file>

@@ -719,6 +719,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     {
         QMetaObject::invokeMethod(m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
     }
+    QMetaObject::invokeMethod(m_pyEngine, "pythonGetClearAllValues");
 
     settings->beginGroup("CurrentStatus");
     QString currentDir = (settings->value("currentDir", QDir::currentPath()).toString());

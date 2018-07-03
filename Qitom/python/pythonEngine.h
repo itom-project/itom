@@ -375,6 +375,9 @@ public slots:
     ito::RetVal getVarnamesListInWorkspace(bool globalNotLocal, const QString &find, QSharedPointer<QStringList> varnameList, ItomSharedSemaphore *semaphore /*= NULL*/);
     ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
 
+    ito::RetVal pythonGetClearAllValues();
+    ito::RetVal pythonClearAll();
+
 private slots:
 
 };

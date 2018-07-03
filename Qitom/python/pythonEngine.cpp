@@ -5227,7 +5227,54 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 
     return retVal;
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+This method calls getClearAllValues in the Python module itomFunctions.py. 
+This function detects all currently available variables and stores them in a global python variable.
+*/
+ito::RetVal PythonEngine::pythonGetClearAllValues()
+{
+    ito::RetVal retVal;
+    if (itomFunctions == NULL)
+    {
+        retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
+    }
+    else
+    {
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+        PyObject_CallMethod(itomFunctions, "getClearAllValues", "");
+        PyGILState_Release(gstate);
+    }
+    return retVal;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+This method calls clearAll in the Python module itomFunctions.py. ClearAll will delete all global available python items but all them stored in the global clearAllState list.
+Afterwards the workspace will be updated.
+*/
+ito::RetVal PythonEngine::pythonClearAll()
+{
+    ito::RetVal retVal;
+    if (itomFunctions == NULL)
+    {
+        retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
+    }
+    else if (pythonState &(pyStateRunning | pyStateDebugging | pyStateDebuggingWaitingButBusy))
+    {
+        retVal += RetVal(retError, 0, tr("It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        std::cerr << "It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
+    }
+    else
+    {
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+        PyObject_CallMethod(itomFunctions, "clearAll", "");
+        emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);        
+    }
+    return retVal;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore)
 {
@@ -6132,7 +6179,6 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     return retval;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION >= 0x050000
 void PythonEngine::connectNotify(const QMetaMethod &signal)
