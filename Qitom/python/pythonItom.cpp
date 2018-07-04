@@ -5218,6 +5218,13 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
     return tuple;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonItom::PyClearAll(PyObject* pSelf)
+{
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    pyEngine->pythonClearAll();
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
@@ -5287,6 +5294,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS | METH_KEYWORDS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
+    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clears all variables in workspace (holds variables created by any startup skript)"},
     {NULL, NULL, 0, NULL}
 };
 

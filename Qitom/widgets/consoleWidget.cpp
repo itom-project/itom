@@ -1049,6 +1049,24 @@ RetVal ConsoleWidget::executeCmdQueue()
             executeCmdQueue();
             emit sendToLastCommand(value.singleLine);
         }
+        else if (value.singleLine == "clearAll")
+        {
+            QObject *pyEngine = AppManagement::getPythonEngine();
+            if (pyEngine)
+            {
+                QMetaObject::invokeMethod(pyEngine, "pythonClearAll");
+                executeCmdQueue();
+                m_pCmdList->add(value.singleLine);
+                emit sendToLastCommand(value.singleLine);
+            }
+            else
+            {
+                QMessageBox::critical(this, tr("Script Execution"), tr("Python is not available"));
+            }
+            autoAdaptLineNumberColumnWidth();
+            autoLineDelete();
+
+        }
         else
         {
             //emit pythonExecuteString(value.singleLine);
