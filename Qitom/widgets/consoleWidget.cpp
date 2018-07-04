@@ -83,7 +83,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
     connect(this, SIGNAL(wantToCopy()), SLOT(copy()));
     connect(this, SIGNAL(selectionChanged()), SLOT(selChanged()));
+#ifndef USE_PYQODE
     connect(this, SIGNAL(SCN_DOUBLECLICK(int,int,int)), SLOT(textDoubleClicked(int,int,int)));
+#endif
 
     if (AppManagement::getCoutStream())
     {
@@ -1009,6 +1011,21 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         event->ignore();
     }
 }
+
+#if USE_PYQODE
+void ConsoleWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    CodeEditor::mouseDoubleClickEvent(e);
+    int line;
+    int column;
+
+    QPoint pos = viewport()->mapFromGlobal(e->globalPos());
+
+    lineIndexFromPosition(pos, &line, &column);
+
+    textDoubleClicked(column, line, e->modifiers());
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)

@@ -103,6 +103,9 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
+#if USE_PYQODE
+    void mouseDoubleClickEvent(QMouseEvent *e);
+#endif
 
 private slots:
     void selChanged(); 
