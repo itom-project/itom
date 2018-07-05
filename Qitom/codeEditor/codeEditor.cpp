@@ -1161,7 +1161,7 @@ void CodeEditor::cut()
     QTextCursor tc = textCursor();
     tc.beginEditBlock();
     bool no_selection = false;
-    if (currentLineText() != "")
+    if (currentLineText() == "")
     {
         tc.deleteChar();
     }

@@ -242,8 +242,8 @@ public:
     void indent();
     void unindent();
 
-    void cut();
-    void copy();
+    virtual void cut();
+    virtual void copy();
 
     void resetStylesheet();
     void rehighlight();
