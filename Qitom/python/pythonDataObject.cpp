@@ -5789,50 +5789,55 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
         if (!error && fromType != ito::tInt8)
         {
+            ito::RetVal retval2;
 
             try
             {
                 switch(self->dataObject->getType())
                 {
                 case ito::tUInt8:
-                    self->dataObject->setTo(ito::numberConversion<uint8>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<uint8>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tInt8:
-                    self->dataObject->setTo(ito::numberConversion<int8>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<int8>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tUInt16:
-                    self->dataObject->setTo(ito::numberConversion<uint16>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<uint16>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tInt16:
-                    self->dataObject->setTo(ito::numberConversion<int16>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<int16>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tUInt32:
-                    self->dataObject->setTo(ito::numberConversion<uint32>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<uint32>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tInt32:
-                    self->dataObject->setTo(ito::numberConversion<int32>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<int32>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tRGBA32:
-                    self->dataObject->setTo(ito::numberConversion<ito::Rgba32>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<ito::Rgba32>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tFloat32:
-                    self->dataObject->setTo(ito::numberConversion<float32>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<float32>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tFloat64:
-                    self->dataObject->setTo(ito::numberConversion<float64>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<float64>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tComplex64:
-                    self->dataObject->setTo(ito::numberConversion<complex64>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<complex64>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 case ito::tComplex128:
-                    self->dataObject->setTo(ito::numberConversion<complex128>(fromType, valuePtr), *(mask->dataObject));
+                    retval2 = self->dataObject->setTo(ito::numberConversion<complex128>(fromType, valuePtr), *(mask->dataObject));
                     break;
                 }
-
             }
             catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                error = true;
+            }
+
+            if (PythonCommon::transformRetValToPyException(retval2) == false)
+            {
                 error = true;
             }
         }
