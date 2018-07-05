@@ -5260,11 +5260,11 @@ ito::RetVal PythonEngine::pythonClearAll()
     {
         retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
     }
-    else if (pythonState &(pyStateRunning | pyStateDebugging | pyStateDebuggingWaitingButBusy))
+    /*else if (pythonState &(pyStateRunning | pyStateDebugging | pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
         std::cerr << "It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
-    }
+    }*/
     else
     {
         PyGILState_STATE gstate;

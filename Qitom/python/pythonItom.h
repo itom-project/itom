@@ -134,6 +134,8 @@ public:
     static PyObject* userCheckIsUser(PyObject* pSelf);
     static PyObject* userGetUserInfo(PyObject* pSelf);
 
+    static PyObject* PyClearAll(PyObject* pSelf);
+
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
 

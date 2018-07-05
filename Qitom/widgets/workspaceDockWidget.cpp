@@ -73,6 +73,7 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
     m_pMainToolBar(NULL),
     m_pContextMenu(NULL),
     m_firstCurrentItem(NULL),
+    m_actClearAll(NULL),
     m_firstCurrentItemKey(QString::Null())
 {
     m_pWorkspaceWidget = new WorkspaceWidget(m_globalNotLocal, this);
