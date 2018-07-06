@@ -1305,7 +1305,7 @@ void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= "
 */
 QString CodeEditor::selectedText() const
 {
-    return textCursor().selectedText();
+    return textCursor().selectedText().replace(QChar(0x2029), '\n');
 }
 
 //------------------------------------------------------------
@@ -1859,6 +1859,34 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNo
         {
             userData = new TextBlockUserData(this);
             userData->m_currentLineNr = lineNbr;
+            block.setUserData(userData);
+        }
+        return userData;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//------------------------------------------------------------
+/*
+Returns a pointer to the TextBlockUserData, assigned to line 'lineNbr'.
+If no userData is currently assigned to this line, a new TextBlockUserData
+structure is allocated, attached to the line and returned.
+
+Returns NULL if the line does not exist
+*/
+TextBlockUserData* CodeEditor::getTextBlockUserData(QTextBlock &block, bool createIfNotExist /*= true*/)
+{
+    if (block.isValid())
+    {
+        //set docstring dynamic attribute, used by the fold detector.
+        TextBlockUserData *userData = dynamic_cast<TextBlockUserData*>(block.userData());
+        if (userData == NULL && createIfNotExist)
+        {
+            userData = new TextBlockUserData(this);
+            userData->m_currentLineNr = block.blockNumber();
             block.setUserData(userData);
         }
         return userData;

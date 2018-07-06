@@ -268,6 +268,7 @@ public:
     QTextCursor wordUnderMouseCursor() const;
 
     TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
+    TextBlockUserData* getTextBlockUserData(QTextBlock &block, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
     const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }
     
