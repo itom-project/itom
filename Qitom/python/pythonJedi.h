@@ -44,9 +44,6 @@ namespace ito
         int m_bracketStartLine;
     };
 
-    Q_DECLARE_METATYPE(JediCalltip)
-
-
     struct JediCompletion
     {
         JediCompletion() {};
@@ -60,8 +57,6 @@ namespace ito
         QString m_tooltip;
         QString m_icon;
     };
-
-    Q_DECLARE_METATYPE(JediCompletion)
 
     struct JediDefinition
     {
@@ -79,8 +74,10 @@ namespace ito
         QString m_fullName; //assignement full name
     };
 
-    Q_DECLARE_METATYPE(JediDefinition)
-
 } //end namespace ito
+
+Q_DECLARE_METATYPE(ito::JediCalltip)
+Q_DECLARE_METATYPE(ito::JediCompletion)
+Q_DECLARE_METATYPE(ito::JediDefinition)
 
 #endif

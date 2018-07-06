@@ -321,7 +321,7 @@ QTextCharFormat& CodeEditorStyle::rformat(StyleItem::StyleType type)
         return m_formats[type].format();
     }
 
-    return QTextCharFormat();
+    return (*m_formats.begin()).format();
 }
 
 

@@ -252,11 +252,11 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
     qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
-    qRegisterMetaType<QVector<ito::JediCalltip>>("QVector<ito::JediCalltip>");
+    qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
     qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
-    qRegisterMetaType<QVector<ito::JediCompletion>>("QVector<ito::JediCompletion>");
+    qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
     qRegisterMetaType<ito::JediDefinition>("ito::JediDefinition");
-    qRegisterMetaType<QVector<ito::JediDefinition>>("QVector<ito::JediDefinition>");
+    qRegisterMetaType<QVector<ito::JediDefinition> >("QVector<ito::JediDefinition>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -2186,7 +2186,7 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
                 {
                     if (line >= 0)
                     {
-                        QFileInfo filepath2 = QLatin1String(path2);
+                        QFileInfo filepath2 = QString(QLatin1String(path2));
                         if (lineOffset == 1)
                         {
                             QFileInfo filepath = path;

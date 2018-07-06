@@ -277,7 +277,7 @@ void AbstractCodeEditorWidget::loadSettings()
 
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
-        StyleItem &item = defaultStyle[styleType];
+        const StyleItem &item = defaultStyle[styleType];
 
         if (item.isValid())
         {

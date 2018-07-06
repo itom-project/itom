@@ -61,7 +61,13 @@
         #define _DEBUG
     #else
     #ifdef linux
-        #include "Python.h"
+        #ifdef slots
+            #undef slots
+            #include "Python.h"
+            #define slots
+        #else
+            #include "Python.h"
+        #endif
         #include "node.h"
         #include "numpy/arrayobject.h"
     #elif (defined __APPLE__)
