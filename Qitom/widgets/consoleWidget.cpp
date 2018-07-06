@@ -1194,9 +1194,10 @@ RetVal ConsoleWidget::executeCmdQueue()
             {
                 QMessageBox::critical(this, tr("Script Execution"), tr("Python is not available"));
             }
+#ifndef USE_PYQODE
             autoAdaptLineNumberColumnWidth();
+#endif
             autoLineDelete();
-
         }
         else
         {
@@ -1351,7 +1352,9 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         //case msgReturnError:
         //!> insert msg after last line
         fromLine = lines() - 1;
+
         append(text);
+
         toLine = lines() - 1;
         if (lineLength(toLine) == 0)
         {
@@ -1385,6 +1388,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         //case msgReturnWarning:
         //!> insert msg after last line
         append(text);
+
         moveCursorToEnd();
         //m_startLineBeginCmd = -1;
 
