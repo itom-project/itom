@@ -27,7 +27,6 @@
 #include "../codeEditor/codeEditor.h"
 
 #include <qevent.h>
-#include "../organizer/qsciApiManager.h"
 #include "../codeEditor/syntaxHighlighter/syntaxHighlighterBase.h"
 #include "../codeEditor/modes/symbolMatcherMode.h"
 #include "../codeEditor/modes/caretLineHighlight.h"

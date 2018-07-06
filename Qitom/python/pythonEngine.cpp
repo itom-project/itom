@@ -2056,6 +2056,13 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
 
         if (m_pyModJedi == NULL)
         {
+            QObject* mainWin = AppManagement::getMainWindow();
+            if (mainWin)
+            {
+                QString text = tr("Auto completion, calltips... not possible, since the package 'jedi' could not be loaded (Python packages 'jedi' and 'parso' are required for this feature).");
+                QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PythonEngine"));
+            }
+
             PyErr_Clear();
             PyGILState_Release(gstate);
             return false;

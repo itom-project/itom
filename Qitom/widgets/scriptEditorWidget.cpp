@@ -44,6 +44,7 @@
 #include <qmimedata.h>
 #include <qtextcodec.h>
 #include <qinputdialog.h>
+#include <qdatetime.h>
 
 #ifdef USE_PYQODE
     #include "../codeEditor/managers/panelsManager.h"
