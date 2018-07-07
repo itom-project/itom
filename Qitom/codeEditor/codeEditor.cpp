@@ -59,7 +59,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_defaultFontSize(10),
     m_useSpacesInsteadOfTabs(true),
     m_showWhitespaces(false),
-    m_tabLength(4),
+    m_tabLength(0),
     m_zoomLevel(0),
     m_fontSize(10),
     m_fontFamily("Verdana"),
@@ -97,6 +97,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     setCenterOnScroll(true);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setCursorWidth(2);
+    setTabLength(4);
 
     m_pPanels = new PanelsManager(this);
     m_pDecorations = new TextDecorationsManager(this);
@@ -417,7 +418,12 @@ int CodeEditor::tabLength() const
 
 void CodeEditor::setTabLength(int value)
 {
-    m_tabLength = value;
+    if (m_tabLength != value)
+    {
+        m_tabLength = value;
+        QFontMetrics metrics(font());
+        setTabStopWidth(40); //m_tabLength * metrics.width('  '));
+    }
 }
 
 //-----------------------------------------------------------

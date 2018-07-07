@@ -37,6 +37,8 @@
 
 #include "codeEditorStyle.h"
 
+#include <qdebug.h>
+
 namespace ito {
 
 //------------------------------------------------------------------
@@ -48,13 +50,13 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
     switch (type)
     {
     case KeyBackground:
-        m_name = QObject::tr("Paper color");
+        m_name = ""; //QObject::tr("Paper color");
         break;
 
     case KeyHighlight:
         m_name = QObject::tr("Current selection");
         break;
-    case KeyNormal:
+    case KeyDefault:
         m_name = QObject::tr("Default");
         break;
     case KeyKeyword:
@@ -73,7 +75,7 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = QObject::tr("Builtin");
         break;
     case KeyDefinition:
-        m_name = QObject::tr("Definition"); //class name only
+        m_name = QObject::tr("Definition");
         break;
     case KeyComment:
         m_name = QObject::tr("Comment");
@@ -95,7 +97,7 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = QObject::tr("Instance");
         break;
     case KeyWhitespace:
-        m_name = QObject::tr("Whitespace");
+        m_name = ""; //special style
         break;
     case KeyTag:
         m_name = QObject::tr("Tag");
@@ -122,7 +124,7 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = QObject::tr("Operator Word");
         break;
     case KeyClass:
-        m_name = QObject::tr("Class name");
+        m_name = QObject::tr("Class Name");
         break;
     default:
         m_name = "";
@@ -234,20 +236,18 @@ CodeEditorStyle::CodeEditorStyle()
         m_formats[styleType] = StyleItem(styleType, defaultFormat);
     }
 
-    
-
     m_formats[StyleItem::KeyKeyword] = StyleItem(StyleItem::KeyKeyword, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyOperator] = StyleItem(StyleItem::KeyOperator, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
     m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyConstant, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyNamespace, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     
-    m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyClass, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true));
+    m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyClass, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyString] = StyleItem(StyleItem::KeyString, StyleItem::createFormat("Courier New", defaultPointSize, "#7f007f", Qt::white, false));
     m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyComment, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false)); //pygments, vs style
     m_formats[StyleItem::KeySelf] = StyleItem(StyleItem::KeySelf, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007020", Qt::white, false)); //pygments, vs style
     m_formats[StyleItem::KeyNumber] = StyleItem(StyleItem::KeyNumber, StyleItem::createFormat(defaultFontName, defaultPointSize, "#40a070", Qt::white, false)); //pygments, vs style
     m_formats[StyleItem::KeyDocstring] = StyleItem(StyleItem::KeyDocstring, StyleItem::createFormat(defaultFontName, defaultPointSize, "#a31515", Qt::white, false)); //pygments, vs style
-    m_formats[StyleItem::KeyDocstring].format().setFontItalic(true);
+    m_formats[StyleItem::KeyDocstring].rformat().setFontItalic(true);
     m_formats[StyleItem::KeyDecorator] = StyleItem(StyleItem::KeyDecorator, StyleItem::createFormat(defaultFontName, defaultPointSize, "#805000", Qt::white, false));
     m_formats[StyleItem::KeyFunction] = StyleItem(StyleItem::KeyFunction, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
 
@@ -272,13 +272,20 @@ Gets the background color.
 */
 QColor CodeEditorStyle::background() const
 {
+    //qDebug() << m_formats[StyleItem::KeyBackground].format().background().color();
     return m_formats[StyleItem::KeyBackground].format().background().color();
 }
 
 //------------------------------------------------------------------
 void CodeEditorStyle::setBackground(const QColor &color)
 {
-    m_formats[StyleItem::KeyBackground].format().background().setColor(color);
+    QBrush bg = m_formats[StyleItem::KeyBackground].format().background();
+    if (bg.color() != color)
+    {
+        bg.setColor(color);
+        m_formats[StyleItem::KeyBackground].rformat().setBackground(bg);
+        //qDebug() << m_formats[StyleItem::KeyBackground].format().background().color();
+    }
 }
 
 //------------------------------------------------------------------
@@ -303,6 +310,17 @@ StyleItem CodeEditorStyle::operator[](StyleItem::StyleType type) const
 }
 
 //------------------------------------------------------------------
+StyleItem& CodeEditorStyle::operator[](StyleItem::StyleType type)
+{
+    if (m_formats.contains(type))
+    {
+        return m_formats[type];
+    }
+
+    return m_formats[StyleItem::KeyDefault];
+}
+
+//------------------------------------------------------------------
 QTextCharFormat CodeEditorStyle::format(StyleItem::StyleType type) const
 {
     if (m_formats.contains(type))
@@ -318,10 +336,10 @@ QTextCharFormat& CodeEditorStyle::rformat(StyleItem::StyleType type)
 {
     if (m_formats.contains(type))
     {
-        return m_formats[type].format();
+        return m_formats[type].rformat();
     }
 
-    return (*m_formats.begin()).format();
+    return m_formats[StyleItem::KeyDefault].rformat();
 }
 
 

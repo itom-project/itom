@@ -847,7 +847,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 void PythonEngine::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
 

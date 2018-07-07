@@ -44,7 +44,7 @@ WidgetPropConsoleWrap::~WidgetPropConsoleWrap()
 void WidgetPropConsoleWrap::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     bool ok = false;
     int index;
@@ -111,7 +111,7 @@ void WidgetPropConsoleWrap::readSettings()
 void WidgetPropConsoleWrap::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     int wrapMode;
     if (ui.radioWrapMode1->isChecked())

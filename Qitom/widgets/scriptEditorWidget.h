@@ -351,26 +351,15 @@ private slots:
     void printPreviewRequested(QPrinter *printer);
 };
 
-#ifdef USE_PYQODE
-    class ScriptEditorPrinter : public QPrinter
-#else
+#ifndef USE_PYQODE
     class ScriptEditorPrinter : public QsciPrinter
-#endif
-{
-public:
-
-#ifdef USE_PYQODE
-    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QPrinter(mode)
     {
-        setColorMode(QPrinter::Color);
-        setPageOrder(QPrinter::FirstPageFirst);
-    }
-#else
-    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
-#endif
+    public:
 
+    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
     virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
 };
+#endif
 
 } //end namespace ito
 

@@ -50,6 +50,7 @@
     #include "../codeEditor/managers/panelsManager.h"
     #include "../codeEditor/managers/modesManager.h"
     #include "../codeEditor/textBlockUserData.h"
+    #include "scriptEditorPrinter.h"
 #endif
 
 namespace ito 
@@ -288,7 +289,7 @@ RetVal ScriptEditorWidget::initEditor()
 void ScriptEditorWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     if (settings.value("showWhitespace", true).toBool())
     {
@@ -2569,7 +2570,7 @@ void ScriptEditorWidget::print()
 #ifndef USE_PYQODE
         printer.setMagnification(-1); //size one point smaller than the one displayed in itom.
 #endif
-        QPrintPreviewDialog printPreviewDialog(&printer);
+        QPrintPreviewDialog printPreviewDialog(&printer, this);
         printPreviewDialog.setWindowFlags(Qt::Window);
         connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printPreviewRequested(QPrinter*)));
         printPreviewDialog.exec();
@@ -2583,7 +2584,7 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
     if (p)
     {
 #ifdef USE_PYQODE
-        p->printRange();
+        p->printRange(this);
 #else
         p->printRange(this);
 #endif
@@ -3105,6 +3106,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     }
 }
 
+#ifndef USE_PYQODE
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
 {
@@ -3129,5 +3131,6 @@ void ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, QRect &are
     area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
     painter.restore();
 }
+#endif
 
 } // end namespace ito

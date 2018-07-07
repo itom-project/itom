@@ -43,6 +43,7 @@
 #include <QTextCharFormat>
 #include <qmetaobject.h>
 #include <qlist.h>
+#include <qmap.h>
 
 namespace ito {
 
@@ -68,7 +69,7 @@ public:
     enum StyleType
     {
         //the pre-defined indices are used to provide a backward-compatibility with old Scintilla styles!
-        KeyNormal = 0,
+        KeyDefault = 0,
         KeyComment = 1,
         KeyNumber = 2,
         KeyString = 3,
@@ -79,7 +80,7 @@ public:
         KeyOperator = 10,
         KeyDecorator = 15,
 
-        KeyBackground = 1000,
+        KeyBackground = 1000, /*special style: directly set by settings*/
         KeyHighlight,
         KeyNamespace,
         KeyType,
@@ -87,7 +88,7 @@ public:
         KeyBuiltin,
         KeyDefinition,
         KeyInstance,
-        KeyWhitespace,
+        KeyWhitespace, /*special style: directly set by settings*/
         KeyTag,
         KeySelf,  
         KeyPunctuation,
@@ -112,7 +113,7 @@ public:
     bool isValid() const { return m_valid; }
     QString name() const { return m_name; }
     StyleType type() const { return m_type; }
-    QTextCharFormat& format() { return m_format; }
+    QTextCharFormat& rformat() { return m_format; }
     QTextCharFormat format() const { return m_format; }
 
     static QMetaEnum styleTypeEnum();
@@ -144,7 +145,12 @@ public:
     CodeEditorStyle();
     virtual ~CodeEditorStyle();
 
+    int numStyles() const { return m_formats.size(); }
+    QList<int> styleKeys() const { return m_formats.keys(); }
     StyleItem operator[](StyleItem::StyleType type) const;
+    StyleItem& operator[](StyleItem::StyleType type);
+    StyleItem at(StyleItem::StyleType type) const { return (*this)[type]; }
+    StyleItem& at(StyleItem::StyleType type) { return (*this)[type]; }
     QTextCharFormat format(StyleItem::StyleType type) const;
     QTextCharFormat& rformat(StyleItem::StyleType type);
 
@@ -154,7 +160,7 @@ public:
     QColor highlight() const;
 
 private:
-    QHash<int, StyleItem> m_formats;
+    QMap<int, StyleItem> m_formats;
 };
 
 } //end namespace ito

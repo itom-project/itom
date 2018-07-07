@@ -136,7 +136,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 
     userData->m_docstring = false;
 
-    setFormat(0, text2.size(), getFormatFromStyle(StyleItem::KeyNormal));
+    setFormat(0, text2.size(), getFormatFromStyle(StyleItem::KeyDefault));
 
     State state = Normal;
 
@@ -259,6 +259,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 }
                 else if (value == "self" || value == "cls")
                 {
+                    //qDebug() << getFormatFromStyle(StyleItem::KeySelf).foreground().color();
                     // highlight self attribute
                     setFormat(start, length,
                                     getFormatFromStyle(StyleItem::KeySelf));
@@ -275,6 +276,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 }
                 else if (key == "comment")
                 {
+                    //qDebug() << getFormatFromStyle(StyleItem::KeyComment).foreground().color();
                     setFormat(start, length,
                                     getFormatFromStyle(StyleItem::KeyComment));
                 }
@@ -314,7 +316,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                         {
                             int start1 = pos2;
                             int end1 = start1 + PythonSyntaxHighlighter::regExpIdProg.matchedLength();
-                            QTextCharFormat fmt = getFormatFromStyle(value == "class" ? StyleItem::KeyDefinition : StyleItem::KeyFunction);
+                            QTextCharFormat fmt = getFormatFromStyle(value == "class" ? StyleItem::KeyClass : StyleItem::KeyFunction);
                             setFormat(start1, end1 - start1, fmt);
                         }
                     }

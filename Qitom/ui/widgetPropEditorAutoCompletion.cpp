@@ -47,7 +47,7 @@ WidgetPropEditorAutoCompletion::~WidgetPropEditorAutoCompletion()
 void WidgetPropEditorAutoCompletion::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     ui.checkCaseSensitivity->setChecked( settings.value("autoComplCaseSensitive", false).toBool());
     ui.checkFillUps->setChecked( settings.value("autoComplFillUps", true).toBool());
@@ -70,7 +70,7 @@ void WidgetPropEditorAutoCompletion::readSettings()
 void WidgetPropEditorAutoCompletion::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     settings.setValue("autoComplCaseSensitive", ui.checkCaseSensitivity->isChecked() );
     settings.setValue("autoComplFillUps", ui.checkFillUps->isChecked() );

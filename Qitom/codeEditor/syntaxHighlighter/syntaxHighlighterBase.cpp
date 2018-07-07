@@ -181,7 +181,7 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
     }
 
     editor()->setBackground(editorStyle->background());
-    editor()->setForeground(editorStyle->format(StyleItem::KeyNormal).foreground().color());
+    //editor()->setForeground(editorStyle->format(StyleItem::KeyDefault).foreground().color());
     editor()->setWhitespacesForeground(editorStyle->format(StyleItem::KeyWhitespace).foreground().color());
     Mode::Ptr mode = editor()->modes()->get("CaretLineHighlighterMode");
     if (mode)
@@ -200,6 +200,10 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
             fp->refreshDecorations(true);
         }
     }
+
+    setDocument(NULL);
+    setDocument(editor()->document());       
+
     editor()->resetStylesheet();
 }
 

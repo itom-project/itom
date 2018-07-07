@@ -210,7 +210,7 @@ ScriptDockWidget::~ScriptDockWidget()
 void ScriptDockWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     // Class Navigator
     m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();

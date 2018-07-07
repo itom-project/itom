@@ -46,7 +46,7 @@ WidgetPropEditorCalltips::~WidgetPropEditorCalltips()
 void WidgetPropEditorCalltips::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     ui.groupCallTips->setChecked( settings.value("calltipsEnabled", true).toBool());
     ui.spinNoOfCalltips->setValue( settings.value("calltipsNoVisible", 3).toInt());
@@ -63,7 +63,7 @@ void WidgetPropEditorCalltips::readSettings()
 void WidgetPropEditorCalltips::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     settings.setValue("calltipsEnabled", ui.groupCallTips->isChecked());
     settings.setValue("calltipsNoVisible", ui.spinNoOfCalltips->value());

@@ -90,7 +90,7 @@ void AbstractCodeEditorWidget::init()
 void AbstractCodeEditorWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     CodeEditorStyle defaultStyle;
 
@@ -152,15 +152,7 @@ void AbstractCodeEditorWidget::loadSettings()
         qSciLex->setIndentationWarning(QsciLexerPython::Tabs);
     }*/
 
-    // ------------ API --------------------------------------------------------
 
-    //do not change api here, since this is directly done by property dialog and qsciApiManager
-
-    //!< add commands to autoCompletion:
-    /*styles:
-        qSciApi->add("methodName(param1,param2) Description);
-        qSciApi->add("name");
-    */
 
     //TODO
     /*
@@ -231,7 +223,7 @@ void AbstractCodeEditorWidget::loadSettings()
     setAutoCompletionReplaceWord(settings.value("autoComplReplaceWord", false).toBool());
     setAutoCompletionShowSingle(settings.value("autoComplShowSingle", false).toBool());
     */
-
+    setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
     m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
     //TODO
@@ -253,7 +245,8 @@ void AbstractCodeEditorWidget::loadSettings()
     m_caretLineHighlighter->setBackground(QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString()));
     m_caretLineHighlighter->setEnabled(settings.value("caretBackgroundShow", false).toBool());
     //todo
-    //setCaretForegroundColor(QColor(settings.value("caretForegroundColor", QColor(Qt::black)).toString()));
+    setForeground(QColor(settings.value("caretForegroundColor", QColor(Qt::black)).toString())); //caret color
+
 
     Mode::Ptr mode = modes()->get("OccurrencesHighlighterMode");
     if (mode)
@@ -275,45 +268,49 @@ void AbstractCodeEditorWidget::loadSettings()
     //QFont marginFont = qSciLex->font(qSciLex->defaultStyle());
     //setMarginsFont(marginFont);
 
+    QTextCharFormat defaultFormat;
+
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
-        const StyleItem &item = defaultStyle[styleType];
+        StyleItem &item = m_editorStyle->at(styleType);
+        defaultFormat =  defaultStyle[styleType].format();
 
         if (item.isValid())
         {
-            settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(item.type()));
+            settings.beginGroup("PythonLexerStyle" + QString().setNum(item.type()));
 
-            QColor bgColor = settings.value("backgroundColor", defaultStyle.background()).toString();
+            QColor bgColor = settings.value("backgroundColor", background()).toString();
             if (bgColor.isValid())
             {
                 bgColor.setAlpha(settings.value("backgroundColorAlpha", 255).toInt());
-                m_editorStyle->format(styleType).setBackground(bgColor);
+                item.rformat().setBackground(bgColor);
             }
 
-            QColor fgColor = settings.value("foregroundColor", defaultStyle.highlight()).toString();
+            QColor fgColor = settings.value("foregroundColor", defaultFormat.foreground().color()).toString();
             if (fgColor.isValid())
             {
                 fgColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
-                m_editorStyle->format(styleType).setForeground(fgColor);
+                item.rformat().setForeground(fgColor);
+                //qDebug() << item.type() << item.format().foreground().color() << fgColor << defaultStyle[styleType].format().foreground().color();
             }
 
             QString fontFamily = settings.value("fontFamily", "").toString();
             if (fontFamily != "")
             {
-                m_editorStyle->format(styleType).setFontFamily(fontFamily);
+                item.rformat().setFontFamily(fontFamily);
             }
 
             int fontPointSize = settings.value("pointSize", 0).toInt();
             if (fontPointSize > 0)
             {
-                m_editorStyle->format(styleType).setFontPointSize(fontPointSize);
+                item.rformat().setFontPointSize(fontPointSize);
             }
 
-            int fontWeight = settings.value("weight", 0).toInt();
-            m_editorStyle->format(styleType).setFontWeight(fontWeight);
+            int fontWeight = settings.value("weight", defaultFormat.fontWeight()).toInt();
+            item.rformat().setFontWeight(fontWeight);
 
-            bool fontItalic = settings.value("italic", false).toBool();
-            m_editorStyle->format(styleType).setFontItalic(fontItalic);
+            bool fontItalic = settings.value("italic", defaultFormat.fontItalic()).toBool();
+            item.rformat().setFontItalic(fontItalic);
 
             settings.endGroup();
         }

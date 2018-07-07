@@ -47,7 +47,7 @@ WidgetPropEditorGeneral::~WidgetPropEditorGeneral()
 void WidgetPropEditorGeneral::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     // EOL-Mode
     QString eolMode = settings.value("eolMode", "EolUnix").toString();
@@ -91,7 +91,7 @@ void WidgetPropEditorGeneral::writeSettings()
 {
     
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
     
     // EOL-Mode
     if (ui.radioEOL1->isChecked())

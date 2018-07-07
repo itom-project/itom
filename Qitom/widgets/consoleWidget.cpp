@@ -213,7 +213,7 @@ RetVal ConsoleWidget::initEditor()
 void ConsoleWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
 #ifndef USE_PYQODE
     bool ok = false;
@@ -1707,7 +1707,7 @@ void ConsoleWidget::copy()
 #endif
 
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup("PyScintilla");
+        settings.beginGroup("CodeEditor");
         bool formatCopyCode = settings.value("formatCopyCode", "false").toBool();
         settings.endGroup();
 
@@ -1729,7 +1729,7 @@ void ConsoleWidget::paste()
     moveCursorToValidRegion();
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
     bool formatPastCode = settings.value("formatPastCode", "false").toBool();
     settings.endGroup();
 
