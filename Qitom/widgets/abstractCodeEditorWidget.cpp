@@ -161,7 +161,7 @@ void AbstractCodeEditorWidget::loadSettings()
     // ------------ auto completion --------------------------------------------------------
     m_codeCompletionMode->setEnabled(settings.value("autoComplEnabled", true).toBool());
     m_codeCompletionMode->setCaseSensitive(settings.value("autoComplCaseSensitive", true).toBool());
-    m_codeCompletionMode->setTriggerLength(settings.value("autoComplThreshold", 2).toBool());
+    m_codeCompletionMode->setTriggerLength(settings.value("autoComplThreshold", 2).toInt());
     m_codeCompletionMode->setShowTooltips(settings.value("autoComplShowTooltips", false).toBool());
     m_codeCompletionMode->setFilterMode((ito::CodeCompletionMode::FilterMode)settings.value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy).toInt());
 
