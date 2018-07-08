@@ -65,23 +65,23 @@ public:
         catch(std::exception &exc)
         {
             QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
-            qWarning("Itom-Application has caught an exception");
+            qWarning("Itom-Application has caught a std::exception");
             qWarning() << "Message:" << exc.what() << " from" << name;
 #ifdef _DEBUG
-            qFatal("Exiting due to exception caught. Exception: %s", exc.what());
+            qFatal("Exiting due to std::exception caught. Exception: %s", exc.what());
 #endif
-            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << name.toLatin1().constData() << "\n" << std::endl;
+            std::cerr << "Itom-Application has caught a std::exception: " << exc.what() << " from: " << name.toLatin1().constData() << "\n" << std::endl;
         }
         catch (...)
         {
             int type = event ? event->type() : -1;
             QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
-            qWarning("Itom-Application has caught an exception");
-            qWarning() << "Itom-Application caught an exception from" <<  name << "from event type" << type;
+            qWarning("Itom-Application has caught an unknown exception");
+            qWarning() << "Itom-Application caught an unknown exception from" <<  name << "from event type" << type;
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught");
 #endif
-            std::cerr << "Itom-Application caught an exception from: " << name.toLatin1().constData() << " from event type " << type << "\n" << std::endl;
+            std::cerr << "Itom-Application caught an unknown exception from: " << name.toLatin1().constData() << " from event type " << type << "\n" << std::endl;
         }
         return false;
     }
