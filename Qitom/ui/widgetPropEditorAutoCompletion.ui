@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupAutoCompletion">
      <property name="title">
-      <string>Auto-completion enabled</string>
+      <string>Auto-completion enabled (requires Python packages jedi and parso)</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -55,6 +55,55 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Filter Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboFilterMode">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>Completion is based on prefix only - fast</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Completion checks if prefix is contained in the suggestions - fast</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Fuzzy filtering - most powerful method - slow</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QCheckBox" name="checkCaseSensitivity">
         <property name="text">
          <string>Case sensitive</string>
@@ -62,57 +111,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkFillUps">
+       <widget class="QCheckBox" name="checkShowTooltips">
         <property name="text">
-         <string>Use fill-up characters</string>
+         <string>Show tooltips</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkReplaceWord">
-        <property name="text">
-         <string>Replace word right of the cursor if entry from list is selected</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkShowSingle">
-        <property name="text">
-         <string>Show single</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupACSource">
-        <property name="title">
-         <string>Sources for auto-completion</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QRadioButton" name="radioACSource1">
-           <property name="text">
-            <string>Use all available sources</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioACSource2">
-           <property name="text">
-            <string>Use text in the current document as source</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioACSource3">
-           <property name="text">
-            <string>Use any installed APIs as source</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
       <item>

@@ -32,6 +32,7 @@
 #include "../codeEditor/modes/caretLineHighlight.h"
 #include "../codeEditor/modes/pyCalltips.h"
 #include "../codeEditor/modes/codeCompletion.h"
+#include "../codeEditor/modes/pyCalltips.h"
 #include <qstringlist.h>
 #include <qrect.h>
 #include <qpixmap.h>
@@ -68,6 +69,8 @@ protected:
     QSharedPointer<CodeEditorStyle> m_editorStyle;
     QSharedPointer<SymbolMatcherMode> m_symbolMatcher;
     QSharedPointer<CaretLineHighlighterMode> m_caretLineHighlighter;
+    QSharedPointer<PyCalltipsMode> m_calltipsMode;
+    QSharedPointer<CodeCompletionMode> m_codeCompletionMode;
 
 private:
     int getSpaceTabCount(const QString &s);

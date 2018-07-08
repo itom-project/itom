@@ -201,8 +201,7 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
         }
     }
 
-    setDocument(NULL);
-    setDocument(editor()->document());       
+    setDocument(editor()->document());   //update document    
 
     editor()->resetStylesheet();
 }

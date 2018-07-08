@@ -73,8 +73,11 @@ void AbstractCodeEditorWidget::init()
     occHighlighterMode->setCaseSensitive(true);
     modes()->append(Mode::Ptr(occHighlighterMode));
 
-    modes()->append(Mode::Ptr(new CodeCompletionMode("CodeCompletionMode")));
-    modes()->append(Mode::Ptr(new PyCalltipsMode("CalltipsMode")));
+    m_codeCompletionMode = QSharedPointer<CodeCompletionMode>(new CodeCompletionMode("CodeCompletionMode"));
+    modes()->append(Mode::Ptr(m_codeCompletionMode.dynamicCast<Mode>()));
+
+    m_calltipsMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode"));
+    modes()->append(Mode::Ptr(m_calltipsMode.dynamicCast<Mode>()));
 
     modes()->append(Mode::Ptr(new PyAutoIndentMode("PyAutoIndentMode")));
     modes()->append(Mode::Ptr(new IndenterMode("IndenterMode")));
@@ -152,77 +155,17 @@ void AbstractCodeEditorWidget::loadSettings()
         qSciLex->setIndentationWarning(QsciLexerPython::Tabs);
     }*/
 
-
-
-    //TODO
-    /*
     // ------------ calltips --------------------------------------------------------
-    bool calltipsEnabled = settings.value("calltipsEnabled",true).toBool();
+    m_calltipsMode->setEnabled(settings.value("calltipsEnabled",true).toBool());
 
-    if (calltipsEnabled)
-    {
-        QString style = settings.value("calltipsStyle","NoContext").toString();
-
-        if (style == "NoContext")
-        {
-            setCallTipsStyle(QsciScintilla::CallTipsNoContext);
-        }
-        else if (style == "NoAutoCompletionContext")
-        {
-            setCallTipsStyle(QsciScintilla::CallTipsNoAutoCompletionContext);
-        }
-        else if (style == "Context")
-        {
-            setCallTipsStyle(QsciScintilla::CallTipsContext);
-        }
-        else
-        {
-            setCallTipsStyle(QsciScintilla::CallTipsNone);
-        }
-
-        setCallTipsVisible(settings.value("calltipsNoVisible",3).toInt()); //show 3 call tips before using arrows (up/down)
-    }
-    else
-    {
-        setCallTipsStyle(QsciScintilla::CallTipsNone);
-    }
-    */
-
-    /* TODO
     // ------------ auto completion --------------------------------------------------------
-    bool acEnabled = settings.value("autoComplEnabled", true).toBool();
-    QString source = settings.value("autoComplSource", "AcsAPIs").toString();
+    m_codeCompletionMode->setEnabled(settings.value("autoComplEnabled", true).toBool());
+    m_codeCompletionMode->setCaseSensitive(settings.value("autoComplCaseSensitive", true).toBool());
+    m_codeCompletionMode->setTriggerLength(settings.value("autoComplThreshold", 2).toBool());
+    m_codeCompletionMode->setShowTooltips(settings.value("autoComplShowTooltips", false).toBool());
+    m_codeCompletionMode->setFilterMode((ito::CodeCompletionMode::FilterMode)settings.value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy).toInt());
 
-    if (acEnabled)
-    {
-        if (source == "AcsAll")
-        {
-            setAutoCompletionSource(QsciScintilla::AcsAll);
-        }
-        else if (source == "AcsDocument")
-        {
-            setAutoCompletionSource(QsciScintilla::AcsDocument);
-        }
-        else if (source == "AcsAPIs")
-        {
-            setAutoCompletionSource(QsciScintilla::AcsAPIs);
-        }
-        else
-        {
-            setAutoCompletionSource(QsciScintilla::AcsNone);
-        }
-    }
-    else
-    {
-        setAutoCompletionSource(QsciScintilla::AcsNone);
-    }
-
-    setAutoCompletionThreshold(settings.value("autoComplThreshold", 3).toInt());
-    setAutoCompletionFillupsEnabled(settings.value("autoComplFillUps", true).toBool()); //Enable the use of fill-up characters, either those explicitly set or those set by a lexer.
-    setAutoCompletionCaseSensitivity(settings.value("autoComplCaseSensitive", false).toBool());
-    setAutoCompletionReplaceWord(settings.value("autoComplReplaceWord", false).toBool());
-    setAutoCompletionShowSingle(settings.value("autoComplShowSingle", false).toBool());
-    */
+    // --------------- styles ------------------------------------------------------------
     setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
     m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
@@ -269,11 +212,14 @@ void AbstractCodeEditorWidget::loadSettings()
     //setMarginsFont(marginFont);
 
     QTextCharFormat defaultFormat;
+    QTextCharFormat currentFormat;
+    bool updateSyntaxHighlighter = false;
 
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
         StyleItem &item = m_editorStyle->at(styleType);
         defaultFormat =  defaultStyle[styleType].format();
+        currentFormat = item.format();
 
         if (item.isValid())
         {
@@ -283,40 +229,67 @@ void AbstractCodeEditorWidget::loadSettings()
             if (bgColor.isValid())
             {
                 bgColor.setAlpha(settings.value("backgroundColorAlpha", 255).toInt());
-                item.rformat().setBackground(bgColor);
+                if (currentFormat.background().color() != bgColor)
+                {
+                    item.rformat().setBackground(bgColor);
+                    updateSyntaxHighlighter = true;
+                }
             }
 
             QColor fgColor = settings.value("foregroundColor", defaultFormat.foreground().color()).toString();
             if (fgColor.isValid())
             {
                 fgColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
-                item.rformat().setForeground(fgColor);
-                //qDebug() << item.type() << item.format().foreground().color() << fgColor << defaultStyle[styleType].format().foreground().color();
+                
+                if (currentFormat.foreground().color() != fgColor)
+                {
+                    item.rformat().setForeground(fgColor);
+                    updateSyntaxHighlighter = true;
+                }                
             }
 
             QString fontFamily = settings.value("fontFamily", "").toString();
             if (fontFamily != "")
             {
-                item.rformat().setFontFamily(fontFamily);
+                if (currentFormat.fontFamily() != fontFamily)
+                {
+                    item.rformat().setFontFamily(fontFamily);
+                    updateSyntaxHighlighter = true;
+                }
             }
 
             int fontPointSize = settings.value("pointSize", 0).toInt();
             if (fontPointSize > 0)
             {
-                item.rformat().setFontPointSize(fontPointSize);
+                if (currentFormat.fontPointSize() != fontPointSize)
+                {
+                    item.rformat().setFontPointSize(fontPointSize);
+                    updateSyntaxHighlighter = true;
+                }
             }
 
             int fontWeight = settings.value("weight", defaultFormat.fontWeight()).toInt();
-            item.rformat().setFontWeight(fontWeight);
+            if (currentFormat.fontWeight() != fontWeight)
+            {
+                item.rformat().setFontWeight(fontWeight);
+                updateSyntaxHighlighter = true;
+            }
 
             bool fontItalic = settings.value("italic", defaultFormat.fontItalic()).toBool();
-            item.rformat().setFontItalic(fontItalic);
+            if (currentFormat.fontItalic() != fontItalic)
+            {
+                item.rformat().setFontItalic(fontItalic);
+                updateSyntaxHighlighter = true;
+            }
 
             settings.endGroup();
         }
     }
 
-    m_pythonSyntaxHighlighter->refreshEditor(m_editorStyle);
+    if (updateSyntaxHighlighter)
+    {
+        m_pythonSyntaxHighlighter->refreshEditor(m_editorStyle);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

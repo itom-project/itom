@@ -48,13 +48,7 @@ void WidgetPropEditorCalltips::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    ui.groupCallTips->setChecked( settings.value("calltipsEnabled", true).toBool());
-    ui.spinNoOfCalltips->setValue( settings.value("calltipsNoVisible", 3).toInt());
-
-    QString style = settings.value("calltipsStyle","NoContext").toString();
-    ui.radioCalltipsContext1->setChecked( style == "NoContext" );
-    ui.radioCalltipsContext2->setChecked( style == "NoAutoCompletionContext" );
-    ui.radioCalltipsContext3->setChecked( style == "Context" );
+    ui.checkCallTips->setChecked( settings.value("calltipsEnabled", true).toBool());
 
     settings.endGroup();
 }
@@ -64,23 +58,7 @@ void WidgetPropEditorCalltips::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-
-    settings.setValue("calltipsEnabled", ui.groupCallTips->isChecked());
-    settings.setValue("calltipsNoVisible", ui.spinNoOfCalltips->value());
-    
-    if (ui.radioCalltipsContext1->isChecked())
-    {
-        settings.setValue("calltipsStyle", "NoContext");
-    }
-    else if (ui.radioCalltipsContext2->isChecked())
-    {
-        settings.setValue("calltipsStyle", "NoAutoCompletionContext");
-    }
-    else
-    {
-        settings.setValue("calltipsStyle", "Context");
-    }
-
+    settings.setValue("calltipsEnabled", ui.checkCallTips->isChecked());
     settings.endGroup();
 }
 

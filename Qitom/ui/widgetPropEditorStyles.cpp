@@ -530,8 +530,6 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
             entry.m_foregroundColor = styleItem.format().foreground().color();
             entry.m_font = styleItem.format().font();
 
-            ui.listWidget->addItem(entry.m_name);
-
             m_styles.push_back(entry);
         }
     }
