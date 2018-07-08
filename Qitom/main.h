@@ -74,10 +74,10 @@ public:
         }
         catch (...)
         {
-			int type = event ? event->type() : -1;
+            int type = event ? event->type() : -1;
             QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught an exception");
-			qWarning() << "Itom-Application caught an exception from" <<  name << "from event type" << type;
+            qWarning() << "Itom-Application caught an exception from" <<  name << "from event type" << type;
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught");
 #endif
