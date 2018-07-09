@@ -2258,6 +2258,7 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
         const char* calltip;
         const char* tooltip;
         const char* icon;
+        const char* docstring;
 
         for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
         {
@@ -2265,9 +2266,10 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
             
             if (PyTuple_Check(pycompletion))
             {
-                if (PyArg_ParseTuple(pycompletion, "sss", &calltip, &tooltip, &icon))
+                if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
                 {
-                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), QLatin1String(icon)));
+                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), \
+                        QLatin1String(icon), QLatin1String(docstring)));
                 }
                 else
                 {

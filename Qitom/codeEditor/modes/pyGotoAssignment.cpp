@@ -56,7 +56,8 @@ namespace ito {
 PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     WordClickMode("PyGotoAssignment", description, parent),
     m_gotoRequested(false),
-    m_pPythonEngine(NULL)
+    m_pPythonEngine(NULL),
+    m_pActionGoto(NULL)
 {
     qRegisterMetaType<PyAssignment>("PyAssignment");
 
@@ -67,6 +68,9 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     {
         connect(this, SIGNAL(jediDefinitionRequested(QString,int,int,QString,QByteArray)), m_pPythonEngine, SLOT(jediDefinitionRequested(QString,int,int,QString,QByteArray)));
     }
+
+    m_pActionGoto = new QAction(tr("Go To Defintion"), this);
+    connect(m_pActionGoto, SIGNAL(triggered()), this, SLOT(requestGoto()));
 }
 
 //----------------------------------------------------------
@@ -74,9 +78,8 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
 */
 PyGotoAssignmentMode::~PyGotoAssignmentMode()
 {
-
+    m_pActionGoto->deleteLater();
 }
-
 
 
 //----------------------------------------------------------
@@ -89,11 +92,11 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
         WordClickMode::onStateChanged(state);
         if (state)
         {
-
+            editor()->registerContextAction(m_pActionGoto, name());
         }
         else
         {
-
+            editor()->unregisterContextAction(m_pActionGoto, name());
         }
     }
 }
@@ -105,7 +108,7 @@ Request a goto action for the word under the text cursor.
 */
 void PyGotoAssignmentMode::requestGoto()
 {
-    m_gotoRequested =true;
+    m_gotoRequested = true;
     checkWordCursor(QTextCursor());
 }
 

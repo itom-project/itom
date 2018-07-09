@@ -279,6 +279,9 @@ public:
 
     void callWheelEvent(QWheelEvent *e);
 
+    void registerContextAction(QAction *action, const QString &categoryName);
+    void unregisterContextAction(QAction *action, const QString &categoryName);
+
 protected:
 
     CodeEditor &operator =(const CodeEditor &) { return *this; };
@@ -300,7 +303,6 @@ protected:
 
     QTextCursor moveCursorTo(int line) const;
     
-
     virtual void resizeEvent(QResizeEvent *e);
     virtual void closeEvent(QCloseEvent *e);
     virtual void keyPressEvent(QKeyEvent *e);
@@ -317,6 +319,8 @@ protected:
     virtual void focusOutEvent(QFocusEvent *e);
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
+
+    QMap<QString, QList<QAction*> > m_registeredContextActions; //QString is the name of a mode, the action list contains all actions of this mode
 
 private:
     struct FindOptions

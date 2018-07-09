@@ -2221,5 +2221,23 @@ void CodeEditor::redoAvailable(bool available)
     m_redoAvailable = available;
 }
 
+//------------------------------------------------------------
+void CodeEditor::registerContextAction(QAction *action, const QString &categoryName)
+{
+    if (!m_registeredContextActions[categoryName].contains(action))
+    {
+        m_registeredContextActions[categoryName].append(action);
+    }
+}
+
+//------------------------------------------------------------
+void CodeEditor::unregisterContextAction(QAction *action, const QString &categoryName)
+{
+    if (m_registeredContextActions.contains(categoryName))
+    {
+        m_registeredContextActions[categoryName].removeOne(action);
+    }
+}
+
 
 } //end namespace ito

@@ -47,15 +47,17 @@ namespace ito
     struct JediCompletion
     {
         JediCompletion() {};
-        JediCompletion(const QString &name, const QString &tooltip, const QString &icon = QString()) :
+        JediCompletion(const QString &name, const QString &tooltip, const QString &icon = QString(), const QString &docstring = QString()) :
             m_name(name),
             m_tooltip(tooltip),
-            m_icon(icon)
+            m_icon(icon),
+            m_docstring(docstring)
         {}
 
         QString m_name;
         QString m_tooltip;
         QString m_icon;
+        QString m_docstring;
     };
 
     struct JediDefinition

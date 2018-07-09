@@ -598,7 +598,16 @@ void ScriptEditorWidget::contextMenuEvent (QContextMenuEvent * event)
             setCursorPosition(line, index);
         }
 
+        /*QMenu *mnu = new QMenu(this);
+
+        foreach (QAction *a, m_registeredContextActions["PyGotoAssignment"])
+        {
+            mnu->addAction(a);
+        }*/
+
         editorMenu->exec(event->globalPos());
+
+        //DELETE_AND_SET_NULL(mnu);
         break;
     }
 

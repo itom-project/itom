@@ -55,7 +55,7 @@ void WidgetPropEditorAutoCompletion::readSettings()
     ui.spinThreshold->setValue( settings.value("autoComplThreshold", 2).toInt());
 
     int filterMode = qBound(0, settings.value("autoComplFilterMode", 2).toInt(), 2);
-    ui.comboFilterMode->setCurrentIndex(0);
+    ui.comboFilterMode->setCurrentIndex(filterMode);
     
     settings.endGroup();
 }

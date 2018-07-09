@@ -222,7 +222,8 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_lastCursorColumn(-1),
     m_showTooltips(false),
     m_requestId(0),
-    m_lastRequestId(0)
+    m_lastRequestId(0),
+    m_tooltipsMaxLength(200)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
     if (m_pPythonEngine)
@@ -552,6 +553,19 @@ void CodeCompletionMode::setShowTooltips(bool show)
     m_showTooltips = show;
 }
 
+//-------------------------------------------------------------------
+/*
+True to show tooltips next to the current completion.
+*/
+int CodeCompletionMode::tooltipsMaxLength() const
+{
+    return m_tooltipsMaxLength;
+}
+
+void CodeCompletionMode::setTooltipsMaxLength(int length)
+{
+    m_tooltipsMaxLength = length;
+}
 
 
 
@@ -798,12 +812,16 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
         item = new QStandardItem();
         item->setData(name, Qt::DisplayRole);
 
-        if (completion.m_tooltip.isNull() == false)
+        if (completion.m_docstring != "")
+        {
+            m_tooltips[name] = completion.m_docstring;
+        }
+        else if (completion.m_tooltip != "")
         {
             m_tooltips[name] = completion.m_tooltip;
         }
 
-        if (completion.m_icon.isNull() == false)
+        if (completion.m_icon != "")
         {
             icon = QIcon(completion.m_icon);
             //if isinstance(icon, list):
@@ -841,6 +859,10 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
         return;
     }
     QString tooltip = Utils::strip(m_tooltips[completion]);
+    if (tooltip.size() > m_tooltipsMaxLength)
+    {
+        tooltip = tooltip.left(m_tooltipsMaxLength) + tr("...");
+    }
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
     pos.setY(pos.y() - 15);

@@ -106,7 +106,8 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
         result.append( \
             (completion.name, \
             completion.description, \
-            icon_from_typename(completion.name, completion.type)) \
+            icon_from_typename(completion.name, completion.type), \
+            completion.docstring()) \
             )
     return result
 

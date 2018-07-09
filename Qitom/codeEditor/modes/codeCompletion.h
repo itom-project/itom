@@ -151,6 +151,8 @@ public:
     bool showTooltips() const;
     void setShowTooltips(bool show);
 
+    int tooltipsMaxLength() const;
+    void setTooltipsMaxLength(int length);
 
     virtual void onStateChanged(bool state);
     virtual void onInstall(CodeEditor *editor);
@@ -207,6 +209,7 @@ private:
     QStringList m_triggerSymbols;
     int m_triggerLen;
     FilterMode m_filterMode;
+    int m_tooltipsMaxLength;
 };
 
 } //end namespace ito

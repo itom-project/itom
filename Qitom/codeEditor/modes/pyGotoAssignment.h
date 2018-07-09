@@ -114,7 +114,7 @@ private:
     QObject *m_pPythonEngine;
     bool m_gotoRequested;
     QList<PyAssignment> m_definitions;
-
+    QAction *m_pActionGoto;
 
 private slots:
     void requestGoto();
