@@ -1424,8 +1424,7 @@ void ConsoleWidget::moveCursorToEnd()
 {
     if (m_autoWheel)
     {
-        int lastLine = lines() - 1;
-        setCursorPosition(lastLine, lineLength(lastLine));
+        moveCursor(QTextCursor::End);
     }
 }
 
@@ -1862,17 +1861,23 @@ void ConsoleWidget::contextMenuEvent(QContextMenuEvent *e)
     }
 
     if (!menu->isEmpty())
+    {
         menu->addSeparator();
+    }
 
     action = menu->addAction(tr("Select All"), this, SLOT(selectAll()));
     action->setEnabled(length() != 0);
 
-    if (menu)
-    {
-        menu->setAttribute(Qt::WA_DeleteOnClose);
-        menu->popup(e->globalPos());
-    }
+    menu->addSeparator();
+
+    action = menu->addAction(tr("Auto Scroll"), this, SLOT(toggleAutoWheel(bool)));
+    action->setCheckable(true);
+    action->setChecked(m_autoWheel);
+
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    menu->popup(e->globalPos());
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::autoLineDelete()
 {
@@ -1900,6 +1905,14 @@ void ConsoleWidget::autoLineDelete()
         m_cmdQueue = newQueue;
 	}
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::toggleAutoWheel(bool enable)
+{
+    m_autoWheel = enable;
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 DequeCommandList::DequeCommandList(int maxLength)

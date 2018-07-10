@@ -1323,9 +1323,9 @@ void CodeEditor::removeSelectedText()
 //------------------------------------------------------------
 void CodeEditor::append(const QString &text)
 {
-    moveCursor(QTextCursor::End);
-    insertPlainText(text);
-    moveCursor(QTextCursor::End);
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::End);
+    cursor.insertText(text);
 }
 
 //------------------------------------------------------------
