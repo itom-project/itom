@@ -166,7 +166,7 @@ void WorkspaceDockWidget::createActions()
     connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));
     checkToggleUnpack();
 
-    m_actClearAll = new ShortcutAction(QIcon(":/workspace/icons/closeAll.png"), tr("Clear All Varaibles"), this);
+    m_actClearAll = new ShortcutAction(QIcon(":/workspace/icons/closeAll.png"), tr("Clear All Variables"), this);
     m_actClearAll->connectTrigger(this, SLOT(mnuClearAll()));
 }
 
