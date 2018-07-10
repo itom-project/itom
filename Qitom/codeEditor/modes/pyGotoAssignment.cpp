@@ -288,7 +288,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &definitions)
         {
             if (a.m_line >= 0 && a.m_column >= 0)
             {
-                items << QString("%1 (2,%3)").arg(a.m_fullName).arg(a.m_line+1).arg(a.m_column);
+                items << QString("%1 (line %2, column %3)").arg(a.m_fullName).arg(a.m_line+1).arg(a.m_column);
             }
             else
             {
@@ -296,7 +296,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &definitions)
             }
         }
 
-        QString result = QInputDialog::getItem(editor(), tr("Choose a definition"), tr("Choose the definition you want to go to:"), items);
+        QString result = QInputDialog::getItem(editor(), tr("Choose a definition"), tr("Choose the definition you want to go to:"), items, 0, false);
         
         if (result.isNull() == false)
         {
