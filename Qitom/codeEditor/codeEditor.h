@@ -49,6 +49,8 @@
 #include "textDecoration.h"
 #include "syntaxHighlighter/syntaxHighlighterBase.h"
 
+class QMenu;
+
 namespace ito {
 
 struct VisibleBlock
@@ -64,6 +66,7 @@ class DelayJobRunnerBase; //forward declaration
 class ModesManager; //forward declaration
 class SyntaxHighlighterBase; //forward declaration
 class TextBlockUserData;
+
 
 /*
 The editor widget is a simple extension to QPlainTextEdit.
@@ -279,18 +282,17 @@ public:
 
     void callWheelEvent(QWheelEvent *e);
 
-    void registerContextAction(QAction *action, const QString &categoryName);
-    void unregisterContextAction(QAction *action, const QString &categoryName);
+    virtual void addContextAction(QAction *action, const QString &categoryName);
 
 protected:
-
     CodeEditor &operator =(const CodeEditor &) { return *this; };
+
+    QMenu *contextMenu() const { return m_pContextMenu; }
 
     void showTooltipDelayJobRunner(QList<QVariant> args);
 
     void initSettings();
     void initStyle();
-    void initActions(bool createStandardActions);
 
     QString previousLineText() const;
     QString currentLineText() const;    
@@ -302,6 +304,8 @@ protected:
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
     QTextCursor moveCursorTo(int line) const;
+
+    virtual void contextMenuAboutToShow(int contextMenuLine);
     
     virtual void resizeEvent(QResizeEvent *e);
     virtual void closeEvent(QCloseEvent *e);
@@ -314,13 +318,12 @@ protected:
     virtual void showEvent(QShowEvent *e);
     virtual void paintEvent(QPaintEvent *e);
     virtual void wheelEvent(QWheelEvent *e);
+    virtual void contextMenuEvent(QContextMenuEvent *e);
 
     virtual void focusInEvent(QFocusEvent *e);
     virtual void focusOutEvent(QFocusEvent *e);
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
-
-    QMap<QString, QList<QAction*> > m_registeredContextActions; //QString is the name of a mode, the action list contains all actions of this mode
 
 private:
     struct FindOptions
@@ -373,6 +376,8 @@ private:
     bool m_dirty;
     QList<VisibleBlock> m_visibleBlocks;
     QSet<TextBlockUserData*> m_textBlockUserDataList;
+
+    QMenu *m_pContextMenu;
 
     PanelsManager *m_pPanels;
     TextDecorationsManager *m_pDecorations;

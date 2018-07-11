@@ -23,21 +23,15 @@
 #ifndef SCRIPTEDITORWIDGET_H
 #define SCRIPTEDITORWIDGET_H
 
-#define USE_PYQODE 1
-
 #include "../models/breakPointModel.h"
 
-#ifdef USE_PYQODE
-    #include "abstractCodeEditorWidget.h"
-    #include "../codeEditor/panels/foldingPanel.h"
-    #include "../codeEditor/panels/checkerBookmarkPanel.h"
-    #include "../codeEditor/panels/breakpointPanel.h"
-    #include "../codeEditor/modes/errorLineHighlight.h"
-    #include "../codeEditor/modes/pyGotoAssignment.h"
-    #include "../codeEditor/panels/lineNumber.h"
-#else
-    #include "abstractPyScintillaWidget.h"
-#endif
+#include "abstractCodeEditorWidget.h"
+#include "../codeEditor/panels/foldingPanel.h"
+#include "../codeEditor/panels/checkerBookmarkPanel.h"
+#include "../codeEditor/panels/breakpointPanel.h"
+#include "../codeEditor/modes/errorLineHighlight.h"
+#include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/panels/lineNumber.h"
 
 #include "../global.h"
 
@@ -51,15 +45,7 @@
 #include <qsharedpointer.h>
 #include "../models/classNavigatorItem.h"
 
-#if QT_VERSION >= 0x050000
-    #include <QtPrintSupport/qprinter.h>
-#else
-    #include <qprinter.h>
-#endif
-
-#ifndef USE_PYQODE
-    #include <Qsci/qsciprinter.h>
-#endif
+#include <QtPrintSupport/qprinter.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -85,22 +71,14 @@ Q_DECLARE_METATYPE(QList<ito::ScriptEditorStorage>) //must be outside of namespa
 namespace ito
 {
 
-#ifdef USE_PYQODE
-    class ScriptEditorWidget : public AbstractCodeEditorWidget
-#else
-    class ScriptEditorWidget : public AbstractPyScintillaWidget
-#endif
+
+class ScriptEditorWidget : public AbstractCodeEditorWidget
 {
     Q_OBJECT
 
 public:
     ScriptEditorWidget(QWidget* parent = NULL);
     ~ScriptEditorWidget();
-
-#ifndef USE_PYQODE
-    bool m_errorMarkerVisible;
-    int m_errorMarkerNr; //number of indicator which marks the line with current erro
-#endif
 
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
@@ -126,25 +104,21 @@ public:
     RetVal gotoNextBookmark();
     RetVal gotoPreviousBookmark();
 
-#ifdef USE_PYQODE
     virtual bool removeTextBlockUserData(TextBlockUserData* userData);
-#endif
 
 protected:
-    //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
-
-#ifndef USE_PYQODE
-    void autoAdaptLineNumberColumnWidth();
-#endif
 
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
-private:
+    virtual void contextMenuAboutToShow(int contextMenuLine);
 
+    virtual void addContextAction(QAction *action, const QString &categoryName);
+
+private:
     enum markerType
     {   
         markerBookmark = 1,
@@ -153,13 +127,8 @@ private:
     };
 
     RetVal initEditor();
-
-    void contextMenuEvent (QContextMenuEvent * event);
-
-    int getMarginNumber(int xPos);
-
-    RetVal initMenus();
-
+    void initMenus();
+    
     bool lineAcceptsBPs(int line);
 
     RetVal changeFilename(const QString &newFilename);
@@ -167,62 +136,15 @@ private:
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex fileSystemWatcherMutex;
 
-#ifndef USE_PYQODE
-    //!< marker handling
-    struct BookmarkErrorEntry
-    {
-        int handle;
-        int type; //entry of enum markerType
-        QString errorMessage;
-        QString errorComment;
-        int errorPos;
-    };
-    QList<BookmarkErrorEntry> bookmarkErrorHandles;
-    int syntaxErrorHandle;
-#endif
-
     bool m_syntaxCheckerEnabled;
     int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
 
-#ifndef USE_PYQODE
-    struct BPMarker
-    {
-        int bpHandle;
-        int lineNo;
-        bool markedForDeletion;
-    };
-
-    QList<BPMarker> m_breakPointMap; //!< <int bpHandle, int lineNo>
-
-    unsigned int markBreakPoint;
-    unsigned int markCBreakPoint;
-    unsigned int markBreakPointDisabled;
-    unsigned int markCBreakPointDisabled;
-    unsigned int markBookmark;
-    unsigned int markSyntaxError;
-    unsigned int markBookmarkSyntaxError;
-
-    unsigned int markCurrentLine;
-    int markCurrentLineHandle;
-
-    unsigned int markMask1;
-    unsigned int markMask2;
-    unsigned int markMaskBreakpoints;
-#endif
-
     //!< menus
-#ifndef USE_PYQODE
-    QMenu *bookmarkMenu;
-#endif
-    QMenu *breakpointMenu;
-    QMenu *editorMenu;
+    QMenu *m_contextMenu;
 
     std::map<QString,QAction*> bookmarkMenuActions;
-    std::map<QString,QAction*> breakpointMenuActions;
-    std::map<QString,QAction*> editorMenuActions;
-
-    int contextMenuLine;
+    std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
     int unnamedNumber;
@@ -232,14 +154,12 @@ private:
 
     bool canCopy;
 
-#ifdef USE_PYQODE
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
     QSharedPointer<BreakpointPanel> m_breakpointPanel;
     QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
-#endif
 
     static const QString lineBreak;
     static int unnamedAutoIncrement;
@@ -269,20 +189,6 @@ public slots:
     void syntaxCheckResult(QString a, QString b);
     void errorListChange(const QStringList &errorList);
 
-#ifndef USE_PYQODE
-    void menuToggleBookmark();
-    void menuClearAllBookmarks();
-    void menuGotoNextBookmark();
-    void menuGotoPreviousBookmark();
-
-    void menuToggleBreakpoint();
-    void menuToggleEnableBreakpoint();
-    void menuEditBreakpoint();
-    void menuClearAllBreakpoints();
-    void menuGotoNextBreakPoint();
-    void menuGotoPreviousBreakPoint();
-#endif
-
     void menuCut();
     void menuCopy();
     void menuPaste();
@@ -291,9 +197,7 @@ public slots:
     void menuComment();
     void menuUncomment();
 
-#ifdef USE_PYQODE
     void menuFoldAll();
-#endif
     void menuUnfoldAll();
     void menuFoldUnfoldToplevel();
     void menuFoldUnfoldAll();
@@ -320,8 +224,6 @@ public slots:
     void print();
 
 private slots:
-
-#ifdef USE_PYQODE
     void toggleBookmarkRequested(int line);
     void gotoBookmarkRequested(bool next);
     void clearAllBookmarksRequested();
@@ -334,9 +236,6 @@ private slots:
     RetVal gotoPreviousBreakPoint();
 
     void gotoAssignmentOutOfDoc(PyAssignment ref);
-#else
-    void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
-#endif
 
     void copyAvailable(const bool yes);
 
@@ -344,22 +243,9 @@ private slots:
 
     void nrOfLinesChanged();
 
-    RetVal preShowContextMenuMargin();
-    RetVal preShowContextMenuEditor();
-
     void fileSysWatcherFileChanged ( const QString & path );
     void printPreviewRequested(QPrinter *printer);
 };
-
-#ifndef USE_PYQODE
-    class ScriptEditorPrinter : public QsciPrinter
-    {
-    public:
-
-    ScriptEditorPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
-    virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
-};
-#endif
 
 } //end namespace ito
 

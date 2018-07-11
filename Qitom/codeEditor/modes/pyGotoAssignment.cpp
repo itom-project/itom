@@ -69,7 +69,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
         connect(this, SIGNAL(jediDefinitionRequested(QString,int,int,QString,QByteArray)), m_pPythonEngine, SLOT(jediDefinitionRequested(QString,int,int,QString,QByteArray)));
     }
 
-    m_pActionGoto = new QAction(tr("Go To Defintion"), this);
+    m_pActionGoto = new QAction(tr("Go To Definition"), this);
     connect(m_pActionGoto, SIGNAL(triggered()), this, SLOT(requestGoto()));
 }
 
@@ -92,11 +92,12 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
         WordClickMode::onStateChanged(state);
         if (state)
         {
-            editor()->registerContextAction(m_pActionGoto, name());
+            editor()->addContextAction(m_pActionGoto, name());
+            m_pActionGoto->setVisible(true);
         }
         else
         {
-            editor()->unregisterContextAction(m_pActionGoto, name());
+            m_pActionGoto->setVisible(false);
         }
     }
 }

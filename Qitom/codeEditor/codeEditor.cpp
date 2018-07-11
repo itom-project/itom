@@ -43,6 +43,7 @@
 #include <qtextdocument.h>
 #include <qdebug.h>
 #include <qpainter.h>
+#include <qmenu.h>
 
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
@@ -80,7 +81,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_showIndentationGuides(true),
     m_indentationGuidesColor(Qt::darkGray),
     m_redoAvailable(false),
-    m_undoAvailable(false)
+    m_undoAvailable(false),
+    m_pContextMenu(NULL)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -105,6 +107,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700);
 
+    m_pContextMenu = new QMenu(this);
+
     initStyle();
 }
 
@@ -128,6 +132,9 @@ CodeEditor::~CodeEditor()
     m_pTooltipsRunner->cancelRequests();
     delete m_pTooltipsRunner;
     m_pTooltipsRunner = NULL;
+
+    delete m_pContextMenu;
+    m_pContextMenu = NULL;
 }
 
 //-----------------------------------------------------------
@@ -532,12 +539,6 @@ void CodeEditor::initStyle()
     m_selForeground = app->palette().highlightedText().color();
     m_fontSize = 10;
     setFontName("");
-}
-
-//-----------------------------------------------------------
-void CodeEditor::initActions(bool createStandardActions)
-{
-    //todo
 }
 
 //-----------------------------------------------------------
@@ -2222,21 +2223,27 @@ void CodeEditor::redoAvailable(bool available)
 }
 
 //------------------------------------------------------------
-void CodeEditor::registerContextAction(QAction *action, const QString &categoryName)
+void CodeEditor::addContextAction(QAction *action, const QString &/*categoryName*/)
 {
-    if (!m_registeredContextActions[categoryName].contains(action))
+    m_pContextMenu->addAction(action);
+}
+
+//------------------------------------------------------------
+void CodeEditor::contextMenuEvent(QContextMenuEvent *e)
+{
+    if (m_showCtxMenu)
     {
-        m_registeredContextActions[categoryName].append(action);
+        e->accept();
+        int line, index;
+        lineIndexFromPosition(e->pos(), &line, &index);
+        contextMenuAboutToShow(line);
+        m_pContextMenu->exec(e->globalPos());
     }
 }
 
 //------------------------------------------------------------
-void CodeEditor::unregisterContextAction(QAction *action, const QString &categoryName)
+void CodeEditor::contextMenuAboutToShow(int contextMenuLine)
 {
-    if (m_registeredContextActions.contains(categoryName))
-    {
-        m_registeredContextActions[categoryName].removeOne(action);
-    }
 }
 
 
