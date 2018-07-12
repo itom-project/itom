@@ -79,7 +79,9 @@ void AbstractCodeEditorWidget::init()
     m_calltipsMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode"));
     modes()->append(Mode::Ptr(m_calltipsMode.dynamicCast<Mode>()));
 
-    modes()->append(Mode::Ptr(new PyAutoIndentMode("PyAutoIndentMode")));
+    m_pyAutoIndentMode = QSharedPointer<PyAutoIndentMode>(new PyAutoIndentMode("PyAutoIndentMode"));
+    modes()->append(Mode::Ptr(m_pyAutoIndentMode.dynamicCast<Mode>()));
+
     modes()->append(Mode::Ptr(new IndenterMode("IndenterMode")));
 
     m_symbolMatcher = QSharedPointer<SymbolMatcherMode>(new SymbolMatcherMode("SymbolMatcherMode"));

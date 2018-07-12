@@ -323,6 +323,7 @@ void CodeCompletionMode::handleCompleterEvents(QKeyEvent *e)
         (nav_key && ctrl))
     {
         resetSyncData();
+        e->accept();
     }
     // move into list
     else if (e->key() == Qt::Key_Home)

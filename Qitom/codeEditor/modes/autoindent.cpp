@@ -43,7 +43,8 @@ namespace ito {
 
 AutoIndentMode::AutoIndentMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     Mode(name, description),
-    QObject(parent)
+    QObject(parent),
+    m_keyPressedModifiers()
 {
 }
 
@@ -84,6 +85,18 @@ QPair<QString, QString> AutoIndentMode::getIndent(const QTextCursor &cursor) con
     return QPair<QString,QString>("", indent);
 }
 
+//---------------------------------------------------------
+void AutoIndentMode::setKeyPressedModifiers(Qt::KeyboardModifiers modifiers)
+{
+    m_keyPressedModifiers = modifiers;
+}
+
+//---------------------------------------------------------
+Qt::KeyboardModifiers AutoIndentMode::keyPressedModifiers() const
+{
+    return m_keyPressedModifiers;
+}
+
 //----------------------------------------------------------
 /*
 Auto indent if the released key is the return key.
@@ -93,7 +106,7 @@ void AutoIndentMode::onKeyPressed(QKeyEvent *e)
 {
     if (!e->isAccepted())
     {
-        if ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter))
+        if (e->modifiers() == m_keyPressedModifiers && ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)))
         {
             QTextCursor cursor = editor()->textCursor();
             QPair<QString,QString> pre_post = getIndent(cursor);

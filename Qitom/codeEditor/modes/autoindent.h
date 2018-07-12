@@ -68,11 +68,19 @@ public:
 
     virtual void onStateChanged(bool state);
 
+    void setKeyPressedModifiers(Qt::KeyboardModifiers modifiers);
+    Qt::KeyboardModifiers keyPressedModifiers() const;
+
 private slots:
     void onKeyPressed(QKeyEvent *e);
 
+
+
 protected:
     virtual QPair<QString, QString> getIndent(const QTextCursor &cursor) const;
+
+private:
+    Qt::KeyboardModifiers m_keyPressedModifiers;
 
 };
 

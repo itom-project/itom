@@ -163,6 +163,8 @@ RetVal ConsoleWidget::initEditor()
     m_markInputLineMode = QSharedPointer<LineBackgroundMarkerMode>(new LineBackgroundMarkerMode("MarkInputLineMode", QColor(179, 222, 171)));
     modes()->append(m_markInputLineMode.dynamicCast<ito::Mode>());
 
+    m_pyAutoIndentMode->setKeyPressedModifiers(Qt::ShiftModifier);
+
     /*m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());*/
@@ -397,7 +399,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!> reimplementation to process the keyReleaseEvent
-void ConsoleWidget::keyPressEvent(QKeyEvent* event)
+bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
 {
     int key = event->key();
     Qt::KeyboardModifiers modifiers = event->modifiers();
@@ -410,7 +412,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         if (m_inputStreamWaitCond)
         {
             m_markInputLineMode->clearAllMarkers();
-            m_caretLineHighlighter->setEnabled(true);
             m_caretLineHighlighter->setEnabled(true);
             //TODO: setCaretLineVisible(true);
             m_inputStreamBuffer->clear();
@@ -850,7 +851,8 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
         if (acceptEvent && forwardEvent)
         {
-            AbstractCodeEditorWidget::keyPressEvent(event);
+            event->ignore();
+            //AbstractCodeEditorWidget::keyPressEvent(event);
         }
         else if (!acceptEvent)
         {
@@ -865,6 +867,8 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
     {
         event->ignore();
     }
+
+    return forwardEvent;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------

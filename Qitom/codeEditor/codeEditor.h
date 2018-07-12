@@ -325,6 +325,8 @@ protected:
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
 
+    virtual bool keyPressInternalEvent(QKeyEvent *e) { return true; };
+
 private:
     struct FindOptions
     {

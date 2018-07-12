@@ -664,8 +664,17 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
     e->ignore();
     emit keyPressed(e);
     bool state = e->isAccepted();
+    bool forward = false;
+
     if (!e->isAccepted())
     {
+        forward = keyPressInternalEvent(e);
+    }
+
+    if (!e->isAccepted() && forward)
+    {
+        forward = false;
+
         if (e->key() == Qt::Key_Tab && e->modifiers() == \
             Qt::NoModifier)
         {
@@ -693,8 +702,16 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         {
             e->setAccepted(initial_state);
             QPlainTextEdit::keyPressEvent(e);
+            
         }
     }
+
+    if (forward)
+    {
+        e->setAccepted(initial_state);
+        QPlainTextEdit::keyPressEvent(e);
+    }
+
     bool new_state = e->isAccepted();
     e->setAccepted(state);
     emit postKeyPressed(e);
