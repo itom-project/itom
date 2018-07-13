@@ -455,12 +455,28 @@ QString any(const QString &name, const QStringList &alternates)
     QString comment = any("comment", QStringList("#[^\\n]*"));
     QString instance = any("instance", QStringList("\\bself\\b") << "\\bcls\\b");
     QString decorator = any("decorator",  QStringList("@\\w*") << ".setter");
+
+    /*QString number = any("number", QStringList() << \
+        "\\b[+-]?[0-9]+[lLjJ]?\\b" <<
+        "\\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\\b" <<
+        "\\b[+-]?0[oO][0-7]+[lL]?\\b" <<
+        "\\b[+-]?0[bB][01]+[lL]?\\b" <<
+        "\\b[+-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b");*/ //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
+
+    //some fixes: 1. numbers with postfix l or L does not exist any more in python 3;
+    // 2. the order of the following number entries is relevant
+    // 3. if dots are included in the regex, no \\b can be used, since the dot is also a word boundary
     QString number = any("number", QStringList() << \
-                 "\\b[+-]?[0-9]+[lLjJ]?\\b" <<
-                  "\\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\\b" <<
-                  "\\b[+-]?0[oO][0-7]+[lL]?\\b" <<
-                  "\\b[+-]?0[bB][01]+[lL]?\\b" <<
-                  "\\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b");
+                "\\b0[xX][0-9A-Fa-f]+\\b" <<
+                "\\b0[oO][0-7]+\\b" <<
+                "\\b0[bB][01]+\\b" <<
+                "[\\+\\-]0[xX][0-9A-Fa-f]+\\b" <<
+                "[\\+\\-]0[oO][0-7]+\\b" <<
+                "[\\+\\-]0[bB][01]+\\b" <<
+                "[\\+\\-]?\\.[0-9]+(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+                "[\\+\\-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+                "[0-9]+[jJ]?\\b" <<
+                "[\\+\\-][0-9]+[jJ]?\\b"     ); //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
     QString sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";
@@ -482,7 +498,9 @@ QString any(const QString &name, const QStringList &alternates)
     QStringList all;
     all << instance << decorator << kw << kw_namespace << builtin << word_operators << builtin_fct << comment;
     all << ufstring1 << ufstring2 << ufstring3 << ufstring4 << string << number << any("SNYC", QStringList("\\n"));
-    regExpressions["all"] = QQRegExp(all.join("|"));
+    QQRegExp regExp = QQRegExp(all.join("|"));
+    //regExp.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    regExpressions["all"] = regExp;
 #else
     regExpressions["instance"] = QQRegExp(instance);
     regExpressions["decorator"] = QQRegExp(decorator);
