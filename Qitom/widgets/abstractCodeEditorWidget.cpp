@@ -71,6 +71,8 @@ void AbstractCodeEditorWidget::init()
     OccurrencesHighlighterMode *occHighlighterMode = new OccurrencesHighlighterMode("OccurrencesHighlighterMode");
     occHighlighterMode->setBackground(Qt::green);
     occHighlighterMode->setCaseSensitive(true);
+    occHighlighterMode->setSelectOnDoubleClick(true);
+    occHighlighterMode->setDelay(100);
     modes()->append(Mode::Ptr(occHighlighterMode));
 
     m_codeCompletionMode = QSharedPointer<CodeCompletionMode>(new CodeCompletionMode("CodeCompletionMode"));
@@ -222,6 +224,42 @@ void AbstractCodeEditorWidget::loadSettings()
         StyleItem &item = m_editorStyle->at(styleType);
         defaultFormat =  defaultStyle[styleType].format();
         currentFormat = item.format();
+
+        if (styleType == StyleItem::KeyDefault)
+        {
+            bool changed = false;
+            if (item.isValid())
+            {
+                if (fontName() != currentFormat.fontFamily())
+                {
+                    setFontName(currentFormat.fontFamily());
+                    changed = true;
+                }
+                if (fontSize() != currentFormat.fontPointSize())
+                {
+                    setFontSize(currentFormat.fontPointSize());
+                    changed = true;
+                }
+            }
+            else
+            {
+                if (fontName() != defaultFormat.fontFamily())
+                {
+                    setFontName(defaultFormat.fontFamily());
+                    changed = true;
+                }
+                if (fontSize() != defaultFormat.fontPointSize())
+                {
+                    setFontSize(defaultFormat.fontPointSize());
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                resetStylesheet();
+            }
+        }
 
         if (item.isValid())
         {

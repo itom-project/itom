@@ -407,6 +407,17 @@ void CodeEditor::setFontName(const QString& value)
 }
 
 //-----------------------------------------------------------
+int CodeEditor::fontSize() const
+{
+    return m_fontSize;
+}
+
+void CodeEditor::setFontSize(int fontSize)
+{
+    m_fontSize = fontSize;
+}
+
+//-----------------------------------------------------------
 int CodeEditor::zoomLevel() const
 {
     return m_zoomLevel;
@@ -1677,7 +1688,7 @@ QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QTextCursor CodeEditor::wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const
+QTextCursor CodeEditor::wordUnderCursor(const QTextCursor &cursor, bool selectWholeWord) const
 {
     QTextCursor text_cursor = cursor;
     int endPos, startPos;
@@ -1728,6 +1739,7 @@ QTextCursor CodeEditor::wordUnderCursor(QTextCursor cursor, bool selectWholeWord
     //now that we habe the boundaries, we can select the text
     text_cursor.setPosition(startPos);
     text_cursor.setPosition(endPos, QTextCursor::KeepAnchor);
+
     return text_cursor;
 }
 
@@ -2237,12 +2249,6 @@ void CodeEditor::undoAvailable(bool available)
 void CodeEditor::redoAvailable(bool available)
 {
     m_redoAvailable = available;
-}
-
-//------------------------------------------------------------
-void CodeEditor::addContextAction(QAction *action, const QString &/*categoryName*/)
-{
-    m_pContextMenu->addAction(action);
 }
 
 //------------------------------------------------------------

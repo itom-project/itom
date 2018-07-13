@@ -40,6 +40,8 @@
 
 #include <qstring.h>
 #include <qsharedpointer.h>
+#include <qaction.h>
+#include <qlist.h>
 
 namespace ito {
 
@@ -87,6 +89,8 @@ public:
 
     inline CodeEditor *editor() const { return m_editor; }
     bool onClose() const { return m_onClose; }
+
+    virtual QList<QAction*> actions() const { return QList<QAction*>(); }
 
 private:
     QString m_name;

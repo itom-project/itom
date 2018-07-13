@@ -116,8 +116,6 @@ protected:
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
 
-    virtual void addContextAction(QAction *action, const QString &categoryName);
-
 private:
     enum markerType
     {   

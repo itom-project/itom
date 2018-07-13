@@ -78,9 +78,14 @@ public:
     bool wholeWord() const;
     void setWholeWord(bool value);
 
+    bool selectOnDoubleClick() const;
+    void setSelectOnDoubleClick(bool value);
+
     virtual void onStateChanged(bool state);
 
 private slots:
+    void requestHighlightPosChanged();
+    void requestHighlightDoubleClick();
     void requestHighlight();
     void sendRequest();
     void onResultsAvailable(QList<QPair<int,int> > results);
@@ -97,6 +102,7 @@ protected:
     bool m_caseSensitive;
     QString m_sub;
     bool m_wholeWord;
+    bool m_selectOnDoubleClick;
 
     QList<TextDecoration::Ptr> m_decorations;
 

@@ -82,8 +82,8 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     connect(m_classNavigatorTimer, SIGNAL(timeout()), this, SLOT(classNavTimerElapsed()));
     m_classNavigatorTimer->setInterval(2000);
     
-    initMenus();
     initEditor();
+    initMenus();
 
     m_pFileSysWatcher = new QFileSystemWatcher(this);
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
@@ -306,6 +306,10 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
     editorMenu->addSeparator();
 
+    editorMenu->addActions(m_pyGotoAssignmentMode->actions());
+
+    editorMenu->addSeparator();
+
     QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
     m_editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
     m_editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
@@ -378,21 +382,6 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["insertCodec"]->setEnabled(!pythonBusy);   
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::addContextAction(QAction *action, const QString &categoryName)
-{
-    if (m_pyGotoAssignmentMode && categoryName == m_pyGotoAssignmentMode->name())
-    {
-        QMenu *menu = contextMenu();
-        menu->insertAction(bookmarkMenuActions["clearAllBM"], action);
-        menu->addSeparator();
-    }
-    else
-    {
-        AbstractCodeEditorWidget::addContextAction(action, categoryName);
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

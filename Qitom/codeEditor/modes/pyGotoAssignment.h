@@ -101,12 +101,13 @@ public:
 
     virtual void onStateChanged(bool state);
 
+    virtual QList<QAction*> actions() const;
+
 protected:
     void doGoto(const PyAssignment &definition);
     virtual void checkWordCursor(const QTextCursor &cursor);
     QList<PyAssignment> unique(const QList<PyAssignment> &definitions) const;
     virtual void clearSelection();
-    bool validateDefinitions(const QList<PyAssignment> &definitions) const;
     void performGoto(const QList<PyAssignment> &definitions);
 
 

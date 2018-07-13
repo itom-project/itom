@@ -47,6 +47,7 @@
 #include "python/pythonEngine.h"
 
 #include <qinputdialog.h>
+#include <qmessagebox.h>
 
 namespace ito {
 
@@ -81,6 +82,14 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
     m_pActionGoto->deleteLater();
 }
 
+//----------------------------------------------------------
+/*
+*/
+/*virtual*/ QList<QAction*> PyGotoAssignmentMode::actions() const
+{
+    return (QList<QAction*>() << m_pActionGoto);
+}
+
 
 //----------------------------------------------------------
 /*
@@ -92,7 +101,6 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
         WordClickMode::onStateChanged(state);
         if (state)
         {
-            editor()->addContextAction(m_pActionGoto, name());
             m_pActionGoto->setVisible(true);
         }
         else
@@ -110,7 +118,7 @@ Request a goto action for the word under the text cursor.
 void PyGotoAssignmentMode::requestGoto()
 {
     m_gotoRequested = true;
-    checkWordCursor(QTextCursor());
+    checkWordCursor(editor()->wordUnderMouseCursor());
 }
 
 //--------------------------------------------------------------
@@ -118,14 +126,15 @@ void PyGotoAssignmentMode::requestGoto()
 */
 void PyGotoAssignmentMode::onJediDefinitionResultsAvailable(QVector<ito::JediDefinition> definitions)
 {
-    //_logger().debug("Got %r" % definitions)
+    QApplication::restoreOverrideCursor();
+
     foreach (const ito::JediDefinition &d, definitions)
     {
         m_definitions.append(PyAssignment(d.m_path, d.m_line, d.m_column, d.m_fullName));
     }
 
     m_definitions = unique(m_definitions);
-    if (validateDefinitions(m_definitions))
+    if (m_definitions.size() >= 1)
     {
         if (m_gotoRequested)
         {
@@ -139,6 +148,11 @@ void PyGotoAssignmentMode::onJediDefinitionResultsAvailable(QVector<ito::JediDef
     }
     else
     {
+        if (m_gotoRequested)
+        {
+            QMessageBox::information(editor(), tr("No definition found"), tr("No definition could be found."));
+        }
+
         clearSelection();
         editor()->setMouseCursor(Qt::IBeamCursor);
     }
@@ -206,6 +220,7 @@ void PyGotoAssignmentMode::checkWordCursor(const QTextCursor &cursor)
     {
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
             emit jediDefinitionRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "onJediDefinitionResultsAvailable");
         }
         else
@@ -257,29 +272,30 @@ void PyGotoAssignmentMode::clearSelection()
 //--------------------------------------------------------------
 /*
 */
-bool PyGotoAssignmentMode::validateDefinitions(const QList<PyAssignment> &definitions) const
-{
-    switch (definitions.size())
-    {
-    case 0:
-        return false;
-    case 1:
-        return definitions[0].m_line >= 0;
-    default:
-        return true;
-    }
-}
-
-//--------------------------------------------------------------
-/*
-*/
 void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &definitions)
 {
-    if (definitions.size() == 1)
+    int numUnreachables = 0;
+
+    foreach (const PyAssignment& a, definitions)
     {
-        doGoto(definitions[0]);
+        if (a.m_line < 0)
+        {
+            numUnreachables++;
+        }
     }
-    else if (definitions.size() > 1)
+
+    if ((definitions.size() - numUnreachables) == 1)
+    {
+        for (int i = 0; i < definitions.size(); ++i)
+        {
+            if (definitions[i].m_line >= 0)
+            {
+                doGoto(definitions[i]);
+                break;
+            }
+        }
+    }
+    else if ((definitions.size() - numUnreachables) > 1)
     {
         /*_logger().debug(
             "More than 1 assignments in different modules, user "
@@ -291,7 +307,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &definitions)
             {
                 items << QString("%1 (line %2, column %3)").arg(a.m_fullName).arg(a.m_line+1).arg(a.m_column);
             }
-            else
+            else if (a.m_line >= 0)
             {
                 items << a.m_fullName;
             }
@@ -304,6 +320,14 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &definitions)
             int idx = items.indexOf(result);
             doGoto(definitions[idx]);
         }
+    }
+    else if (numUnreachables > 0)
+    {
+         QMessageBox::information(editor(), tr("Source of definition not reachable"), tr("The source of this definition is not reachable."));
+    }
+    else if (definitions.size() == 0)
+    {
+        QMessageBox::information(editor(), tr("No definition found"), tr("No definition could be found."));
     }
 }
 

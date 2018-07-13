@@ -64,8 +64,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_autoWheel(true)
 {
     qDebug("console widget start constructor");
-    initMenus();
+
     initEditor();
+    initMenus();
 
     loadSettings();
 

@@ -135,6 +135,9 @@ public:
     QString fontName() const;
     void setFontName(const QString& value);
 
+    int fontSize() const;
+    void setFontSize(int fontSize);
+
     int zoomLevel() const;
     void setZoomLevel(int value);
 
@@ -266,7 +269,7 @@ public:
     bool isNumber(const QTextBlock &block) const;
 
     QTextCursor wordUnderCursor(bool selectWholeWord) const;
-    QTextCursor wordUnderCursor(QTextCursor cursor, bool selectWholeWord) const;
+    QTextCursor wordUnderCursor(const QTextCursor &cursor, bool selectWholeWord) const;
     QString wordAtPosition(int line, int index, bool selectWholeWord) const;
     QTextCursor wordUnderMouseCursor() const;
 
@@ -281,8 +284,6 @@ public:
     bool breakpointsAvailable() const;
 
     void callWheelEvent(QWheelEvent *e);
-
-    virtual void addContextAction(QAction *action, const QString &categoryName);
 
 protected:
     CodeEditor &operator =(const CodeEditor &) { return *this; };

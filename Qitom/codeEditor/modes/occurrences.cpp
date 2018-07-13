@@ -54,7 +54,8 @@ OccurrencesHighlighterMode::OccurrencesHighlighterMode(const QString &descriptio
     m_foreground(QColor("magenta")),
     m_underlined(false),
     m_caseSensitive(false),
-    m_wholeWord(true)
+    m_wholeWord(true),
+    m_selectOnDoubleClick(false)
 {
     // Timer used to run the search request with a specific delay
     m_pTimer = new DelayJobRunnerNoArgs<OccurrencesHighlighterMode, void(OccurrencesHighlighterMode::*)()>(1000);
@@ -166,17 +167,60 @@ void OccurrencesHighlighterMode::setCaseSensitive(bool value)
 //----------------------------------------------------------
 /*
 */
+bool OccurrencesHighlighterMode::selectOnDoubleClick() const
+{
+    return m_selectOnDoubleClick;
+}
+
+void OccurrencesHighlighterMode::setSelectOnDoubleClick(bool value)
+{
+    if (m_selectOnDoubleClick != value)
+    {
+        m_selectOnDoubleClick = value;
+    }
+}
+
+//----------------------------------------------------------
+/*
+*/
 void OccurrencesHighlighterMode::onStateChanged(bool state)
 {
     if (state)
     {
-        connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlight()));
+        connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlightPosChanged()));
+        connect(editor(), SIGNAL(mouseDoubleClicked(QMouseEvent*)), this, SLOT(requestHighlightDoubleClick()));
     }
     else
     {
-        disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlight()));
+        disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(requestHighlightPosChanged()));
+        disconnect(editor(), SIGNAL(mouseDoubleClicked(QMouseEvent*)), this, SLOT(requestHighlightDoubleClick()));
         m_pTimer->cancelRequests();
     }       
+}
+
+//----------------------------------------------------------
+void OccurrencesHighlighterMode::requestHighlightPosChanged()
+{
+    if (!m_selectOnDoubleClick)
+    {
+        requestHighlight();
+    }
+    else if (m_decorations.size() > 0)
+    {
+        m_pTimer->cancelRequests();
+        clearDecorations();
+        m_sub = "";
+    }
+}
+
+//----------------------------------------------------------
+void OccurrencesHighlighterMode::requestHighlightDoubleClick()
+{
+    if (m_selectOnDoubleClick)
+    {
+        m_pTimer->cancelRequests();
+        requestHighlight();
+    }
 }
 
 //----------------------------------------------------------
