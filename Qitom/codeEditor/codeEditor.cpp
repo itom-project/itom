@@ -110,6 +110,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_pContextMenu = new QMenu(this);
 
     initStyle();
+    resetStylesheet();
 }
 
 //-----------------------------------------------------------
@@ -215,8 +216,11 @@ QColor CodeEditor::background() const
 
 void CodeEditor::setBackground(const QColor &value)
 {
-    m_background = value;
-    resetStylesheet();
+    if (m_background != value)
+    {
+        m_background = value;
+        resetStylesheet();
+    }
 }
 
 //-----------------------------------------------------------
@@ -230,8 +234,11 @@ QColor CodeEditor::foreground() const
 
 void CodeEditor::setForeground(const QColor &value)
 {
-    m_foreground = value;
-    resetStylesheet();
+    if (m_foreground != value)
+    {
+        m_foreground = value;
+        resetStylesheet();
+    }
 }
 
 //-----------------------------------------------------------
@@ -245,8 +252,11 @@ QColor CodeEditor::selectionForeground() const
 
 void CodeEditor::setSelectionForeground(const QColor &value)
 {
-    m_selForeground = value;
-    resetStylesheet();
+    if (m_selForeground != value)
+    {
+        m_selForeground = value;
+        resetStylesheet();
+    }
 }
 
 //-----------------------------------------------------------
@@ -260,8 +270,11 @@ QColor CodeEditor::selectionBackground() const
 
 void CodeEditor::setSelectionBackground(const QColor &value)
 {
-    m_selBackground = value;
-    resetStylesheet();
+    if (m_selBackground != value)
+    {
+        m_selBackground = value;
+        resetStylesheet();
+    }
 }
 
 //-----------------------------------------------------------

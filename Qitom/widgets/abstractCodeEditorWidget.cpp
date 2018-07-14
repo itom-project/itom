@@ -225,42 +225,6 @@ void AbstractCodeEditorWidget::loadSettings()
         defaultFormat =  defaultStyle[styleType].format();
         currentFormat = item.format();
 
-        if (styleType == StyleItem::KeyDefault)
-        {
-            bool changed = false;
-            if (item.isValid())
-            {
-                if (fontName() != currentFormat.fontFamily())
-                {
-                    setFontName(currentFormat.fontFamily());
-                    changed = true;
-                }
-                if (fontSize() != currentFormat.fontPointSize())
-                {
-                    setFontSize(currentFormat.fontPointSize());
-                    changed = true;
-                }
-            }
-            else
-            {
-                if (fontName() != defaultFormat.fontFamily())
-                {
-                    setFontName(defaultFormat.fontFamily());
-                    changed = true;
-                }
-                if (fontSize() != defaultFormat.fontPointSize())
-                {
-                    setFontSize(defaultFormat.fontPointSize());
-                    changed = true;
-                }
-            }
-
-            if (changed)
-            {
-                resetStylesheet();
-            }
-        }
-
         if (item.isValid())
         {
             settings.beginGroup("PythonLexerStyle" + QString().setNum(item.type()));
@@ -323,6 +287,38 @@ void AbstractCodeEditorWidget::loadSettings()
             }
 
             settings.endGroup();
+        }
+
+        if (styleType == StyleItem::KeyDefault)
+        {
+            currentFormat = item.format();
+
+            if (item.isValid())
+            {
+                if (fontName() != currentFormat.fontFamily())
+                {
+                    setFontName(currentFormat.fontFamily());
+                    updateSyntaxHighlighter = true;
+                }
+                if (fontSize() != currentFormat.fontPointSize())
+                {
+                    setFontSize(currentFormat.fontPointSize());
+                    updateSyntaxHighlighter = true;
+                }
+            }
+            else
+            {
+                if (fontName() != defaultFormat.fontFamily())
+                {
+                    setFontName(defaultFormat.fontFamily());
+                    updateSyntaxHighlighter = true;
+                }
+                if (fontSize() != defaultFormat.fontPointSize())
+                {
+                    setFontSize(defaultFormat.fontPointSize());
+                    updateSyntaxHighlighter = true;
+                }
+            }
         }
     }
 
