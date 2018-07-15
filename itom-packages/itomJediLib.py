@@ -103,12 +103,16 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
     completions = script.completions()
     result = []
     for completion in completions:
-        result.append( \
-            (completion.name, \
-            completion.description, \
-            icon_from_typename(completion.name, completion.type), \
-            completion.docstring()) \
-            )
+        try:
+            desc = completion.description
+            result.append( \
+                (completion.name, \
+                desc, \
+                icon_from_typename(completion.name, completion.type), \
+                completion.docstring()) \
+                )
+        except:
+            break #todo, check this further
     return result
 
 def goto_definitions(code, line, column, path):

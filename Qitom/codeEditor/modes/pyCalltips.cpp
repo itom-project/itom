@@ -124,7 +124,7 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
             fn = sew->getFilename();
         }*/
 
-        QString source = editor()->toPlainText();
+        QString source = editor()->codeText(line, col); // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
         // jedi has a bug if the statement has a closing parenthesis
         // remove it!
         QStringList lines = Utils::splitlines(source);

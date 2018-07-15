@@ -245,6 +245,8 @@ public:
     void markWholeDocDirty();
     void callResizeEvent(QResizeEvent *evt) { resizeEvent(evt); }
 
+    virtual QString codeText(int &/*line*/, int &/*column*/) const { return toPlainText(); } //usually this is the same than toPlainText(), however in the console widget, the codeText() contains all the history of input code within this session!
+
     void indent();
     void unindent();
 

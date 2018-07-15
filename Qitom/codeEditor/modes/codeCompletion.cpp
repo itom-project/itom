@@ -49,6 +49,7 @@
 #include <qabstractitemview.h>
 #include <qstandarditemmodel.h>
 #include <qscrollbar.h>
+#include <qdir.h>
 
 
 
@@ -650,20 +651,30 @@ bool CodeCompletionMode::requestCompletion()
     else
     {
         //debug('requesting completion')
-        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-        QString filename;
-        if (sew)
-        {
-            filename = sew->getFilename();
-        }
+        
 
 
         PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
         if (pyEng)
         {
+            QString filename;
+
+            ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+            
+            if (sew)
+            {
+                filename = sew->getFilename();
+            }
+
+            if (filename == "")
+            {
+                filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
+            }
+            
             if (pyEng->tryToLoadJediIfNotYetDone())
             {
-                emit jediCompletionRequested(editor()->toPlainText(), line, col, filename, "utf-8", m_completionPrefix, m_requestId, "onJediCompletionResultAvailable");
+                QString code = editor()->codeText(line, col); // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
+                emit jediCompletionRequested(code, line, col, filename, "utf-8", m_completionPrefix, m_requestId, "onJediCompletionResultAvailable");
 
                 //debug('request sent: %r', data)
                 m_lastCursorColumn = col;

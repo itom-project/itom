@@ -62,6 +62,8 @@ public:
 
     static const QString lineBreak;
 
+    virtual QString codeText(int &line, int &column) const;
+
 protected:
     virtual void loadSettings();
     virtual void contextMenuAboutToShow(int contextMenuLine);
@@ -151,6 +153,9 @@ private:
     bool m_autoWheel; //!< true if command line should automatically move to the last line if new lines are appended, this is set to false upon a wheel event and will be reset to true if the command line is cleared (clc) or if a new input is added
 
     QMap<QString, QAction*> m_contextMenuActions;
+
+    QString m_codeHistory; //!< history of all code lines that have been executed in this command line (used for calltips and code completion)
+    int m_codeHistoryLines;
 };
 
 class DequeCommandList
