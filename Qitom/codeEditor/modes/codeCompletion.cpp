@@ -680,6 +680,11 @@ bool CodeCompletionMode::requestCompletion()
                 m_lastCursorColumn = col;
                 m_lastCursorLine = line;
                 m_requestId += 1;
+
+                if (m_requestId == INT_MAX)
+                {
+                    m_requestId = 0;
+                }
             }
             else
             {
