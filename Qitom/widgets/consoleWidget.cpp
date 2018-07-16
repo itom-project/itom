@@ -1242,6 +1242,10 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         //case msgReturnError:
         //!> insert msg after last line
         fromLine = lines() - 1;
+        if (lineLength(fromLine) > 0)
+        {
+            fromLine++;
+        }
 
         append(text);
 

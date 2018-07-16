@@ -42,6 +42,7 @@
 #include "../utils/utils.h"
 
 #include <qbrush.h>
+//#include <qdebug.h>
 
 namespace ito {
 
@@ -88,6 +89,7 @@ void LineBackgroundMarkerMode::setBackground(const QColor &color)
 */
 void LineBackgroundMarkerMode::addMarker(int line)
 {
+    //qDebug() << "add marker in line" << line << m_color;
     TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101));
     deco->setBackground(QBrush(m_color));
     deco->setFullWidth();
