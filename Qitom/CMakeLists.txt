@@ -173,7 +173,7 @@ LINK_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${OpenCV_DIR}/lib
 )
-
+ 
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
