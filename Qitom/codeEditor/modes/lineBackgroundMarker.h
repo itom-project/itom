@@ -65,6 +65,7 @@ public:
     bool numMarkedLines() const { return m_decorations.size(); }
     
     void addMarker(int line);
+    void addMarker(int fromLine, int toLine);
     void clearAllMarkers();
 
     virtual void onInstall(CodeEditor *editor);

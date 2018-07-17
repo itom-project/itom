@@ -38,6 +38,7 @@
 #include "textDecoration.h"
 
 #include <QTextBlock>
+//#include <qdebug.h>
 
 namespace ito {
 
@@ -164,6 +165,12 @@ TextDecoration::TextDecoration(QTextDocument *document, int startPos /*=-1*/, in
     {
         this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
     }
+
+    /*QTextCursor startc(document);
+    startc.setPosition(this->cursor.selectionStart());
+    QTextCursor endc(document);
+    endc.setPosition(this->cursor.selectionEnd());
+    qDebug() << this->cursor.selectedText() << "(" << startLine << ":" << endLine << ")" << this->cursor.selectionStart() << this->cursor.selectionEnd() << startc.blockNumber() << endc.blockNumber();*/
 }
 
 //-----------------------------------------------------------

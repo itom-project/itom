@@ -90,11 +90,30 @@ void LineBackgroundMarkerMode::setBackground(const QColor &color)
 void LineBackgroundMarkerMode::addMarker(int line)
 {
     //qDebug() << "add marker in line" << line << m_color;
-    TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101));
+    TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101,"", true));
     deco->setBackground(QBrush(m_color));
-    deco->setFullWidth();
     editor()->decorations()->append(deco);
     m_decorations.append(deco);
+}
+
+//----------------------------------------------------------
+/*
+*/
+void LineBackgroundMarkerMode::addMarker(int fromLine, int toLine)
+{
+    //qDebug() << "add marker in lines <<" << fromLine << ":" << toLine << "->" << m_color;
+    TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, fromLine, toLine, 101, "", true));
+    deco->setBackground(QBrush(m_color));
+    editor()->decorations()->append(deco);
+    m_decorations.append(deco);
+
+    if (toLine > fromLine) //there seems to be a bug that the last line is not selected --> add another special selection in the last line
+    {
+        deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, toLine, toLine, 101, "", true));
+        deco->setBackground(QBrush(m_color));
+        editor()->decorations()->append(deco);
+        m_decorations.append(deco);
+    }
 }
 
 //----------------------------------------------------------

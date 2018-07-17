@@ -68,6 +68,8 @@ public:
     bool remove(TextDecoration::Ptr decoration);
     void clear();
 
+    void dump() const;
+
     bool contains(const TextDecoration::Ptr &deco)
     {
         foreach (const TextDecoration::Ptr &t, m_decorations)

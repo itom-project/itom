@@ -54,9 +54,27 @@ TextDecorationsManager::TextDecorationsManager(CodeEditor *editor, QObject *pare
 {
 }
 
-    //---------------------------------------------------------------------
+//---------------------------------------------------------------------
 TextDecorationsManager::~TextDecorationsManager()
 {
+}
+
+//---------------------------------------------------------------------
+void TextDecorationsManager::dump() const
+{
+    QList<TextDecoration::Ptr>::const_iterator deco = constBegin();
+    int idx = 0;
+    while (deco != constEnd())
+    {
+        TextDecoration *td = deco->data();
+        QTextCursor start(editor()->document());
+        start.setPosition(td->cursor.selectionStart());
+        QTextCursor end(editor()->document());
+        end.setPosition(td->cursor.selectionEnd());
+        qDebug() << "Deco" << idx << ":" << td->format.background().color() << td->format.property(QTextFormat::FullWidthSelection) << start.blockNumber() << start.columnNumber() << end.blockNumber() << end.columnNumber();
+        deco++;
+        idx++;
+    }
 }
 
 //---------------------------------------------------------------------
@@ -96,6 +114,8 @@ bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
     std::sort(m_decorations.begin(), m_decorations.end(), sortDecorationsByDrawOrder);
     editor()->setExtraSelections(getExtraSelections());
 
+    //qDebug() << "deco #" << m_decorations.size() << "(append)";
+
     QList<QTextEdit::ExtraSelection> sels = editor()->extraSelections();
     /*foreach (QTextEdit::ExtraSelection s, sels)
     {
@@ -117,6 +137,7 @@ bool TextDecorationsManager::remove(TextDecoration::Ptr decoration)
    if (m_decorations.removeOne(decoration))
    {
        editor()->setExtraSelections(getExtraSelections());
+       //qDebug() << "deco #" << m_decorations.size() << "(remove)";
        return true;
    }
    return false;
@@ -130,6 +151,7 @@ void TextDecorationsManager::clear()
 {
     m_decorations.clear();
     editor()->setExtraSelections(QList<QTextEdit::ExtraSelection>());
+    //qDebug() << "deco # 0 (clear)";
 }
 
 } //end namespace ito

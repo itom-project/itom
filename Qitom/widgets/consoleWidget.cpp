@@ -35,6 +35,7 @@
 #include <qregexp.h>
 #include <QClipboard>
 #include <qevent.h>
+#include <qdebug.h>
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -299,6 +300,7 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
         {
             m_startLineBeginCmd = lines() - 1;
             append(m_temporaryRemovedCommands);
+            //qDebug() << "temp commands: " << m_temporaryRemovedCommands;
             m_temporaryRemovedCommands = "";
             moveCursorToEnd();
         }
@@ -335,6 +337,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     {
         //!< empty editor, just start new command
         append(">>");
+        //qDebug() << (">> (startNewCommand)");
         moveCursorToEnd();
         m_startLineBeginCmd = lines() - 1;
     }
@@ -346,6 +349,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
             append(ConsoleWidget::lineBreak);
         }
         append(">>");
+        //qDebug() << (">> (startNewCommand 2)");
         moveCursorToEnd();
         m_startLineBeginCmd = lines() - 1;
     }
@@ -956,8 +960,10 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 void ConsoleWidget::clearCommandLine()
 {
     clear();
-    m_startLineBeginCmd = -1;
+    m_markErrorLineMode->clearAllMarkers();
+    m_markCurrentLineMode->clearAllMarkers();
     m_autoWheel = true;
+    m_startLineBeginCmd = -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -990,6 +996,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             //text, that is removed due to another run of python (not invoked by this command line),
             //is added in the pythonStateChanged method
             append(m_temporaryRemovedCommands);
+            //qDebug() << "temp commands: " << m_temporaryRemovedCommands;
             m_temporaryRemovedCommands = "";
             moveCursorToEnd();
         }
@@ -1004,10 +1011,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         m_cmdQueue.pop();
 
         m_markCurrentLineMode->clearAllMarkers();
-        for (int i = 0; i < value.m_nrOfLines; i++)
-        {
-            m_markCurrentLineMode->addMarker(value.m_lineBegin + i);
-        }       
+        m_markCurrentLineMode->addMarker(value.m_lineBegin, value.m_lineBegin + value.m_nrOfLines - 1);    
 
         if (value.singleLine == "")
         {
@@ -1016,10 +1020,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         }
         else if (value.singleLine == "clc" || value.singleLine == "clear")
         {
-            clear();
-            m_markErrorLineMode->clearAllMarkers();
-            m_autoWheel = true;
-            m_startLineBeginCmd = -1; 
+            clearCommandLine();
             m_pCmdList->add(value.singleLine);
             executeCmdQueue();
             emit sendToLastCommand(value.singleLine);
@@ -1248,6 +1249,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         }
 
         append(text);
+        //qDebug() << text;
 
         toLine = lines() - 1;
         if (lineLength(toLine) == 0)
@@ -1255,10 +1257,11 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
             toLine--;
         }
 
-        for (int i = fromLine; i <= toLine; ++i)
+        if (fromLine <= toLine)
         {
-            m_markErrorLineMode->addMarker(i);
+            m_markErrorLineMode->addMarker(fromLine, toLine);
         }
+
         moveCursorToEnd();
         //m_startLineBeginCmd = -1;
         if (!m_pythonBusy && text.right(1) == ConsoleWidget::lineBreak)
@@ -1685,6 +1688,15 @@ void ConsoleWidget::initMenus()
     m_contextMenuActions["select_all"] = menu->addAction(tr("Select All"), this, SLOT(selectAll()));
     menu->addSeparator();
     m_contextMenuActions["auto_scroll"] = menu->addAction(tr("Auto Scroll"), this, SLOT(toggleAutoWheel(bool)));
+#ifdef _DEBUG
+    menu->addSeparator();
+    m_contextMenuActions["dump"] = menu->addAction(tr("Dump"), this, SLOT(dumpSlot()));
+#endif
+}
+
+void ConsoleWidget::dumpSlot()
+{
+    this->dump();
 }
 
 

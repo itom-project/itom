@@ -138,6 +138,11 @@ CodeEditor::~CodeEditor()
     m_pContextMenu = NULL;
 }
 
+void CodeEditor::dump()
+{
+    this->decorations()->dump();
+}
+
 //-----------------------------------------------------------
 /*
 Returns a reference to the :class:`pyqode.core.managers.PanelsManager`
@@ -1418,7 +1423,7 @@ void CodeEditor::replace(const QString &text)
 /*
 */
 bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
-		bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/, bool posix /*= false*/)
+        bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/, bool posix /*= false*/)
 {
     QTextCursor current_cursor = textCursor();
 

@@ -226,7 +226,7 @@ public:
     void removeSelectedText();
     
     bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
-		bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
+    bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
     bool findNext();
     void replace(const QString &text);
 
@@ -286,6 +286,8 @@ public:
     bool breakpointsAvailable() const;
 
     void callWheelEvent(QWheelEvent *e);
+
+    void dump();
 
 protected:
     CodeEditor &operator =(const CodeEditor &) { return *this; };
