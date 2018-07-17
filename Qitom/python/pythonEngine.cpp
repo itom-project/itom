@@ -2073,7 +2073,7 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &encoding, QByteArray callbackFctName)
+void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
 {
     QVector<ito::JediCalltip> calltips;
 
@@ -2086,11 +2086,11 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     {
         //add from itom import * as first line (this is afterwards removed from results)
         lineOffset = 1;
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", source.toUtf8().constData(), line, col, encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2148,7 +2148,7 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediDefinitionRequested(const QString &source, int line, int col, const QString &path, QByteArray callbackFctName)
+void PythonEngine::jediDefinitionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
 {
     QVector<ito::JediDefinition> definitions;
 
@@ -2161,11 +2161,11 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     {
         lineOffset = 1;
         //add from itom import * as first line (this is afterwards removed from results)
-        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siiss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siis", source.toUtf8().constData(), line, col, path.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siiss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))

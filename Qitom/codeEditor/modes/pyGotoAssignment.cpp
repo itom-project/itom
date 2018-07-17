@@ -48,6 +48,7 @@
 
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qdir.h>
 
 namespace ito {
 
@@ -67,7 +68,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pPythonEngine = AppManagement::getPythonEngine();
     if (m_pPythonEngine)
     {
-        connect(this, SIGNAL(jediDefinitionRequested(QString,int,int,QString,QByteArray)), m_pPythonEngine, SLOT(jediDefinitionRequested(QString,int,int,QString,QByteArray)));
+        connect(this, SIGNAL(jediDefinitionRequested(QString,int,int,QString,QString,QByteArray)), m_pPythonEngine, SLOT(jediDefinitionRequested(QString,int,int,QString,QString,QByteArray)));
     }
 
     m_pActionGoto = new QAction(tr("Go To Definition"), this);
@@ -208,20 +209,25 @@ void PyGotoAssignmentMode::checkWordCursor(const QTextCursor &cursor)
         tc = editor()->wordUnderCursor(false);
     }
 
-    ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-    QString filename;
-    if (sew)
-    {
-        filename = sew->getFilename();
-    }
-
     PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
     if (pyEng)
     {
+        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+        QString filename;
+        if (sew)
+        {
+            filename = sew->getFilename();
+        }
+
+        if (filename == "")
+        {
+            filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
+        }
+
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
             QApplication::setOverrideCursor(Qt::WaitCursor);
-            emit jediDefinitionRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "onJediDefinitionResultsAvailable");
+            emit jediDefinitionRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "utf-8", "onJediDefinitionResultsAvailable");
         }
         else
         {

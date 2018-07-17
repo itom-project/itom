@@ -3,38 +3,6 @@ import sys
 
 if jedi.__version__ >= '0.12.0':
     jedienv = jedi.api.environment.InterpreterEnvironment()
-
-def calltips(code, line, column, encoding = "utf-8"):
-    '''
-    '''
-    if jedi.__version__ >= '0.12.0':
-        script = jedi.Script(code, line + 1, column, None, encoding, environment = jedienv)
-    else:
-        script = jedi.Script(code, line + 1, column, None, encoding)
-    signatures = script.call_signatures()
-    result = []
-    for sig in signatures:
-        index = sig.index
-        if index is None:
-            index = 0
-        #create a formatted calltip (current index appear in bold)
-        module_name = str(sig.module_name)
-        call_name = str(sig.name)
-        paramlist = [p.description for p in sig.params]
-        if index >= 0 and index < len(paramlist):
-            paramlist[index] = "<b>%s</b>" % paramlist[index]
-        params = ", ".join(paramlist)
-        if module_name != "":
-            calltip = "<p style='white-space:pre'>%s.%s(%s)</p>" % (module_name, call_name, params)
-        else:
-            calltip = "<p style='white-space:pre'>%s(%s)</p>" % (call_name, params)
-        result.append( \
-            (calltip, \
-            column, \
-            sig.bracket_start[0], \
-            sig.bracket_start[1]) \
-            )
-    return result
     
 ICON_CLASS = ('code-class', ':/classNavigator/icons/class.png') #':/pyqode_python_icons/rc/class.png')
 ICON_FUNC = ('code-function', ':/classNavigator/icons/method.png') #':/pyqode_python_icons/rc/func.png')
@@ -44,7 +12,7 @@ ICON_FUNC_PROTECTED = ('code-function',
 ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png') #':/pyqode_python_icons/rc/namespace.png')
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png') #':/pyqode_python_icons/rc/var.png')
 ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png') #':/pyqode_python_icons/rc/keyword.png')
-    
+
 def icon_from_typename(name, icon_type):
     """
     Returns the icon resource filename that corresponds to the given typename.
@@ -92,6 +60,38 @@ def icon_from_typename(name, icon_type):
     elif icon_type:
         _logger().warning("Unimplemented completion icon_type: %s", icon_type)
     return ret_val
+
+def calltips(code, line, column, path = None, encoding = "utf-8"):
+    '''
+    '''
+    if jedi.__version__ >= '0.12.0':
+        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+    else:
+        script = jedi.Script(code, line + 1, column, path, encoding)
+    signatures = script.call_signatures()
+    result = []
+    for sig in signatures:
+        index = sig.index
+        if index is None:
+            index = 0
+        #create a formatted calltip (current index appear in bold)
+        module_name = str(sig.module_name)
+        call_name = str(sig.name)
+        paramlist = [p.description for p in sig.params]
+        if index >= 0 and index < len(paramlist):
+            paramlist[index] = "<b>%s</b>" % paramlist[index]
+        params = ", ".join(paramlist)
+        if module_name != "":
+            calltip = "<p style='white-space:pre'>%s.%s(%s)</p>" % (module_name, call_name, params)
+        else:
+            calltip = "<p style='white-space:pre'>%s(%s)</p>" % (call_name, params)
+        result.append( \
+            (calltip, \
+            column, \
+            sig.bracket_start[0], \
+            sig.bracket_start[1]) \
+            )
+    return result
     
 def completions(code, line, column, path, prefix, encoding = "utf-8"):
     '''
@@ -115,10 +115,9 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
             break #todo, check this further
     return result
 
-def goto_definitions(code, line, column, path):
+def goto_definitions(code, line, column, path, encoding = "utf-8"):
     '''
     '''
-    encoding = 'utf-8'
     if jedi.__version__ >= '0.12.0':
         script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
     else:

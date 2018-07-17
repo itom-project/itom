@@ -1398,25 +1398,11 @@ void CodeEditor::replace(const QString &text)
     {
         return;
     }
-     
-    cursor.setPosition(end, QTextCursor::KeepAnchor);
-    QTextBlock endBlock = cursor.block();
-     
-    cursor.setPosition(start, QTextCursor::KeepAnchor);
-    QTextBlock block = cursor.block();
-     
-    for(; block.isValid() && !(endBlock < block); block = block.next())
-    {
-        if (!block.isValid())
-        {
-            continue;
-        }
-     
-        cursor.movePosition(QTextCursor::StartOfLine);
-        cursor.clearSelection();
-        cursor.insertText(text);
-        cursor.movePosition(QTextCursor::NextBlock);
-    }
+
+    cursor.removeSelectedText();
+    cursor.setPosition(start);
+    cursor.insertText(text);
+    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, text.size());
 }
 
 //--------------------------------------------------------------
