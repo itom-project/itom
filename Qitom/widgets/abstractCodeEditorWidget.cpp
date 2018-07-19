@@ -179,7 +179,6 @@ void AbstractCodeEditorWidget::loadSettings()
     //setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
     //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
 
-
     m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
     m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
 
@@ -221,6 +220,11 @@ void AbstractCodeEditorWidget::loadSettings()
 
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
+        if (styleType == StyleItem::KeyWhitespace)
+        {
+            continue; //this will be handled separately
+        }
+
         StyleItem &item = m_editorStyle->at(styleType);
         defaultFormat =  defaultStyle[styleType].format();
         currentFormat = item.format();

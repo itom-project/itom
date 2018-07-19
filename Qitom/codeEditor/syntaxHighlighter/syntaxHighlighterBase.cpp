@@ -40,6 +40,7 @@
 #include "../codeEditor.h"
 #include <qapplication.h>
 #include <qtextdocument.h>
+#include <qdebug.h>
 
 #include "../managers/modesManager.h"
 #include "../managers/panelsManager.h"
