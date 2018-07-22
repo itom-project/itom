@@ -2116,8 +2116,11 @@ pointCloud.");
     }
 
     PyPointCloud *cloud = createEmptyPyPointCloud();
-    cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
-    retval += ito::pclHelper::pointCloudFromXYZ(X.data(), Y.data(), Z.data(), *(cloud->data), deleteNaN);
+    if (cloud != nullptr)
+    {
+        cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
+        retval += ito::pclHelper::pointCloudFromXYZ(X.data(), Y.data(), Z.data(), *(cloud->data), deleteNaN);
+    }
 
     if (PythonCommon::transformRetValToPyException(retval) == false)
     {
