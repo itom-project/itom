@@ -16,7 +16,7 @@ include ( CheckIncludeFile )
 
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 
-find_package ( PkgConfig )
+find_package ( PkgConfig QUIET)
 if ( PKG_CONFIG_FOUND )
   pkg_check_modules ( PKGCONFIG_LIBUSB libusb>=1.0 )
 endif ( PKG_CONFIG_FOUND )
@@ -45,6 +45,8 @@ else ( PKGCONFIG_LIBUSB_FOUND )
       $ENV{LibUSB_ROOT_DIR}
       ${LibUSB_DIR}
     PATH_SUFFIXES
+      libusb
+      libusb-1.0
       include
       include/libusb-1.0
     DOC "root directory of LibUSB"
@@ -58,6 +60,8 @@ else ( PKGCONFIG_LIBUSB_FOUND )
       $ENV{LibUSB_ROOT_DIR}
       ${LibUSB_DIR}
     PATH_SUFFIXES
+      libusb
+      libusb-1.0
       include
       include/libusb-1.0
     )
@@ -70,10 +74,26 @@ else ( PKGCONFIG_LIBUSB_FOUND )
         # Use the lib that got compiled with the same compiler.
         if ( MSVC )
             if (BUILD_TARGET64)
-                set ( LibUSB_LIBRARY_PATH_SUFFIX MS64/static )
+                set ( LibUSB_LIBRARY_PATH_SUFFIX 
+                    MS64/static 
+                    x64
+                    x64/Release
+                    x64/Debug
+                    x64/Release/lib
+                    x64/Debug/lib 
+                    x64/Release/dll
+                    x64/Debug/dll)
             else (BUILD_TARGET64)
-                set ( LibUSB_LIBRARY_PATH_SUFFIX MS32/static )
-            endif (BUILD_TARGET64)         
+                set ( LibUSB_LIBRARY_PATH_SUFFIX 
+                    MS32/static 
+                    Win32
+                    Win32/Release
+                    Win32/Debug
+                    Win32/Release/lib
+                    Win32/Debug/lib
+                    Win32/Release/dll
+                    Win32/Debug/dll)
+            endif (BUILD_TARGET64)
         elseif ( BORLAND )
             set ( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
         elseif ( CMAKE_COMPILER_IS_GNUCC )
@@ -94,6 +114,16 @@ else ( PKGCONFIG_LIBUSB_FOUND )
     mark_as_advanced ( LibUSB_LIBRARY )
     if ( LibUSB_LIBRARY )
         set ( LibUSB_LIBRARIES ${LibUSB_LIBRARY} )
+        get_filename_component(LibUSB_LIBRARY_DIR ${LibUSB_LIBRARY} DIRECTORY  CACHE)
+        get_filename_component(DLLNAME ${LibUSB_LIBRARY} NAME_WE)
+        find_file ( LibUSB_LIBRARY_DLL
+        NAMES
+            libusb.dll libusb-1.0.dll *.dll
+        PATHS
+            ${LibUSB_DIR}
+        PATH_SUFFIXES
+            ${LibUSB_LIBRARY_PATH_SUFFIX}
+        )
     endif ( LibUSB_LIBRARY )
 
     if ( LibUSB_INCLUDE_DIRS AND LibUSB_LIBRARIES )

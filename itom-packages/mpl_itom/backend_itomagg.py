@@ -118,6 +118,16 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             Y = 0
             W = round(self.renderer.width)
             H = round(self.renderer.height)
+            #workaround sometimes the width and hight does not fit to the stringBuffer length, leding to a crash of itom.
+            #If the length is a multiple of either the width or the length we readjust them.
+            if not int(W*H*4) ==len(stringBuffer):
+                numberElements= len(stringBuffer)/4
+                if numberElements%H == 0:
+                    W=int(numberElements/H)
+                elif numberElements%W == 0:
+                    H=int(numberElements/W)
+                else:
+                    return
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, False)
             except RuntimeError as e:
