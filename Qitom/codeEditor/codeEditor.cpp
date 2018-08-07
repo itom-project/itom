@@ -1475,6 +1475,16 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
         }
     }
 
+    m_lastFindOptions.valid = true;
+    m_lastFindOptions.cs = cs;
+    m_lastFindOptions.expr = expr;
+    m_lastFindOptions.forward = forward;
+    m_lastFindOptions.posix = posix;
+    m_lastFindOptions.re = re;
+    m_lastFindOptions.show = show;
+    m_lastFindOptions.wo = wo;
+    m_lastFindOptions.wrap = wrap;
+
     if (cursor.isNull() == false)
     {
         setTextCursor(cursor);
