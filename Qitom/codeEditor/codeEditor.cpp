@@ -1756,8 +1756,27 @@ Selects the word under the **mouse** cursor.
 QTextCursor CodeEditor::wordUnderMouseCursor() const
 {
     QTextCursor text_cursor = cursorForPosition(m_lastMousePos);
-    text_cursor = wordUnderCursor(text_cursor, true);
-    return text_cursor;
+
+    //check if text_cursor is not behind end of line
+    QTextCursor end_of_line_cursor(text_cursor);
+    end_of_line_cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+
+    if (text_cursor.position() < end_of_line_cursor.position())
+    {
+        text_cursor.select(QTextCursor::WordUnderCursor);
+        if (text_cursor.selectedText().isEmpty())
+        {
+            return QTextCursor();
+        }
+        else
+        {
+            return text_cursor;
+        }
+    }
+    else
+    {
+        return QTextCursor();
+    }
 }
 
 

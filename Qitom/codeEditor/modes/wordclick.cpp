@@ -148,7 +148,7 @@ void WordClickMode::onMouseMoved(QMouseEvent *e)
     if (e->modifiers() & Qt::ControlModifier)
     {
         QTextCursor cursor = editor()->wordUnderMouseCursor();
-        if (m_cursor.isNull() || cursor.position() != m_cursor.position())
+        if (!cursor.isNull() && (m_cursor.isNull() || cursor.position() != m_cursor.position()))
         {
             checkWordCursor(cursor);
         }
