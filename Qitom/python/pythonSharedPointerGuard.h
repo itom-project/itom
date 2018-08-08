@@ -37,6 +37,7 @@
 
 #include "../../common/sharedStructures.h"
 #include "../global.h"
+#include "patchlevel.h"
 
 #include <qhash.h>
 #include <qsharedpointer.h>
@@ -54,13 +55,34 @@ public:
         QHash<void*, PyObject*>::iterator i = m_hashTable.find((void*)sharedPointerData);
         if(i != m_hashTable.end())
         {
-            Py_XDECREF(i.value());
+            if (i.value())
+            {
+#if (PY_VERSION_HEX >= 0x03040000)
+                if (PyGILState_Check())
+                {
+                    Py_DECREF(i.value());
+                }
+                else
+                {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
+                    Py_DECREF(i.value());
+                    PyGILState_Release(gstate);
+                }
+#else
+                //we don't know if we need to acquire the GIL here, or not.
+                Py_DECREF(i.value());
+#endif
+            }
+
             m_hashTable.erase(i);
         }
     }
 
     template<typename _Tp> static QSharedPointer<_Tp> createPythonSharedPointer(_Tp *sharedPointerData, PyObject *pyObjOwner)
     {
+
+
+
         Py_XINCREF(pyObjOwner);
         m_hashTable.insert((void*)sharedPointerData, pyObjOwner);
         return QSharedPointer<_Tp>(sharedPointerData, deleter<_Tp>);

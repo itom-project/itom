@@ -30,6 +30,7 @@
 #include "pythonAutoInterval.h"
 #include "pythonNone.h"
 #include "datetime.h"
+#include "patchlevel.h"
 
 #include "../global.h"
 #include "../../common/itomPlotHandle.h"
@@ -180,7 +181,11 @@ private:
 
     /*!
     if any PyObject is converted into a QVariant-object, dataObject or any other class, and if this
-    PyObject has a base-pointer unequal to 
+    PyObject has a base-pointer unequal to None, this base pointer is incremented during the lifetime of the
+    dataObject, passed to QVariant. If this dataObject is destroyed, the baseObjectDeleterDataObject deleter method
+    is called and decrements the base PyObject. 
+
+    Be careful: For decrementing the refcount, the GIL must be hold by this deleter!
     */
     static QHash<char*,PyObject*> m_pyBaseObjectStorage; 
     static void baseObjectDeleterDataObject(ito::DataObject *sharedObject)
@@ -188,7 +193,26 @@ private:
         QHash<char*,PyObject*>::iterator i = m_pyBaseObjectStorage.find((char*)sharedObject);
         if(i != m_pyBaseObjectStorage.end())
         {
-            Py_XDECREF(i.value());
+            if (i.value())
+            {
+#if (PY_VERSION_HEX >= 0x03040000)
+                if (PyGILState_Check())
+                {
+                    Py_DECREF(i.value());
+                }
+                else
+                {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
+                    Py_DECREF(i.value());
+                    PyGILState_Release(gstate);
+                }
+#else
+                //we don't know if we need to acquire the GIL here, or not.
+                Py_DECREF(i.value());
+#endif
+                
+            }
+            
             m_pyBaseObjectStorage.erase(i);
         }
 
