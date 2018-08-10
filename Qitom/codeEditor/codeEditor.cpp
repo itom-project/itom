@@ -183,6 +183,8 @@ Returns a reference to the syntax highlighter mode currently used to
 */
 SyntaxHighlighterBase* CodeEditor::syntaxHighlighter() const
 {
+    if (!m_pModes) return NULL;
+
     SyntaxHighlighterBase* out = NULL;
     ModesManager::const_iterator it = m_pModes->constBegin();
     while (it != m_pModes->constEnd())
@@ -208,6 +210,7 @@ bool CodeEditor::useSpacesInsteadOfTabs() const
 void CodeEditor::setUseSpacesInsteadOfTabs(bool value)
 {
     m_useSpacesInsteadOfTabs = value;
+    updateTabStopAndIndentationWidth();
 }
 
 //-----------------------------------------------------------
@@ -349,6 +352,7 @@ void CodeEditor::setShowIndentationGuides(bool value)
     if (m_showIndentationGuides != value)
     {
         m_showIndentationGuides = value;
+        updateTabStopAndIndentationWidth();
         update();
     }
 }
@@ -402,6 +406,7 @@ void CodeEditor::setShowWhitespaces(bool value)
     {
         m_showWhitespaces = value;
         setWhitespacesFlags(value);
+        updateTabStopAndIndentationWidth();
         rehighlight();
     }
 }
@@ -457,8 +462,7 @@ void CodeEditor::setTabLength(int value)
     if (m_tabLength != value)
     {
         m_tabLength = value;
-        QFontMetrics metrics(font());
-        setTabStopWidth(40); //m_tabLength * metrics.width('  '));
+        updateTabStopAndIndentationWidth();
     }
 }
 
@@ -481,10 +485,10 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
     {
         syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(value);
     }
-    else
-    {
-        m_whitespacesForeground = value;
-    }
+
+    m_whitespacesForeground = value;
+
+    updateTabStopAndIndentationWidth();
 }
 
 //-----------------------------------------------------------
@@ -552,8 +556,24 @@ void CodeEditor::initSettings()
     m_showWhitespaces = false;
     m_tabLength = 4;
     m_useSpacesInsteadOfTabs = true;
-    setTabStopWidth(m_tabLength * fontMetrics().width(" "));
     setWhitespacesFlags(m_showWhitespaces);
+    updateTabStopAndIndentationWidth();
+    
+}
+
+//-----------------------------------------------------------
+void CodeEditor::updateTabStopAndIndentationWidth()
+{
+    QFontMetrics fm = fontMetrics();
+
+    if (syntaxHighlighter() && showWhitespaces())
+    {
+        fm = QFontMetrics(syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).font());
+    }
+
+    QString tab_text = useSpacesInsteadOfTabs() ? QString(tabLength(), ' ') : "\t";
+    m_indentationBarWidth = fm.width(tab_text);
+    setTabStopWidth(tabLength() * fm.width(" "));
 }
 
 //-----------------------------------------------------------
@@ -587,6 +607,8 @@ void CodeEditor::setWhitespacesFlags(bool show)
             options.flags() & ~QTextOption::ShowTabsAndSpaces);
     }
     doc->setDefaultTextOption(options);
+
+    updateTabStopAndIndentationWidth();
 }
 
 //-----------------------------------------------------------
@@ -660,8 +682,9 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         int bottom;
         int indentation;
 
-        QString tab_text = useSpacesInsteadOfTabs() ? QString(tabLength(), ' ') : "\t";
-        int x = fontMetrics().width(tab_text);
+        QTextCursor tc = textCursor();
+        tc.movePosition(QTextCursor::MoveOperation::Start);
+        int x = cursorRect(tc).x();
 
         foreach (const VisibleBlock &block, visibleBlocks())
         {
@@ -669,7 +692,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
             for (int i = 1; i < indentation; ++i)
             {
-                painter.drawLine(x * i, block.topPosition, x * i, bottom);
+                painter.drawLine(x + m_indentationBarWidth * i, block.topPosition, x + m_indentationBarWidth * i, bottom);
             }
         }
     }

@@ -901,6 +901,11 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
     {
         QString selectedText = text(line);
 
+        if (selectedText.startsWith(">>"))
+        {
+            selectedText = selectedText.mid(2); //remove trailing >>
+        }
+
         //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
         if (selectedText.contains("file ", Qt::CaseInsensitive) || selectedText.contains("Warning:", Qt::CaseSensitive))
         {

@@ -131,7 +131,7 @@ QList<Panel::Ptr> PanelsManager::panelsForZoneSortedByOrderReverse(Panel::Positi
     std::sort(sortlist.begin(), sortlist.end(), cmpPanelByOrderInZoneReverse);
 
     QList<Panel::Ptr> panelsOut;
-    panelsOut.reserve(sortlist.size());
+    panelsOut.reserve((int)sortlist.size());
     
     for (size_t i = 0; i < sortlist.size(); ++i)
     {

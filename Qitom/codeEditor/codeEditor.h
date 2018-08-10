@@ -303,6 +303,7 @@ protected:
     QString currentLineText() const;    
 
     void setWhitespacesFlags(bool show);
+    void updateTabStopAndIndentationWidth();
 
     void updateVisibleBlocks();
 
@@ -366,6 +367,7 @@ private:
     bool m_saveOnFocusOut;
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;
+    int m_indentationBarWidth;
 
     EdgeMode m_edgeMode;
     int m_edgeColumn;
