@@ -245,9 +245,16 @@ int PyAutoIndentMode::getIndentOfOpeningParen(const QTextCursor &cursor) const
         {
             QPoint pt = symMatcherMode->symbolPos(cursor2, mapping[character].first, mapping[character].second);
             int ol = pt.x();
-            //int oc = pt.y();
-            QString line = editor()->lineText(ol);
-            return (line.size() - Utils::lstrip(line).size());
+
+            if (ol >= 0)
+            {
+                QString line = editor()->lineText(ol);
+                return (line.size() - Utils::lstrip(line).size());
+            }
+            else
+            {
+                return -3;
+            }
         }
         return -2;
     }
@@ -260,7 +267,7 @@ int PyAutoIndentMode::getIndentOfOpeningParen(const QTextCursor &cursor) const
 //---------------------------------------------------------------
 bool cmpParenthesisByPosReversed(const Utils::ParenthesisInfo &a, const Utils::ParenthesisInfo &b)
 {
-    return a.position <= b.position; //todo: verify
+    return a.position > b.position; //todo: verify
 }
 
 
@@ -316,7 +323,7 @@ QPair<int, QChar> PyAutoIndentMode::getFirstOpenParen(const QTextCursor &cursor,
                             ch = mappingItem.first;
                             ch_type = mappingItem.second;
                             QPoint pt = symMatcherMode->symbolPos(tc3, ch, ch_type);
-                            l = pt.x();
+                            l = pt.x(); //if -1: nothing found!
                             c = pt.y();
                         }
                         else
@@ -324,7 +331,7 @@ QPair<int, QChar> PyAutoIndentMode::getFirstOpenParen(const QTextCursor &cursor,
                             continue;
                         }
 
-                        if ((l == ln) && (c < column))
+                        if ((l >= 0) && (l == ln) && (c < column))
                         {
                             continue;
                         }
@@ -356,8 +363,8 @@ void PyAutoIndentMode::getParenPos(const QTextCursor &cursor, int column, int &o
 
     QTextCursor tc2(cursor);
     tc2.setPosition(pos_char.first);
-    QPoint ol_oc = symMatcherMode->symbolPos(tc2, SymbolMatcherMode::Open, mapping[pos_char.second]);
-    QPoint cl_cc = symMatcherMode->symbolPos(tc2, SymbolMatcherMode::Close, mapping[pos_char.second]);
+    QPoint ol_oc = symMatcherMode->symbolPos(tc2, SymbolMatcherMode::Open, mapping[pos_char.second]); //x/y values are -1, if nothing could be found
+    QPoint cl_cc = symMatcherMode->symbolPos(tc2, SymbolMatcherMode::Close, mapping[pos_char.second]); //x/y values are -1, if nothing could be found
     ol = ol_oc.x();
     oc = ol_oc.y();
     cl = cl_cc.x();
@@ -378,7 +385,7 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
     bool prev_open = QString("[({").contains(prev_char);
     bool next_close = QString("])}").contains(next_char);
 
-    int open_line, open_symbol_col, close_line, close_col;
+    int open_line, open_symbol_col, close_line, close_col; //if open_line and open_symbol_col is -1, no open symbol could be found; if close_line and close_col is -1, no closing symbol could be found
     getParenPos(cursor, column, open_line, open_symbol_col, close_line, close_col);
     QString open_line_txt = editor()->lineText(open_line);
     int open_line_indent = open_line_txt.size() - Utils::lstrip(open_line_txt).size();
@@ -397,7 +404,7 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
 
     // adapt indent if cursor on closing line and next line have same
     // indent -> PEP8 compliance
-    if (close_line && close_col)
+    if ((close_line >= 0) && (close_col >= 0))
     {
         QString txt = editor()->lineText(close_line);
         int bn = cursor.block().blockNumber();
@@ -612,7 +619,8 @@ void PyAutoIndentMode::handleIndentAfterParen(const QTextCursor &cursor, QString
 {
     QTextCursor tc2 = QTextCursor(cursor);
     tc2.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-    QCharRef c = tc2.selectedText()[0];
+    QString text = tc2.selectedText();
+    QChar c = tc2.selectedText()[0];
     while (c == ' ')
     {
         tc2.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);

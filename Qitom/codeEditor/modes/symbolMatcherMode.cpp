@@ -370,10 +370,12 @@ function will look for '('.
 :param cursor: QTextCursor
 :param character_type: character type to look for (open or close char)
 :param symbol_type: symbol type (index in the SYMBOLS map).
+
+Return -1, -1 if nothing found, QPoint.x is line, QPoint.y is column
 */
 QPoint SymbolMatcherMode::symbolPos(const QTextCursor &cursor, SymbolMatcherMode::CharType charType /*= Open*/, SymbolMatcherMode::Symbols symbolType /*=Paren*/)
 {
-    QPoint retval;
+    QPoint retval(-1, -1);
     QTextCursor original_cursor = editor()->textCursor();
     editor()->setTextCursor(cursor);
     QTextBlock block = cursor.block();

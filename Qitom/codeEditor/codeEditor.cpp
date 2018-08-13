@@ -1283,6 +1283,11 @@ Gets the text of the specified line
 */
 QString CodeEditor::lineText(int lineNbr) const
 {
+    if (lineNbr < 0)
+    {
+        return "";
+    }
+
     const QTextBlock &block = document()->findBlockByNumber(lineNbr);
     return block.text();
 }
