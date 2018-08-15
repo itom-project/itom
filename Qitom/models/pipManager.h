@@ -51,12 +51,14 @@ struct PythonPackage
 
 struct PipGeneralOptions
 {
-    PipGeneralOptions() : isolated(false), logPath(""), proxy(""), timeout(15), retries(5) {}
+    PipGeneralOptions() : isolated(false), logPath(""), proxy(""), timeout(15), retries(5), useTrustedHosts(false) {}
     bool isolated;          //if true, --isolated is added to pip calls
     QString logPath;        //if != "" --log <logPath> is added to pip calls
     QString proxy;          //if != "" --proxy <proxy> is added to pip calls
     int timeout;            //if >= 0 --timeout <sec> is added to pip calls where timeout denotes the number of seconds
     int retries;            //if > 0 --retries <retries> is added to pip calls where retries denotes the number of tries if one command failed.
+    bool useTrustedHosts;   //if true, each host in the corresponding text field (semicolon separated list) will be appended via --trusted-host to any pip command
+    QStringList trustedHosts; //trusted hosts, only considered if useTrustedHosts is true
 };
 
 struct PipInstall

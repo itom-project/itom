@@ -1054,11 +1054,19 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bo
         output << "--retries" << QString("%1").arg(options.retries);
     }
 
+    if (options.useTrustedHosts && MAJORVERSION(m_pipVersion) >= 6)
+    {
+        foreach(const QString &th, options.trustedHosts)
+        {
+            output << QString("--trusted-host=%1").arg(th);
+        }
+    }
+
     if (ignoreVersionCheck && MAJORVERSION(m_pipVersion) >= 6)
     {
         output << "--disable-pip-version-check";
     }
-    
+
     return output;
 }
 
