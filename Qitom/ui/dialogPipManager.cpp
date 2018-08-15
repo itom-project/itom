@@ -124,6 +124,25 @@ PipGeneralOptions DialogPipManager::createOptions() const
     pgo.proxy = ui.txtProxy->text();
     pgo.timeout = ui.spinTimeout->value();
     pgo.retries = ui.spinRetries->value();
+    pgo.useTrustedHosts = ui.checkTrustedHosts->isChecked();
+    QStringList trustedHosts = ui.txtTrustedHosts->text().split(";");
+    pgo.trustedHosts.clear();
+    QString temp;
+    foreach(const QString &th, trustedHosts)
+    {
+        temp = th.trimmed();
+        if (temp != "")
+        {
+            if (temp.contains(" "))
+            {
+                pgo.trustedHosts.append(QString("\"%1\"").arg(temp));
+            }
+            else
+            {
+                pgo.trustedHosts.append(temp);
+            }
+        }
+    }
     return pgo;
 }
 

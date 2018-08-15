@@ -478,7 +478,12 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 
         QStringList arguments;
         arguments << "-m" << "pip" << "list"; //here the pip version check is done
-		if (m_pipVersion >= 0x090000)
+
+        if (m_pipVersion >= 0x120000) // >= 18.0
+        {
+            arguments << "--format=columns";
+        }
+		else if (m_pipVersion >= 0x090000)
 		{
 			arguments << "--format=legacy";
 		}
@@ -541,10 +546,14 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
 
         QStringList arguments;
         arguments << "-m" << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
-		if (m_pipVersion >= 0x090000)
-		{
-			arguments << "--format=legacy";
-		}
+        if (m_pipVersion >= 0x120000) // >= 18.0
+        {
+            arguments << "--format=columns";
+        }
+        else if (m_pipVersion >= 0x090000)
+        {
+            arguments << "--format=legacy";
+        }
         arguments << parseGeneralOptions(options, false, true);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -768,8 +777,20 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 }
                 else
                 {
-                    m_pipAvailable = false;
-                    emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+                    QRegExp reg("pip ((\\d+)\\.(\\d+)) from(.*)");
+                    if (reg.indexIn(output) != -1)
+                    {
+                        m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), 0);
+                        QString version = reg.cap(1);
+                        emit pipVersion(version);
+                        m_pipAvailable = true;
+                        emit pipRequestFinished(temp, "", true);
+                    }
+                    else
+                    {
+                        m_pipAvailable = false;
+                        emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+                    }
                 }
             }
             else if (exitCode == 3)
@@ -794,12 +815,29 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 QStringList packages_out;
                 int idx;
                 QStringList packages = output.split("\n");
-                foreach (const QString &p, packages)
+
+                if (m_pipVersion >= 0x120000) //>= 18.0
                 {
-                    idx = p.indexOf(" (");
-                    if (idx != -1)
+                    //format columns (first line are headings, then one line with dashes)
+                    for (int idx = 2; idx < packages.size(); ++idx)
                     {
-                        packages_out.append(p.left(idx));
+                        QStringList items = packages[idx].split(" ");
+                        if (items.size() > 0)
+                        {
+                            packages_out.append(items[0]);
+                        }
+                    }
+                }
+                else
+                {
+                    //format legacy
+                    foreach(const QString &p, packages)
+                    {
+                        idx = p.indexOf(" (");
+                        if (idx != -1)
+                        {
+                            packages_out.append(p.left(idx));
+                        }
                     }
                 }
 
@@ -945,34 +983,50 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
             }
             else
             {
-                QRegExp rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
-                int pos = 0;
-                QMap<QString,QString> outdated;
-                QMap<QString,QString> unknown;
+                QMap<QString, QString> outdated;
+                QMap<QString, QString> unknown;
 
-                while ((pos = rx.indexIn(output, pos)) != -1)
+                if (m_pipVersion >= 0x120000)
                 {
-                    outdated[rx.cap(1)] = rx.cap(3);
-                    pos += rx.matchedLength();
+                    QStringList lines = output.split("\n");
+                    for (int idx = 2; idx < lines.size(); ++idx)
+                    {
+                        QStringList items = lines[idx].split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                        if (items.size() >= 4)
+                        {
+                            outdated[items[0]] = items[2];
+                        }
+                    }
                 }
+                else
+                {
+                    QRegExp rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
+                    int pos = 0;
+                    
+                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    {
+                        outdated[rx.cap(1)] = rx.cap(3);
+                        pos += rx.matchedLength();
+                    }
 
-                //check for style of pip >= 8.0.0
-                pos = 0;
-                rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
-                while ((pos = rx.indexIn(output, pos)) != -1)
-                {
-                    outdated[rx.cap(1)] = rx.cap(4);
-                    pos += rx.matchedLength();
-                }
-                
-                //check for unknown (that could not been fetched)
-                pos = 0;
-                rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
-        
-                while ((pos = rx.indexIn(output, pos)) != -1)
-                {
-                    unknown[rx.cap(1)] = "unknown";
-                    pos += rx.matchedLength();
+                    //check for style of pip >= 8.0.0
+                    pos = 0;
+                    rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
+                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    {
+                        outdated[rx.cap(1)] = rx.cap(4);
+                        pos += rx.matchedLength();
+                    }
+
+                    //check for unknown (that could not been fetched)
+                    pos = 0;
+                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+
+                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    {
+                        unknown[rx.cap(1)] = "unknown";
+                        pos += rx.matchedLength();
+                    }
                 }
 
                 for (int i = 0; i < m_pythonPackages.length(); ++i)
@@ -1054,11 +1108,19 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bo
         output << "--retries" << QString("%1").arg(options.retries);
     }
 
+    if (options.useTrustedHosts && MAJORVERSION(m_pipVersion) >= 6)
+    {
+        foreach(const QString &th, options.trustedHosts)
+        {
+            output << QString("--trusted-host=%1").arg(th);
+        }
+    }
+
     if (ignoreVersionCheck && MAJORVERSION(m_pipVersion) >= 6)
     {
         output << "--disable-pip-version-check";
     }
-    
+
     return output;
 }
 
