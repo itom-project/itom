@@ -33,7 +33,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 
-
+#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
 
 #include "ui_widgetPropEditorStyles.h"
 
@@ -49,10 +49,10 @@ class WidgetPropEditorStyles : public AbstractPropertyPageWidget
 public:
     struct StyleNode
     {
-        StyleNode(int index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), /*m_fillToEOL(fillToEOL), */m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
+        StyleNode(ito::StyleItem::StyleType index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), /*m_fillToEOL(fillToEOL), */m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
         StyleNode() {}
-        StyleNode(int index, QString name) : m_index(index), m_name(name)/*, m_fillToEOL(0)*/ {}
-        int m_index;
+        StyleNode(ito::StyleItem::StyleType index, QString name) : m_index(index), m_name(name)/*, m_fillToEOL(0)*/ {}
+        ito::StyleItem::StyleType m_index;
         QString m_name;
         QFont m_font;
         //bool m_fillToEOL;

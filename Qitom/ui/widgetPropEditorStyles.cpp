@@ -23,7 +23,7 @@
 #include "widgetPropEditorStyles.h"
 #include "../global.h"
 #include "../AppManagement.h"
-#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
+
 
 #include <qcolordialog.h>
 #include <qfontdialog.h>
@@ -765,13 +765,59 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             
                         }
 
+                        QMap<StyleItem::StyleType, int> mapIdx;
+                        //Default = 0, 
+                        //Comment = 1, 
+                        //Number = 2,
+                        //DoubleQuotedString = 3, 
+                        //SingleQuotedString = 4, 
+                        //Keyword = 5,
+                        //TripleSingleQuotedString = 6, 
+                        //TripleDoubleQuotedString = 7, 
+                        //ClassName = 8,
+                        //FunctionMethodName = 9, 
+                        //Operator = 10, 
+                        //Identifier = 11,
+                        //CommentBlock = 12, 
+                        //UnclosedString = 13, 
+                        //HighlightedIdentifier = 14,
+                        //Decorator = 15 
+
+
+                        //the numbers are the lexer style ids of QScintilla, python lexer
+                        mapIdx[StyleItem::KeyDefault] = 0; //Default
+                        mapIdx[StyleItem::KeyComment] = 1; //Comment
+                        mapIdx[StyleItem::KeyNumber] = 2; //Number
+                        mapIdx[StyleItem::KeyString] = 4; //SingleQuotedString
+                        mapIdx[StyleItem::KeyKeyword] = 5; //Keyword
+                        mapIdx[StyleItem::KeyDocstring] = 6; //TripleSingleQuotedString
+                        mapIdx[StyleItem::KeyClass] = 8; //ClassName
+                        mapIdx[StyleItem::KeyFunction] = 9; //FunctionMethodName
+                        mapIdx[StyleItem::KeyOperator] = 0; //Default
+                        mapIdx[StyleItem::KeyDecorator] = 15; //Decorator
+                        mapIdx[StyleItem::KeyHighlight] = 0; //Default
+                        mapIdx[StyleItem::KeyNamespace] = 0; //Default
+                        mapIdx[StyleItem::KeyType] = 0; //Default
+                        mapIdx[StyleItem::KeyKeywordReserved] = 0; //Default
+                        mapIdx[StyleItem::KeyBuiltin] = 11; //Identifier
+                        mapIdx[StyleItem::KeyDefinition] = 0; //Default
+                        mapIdx[StyleItem::KeyInstance] = 0; //Default
+                        mapIdx[StyleItem::KeyTag] = 0; //Default
+                        mapIdx[StyleItem::KeySelf] = 11; //Identifier  
+                        mapIdx[StyleItem::KeyPunctuation] = 10; //Operator
+                        mapIdx[StyleItem::KeyConstant] = 11; //Identifier
+                        mapIdx[StyleItem::KeyOperatorWord] = 10; //Operator
+
                         QVector<int> stylesFound;
+                        int styleId;
                         bool ok;
                         foreach(const QXmlStreamAttributes &attr, pythonStyles)
                         {
                             for (int i = 0; i < m_styles.size(); ++i)
                             {
-                                if (m_styles[i].m_index == attr.value("styleID").toString().toInt(&ok) && ok)
+                                styleId = attr.value("styleID").toString().toInt(&ok);
+
+                                if (ok && mapIdx.contains(m_styles[i].m_index) && styleId == mapIdx[m_styles[i].m_index])
                                 {
                                     stylesFound << m_styles[i].m_index;
                                     //m_styles[i].m_fillToEOL = false;
