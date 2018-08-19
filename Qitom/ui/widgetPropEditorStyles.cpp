@@ -795,17 +795,17 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         mapIdx[StyleItem::KeyFunction] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyOperator] = 0; //Default
                         mapIdx[StyleItem::KeyDecorator] = 15; //Decorator
-                        mapIdx[StyleItem::KeyHighlight] = 0; //Default
-                        mapIdx[StyleItem::KeyNamespace] = 0; //Default
+                        //mapIdx[StyleItem::KeyHighlight] = 0; //Default
+                        mapIdx[StyleItem::KeyNamespace] = 5; //Keyword
                         mapIdx[StyleItem::KeyType] = 0; //Default
                         mapIdx[StyleItem::KeyKeywordReserved] = 0; //Default
                         mapIdx[StyleItem::KeyBuiltin] = 11; //Identifier
-                        mapIdx[StyleItem::KeyDefinition] = 0; //Default
+                        mapIdx[StyleItem::KeyDefinition] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyInstance] = 0; //Default
                         mapIdx[StyleItem::KeyTag] = 0; //Default
                         mapIdx[StyleItem::KeySelf] = 11; //Identifier  
                         mapIdx[StyleItem::KeyPunctuation] = 10; //Operator
-                        mapIdx[StyleItem::KeyConstant] = 11; //Identifier
+                        mapIdx[StyleItem::KeyConstant] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyOperatorWord] = 10; //Operator
 
                         QVector<int> stylesFound;
