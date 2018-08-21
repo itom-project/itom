@@ -458,7 +458,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             qDebug() << "Py_Initialize done.";
 
+#if (PY_VERSION_HEX < 0x03070000)
             PyEval_InitThreads();                                                   //!< prepare Python multithreading
+#endif
 
             itomModule = PyImport_ImportModule("itom");
             m_pyModGC = PyImport_ImportModule("gc"); //new reference
