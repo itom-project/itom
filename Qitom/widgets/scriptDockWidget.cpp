@@ -644,7 +644,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     \param askFirst if true, the user is asked for confirmation, else all scripts are silently saved
     \param ignoreNewScripts if true do not consider new scripts, which does not have any filename yet
     \param excludeIndex ignore tab with this index, set it to -1 in order to consider every tab (default: -1)
-    \return retOk if all identified scripts could be saved, else retError
+    \return retOk if all identified scripts could be saved or have been discarded, else retError (in order to cancel the execution)
 */
 RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, int excludeIndex)
 {

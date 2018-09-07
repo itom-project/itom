@@ -71,9 +71,12 @@ void DialogCloseItom::on_btnInterrupt_clicked()
 		
         ui.btnInterrupt->setEnabled(false);
         ui.btnCancel->setEnabled(false);
+        ui.progressBarClose->setMaximum(m_secondsToWait);
+        ui.progressBarClose->setValue(0);
 		ui.progressBarClose->setVisible(true);
+        
 		m_secondsElapsed = 0.0;
-		m_timerID = startTimer(500);
+		m_timerID = startTimer(1000);
 
 	}	
 
@@ -88,7 +91,7 @@ void DialogCloseItom::on_btnCancel_clicked()
 //------------------------------------------------------------------------------------------------------
 void DialogCloseItom::timerEvent(QTimerEvent *event)
 {
-	m_secondsElapsed += 0.5;
+	m_secondsElapsed += 1;
 	
 	ui.progressBarClose->setValue(m_secondsElapsed);
 	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
