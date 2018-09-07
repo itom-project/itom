@@ -90,7 +90,7 @@
       <number>24</number>
      </property>
      <property name="format">
-      <string>%p s</string>
+      <string>%v s</string>
      </property>
     </widget>
    </item>

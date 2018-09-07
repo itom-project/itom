@@ -921,6 +921,12 @@ void MainApplication::mainWindowCloseRequest()
             m_scriptEditorOrganizer->saveScriptState();
 
             retValue += m_scriptEditorOrganizer->closeAllScripts(true);
+
+            if (retValue.containsError())
+            {
+                //The user was asked how to proceed with unsaved scripts. In this case, the user cancelled this request... do not close itom!
+                return;
+            }
 		}
 	
 		if (m_mainWin)

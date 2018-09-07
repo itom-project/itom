@@ -52,7 +52,7 @@ private:
     Ui::DialogCloseItom ui;
 
 	int m_secondsToWait;
-	float m_secondsElapsed;
+	int m_secondsElapsed;
 	int m_timerID;
 
 private slots:
