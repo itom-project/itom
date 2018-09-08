@@ -284,22 +284,10 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
-void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
+void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 { 
     if (m_ClassNavigatorEnabled && editor)
     {
-        
-        /*ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
-        ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
-        if (lastClassItem)
-        {
-            lastClass = lastClassItem->m_name;
-        }
-        if (lastMethodItem)
-        {
-            lastMethod = lastMethodItem->m_name;
-        }*/
-
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
             QString lastClass = editor->getCurrentClass();
@@ -761,9 +749,9 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     
     // Load the right Class->Method model for this Editor
-    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
 
-    updateClassesBox(editorWidget);
+    updateCodeNavigation(editorWidget);
 
     updateEditorActions();
     updatePythonActions();
@@ -795,7 +783,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     // Class Navigator
-    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
 
     updateEditorActions();
     updatePythonActions();
@@ -851,7 +839,7 @@ void ScriptDockWidget::currentTabChanged(int index)
         setWindowModified(editorWidget->isModified());
 
         // ClassNavigator: set the right classes in comboboxes
-        updateClassesBox(editorWidget);
+        updateCodeNavigation(editorWidget);
 
         if (editorWidget->hasNoFilename())
         {

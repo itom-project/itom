@@ -1918,7 +1918,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
 int ScriptEditorWidget::getIndentationLength(const QString &str) const
 {
     QString temp = str;
-    temp.replace('\t', "    ");
+    temp.replace('\t', QString(tabLength(), ' '));
     return temp.size();
 }
 

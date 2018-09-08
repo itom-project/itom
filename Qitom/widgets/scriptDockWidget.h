@@ -264,7 +264,7 @@ private slots:
 
 public slots:
     void editorMarginChanged();
-    void updateClassesBox(ScriptEditorWidget *editor);
+    void updateCodeNavigation(ScriptEditorWidget *editor);
 };
 
 } //end namespace ito
