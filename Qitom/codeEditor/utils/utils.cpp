@@ -182,12 +182,12 @@ namespace Utils
         {
             state = 0;
         }
-        if (val >= 0x3FF)
+        if (val >= 0x3FF) //maximum fold level
         {
             val = 0x3FF;
         }
         state &= 0x7C00FFFF;
-        state |= val << 16;
+        state |= (val << 16);
         block.setUserState(state);
     }
 

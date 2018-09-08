@@ -649,7 +649,7 @@ void FoldingPanel::toggleFoldTrigger(const QTextBlock &block)
 
     if (region.collapsed())
     {
-        region.unfold();
+        region.unfold(false);
         if (m_mouseOverLine >= 0)
         {
             QPair<int,int> start_end = region.getRange();

@@ -116,7 +116,7 @@ public:
     bool isValid() const;
     QPair<int, int> getRange(bool ignoreBlankLines = true) const;
     void fold();
-    void unfold();
+    void unfold(bool unfoldChildBlocks = true);
     QString text(int maxLines) const;
     QSharedPointer<FoldScope> parent() const;
     QTextBlock trigger() const;

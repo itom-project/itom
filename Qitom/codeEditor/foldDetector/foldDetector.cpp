@@ -42,6 +42,8 @@
 #include "../utils/utils.h"
 #include <limits>
 
+#include <qdebug.h>
+
 namespace ito {
 
 class FoldDetectorPrivate
@@ -291,17 +293,40 @@ void FoldScope::fold()
 /*
 Unfolds the region.
 */
-void FoldScope::unfold()
+void FoldScope::unfold(bool unfoldChildBlocks /*= true*/)
 {
     // set all direct child blocks which are not triggers to be visible
     m_trigger.setVisible(true);
     Utils::TextBlockHelper::setCollapsed(m_trigger, false);
-    foreach (QTextBlock block, blocks(false))
+    QList<QTextBlock> subblocksOfTrigger = blocks(false);
+
+    if (unfoldChildBlocks)
     {
-        block.setVisible(true);
-        if (Utils::TextBlockHelper::isFoldTrigger(block))
+        foreach (QTextBlock block, subblocksOfTrigger)
         {
-            Utils::TextBlockHelper::setCollapsed(block, false);
+            block.setVisible(true);
+            if (Utils::TextBlockHelper::isFoldTrigger(block))
+            {
+                Utils::TextBlockHelper::setCollapsed(block, false);
+            }
+        }
+    }
+    else if (subblocksOfTrigger.size() > 0)
+    {
+        int lvl = Utils::TextBlockHelper::getFoldLvl(subblocksOfTrigger[0]);
+
+        foreach (QTextBlock block, subblocksOfTrigger)
+        {
+            if (Utils::TextBlockHelper::getFoldLvl(block) == lvl)
+            {
+                block.setVisible(true);
+
+                if (Utils::TextBlockHelper::isFoldTrigger(block) && !Utils::TextBlockHelper::isCollapsed(block))
+                {
+                    FoldScope subblock(block);
+                    subblock.unfold(unfoldChildBlocks);
+                }
+            }
         }
     }
 }
