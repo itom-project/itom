@@ -683,7 +683,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         int indentation;
 
         QTextCursor tc = textCursor();
-        tc.movePosition(QTextCursor::MoveOperation::Start);
+        tc.movePosition(QTextCursor::Start);
         int x = cursorRect(tc).x();
 
         foreach (const VisibleBlock &block, visibleBlocks())
@@ -1153,9 +1153,17 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
                 if (!block.isVisible())
                 {
                     block = FoldScope::findParentScope(block);
-                    if (Utils::TextBlockHelper::isCollapsed(block))
+
+                    while (block.isValid())
                     {
-                        fp->toggleFoldTrigger(block);
+                        qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+                        if (Utils::TextBlockHelper::isCollapsed(block))
+                        {
+                            fp->toggleFoldTrigger(block);
+                        }
+
+                        block = block.previous();
+                        block = FoldScope::findParentScope(block);
                     }
                 }
             }

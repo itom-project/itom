@@ -445,16 +445,20 @@ Find parent scope, if the block is not a fold trigger.
     // would take too much time.
     int limit = 5000;
     int counter = 0;
+    int ref_lvl;
+
     QTextBlock original = block;
-    if (!Utils::TextBlockHelper::isFoldTrigger(block))
+    if (block.isValid() && !Utils::TextBlockHelper::isFoldTrigger(block))
     {
         // search level of next non blank line
         while ((Utils::strip(block.text()) == "") && block.isValid())
         {
             block = block.next();
         }
-        int ref_lvl = Utils::TextBlockHelper::getFoldLvl(block) - 1;
+
+        ref_lvl = Utils::TextBlockHelper::getFoldLvl(block) - 1;
         block = original;
+
         while (block.blockNumber() && (counter < limit) && \
                 (!Utils::TextBlockHelper::isFoldTrigger(block) || \
                 (Utils::TextBlockHelper::getFoldLvl(block) > ref_lvl)))
@@ -463,10 +467,12 @@ Find parent scope, if the block is not a fold trigger.
             block = block.previous();
         }
     }
+
     if (counter < limit)
     {
         return block;
     }
+
     return QTextBlock();
 }
 
