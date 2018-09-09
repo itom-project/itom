@@ -840,6 +840,19 @@ BUILD_PARALLEL_LINUX(${target_name})
 
 # copy some folders and files during generate
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
+
+# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to 
+# also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
+# version is old and creates conflicts with newer versions required by further modern python packages.
+# Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
+# has to be installed manually!
+IF (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
+    message(Fatal "exists delete it")
+    FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
+ELSE()
+    message(Fatal "does not exist")
+ENDIF()
+
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itomSettings/itomDefault.ini  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../itomSettings)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
