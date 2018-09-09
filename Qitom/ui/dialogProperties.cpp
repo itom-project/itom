@@ -29,6 +29,7 @@
 #include "widgetPropEditorCalltips.h"
 #include "widgetPropEditorStyles.h"
 #include "widgetPropEditorAutoCompletion.h"
+#include "widgetPropEditorGotoAssignment.h"
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropEditorScripts.h"
 #include "widgetPropGeneralLanguage.h"
@@ -156,6 +157,7 @@ void DialogProperties::initPages()
     m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - Scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips"), tr("Editor - Calltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - Auto Completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/06gotoassignment"] = PropertyPage(tr("Goto Assignment"), tr("Editor - Goto Assignment"), "04_editor/06gotoassignment", new WidgetPropEditorGotoAssignment(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/06styles"] = PropertyPage(tr("Styles"), tr("Editor - Styles"), "04_editor/06styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - Please Choose Subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/01general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/01general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));

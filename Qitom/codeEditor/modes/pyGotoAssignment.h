@@ -101,32 +101,45 @@ public:
 
     virtual void onStateChanged(bool state);
 
+    void setDefaultWordClickMode(int mode) { m_defaultMode = mode; }
+    int defaultWordClickMode() const { return m_defaultMode; }
+
+    bool mouseClickEnabled() const { return m_mouseClickEnabled; }
+    void setMouseClickEnabled(bool enabled);
+
     virtual QList<QAction*> actions() const;
 
 protected:
-    void doGoto(const PyAssignment &definition);
+    void doGoto(const PyAssignment &assignment);
     virtual void checkWordCursor(const QTextCursor &cursor);
-    QList<PyAssignment> unique(const QList<PyAssignment> &definitions) const;
+    void checkWordCursorWithMode(const QTextCursor &cursor, int mode);
+    QList<PyAssignment> unique(const QList<PyAssignment> &assignments) const;
     virtual void clearSelection();
-    void performGoto(const QList<PyAssignment> &definitions);
+    void performGoto(const QList<PyAssignment> &assignments);
 
 
 private:
     QObject *m_pPythonEngine;
     bool m_gotoRequested;
-    QList<PyAssignment> m_definitions;
-    QAction *m_pActionGoto;
+    QList<PyAssignment> m_assignments;
+    QAction *m_pActionGotoDefinition;
+    QAction *m_pActionGotoAssignment;
+    QAction *m_pActionGotoAssignmentExtended;
+    int m_defaultMode; //mode, if word is clicked: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
+    bool m_mouseClickEnabled;
 
 private slots:
-    void requestGoto();
-    void onJediDefinitionResultsAvailable(QVector<ito::JediDefinition> definitions);
-    void onWordClicked(const QTextCursor &cursor) { performGoto(m_definitions); }
+    void requestGotoDefinition();
+    void requestGotoAssignment();
+    void requestGotoAssignmentEx();
+    void onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments);
+    void onWordClicked(const QTextCursor &cursor) { performGoto(m_assignments); }
 
 
 signals:
-    void outOfDoc(PyAssignment definition); //Signal emitted when the definition cannot be reached in the current document
+    void outOfDoc(PyAssignment assignment); //Signal emitted when the definition cannot be reached in the current document
     void noResultsFound(); //Signal emitted when no results could be found.
-    void jediDefinitionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
+    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
     
 
 };

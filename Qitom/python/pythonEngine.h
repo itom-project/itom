@@ -349,7 +349,7 @@ public slots:
     void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
     void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
     void jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName);
-    void jediDefinitionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
+    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 

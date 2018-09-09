@@ -115,8 +115,9 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
             break #todo, check this further
     return result
 
-def goto_definitions(code, line, column, path, encoding = "utf-8"):
+def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     '''
+    mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
     '''
     if jedi.__version__ >= '0.12.0':
         script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
@@ -124,17 +125,23 @@ def goto_definitions(code, line, column, path, encoding = "utf-8"):
         script = jedi.Script(code, line + 1, column, path, encoding)
     
     try:
-        definitions = script.goto_assignments()
-    except jedi.NotFoundError:
-        definitions = []
+        if mode == 0:
+            assignments = script.goto_definitions()
+        elif mode == 1:
+            assignments = script.goto_assignments(False)
+        else:
+            assignments = script.goto_assignments(True)
+    except Exception as ex:
+        #print(str(ex))
+        assignments = []
     result = []
-    for definition in definitions:
-        #print("Definition::", str(definition), definition.module_path, definition.line, definition.column, definition.full_name)
+    for assignment in assignments:
+        #print("Assignment::", str(assignment), assignment.module_path, assignment.line, assignment.column, assignment.full_name)
         result.append( \
-            (definition.module_path if definition.module_path is not None else "", \
-            definition.line - 1 if definition.line else -1, \
-            definition.column if definition.column else -1, \
-            definition.full_name, \
+            (assignment.module_path if assignment.module_path is not None else "", \
+            assignment.line - 1 if assignment.line else -1, \
+            assignment.column if assignment.column else -1, \
+            assignment.full_name, \
             ) \
             )
     return result

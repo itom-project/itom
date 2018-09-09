@@ -60,10 +60,10 @@ namespace ito
         QString m_docstring;
     };
 
-    struct JediDefinition
+    struct JediAssignment
     {
-        JediDefinition() {};
-        JediDefinition(const QString &path, int line, int column, const QString &fullName) :
+        JediAssignment() {};
+        JediAssignment(const QString &path, int line, int column, const QString &fullName) :
             m_path(path),
             m_line(line),
             m_column(column),
@@ -80,6 +80,6 @@ namespace ito
 
 Q_DECLARE_METATYPE(ito::JediCalltip)
 Q_DECLARE_METATYPE(ito::JediCompletion)
-Q_DECLARE_METATYPE(ito::JediDefinition)
+Q_DECLARE_METATYPE(ito::JediAssignment)
 
 #endif

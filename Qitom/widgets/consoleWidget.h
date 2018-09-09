@@ -140,7 +140,6 @@ private:
     QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;
     QSharedPointer<LineBackgroundMarkerMode> m_markInputLineMode;
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
-    //QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
 
     bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...

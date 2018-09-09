@@ -255,8 +255,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
     qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
     qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
-    qRegisterMetaType<ito::JediDefinition>("ito::JediDefinition");
-    qRegisterMetaType<QVector<ito::JediDefinition> >("QVector<ito::JediDefinition>");
+    qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
+    qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -2061,7 +2061,7 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
             QObject* mainWin = AppManagement::getMainWindow();
             if (mainWin)
             {
-                QString text = tr("Auto completion, calltips... not possible, since the package 'jedi' could not be loaded (Python packages 'jedi' and 'parso' are required for this feature).");
+                QString text = tr("Auto completion, calltips, goto definition... not possible, since the package 'jedi' could not be loaded (Python packages 'jedi' and 'parso' are required for this feature).");
                 QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PythonEngine"));
             }
 
@@ -2150,9 +2150,9 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediDefinitionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
+void PythonEngine::jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName)
 {
-    QVector<ito::JediDefinition> definitions;
+    QVector<ito::JediAssignment> assignments;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -2163,11 +2163,11 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     {
         lineOffset = 1;
         //add from itom import * as first line (this is afterwards removed from results)
-        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siiss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "goto_definitions", "siiss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", source.toUtf8().constData(), line, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2197,17 +2197,17 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
                                 lineOffset = 0;
                             }
                         }
-                        definitions.append(ito::JediDefinition(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
+                        assignments.append(ito::JediAssignment(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
                     }
                 }
                 else
                 {
-                    std::cerr << "Error in definition: invalid format of tuple\n" << std::endl;
+                    std::cerr << "Error in assignment / definition: invalid format of tuple\n" << std::endl;
                 }
             }
             else
             {
-                std::cerr << "Error in definition: list of tuples required\n" << std::endl;
+                std::cerr << "Error in assignment / definition: list of tuples required\n" << std::endl;
             }
         }
 
@@ -2218,7 +2218,7 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     {
         Py_XDECREF(result);
 //#ifdef _DEBUG
-        std::cerr << "Error when getting definitions from jedi\n" << std::endl;
+        std::cerr << "Error when getting assignments or definitions from jedi\n" << std::endl;
         PyErr_PrintEx(0);
 //#endif
     }
@@ -2230,7 +2230,7 @@ void PythonEngine::jediDefinitionRequested(const QString &source, int line, int 
     QObject *s = sender();
     if (s && callbackFctName != "")
     {
-        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediDefinition>, definitions));
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediAssignment>, assignments));
         
     }
 }

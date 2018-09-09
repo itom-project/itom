@@ -171,9 +171,6 @@ RetVal ConsoleWidget::initEditor()
 
     m_pyAutoIndentMode->setKeyPressedModifiers(Qt::ShiftModifier);
 
-    /*m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
-    connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
-    modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());*/
     return RetVal(retOk);
 }
 

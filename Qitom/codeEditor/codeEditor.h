@@ -220,6 +220,7 @@ public:
     void lineIndexFromPosition(int pos, int *line, int *column) const;
     void getCursorPosition(int *line, int *column) const;
     QTextCursor setCursorPosition(int line, int column, bool applySelection = true);
+    void unfoldCursorPosition(); //make sures, that the line of the current cursor is unfold
     void ensureLineVisible(int line);
     QTextCursor gotoLine(int line, int column, bool move = true);
 

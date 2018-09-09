@@ -87,6 +87,7 @@ WordClickMode::~WordClickMode()
         disconnect(editor(), SIGNAL(mouseReleased(QMouseEvent*)), this, SLOT(onMouseReleased(QMouseEvent*)));
         disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
         disconnect(editor(), SIGNAL(mouseDoubleClicked(QMouseEvent*)), this, SLOT(onMouseDoubleClicked(QMouseEvent*)));
+        clearSelection();
     }
 }
 

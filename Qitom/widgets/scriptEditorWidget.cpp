@@ -276,6 +276,10 @@ void ScriptEditorWidget::loadSettings()
     setEdgeColumn(settings.value("edgeColumn", edgeColumn()).toInt());
     setEdgeColor(settings.value("edgeColor", edgeColor()).value<QColor>());
 
+    m_pyGotoAssignmentMode->setEnabled(settings.value("gotoAssignmentEnabled", true).toBool());
+    m_pyGotoAssignmentMode->setMouseClickEnabled(settings.value("gotoAssignmentMouseClickEnabled", m_pyGotoAssignmentMode->mouseClickEnabled()).toBool());
+    m_pyGotoAssignmentMode->setDefaultWordClickMode(settings.value("gotoAssignmentMouseClickMode", m_pyGotoAssignmentMode->defaultWordClickMode()).toInt());
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();

@@ -1141,35 +1141,37 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
     }
     if (move)
     {
-        QTextBlock block = text_cursor.block();
-        // unfold parent fold trigger if the block is collapsed
+        //QTextBlock block = text_cursor.block();
+        //// unfold parent fold trigger if the block is collapsed
 
-        Panel::Ptr panel = panels()->get("FoldingPanel");
-        if (panel)
-        {
-            QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
-            if (fp)
-            {
-                if (!block.isVisible())
-                {
-                    block = FoldScope::findParentScope(block);
+        //Panel::Ptr panel = panels()->get("FoldingPanel");
+        //if (panel)
+        //{
+        //    QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+        //    if (fp)
+        //    {
+        //        if (!block.isVisible())
+        //        {
+        //            block = FoldScope::findParentScope(block);
 
-                    while (block.isValid())
-                    {
-                        qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
-                        if (Utils::TextBlockHelper::isCollapsed(block))
-                        {
-                            fp->toggleFoldTrigger(block);
-                        }
+        //            while (block.isValid())
+        //            {
+        //                qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+        //                if (Utils::TextBlockHelper::isCollapsed(block))
+        //                {
+        //                    fp->toggleFoldTrigger(block);
+        //                }
 
-                        block = block.previous();
-                        block = FoldScope::findParentScope(block);
-                    }
-                }
-            }
-        }
+        //                block = block.previous();
+        //                block = FoldScope::findParentScope(block);
+        //            }
+        //        }
+        //    }
+        //}
 
         setTextCursor(text_cursor);
+        unfoldCursorPosition();
+        ensureCursorVisible();
     }
 
     return text_cursor;
@@ -1527,6 +1529,7 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
 
         if (show)
         {
+            unfoldCursorPosition();
             ensureCursorVisible();
         }
         
@@ -1938,9 +1941,42 @@ QTextCursor CodeEditor::setCursorPosition(int line, int column, bool applySelect
 }
 
 //------------------------------------------------------------
+void CodeEditor::unfoldCursorPosition()
+{
+    QTextBlock block = textCursor().block();
+    // unfold parent fold trigger if the block is collapsed
+
+    Panel::Ptr panel = panels()->get("FoldingPanel");
+    if (panel)
+    {
+        QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+        if (fp)
+        {
+            if (!block.isVisible())
+            {
+                block = FoldScope::findParentScope(block);
+
+                while (block.isValid())
+                {
+                    qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+                    if (Utils::TextBlockHelper::isCollapsed(block))
+                    {
+                        fp->toggleFoldTrigger(block);
+                    }
+
+                    block = block.previous();
+                    block = FoldScope::findParentScope(block);
+                }
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------
 void CodeEditor::ensureLineVisible(int line)
 {
     setCursorPosition(line, 0);
+    unfoldCursorPosition();
     ensureCursorVisible();
 }
 
