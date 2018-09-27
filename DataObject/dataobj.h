@@ -56,7 +56,7 @@ namespace cv
     {
         if(cvIsInf(v)) return std::numeric_limits<ito::float32>::infinity();
         if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::quiet_NaN();
-        return static_cast<ito::float32>(std::max ( (ito::float64)(- std::numeric_limits<ito::float32>::max()) ,  std::min ( v , (ito::float64) std::numeric_limits<ito::float32>::max() )));
+        return static_cast<ito::float32>(std::max ( (ito::float64)(- (std::numeric_limits<ito::float32>::max)()) ,  std::min ( v , (ito::float64) ((std::numeric_limits<ito::float32>::max)()) )));
     }
     
     template<> inline ito::float64 saturate_cast<ito::float64>( ito::float32 v)
