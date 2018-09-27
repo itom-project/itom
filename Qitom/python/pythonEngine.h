@@ -32,6 +32,8 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
+#include "pythonJedi.h"
+
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
 
 #ifndef Q_MOC_RUN
@@ -172,6 +174,9 @@ public:
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
+    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request); //directly call this method from another thread
+    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request); //directly call this method from another thread
+
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 protected:
@@ -231,9 +236,6 @@ private:
 
     //member variables
     bool m_started;
-    //QString m_itomMemberClasses;
-
-    //PyGILState_STATE threadState;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
@@ -241,6 +243,10 @@ private:
     QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
+
+    QMutex m_jediRequestMutex;
+    QQueue<ito::JediCompletionRequest> m_queuedJediCompletionRequests;
+    QQueue<ito::JediCalltipRequest> m_queuedJediCalltipRequests;
     
     ito::tPythonState pythonState;
     
@@ -347,8 +353,8 @@ public slots:
     void propertiesChanged();
 
     void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
-    void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
-    void jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName);
+    //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
+    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
     void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
@@ -385,6 +391,8 @@ public slots:
     ito::RetVal pythonClearAll();
 
 private slots:
+    void jediCompletionRequestEnqueued(); //this slot is invoked whenever a new jedi completion request has been enqueued using the direct, thread-safe method call enqueueJediCompletionRequest(...)
+    void jediCalltipRequestEnqueued(); //this slot is invoked whenever a new jedi calltip request has been enqueued using the direct, thread-safe method call enqueueJediCalltipRequest(...)
 
 };
 

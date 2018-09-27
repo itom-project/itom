@@ -227,10 +227,6 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_tooltipsMaxLength(200)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
-    if (m_pPythonEngine)
-    {
-        connect(this, SIGNAL(jediCompletionRequested(QString,int,int,QString,QString,QString,int,QByteArray)), m_pPythonEngine, SLOT(jediCompletionRequested(QString,int,int,QString,QString,QString,int,QByteArray)));
-    }
 }
 
 //-------------------------------------------------------------------
@@ -588,6 +584,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 //-------------------------------------------------------------------
 void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
 {
+    qDebug() << "completion result obtained " << requestId;
     //debug("completion results (completions=%r), prefix=%s",
     //                results, self.completion_prefix)
 
@@ -674,7 +671,19 @@ bool CodeCompletionMode::requestCompletion()
             if (pyEng->tryToLoadJediIfNotYetDone())
             {
                 QString code = editor()->codeText(line, col); // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
-                emit jediCompletionRequested(code, line, col, filename, "utf-8", m_completionPrefix, m_requestId, "onJediCompletionResultAvailable");
+
+                ito::JediCompletionRequest request;
+                request.m_source = code;
+                request.m_line = line;
+                request.m_col = col;
+                request.m_path = filename;
+                request.m_encoding = "utf-8";
+                request.m_prefix = m_completionPrefix;
+                request.m_requestId = m_requestId;
+                request.m_callbackFctName = "onJediCompletionResultAvailable";
+                request.m_sender = this;
+
+                pyEng->enqueueJediCompletionRequest(request);
 
                 //debug('request sent: %r', data)
                 m_lastCursorColumn = col;

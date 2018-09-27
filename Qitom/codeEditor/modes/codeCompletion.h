@@ -171,7 +171,7 @@ private slots:
     void displayCompletionTooltip(const QString &completion) const;
 
 signals:
-    void jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName);
+    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
 
 protected:
     bool requestCompletion();

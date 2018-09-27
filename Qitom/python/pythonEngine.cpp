@@ -255,6 +255,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
     qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
     qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
+    qRegisterMetaType<ito::JediCompletionRequest>("ito::JediCompletionRequest");
     qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
     qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
 
@@ -2075,9 +2076,30 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
+void PythonEngine::jediCalltipRequestEnqueued()
+//void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
 {
     QVector<ito::JediCalltip> calltips;
+
+    ito::JediCalltipRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCalltipRequests.isEmpty())
+        {
+            request = m_queuedJediCalltipRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -2088,11 +2110,13 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
     {
         //add from itom import * as first line (this is afterwards removed from results)
         lineOffset = 1;
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", request.m_source.toUtf8().constData(), \
+            request.m_line, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2140,12 +2164,28 @@ void PythonEngine::jediCalltipRequested(const QString &source, int line, int col
 
     PyGILState_Release(gstate);
 
-    QObject *s = sender();
-    if (s && callbackFctName != "")
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
     {
-        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
         
     }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCalltipRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCalltipRequests.clear();
+    }
+
+    m_queuedJediCalltipRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCalltipRequestEnqueued");
 }
 
 
@@ -2236,8 +2276,28 @@ void PythonEngine::jediAssignmentRequested(const QString &source, int line, int 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediCompletionRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, const QString &prefix, int requestId, QByteArray callbackFctName)
+void PythonEngine::jediCompletionRequestEnqueued()
 {
+    ito::JediCompletionRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCompletionRequests.isEmpty())
+        {
+            request = m_queuedJediCompletionRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
     QVector<ito::JediCompletion> completions;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
@@ -2247,11 +2307,13 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
     if (m_includeItomImportBeforeSyntaxCheck)
     {
         //add from itom import * as first line (this is afterwards removed from results)
-        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", source.toUtf8().constData(), line, col, path.toUtf8().constData(), prefix.toUtf8().constData(), encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
+            request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2300,12 +2362,34 @@ void PythonEngine::jediCompletionRequested(const QString &source, int line, int 
 
     PyGILState_Release(gstate);
 
-    QObject *s = sender();
-    if (s && callbackFctName != "")
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
     {
-        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(int, line), Q_ARG(int, col), Q_ARG(int, requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(int, request.m_line), \
+            Q_ARG(int, request.m_col), Q_ARG(int, request.m_requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
         
     }
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCompletionRequests.clear();
+    }
+
+    m_queuedJediCompletionRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

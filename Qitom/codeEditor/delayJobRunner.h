@@ -47,6 +47,7 @@
 #define DELAY_JOB_RUNNER_ARGTEXTBLOCK(base,T1,T2) ((DelayJobRunnerArgTextBlock<T1,T2>*)(base))
 #define DELAY_JOB_RUNNER_ARGTEXTCURSOR(base,T1,T2) ((DelayJobRunnerArgTextCursor<T1,T2>*)(base))
 #define DELAY_JOB_RUNNER_NOARGS(base,T1,T2) ((DelayJobRunnerNoArgs<T1,T2>*)(base))
+#define DELAY_JOB_RUNNER_GENERICARG(base,T1,T2,T3) ((DelayJobRunnerGenericArg<T1,T2,T3>*)(base))
 
 namespace ito {
 
@@ -268,6 +269,73 @@ private:
         if (m_obj)
         {
             (m_obj->*m_func)(m_cursor);
+        }
+    }
+};
+
+
+
+/*
+Utility class for running job after a certain delay. If a new request is
+made during this delay, the previous request is dropped and the timer is
+restarted for the new request.
+We use this to implement a cooldown effect that prevents jobs from being
+executed while the IDE is not idle.
+A job is a simple callable.
+*/
+template <typename OBJECT, typename FUNC, typename ARGTYPE>
+class DelayJobRunnerGenericArg : public DelayJobRunnerBase
+{
+
+
+public:
+    //-------------------------------------------
+    /*
+    :param delay: Delay to wait before running the job. This delay applies
+    to all requests and cannot be changed afterwards.
+    */
+    DelayJobRunnerGenericArg(int delay = 500, QObject *parent = NULL) :
+        DelayJobRunnerBase(delay, parent),
+        m_func(NULL),
+        m_obj(NULL)
+    {
+        int i = 0;
+    }
+
+    virtual ~DelayJobRunnerGenericArg() {}
+
+    void requestJob(OBJECT* obj, FUNC f, const ARGTYPE &arg)
+    {
+        cancelRequests();
+        m_obj = obj;
+        m_func = f;
+        m_arg = arg;
+        m_timer.start(m_delay);
+    }
+
+    virtual void cancelRequests()
+    {
+        m_timer.stop();
+        m_obj = NULL;
+        m_func = NULL;
+        m_arg = ARGTYPE();
+    }
+
+private:
+    OBJECT* m_obj;
+    FUNC m_func;
+    ARGTYPE m_arg;
+
+    //-------------------------------------------
+    /*
+    Execute the requested job after the timer has timeout.
+    */
+    virtual void execRequestedJob()
+    {
+        m_timer.stop();
+        if (m_obj)
+        {
+            (m_obj->*m_func)(m_arg);
         }
     }
 };

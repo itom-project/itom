@@ -25,9 +25,24 @@
 
 #include <QMetaType>
 #include <qstring.h>
+#include <qpointer.h>
+#include <qobject.h>
 
 namespace ito
 {
+    //--------------------------------------------------------------------------------------
+    struct JediCalltipRequest
+    {
+        QString m_source;
+        int     m_line;
+        int     m_col;
+        QString m_path;
+        QString m_encoding;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
     struct JediCalltip
     {
         JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1) {};
@@ -44,6 +59,21 @@ namespace ito
         int m_bracketStartLine;
     };
 
+    //--------------------------------------------------------------------------------------
+    struct JediCompletionRequest
+    {
+        QString m_source;
+        int     m_line;
+        int     m_col;
+        QString m_path;
+        QString m_encoding;
+        QString m_prefix;
+        int m_requestId;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
     struct JediCompletion
     {
         JediCompletion() {};
@@ -60,6 +90,7 @@ namespace ito
         QString m_docstring;
     };
 
+    //--------------------------------------------------------------------------------------
     struct JediAssignment
     {
         JediAssignment() {};

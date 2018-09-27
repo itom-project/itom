@@ -57,10 +57,10 @@ PyCalltipsMode::PyCalltipsMode(const QString &name, const QString &description /
     m_requestCount(0)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
-    if (m_pPythonEngine)
+    /*if (m_pPythonEngine)
     {
         connect(this, SIGNAL(jediCalltipRequested(QString,int,int,QString,QString,QByteArray)), m_pPythonEngine, SLOT(jediCalltipRequested(QString,int,int,QString,QString,QByteArray)));
-    }
+    }*/
 
     m_disablingKeys << Qt::Key_ParenRight << \
             Qt::Key_Return << \
@@ -180,7 +180,18 @@ void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, co
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
             m_requestCount += 1;
-            emit jediCalltipRequested(source, line, col, filename, encoding, "onJediCalltipResultAvailable");
+
+            ito::JediCalltipRequest request;
+            request.m_callbackFctName = "onJediCalltipResultAvailable";
+            request.m_col = col;
+            request.m_encoding = encoding;
+            request.m_line = line;
+            request.m_path = filename;
+            request.m_sender = this;
+            request.m_source = source;
+
+            pyEng->enqueueJediCalltipRequest(request);
+            //emit jediCalltipRequested(source, line, col, filename, encoding, "onJediCalltipResultAvailable");
         }
         else
         {

@@ -78,7 +78,7 @@ private slots:
     void onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
 
 signals:
-    void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
+    //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
 
 protected:
     void requestCalltip(const QString &source, int line, int col, const QString &encoding);
