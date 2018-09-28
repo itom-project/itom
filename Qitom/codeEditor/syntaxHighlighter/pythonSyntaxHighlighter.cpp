@@ -466,17 +466,27 @@ QString any(const QString &name, const QStringList &alternates)
     //some fixes: 1. numbers with postfix l or L does not exist any more in python 3;
     // 2. the order of the following number entries is relevant
     // 3. if dots are included in the regex, no \\b can be used, since the dot is also a word boundary
-    QString number = any("number", QStringList() << \
+#if QT_VERSION > MIN_QT_REGULAREXPRESSION_VERSION
+    //using lookbehind
+    QString number = any("number", QStringList() <<  
                 "\\b0[xX][0-9A-Fa-f]+\\b" <<
                 "\\b0[oO][0-7]+\\b" <<
                 "\\b0[bB][01]+\\b" <<
-                "[\\+\\-]0[xX][0-9A-Fa-f]+\\b" <<
-                "[\\+\\-]0[oO][0-7]+\\b" <<
-                "[\\+\\-]0[bB][01]+\\b" <<
-                "[\\+\\-]?\\.[0-9]+(?:[eE][+-]?[0-9]+)?[jJ]?" <<
-                "[\\+\\-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
-                "[0-9]+[jJ]?\\b" <<
-                "[\\+\\-][0-9]+[jJ]?\\b"     ); //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
+                "(?<![a-zA-Z\\)\\]\\}\\._])\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+                "(?<![a-zA-Z\\)\\]\\}\\.0-9_])[\\+\\-]\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?"); 
+#else
+    QString number = any("number", QStringList() << \
+            "\\b0[xX][0-9A-Fa-f]+\\b" <<
+            "\\b0[oO][0-7]+\\b" <<
+            "\\b0[bB][01]+\\b" <<
+            "[\\+\\-]0[xX][0-9A-Fa-f]+\\b" <<
+            "[\\+\\-]0[oO][0-7]+\\b" <<
+            "[\\+\\-]0[bB][01]+\\b" <<
+            "[\\+\\-]?\\.[0-9]+(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+            "[\\+\\-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+            "[0-9]+[jJ]?\\b" <<
+            "[\\+\\-][0-9]+[jJ]?\\b"     ); //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
+#endif
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
     QString sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";
