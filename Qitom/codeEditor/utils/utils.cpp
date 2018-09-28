@@ -92,9 +92,9 @@ namespace Utils
         parentheses = listSymbols(editor, block, '(') + listSymbols(editor, block, ')');
         qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
         squareBrackets = listSymbols(editor, block, '[') + listSymbols(editor, block, ']');
-        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        qSort(squareBrackets.begin(), squareBrackets.end(), sortParenthesisInfo);
         braces = listSymbols(editor, block, '{') + listSymbols(editor, block, '}');
-        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        qSort(braces.begin(), braces.end(), sortParenthesisInfo);
     }
 
     //-------------------------------------------------------------
