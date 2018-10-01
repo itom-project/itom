@@ -423,7 +423,7 @@ namespace ito
     {
         public:
 
-            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = std::numeric_limits<int>::max(), ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
+            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = (std::numeric_limits<int>::max)(), ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
             inline int getAllowedTypes() const { return m_allowedTypes; }
             inline int getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
             inline int getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
