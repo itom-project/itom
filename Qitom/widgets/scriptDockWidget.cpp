@@ -1785,7 +1785,12 @@ void ScriptDockWidget::mnuSaveScriptAs()
     ScriptEditorWidget *sew = getEditorByIndex(m_actTabIndex);
     if (sew != NULL)
     {
-        sew->saveAsFile(false);
+        ito::RetVal retval = sew->saveAsFile(false);
+
+        if (retval == ito::retOk)
+        {
+            currentTabChanged(m_actTabIndex);
+        }
     }
 }
 
