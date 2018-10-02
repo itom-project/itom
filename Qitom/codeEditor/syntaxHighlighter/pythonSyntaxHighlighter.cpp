@@ -472,8 +472,10 @@ QString any(const QString &name, const QStringList &alternates)
                 "\\b0[xX][0-9A-Fa-f]+\\b" <<
                 "\\b0[oO][0-7]+\\b" <<
                 "\\b0[bB][01]+\\b" <<
-                "(?<![a-zA-Z\\)\\]\\}\\._])\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
+                "(?<![a-zA-Z\\)\\]\\}\\.0-9_])\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
                 "(?<![a-zA-Z\\)\\]\\}\\.0-9_])[\\+\\-]\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?"); 
+    //hint: maybe, the first 0-9 range in the lookbehind of the next-to-last expression is not 'necessary' for  Qt < 5.9. 
+    //test it by typing a2000 in python. The correct version should identify the entire string as string, not number (even not the zeros as number)
 #else
     QString number = any("number", QStringList() << \
             "\\b0[xX][0-9A-Fa-f]+\\b" <<
