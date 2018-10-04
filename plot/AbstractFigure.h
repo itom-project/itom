@@ -209,6 +209,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         ito::uint8 m_lineCutType;
         ito::uint8 m_zSliceType;
         ito::uint8 m_zoomCutType;
+        ito::uint8 m_volumeCutType;
 
     private:
         AbstractFigurePrivate *d;
