@@ -36,25 +36,25 @@
     #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #if (defined linux) | (defined CMAKE)
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "numpy/arrayobject.h"
         #elif (defined __APPLE__) | (defined CMAKE)
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "numpy/arrayobject.h"
         #else
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
         #endif
         #define _DEBUG
     #else
         #ifdef linux
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "numpy/arrayobject.h"
         #elif (defined __APPLE__)
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "numpy/arrayobject.h"
         #else
-            #include "Python.h"
+            #include "../Python_wrapper.h"
             #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
         #endif
     #endif
