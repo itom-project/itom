@@ -206,7 +206,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
     * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: 
 
-        * **PYTON_EXECUTABLE**: /usr/local/bin/python3.4
+        * **PYTHON_EXECUTABLE**: /usr/local/bin/python3.4
         * **PYTHON_INCLUDE_DIR**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/include/python3.4m
         * **PYTHON_LIBRARY**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4.dylib
         * **PYTHON_LIBRARY_DEBUG**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.PYTHON_LIBRARY_RELEASE**: framework/Versions/3.4/lib/libpython3.4.dylib
@@ -244,7 +244,8 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 Build plugins
 ---------------
 
-Build the plugins, designerPlugins... in the same way than |itom| but make sure that you compiled |itom| at least once before you start configuring and compiling any plugin. In CMake, you need to indicate the same variables than above, but you also need to set the variable **ITOM_DIR_SDK** to the **sdk** folder in **build_debug/itom/sdk** or **build_release/itom/sdk** depending whether you want to compile a debug or release version (please don't forget to set **CMAKE_BUILD_TYPE**. 
+Build the plugins, designerPlugins... in the same way than |itom| but make sure that you compiled |itom| at least once before you start configuring and compiling any plugin. In CMake, you need to indicate the same variables 
+than above, but you also need to set the variable **ITOM_SDK_DIR** to the **sdk** folder in **build_debug/itom/sdk** or **build_release/itom/sdk** depending whether you want to compile a debug or release version (please don't forget to set **CMAKE_BUILD_TYPE**. 
 
 If you don't want to have some of the plugins, simply uncheck them in CMake under the group **Plugin**.
 
