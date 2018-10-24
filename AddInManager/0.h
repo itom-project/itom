@@ -12,30 +12,30 @@
 #if (defined _DEBUG) && (defined WIN32)
     #undef _DEBUG
     #if (defined linux) | (defined CMAKE)
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
     #elif (defined __APPLE__) | (defined CMAKE)
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
     #else
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
     #define _DEBUG
 #else
     #if (defined linux)
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
     #elif (defined __APPLE__)
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
     #else
-        #include "../Python_wrapper.h"
+        #include "../pythonWrapper.h"
         #include "node.h"
         #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
