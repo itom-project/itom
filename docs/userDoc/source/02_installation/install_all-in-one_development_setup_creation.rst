@@ -215,6 +215,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
 * Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.6.0/msvc2013_64/lib/cmake/Qt5**. 
 * Check VTK_BUILD_QT_DESIGNER_PLUGIN.
+* Uncheck VTK_Group_Qt
 
 .. note::
 
