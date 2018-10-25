@@ -99,6 +99,8 @@ void AbstractCodeEditorWidget::loadSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
+    bool updateSyntaxHighlighter = false;
+
     CodeEditorStyle defaultStyle;
 
     // ------------ general  --------------------------------------------------------
@@ -179,8 +181,19 @@ void AbstractCodeEditorWidget::loadSettings()
     //setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
     //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
 
-    m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
-    m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+    QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
+
+    if (keyWhitespaceFormat.background() != m_pythonSyntaxHighlighter->editorStyle()->background())
+    { 
+        m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
+        updateSyntaxHighlighter = true;
+    }
+
+    if (keyWhitespaceFormat.foreground().color() != QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
+    {
+        m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+        updateSyntaxHighlighter = true;
+    }
 
     m_symbolMatcher->setMatchBackground(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
     m_symbolMatcher->setMatchForeground(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
@@ -216,7 +229,7 @@ void AbstractCodeEditorWidget::loadSettings()
 
     QTextCharFormat defaultFormat;
     QTextCharFormat currentFormat;
-    bool updateSyntaxHighlighter = false;
+    
 
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
