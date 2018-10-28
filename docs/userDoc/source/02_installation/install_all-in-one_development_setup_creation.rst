@@ -206,10 +206,12 @@ Compile VTK
 
 Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and execute than CMake with this two folders. 
 
-* Uncheck BUILD_EXAMPLES, BUILD_TESTING. 
-* Uncheck HDF5_USE_FOLDERS, HDF5_EMBEEDDED_LIBINFO
-* Check Module_vtkGUISupportQt, Module_vtkGUISupportQtOpenGL, Module_vtkGUISupportQtSQL, Module_vtkGUISupportWebkit, Module_vtkRenderingQT and Module_vtkViewsQt. 
-* Add a new entry in name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
+* Uncheck BUILD_EXAMPLES, BUILD_TESTING and BUILD_SHARED_LIBS.
+* Uncheck HDF5_USE_FOLDERS, HDF5_EMBEEDDED_LIBINFO, 
+* Check Module_vtkGUISupportQt, Module_vtkGUISupportQtOpenGL, Module_vtkGUISupportQtSQL, Module_vtkRenderingQT and Module_vtkViewsQt. 
+* Add a new entry: name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
+* Add a new entry: name = **"VTK_USE_QT"**, type = **"BOOL"** with the value = checked
+* Add a new entry: name = **"VTK_USE_GUISUPPORT"**, type = **"BOOL"** with the value = checked
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
