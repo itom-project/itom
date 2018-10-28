@@ -46,11 +46,9 @@
         #include "numpy/arrayobject.h"
         #define _DEBUG
     #else
-    #ifdef linux
         #include "pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
-
     #endif
 
 #endif // Q_MOC_RUN
