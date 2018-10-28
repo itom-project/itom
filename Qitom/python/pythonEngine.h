@@ -39,34 +39,14 @@
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
     #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
-        #if (defined linux) | (defined CMAKE)
-            #include "Python.h"
-            #include "node.h"
-            #include "numpy/arrayobject.h"
-        #elif (defined __APPLE__) | (defined CMAKE)
-            #include "Python.h"
-            #include "node.h"
-            #include "numpy/arrayobject.h"
-        #else
-            #include "Python.h"
-            #include "node.h"
-            #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-        #endif
+        #include "pythonWrapper.h"
+        #include "node.h"
+        #include "numpy/arrayobject.h"
         #define _DEBUG
     #else
-    #ifdef linux
-        #include "Python.h"
+        #include "pythonWrapper.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
-    #elif (defined __APPLE__)
-        #include "Python.h"
-        #include "node.h"
-        #include "numpy/arrayobject.h"
-    #else
-        #include "Python.h"
-        #include "node.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-    #endif
     #endif
 #endif // Q_MOC_RUN
 
