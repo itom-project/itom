@@ -438,6 +438,7 @@ IF(WIN32)
 ELSE(WIN32)
    #Under linux, copying the library (like under Windows) will result in a strange double-linked-list error, since two libraries with the
    #same content will then be loaded by itom. Therefore, a symbolic link to the original library is created in the designer-folder.
+    file(MAKE_DIRECTORY "${ITOM_APP_DIR}/designer")
     ADD_CUSTOM_COMMAND(TARGET ${target_name} POST_BUILD                                                # Adds a post-build event to this target
             COMMAND ${CMAKE_COMMAND} -E create_symlink                                                                    # which executes "cmake - E create_symlink..."
                 "$<TARGET_LINKER_FILE:${target_name}>"                                                                                      # <--this is the old file
