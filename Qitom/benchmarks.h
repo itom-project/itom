@@ -339,6 +339,30 @@ void benchmarkTestColor()
     qDebug() << "time: " << (ende-start)/freq;
 }
 
+void dataObjectDStackMemoryLeak()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        qDebug() << "round " << i;
+        int n = 50;
+        ito::DataObject *mats = new ito::DataObject[n];
+        for (int i = 0; i < n; ++i)
+        {
+            mats[i] = ito::DataObject(1000,1000, ito::tFloat64);
+        }
+
+        {
+            ito::DataObject result = ito::DataObject::stack(mats, n);
+
+            delete[] mats;
+            mats = NULL;
+        }
+
+        qDebug() << "round " << i << " finished";
+    }
+
+}
+
 
 void startBenchmarks()
 {

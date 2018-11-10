@@ -7271,8 +7271,9 @@ The result is stored in a result matrix of the same plane size and type. Only on
 	{
 		cv::error(cv::Exception(CV_StsAssert, "A length less than one was given", "", __FILE__, __LINE__));
 	}
-	if (num == 1)
+	else if (num == 1)
 	{
+        //TODO: is this good? (Marc: I would return a 3d object, too)
 		return mats[0];
 	}
 	if (axis >= 3)
@@ -7280,29 +7281,36 @@ The result is stored in a result matrix of the same plane size and type. Only on
 		cv::error(cv::Exception(CV_StsAssert, "An axis greater 2 was given", "", __FILE__, __LINE__));
 	}
 
-	int type = mats[0].getType();
+    const ito::DataObject &firstMat = mats[0];
+
+	int type = firstMat.getType();
 	if (type == ito::tUInt32)
 	{
 		cv::error(cv::Exception(CV_StsAssert, "DataType uint32 is not supported by this function", "", __FILE__, __LINE__));
 	}
-	int *planeSize = new int[2];
-	planeSize[0] = mats[0].getSize(mats[0].getDims() - 2);
-	planeSize[1] = mats[0].getSize(mats[0].getDims() - 1);
-	int cnt;
+
+    if (firstMat.getDims() < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "First dataObject is empty", "", __FILE__, __LINE__));
+    }
+
+	int planeSize[2];
+    std::vector<int> sizes(2);
+
+	sizes[0] = planeSize[0] = firstMat.getSize(firstMat.getDims() - 2);
+	sizes[1] = planeSize[1] = firstMat.getSize(firstMat.getDims() - 1);
+	
+    int cnt;
 	int dims;
 	bool valid;
-	std::vector<int> sizes;
-	sizes.resize(2);
-	sizes[0] = mats[0].getSize(mats[0].getDims() - 2);
-	sizes[1] = mats[0].getSize(mats[0].getDims() - 1);
 
 	//check if only one dimension excluding the last but two has a size greater than one and find the location of this  dimension
 	unsigned int stackLayers = 0;
 	int size;
 	int *objLayers = new int[num];
+
 	for (int i = 0; i < num; ++i)
 	{
-
 		dims = mats[i].getDims();
 		if (dims > 2)
 		{
@@ -7324,29 +7332,31 @@ The result is stored in a result matrix of the same plane size and type. Only on
 				{
 					if (mats[i].getSize(cnt) != 1)
 					{
-						objLayers = NULL;
-						delete[] objLayers;
+                        DELETE_AND_SET_NULL_ARRAY(objLayers);
 						cv::error(cv::Exception(CV_StsAssert, cv::format("%i-th element of sequence has more than one dimension of a size greater than one (regardless the last two).", i), "", __FILE__, __LINE__));
 					}
 				}
 			}
+
 			if (valid) //if still valid the dataObject contains only one plane
 			{
 				++stackLayers;
 				objLayers[i] = 1;
 			}
 		}
-		else{
+		else
+        {
 			++stackLayers; 
 			objLayers[i] = 1;
 		}
+
 		if (mats[i].getType() != type)
 		{
+            DELETE_AND_SET_NULL_ARRAY(objLayers);
 			cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
-			planeSize = NULL;
-			delete[] planeSize;
 		}
 	}
+
 	switch (axis)
 	{
 	case 0:
@@ -7354,16 +7364,14 @@ The result is stored in a result matrix of the same plane size and type. Only on
 		{
 			if (mats[i].getType() != type)
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 			//check the last size of the last two dimensions 
 			if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || mats[i].getSize(mats[i].getDims() - 2) != planeSize[0])
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "The last two dimensions of the given dataObjects differ in size.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 		}
 		break;
@@ -7372,16 +7380,14 @@ The result is stored in a result matrix of the same plane size and type. Only on
 		{
 			if (mats[i].getType() != type)
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 			//check the last size of the last two dimensions 
 			if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || objLayers[i] != objLayers[1])
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject has a different number of layers or a shape of the last dimension that does not fit.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 			sizes[0] += mats[i].getSize(mats[i].getDims() - 2);
 		}
@@ -7391,21 +7397,20 @@ The result is stored in a result matrix of the same plane size and type. Only on
 		{
 			if (mats[i].getType() != type)
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 			//check the last size of the last two dimensions 
 			if (mats[i].getSize(mats[i].getDims() - 2) != planeSize[0] || objLayers[i] != objLayers[1])
 			{
+                DELETE_AND_SET_NULL_ARRAY(objLayers);
 				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject has a different number of layers or a shape of the last but one dimension that does not fit.", "", __FILE__, __LINE__));
-				planeSize = NULL;
-				delete[] planeSize;
 			}
 			sizes[1] += mats[i].getSize(mats[i].getDims() - 1);
 		}
 		break;
 	}
+
 	DataObject resObj;
 	//copy
 	if (axis == 0)
@@ -7433,19 +7438,16 @@ The result is stored in a result matrix of the same plane size and type. Only on
 					//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
 					tempPlane->copyTo(planes[planeCount++]);
 				}
-
 			}
 		}
-		int *shape = new int[3];
+		int shape[3];
 		shape[0] = stackLayers;
 		shape[1] = planeSize[0];
 		shape[2] = planeSize[1];
 
 		resObj = DataObject(3, shape, type, planes, stackLayers);
-		shape = NULL;
-		delete[] shape;
-		planes = NULL;
-		delete[] planes;
+
+        DELETE_AND_SET_NULL_ARRAY(planes);
 	}
 	else if (axis == 1)
 	{
@@ -7458,10 +7460,9 @@ The result is stored in a result matrix of the same plane size and type. Only on
 		resObj = DataObject(objLayers[0], sizes[0], sizes[1], type);
 		fListplaneStackFunc[type](mats, num, axis, &resObj);
 	}
-	objLayers = NULL;
-	delete[] objLayers;
-	planeSize = NULL;
-	delete[] planeSize;
+	
+    DELETE_AND_SET_NULL_ARRAY(objLayers);
+
 	return resObj;
 }
 
