@@ -185,8 +185,11 @@ bool SymbolMatcherMode::matchLeft(SymbolMatcherMode::Symbols symbol, const QText
             break;
         }
 
-        foreach (const Utils::ParenthesisInfo &info, used)
+        //foreach (const Utils::ParenthesisInfo &info, used)
+        for (int j = i; j < used.size(); ++j)
         {
+            Utils::ParenthesisInfo &info = used[j];
+            
             if (info.character == chars[symbol + Open])
             {
                 cpt ++;

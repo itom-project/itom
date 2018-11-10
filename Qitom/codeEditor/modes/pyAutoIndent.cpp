@@ -41,6 +41,8 @@
 #include "../modes/symbolMatcherMode.h"
 #include "../managers/modesManager.h"
 
+#include <qdebug.h>
+
 namespace ito {
 
 PyAutoIndentMode::PyAutoIndentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
