@@ -63,7 +63,8 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pActionGotoAssignment(NULL),
     m_pActionGotoAssignmentExtended(NULL),
     m_defaultMode(1),
-    m_mouseClickEnabled(true)
+    m_mouseClickEnabled(true),
+    m_gotoRequestedTimerId(0)
 {
     qRegisterMetaType<PyAssignment>("PyAssignment");
 
@@ -173,7 +174,16 @@ void PyGotoAssignmentMode::requestGotoAssignmentEx()
 */
 void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments)
 {
-    QApplication::restoreOverrideCursor();
+    if (m_gotoRequestedTimerId > 0)
+    { 
+        QApplication::restoreOverrideCursor();
+        killTimer(m_gotoRequestedTimerId);
+        m_gotoRequestedTimerId = 0;
+    }
+    else
+    {
+        int i = 1;
+    }
 
     foreach (const ito::JediAssignment &d, assignments)
     {
@@ -287,13 +297,37 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
 
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
+            if (m_gotoRequestedTimerId > 0)
+            {
+                QApplication::restoreOverrideCursor();
+                killTimer(m_gotoRequestedTimerId);
+            }
+
             QApplication::setOverrideCursor(Qt::WaitCursor);
+
+            m_gotoRequestedTimerId = startTimer(gotoRequestedTimeoutMs);
+
             emit jediAssignmentRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "utf-8", mode, "onJediAssignmentResultsAvailable");
         }
         else
         {
             onStateChanged(false);
         }
+    }
+}
+
+//--------------------------------------------------------------
+/*
+*/
+void PyGotoAssignmentMode::timerEvent(QTimerEvent *event)
+{
+    qDebug() << "Timeout to obtain a goto assignment result from python. Probably python is busy.";
+    QApplication::restoreOverrideCursor();
+
+    if (m_gotoRequestedTimerId > 0)
+    {
+        killTimer(m_gotoRequestedTimerId);
+        m_gotoRequestedTimerId = 0;
     }
 }
 

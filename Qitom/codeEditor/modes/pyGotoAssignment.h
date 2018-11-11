@@ -117,10 +117,14 @@ protected:
     virtual void clearSelection();
     void performGoto(const QList<PyAssignment> &assignments);
 
+    void timerEvent(QTimerEvent *event) override;
 
 private:
     QObject *m_pPythonEngine;
     bool m_gotoRequested;
+    int m_gotoRequestedTimerId;
+    static const int gotoRequestedTimeoutMs = 3000;
+
     QList<PyAssignment> m_assignments;
     QAction *m_pActionGotoDefinition;
     QAction *m_pActionGotoAssignment;
