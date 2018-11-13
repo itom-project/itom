@@ -8,8 +8,8 @@ import sys
 from os import path
 from sphinx.util import format_exception_cut_frames, save_traceback
 from sphinx.util.console import darkred, nocolor
-
 from sphinx.application import Sphinx
+
 from docutils.utils import SystemMessage
 import subprocess
 import itom
@@ -17,6 +17,7 @@ import __main__
 import shutil
 import glob
 import modify_doc
+import re
 
 from sys import platform as _platform
 
@@ -84,6 +85,20 @@ for buildername in buildernames:
         #[iI] is a regexp for case insensitive letter i e.g.
         filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp") 
         ret = 0
+        
+        import sphinx
+        if sphinx.__version__ >= "1.8.0":
+            #temporary fix to replace <file>/index.html</file> by <file>index.html</file> in qhp file
+            #see: https://github.com/sphinx-doc/sphinx/issues/5627
+            for qhpName in glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhp"):
+                newContent = None
+                with open(qhpName, 'rt') as fp:
+                    content = fp.read()
+                    newContent = re.sub("<file>/([a-zA-Z0-9\._\-]*)</file>",r"<file>\1</file>", content, flags =re.M)
+                if not newContent is None:
+                    with open(qhpName, 'wt') as fp:
+                        fp.write(newContent)
+        
         if _platform == "darwin":   # OS X
             ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
         else:
