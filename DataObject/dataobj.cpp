@@ -8118,7 +8118,7 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &resObj, const char *color, const int &type)
 {
-    int numChannels = strlen(color);
+    int numChannels = (int)strlen(color);
 
     switch (numChannels)
     {
@@ -8282,7 +8282,7 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
     {
         cv::error(cv::Exception(CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
     }
-    int numChannels = strlen(destinationColor);
+    int numChannels = (int)strlen(destinationColor);
     for (int channel = 0; channel < numChannels; ++channel)
     {
         if (destinationColor[channel] != 'b' && destinationColor[channel] != 'r' \
