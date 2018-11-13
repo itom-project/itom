@@ -259,28 +259,252 @@ namespace ito
             //--------------------------------------------------------------------------------------------
             //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
             //--------------------------------------------------------------------------------------------
-            //! default constructor, creates "empty" tParam
+            //! default constructor, creates "empty" Param
+            /*
+            This parameter has no documentation string and no meta information.
+            The type is 0 (invalid).
+            The name is empty.
+            */
             Param() : ParamBase(), m_pMeta(NULL), m_info(NULL) {}
-            Param(const ByteArray &name) : ParamBase(name), m_pMeta(NULL), m_info(NULL) {}                         // type-less Param with name only
-            Param(const ByteArray &name, const uint32 type) : ParamBase(name, type), m_pMeta(NULL), m_info(NULL) {}   // constructor with type and name
-            Param(const ByteArray &name, const uint32 type, const char *val, const char *info);                        // constructor with name and type, char val and optional info
-            Param(const ByteArray &name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
-            Param(const ByteArray &name, const uint32 type, const int32 minVal, const int32 maxVal, const int32 val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
-            Param(const ByteArray &name, const uint32 type, const float64 minVal, const float64 maxVal, const float64 val, const char *info); // constructor with name and type, double val, double minVal, double maxVal and optional info
+
+            //!< type-less Param with name only
+            /*
+            This parameter has no documentation string and no meta information.
+            The type is 0 (invalid).
+
+            \param name is the name of the parameter
+            */
+            Param(const ByteArray &name) : ParamBase(name), m_pMeta(NULL), m_info(NULL) {}
+
+            //!< type-less Param with name and type
+            /*
+            This parameter has no documentation string and no meta information.
+
+            \param name is the name of the parameter
+            \type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+            e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
+            */
+            Param(const ByteArray &name, const uint32 type) : ParamBase(name, type), m_pMeta(NULL), m_info(NULL) {}
+
+            //!< Constructor for a string value (const char*)
+            /*
+            This parameter has no meta information. They can be added using setMetaInfo.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::String | ito::ParamBase::In for a read-only input parameter
+            \param val is the default string (const char*) of this parameter
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const char *val, const char *info);
+
+            //!< Constructor for a char value parameter (int8)
+            /*
+            This parameter will automatically get meta information of type ito::CharMeta with a minimum and maximum value.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
+            \param minVal is the minimum allowed value (added to meta information)
+            \param maxVal is the maximum allowed value (added to meta information)
+            \param val is the default int8 value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info);
+            
+            //!< Constructor for an integer value parameter (int32)
+            /*
+            This parameter will automatically get meta information of type ito::IntMeta with a minimum and maximum value.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+            e.g. ito::ParamBase::Int | ito::ParamBase::In for a read-only input parameter
+            \param minVal is the minimum allowed value (added to meta information)
+            \param maxVal is the maximum allowed value (added to meta information)
+            \param val is the default int32 value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const int32 minVal, const int32 maxVal, const int32 val, const char *info);
+
+            //!< Constructor for an double value parameter (float64)
+            /*
+            This parameter will automatically get meta information of type ito::DoubleMeta with a minimum and maximum value.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+            e.g. ito::ParamBase::Double | ito::ParamBase::In for a read-only input parameter
+            \param minVal is the minimum allowed value (added to meta information)
+            \param maxVal is the maximum allowed value (added to meta information)
+            \param val is the default float64 value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const float64 minVal, const float64 maxVal, const float64 val, const char *info);
+            
+            //!< Constructor for a character array parameter (int8)
+            /*
+            This parameter has no meta information. They can be added using setMetaInfo.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::CharArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the size of the given default values array
+            \param values is the default int8 array value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, const char *info);  // array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, const char *info);   // array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, const char *info);// array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, const char *info);// array constructor with name and type, size and array
+            
+            //!< Constructor for an integer array parameter (int32)
+            /*
+            This parameter has no meta information. They can be added using setMetaInfo.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::IntArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the size of the given default values array
+            \param values is the default int32 array value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, const char *info);
+            
+            //!< Constructor for a double array parameter (float64)
+            /*
+            This parameter has no meta information. They can be added using setMetaInfo.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::DoubleArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the size of the given default values array
+            \param values is the default float64 array value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, const char *info);
+            
+            //!< Constructor for a complex128 array parameter
+            /*
+            This parameter has no meta information.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the size of the given default values array
+            \param values is the default complex array value
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, const char *info);
+            
+            //!< constructor for a character value (int8)
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
+            \param val is the default value
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::CharMeta.
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const char val, ParamMeta *meta, const char *info);
+            
+            //!< constructor for an integer value (int32)
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::Int | ito::ParamBase::In for a read-only input parameter
+            \param val is the default value
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::IntMeta.
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const int32 val, ParamMeta *meta, const char *info);
+            
+            //!< constructor for a double value (float64)
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::Double | ito::ParamBase::In for a read-only input parameter
+            \param val is the default value
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::DoubleMeta.
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const float64 val, ParamMeta *meta, const char *info);
+            
+            //!< constructor for a complex value (complex128)
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+            e.g. ito::ParamBase::Complex | ito::ParamBase::In for a read-only input parameter
+            \param val is the default value
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                Currently, there is no meta information class for complex value parameters!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const complex128 val, ParamMeta *meta, const char *info);
+            
+            //!< constructor for int32 arrays.
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::CharArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the length of the default array, passed to values
+            \param values is the pointer to the default array of values
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::CharArrayMeta.
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info);
+            
+            //!< constructor for int32 arrays.
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::IntArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the length of the default array, passed to values
+            \param values is the pointer to the default array of values
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::IntArrayMeta, ito::IntervalMeta, 
+                ito::RangeMeta or ito::RectMeta. 
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, ParamMeta *meta, const char *info);
+            
+            //!< constructor for float64 arrays.
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::DoubleArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the length of the default array, passed to values
+            \param values is the pointer to the default array of values
+            \param meta might me NULL, if no meta information should be passed to this parameter.
+                If a pointer is given, it has to be an object of ito::DoubleArrayMeta or ito::DoubleIntervalMeta. 
+                The ownership is taken by this parameter!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, ParamMeta *meta, const char *info);
+            
+            //!< constructor for complex128 arrays.
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type, 
+                e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the length of the default array, passed to values
+            \param values is the pointer to the default array of values
+            \param meta might me NULL, if no meta information should be passed to this parameter. 
+                If a pointer is given, the ownership is taken by this parameter! 
+                Currently, there is no meta information class available for complex array parameters!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, ParamMeta *meta, const char *info);
-            ~Param();                        //!< Destructor
-            Param(const Param &copyConstr); //!< Copy-Constructor
+            
+            //!< Destructor
+            ~Param();
+
+            //!< Copy-Constructor
+            Param(const Param &copyConstr);
 
             //--------------------------------------------------------------------------------------------
             //  ASSIGNMENT AND OPERATORS
