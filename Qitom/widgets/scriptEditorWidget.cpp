@@ -303,11 +303,11 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut")));
     m_editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut")));
     m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
-    editorMenu->addSeparator();
+    /*editorMenu->addSeparator();
     editorMenu->addAction(bookmarkMenuActions["toggleBM"]);
     editorMenu->addAction(bookmarkMenuActions["nextBM"]);
     editorMenu->addAction(bookmarkMenuActions["prevBM"]);
-    editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
+    editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);*/
     editorMenu->addSeparator();
 
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());

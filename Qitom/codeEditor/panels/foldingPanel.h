@@ -93,7 +93,7 @@ public:
     void expandAll();
     void toggleFold(bool topLevelOnly);
 
-    void toggleFoldTrigger(const QTextBlock &block);
+    void toggleFoldTrigger(const QTextBlock &block, bool refreshEditor = true);
 
     void refreshDecorations(bool force = false);
 

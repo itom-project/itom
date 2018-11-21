@@ -638,7 +638,7 @@ Toggle a fold trigger block (expand or collapse it).
 
 :param block: The QTextBlock to expand/collapse
 */
-void FoldingPanel::toggleFoldTrigger(const QTextBlock &block)
+void FoldingPanel::toggleFoldTrigger(const QTextBlock &block, bool refreshEditor /*= true*/)
 {
     if (!Utils::TextBlockHelper::isFoldTrigger(block))
     {
@@ -662,7 +662,10 @@ void FoldingPanel::toggleFoldTrigger(const QTextBlock &block)
         clearScopeDecos();
     }
 
-    refreshEditorAndScrollbars();
+    if (refreshEditor)
+    {
+        refreshEditorAndScrollbars();
+    }
     emit triggerStateChanged(region.trigger(), region.collapsed());
 }
 
@@ -680,7 +683,7 @@ at all, even with a value = 500)
 void FoldingPanel::refreshEditorAndScrollbars()
 {
     
-    editor()->markWholeDocDirty();
+    //editor()->markWholeDocDirty();
     editor()->repaint();
     QSize s = editor()->size();
     s.setWidth(s.width() + 1);
@@ -830,18 +833,19 @@ toggles all folds
 */
 void FoldingPanel::toggleFold(bool topLevelOnly)
 {
+    QTextBlock block = editor()->document()->firstBlock();
+    bool trigger;
+    int lvl;
+
     if (topLevelOnly)
     {
-        QTextBlock block = editor()->document()->firstBlock();
-        int lvl;
-        bool trigger;
         while (block.isValid())
         {
             lvl = Utils::TextBlockHelper::getFoldLvl(block);
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
             if (lvl == 0 && trigger)
             {
-                toggleFoldTrigger(block); 
+                toggleFoldTrigger(block, true);     
             }
             block = block.next();
         }
@@ -851,20 +855,35 @@ void FoldingPanel::toggleFold(bool topLevelOnly)
     }
     else
     {
+        //at first, toggle all the top level entries and refresh editor, afterwards silently toggle all deeper levels
         QTextBlock block = editor()->document()->firstBlock();
         bool trigger;
         while (block.isValid())
         {
+            lvl = Utils::TextBlockHelper::getFoldLvl(block);
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
-            if (trigger)
+            if (lvl == 0 && trigger)
             {
-                toggleFoldTrigger(block); 
+                toggleFoldTrigger(block, false);
             }
             block = block.next();
         }
 
         clearBlockDeco();
         refreshEditorAndScrollbars();
+
+        //2nd run
+        block = editor()->document()->firstBlock();
+        while (block.isValid())
+        {
+            lvl = Utils::TextBlockHelper::getFoldLvl(block);
+            trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+            if (lvl > 0 && trigger)
+            {
+                toggleFoldTrigger(block, false);
+            }
+            block = block.next();
+        }
     }
 }
 

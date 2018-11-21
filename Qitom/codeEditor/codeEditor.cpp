@@ -2304,6 +2304,7 @@ void CodeEditor::markWholeDocDirty()
 {
     QTextCursor text_cursor = textCursor();
     text_cursor.select(QTextCursor::Document);
+    qDebug() << "markContentsDirty" << text_cursor.selectionStart() << " - " <<  text_cursor.selectionEnd();
     document()->markContentsDirty(text_cursor.selectionStart(),
                                                 text_cursor.selectionEnd());
 }
