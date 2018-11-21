@@ -850,10 +850,8 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATI
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!
 IF (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
-    message(Fatal "exists delete it")
+    message(Fatal "itom-packages/enum.py exists. This file will be deleted.")
     FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
-ELSE()
-    message(Fatal "does not exist")
 ENDIF()
 
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)

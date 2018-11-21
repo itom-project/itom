@@ -94,7 +94,7 @@ For the compilation of |itom|, it is not necessary to have a installed Python on
 * Copy the installed **Python** folder into the **${MAINDIR}**/3rdParty/Python folder. 
 * Deinstall it again. 
 
-.. note: 
+.. note:: 
 
     You have to copy the installed folder, rename and deinstall it does not work!
 
@@ -114,7 +114,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     * files: all files in the main folder, e. g. components.xml...
 * Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.6.0/5.6/msvc2013_64/bin
 
-.. note: 
+.. note:: 
 
     Create a path on your hard drive with a long, long path name (called ${MAINDIR}) (later, the all-in-one path on destination computers must be shorter than this path name, due to the Qt patching)
 
