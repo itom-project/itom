@@ -194,7 +194,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
 {
-    return PyUnicode_FromFormat("PlotItem(%U)", PythonUi::PyUiItemType.tp_repr((PyObject*)self) );
+    return PyUnicode_FromFormat("PlotItem(%U)", PythonUi::PyUiItemType.tp_repr((PyObject*)self));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -234,10 +234,21 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting number of properties");
-        return 0;
+        return -1;
     }
 
     retValue += locker.getSemaphore()->returnValue;
+
+    if (retValue.containsError() && retValue.errorCode() == UiOrganizer::errorObjDoesNotExist)
+    {
+        return 0; //special case: if the widget does not exist any more, return 0 mapping items such the check "if plotHandle:" becomes False, instead of True
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return -1;
+    }
+
     return *propertiesCount; //nr of properties in the corresponding QMetaObject
 }
 
