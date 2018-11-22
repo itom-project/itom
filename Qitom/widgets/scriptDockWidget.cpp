@@ -2020,6 +2020,26 @@ void ScriptDockWidget::mnuFindTextExpr()
 {
     m_findTextExprActionSC->setEnabled(false);
     m_pWidgetFindWord->show();
+
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        int lineFrom = -1;
+        int lineTo = -1;
+        int indexFrom = -1;
+        int indexTo = -1;
+        bool multiLineSelection = false;
+        QString defaultText = "";
+
+        //check whether text has been marked
+        sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+        if (lineFrom >= 0 && lineTo == lineFrom)
+        {
+            m_pWidgetFindWord->setText(sew->selectedText());
+        }
+    }
+
     m_pWidgetFindWord->setCursorToTextField();
     m_findTextExprAction->action()->setChecked(true);
 }
