@@ -39,6 +39,12 @@
 #include <qvector4d.h>
 #include <qelapsedtimer.h>
 
+#if QT_VERSION >= 0x050000
+    #include <QtConcurrent/qtconcurrentrun.h>
+#else
+    #include <qtconcurrentrun.h>
+#endif
+
 #include "pythonSharedPointerGuard.h"
 
 #if QT_VERSION >= 0x050000
@@ -3218,6 +3224,62 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             return res;
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// the following method is only called by baseObjectDeleterDataObject within a QtConcurrent::run worker thread
+void safeDecrefPyObject(PyObject *obj)
+{
+#if (PY_VERSION_HEX >= 0x03040000)
+    if (PyGILState_Check())
+    {
+        Py_DECREF(obj);
+    }
+    else
+    {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+        Py_DECREF(obj);
+        PyGILState_Release(gstate);
+    }
+#else
+    //we don't know if we need to acquire the GIL here, or not.
+    Py_DECREF(obj);
+#endif
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ void PythonQtConversion::baseObjectDeleterDataObject(ito::DataObject *sharedObject)
+{
+    QHash<char*, PyObject*>::iterator i = m_pyBaseObjectStorage.find((char*)sharedObject);
+    if (i != m_pyBaseObjectStorage.end())
+    {
+        if (i.value())
+        {
+#if (PY_VERSION_HEX >= 0x03040000)
+            if (PyGILState_Check())
+            {
+                Py_DECREF(i.value());
+            }
+            else
+            {
+                //the current thread has no Python GIL. However, it might be
+                //that the GIL is currently hold by another thread, which has called
+                //the current thread, such that directly waiting for the GIL here might
+                //lead to a dead-lock. Therefore, we open a worker thread to finally delete the guarded base object!
+                QtConcurrent::run(safeDecrefPyObject, i.value());
+            }
+#else
+            //we don't know if we need to acquire the GIL here, or not.
+            Py_DECREF(i.value());
+#endif
+
+        }
+
+        m_pyBaseObjectStorage.erase(i);
+    }
+
+    delete sharedObject;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
