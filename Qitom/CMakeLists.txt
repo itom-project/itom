@@ -9,7 +9,7 @@ if (POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
 ENDIF (POLICY CMP0028)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
