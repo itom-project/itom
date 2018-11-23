@@ -52,7 +52,7 @@
 #include <qdebug.h>
 #include <qicon.h>
 #include <ui/widgetFindWord.h>
-
+#include <iostream>
 
 namespace ito {
 
@@ -448,6 +448,23 @@ void HelpViewer::keyPressEvent(QKeyEvent *event)
 	{
 		hideFindWordBar();
 	}
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::mousePressEvent(QMouseEvent *event)
+{
+	//works not, if the mouse is in the QWebEnginePage frame. 
+	int key = event->button();
+	
+	if (key == Qt::BackButton)
+	{
+		m_pView->back();
+	}
+	else if (key == Qt::ForwardButton)
+	{
+		m_pView->forward();
+	}
+
 }
 
 //----------------------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 
 #include <qapplication.h>
 #include <qdebug.h>
+#include <QMetaEnum>
 #include <iostream>
 #include "opencv/cv.h"
 
