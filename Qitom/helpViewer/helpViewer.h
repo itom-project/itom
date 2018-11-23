@@ -64,6 +64,7 @@ private:
 
 protected:
 	void keyPressEvent(QKeyEvent *event);
+	void mousePressEvent(QMouseEvent *event);
 
 private slots:
 	void linkActivated(const QUrl &url);
