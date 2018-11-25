@@ -311,8 +311,6 @@ MainWindow::MainWindow() :
     
     settings.beginGroup("MainWindow");
 
-    //restoreGeometry(settings.value("geometry").toByteArray());
-
     bool maximized = settings.value("maximized", false).toBool();
     QDesktopWidget desktop;
     QRect mainScreen = desktop.screenGeometry(desktop.primaryScreen());

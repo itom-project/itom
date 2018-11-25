@@ -58,7 +58,8 @@ public:
     RetVal openScript();
     RetVal openScript(QString filename, bool silent = false);
     RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
-    RetVal closeAllScripts(bool saveFirst = true, bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
+    RetVal closeAllScripts(bool saveFirst = true, bool askFirst = true, bool ignoreNewScripts = false, \
+                            int excludeIndex = -1, bool closeScriptWidgetIfLastTabClosed = true);
 
     inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); }   /*!<  checks wether given tab-index is valid (true) or not (false) */
     inline int getTabCount() const { return m_tab->count(); }      /*!<  returns number of tabs */
@@ -92,7 +93,7 @@ protected:
 
     void closeEvent(QCloseEvent *event);
 
-    RetVal closeTab(int index, bool saveFirst = true);
+    RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
 
 private:

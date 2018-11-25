@@ -699,7 +699,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
     \return retOk if every script could be closed, else retError
     \sa saveAllScripts
 */
-RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ignoreNewScripts, int excludeIndex)
+RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ignoreNewScripts, int excludeIndex, bool closeScriptWidgetIfLastTabClosed /*= true*/)
 {
     RetVal retValue(retOk);
 
@@ -722,7 +722,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
 
         for (it = list.begin(); it != list.end(); ++it)
         {
-            retValue += closeTab(getIndexByEditor(*it), false);
+            retValue += closeTab(getIndexByEditor(*it), false, closeScriptWidgetIfLastTabClosed);
         }
     }
 
@@ -959,7 +959,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
     \return retOk if tab has been saved (or not) and closed, retError if saving failed
     \sa saveTab, removeEditor
 */
-RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
+RetVal ScriptDockWidget::closeTab(int index, bool saveFirst, bool closeScriptWidgetIfLastTabClosed /*= true*/)
 {
     if (index < 0 || index >= m_tab->count())
     {
@@ -981,7 +981,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
         sew = NULL;
     }
 
-    if (m_tab->count() == 0)
+    if (m_tab->count() == 0 && closeScriptWidgetIfLastTabClosed)
     {
         QCloseEvent evt;
         QApplication::sendEvent(this, &evt);
@@ -2198,7 +2198,7 @@ void ScriptDockWidget::mnuInsertCodec()
 */
 void ScriptDockWidget::closeEvent(QCloseEvent *event)
 {
-    RetVal retValue = closeAllScripts(true, true, false);
+    RetVal retValue = closeAllScripts(true, true, false, false);
 
     if (retValue.containsError())
     {
