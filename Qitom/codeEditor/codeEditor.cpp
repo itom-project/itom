@@ -1440,7 +1440,7 @@ void CodeEditor::replace(const QString &text)
     cursor.removeSelectedText();
     cursor.setPosition(start);
     cursor.insertText(text);
-    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, text.size());
+    cursor.setPosition(cursor.position() + text.size(), QTextCursor::MoveAnchor);
 }
 
 //--------------------------------------------------------------
