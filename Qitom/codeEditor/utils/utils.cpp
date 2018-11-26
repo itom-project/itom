@@ -70,7 +70,8 @@ namespace Utils
             }
             pos = text.indexOf(character, pos + 1);
             cursor.movePosition(QTextCursor::StartOfBlock);
-            cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
+            cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
+            //cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
         }
         return symbols;
     }
