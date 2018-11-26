@@ -102,7 +102,13 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
         script = jedi.Script(code, line + 1, column, path, encoding)
     completions = script.completions()
     result = []
+    
+    #the following pairs of [name, type] will not be returned as possible completion
+    blacklist = [['and', 'keyword'], ['if', 'keyword'], ['in', 'keyword'], ['is', 'keyword'], ['not', 'keyword'], ['or', 'keyword']]
+    
     for completion in completions:
+        if [completion.name, completion.type] in blacklist:
+            continue
         try:
             desc = completion.description
             result.append( \
@@ -147,14 +153,16 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     return result
     
 if __name__ == "__main__":
+    
+    result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
     print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5, "utf-8"))
     
     print(completions("from itom import dataObject\ndataO, 'u",1,5, "", "", "utf-8"))
     print(completions("1", 0, 1, "", "", "utf-8"))
     print(completions("import numpy as np\nnp.arr", 1, 6, "", "", "utf-8"))
-    print(goto_definitions("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
-    print(goto_definitions("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
+    print(goto_assignments("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
+    print(goto_assignments("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
     
 
     
