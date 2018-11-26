@@ -118,7 +118,7 @@ void SyntaxHighlighterBase::highlightBlock(const QString &text)
         }
         if (m_foldDetector.isNull() == false)
         {
-            m_foldDetector->setEditor(editor());
+            m_foldDetector->setEditor(e);
             m_foldDetector->processBlock(current_block, previous_block, text);
         }
     }

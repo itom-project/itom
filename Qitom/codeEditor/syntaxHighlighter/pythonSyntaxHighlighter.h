@@ -93,8 +93,16 @@ private:
         InsideDqString = 4
     };
 
+    struct NamedRegExp
+    {
+        NamedRegExp(const QString &groupName_, const QQRegExp &regExp_) : regExp(regExp_), groupNames(groupName_) {}
+        NamedRegExp(const QStringList &groupNames_, const QQRegExp &regExp_) : regExp(regExp_), groupNames(groupNames_) {}
+        QQRegExp regExp;
+        QStringList groupNames;
+    };
+
     //syntax highlighting rules
-    static QMap<QString,QQRegExp> regExpProg;
+    static QList<NamedRegExp> regExpProg;
     static QRegExp regExpIdProg;
     static QRegExp regExpAsProg;
     static QQRegExp regExpOeComment; //comments suitable for outline explorer
@@ -105,7 +113,7 @@ private:
     QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
-    static QMap<QString,QQRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
+    static QList<NamedRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };
 
 } //end namespace ito

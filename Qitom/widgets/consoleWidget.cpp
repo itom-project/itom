@@ -65,6 +65,11 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_autoWheel(true),
     m_codeHistoryLines(0)
 {
+    m_receiveStreamBuffer.msgType = ito::msgStreamOut;
+    connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
+    m_receiveStreamBufferTimer.setSingleShot(true);
+    m_receiveStreamBufferTimer.setInterval(50);
+
     qDebug("console widget start constructor");
 
     initEditor();
@@ -256,6 +261,8 @@ void ConsoleWidget::loadSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 {
+    processStreamBuffer();
+
     switch (pyTransition)
     {
     case pyTransBeginRun:
@@ -985,6 +992,7 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
 RetVal ConsoleWidget::executeCmdQueue()
 {
     cmdQueueStruct value;
+    processStreamBuffer();
 
     if (m_cmdQueue.empty())
     {
@@ -1237,9 +1245,39 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 {
+    if (m_receiveStreamBuffer.msgType != msgType)
+    {
+        processStreamBuffer();
+        m_receiveStreamBuffer.text = text;
+        m_receiveStreamBuffer.msgType = msgType;
+    }
+    else
+    {
+        m_receiveStreamBuffer.text += text;
+
+        if (m_receiveStreamBuffer.text.size() > 1500)
+        {
+            processStreamBuffer();
+            repaint();
+        }
+        else
+        {
+            m_receiveStreamBufferTimer.start();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::processStreamBuffer()
+{
+    if (m_receiveStreamBuffer.text == "")
+    {
+        return;
+    }
+
     int fromLine, toLine;
 
-    switch (msgType)
+    switch (m_receiveStreamBuffer.msgType)
     {
     case ito::msgStreamErr:
         //case msgReturnError:
@@ -1250,8 +1288,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
             fromLine++;
         }
 
-        append(text);
-        //qDebug() << text;
+        append(m_receiveStreamBuffer.text);
 
         toLine = lines() - 1;
         if (lineLength(toLine) == 0)
@@ -1266,7 +1303,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 
         moveCursorToEnd();
         //m_startLineBeginCmd = -1;
-        if (!m_pythonBusy && text.right(1) == ConsoleWidget::lineBreak)
+        if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
         }
@@ -1275,19 +1312,16 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
             m_startLineBeginCmd = lines() - 1;
         }
 
-        emit sendToPythonMessage(text);
+        emit sendToPythonMessage(m_receiveStreamBuffer.text);
         break;
 
     case ito::msgStreamOut:
-        //case msgReturnInfo:
-        //case msgReturnWarning:
         //!> insert msg after last line
-        append(text);
+        append(m_receiveStreamBuffer.text);
 
         moveCursorToEnd();
-        //m_startLineBeginCmd = -1;
 
-        if (!m_pythonBusy && text.right(1) == ConsoleWidget::lineBreak)
+        if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
         }
@@ -1297,16 +1331,9 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         }
 
         break;
-
-        //case msgTextInfo:
-        //case msgTextWarning:
-        //case msgTextError:
-        //    //!> insert msg before last line containing ">>" (m_startLineBeginCmd)
-        //    insertAt(totalMsg, m_startLineBeginCmd, 0);
-        //    m_startLineBeginCmd += msg.length();
-        //    moveCursorToEnd();
-        //    break;
     }
+
+    m_receiveStreamBuffer.text = "";
 
 	autoLineDelete();
 }

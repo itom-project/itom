@@ -42,6 +42,7 @@
 #include <qstringlist.h>
 #include <qdebug.h>
 #include <qsettings.h>
+#include <qtimer.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -102,6 +103,7 @@ private slots:
     void clearAndStartNewCommand();
     void toggleAutoWheel(bool enable);
     void dumpSlot();
+    void processStreamBuffer();
 
 private:
     struct cmdQueueStruct
@@ -111,6 +113,12 @@ private:
         QString singleLine;
         int m_lineBegin;
         int m_nrOfLines;
+    };
+
+    struct StreamBuffer
+    {
+        QString text;
+        ito::tStreamMessageType msgType;
     };
 
     RetVal initEditor();
@@ -135,6 +143,8 @@ private:
 
     bool m_canCopy;
     bool m_canCut;
+    StreamBuffer m_receiveStreamBuffer;
+    QTimer m_receiveStreamBufferTimer;
 
     QSharedPointer<LineBackgroundMarkerMode> m_markErrorLineMode;
     QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;

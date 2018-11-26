@@ -172,34 +172,41 @@ void AbstractCodeEditorWidget::loadSettings()
     m_codeCompletionMode->setFilterMode((ito::CodeCompletionMode::FilterMode)settings.value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy).toInt());
 
     // --------------- styles ------------------------------------------------------------
-    setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
-    m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
-    //TODO
-    //setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
-    //setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
-    //setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
-    //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
-
-    QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
-
-    if (keyWhitespaceFormat.background() != m_pythonSyntaxHighlighter->editorStyle()->background())
-    { 
-        m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
-        updateSyntaxHighlighter = true;
-    }
-
-    if (keyWhitespaceFormat.foreground().color() != QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
+    if (m_pythonSyntaxHighlighter)
     {
-        m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
-        updateSyntaxHighlighter = true;
+        setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
+        m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
+
+        //TODO
+        //setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
+        //setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
+        //setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
+        //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
+
+        QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
+
+        if (keyWhitespaceFormat.background() != m_pythonSyntaxHighlighter->editorStyle()->background())
+        {
+            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
+            updateSyntaxHighlighter = true;
+        }
+
+        if (keyWhitespaceFormat.foreground().color() != QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
+        {
+            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+            updateSyntaxHighlighter = true;
+        }
     }
 
-    m_symbolMatcher->setMatchBackground(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
-    m_symbolMatcher->setMatchForeground(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
+    if (m_symbolMatcher)
+    {
+        m_symbolMatcher->setMatchBackground(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+        m_symbolMatcher->setMatchForeground(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
 
-    m_symbolMatcher->setUnmatchBackground(QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
-    m_symbolMatcher->setUnmatchForeground(QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
+        m_symbolMatcher->setUnmatchBackground(QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+        m_symbolMatcher->setUnmatchForeground(QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
+    }
 
     m_caretLineHighlighter->setBackground(QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString()));
     m_caretLineHighlighter->setEnabled(settings.value("caretBackgroundShow", false).toBool());
@@ -339,7 +346,7 @@ void AbstractCodeEditorWidget::loadSettings()
         }
     }
 
-    if (updateSyntaxHighlighter)
+    if (updateSyntaxHighlighter && m_pythonSyntaxHighlighter)
     {
         m_pythonSyntaxHighlighter->refreshEditor(m_editorStyle);
     }

@@ -186,8 +186,11 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
-    m_symbolMatcher->setMatchBackground(QColor("lightGray"));
-    m_symbolMatcher->setMatchForeground(QColor("blue"));
+    if (m_symbolMatcher)
+    {
+        m_symbolMatcher->setMatchBackground(QColor("lightGray"));
+        m_symbolMatcher->setMatchForeground(QColor("blue"));
+    }
 
     connect(m_checkerBookmarkPanel.data(), SIGNAL(toggleBookmarkRequested(int)), this, SLOT(toggleBookmarkRequested(int)));
     connect(m_checkerBookmarkPanel.data(), SIGNAL(gotoBookmarkRequested(bool)), this, SLOT(gotoBookmarkRequested(bool)));
