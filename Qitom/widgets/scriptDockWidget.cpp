@@ -699,7 +699,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
     \return retOk if every script could be closed, else retError
     \sa saveAllScripts
 */
-RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ignoreNewScripts, int excludeIndex)
+RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ignoreNewScripts, int excludeIndex, bool closeScriptWidgetIfLastTabClosed /*= true*/)
 {
     RetVal retValue(retOk);
 
@@ -722,7 +722,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
 
         for (it = list.begin(); it != list.end(); ++it)
         {
-            retValue += closeTab(getIndexByEditor(*it), false);
+            retValue += closeTab(getIndexByEditor(*it), false, closeScriptWidgetIfLastTabClosed);
         }
     }
 
@@ -959,7 +959,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
     \return retOk if tab has been saved (or not) and closed, retError if saving failed
     \sa saveTab, removeEditor
 */
-RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
+RetVal ScriptDockWidget::closeTab(int index, bool saveFirst, bool closeScriptWidgetIfLastTabClosed /*= true*/)
 {
     if (index < 0 || index >= m_tab->count())
     {
@@ -981,7 +981,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst)
         sew = NULL;
     }
 
-    if (m_tab->count() == 0)
+    if (m_tab->count() == 0 && closeScriptWidgetIfLastTabClosed)
     {
         QCloseEvent evt;
         QApplication::sendEvent(this, &evt);
@@ -1106,8 +1106,10 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
 //! updates actions which deal with editor commands
 void ScriptDockWidget::updateEditorActions()
 {
+	int tabCount = m_tab->count();
+
     m_saveAllScriptsAction->setEnabled(false);
-    for (int i = 0; i < m_tab->count(); i++)
+    for (int i = 0; i < tabCount; i++)
     {
         if (static_cast<ScriptEditorWidget *>(m_tab->widget(i))->isModified())
         {
@@ -1122,18 +1124,18 @@ void ScriptDockWidget::updateEditorActions()
         sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
     }
 
-    m_saveScriptAction->setEnabled(m_tab->count()>0 && sew != NULL && sew->isModified());
-    m_saveScriptAsAction->setEnabled(m_tab->count()>0 && sew != NULL);
+    m_saveScriptAction->setEnabled(tabCount>0 && sew != NULL && sew->isModified());
+    m_saveScriptAsAction->setEnabled(tabCount>0 && sew != NULL);
 
     m_cutAction->setEnabled(sew != NULL && sew->getCanCopy());
     m_copyAction->setEnabled(sew != NULL && sew->getCanCopy());
-    m_pasteAction->setEnabled(true, true); //!< todo
+    m_pasteAction->setEnabled(tabCount > 0 && sew != NULL);
     m_undoAction->setEnabled(sew != NULL && sew->isUndoAvailable());
     m_redoAction->setEnabled(sew != NULL && sew->isRedoAvailable());
-    m_commentAction->setEnabled(m_tab->count()>0 && sew != NULL);
-    m_uncommentAction->setEnabled(m_tab->count()>0 && sew != NULL);
-    m_indentAction->setEnabled(m_tab->count()>0 && sew != NULL);
-    m_unindentAction->setEnabled(m_tab->count()>0 && sew != NULL);
+    m_commentAction->setEnabled(tabCount > 0 && sew != NULL);
+    m_uncommentAction->setEnabled(tabCount > 0 && sew != NULL);
+    m_indentAction->setEnabled(tabCount > 0 && sew != NULL);
+    m_unindentAction->setEnabled(tabCount > 0 && sew != NULL);
 
     m_tabCloseAction->setEnabled(m_actTabIndex > -1);
     m_tabCloseAllAction->setEnabled(m_actTabIndex > -1);
@@ -1750,7 +1752,7 @@ void ScriptDockWidget::mnuTabDock()
 void ScriptDockWidget::mnuTabUndock()
 {
     bool undockToNewScriptWindow = !docked();
-    emit (undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, !docked()));
+	emit(undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, true)); // !docked()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2196,7 +2198,7 @@ void ScriptDockWidget::mnuInsertCodec()
 */
 void ScriptDockWidget::closeEvent(QCloseEvent *event)
 {
-    RetVal retValue = closeAllScripts(true, true, false);
+    RetVal retValue = closeAllScripts(true, true, false, false);
 
     if (retValue.containsError())
     {
