@@ -252,17 +252,21 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     sprintf(command,function_wrap,stringarg);
     if (func_engEvalString(self->ep,command)!=0)
     {
-        return PyErr_Format(PyExc_RuntimeError, "Was not able to evaluate command: %s",command);
+        PyObject* error = PyErr_Format(PyExc_RuntimeError, "Was not able to evaluate command: %s", command);
+        free((void*)command);
+        return error;
     }
     if ((mxresult = func_engGetVariable(self->ep,"pymatlaberrstring"))==NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "can't get internal variable: pymatlaberrstring");
+        free((void*)command);
         return NULL;
     }
     if (strcmp( func_mxArrayToString(mxresult),"")!=0)
     {
         /*make sure 'pymatlaberrstring' is empty or not exist until next call*/
         status = func_engEvalString(self->ep,"clear pymatlaberrstring");
+        free((void*)command);
         return PyErr_Format(PyExc_RuntimeError,"Error from Matlab: %s end.", func_mxArrayToString(mxresult));
     }
     free((void*)command);
