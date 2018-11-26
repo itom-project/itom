@@ -416,7 +416,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point clou [read-only]\n\
+PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point cloud [read-only]\n\
 \n\
 Point types can be: \n\
 \n\

@@ -720,7 +720,10 @@ namespace ito {
         bool deleteTag(const std::string &key);
         bool deleteAllTags();
         int addToProtocol(const std::string &value);
-        
+
+		//!< set the real oder imaginary part of the data object
+		int setReal(const DataObject &value);
+		int setImag(const DataObject &value);
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate

@@ -5194,6 +5194,326 @@ PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttrReal_doc, "real -> return a new data object with the real part of the source or set the values of the real part of the data object.\n\
+\n\
+This method extracts the real part of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+This method also changes the real part of the complex input object. \n\
+The input value must be a numpy.array or a data object of the same shape as the data object. \n\
+If a single integer or float value is given, all real values will be changed to this value. \n\
+\n\
+Parameters \n\
+----------- \n\
+value : {numpy.array, dataObject, int, float32, float64} \n\
+    Input value ('float32', 'float64') \n\
+\n\
+Returns \n\
+----------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape and same type with changed real part of complex object.\n\
+\n\
+Notes \n\
+----------- \n\
+read / write");
+PyObject* PythonDataObject::PyDataObject_getReal(PyDataObject *self, void * /*closure*/)
+{
+	if (self->dataObject == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return NULL;
+	}
+
+	ito::DataObject *d = self->dataObject;
+
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+	try
+	{
+		retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	retObj->dataObject->addToProtocol("Extracted real part of a complex dataObject via real().");
+
+	return (PyObject*)retObj;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, void * /*closure*/)
+{
+	if (value == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Value is not defined.");
+		return NULL;
+	}
+
+	ito::DataObject *newValues;
+
+	int dataObjectType = self->dataObject->getType();
+
+	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
+	{
+		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
+		return NULL;
+	}
+
+	if (PyDataObject_Check(value)) //check if value is dataObject
+	{
+		newValues = self->dataObject;
+	}
+	else if (PyArray_Check(value)) //check if value is numpy array
+	{
+		//newValues = (PyDataObject*)createPyDataObjectFromArray(value); //new reference
+	}
+	else if (PyLong_Check(value)) //check if value is integer single value
+	{
+		if (dataObjectType == ito::tComplex64)
+		{
+			float32 newValue = PyLong_AsLong(value);
+		}
+		else if (dataObjectType == ito::tComplex128)
+		{
+			float64 newValue = PyLong_AsLong(value);
+		}
+	}
+	else if (PyFloat_Check(value)) //check if value is float single value
+	{
+		if (dataObjectType == ito::tComplex64)
+		{
+			float32 newValue = PyFloat_AsDouble(value);
+		}
+		else if (dataObjectType == ito::tComplex128)
+		{
+			float64 newValue = PyFloat_AsDouble(value);
+		}
+
+	}
+	else //error
+	{
+		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
+		return NULL;
+	}
+
+	try 
+	{
+		self->dataObject->setReal((*(newValues)));
+	}
+	catch (cv::Exception &exc)
+	{
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	self->dataObject->addToProtocol("Changed real part of complex data object via real.");
+
+	return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttrImag_doc, "imag -> return a new data object with the imaginary part of the source or set the values of the imaginary part of the data object.\n\
+\n\
+This method extracts the imaginary part of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+This method also changes the imaginary part of the complex input object. \n\
+The input value must be a numpy.array or a data object of the same shape as the data object. \n\
+If a single integer or float value is given, all imaginary values will be changed to this value. \n\
+\n\
+Parameters \n\
+----------- \n\
+value : {numpy.array, dataObject, int, float32, float64} \n\
+    Input value ('float32', 'float64') \n\
+\n\
+Returns \n\
+----------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape and same type with changed imaginary part of complex object.\n\
+\n\
+Notes \n\
+----------- \n\
+read / write");
+PyObject* PythonDataObject::PyDataObject_getImag(PyDataObject *self, void * /*closure*/)
+{
+	if (self->dataObject == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return NULL;
+	}
+
+	ito::DataObject *d = self->dataObject;
+
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+	try
+	{
+		retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	retObj->dataObject->addToProtocol("Extracted imaginary part of a complex dataObject via imag.");
+
+	return (PyObject*)retObj;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, void * /*closure*/)
+{
+	if (value == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Value is not defined.");
+		return NULL;
+	}
+
+	ito::DataObject *newValues;
+	int dataObjectType = self->dataObject->getType();
+
+	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
+	{
+		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
+		return NULL;
+	}
+
+	if (PyDataObject_Check(value)) //check if value is dataObject
+	{
+		newValues = self->dataObject;
+	}
+	else if (PyArray_Check(value)) //check if value is numpy array
+	{
+		//newValues = (PyDataObject*)createPyDataObjectFromArray(value); //new reference
+	}
+	else if (PyLong_Check(value)) //check if value is integer single value
+	{
+		if (dataObjectType == ito::tComplex64)
+		{
+			float32 newValue = PyLong_AsLong(value);
+		}
+		else if (dataObjectType == ito::tComplex128)
+		{
+			float64 newValue = PyLong_AsLong(value);
+		}
+	}
+	else if (PyFloat_Check(value)) //check if value is float single value
+	{
+		if (dataObjectType == ito::tComplex64)
+		{
+			float32 newValue = PyFloat_AsDouble(value);
+		}
+		else if (dataObjectType == ito::tComplex128)
+		{
+			float64 newValue = PyFloat_AsDouble(value);
+		}
+
+	}
+	else //error
+	{
+		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
+		return NULL;
+	}
+
+	try
+	{
+		self->dataObject->setImag((*(newValues)));
+	}
+	catch (cv::Exception &exc)
+	{
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	self->dataObject->addToProtocol("Changed imaginary part of complex data object via real.");
+
+	return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttrAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
+\n\
+This method calculates the abs value of each element in source and writes the result to the output object.\
+In case of floating point or real object, the type of the output will not change. For complex values\
+the type is changes to the corresponding floating type value.\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type may be changed.");
+PyObject* PythonDataObject::PyDataObject_getAbs(PyDataObject *self, void * /*closure*/)
+{
+	if (self->dataObject == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return NULL;
+	}
+
+	ito::DataObject *d = self->dataObject;
+
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+	try
+	{
+		retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	retObj->dataObject->addToProtocol("Absolute values of calculated via abs().");
+	return (PyObject*)retObj;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttrArg_doc, "arg() -> return a new data object with the argument values of the source\n\
+\n\
+This method calculates the argument value of each element in source and writes the result to the output object.\
+This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+\n\
+Returns \n\
+------- \n\
+res : {dataObject} \n\
+    output dataObject of same shape but the type is changed.");
+PyObject* PythonDataObject::PyDataObject_getArg(PyDataObject *self, void * /*closure*/)
+{
+	if (self->dataObject == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return NULL;
+	}
+
+	ito::DataObject *d = self->dataObject;
+
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+	try
+	{
+		retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+
+	retObj->dataObject->addToProtocol("Extracted phase/argument of a complex dataObject via arg().");
+	return (PyObject*)retObj;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 {
     if (self->dataObject == NULL) return 0;
@@ -6723,408 +7043,253 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *args)
 {
-    //version history:
-    // see log in PyDataObj_Reduce
+	//version history:
+	// see log in PyDataObj_Reduce
 
-    bool transpose = false;
-    PyObject *dataTuple = NULL; //borrowed reference
-    PyObject *tagTuple = NULL;  //borrowed reference
-    PyObject *tempTag = NULL;   //borrowed reference
-    long version = 21120; //this is the first version, current is 21121
+	bool transpose = false;
+	PyObject *dataTuple = NULL; //borrowed reference
+	PyObject *tagTuple = NULL;  //borrowed reference
+	PyObject *tempTag = NULL;   //borrowed reference
+	long version = 21120; //this is the first version, current is 21121
 
-    if (!PyArg_ParseTuple(args,"(bO!O!)", &transpose, &PyTuple_Type, &dataTuple, &PyTuple_Type, &tagTuple))
-    {
-        PyErr_Clear();
-        //test if maybe no tagTuple is available
-        tagTuple = NULL;
-        if (!PyArg_ParseTuple(args,"(bO!)", &transpose, &PyTuple_Type, &dataTuple))
-        {
-            PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject not possible since state vector is invalid");
-            return NULL;
-        }
-    }
+	if (!PyArg_ParseTuple(args, "(bO!O!)", &transpose, &PyTuple_Type, &dataTuple, &PyTuple_Type, &tagTuple))
+	{
+		PyErr_Clear();
+		//test if maybe no tagTuple is available
+		tagTuple = NULL;
+		if (!PyArg_ParseTuple(args, "(bO!)", &transpose, &PyTuple_Type, &dataTuple))
+		{
+			PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject not possible since state vector is invalid");
+			return NULL;
+		}
+	}
 
-    //pre-check tags
-    if (tagTuple != NULL)
-    {
-        if (PyTuple_Size(tagTuple) != 10)
-        {
-            //Py_XDECREF(dataTuple);
-            //Py_XDECREF(tagTuple);
-            PyErr_SetString(PyExc_NotImplementedError, "tags in pickled data object does not have the required number of elements (10)");
-            return NULL;
-        }
-        else
-        {
-            tempTag = PyTuple_GetItem(tagTuple,0); //borrowed ref
-            if (!PyLong_Check(tempTag))
-            {
-                //Py_XDECREF(dataTuple);
-                //Py_XDECREF(tagTuple);
-                PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple must be an integer number, which it is not.");
-                return NULL;
-            }
+	//pre-check tags
+	if (tagTuple != NULL)
+	{
+		if (PyTuple_Size(tagTuple) != 10)
+		{
+			//Py_XDECREF(dataTuple);
+			//Py_XDECREF(tagTuple);
+			PyErr_SetString(PyExc_NotImplementedError, "tags in pickled data object does not have the required number of elements (10)");
+			return NULL;
+		}
+		else
+		{
+			tempTag = PyTuple_GetItem(tagTuple, 0); //borrowed ref
+			if (!PyLong_Check(tempTag))
+			{
+				//Py_XDECREF(dataTuple);
+				//Py_XDECREF(tagTuple);
+				PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple must be an integer number, which it is not.");
+				return NULL;
+			}
 
-            version = PyLong_AsLong(tempTag);
-            if (version != 21120 && version != 21121)
-            {
-                //Py_XDECREF(dataTuple);
-                //Py_XDECREF(tagTuple);
-                PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple is a check sum and does not have the right value.");
-                return NULL;
-            }
-        }
-    }
+			version = PyLong_AsLong(tempTag);
+			if (version != 21120 && version != 21121)
+			{
+				//Py_XDECREF(dataTuple);
+				//Py_XDECREF(tagTuple);
+				PyErr_SetString(PyExc_NotImplementedError, "first element in tag tuple is a check sum and does not have the right value.");
+				return NULL;
+			}
+		}
+	}
 
-    if (transpose == true)
-    {
-        //Py_XDECREF(dataTuple);
-        //Py_XDECREF(tagTuple);
-        PyErr_SetString(PyExc_NotImplementedError, "transpose flag of unpickled data must be false (since the transposition has been evaluated before pickling). Transpose flag is obsolete now.");
-        return NULL;
-    }
+	if (transpose == true)
+	{
+		//Py_XDECREF(dataTuple);
+		//Py_XDECREF(tagTuple);
+		PyErr_SetString(PyExc_NotImplementedError, "transpose flag of unpickled data must be false (since the transposition has been evaluated before pickling). Transpose flag is obsolete now.");
+		return NULL;
+	}
 
-    if (self->dataObject == NULL)
-    {
-        //Py_XDECREF(dataTuple);
-        //Py_XDECREF(tagTuple);
-        PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed");
-        return NULL;
-    }
+	if (self->dataObject == NULL)
+	{
+		//Py_XDECREF(dataTuple);
+		//Py_XDECREF(tagTuple);
+		PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed");
+		return NULL;
+	}
 
-    int vectorLength = self->dataObject->calcNumMats();
+	int vectorLength = self->dataObject->calcNumMats();
 
-    if (PyTuple_Size(dataTuple) != vectorLength)
-    {
-        //Py_XDECREF(dataTuple);
-        //Py_XDECREF(tagTuple);
-        PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed since data dimensions does not fit");
-        return NULL;
-    }
+	if (PyTuple_Size(dataTuple) != vectorLength)
+	{
+		//Py_XDECREF(dataTuple);
+		//Py_XDECREF(tagTuple);
+		PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed since data dimensions does not fit");
+		return NULL;
+	}
 
-    int dims = self->dataObject->getDims();
-    PyObject *byteArray = NULL;
-    cv::Mat* tempMat;
-    unsigned int seekNr;
-    Py_ssize_t sizeU = 0;
-    Py_ssize_t sizeV = 0;
-    uchar* startPtr = NULL;
-    char* byteArrayContent = NULL;
-    Py_ssize_t elemSize = 0;
-    std::string tempString;
-    std::string keyString;
-    PyObject *key, *value;
-    Py_ssize_t pos = 0;
-    PyObject *seqItem = NULL;
-    bool stringOk;
+	int dims = self->dataObject->getDims();
+	PyObject *byteArray = NULL;
+	cv::Mat* tempMat;
+	unsigned int seekNr;
+	Py_ssize_t sizeU = 0;
+	Py_ssize_t sizeV = 0;
+	uchar* startPtr = NULL;
+	char* byteArrayContent = NULL;
+	Py_ssize_t elemSize = 0;
+	std::string tempString;
+	std::string keyString;
+	PyObject *key, *value;
+	Py_ssize_t pos = 0;
+	PyObject *seqItem = NULL;
+	bool stringOk;
 
-    if (dims == 1)
-    {
-        sizeU = 1;
-        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
-    }
-    else if (dims > 1)
-    {
-        sizeU = (Py_ssize_t)self->dataObject->getSize(dims - 2);
-        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
-    }
+	if (dims == 1)
+	{
+		sizeU = 1;
+		sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
+	}
+	else if (dims > 1)
+	{
+		sizeU = (Py_ssize_t)self->dataObject->getSize(dims - 2);
+		sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
+	}
 
-    if (version == 21120)
-    {
-        for (int i = 0; i < vectorLength; i++)
-        {
-            seekNr = self->dataObject->seekMat(i);
-            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = (int)tempMat->elemSize();
-            startPtr = tempMat->ptr(0); //mat is continuous!!! (should be;))
-            byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
+	if (version == 21120)
+	{
+		for (int i = 0; i < vectorLength; i++)
+		{
+			seekNr = self->dataObject->seekMat(i);
+			tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+			elemSize = (int)tempMat->elemSize();
+			startPtr = tempMat->ptr(0); //mat is continuous!!! (should be;))
+			byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
 
-            byteArrayContent = PyByteArray_AsString(byteArray); //borrowed ref
-            memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
-        }
-    }
-    else if (version == 21121)
-    {
-        for (int i = 0; i < vectorLength; i++)
-        {
-            seekNr = self->dataObject->seekMat(i);
-            tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = (int)tempMat->elemSize();
-            startPtr = tempMat->ptr(0); //mat is continuous!!! (should be;))
-            byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
+			byteArrayContent = PyByteArray_AsString(byteArray); //borrowed ref
+			memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
+		}
+	}
+	else if (version == 21121)
+	{
+		for (int i = 0; i < vectorLength; i++)
+		{
+			seekNr = self->dataObject->seekMat(i);
+			tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
+			elemSize = (int)tempMat->elemSize();
+			startPtr = tempMat->ptr(0); //mat is continuous!!! (should be;))
+			byteArray = PyTuple_GetItem(dataTuple, i); //borrowed ref
 
-            byteArrayContent = PyBytes_AsString(byteArray); //borrowed ref
-            memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
-        }
-    }
+			byteArrayContent = PyBytes_AsString(byteArray); //borrowed ref
+			memcpy((void*)startPtr, (void*)byteArrayContent, sizeU*sizeV*elemSize);
+		}
+	}
 
-    //transpose must be false (checked above)
+	//transpose must be false (checked above)
 
-    //check tags
-    if (tagTuple != NULL && PyTuple_Size(tagTuple) == 10)
-    {
-        //1. tags
-        tempTag = PyTuple_GetItem(tagTuple,1); //borrowed
-        if (PyDict_Check(tempTag))
-        {
-            while (PyDict_Next(tempTag, &pos, &key, &value))
-            {
-                keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
-                if (stringOk)
-                {
-                    if (PyFloat_Check(value)||PyLong_Check(value))
-                    {
-                        self->dataObject->setTag(keyString, PyFloat_AsDouble(value));
-                    }
-                    else
-                    {
-                        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(value, false, stringOk);
-                        if (stringOk)
-                        {
-                            self->dataObject->setTag(keyString, tempString);
-                        }
-                    }
-                }
-            }
-        }
+	//check tags
+	if (tagTuple != NULL && PyTuple_Size(tagTuple) == 10)
+	{
+		//1. tags
+		tempTag = PyTuple_GetItem(tagTuple, 1); //borrowed
+		if (PyDict_Check(tempTag))
+		{
+			while (PyDict_Next(tempTag, &pos, &key, &value))
+			{
+				keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
+				if (stringOk)
+				{
+					if (PyFloat_Check(value) || PyLong_Check(value))
+					{
+						self->dataObject->setTag(keyString, PyFloat_AsDouble(value));
+					}
+					else
+					{
+						tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(value, false, stringOk);
+						if (stringOk)
+						{
+							self->dataObject->setTag(keyString, tempString);
+						}
+					}
+				}
+			}
+		}
 
-        //2. axisScales
-        tempTag = PyTuple_GetItem(tagTuple,2);
-        if (PySequence_Check(tempTag))
-        {
-            for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
-            {
-                seqItem = PySequence_GetItem(tempTag,i); //new reference
-                self->dataObject->setAxisScale(i, PyFloat_AsDouble(seqItem));
-                Py_XDECREF(seqItem);
-            }
-        }
+		//2. axisScales
+		tempTag = PyTuple_GetItem(tagTuple, 2);
+		if (PySequence_Check(tempTag))
+		{
+			for (Py_ssize_t i = 0; i < PySequence_Size(tempTag); i++)
+			{
+				seqItem = PySequence_GetItem(tempTag, i); //new reference
+				self->dataObject->setAxisScale(i, PyFloat_AsDouble(seqItem));
+				Py_XDECREF(seqItem);
+			}
+		}
 
-        //3. axisOffsets
-        tempTag = PyTuple_GetItem(tagTuple,3);
-        if (PySequence_Check(tempTag))
-        {
-            for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
-            {
-                seqItem = PySequence_GetItem(tempTag,i); //new reference
-                self->dataObject->setAxisOffset(i, PyFloat_AsDouble(seqItem));
-                Py_XDECREF(seqItem);
-            }
-        }
+		//3. axisOffsets
+		tempTag = PyTuple_GetItem(tagTuple, 3);
+		if (PySequence_Check(tempTag))
+		{
+			for (Py_ssize_t i = 0; i < PySequence_Size(tempTag); i++)
+			{
+				seqItem = PySequence_GetItem(tempTag, i); //new reference
+				self->dataObject->setAxisOffset(i, PyFloat_AsDouble(seqItem));
+				Py_XDECREF(seqItem);
+			}
+		}
 
-        // 4. axisDescriptions
-        tempTag = PyTuple_GetItem(tagTuple,4);
-        if (PySequence_Check(tempTag))
-        {
-            for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
-            {
-                seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
-                if (stringOk)
-                {
-                    self->dataObject->setAxisDescription(i, tempString);
-                }
-                Py_XDECREF(seqItem);
-            }
-        }
+		// 4. axisDescriptions
+		tempTag = PyTuple_GetItem(tagTuple, 4);
+		if (PySequence_Check(tempTag))
+		{
+			for (Py_ssize_t i = 0; i < PySequence_Size(tempTag); i++)
+			{
+				seqItem = PySequence_GetItem(tempTag, i); //new reference
+				tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
+				if (stringOk)
+				{
+					self->dataObject->setAxisDescription(i, tempString);
+				}
+				Py_XDECREF(seqItem);
+			}
+		}
 
-        // 5. axisUnits
-        tempTag = PyTuple_GetItem(tagTuple,5);
-        if (PySequence_Check(tempTag))
-        {
-            for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
-            {
-                seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
-                if (stringOk)
-                {
-                    self->dataObject->setAxisUnit(i, tempString);
-                }
-                Py_XDECREF(seqItem);
-            }
-        }
+		// 5. axisUnits
+		tempTag = PyTuple_GetItem(tagTuple, 5);
+		if (PySequence_Check(tempTag))
+		{
+			for (Py_ssize_t i = 0; i < PySequence_Size(tempTag); i++)
+			{
+				seqItem = PySequence_GetItem(tempTag, i); //new reference
+				tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
+				if (stringOk)
+				{
+					self->dataObject->setAxisUnit(i, tempString);
+				}
+				Py_XDECREF(seqItem);
+			}
+		}
 
-        // 6. valueUnit
-        tempTag = PyTuple_GetItem(tagTuple,6); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
-        if (stringOk)
-        {
-            self->dataObject->setValueUnit(tempString);
-        }
+		// 6. valueUnit
+		tempTag = PyTuple_GetItem(tagTuple, 6); //borrowed
+		tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
+		if (stringOk)
+		{
+			self->dataObject->setValueUnit(tempString);
+		}
 
-        // 7. valueDescription
-        tempTag = PyTuple_GetItem(tagTuple,7); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
-        if (stringOk)
-        {
-            self->dataObject->setValueDescription(tempString);
-        }
+		// 7. valueDescription
+		tempTag = PyTuple_GetItem(tagTuple, 7); //borrowed
+		tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
+		if (stringOk)
+		{
+			self->dataObject->setValueDescription(tempString);
+		}
 
-        // 8.
-        //tempTag = PyTuple_GetItem(tagTuple,8);
-        // 9.
-        //tempTag = PyTuple_GetItem(tagTuple,9);
-    }
+		// 8.
+		//tempTag = PyTuple_GetItem(tagTuple,8);
+		// 9.
+		//tempTag = PyTuple_GetItem(tagTuple,9);
+	}
 
-    //Py_XDECREF(dataTuple);
-    //Py_XDECREF(tagTuple);
+	//Py_XDECREF(dataTuple);
+	//Py_XDECREF(tagTuple);
 
-    Py_RETURN_NONE;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
-\n\
-This method calculates the abs value of each element in source and writes the result to the output object.\
-In case of floating point or real object, the type of the output will not change. For complex values\
-the type is changes to the corresponding floating type value.\n\
-\n\
-Returns \n\
-------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type may be changed.");
-PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
-{
-    if (self->dataObject == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
-    }
-
-    ito::DataObject *d = self->dataObject;
-
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-    try
-    {
-        retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
-
-    retObj->dataObject->addToProtocol("Absolute values of calculated via abs().");
-    return (PyObject*)retObj;
-    
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectArg_doc, "arg() -> return a new data object with the argument values of the source\n\
-\n\
-This method calculates the argument value of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
-\n\
-Returns \n\
-------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type is changed.");
-PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
-{
-    if (self->dataObject == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
-    }
-
-    ito::DataObject *d = self->dataObject;
-
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-    try
-    {
-        retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
-
-    retObj->dataObject->addToProtocol("Extracted phase/argument of a complex dataObject via arg().");
-    return (PyObject*)retObj;
-    
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectReal_doc, "real() -> return a new data object with the real part of the source\n\
-\n\
-This method extracts the real part of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
-\n\
-Returns \n\
-------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type is changed.");
-PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
-{
-    if (self->dataObject == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
-    }
-
-    ito::DataObject *d = self->dataObject;
-
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-    try
-    {
-        retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
-
-    retObj->dataObject->addToProtocol("Extracted real part of a complex dataObject via real().");
-
-    return (PyObject*)retObj;
-    
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectImag_doc, "imag() -> return a new data object with the imaginary part of the source\n\
-\n\
-This method extracts the imaginary part of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
-\n\
-Returns \n\
-------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type is changed.");
-PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
-{
-    if (self->dataObject == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
-    }
-
-    ito::DataObject *d = self->dataObject;
-
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-    try
-    {
-        retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
-
-    retObj->dataObject->addToProtocol("Extracted imaginary part of a complex dataObject via imag().");
-
-    return (PyObject*)retObj;
-    
+	Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -8375,11 +8540,6 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
 		{ "dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
 		{"lineCut",(PyCFunction)PythonDataObject::PyDataObj_lineCut, METH_VARARGS , pyDataObjectLineCut_doc},
 
-        {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
-        {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
-        {"real", (PyCFunction)PythonDataObject::PyDataObject_real, METH_NOARGS, pyDataObjectReal_doc},
-        {"imag", (PyCFunction)PythonDataObject::PyDataObject_imag, METH_NOARGS, pyDataObjectImag_doc},
-
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
         {"toNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_ToNumpyColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToNumpyColor_doc },
@@ -8422,6 +8582,11 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"valueOffset", (getter)PyDataObject_getValueOffset, NULL, dataObjectAttrValueOffset_doc, NULL},
     {"value", (getter)PyDataObject_getValue, (setter)PyDataObject_setValue, dataObjectAttrValue_doc, NULL},
     {"xyRotationalMatrix", (getter)PyDataObject_getXYRotationalMatrix, (setter)PyDataObject_setXYRotationalMatrix, dataObjectAttrRotationalMatrix_doc, NULL},
+	{"real", (getter)PyDataObject_getReal, (setter)PyDataObject_setReal, dataObjectAttrReal_doc, NULL},
+	{"imag", (getter)PyDataObject_getImag, (setter)PyDataObject_setImag, dataObjectAttrImag_doc, NULL},
+	{"abs", (getter)PyDataObject_getAbs, NULL, dataObjectAttrAbs_doc, NULL},
+	{"arg", (getter)PyDataObject_getArg, NULL, dataObjectAttrArg_doc, NULL},
+
 
     {"__array_struct__", (getter)PyDataObj_Array_StructGet, NULL, dataObjectArray_StructGet_doc, NULL},
     {"__array_interface__", (getter)PyDataObj_Array_Interface, NULL, dataObjectArray_Interface_doc ,NULL},

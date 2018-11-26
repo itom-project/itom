@@ -745,6 +745,28 @@ DObjIterator DObjIterator::operator ++(int)
         cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
     }
 
+#define CHECK_NUM_PLANES_AND_PLANE_SIZE(otherObject) \
+    if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size)) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__)); \
+    } \
+    else if (getNumPlanes() != otherObject.getNumPlanes()) \
+    { \
+        /*dataObjects have different numbers of planes.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal number of planes)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size())) \
+    { \
+        /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
+        /*but the size of both planes (last two dimensions) is not equal.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal size of each plane)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0) \
+    { \
+        /*One of the matrix dimensions is zeros, so matrix operations are meaningless*/ \
+        cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
+    }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method for freeing allocated data blocks
 /*!
@@ -10143,6 +10165,30 @@ int DataObject::addToProtocol(const std::string &value)
         (*it).second = tempVal;
     }
     return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!<  Function to set the real part values of a data object. 
+int DataObject::setReal(const DataObject &value)
+{
+	CHECK_NUM_PLANES_AND_PLANE_SIZE(value);
+
+	if (0)
+	{
+		return 0;
+	}
+	else
+	{
+		cv::error(cv::Exception(CV_StsAssert, "test error", "", __FILE__, __LINE__));
+		return DataObject();
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!<  Function to set the real part values of a data object. 
+int DataObject::setImag(const DataObject &value)
+{
+	return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
