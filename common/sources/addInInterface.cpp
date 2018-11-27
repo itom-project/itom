@@ -1092,6 +1092,41 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal AddInActuator::getStatus(const int axis, QSharedPointer<int> status, ItomSharedSemaphore *waitCond)
+    {
+        ito::RetVal retval;
+
+        if (axis < 0 || axis >= m_currentStatus.size())
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "axis out of bounds [0,%i]", m_currentStatus.size() - 1);
+        }
+        else
+        {
+            QSharedPointer<QVector<int> > statusVector(new QVector<int>());
+            retval += getStatus(statusVector, NULL);
+
+            if (!retval.containsError())
+            {
+                if (axis >= statusVector->size())
+                {
+                    retval += ito::RetVal(ito::retError, 0, "invalid status vector returned from getStatus()");
+                }
+                else
+                {
+                    *status = statusVector->at(axis);
+                }
+            }
+        }
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+
+        return retval;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     AddInAlgo::AddInAlgo() : AddInBase()
     {
         Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toLatin1().data());

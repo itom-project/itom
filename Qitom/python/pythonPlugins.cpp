@@ -1750,7 +1750,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus() -> returns a list of status values for each axis\n\
+PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus([axis = -1]) -> returns a list of status values for each axis or the status value for a specific axis\n\
 \n\
 Each axis of an actuator plugin has got a status value that is used for informing about the current status of the axis. \n\
 \n\
@@ -1778,6 +1778,12 @@ Status flags: \n\
 * actuatorAvailable = 0x4000 : the axis is available \n\
 * actuatorEnabled   = 0x8000 : the axis is currently enabled and can be moved \n\
 \n\
+Parameters \n\
+----------- \n\
+axis : {int}, optional\n\
+    index of desired axis. If given, the returned status value is a single value. \n\
+    If not given (default), the status of all axes is requested and returned as list. \n\
+\n\
 Returns \n\
 ------- \n\
 status : {list of integers} \n\
@@ -1796,49 +1802,86 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     ito::RetVal ret = ito::retOk;
     int length = PyTuple_Size(args);
 
-    QSharedPointer<QVector<int> > status(new QVector<int>());
-
+    int axis = -1;
     PyObject *result = NULL;
 
-    if (length != 0)
+    if (!PyArg_ParseTuple(args, "|i", &axis))
     {
-        PyErr_SetString(PyExc_ValueError, "too many parameters");
         return NULL;
     }
-
-    if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    
+    if (axis == -1)
     {
-        bool timeout = false;
-        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        QSharedPointer<QVector<int> > status(new QVector<int>());
+
+        if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
-            if (!self->actuatorObj->isAlive())
+            bool timeout = false;
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
-                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toLatin1().data());
-                timeout = true;
-                break;
+                if (!self->actuatorObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting status").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += locker.getSemaphore()->returnValue;
             }
         }
-
-        if (!timeout)
+        else
         {
-            ret += locker.getSemaphore()->returnValue;
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+        }
+
+        if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
+        {
+            return NULL;
+        }
+
+        int size = status->size();
+        result = PyList_New(size); //new ref
+        for (int i = 0; i < size; ++i)
+        {
+            PyList_SetItem(result, i, PyLong_FromLong((*status)[i]));
         }
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
-    }
+        QSharedPointer<int> status(new int);
 
-    if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
-    {
-        return NULL;
-    }
+        if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(int, axis), Q_ARG(QSharedPointer<int>, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        {
+            bool timeout = false;
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                if (!self->actuatorObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting status").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
+            }
 
-    int size = status->size();
-    result = PyList_New(size); //new ref
-    for (int i = 0; i < size; ++i)
-    {
-        PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
+            if (!timeout)
+            {
+                ret += locker.getSemaphore()->returnValue;
+            }
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+        }
+
+        if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
+        {
+            return NULL;
+        }
+
+        result = PyLong_FromLong(*status);
     }
 
     return result;
