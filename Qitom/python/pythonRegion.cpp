@@ -184,7 +184,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionContains_doc,"contains(x,y[,w,h]) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
+PyDoc_STRVAR(pyRegionContains_doc,"contains(x, y, w = -1, h = -1) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
 \n\
 This method returns True, if the given point (x,y) or region (x,y,w,h) is fully contained in this region. Otherwise returns False.\n\
 \n\
@@ -638,7 +638,7 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask([boundingRegion]) -> creates mask data object based on this region and the optional boundingRegion. \n\
+PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask(boundingRegion = None) -> creates mask data object based on this region and the optional boundingRegion. \n\
 \n\
 Returns a uint8-dataObject whose size corresponds to the width and height of the bounding rectangle. \n\
 All pixels contained in the region have a value of 255 while the rest is set to 0. The offset value of \n\

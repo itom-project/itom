@@ -198,7 +198,7 @@ PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this) \n\
+PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points, maxNrPoints = -1) -> method to let the user pick points on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple points (up to maxNrPoints) at the current plot (if the plot supports this).\n\
 \n\
@@ -292,7 +292,7 @@ maxNrPoints: {int}, optional \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType [,maxNrElements]) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
+PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, maxNrElements = -1) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple elements of type (up to maxNrElements) at the current plot (if the plot supports this).\n\
 \n\

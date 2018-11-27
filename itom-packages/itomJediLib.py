@@ -1,5 +1,6 @@
 import jedi
 import sys
+import itom
 
 if jedi.__version__ >= '0.12.0':
     jedienv = jedi.api.environment.InterpreterEnvironment()
@@ -61,9 +62,36 @@ def icon_from_typename(name, icon_type):
         _logger().warning("Unimplemented completion icon_type: %s", icon_type)
     return ret_val
 
+def calltipModuleItomModification(sig, params):
+    '''mod that returns the call signature for all methods and classes in the itom module
+    based on their special docstrings
+    '''
+    try:
+        doc = sig.docstring(raw = False, fast = True)
+    except:
+        return None
+    
+    arrow_idx = doc.index("->")
+    
+    if arrow_idx == -1 or not doc.startswith(sig.name):
+        return None
+    
+    signature = doc[len(sig.name):arrow_idx].strip()
+    #remove ( and )
+    signature = signature[1:-1]
+    parts = signature.split(",")
+    
+    if len(parts) == len(params):
+        return parts
+    else:
+        return None
+
+calltipsModificationList = { 'itom': calltipModuleItomModification }
+
 def calltips(code, line, column, path = None, encoding = "utf-8"):
     '''
     '''
+    
     if jedi.__version__ >= '0.12.0':
         script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
     else:
@@ -77,7 +105,14 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
         #create a formatted calltip (current index appear in bold)
         module_name = str(sig.module_name)
         call_name = str(sig.name)
-        paramlist = [p.description for p in sig.params]
+        
+        paramlist = None
+        if module_name in calltipsModificationList:
+            paramlist = calltipsModificationList[module_name](sig, sig.params)
+        
+        if paramlist is None:
+            paramlist = [p.description for p in sig.params]
+        
         if index >= 0 and index < len(paramlist):
             paramlist[index] = "<b>%s</b>" % paramlist[index]
         params = ", ".join(paramlist)
@@ -92,6 +127,8 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
             sig.bracket_start[1]) \
             )
     return result
+
+
     
 def completions(code, line, column, path, prefix, encoding = "utf-8"):
     '''
@@ -154,6 +191,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     
 if __name__ == "__main__":
     
+    print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
     result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
     print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5, "utf-8"))

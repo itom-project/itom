@@ -206,7 +206,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer([collectionFile]) -> open the user documentation in the help viewer.\n\
+PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = '') -> open the user documentation in the help viewer.\n\
 \n\
 The user documentation is shown in an external help viewer. Optionally, it is possible to load a user-defined collection file \n\
 in this help viewer.\n\
@@ -251,7 +251,7 @@ PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, className = '', properties = {}) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
 \n\
 Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
@@ -417,7 +417,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, [xData, className, properties]) -> plots a dataObject as an 1d plot in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = '', properties = {}) -> plots a dataObject as an 1d plot in a new figure \n\
 \n\
 Plots an existing dataObject in a dockable, not blocking window. \n\
 \n\
@@ -601,7 +601,7 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, [properties]) -> plots a dataObject in a new figure \n\
+PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) -> plots a dataObject in a new figure \n\
 \n\
 Plots an existing dataObject in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
@@ -772,7 +772,7 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = '', properties = {}) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
 \n\
 Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
@@ -944,7 +944,7 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a new figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = '', properties = {}) -> show a camera live image in a new figure\n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
@@ -1537,7 +1537,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s). \n\
+PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp(filterName = '', dictionary = 0, furtherInfos = 0) -> generates an online help for the given filter(s). \n\
 \n\
 This method prints information about one specific filter (algorithm) or a list of filters to the console output. If one specific filter, defined \
 in an algorithm plugin can be found that case-sensitively fits the given filterName its full documentation is printed. Else, a list of filters \
@@ -1566,7 +1566,7 @@ PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp([widgetName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given widget(s). \n\
+PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp(filterName = '', dictionary = 0, furtherInfos = 0) -> generates an online help for the given widget(s). \n\
 \n\
 This method prints information about one specific widget or a list of widgets to the console output. If one specific widget, defined \
 in an algorithm plugin can be found that case-sensitively fits the given widgetName its full documentation is printed. Else, a list of widgets \
@@ -1682,7 +1682,7 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp([plotName , dictionary = False]) -> generates an online help for the specified plot.\n\
+PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName = '', dictionary = False) -> generates an online help for the specified plot.\n\
 Gets (also print to console) the available slots / properties of the plot specified by plotName (str, as specified in the properties window).\n\
 \n\
 Parameters \n\
@@ -2126,7 +2126,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.\n\
+PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName = '', dictionary = False) -> generates an online help for the specified plugin.\n\
                               Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
 If `dictionary == True`, a dict with all plugin parameters is returned and nothing is printed to the console.\n\
 \n\
@@ -2529,16 +2529,16 @@ PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs)
     return NULL;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers\n\
+PyDoc_STRVAR(pyITOMVersion_doc,"version(returnDict = False, addPluginInfos = False) -> retrieve complete information about itom version numbers\n\
 \n\
 Parameters \n\
 ----------- \n\
 toggle-output : {bool}, optional\n\
     default = false\n\
     if true, output will be written to a dictionary else to console.\n\
-dictionary : {bool}, optional \n\
+addPluginInfos : {bool}, optional \n\
     default = false\n\
-    if true, add informations about plugIn versions.\n\
+    if true, add informations about plugin versions.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2554,27 +2554,8 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     bool toggleOut = false;
     bool addPlugIns = false;
 
-    int length = PyTuple_Size(pArgs);
-
-    if (length == 1) //!< copy name + object
+    if (!PyArg_ParseTuple(pArgs, "|bb", &toggleOut, &addPlugIns))
     {
-        if (!PyArg_ParseTuple(pArgs, "b", &toggleOut))
-        {
-            PyErr_SetString(PyExc_TypeError, "Wrong input type, must be (bool, bool)");
-            return NULL;
-        }
-    }
-    else if (length == 2) //!< copy name + object + asBinary
-    {
-        if (!PyArg_ParseTuple(pArgs, "bb", &toggleOut, &addPlugIns))
-        {
-            PyErr_SetString(PyExc_TypeError, "Wrong input type, must be (bool, bool)");
-            return NULL;
-        }
-    }
-    else if (length > 2)
-    {
-        PyErr_SetString(PyExc_ValueError, "Only two optional parameters. Not more!");
         return NULL;
     }
 
@@ -2597,18 +2578,6 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         Py_DECREF(key);
         Py_DECREF(value);
     }
-
-    /*QList<QPair<QString, QString> > versionList = ito::retrieveITOMVERSIONMAP();
-
-    for (int i = 0; i < versionList.size(); i++)
-    {
-        key = PythonQtConversion::QStringToPyObject(versionList[i].first);
-        value = PythonQtConversion::QStringToPyObject(versionList[i].second);
-        ret = PyDict_SetItem(myTempDic, key, value);
-
-        Py_DECREF(key);
-        Py_DECREF(value);
-    }*/
 
     PyDict_SetItemString(myDic, "itom", myTempDic);
     Py_XDECREF(myTempDic);
@@ -2777,7 +2746,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window \n\
+PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code, icon = '', argtuple = []) -> adds a button to a toolbar in the main window \n\
 \n\
 This function adds a button to a toolbar in the main window. If the button is pressed the given code, function or method is executed. \n\
 If the toolbar specified by 'toolbarName' does not exist, it is created. The button will show the optional icon, or if not given or not \n\
@@ -2895,7 +2864,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle | toolbarName [, buttonName]) -> removes a button from a given toolbar. \n\
+PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle | toolbarName, buttonName = '') -> removes a button from a given toolbar. \n\
 \n\
 This method removes an existing button from a toolbar in the main window of 'itom'. This button must have been \n\
 created using `addButton`. If the toolbar is empty after the removal, it is finally deleted. \n\
@@ -2911,7 +2880,7 @@ handle : {int} \n\
 toolbarName : {str} \n\
     The name of the toolbar.\n\
 buttonName : {str} \n\
-    The name (str, identifier) of the button to remove.\n\
+    The name (str, identifier) of the button to remove (only necessary, if toolbarName is given instead of handle).\n\
 \n\
 Raises \n\
 ------- \n\
@@ -2989,7 +2958,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom. \n\
+PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key, name = <last_section_of_key>, code = '', icon = '', argtuple = []) -> adds an element to the menu bar of itom. \n\
 \n\
 This function adds an element to the main window menu bar. \n\
 The root element of every menu-list must be a MENU-element. Such a MENU-element can contain sub-elements. \n\
@@ -3427,7 +3396,7 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoReloader_doc,"autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules \n\
+PyDoc_STRVAR(autoReloader_doc,"autoReloader(enabled, checkFileExec = True, checkCmdExec = True, checkFctExec = False) -> dis-/enables the module to automatically reload changed modules \n\
 \n\
 Use this method to enable or disable (and configure) a tool that automatically tries to reload imported modules and their submodules if they have changed \n\
 since the last run. \n\
@@ -3558,7 +3527,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
+PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values, matrixName = 'matrix') -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
 \n\
 Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`...) to a Matlab *mat* file. \n\
 There are the following possibilites for saving: \n\
@@ -3933,7 +3902,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name, *parameters) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
 This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
 The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
@@ -4109,7 +4078,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject [, tagsAsBinary = False]) -> save a dataObject to harddrive in a xml-based file format. \n\
+PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject, tagsAsBinary = False) -> save a dataObject to harddrive in a xml-based file format. \n\
 \n\
 This method writes a `dataObject` into the file specified by 'filename'. The data is stored in a binary format within a xml-based structure. \n\
 All string-tags of the dataObject are encoded in order to avoid xml-errors, the value of numerical tags are converted to string with \n\
@@ -4160,7 +4129,7 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive. \n\
+PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject, doNotAppendIDO = False) -> load a dataObject from the harddrive. \n\
 \n\
 This function reads a `dataObject` from the file specified by filename. \n\
 MetaData saveType (string, binary) are extracted from the file and restored within the object.\n\
@@ -4474,7 +4443,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor([cursorIndex = -1]) -> changes the itom cursor or restores the previously set cursor if -1 \n\
+PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor(cursorIndex = -1) -> changes the itom cursor or restores the previously set cursor if -1 \n\
 \n\
 This methods changes the overall cursor icon of itom where cursorIndex corresponds to the Qt enumeration Qt::CursorShape. e.g.:\n\
 \n\
@@ -4576,7 +4545,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.\n\
+PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict, overwriteIfExists = True) -> saves the given dictionary as pickled idc-file.\n\
 \n\
 This method saves the given dictionary as pickled idc-file using the method dump from the builtin module pickle.\n\
 The file will be saved with the pickle protocol version 3 (default for Python 3).\n\
@@ -5156,7 +5125,7 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
     return dict;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getPaletteList_doc,"getPaletteList([typefilter = 0]) -> returns a tuple of all currently available names of color palettes.\n\
+PyDoc_STRVAR(getPaletteList_doc,"getPaletteList(typefilter = 0) -> returns a tuple of all currently available names of color palettes.\n\
 \n\
 \n\
 Parameters \n\
