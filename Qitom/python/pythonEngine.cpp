@@ -737,8 +737,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 
             //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
-
-            //try to add the module 'frosted' for syntax check
+            //try to add the module 'frosted' or 'pyflakes' (preferred) for syntax check
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
@@ -2395,11 +2394,11 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
 //----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
 /*!
-    This function calls the frosted python module. This module is able to check the syntax.
+    This function calls the pyflakes or frosted python module. This module is able to check the syntax.
     It\B4s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
     calling ScriptEditorWidget::syntaxCheckResult(...).
 
-    \param code This QString contains the code that frosted is supposed to check
+    \param code This QString contains the code that pyflakes or frosted is supposed to check
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
 */
