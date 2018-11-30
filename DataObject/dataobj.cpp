@@ -9723,47 +9723,48 @@ DataObject real(const DataObject &dObj)
 	\return retOk
 	\sa std::abs
 */
-template<typename _Tp1, typename _Tp2> RetVal SetRealFunc(const DataObject *dObj, DataObject *valueObj)
+template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, DataObject *valueObj)
 {
 
 	int numMats = dObj->getNumPlanes();
 	int dObjMatNum = 0;
 	int valMatNum = 0;
 
-	const cv::Mat_<_Tp1> * dObjMat = NULL;
-	cv::Mat_<_Tp2> * valMat = NULL;
+	cv::Mat_<_CmplxTp> * dObjMat = NULL;
+	const cv::Mat_<_Tp> * valMat = NULL;
 	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+
 	for (int nmat = 0; nmat < numMats; nmat++)
 	{
-		//TODO: check if non iterator version is working
 		dObjMatNum = dObj->seekMat(nmat, numMats);
 		valMatNum = valueObj->seekMat(nmat, numMats);
-		dObjMat = static_cast<const cv::Mat_<_Tp1> *>(dObj->get_mdata()[dObjMatNum]);
-		valMat = static_cast<cv::Mat_<_Tp2> *>(valueObj->get_mdata()[valMatNum]);
+		dObjMat = static_cast<cv::Mat_<_CmplxTp> *>(dObj->get_mdata()[dObjMatNum]);
+		valMat = static_cast<cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
 		{
 #endif
-			_Tp1* dObjPtr = NULL;
-			_Tp2* valPtr = NULL;
+			_CmplxTp* dObjPtr = NULL;
+			const _Tp* valPtr = NULL;
+
 #if (USEOMP)
-#pragma omp for schedule(guided)
+	#pragma omp for schedule(guided)
 #endif
+
 			for (int y = 0; y < sizey; y++)
 			{
-				dObjPtr = (_Tp1*)dObjMat->ptr(y);
-				valPtr = (_Tp2*)valMat->ptr(y);
+				dObjPtr = (_CmplxTp*)dObjMat->ptr(y);
+				valPtr = (_Tp*)valMat->ptr(y);
+
 				for (int x = 0; x < sizex; x++)
 				{
-
-					reinterpret_cast<_Tp1*>(dObjPtr)[2*x] = valPtr[x];
-					
+					reinterpret_cast<_Tp*>(dObjPtr)[x*2] = valPtr[x];
+					//reinterpret_cast<_CmplxTp*>(dObjPtr)[2 * x] = valPtr[x];
 				}
 			}
-			DELETE_AND_SET_NULL(dObjPtr);
-			DELETE_AND_SET_NULL(valPtr);
+
 #if (USEOMP)
 		}
 #endif
@@ -9771,7 +9772,7 @@ template<typename _Tp1, typename _Tp2> RetVal SetRealFunc(const DataObject *dObj
 	return 0;
 }
 
-typedef RetVal(*tSetRealFunc)(const DataObject *dObj, DataObject *valueObj);
+typedef RetVal(*tSetRealFunc)(DataObject *dObj, DataObject *valueObj);
 MAKEFUNCLIST_CMPLX_TO_REAL(SetRealFunc)
 
 //! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
@@ -9781,11 +9782,11 @@ MAKEFUNCLIST_CMPLX_TO_REAL(SetRealFunc)
 	\throws cv::Exception if undefined data type (e.g. real data types)
 	\sa ArgFunc
 */
-DataObject setReal(DataObject &dObj, const DataObject &valuesObj)
+DataObject setReal(DataObject &dObj, DataObject &valuesObj)
 {
 	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
 	{
-		DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
+		//DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
 		fListSetRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
 
@@ -9799,14 +9800,81 @@ DataObject setReal(DataObject &dObj, const DataObject &valuesObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!<  Function to set the real part values of a data object. 
-DataObject setImag(DataObject &dObj, const DataObject &valuesObj)
+
+//! low-level, double templated method to save the element-wise real value of each element in source matrix to result matrix
+/*!
+	This method takes the real value of a complex valued input matrix and stores it in the equivalent real typed result matrix
+
+	\param *dObj is source matrix, must have complex type
+	\param *resObj is the resulting data object, which has the real data type which corresponds to the complex type
+	\return retOk
+	\sa std::abs
+*/
+template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, DataObject *valueObj)
+{
+
+	int numMats = dObj->getNumPlanes();
+	int dObjMatNum = 0;
+	int valMatNum = 0;
+
+	cv::Mat_<_CmplxTp> * dObjMat = NULL;
+	cv::Mat_<_Tp> * valMat = NULL;
+	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+	for (int nmat = 0; nmat < numMats; nmat++)
+	{
+		//TODO: check if non iterator version is working
+		dObjMatNum = dObj->seekMat(nmat, numMats);
+		valMatNum = valueObj->seekMat(nmat, numMats);
+		dObjMat = static_cast<cv::Mat_<_CmplxTp> *>(dObj->get_mdata()[dObjMatNum]);
+		valMat = static_cast<cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+		{
+#endif
+			_CmplxTp* dObjPtr = NULL;
+			_Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+			for (int y = 0; y < sizey; y++)
+			{
+				dObjPtr = (_CmplxTp*)dObjMat->ptr(y);
+				valPtr = (_Tp*)valMat->ptr(y);
+
+				for (int x = 0; x < sizex; x++)
+				{
+					reinterpret_cast<_Tp*>(dObjPtr)[x * 2 + 1] = valPtr[x];
+					//reinterpret_cast<_CmplxTp*>(dObjPtr)[2 * x] = valPtr[x];
+				}
+			}
+
+#if (USEOMP)
+		}
+#endif
+	}
+	return 0;
+}
+
+typedef RetVal(*tSetImagFunc)(DataObject *dObj, DataObject *valueObj);
+MAKEFUNCLIST_CMPLX_TO_REAL(SetImagFunc)
+
+//! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
+/*!
+	\param &dObj
+	\return new data object with real values
+	\throws cv::Exception if undefined data type (e.g. real data types)
+	\sa ArgFunc
+*/
+DataObject setImag(DataObject &dObj, DataObject &valuesObj)
 {
 	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
 	{
-		DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
+		//DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
 
-		fListSetRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
+		fListSetImagFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
 
 		return valuesObj;
 	}

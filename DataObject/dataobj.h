@@ -1379,8 +1379,8 @@ namespace ito {
     DATAOBJ_EXPORT DataObject arg(const DataObject &dObj);              /*!< calculates the argument of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject real(const DataObject &dObj);             /*!< calculates the real part of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject imag(const DataObject &dObj);             /*!< calculates the imaginary part of each element in the given data object and returns the result as new data object */
-	DATAOBJ_EXPORT DataObject setReal(DataObject &Obj, const DataObject &valuesObj);
-	DATAOBJ_EXPORT DataObject setImag(DataObject &Obj, const DataObject &valuesObj);
+	DATAOBJ_EXPORT DataObject setReal(DataObject &Obj, DataObject &valuesObj);
+	DATAOBJ_EXPORT DataObject setImag(DataObject &Obj, DataObject &valuesObj);
 
     DATAOBJ_EXPORT DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
     
