@@ -5302,7 +5302,8 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 
 	try 
 	{
-		self->dataObject->setReal((*(newValues)));
+		//self->dataObject->setReal((*(newValues)));
+		ito::DataObject(ito::setReal((*(self->dataObject)), (*(newValues))));
 	}
 	catch (cv::Exception &exc)
 	{
@@ -5423,7 +5424,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 
 	try
 	{
-		self->dataObject->setImag((*(newValues)));
+		ito::DataObject(ito::setImag((*(self->dataObject)), (*(newValues))));
 	}
 	catch (cv::Exception &exc)
 	{

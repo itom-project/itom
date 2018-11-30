@@ -9711,6 +9711,112 @@ DataObject real(const DataObject &dObj)
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+//! low-level, double templated method to save the element-wise real value of each element in source matrix to result matrix
+/*!
+	This method takes the real value of a complex valued input matrix and stores it in the equivalent real typed result matrix
+
+	\param *dObj is source matrix, must have complex type
+	\param *resObj is the resulting data object, which has the real data type which corresponds to the complex type
+	\return retOk
+	\sa std::abs
+*/
+template<typename _Tp1, typename _Tp2> RetVal SetRealFunc(const DataObject *dObj, DataObject *valueObj)
+{
+
+	int numMats = dObj->getNumPlanes();
+	int dObjMatNum = 0;
+	int valMatNum = 0;
+
+	const cv::Mat_<_Tp1> * dObjMat = NULL;
+	cv::Mat_<_Tp2> * valMat = NULL;
+	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+	for (int nmat = 0; nmat < numMats; nmat++)
+	{
+		//TODO: check if non iterator version is working
+		dObjMatNum = dObj->seekMat(nmat, numMats);
+		valMatNum = valueObj->seekMat(nmat, numMats);
+		dObjMat = static_cast<const cv::Mat_<_Tp1> *>(dObj->get_mdata()[dObjMatNum]);
+		valMat = static_cast<cv::Mat_<_Tp2> *>(valueObj->get_mdata()[valMatNum]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+		{
+#endif
+			_Tp1* dObjPtr = NULL;
+			_Tp2* valPtr = NULL;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+			for (int y = 0; y < sizey; y++)
+			{
+				dObjPtr = (_Tp1*)dObjMat->ptr(y);
+				valPtr = (_Tp2*)valMat->ptr(y);
+				for (int x = 0; x < sizex; x++)
+				{
+
+					reinterpret_cast<_Tp1*>(dObjPtr)[2*x] = valPtr[x];
+					
+				}
+			}
+			DELETE_AND_SET_NULL(dObjPtr);
+			DELETE_AND_SET_NULL(valPtr);
+#if (USEOMP)
+		}
+#endif
+	}
+	return 0;
+}
+
+typedef RetVal(*tSetRealFunc)(const DataObject *dObj, DataObject *valueObj);
+MAKEFUNCLIST_CMPLX_TO_REAL(SetRealFunc)
+
+//! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
+/*!
+	\param &dObj
+	\return new data object with real values
+	\throws cv::Exception if undefined data type (e.g. real data types)
+	\sa ArgFunc
+*/
+DataObject setReal(DataObject &dObj, const DataObject &valuesObj)
+{
+	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
+	{
+		DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
+
+		fListSetRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
+
+		return valuesObj;
+	}
+	else
+	{
+		cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+		return DataObject();
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!<  Function to set the real part values of a data object. 
+DataObject setImag(DataObject &dObj, const DataObject &valuesObj)
+{
+	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
+	{
+		DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
+
+		fListSetRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
+
+		return valuesObj;
+	}
+	else
+	{
+		cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+		return DataObject();
+	}
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, double templated method to save the element-wise imaginary value of each element in source matrix to result matrix
 /*!
@@ -10165,30 +10271,6 @@ int DataObject::addToProtocol(const std::string &value)
         (*it).second = tempVal;
     }
     return 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//!<  Function to set the real part values of a data object. 
-int DataObject::setReal(const DataObject &value)
-{
-	CHECK_NUM_PLANES_AND_PLANE_SIZE(value);
-
-	if (0)
-	{
-		return 0;
-	}
-	else
-	{
-		cv::error(cv::Exception(CV_StsAssert, "test error", "", __FILE__, __LINE__));
-		return DataObject();
-	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//!<  Function to set the real part values of a data object. 
-int DataObject::setImag(const DataObject &value)
-{
-	return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
