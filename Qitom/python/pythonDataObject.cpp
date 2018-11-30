@@ -5265,10 +5265,11 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
-		newValues = self->dataObject;
+		newValues = (((PyDataObject*)(value))->dataObject);
 	}
 	else if (PyArray_Check(value)) //check if value is numpy array
 	{
+		
 		//newValues = (PyDataObject*)createPyDataObjectFromArray(value); //new reference
 	}
 	else if (PyLong_Check(value)) //check if value is integer single value
@@ -5302,7 +5303,6 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 
 	try 
 	{
-		//self->dataObject->setReal((*(newValues)));
 		ito::DataObject(ito::setReal((*(self->dataObject)), (*(newValues))));
 	}
 	catch (cv::Exception &exc)
