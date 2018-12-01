@@ -9782,14 +9782,14 @@ DataObject setReal(DataObject &dObj, DataObject &valuesObj)
 {
 	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
 	{
-		//DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
-
-		//fListSetRealFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
 		if (dObj.getType() == ito::tComplex128)
 		{
 			SetRealFunc<ito::complex128, ito::float64>(&dObj, &valuesObj);
 		}
-
+		else
+		{
+			SetRealFunc<ito::complex64, ito::float32>(&dObj, &valuesObj);
+		}
 
 		return valuesObj;
 	}
@@ -9818,37 +9818,37 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 	int dObjMatNum = 0;
 	int valMatNum = 0;
 
-	cv::Mat_<_CmplxTp> * dObjMat = NULL;
-	cv::Mat_<_Tp> * valMat = NULL;
+	cv::Mat_<_Tp> * dObjMat = NULL;
+	const cv::Mat_<_Tp> * valMat = NULL;
 	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+
 	for (int nmat = 0; nmat < numMats; nmat++)
 	{
-		//TODO: check if non iterator version is working
 		dObjMatNum = dObj->seekMat(nmat, numMats);
 		valMatNum = valueObj->seekMat(nmat, numMats);
-		dObjMat = static_cast<cv::Mat_<_CmplxTp> *>(dObj->get_mdata()[dObjMatNum]);
-		valMat = static_cast<cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+		dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+		valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
 		{
 #endif
-			_CmplxTp* dObjPtr = NULL;
-			_Tp* valPtr = NULL;
+			_Tp* dObjPtr = NULL;
+			const _Tp* valPtr = NULL;
 
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
+
 			for (int y = 0; y < sizey; y++)
 			{
-				dObjPtr = (_CmplxTp*)dObjMat->ptr(y);
+				dObjPtr = (_Tp*)dObjMat->ptr(y);
 				valPtr = (_Tp*)valMat->ptr(y);
 
 				for (int x = 0; x < sizex; x++)
 				{
-					reinterpret_cast<_Tp*>(dObjPtr)[x * 2 + 1] = valPtr[x];
-					//reinterpret_cast<_CmplxTp*>(dObjPtr)[2 * x] = valPtr[x];
+					dObjPtr[2 * x + 1] = valPtr[x];
 				}
 			}
 
@@ -9858,9 +9858,6 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 	}
 	return 0;
 }
-
-typedef RetVal(*tSetImagFunc)(DataObject *dObj, DataObject *valueObj);
-MAKEFUNCLIST_CMPLX_TO_REAL(SetImagFunc)
 
 //! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
 /*!
@@ -9873,9 +9870,14 @@ DataObject setImag(DataObject &dObj, DataObject &valuesObj)
 {
 	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
 	{
-		//DataObject valuesObj(dObj.getDims(), dObj.getSize().m_p, ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
-
-		fListSetImagFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &valuesObj);
+		if (dObj.getType() == ito::tComplex128)
+		{
+			SetImagFunc<ito::complex128, ito::float64>(&dObj, &valuesObj);
+		}
+		else
+		{
+			SetImagFunc<ito::complex64, ito::float32>(&dObj, &valuesObj);
+		}
 
 		return valuesObj;
 	}

@@ -5252,7 +5252,7 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 		PyErr_SetString(PyExc_TypeError, "Value is not defined.");
 		return NULL;
 	}
-
+	
 	ito::DataObject *newValues;
 
 	int dataObjectType = self->dataObject->getType();
@@ -5265,12 +5265,11 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
-		newValues = (((PyDataObject*)(value))->dataObject);
+		newValues = (((PyDataObject*)(value))->dataObject);		
 	}
 	else if (PyArray_Check(value)) //check if value is numpy array
 	{
-		
-		//newValues = (PyDataObject*)createPyDataObjectFromArray(value); //new reference
+		newValues = (((PyDataObject*)(createPyDataObjectFromArray(value)))->dataObject);
 	}
 	else if (PyLong_Check(value)) //check if value is integer single value
 	{
@@ -5300,6 +5299,41 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
 		return NULL;
 	}
+
+	const int dObjDims = self->dataObject->getDims();
+	const int valDims = newValues->getDims();
+
+	if (dObjDims == valDims) //error if same dimensions but differenz shape
+	{
+		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
+		{
+			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims)))
+			{
+				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
+				return NULL;
+			}
+		}
+	}
+	else //dObjDims must be greater than valDims
+	{
+		if (dObjDims > valDims && valDims == 2)
+		{
+			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2)) << std::endl;
+			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)) << std::endl;
+
+			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
+			{
+				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
+				return NULL;
+			}
+		}
+		else 
+		{
+			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
+			return NULL;
+		}
+	}
+	
 
 	try 
 	{
@@ -5377,6 +5411,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	}
 
 	ito::DataObject *newValues;
+
 	int dataObjectType = self->dataObject->getType();
 
 	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
@@ -5387,11 +5422,11 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
-		newValues = self->dataObject;
+		newValues = (((PyDataObject*)(value))->dataObject);
 	}
 	else if (PyArray_Check(value)) //check if value is numpy array
 	{
-		//newValues = (PyDataObject*)createPyDataObjectFromArray(value); //new reference
+		newValues = (((PyDataObject*)(createPyDataObjectFromArray(value)))->dataObject);
 	}
 	else if (PyLong_Check(value)) //check if value is integer single value
 	{
@@ -5421,6 +5456,41 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
 		return NULL;
 	}
+
+	const int dObjDims = self->dataObject->getDims();
+	const int valDims = newValues->getDims();
+
+	if (dObjDims == valDims) //error if same dimensions but differenz shape
+	{
+		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
+		{
+			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims)))
+			{
+				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
+				return NULL;
+			}
+		}
+	}
+	else //dObjDims must be greater than valDims
+	{
+		if (dObjDims > valDims && valDims == 2)
+		{
+			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2)) << std::endl;
+			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)) << std::endl;
+
+			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
+			{
+				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
+				return NULL;
+			}
+		}
+		else
+		{
+			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
+			return NULL;
+		}
+	}
+
 
 	try
 	{
