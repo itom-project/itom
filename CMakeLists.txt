@@ -1,7 +1,7 @@
 project(itom)
 #trigger update on 2015.12.26@14:09
 cmake_minimum_required(VERSION 2.8)
-            
+             
 if(APPLE)    
     SET(CMAKE_OSX_ARCHITECTURES "x86_64") 
 endif(APPLE)
