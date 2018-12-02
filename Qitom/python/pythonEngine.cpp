@@ -2424,6 +2424,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         {
             QString unexpectedErrors;
             QString flakes;
+            QString syntaxErrors;
+            QStringList strlist;
 
             bool ok;
             unexpectedErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 0), false, ok);
@@ -2441,32 +2443,68 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             {   
                 if (m_includeItomImportBeforeSyntaxCheck)
                 {   // if itom is automatically included, this block is correcting the line numbers
-                    QStringList sFlakes = flakes.split("\n");
-                    if (sFlakes.length() > 0)
+                    strlist = flakes.split("\n");
+                    if (strlist.length() > 0)
                     {
-                        while (sFlakes.at(0).startsWith("code:1:"))
+                        while (strlist.at(0).startsWith("code:1:"))
                         {
-                            sFlakes.removeFirst();
-                            if (sFlakes.length() == 0)
+                            strlist.removeFirst();
+                            if (strlist.length() == 0)
                             {
                                 break;
                             }
                         }
-                        for (int i = 0; i < sFlakes.length(); ++i)
+                        for (int i = 0; i < strlist.length(); ++i)
                         {
                             QRegExp reg("(code:)(\\d+)");
-                            reg.indexIn(sFlakes[i]);
+                            reg.indexIn(strlist[i]);
                             int line = reg.cap(2).toInt() - 1;
-                            sFlakes[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
+                            strlist[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
                         }
-                        flakes = sFlakes.join("\n");
+                        flakes = strlist.join("\n");
                     }
                 }   // if not, no correction is nessesary
             }
+
+            if (PyList_Size(result) >= 3)
+            {
+                syntaxErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 2), false, ok);
+                if (!ok)
+                {
+                    syntaxErrors = "<<error>>";
+                }
+                else
+                {
+                    if (m_includeItomImportBeforeSyntaxCheck)
+                    {   // if itom is automatically included, this block is correcting the line numbers
+                        strlist = syntaxErrors.split("\n");
+                        if (strlist.length() > 0)
+                        {
+                            while (strlist.at(0).startsWith("code:1:"))
+                            {
+                                strlist.removeFirst();
+                                if (strlist.length() == 0)
+                                {
+                                    break;
+                                }
+                            }
+                            for (int i = 0; i < strlist.length(); ++i)
+                            {
+                                QRegExp reg("(code:)(\\d+)");
+                                reg.indexIn(strlist[i]);
+                                int line = reg.cap(2).toInt() - 1;
+                                strlist[i].replace(QRegExp("code:\\d+:"), "code:" + QString::number(line) + ":");
+                            }
+                            syntaxErrors = strlist.join("\n");
+                        }
+                    }   // if not, no correction is nessesary
+                }
+            }
+
             QObject *s = sender.data();
             if (s && callbackFctName != "")
             {
-                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
+                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
             }
         }
 #ifdef _DEBUG

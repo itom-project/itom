@@ -998,10 +998,14 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     \sa checkSyntax
 */
-void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
-{ // this event occurs when the syntax checker is delivering results
-    QStringList errorList = b.split("\n");
-    errorList.removeAll("");
+void ScriptEditorWidget::syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors)
+{ 
+    // this event occurs when the syntax checker is delivering results
+    QStringList errorList = flakes.split("\n") + syntaxErrors.split("\n");
+    for (int i = 0; i < errorList.length(); ++i)
+    {
+        errorList.removeAt(errorList.indexOf("",i));
+    }    
     errorListChange(errorList);
 }
 
