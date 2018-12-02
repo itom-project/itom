@@ -1254,13 +1254,12 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     \sa checkSyntax
 */
-void ScriptEditorWidget::syntaxCheckResult(QString a, QString b)
+void ScriptEditorWidget::syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors)
 { // this event occurs when the syntax checker is delivering results
-    QStringList errorList = b.split("\n");
-    for (int i = 0; i<errorList.length(); ++i)
+    QStringList errorList = flakes.split("\n") + syntaxErrors.split("\n");
+    for (int i = 0; i < errorList.length(); ++i)
     {
-        errorList.removeAt(errorList.indexOf("",i));
-        //errorList.at(i).
+        errorList.removeAt(errorList.indexOf("", i));
     }
     errorListChange(errorList);
 }
