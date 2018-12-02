@@ -60,7 +60,7 @@ PyObject* PythonPlotItem::PyPlotItem_new(PyTypeObject *type, PyObject * args, Py
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.\n\
+PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure, subplotIdx = 0 | figure, objectID = 0 | uiItem) -> instance of the plot or subplot of a figure.\n\
 \n\
 Use can use this constructor to access any plot or subplot (if more than one plot) of a figure. The subplotIndex \n\
 row-wisely addresses the subplots, beginning with 0. \n\

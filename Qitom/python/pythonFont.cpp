@@ -80,7 +80,7 @@ PyObject* PythonFont::PyFont_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyFont_doc,"font(family, pointSize = 0, weight = -1, italic = false) -> creates a font object. \n\
+PyDoc_STRVAR(PyFont_doc,"font(family, pointSize = 0, weight = -1, italic = False) -> creates a font object. \n\
 \n\
 This class is a wrapper for the class QFont of Qt. It provides possibilities for creating a font type. \n\
 \n\

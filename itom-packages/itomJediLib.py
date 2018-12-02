@@ -101,7 +101,7 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
     for sig in signatures:
         index = sig.index
         if index is None:
-            index = 0
+            index = -1
         #create a formatted calltip (current index appear in bold)
         module_name = str(sig.module_name)
         call_name = str(sig.name)

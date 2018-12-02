@@ -174,7 +174,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
     PyObject *result;
     if(self->r == NULL)
     {
-        result = PyUnicode_FromFormat("region(NULL)");
+        result = PyUnicode_FromFormat("region(empty)");
     }
     else
     {

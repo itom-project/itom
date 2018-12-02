@@ -357,7 +357,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.  \n\
+PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod, *args) -> calls any public slot of this widget or any accessible public method.  \n\
 \n\
 This method invokes (calls) a method of the underlying widget that is marked as public slot. Besides slots there are some public methods of specific \n\
 widget classes that are wrapped by itom and therefore are callable by this method, too. \n\
@@ -370,9 +370,9 @@ Parameters \n\
 ----------- \n\
 slotOrPublicMethod : {str} \n\
     name of the slot or method \n\
-arguments : {various types}, optional\n\
-    Here you must indicate every argument, that the definition of the slot indicates. The type must be convertable into the \n\
-    requested C++ based argument type.\n\
+*args : {various types}, optional\n\
+    Variable length argument list, that is passed to the called slot or method. The type of each value must be \n\
+    convertible to the requested C++ based argument type of the slot.\n\
 \n\
 Notes \n\
 ----- \n\
@@ -744,18 +744,13 @@ PyDoc_STRVAR(PyUiItemDisconnect_doc,"disconnect(signalSignature, callableMethod)
 Parameters \n\
 ----------- \n\
 signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
 callableMethod : {python method or function} \n\
-\n\
-Returns \n\
-------- \n\
-\n\
-Notes \n\
------ \n\
-doctodo\n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
+connect \n\
 ");
 PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 {
@@ -829,14 +824,15 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)\n\
+PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName) -> returns tuple of requested properties (single property or tuple of properties)\n\
+\n\
 Use this method or the operator [] in order to get the value of one specific property of this widget or of multiple properties. \n\
 Multiple properties are given by a tuple or list of property names. For one single property, its value is returned as it is. \n\
 If the property names are passed as sequence, a sequence of same size is returned with the corresponding values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-property : {string, string-list} \n\
+property : {str, sequence of str} \n\
     Name of one property or sequence (tuple,list...) of property names \n\
 \n\
 Returns \n\
@@ -1012,15 +1008,24 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.\n\
+PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo(propertyName = None) -> returns information about the property 'propertyName' of this widget or all properties, if None or no name indicated.\n\
 \n\
 Parameters \n\
 ----------- \n\
 propertyName : {tuple}, optional \n\
+    The name of the property whose detailed information should be returned or None, if a list of all property names should be returned. \n\
+    Instead of None, the method can also be called without any arguments.\n\
 \n\
 Returns \n\
 ------- \n\
-");
+A list of all available property names, if None or no argument is given. \n\
+\n\
+OR:\n\
+\n\
+A read-only dictionary with further settings of the requested property. This dictionary contains\n\
+of the following entries:\n\
+\n\
+name, valid, readable, writeable, resettable, final, constant");
 PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 {
     const char *propertyName = NULL;
@@ -1137,7 +1142,7 @@ out : {bool} \n\
 \n\
 See Also \n\
 --------- \n\
-setAttribute()\n\
+setAttribute\n\
 ");
 PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 {
@@ -1283,7 +1288,7 @@ flags : {int} \n\
 \n\
 See Also \n\
 ---------- \n\
-getWindowFlags()");
+getWindowFlags");
 PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
 {
     int value;
@@ -1335,7 +1340,7 @@ flags {int}: \n\
 \n\
 See Also \n\
 --------- \n\
-setWindowFlags()");
+setWindowFlags");
 PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1370,7 +1375,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInfo_doc,"info([verbose = 0]) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
+PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1478,7 +1483,7 @@ PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemChildren_doc,"children([recursive = False]) -> returns dict with widget-based child items of this uiItem. \n\
+PyDoc_STRVAR(PyUiItemChildren_doc,"children(recursive = False) -> returns dict with widget-based child items of this uiItem. \n\
 \n\
 Each key -> value pair is object-name -> class-name). Objects with no object-name are omitted. \n\
 \n\
