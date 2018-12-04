@@ -5253,7 +5253,8 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 		return NULL;
 	}
 	
-	ito::DataObject *newValues;
+	ito::DataObject *newValues = NULL;
+	bool singleValue = false;
 
 	int dataObjectType = self->dataObject->getType();
 
@@ -5275,24 +5276,34 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	{
 		if (dataObjectType == ito::tComplex64)
 		{
-			float32 newValue = PyLong_AsLong(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat32);
+			ito::float32 newValue = PyLong_AsLong(value);
+			newValues->at<ito::float32>(0, 0) = newValue;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
-			float64 newValue = PyLong_AsLong(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat64);
+			ito::float64 newValue = PyLong_AsLong(value);
+			newValues->at<ito::float64>(0, 0) = newValue;
 		}
+		singleValue = true;
+		
 	}
 	else if (PyFloat_Check(value)) //check if value is float single value
 	{
 		if (dataObjectType == ito::tComplex64)
 		{
-			float32 newValue = PyFloat_AsDouble(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat32);
+			ito::float32 newValue = PyFloat_AsDouble(value);
+			newValues->at<ito::float32>(0, 0) = newValue;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
-			float64 newValue = PyFloat_AsDouble(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat64);
+			ito::float64 newValue = PyFloat_AsDouble(value);
+			newValues->at<ito::float64>(0, 0) = newValue;
 		}
-
+		singleValue = true;
 	}
 	else //error
 	{
@@ -5307,7 +5318,7 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	{
 		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
 		{
-			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims)))
+			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
 			{
 				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
 				return NULL;
@@ -5318,9 +5329,6 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	{
 		if (dObjDims > valDims && valDims == 2)
 		{
-			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2)) << std::endl;
-			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)) << std::endl;
-
 			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
@@ -5333,7 +5341,6 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 			return NULL;
 		}
 	}
-	
 
 	try 
 	{
@@ -5410,7 +5417,8 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 		return NULL;
 	}
 
-	ito::DataObject *newValues;
+	ito::DataObject *newValues = NULL;
+	bool singleValue = false;
 
 	int dataObjectType = self->dataObject->getType();
 
@@ -5432,24 +5440,34 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	{
 		if (dataObjectType == ito::tComplex64)
 		{
-			float32 newValue = PyLong_AsLong(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat32);
+			ito::float32 newValue = PyLong_AsLong(value);
+			newValues->at<ito::float32>(0, 0) = newValue;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
-			float64 newValue = PyLong_AsLong(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat64);
+			ito::float64 newValue = PyLong_AsLong(value);
+			newValues->at<ito::float64>(0, 0) = newValue;
 		}
+		singleValue = true;
+
 	}
 	else if (PyFloat_Check(value)) //check if value is float single value
 	{
 		if (dataObjectType == ito::tComplex64)
 		{
-			float32 newValue = PyFloat_AsDouble(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat32);
+			ito::float32 newValue = PyFloat_AsDouble(value);
+			newValues->at<ito::float32>(0, 0) = newValue;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
-			float64 newValue = PyFloat_AsDouble(value);
+			newValues = new ito::DataObject(1, 1, ito::tFloat64);
+			ito::float64 newValue = PyFloat_AsDouble(value);
+			newValues->at<ito::float64>(0, 0) = newValue;
 		}
-
+		singleValue = true;
 	}
 	else //error
 	{
@@ -5464,7 +5482,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	{
 		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
 		{
-			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims)))
+			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
 			{
 				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
 				return NULL;
@@ -5475,9 +5493,6 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	{
 		if (dObjDims > valDims && valDims == 2)
 		{
-			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2)) << std::endl;
-			std::cout << (self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)) << std::endl;
-
 			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
@@ -5490,7 +5505,6 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 			return NULL;
 		}
 	}
-
 
 	try
 	{

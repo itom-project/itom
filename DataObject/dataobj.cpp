@@ -9706,7 +9706,7 @@ DataObject real(const DataObject &dObj)
     }
     else
     {
-        cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Real not defined for real input parameter type", "", __FILE__, __LINE__));
         return DataObject();
     }
 }
@@ -9725,7 +9725,6 @@ DataObject real(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, DataObject *valueObj)
 {
-
 	int numMats = dObj->getNumPlanes();
 	int dObjMatNum = 0;
 	int valMatNum = 0;
@@ -9735,38 +9734,79 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
 
-	for (int nmat = 0; nmat < numMats; nmat++)
-	{
-		dObjMatNum = dObj->seekMat(nmat, numMats);
-		valMatNum = valueObj->seekMat(nmat, numMats);
-		dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
-		valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
 
+	if (static_cast<int>(valueObj->getSize(valueObj->getDims() - 1)) == 1 && static_cast<int>(valueObj->getSize(valueObj->getDims() - 2))) //just a single value
+	{
+		const int valMat = valueObj->seekMat(0);
+		const _Tp *valPtr = NULL;
+		valPtr = (_Tp*)valueObj->rowPtr(valMat, 0);
+		const _Tp val = valPtr[0];
+
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMatNum = dObj->seekMat(nmat, numMats);
+			
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+			
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
-		{
-#endif
-			_Tp* dObjPtr = NULL;
-			const _Tp* valPtr = NULL;
-
-#if (USEOMP)
-	#pragma omp for schedule(guided)
-#endif
-
-			for (int y = 0; y < sizey; y++)
 			{
-				dObjPtr = (_Tp*)dObjMat->ptr(y);
-				valPtr = (_Tp*)valMat->ptr(y);
-
-				for (int x = 0; x < sizex; x++)
+#endif
+				_Tp* dObjPtr = NULL;
+				
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+				for (int y = 0; y < sizey; y++)
 				{
-					dObjPtr[2 * x] =  valPtr[x];
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = val;
+					}
 				}
-			}
 
 #if (USEOMP)
 		}
 #endif
+	}
+	}
+	else
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMatNum = dObj->seekMat(nmat, numMats);
+			valMatNum = valueObj->seekMat(nmat, numMats);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
 	}
 	return 0;
 }
@@ -9795,7 +9835,7 @@ DataObject setReal(DataObject &dObj, DataObject &valuesObj)
 	}
 	else
 	{
-		cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+		cv::error(cv::Exception(CV_StsAssert, "Real not defined for real input parameter type", "", __FILE__, __LINE__));
 		return DataObject();
 	}
 }
@@ -9813,7 +9853,6 @@ DataObject setReal(DataObject &dObj, DataObject &valuesObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, DataObject *valueObj)
 {
-
 	int numMats = dObj->getNumPlanes();
 	int dObjMatNum = 0;
 	int valMatNum = 0;
@@ -9823,39 +9862,80 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
 
-	for (int nmat = 0; nmat < numMats; nmat++)
+
+	if (static_cast<int>(valueObj->getSize(valueObj->getDims() - 1)) == 1 && static_cast<int>(valueObj->getSize(valueObj->getDims() - 2))) //just a single value
 	{
-		dObjMatNum = dObj->seekMat(nmat, numMats);
-		valMatNum = valueObj->seekMat(nmat, numMats);
-		dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
-		valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+		const int valMat = valueObj->seekMat(0);
+		const _Tp *valPtr = NULL;
+		valPtr = (_Tp*)valueObj->rowPtr(valMat, 0);
+		const _Tp val = valPtr[0];
+
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMatNum = dObj->seekMat(nmat, numMats);
+
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
-		{
+			{
 #endif
-			_Tp* dObjPtr = NULL;
-			const _Tp* valPtr = NULL;
+				_Tp* dObjPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = val;
+					}
+				}
+
+#if (USEOMP)
+					}
+#endif
+				}
+			}
+	else
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMatNum = dObj->seekMat(nmat, numMats);
+			valMatNum = valueObj->seekMat(nmat, numMats);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
 
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
 
-			for (int y = 0; y < sizey; y++)
-			{
-				dObjPtr = (_Tp*)dObjMat->ptr(y);
-				valPtr = (_Tp*)valMat->ptr(y);
-
-				for (int x = 0; x < sizex; x++)
+				for (int y = 0; y < sizey; y++)
 				{
-					dObjPtr[2 * x + 1] = valPtr[x];
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = valPtr[x];
+					}
 				}
-			}
 
 #if (USEOMP)
-		}
+					}
 #endif
-	}
+				}
+			}
 	return 0;
 }
 
@@ -9883,7 +9963,7 @@ DataObject setImag(DataObject &dObj, DataObject &valuesObj)
 	}
 	else
 	{
-		cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+		cv::error(cv::Exception(CV_StsAssert, "Imag not defined for real input parameter type", "", __FILE__, __LINE__));
 		return DataObject();
 	}
 }
@@ -9966,7 +10046,7 @@ DataObject imag(const DataObject &dObj)
     }
     else
     {
-        cv::error(cv::Exception(CV_StsAssert, "Imag() not defined for real input parameter type", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Imag not defined for real input parameter type", "", __FILE__, __LINE__));
         return DataObject();
     }
 }
