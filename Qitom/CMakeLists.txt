@@ -9,7 +9,7 @@ if (POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
 ENDIF (POLICY CMP0028)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
@@ -778,10 +778,8 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATI
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!
 IF (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
-    message(Fatal "exists delete it")
+    message(Fatal "itom-packages/enum.py exists. This file will be deleted.")
     FILE(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
-ELSE()
-    message(Fatal "does not exist")
 ENDIF()
 
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)

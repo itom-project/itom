@@ -203,9 +203,9 @@ void WorkspaceDockWidget::createToolBars()
 void WorkspaceDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction(m_actImport->action());
+//    m_pContextMenu->addAction(m_actImport->action());
     m_pContextMenu->addAction(m_actExport->action());
-    m_pContextMenu->addAction(m_actUnpack);
+//    m_pContextMenu->addAction(m_actUnpack);
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_actDelete->action());
     m_pContextMenu->addAction(m_actRename->action());

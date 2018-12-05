@@ -78,8 +78,8 @@ public slots:
     void collapseTree();
     void reloadDB();
     void liveFilter(const QString &filterText);
-    void showTreeview();
-    void unshowTreeview();
+//    void showTreeview();
+//    void unshowTreeview();
     void propertiesChanged();
     void showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink);
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);

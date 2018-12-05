@@ -7,38 +7,29 @@
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
-//python
+///python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #if (defined _DEBUG) && (defined WIN32)
     #undef _DEBUG
-    #if (defined linux) | (defined CMAKE)
-        #include "Python.h"
-        #include "node.h"
-        #include "numpy/arrayobject.h"
-    #elif (defined __APPLE__) | (defined CMAKE)
-        #include "Python.h"
-        #include "node.h"
-        #include "numpy/arrayobject.h"
-    #else
-        #include "Python.h"
-        #include "node.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-    #endif
+
+    //workaround following: https://stackoverflow.com/questions/23068700/embedding-python3-in-qt-5
+    #pragma push_macro("slots")
+    #undef slots
+    #include "Python.h"
+    #pragma pop_macro("slots")
+
+    #include "node.h"
+    #include "numpy/arrayobject.h" //for numpy arrays
     #define _DEBUG
 #else
-    #if (defined linux)
-        #include "Python.h"
-        #include "node.h"
-        #include "numpy/arrayobject.h"
-    #elif (defined __APPLE__)
-        #include "Python.h"
-        #include "node.h"
-        #include "numpy/arrayobject.h"
-    #else
-        #include "Python.h"
-        #include "node.h"
-        #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
-    #endif
+    //workaround following: https://stackoverflow.com/questions/23068700/embedding-python3-in-qt-5
+    #pragma push_macro("slots")
+    #undef slots
+    #include "Python.h"
+    #pragma pop_macro("slots")
+
+    #include "node.h"
+    #include "numpy/arrayobject.h"
 #endif
 
 #include <qobject.h>

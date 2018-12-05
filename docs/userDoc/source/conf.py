@@ -31,12 +31,11 @@ thisDir = os.path.dirname( os.path.abspath (inspect.getfile(inspect.currentframe
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+needs_sphinx = '1.4.3'
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')
@@ -44,7 +43,10 @@ else:
     extensions.append('autosummary')
     extensions.append('only_directives')
 
-
+if sphinx.__version__<= "1.4.3":
+    extensions.append('sphinx.ext.pngmath')
+else:
+    extensions.append('sphinx.ext.imgmath')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -7617,28 +7617,35 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> returns a stacked data object containing a stack of all planes given by this and obj. \n\
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> return a 3d dataObject with stacked arrays in sequence depth wise (along first axis). \n\
 \n\
-The returned dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\n\
+The given dataObjects must all have the same type as well as the same size of both last axes / dimensions. \n\
+This method then returns a 3d dataObject of the same type, whose size of the two last axes correspond to those of\n\
+the input objects. This 3d dataObject contain a stacked representation of all given input dataObjects depth wise (along first axis). \n\
+\n\
+If any of the input dataObjects has more than two dimensions, all contained planes (x,y-matrices) are also stacked in the resulting object.\n\
 \n\
 Parameters \n\
 ----------- \n\
-obj : {sequence of dataObjects} \n\
-	Sequence (list) of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\
-		Only one of the (n-2) dimensions of each input dataObject is allowed to have a size greater one.\n\
+objects : {sequence of dataObjects} \n\
+	Sequence (list) of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have \n\
+    the same shape of planes (last two dimesnions).\
 \n\
 Returns \n\
 ------- \n\
 dataObj : {dataObject} \n\
-	dataObject of the same type. The different planes are located along the first axis.");
+    If objects only contains one array, this array is returned. If objects contains more than one array, \n\
+    these arrays are vertically stacked along the first axis, which is prepended to the existing axes before.");
 PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 {
     PyObject *sequence = NULL;
 	unsigned int axis = 0;
-	if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis))
+	
+    //if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis)) //currently not implemented in dataObject::stack
+    if (!PyArg_ParseTuple(args, "O", &sequence))
     {
 
-		return PyErr_Format(PyExc_RuntimeError, "more than one parameter was given. The filter only supports a list of dataObjects.");
+		return PyErr_Format(PyExc_RuntimeError, "More than one parameter was given. This method only supports a list or tuple of dataObjects.");
     }
 
 	if (PySequence_Check(sequence))

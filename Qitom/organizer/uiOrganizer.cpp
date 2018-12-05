@@ -1952,6 +1952,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
     }
     else
     {
+        //the error code 'errorObjDoesNotExist' is checked in pythonUi::PyUiItem_mappingLength!
         retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 

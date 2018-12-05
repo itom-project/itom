@@ -17,7 +17,7 @@ ENDIF (POLICY CMP0028)
  
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
@@ -431,7 +431,20 @@ add_dependencies(${target_name} ${target_name}GenerateMoc)
 set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/${target_name}_de.qm")
 set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ADD_DESIGNERLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+
+IF(WIN32)
+    #For Windows, the resulting library is copied to the designer-folder, such that the widgets are listed in the widget library of QtDesigner
+    ADD_DESIGNERLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+ELSE(WIN32)
+   #Under linux, copying the library (like under Windows) will result in a strange double-linked-list error, since two libraries with the
+   #same content will then be loaded by itom. Therefore, a symbolic link to the original library is created in the designer-folder.
+    file(MAKE_DIRECTORY "${ITOM_APP_DIR}/designer")
+    ADD_CUSTOM_COMMAND(TARGET ${target_name} POST_BUILD                                                # Adds a post-build event to this target
+            COMMAND ${CMAKE_COMMAND} -E create_symlink                                                                    # which executes "cmake - E create_symlink..."
+                "$<TARGET_LINKER_FILE:${target_name}>"                                                                                      # <--this is the old file
+                "${ITOM_APP_DIR}/designer/$<TARGET_LINKER_FILE_NAME:${target_name}>"     # <--this is the new file
+        )
+ENDIF(WIN32)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 FOREACH(headerFile ${itomWidgets_HEADERS}) 

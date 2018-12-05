@@ -727,7 +727,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 
             //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
-            //try to add the module 'frosted' for syntax check
+            //try to add the module 'frosted' or 'pyflakes' (preferred) for syntax check
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
@@ -2032,11 +2032,11 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
 /*!
-    This function calls the frosted python module. This module is able to check the syntax.
+    This function calls the pyflakes or frosted python module. This module is able to check the syntax.
     It\B4s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
     calling ScriptEditorWidget::syntaxCheckResult(...).
 
-    \param code This QString contains the code that frosted is supposed to check
+    \param code This QString contains the code that pyflakes or frosted is supposed to check
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
 */
@@ -2062,6 +2062,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         {
             QString unexpectedErrors;
             QString flakes;
+            QString syntaxErrors;
+            QStringList strlist;
 
             bool ok;
             unexpectedErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 0), false, ok);
@@ -2079,32 +2081,68 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             {   
                 if (m_includeItomImportBeforeSyntaxCheck)
                 {   // if itom is automatically included, this block is correcting the line numbers
-                    QStringList sFlakes = flakes.split("\n");
-                    if (sFlakes.length() > 0)
+                    strlist = flakes.split("\n");
+                    if (strlist.length() > 0)
                     {
-                        while (sFlakes.at(0).startsWith("code:1:"))
+                        while (strlist.at(0).startsWith("code:1:"))
                         {
-                            sFlakes.removeFirst();
-                            if (sFlakes.length() == 0)
+                            strlist.removeFirst();
+                            if (strlist.length() == 0)
                             {
                                 break;
                             }
                         }
-                        for (int i = 0; i < sFlakes.length(); ++i)
+                        for (int i = 0; i < strlist.length(); ++i)
                         {
                             QRegExp reg("(code:)(\\d+)");
-                            reg.indexIn(sFlakes[i]);
+                            reg.indexIn(strlist[i]);
                             int line = reg.cap(2).toInt() - 1;
-                            sFlakes[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
+                            strlist[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
                         }
-                        flakes = sFlakes.join("\n");
+                        flakes = strlist.join("\n");
                     }
                 }   // if not, no correction is nessesary
             }
+
+            if (PyList_Size(result) >= 3)
+            {
+                syntaxErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 2), false, ok);
+                if (!ok)
+                {
+                    syntaxErrors = "<<error>>";
+                }
+                else
+                {
+                    if (m_includeItomImportBeforeSyntaxCheck)
+                    {   // if itom is automatically included, this block is correcting the line numbers
+                        strlist = syntaxErrors.split("\n");
+                        if (strlist.length() > 0)
+                        {
+                            while (strlist.at(0).startsWith("code:1:"))
+                            {
+                                strlist.removeFirst();
+                                if (strlist.length() == 0)
+                                {
+                                    break;
+                                }
+                            }
+                            for (int i = 0; i < strlist.length(); ++i)
+                            {
+                                QRegExp reg("(code:)(\\d+)");
+                                reg.indexIn(strlist[i]);
+                                int line = reg.cap(2).toInt() - 1;
+                                strlist[i].replace(QRegExp("code:\\d+:"), "code:" + QString::number(line) + ":");
+                            }
+                            syntaxErrors = strlist.join("\n");
+                        }
+                    }   // if not, no correction is nessesary
+                }
+            }
+
             QObject *s = sender.data();
             if (s)
             {
-                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
+                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
             }
         }
 #ifdef _DEBUG

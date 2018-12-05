@@ -25,6 +25,7 @@
 
 #include <qapplication.h>
 #include <qdebug.h>
+#include <QMetaEnum>
 #include <iostream>
 #include "opencv/cv.h"
 
@@ -39,7 +40,7 @@ public:
     {
         try
         {
-            int type = event ? event->type() : -1;
+            /*int type = event ? event->type() : -1;
 
             if (type == 68 || type == 74 || type == 69)
             {
@@ -48,7 +49,7 @@ public:
                 {
                     int j = 1;
                 }
-            }
+            }*/
             return QApplication::notify(receiver,event);
         }
         catch (cv::Exception &exc)
@@ -74,14 +75,17 @@ public:
         }
         catch (...)
         {
+			int enumIdx = QEvent::staticMetaObject.indexOfEnumerator("Type");
+			QMetaEnum me = QEvent::staticMetaObject.enumerator(enumIdx);
+			QByteArray key = event ? me.valueToKeys(event->type()) : "";
             int type = event ? event->type() : -1;
             QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught an unknown exception");
-            qWarning() << "Itom-Application caught an unknown exception from" <<  name << "from event type" << type;
+            qWarning() << "Itom-Application caught an unknown exception from" <<  name << "from event type" << type << " (" << key.constData() << ")";
 #ifdef _DEBUG
             qFatal("Exiting due to exception caught");
 #endif
-            std::cerr << "Itom-Application caught an unknown exception from: " << name.toLatin1().constData() << " from event type " << type << "\n" << std::endl;
+            std::cerr << "Itom-Application caught an unknown exception from: " << name.toLatin1().constData() << " from event type " << type << " (" << key.constData() << ")" << "\n" << std::endl;
         }
         return false;
     }

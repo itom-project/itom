@@ -188,36 +188,7 @@ private:
     Be careful: For decrementing the refcount, the GIL must be hold by this deleter!
     */
     static QHash<char*,PyObject*> m_pyBaseObjectStorage; 
-    static void baseObjectDeleterDataObject(ito::DataObject *sharedObject)
-    {
-        QHash<char*,PyObject*>::iterator i = m_pyBaseObjectStorage.find((char*)sharedObject);
-        if(i != m_pyBaseObjectStorage.end())
-        {
-            if (i.value())
-            {
-#if (PY_VERSION_HEX >= 0x03040000)
-                if (PyGILState_Check())
-                {
-                    Py_DECREF(i.value());
-                }
-                else
-                {
-                    PyGILState_STATE gstate = PyGILState_Ensure();
-                    Py_DECREF(i.value());
-                    PyGILState_Release(gstate);
-                }
-#else
-                //we don't know if we need to acquire the GIL here, or not.
-                Py_DECREF(i.value());
-#endif
-                
-            }
-            
-            m_pyBaseObjectStorage.erase(i);
-        }
-
-        delete sharedObject;
-    }
+    static void baseObjectDeleterDataObject(ito::DataObject *sharedObject);
 };
 
 } //end namespace ito

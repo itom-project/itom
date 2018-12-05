@@ -234,7 +234,7 @@ signals:
 public slots:
     void menuToggleBookmark();
     void checkSyntax();
-    void syntaxCheckResult(QString a, QString b);
+    void syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors); //if frosted is used, syntaxErrors are contained in flakes
     void errorListChange(const QStringList &errorList);
     void menuClearAllBookmarks();
     void menuGotoNextBookmark();
