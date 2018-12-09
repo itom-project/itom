@@ -24,7 +24,7 @@ class ItomReporter():
         
         This method is called by frosted
         """
-        return unexpectedError(filename, msg)
+        return self.unexpectedError(filename, msg)
     
     def unexpectedError(self, filename, msg):
         """
