@@ -106,18 +106,32 @@ void SyntaxHighlighterBase::highlightBlock(const QString &text)
     {
         return;
     }
+
     QTextBlock current_block = currentBlock();
-    QTextBlock previous_block = SyntaxHighlighterBase::findPrevNonBlankBlock(current_block);
+    
     if (editor())
     {
         CodeEditor *e = editor();
-        highlight_block(text, current_block);
-        if (e->showWhitespaces())
+
+        //qDebug() << current_block.blockNumber();
+        TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
+        if (userData && userData->m_noSyntaxHighlighting)
         {
-            highlightWhitespaces(text);
+            default_highlight_block(text);
         }
+        else
+        {
+            highlight_block(text, current_block);
+
+            if (e->showWhitespaces())
+            {
+                highlightWhitespaces(text);
+            }
+        }
+
         if (m_foldDetector.isNull() == false)
         {
+            QTextBlock previous_block = SyntaxHighlighterBase::findPrevNonBlankBlock(current_block);
             m_foldDetector->setEditor(e);
             m_foldDetector->processBlock(current_block, previous_block, text);
         }

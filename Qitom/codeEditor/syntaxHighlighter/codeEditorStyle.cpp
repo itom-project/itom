@@ -126,6 +126,9 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
     case KeyClass:
         m_name = QObject::tr("Class Name");
         break;
+    case KeyStreamOutput:
+        m_name = QObject::tr("Stream Output (Command Line)");
+        break;
     default:
         m_name = "";
         m_valid = false;
@@ -256,6 +259,7 @@ CodeEditorStyle::CodeEditorStyle()
     m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
 
+    m_formats[StyleItem::KeyStreamOutput] = StyleItem(StyleItem::KeyStreamOutput, StyleItem::createFormat("Courier New", defaultPointSize, "#000000", Qt::white, false));
     
 }
 

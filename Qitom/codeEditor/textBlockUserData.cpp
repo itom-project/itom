@@ -46,10 +46,10 @@ namespace ito {
 */
 TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
     QTextBlockUserData(),
-    m_importStmt(false),
     m_breakpointType(TypeNoBp),
     m_bookmark(false),
-    m_codeEditor(editor)
+    m_codeEditor(editor),
+    m_noSyntaxHighlighting(false)
 {
     m_codeEditor->textBlockUserDataList() << this;
 }

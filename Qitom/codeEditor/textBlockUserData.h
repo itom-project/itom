@@ -189,11 +189,9 @@ public:
 
     QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
 
-    bool m_docstring; //special item for python-related code editor
+    int m_currentLineIdx;
 
-    bool m_importStmt;
-
-    int m_currentLineNr;
+    bool m_noSyntaxHighlighting;
 
 private:
     QPointer<CodeEditor> m_codeEditor;

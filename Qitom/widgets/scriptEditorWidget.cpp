@@ -1750,7 +1750,7 @@ RetVal ScriptEditorWidget::changeFilename(const QString &newFilename)
             BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
             if (bpModel)
             {
-                bpModel->deleteBreakPoint(bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineNr));
+                bpModel->deleteBreakPoint(bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineIdx));
             }
         }
         return true;
@@ -1781,18 +1781,18 @@ void ScriptEditorWidget::nrOfLinesChanged()
                 it = textBlockUserDataList().find(userData);
                 if (it != textBlockUserDataList().end())
                 {
-                    if (block.blockNumber() != userData->m_currentLineNr)
+                    if (block.blockNumber() != userData->m_currentLineIdx)
                     {
                         if (bpModel && userData->m_breakpointType != TextBlockUserData::TypeNoBp)
                         {
-                            index = bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineNr);
+                            index = bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineIdx);
                             item = bpModel->getBreakPoint(index);
                             item.lineno = block.blockNumber(); //new line
                             changedIndices << index;
                             changedBpItems << item;
                         }
 
-                        userData->m_currentLineNr = block.blockNumber();
+                        userData->m_currentLineIdx = block.blockNumber();
                     }
                 }
             }

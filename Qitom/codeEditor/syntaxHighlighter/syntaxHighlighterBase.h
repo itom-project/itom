@@ -91,6 +91,8 @@ public:
     */
     virtual void highlight_block(const QString &text, QTextBlock &block) = 0;
 
+    virtual void default_highlight_block(const QString &text) = 0;
+
     virtual void rehighlight();
 
 protected:

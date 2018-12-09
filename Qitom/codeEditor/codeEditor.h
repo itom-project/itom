@@ -256,6 +256,7 @@ public:
 
     void resetStylesheet();
     void rehighlight();
+    void rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/);
 
     void showTooltip(const QPoint &pos, const QString &tooltip);
     void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
@@ -276,7 +277,7 @@ public:
     QString wordAtPosition(int line, int index, bool selectWholeWord) const;
     QTextCursor wordUnderMouseCursor() const;
 
-    TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
+    TextBlockUserData* getTextBlockUserData(int lineIndex, bool createIfNotExist = true);
     TextBlockUserData* getTextBlockUserData(QTextBlock &block, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
     const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }

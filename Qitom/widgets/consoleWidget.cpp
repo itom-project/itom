@@ -159,8 +159,6 @@ ConsoleWidget::~ConsoleWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::initEditor()
 {
-    //setBackground(QColor(1,81,107));
-
     m_lineNumberPanel = QSharedPointer<LineNumberPanel>(new LineNumberPanel("LineNumberPanel"));
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
@@ -281,11 +279,14 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             for (int i = m_startLineBeginCmd; i <= lines() - 1; i++)
             {
                 temp.push_back(text(i));
+                if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+                {
+                    //lines with a smooth line break have no endline character. add it to distinguish these lines
+                    temp.push_back(lineBreak);
+                }
             }
             m_temporaryRemovedCommands = temp.join("");
-
             setSelection(m_startLineBeginCmd, 0, lines() - 1, lineLength(lines() - 1));
-
             removeSelectedText();
         }
         else
@@ -1187,6 +1188,11 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     for (int i = endLine + 1; i < lines(); i++)
     {
         temp.push_back(text(i));
+        if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+        {
+            //lines with a smooth line break have no endline character. add it to distinguish these lines
+            temp.push_back(lineBreak);
+        }
     }
     m_temporaryRemovedCommands = temp.join("");
     setSelection(endLine + 1, 0, lines() - 1, lineLength(lines() - 1));
@@ -1276,6 +1282,7 @@ void ConsoleWidget::processStreamBuffer()
     }
 
     int fromLine, toLine;
+    TextBlockUserData *userData = NULL;
 
     switch (m_receiveStreamBuffer.msgType)
     {
@@ -1301,8 +1308,15 @@ void ConsoleWidget::processStreamBuffer()
             m_markErrorLineMode->addMarker(fromLine, toLine);
         }
 
+        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        {
+            userData = getTextBlockUserData(lineIdx, true);
+            userData->m_noSyntaxHighlighting = true;
+        }
+        rehighlightBlock(fromLine, toLine);
+
         moveCursorToEnd();
-        //m_startLineBeginCmd = -1;
+
         if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
@@ -1316,8 +1330,28 @@ void ConsoleWidget::processStreamBuffer()
         break;
 
     case ito::msgStreamOut:
+
+        fromLine = lines() - 1;
+        if (lineLength(fromLine) > 0)
+        {
+            fromLine++;
+        }
+
         //!> insert msg after last line
         append(m_receiveStreamBuffer.text);
+
+        toLine = lines() - 1;
+        if (lineLength(toLine) == 0)
+        {
+            toLine--;
+        }
+
+        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        {
+            userData = getTextBlockUserData(lineIdx, true);
+            userData->m_noSyntaxHighlighting = true;
+        }
+        rehighlightBlock(fromLine, toLine);
 
         moveCursorToEnd();
 

@@ -1982,15 +1982,15 @@ void CodeEditor::ensureLineVisible(int line)
 
 //------------------------------------------------------------
 /*
-Returns a pointer to the TextBlockUserData, assigned to line 'lineNbr'.
+Returns a pointer to the TextBlockUserData, assigned to line 'lineIndex'.
 If no userData is currently assigned to this line, a new TextBlockUserData
 structure is allocated, attached to the line and returned.
 
 Returns NULL if the line does not exist
 */
-TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNotExist /*= true*/)
+TextBlockUserData* CodeEditor::getTextBlockUserData(int lineIndex, bool createIfNotExist /*= true*/)
 {
-    QTextBlock block = document()->findBlockByNumber(lineNbr);
+    QTextBlock block = document()->findBlockByNumber(lineIndex);
 
     if (block.isValid())
     {
@@ -1999,7 +1999,7 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNo
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
-            userData->m_currentLineNr = lineNbr;
+            userData->m_currentLineIdx = lineIndex;
             block.setUserData(userData);
         }
         return userData;
@@ -2027,7 +2027,7 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(QTextBlock &block, bool crea
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
-            userData->m_currentLineNr = block.blockNumber();
+            userData->m_currentLineIdx = block.blockNumber();
             block.setUserData(userData);
         }
         return userData;
@@ -2318,6 +2318,26 @@ void CodeEditor::rehighlight()
     if (syntaxHighlighter())
     {
         syntaxHighlighter()->rehighlight();
+    }
+}
+
+//------------------------------------------------------------
+/*
+Calls ``rehighlightBlock`` on the installed syntax highlighter mode.
+*/
+void CodeEditor::rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/)
+{
+    if (syntaxHighlighter())
+    {
+        QTextBlock begin = document()->findBlockByNumber(lineFromIdx);
+        QTextBlock end = lineToIdx == -1 ? begin : document()->findBlockByNumber(qMax(lineFromIdx, lineToIdx));
+        end = end.next();
+        
+        while (begin != end)
+        {
+            syntaxHighlighter()->rehighlightBlock(begin);
+            begin = begin.next();
+        }
     }
 }
 

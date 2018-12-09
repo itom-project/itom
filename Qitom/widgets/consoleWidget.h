@@ -154,7 +154,7 @@ private:
     bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
 
-    QString m_temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
+    QString m_temporaryRemovedCommands; //!< removed commands, if python busy, caused by another console instance or script (we assume that these removed commands are always python commands and no printed text)
 
     ItomSharedSemaphore *m_inputStreamWaitCond; //!< if this is != NULL, a input(...) command is currently running in Python and the command line is ready to receive inputs from the user.
     QSharedPointer<QByteArray> m_inputStreamBuffer;
