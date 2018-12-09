@@ -584,7 +584,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 //-------------------------------------------------------------------
 void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
 {
-    qDebug() << "completion result obtained " << requestId;
+    //qDebug() << "completion result obtained " << requestId;
     //debug("completion results (completions=%r), prefix=%s",
     //                results, self.completion_prefix)
 
