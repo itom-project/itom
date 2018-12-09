@@ -62,8 +62,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_pCmdList(NULL),
     m_inputStreamWaitCond(NULL),
     m_inputStartLine(0),
-    m_autoWheel(true),
-    m_codeHistoryLines(0)
+    m_autoWheel(true)
 {
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
@@ -120,9 +119,6 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     }
 
     startNewCommand(true);
-
-    m_codeHistory = "from itom import *"; //this command is directly executed at the start of itom
-    m_codeHistoryLines = 1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1073,12 +1069,6 @@ RetVal ConsoleWidget::executeCmdQueue()
 
             m_pCmdList->add(value.singleLine);
 
-            if (value.singleLine != "")
-            {
-                m_codeHistory += ConsoleWidget::lineBreak + value.singleLine;
-                m_codeHistoryLines += value.m_nrOfLines;
-            }
-
             emit sendToLastCommand(value.singleLine);
         }
 
@@ -1117,16 +1107,16 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         for (int i = beginLine; i <= endLine; i++)
         {
             singleLine = text(i);
-            if (singleLine.endsWith('\n'))
-            {
-                singleLine.chop(1);
-            }
-            if (singleLine.startsWith(">>"))
-            {
-                singleLine.remove(0, 2);
-            }
+if (singleLine.endsWith('\n'))
+{
+    singleLine.chop(1);
+}
+if (singleLine.startsWith(">>"))
+{
+    singleLine.remove(0, 2);
+}
 
-            buffer.append(singleLine);
+buffer.append(singleLine);
         }
 
         const PythonEngine *pyEng = PythonEngine::getInstance();
@@ -1153,7 +1143,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             lines.append(buffer.length() + 1); //append last index
             for (int i = 0; i < lines.length() - 1; i++)
             {
-                temp = buffer.mid(lines[i] - 1 , lines[i+1] - lines[i]);
+                temp = buffer.mid(lines[i] - 1, lines[i + 1] - lines[i]);
 
                 //remove empty (besides whitechars) lines at the end of each block, else an error can occur if the block is indented
                 while (temp.size() > 1)
@@ -1207,45 +1197,36 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
 {
-    return toPlainText(); //todo: remove if ready
+    QStringList textLines;
+    const ito::TextBlockUserData *userData = NULL;
+    QString temp;
 
-    if (m_startLineBeginCmd == -1)
+    for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
     {
-        line = -1; //invalid
-        column = -1; //invalid
-        return m_codeHistory;
-    }
-    else
-    {
-        QStringList current;
-        for (int i = m_startLineBeginCmd; i < lineCount(); ++i)
+        userData = getConstTextBlockUserData(lineIdx);
+        if (userData == NULL || !userData->m_noSyntaxHighlighting)
         {
-            if (i == 0 && lineText(i).startsWith(">>"))
+            temp = lineText(lineIdx);
+
+            if (temp.startsWith(">>"))
             {
-                current << lineText(i).mid(2);
+                temp = temp.mid(2);
+                if (line == lineIdx)
+                {
+                    column -= 2;
+                    line = textLines.size();
+                }
             }
-            else
+            else if (line == lineIdx)
             {
-                current << lineText(i);
-            }            
-        }
+                line = textLines.size();
+            }
 
-        if (line == m_startLineBeginCmd)
-        {
-            column -= 2;
-        }
-
-        line = m_codeHistoryLines + (line - m_startLineBeginCmd);
-
-        if (current.size() > 0)
-        {
-            return m_codeHistory + ConsoleWidget::lineBreak + current.join(ConsoleWidget::lineBreak);
-        }
-        else
-        {
-            return m_codeHistory;
+            textLines.append(temp);
         }
     }
+
+    return textLines.join(ConsoleWidget::lineBreak);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1751,15 +1732,6 @@ void ConsoleWidget::initMenus()
     m_contextMenuActions["select_all"] = menu->addAction(tr("Select All"), this, SLOT(selectAll()));
     menu->addSeparator();
     m_contextMenuActions["auto_scroll"] = menu->addAction(tr("Auto Scroll"), this, SLOT(toggleAutoWheel(bool)));
-#ifdef _DEBUG
-    menu->addSeparator();
-    m_contextMenuActions["dump"] = menu->addAction(tr("Dump"), this, SLOT(dumpSlot()));
-#endif
-}
-
-void ConsoleWidget::dumpSlot()
-{
-    this->dump();
 }
 
 

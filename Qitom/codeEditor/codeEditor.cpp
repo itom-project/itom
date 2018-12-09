@@ -138,11 +138,6 @@ CodeEditor::~CodeEditor()
     m_pContextMenu = NULL;
 }
 
-void CodeEditor::dump()
-{
-    this->decorations()->dump();
-}
-
 //-----------------------------------------------------------
 /*
 Returns a reference to the :class:`pyqode.core.managers.PanelsManager`
@@ -1287,18 +1282,18 @@ void CodeEditor::copy()
 /*
 Gets the text of the specified line
 
-:param line_nbr: The line number of the text to get
+:param line_idx: The line number of the text to get
 :return: Entire line's text
 :rtype: str
 */
-QString CodeEditor::lineText(int lineNbr) const
+QString CodeEditor::lineText(int lineIdx) const
 {
-    if (lineNbr < 0)
+    if (lineIdx < 0)
     {
         return "";
     }
 
-    const QTextBlock &block = document()->findBlockByNumber(lineNbr);
+    const QTextBlock &block = document()->findBlockByNumber(lineIdx);
     return block.text();
 }
 
@@ -1958,7 +1953,7 @@ void CodeEditor::unfoldCursorPosition()
 
                 while (block.isValid())
                 {
-                    qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+                    //qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
                     if (Utils::TextBlockHelper::isCollapsed(block))
                     {
                         fp->toggleFoldTrigger(block);
@@ -2003,6 +1998,21 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineIndex, bool createIf
             block.setUserData(userData);
         }
         return userData;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//------------------------------------------------------------
+const TextBlockUserData* CodeEditor::getConstTextBlockUserData(int lineIndex) const
+{
+    QTextBlock block = document()->findBlockByNumber(lineIndex);
+
+    if (block.isValid())
+    {
+        return dynamic_cast<TextBlockUserData*>(block.userData());
     }
     else
     {

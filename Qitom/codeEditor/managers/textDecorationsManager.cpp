@@ -60,24 +60,6 @@ TextDecorationsManager::~TextDecorationsManager()
 }
 
 //---------------------------------------------------------------------
-void TextDecorationsManager::dump() const
-{
-    QList<TextDecoration::Ptr>::const_iterator deco = constBegin();
-    int idx = 0;
-    while (deco != constEnd())
-    {
-        TextDecoration *td = deco->data();
-        QTextCursor start(editor()->document());
-        start.setPosition(td->cursor.selectionStart());
-        QTextCursor end(editor()->document());
-        end.setPosition(td->cursor.selectionEnd());
-        qDebug() << "Deco" << idx << ":" << td->format.background().color() << td->format.property(QTextFormat::FullWidthSelection) << start.blockNumber() << start.columnNumber() << end.blockNumber() << end.columnNumber();
-        deco++;
-        idx++;
-    }
-}
-
-//---------------------------------------------------------------------
 QList<QTextEdit::ExtraSelection> TextDecorationsManager::getExtraSelections() const
 {
     QList<QTextEdit::ExtraSelection> s;
