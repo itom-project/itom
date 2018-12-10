@@ -174,6 +174,8 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
         void setWindowTitleExtension(const QString& title); /*< call this method if the window title should be changed. This emits the signal windowTitleChanged which is connected to the plot window.*/
 
+        
+
     protected:
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
@@ -206,10 +208,11 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
 
-        ito::uint8 m_lineCutType;
-        ito::uint8 m_zSliceType;
-        ito::uint8 m_zoomCutType;
-        ito::uint8 m_volumeCutType;
+        //ito::uint8 m_lineCutType;
+        //ito::uint8 m_zSliceType;
+        //ito::uint8 m_zoomCutType;
+        //ito::uint8 m_volumeCutType;
+        QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots*/
 
     private:
         AbstractFigurePrivate *d;
