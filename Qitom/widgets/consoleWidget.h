@@ -102,7 +102,6 @@ private slots:
     void textDoubleClicked(int position, int line, int modifiers);
     void clearAndStartNewCommand();
     void toggleAutoWheel(bool enable);
-    void dumpSlot();
     void processStreamBuffer();
 
 private:
