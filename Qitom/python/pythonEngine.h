@@ -32,6 +32,8 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
+#include "pythonJedi.h"
+
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
 
 #ifndef Q_MOC_RUN
@@ -48,6 +50,7 @@
         #include "node.h"
         #include "numpy/arrayobject.h"
     #endif
+
 #endif // Q_MOC_RUN
 
 /* includes */
@@ -129,9 +132,13 @@ public:
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
+    bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
+
+    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request); //directly call this method from another thread
+    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request); //directly call this method from another thread
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
@@ -192,9 +199,6 @@ private:
 
     //member variables
     bool m_started;
-    //QString m_itomMemberClasses;
-
-    //PyGILState_STATE threadState;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
@@ -202,6 +206,10 @@ private:
     QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
+
+    QMutex m_jediRequestMutex;
+    QQueue<ito::JediCompletionRequest> m_queuedJediCompletionRequests;
+    QQueue<ito::JediCalltipRequest> m_queuedJediCalltipRequests;
     
     ito::tPythonState pythonState;
     
@@ -217,6 +225,8 @@ private:
     PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
     PyObject *m_pyModSyntaxCheck;
+    PyObject *m_pyModJedi;         //!< Python package Jedi for auto completion and calltips (Jedi is tried to be loaded as late as possible)
+    bool     m_pyModJediChecked;   //!< defines, if it is already checked if Jedi could be loaded on this computer.
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
     Qt::HANDLE m_pythonThreadId;
@@ -305,7 +315,10 @@ public slots:
     void readSettings();
     void propertiesChanged();
 
-    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender);
+    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
+    //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
+    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
+    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 
@@ -341,6 +354,8 @@ public slots:
     ito::RetVal pythonClearAll();
 
 private slots:
+    void jediCompletionRequestEnqueued(); //this slot is invoked whenever a new jedi completion request has been enqueued using the direct, thread-safe method call enqueueJediCompletionRequest(...)
+    void jediCalltipRequestEnqueued(); //this slot is invoked whenever a new jedi calltip request has been enqueued using the direct, thread-safe method call enqueueJediCalltipRequest(...)
 
 };
 

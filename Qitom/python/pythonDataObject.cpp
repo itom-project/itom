@@ -76,7 +76,7 @@ PyObject* PythonDataObject::PyDataObject_new(PyTypeObject *type, PyObject * /*ar
     \return description
     \sa (see also) keywords (comma-separated)
 */
-PyDoc_STRVAR(dataObjectInit_doc,"dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]]) -> constructor to get a new dataObject.\n\
+PyDoc_STRVAR(dataObjectInit_doc,"dataObject(dims, dtype='uint8', continuous = 0, data = valueOrSequence) -> constructor to get a new dataObject.\n\
 \n\
 The itom.dataObject represents a multidimensional array of fixed-size items with corresponding meta information (units, axes descriptions, scalings, tags, protocol...). \n\
 Recently the following data types (dtype) are supported: \n\
@@ -2205,7 +2205,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectPhysToPix_doc,"physToPix(values [, axes]) -> returns the pixel coordinates for the given physical coordinates. \n\
+PyDoc_STRVAR(pyDataObjectPhysToPix_doc,"physToPix(values, axes = 0) -> returns the pixel coordinates for the given physical coordinates. \n\
 \n\
 This method transforms a physical axis coordinate into its corresponding pixel coordinate. The transformation is influenced \n\
 by the offset and scaling of each axis: \n\
@@ -2384,7 +2384,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectPixToPhys_doc,"pixToPhys(values [, axes]) -> returns the physical coordinates for the given pixel coordinates. \n\
+PyDoc_STRVAR(pyDataObjectPixToPhys_doc,"pixToPhys(values , axes = 0) -> returns the physical coordinates for the given pixel coordinates. \n\
 \n\
 This method transforms a pixel coordinate into its corresponding physical coordinate. The transformation is influenced \n\
 by the offset and scaling of each axis: \n\
@@ -4616,7 +4616,7 @@ PyObject* PythonDataObject::PyDataObject_size(PyDataObject *self, PyObject* args
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectCopy_doc,"copy(regionOnly=0) -> return a deep copy of this dataObject\n\
+PyDoc_STRVAR(pyDataObjectCopy_doc,"copy(regionOnly = 0) -> return a deep copy of this dataObject\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -4904,7 +4904,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectNormalize_doc,"normalize([minValue=0.0, maxValue=1.0, typestring='']) -> returns the normalization of this dataObject\n\
+PyDoc_STRVAR(pyDataObjectNormalize_doc,"normalize(minValue = 0.0, maxValue = 1.0, typestring = '') -> returns the normalization of this dataObject\n\
 \n\
 Returns the normalized version of this data object, where the values lie in the range [minValue,maxValue]. Additionally it is also \n\
 possible to convert the resulting data object to another type (given by the parameter typestring). As default no type conversion is executed.\n\
@@ -7421,7 +7421,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray([destinationType='uint8']) -> returns the rgba32 color data object as a gray-scale object\n\
+PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray(destinationType='uint8') -> returns the rgba32 color data object as a gray-scale object\n\
 \n\
 The destination data object has the same size than this data object and the real type given by destinationType. The pixel-wise \
 conversion is done using the formula: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
@@ -7480,7 +7480,7 @@ dataObj : {dataObject} \n\
     return (PyObject*)retObj;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, [destinationType='uint8']) -> returns a seperated color channel of a rgba32 color data object\n\
+PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, destinationType='uint8') -> returns a seperated color channel of a rgba32 color data object\n\
 \n\
 The destination data object has the same size than this data object if only one color is extracted. The output will have one dimension more if there are more than one colors extracted.\
 Each element of the new dimension corrspomnds to one color. \
@@ -7539,7 +7539,7 @@ dataObj : {dataObject} \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor([addAlphaChannel = 0]) -> convert a 2D dataObject of type 'rgba32' to a 3D 'uint8' numpy.array whose last dimension is 3 (no alpha channel) or 4.\n\
+PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor(addAlphaChannel = 0) -> convert a 2D dataObject of type 'rgba32' to a 3D 'uint8' numpy.array whose last dimension is 3 (no alpha channel) or 4.\n\
 \n\
 Whereas the class 'dataObject' has a specific type 'rgba32' for colour values (which is internally a uint32 value with 4 times 8bit values for blue, green, red and alpha), \n\
 numpy.arrays don't have this. Therefore, several python packages like cv2 (OpenCV) or PIL store colour values in 3D numpy.arrays whereas the last dimension has a size of 3 \n\
@@ -7808,7 +7808,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
+PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes, inverse = False) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
 \n\
 The destination data object has the same size than this data object and the real type given by destinationType. The pixel - wise \
 conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
@@ -8084,7 +8084,7 @@ void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticZeros_doc,"zeros(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with zeros.  \n\
+PyDoc_STRVAR(pyDataObjectStaticZeros_doc,"zeros(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with zeros.  \n\
 \n\
 Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with zeros. \n\
 \n\
@@ -8140,7 +8140,7 @@ PyObject* PythonDataObject::PyDataObj_StaticZeros(PyObject * /*self*/, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticOnes_doc,"ones(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with ones.  \n\
+PyDoc_STRVAR(pyDataObjectStaticOnes_doc,"ones(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with ones.  \n\
 \n\
 Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with ones. \n\
 \n\
@@ -8201,7 +8201,7 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticNans_doc, "nans(dims [, dtype='float32'[, continuous = 0]]) -> creates new dataObject filled with NaNs.  \n\
+PyDoc_STRVAR(pyDataObjectStaticNans_doc, "nans(dims, dtype='float32', continuous = 0) -> creates new dataObject filled with NaNs.  \n\
 \n\
 Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with NaNs. \n\
 \n\
@@ -8259,7 +8259,7 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniformly distributed random values.  \n\
+PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with uniformly distributed random values.  \n\
 \n\
 Static method to create a new itom.dataObject filled with uniformly distributed random numbers.\n\
 In case of an integer type, the uniform noise is from min<ObjectType>(inclusiv) to max<ObjectType>(inclusiv).\n\
@@ -8318,7 +8318,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticRandN_doc,"randN(dims [, dtype='uint8'[, continuous = 0]]) -> creates dataObject filled with gaussian distributed random values.  \n\
+PyDoc_STRVAR(pyDataObjectStaticRandN_doc,"randN(dims, dtype='uint8', continuous = 0) -> creates dataObject filled with gaussian distributed random values.  \n\
 \n\
 Static method to create a new itom.dataObject filled with gaussian distributed random numbers. \n\
 In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the standard deviation is (max-min/)6.0 to max. \n\
@@ -8377,7 +8377,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticEye_doc,"eye(size [, dtype='uint8']) -> creates a 2D, square, eye-matrix.\n\
+PyDoc_STRVAR(pyDataObjectStaticEye_doc,"eye(size, dtype='uint8') -> creates a 2D, square, eye-matrix.\n\
 \n\
 Static method for creating a two-dimensional, square, eye-matrix of type itom.dataObject. \n\
 \n\
@@ -8551,7 +8551,7 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj [, copyAxisInfo = True, copyTags = False]) -> Copy the meta information of sourceObj. \n\
+PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj, copyAxisInfo = True, copyTags = False) -> Copy the meta information of sourceObj. \n\
 \n\
 All meta information(axis scales, offsets, descriptions, units, tags...) of the sourceObj \
 are copied to the dataObject. \n\

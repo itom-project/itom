@@ -6,9 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>323</height>
-   </rect>
+    <height>281</height>   </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>

@@ -106,7 +106,7 @@ PyObject* PythonPCL::PyPointCloud_new(PyTypeObject *type, PyObject* /*args*/, Py
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pointCloudInit_doc,"pointCloud([type] | pointCloud [,indices] | width, height [,point] | point) -> creates new point cloud.  \n\
+PyDoc_STRVAR(pointCloudInit_doc,"pointCloud(type = point.PointInvalid | pointCloud, indices = None | width, height, point = None | point) -> creates new point cloud.  \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -126,12 +126,13 @@ point : {point} \n\
 Notes \n\
 ------ \n\
 Possible types: \n\
-    * point.PointXYZ \n\
-    * point.PointXYZI \n\
-    * point.PointXYZRGBA \n\
-    * point.PointXYZNormal \n\
-    * point.PointXYZINormal \n\
-    * point.PointXYZRGBNormal\n\
+\n\
+* point.PointXYZ \n\
+* point.PointXYZI \n\
+* point.PointXYZRGBA \n\
+* point.PointXYZNormal \n\
+* point.PointXYZINormal \n\
+* point.PointXYZRGBNormal\n\
 ");
 int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * /*kwds*/)
 {
@@ -2008,7 +2009,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZ_doc,"fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZ_doc,"fromXYZ(X, Y, Z, deleteNaN = False | XYZ, deleteNaN = False) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object\n\
 \n\
 The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
 \n\
@@ -2135,7 +2136,7 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZI_doc,"fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZI_doc,"fromXYZI(X, Y, Z, I, deleteNaN = False | XYZ, I, deleteNaN = False) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object\n\
 \n\
 The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
 \n\
@@ -2266,7 +2267,7 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZRGBA_doc,"fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZRGBA_doc,"fromXYZRGBA(X, Y, Z, color, deleteNaN = False | XYZ, color, deleteNaN = False) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object\n\
 \n\
 The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
 \n\
@@ -2397,7 +2398,7 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given topography dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity, intensity = None, deleteNaN = False, color = None) -> creates a point cloud from a given topography dataObject.\n\
 \n\
 Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
 values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
@@ -2419,7 +2420,7 @@ Returns \n\
 ------- \n\
 pointCloud.");
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography [,intensity] [,deleteNaN = False]) -> creates a point cloud from a given topography dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography, intensity = None, deleteNaN = False, color = None) -> creates a point cloud from a given topography dataObject.\n\
 \n\
 Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
 values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
@@ -2764,7 +2765,7 @@ PyObject* PythonPCL::PyPoint_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pointInit_doc,"point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.  \n\
+PyDoc_STRVAR(pointInit_doc,"point(type = point.PointInvalid, xyz = None, intensity = None, rgba = None, normal = None, curvature = None) -> creates new point used for class 'pointCloud'.  \n\
 \n\
 Parameters \n\
 ------------ \n\
@@ -2790,10 +2791,10 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         return 0;
     }
 
-    if (PyTuple_Size(args)>0 || kwds != NULL)
+    if (PyTuple_Size(args) > 0 || kwds != NULL)
     {
-        PyObject *temp = kwds == NULL ? (PyObject*)NULL : PyDict_GetItemString(kwds, "type");
-        if (temp == NULL && PyTuple_Size(args)>0) temp = PyTuple_GetItem(args,0); //borrowed
+        PyObject *temp = kwds == NULL ? (PyObject*)NULL : PyDict_GetItemString(kwds, "type"); //borrowed
+        if (temp == NULL && PyTuple_Size(args) > 0) temp = PyTuple_GetItem(args,0); //borrowed
         if (temp)
         {
             if (!PyLong_Check(temp))
@@ -3820,7 +3821,7 @@ PyObject* PythonPCL::PyPolygonMesh_new(PyTypeObject *type, PyObject* /*args*/, P
 };
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh([mesh, polygons]) -> creates a polygon mesh.\n\
+PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh(mesh = None, polygons = None) -> creates a polygon mesh.\n\
 \n\
 This constructor either creates an empty polygon mesh, a shallow copy of another polygon mesh (mesh parameter only) or a deep copy of \n\
 another polygon mesh where only the polygons, given by the list of indices in the parameter 'polygons', are taken. \n\
@@ -4235,7 +4236,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> "); 
+PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 dataObject with the polygon description. M is the number of polygons and N is the biggest number of vertices."); 
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, ""))
@@ -4351,7 +4352,7 @@ polygons : {array-like, MxN} \n\
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography [, triangulationType = 1]) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
+PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography, triangulationType = 1) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
 \n\
 The polygons are created either as rectangles (quads) or triangles. Some other algorithms only support meshes with triangles. \n\
 This method is the same than calling polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography)). \n\
@@ -4393,7 +4394,7 @@ triangulationType : {int} \n\
 
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles. \n\
+PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud, triangulationType = 1) -> creates a polygon mesh from an organized cloud using triangles. \n\
 \n\
 The polygons are created as triangles. Triangles are also created for non-finite points. \n\
 \n\

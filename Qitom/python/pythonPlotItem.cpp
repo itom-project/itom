@@ -60,7 +60,7 @@ PyObject* PythonPlotItem::PyPlotItem_new(PyTypeObject *type, PyObject * args, Py
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.\n\
+PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure, subplotIdx = 0 | figure, objectID = 0 | uiItem) -> instance of the plot or subplot of a figure.\n\
 \n\
 Use can use this constructor to access any plot or subplot (if more than one plot) of a figure. The subplotIndex \n\
 row-wisely addresses the subplots, beginning with 0. \n\
@@ -198,7 +198,7 @@ PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this) \n\
+PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points, maxNrPoints = -1) -> method to let the user pick points on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple points (up to maxNrPoints) at the current plot (if the plot supports this).\n\
 \n\
@@ -292,7 +292,7 @@ maxNrPoints: {int}, optional \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType [,maxNrElements]) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
+PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, maxNrElements = -1) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple elements of type (up to maxNrElements) at the current plot (if the plot supports this).\n\
 \n\

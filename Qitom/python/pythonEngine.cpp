@@ -45,6 +45,7 @@
 #include "pythonFont.h"
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
+#include "pythonJedi.h"
 
 #include "../../AddInManager/addInManager.h"
 #include "common/interval.h"
@@ -178,7 +179,9 @@ PythonEngine::PythonEngine() :
     dictUnicode(NULL),
     m_pythonThreadId(0),
     m_includeItomImportString(""),
-    m_pUserDefinedPythonHome(NULL)
+    m_pUserDefinedPythonHome(NULL),
+    m_pyModJedi(NULL),
+    m_pyModJediChecked(false)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -248,6 +251,13 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
+    qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
+    qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
+    qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
+    qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
+    qRegisterMetaType<ito::JediCompletionRequest>("ito::JediCompletionRequest");
+    qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
+    qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -839,7 +849,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 void PythonEngine::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
 
@@ -974,6 +984,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 
         Py_XDECREF(m_pyModSyntaxCheck);
         m_pyModSyntaxCheck = NULL;
+
+        Py_XDECREF(m_pyModJedi);
+        m_pyModJedi = NULL;
 
         Py_XDECREF(m_pyModGC);
         m_pyModGC = NULL;
@@ -2030,6 +2043,355 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool PythonEngine::tryToLoadJediIfNotYetDone()
+{
+    if (m_pyModJediChecked)
+    {
+        return m_pyModJedi != NULL;
+    }
+    else
+    {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
+        m_pyModJediChecked = true;
+        m_pyModJedi = PyImport_ImportModule("itomJediLib"); //new reference
+
+        if (m_pyModJedi == NULL)
+        {
+            QObject* mainWin = AppManagement::getMainWindow();
+            if (mainWin)
+            {
+                QString text = tr("Auto completion, calltips, goto definition... not possible, since the package 'jedi' could not be loaded (Python packages 'jedi' and 'parso' are required for this feature).");
+                QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PythonEngine"));
+            }
+
+            PyErr_Clear();
+            PyGILState_Release(gstate);
+            return false;
+        }
+        PyGILState_Release(gstate);
+        return true;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCalltipRequestEnqueued()
+//void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
+{
+    QVector<ito::JediCalltip> calltips;
+
+    ito::JediCalltipRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCalltipRequests.isEmpty())
+        {
+            request = m_queuedJediCalltipRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+    int lineOffset = 0;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        lineOffset = 1;
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", request.m_source.toUtf8().constData(), \
+            request.m_line, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycalltip = NULL;
+        const char* calltip;
+        int column;
+        int bracketStartCol;
+        int bracketStartLine;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pycalltip = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycalltip))
+            {
+                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                {
+                    calltips.append(ito::JediCalltip(QLatin1String(calltip), column, bracketStartLine - lineOffset, bracketStartCol));
+                }
+                else
+                {
+                    std::cerr << "Error in calltip: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in calltip: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting calltips from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+        
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCalltipRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCalltipRequests.clear();
+    }
+
+    m_queuedJediCalltipRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCalltipRequestEnqueued");
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName)
+{
+    QVector<ito::JediAssignment> assignments;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    int lineOffset = 0;
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        lineOffset = 1;
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", source.toUtf8().constData(), line, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pydefinition = NULL;
+        const char* path2;
+        const char* fullName;
+        int column;
+        int line;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pydefinition = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pydefinition))
+            {
+                if (PyArg_ParseTuple(pydefinition, "siis", &path2, &line, &column, &fullName))
+                {
+                    if (line >= 0)
+                    {
+                        QFileInfo filepath2 = QString(QLatin1String(path2));
+                        if (lineOffset == 1)
+                        {
+                            QFileInfo filepath = path;
+                            if (filepath != filepath2)
+                            {
+                                lineOffset = 0;
+                            }
+                        }
+                        assignments.append(ito::JediAssignment(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
+                    }
+                }
+                else
+                {
+                    std::cerr << "Error in assignment / definition: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in assignment / definition: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting assignments or definitions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = sender();
+    if (s && callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediAssignment>, assignments));
+        
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCompletionRequestEnqueued()
+{
+    ito::JediCompletionRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCompletionRequests.isEmpty())
+        {
+            request = m_queuedJediCompletionRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    QVector<ito::JediCompletion> completions;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
+            request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycompletion = NULL;
+        const char* calltip;
+        const char* tooltip;
+        const char* icon;
+        const char* docstring;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pycompletion = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycompletion))
+            {
+                if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                {
+                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), \
+                        QLatin1String(icon), QLatin1String(docstring)));
+                }
+                else
+                {
+                    std::cerr << "Error in completion: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in completion: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting completions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(int, request.m_line), \
+            Q_ARG(int, request.m_col), Q_ARG(int, request.m_requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
+        
+    }
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCompletionRequests.clear();
+    }
+
+    m_queuedJediCompletionRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
 /*!
     This function calls the pyflakes or frosted python module. This module is able to check the syntax.
@@ -2040,7 +2402,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
 */
-void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
+void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName)
 {
     if (m_pyModSyntaxCheck)
     {
@@ -2056,12 +2418,14 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().constData());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {
             QString unexpectedErrors;
             QString flakes;
+            QString syntaxErrors;
+            QStringList strlist;
 
             bool ok;
             unexpectedErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 0), false, ok);
@@ -2079,32 +2443,68 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             {   
                 if (m_includeItomImportBeforeSyntaxCheck)
                 {   // if itom is automatically included, this block is correcting the line numbers
-                    QStringList sFlakes = flakes.split("\n");
-                    if (sFlakes.length() > 0)
+                    strlist = flakes.split("\n");
+                    if (strlist.length() > 0)
                     {
-                        while (sFlakes.at(0).startsWith("code:1:"))
+                        while (strlist.at(0).startsWith("code:1:"))
                         {
-                            sFlakes.removeFirst();
-                            if (sFlakes.length() == 0)
+                            strlist.removeFirst();
+                            if (strlist.length() == 0)
                             {
                                 break;
                             }
                         }
-                        for (int i = 0; i < sFlakes.length(); ++i)
+                        for (int i = 0; i < strlist.length(); ++i)
                         {
                             QRegExp reg("(code:)(\\d+)");
-                            reg.indexIn(sFlakes[i]);
+                            reg.indexIn(strlist[i]);
                             int line = reg.cap(2).toInt() - 1;
-                            sFlakes[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
+                            strlist[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
                         }
-                        flakes = sFlakes.join("\n");
+                        flakes = strlist.join("\n");
                     }
                 }   // if not, no correction is nessesary
             }
-            QObject *s = sender.data();
-            if (s)
+
+            if (PyList_Size(result) >= 3)
             {
-                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
+                syntaxErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 2), false, ok);
+                if (!ok)
+                {
+                    syntaxErrors = "<<error>>";
+                }
+                else
+                {
+                    if (m_includeItomImportBeforeSyntaxCheck)
+                    {   // if itom is automatically included, this block is correcting the line numbers
+                        strlist = syntaxErrors.split("\n");
+                        if (strlist.length() > 0)
+                        {
+                            while (strlist.at(0).startsWith("code:1:"))
+                            {
+                                strlist.removeFirst();
+                                if (strlist.length() == 0)
+                                {
+                                    break;
+                                }
+                            }
+                            for (int i = 0; i < strlist.length(); ++i)
+                            {
+                                QRegExp reg("(code:)(\\d+)");
+                                reg.indexIn(strlist[i]);
+                                int line = reg.cap(2).toInt() - 1;
+                                strlist[i].replace(QRegExp("code:\\d+:"), "code:" + QString::number(line) + ":");
+                            }
+                            syntaxErrors = strlist.join("\n");
+                        }
+                    }   // if not, no correction is nessesary
+                }
+            }
+
+            QObject *s = sender.data();
+            if (s && callbackFctName != "")
+            {
+                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
             }
         }
 #ifdef _DEBUG
