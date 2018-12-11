@@ -1,7 +1,11 @@
-import frosted
+#load either pyflakes, or if not found frosted
+try:
+    from pyflakes import api
+except ModuleNotFoundError:
+    from frosted import api
 
 class ItomReporter():
-    """Formats the results of frosted checks and then presents them to the user."""
+    """Formats the results of pyflakes / frosted checks and then presents them to the user."""
     def __init__(self):
         self.__unexpected_errors = []
         self.__flake = []
@@ -21,7 +25,6 @@ class ItomReporter():
         return ["\n".join(self.__unexpected_errors), "\n".join(self.__flake)]
 
 def check(codestring):
-    from frosted import api
     reporter = ItomReporter()
     api.check(codestring, "code", reporter = reporter)
     return reporter.results()

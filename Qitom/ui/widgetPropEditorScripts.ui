@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>479</width>
-    <height>281</height>
+    <width>576</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupSyntaxCheck">
      <property name="title">
-      <string>Python Syntax-Checker (uses Python-Module &quot;frosted&quot;)</string>
+      <string>Python Syntax-Checker (uses Python-Module &quot;pyflakes&quot; or &quot;frosted&quot;)</string>
      </property>
      <property name="checkable">
       <bool>true</bool>

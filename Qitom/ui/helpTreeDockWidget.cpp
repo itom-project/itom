@@ -1439,7 +1439,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
 {
     // = qobject_cast<ito::AbstractDockWidget*>(parent());
 
-    if (obj == ui.commandLinkButton && event->type() == QEvent::Enter)
+/*    if (obj == ui.commandLinkButton && event->type() == QEvent::Enter)
     {
         showTreeview();
     }
@@ -1457,7 +1457,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
             unshowTreeview();
             return true;
         }    
-    }
+    }*/
 
     return QObject::eventFilter(obj, event);
  }
@@ -2156,7 +2156,7 @@ void HelpTreeDockWidget::liveFilter(const QString &filterText)
 //---------------------------------------------------------------------------------------------------------------------------------
 void HelpTreeDockWidget::timerEvent(QTimerEvent *event)
 {
-    showTreeview();
+//    showTreeview();
     m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
     expandTree();
 
@@ -2575,7 +2575,7 @@ void HelpTreeDockWidget::navigateForwards()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show tree
-void HelpTreeDockWidget::showTreeview()
+/*void HelpTreeDockWidget::showTreeview()
 {
     m_treeVisible = true;
     QList<int> intList;
@@ -2584,11 +2584,11 @@ void HelpTreeDockWidget::showTreeview()
     {
         ui.splitter->setSizes(intList);
     }
-}
+}*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Hide tree
-void HelpTreeDockWidget::unshowTreeview()
+/*void HelpTreeDockWidget::unshowTreeview()
 {
     m_treeVisible = false;
     QList<int> intList;
@@ -2597,7 +2597,7 @@ void HelpTreeDockWidget::unshowTreeview()
     {
         ui.splitter->setSizes(intList);
     }
-}
+}*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Expand Tree
