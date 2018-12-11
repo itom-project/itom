@@ -9726,8 +9726,6 @@ DataObject real(const DataObject &dObj)
 template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, DataObject *valueObj)
 {
 	int numMats = dObj->getNumPlanes();
-	int dObjMatNum = 0;
-	int valMatNum = 0;
 
 	cv::Mat_<_Tp> * dObjMat = NULL;
 	const cv::Mat_<_Tp> * valMat = NULL;
@@ -9735,7 +9733,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
 
 
-	if (static_cast<int>(valueObj->getSize(valueObj->getDims() - 1)) == 1 && static_cast<int>(valueObj->getSize(valueObj->getDims() - 2))) //just a single value
+	if (valueObj->getTotal() == 1) //just a single value
 	{
 		const int valMat = valueObj->seekMat(0);
 		const _Tp *valPtr = NULL;
@@ -9744,9 +9742,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 
 		for (int nmat = 0; nmat < numMats; nmat++)
 		{
-			dObjMatNum = dObj->seekMat(nmat, numMats);
-			
-			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
 			
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -9772,14 +9768,46 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 #endif
 	}
 	}
-	else
+	else if (dObj->getDims() == valueObj->getDims())
 	{
 		for (int nmat = 0; nmat < numMats; nmat++)
 		{
-			dObjMatNum = dObj->seekMat(nmat, numMats);
-			valMatNum = valueObj->seekMat(nmat, numMats);
-			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
-			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[nmat]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	else //valueObj has 2 dimensions
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[0]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -9818,25 +9846,30 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 	\throws cv::Exception if undefined data type (e.g. real data types)
 	\sa ArgFunc
 */
-DataObject setReal(DataObject &dObj, DataObject &valuesObj)
+RetVal DataObject::setReal(DataObject &valuesObj)
 {
-	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
+	if (this->getType() >= TYPE_OFFSET_COMPLEX && this->getType() < TYPE_OFFSET_RGBA) //data object only complex
 	{
-		if (dObj.getType() == ito::tComplex128)
+		if (this->getType() == ito::tComplex128 && valuesObj.getType() == ito::tFloat64)
 		{
-			SetRealFunc<ito::complex128, ito::float64>(&dObj, &valuesObj);
+			SetRealFunc<ito::complex128, ito::float64>(this, &valuesObj);
+		}
+		else if (this->getType() == ito::tComplex64 && valuesObj.getType() == ito::tFloat32)
+		{
+			SetRealFunc<ito::complex64, ito::float32>(this, &valuesObj);
 		}
 		else
 		{
-			SetRealFunc<ito::complex64, ito::float32>(&dObj, &valuesObj);
+			cv::error(cv::Exception(CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+			return ito::retError;
 		}
 
-		return valuesObj;
+		return 0;
 	}
 	else
 	{
 		cv::error(cv::Exception(CV_StsAssert, "Real not defined for real input parameter type", "", __FILE__, __LINE__));
-		return DataObject();
+		return ito::retError;
 	}
 }
 
@@ -9854,8 +9887,6 @@ DataObject setReal(DataObject &dObj, DataObject &valuesObj)
 template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, DataObject *valueObj)
 {
 	int numMats = dObj->getNumPlanes();
-	int dObjMatNum = 0;
-	int valMatNum = 0;
 
 	cv::Mat_<_Tp> * dObjMat = NULL;
 	const cv::Mat_<_Tp> * valMat = NULL;
@@ -9863,7 +9894,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
 
 
-	if (static_cast<int>(valueObj->getSize(valueObj->getDims() - 1)) == 1 && static_cast<int>(valueObj->getSize(valueObj->getDims() - 2))) //just a single value
+	if (valueObj->getTotal() == 1) //just a single value
 	{
 		const int valMat = valueObj->seekMat(0);
 		const _Tp *valPtr = NULL;
@@ -9872,9 +9903,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 
 		for (int nmat = 0; nmat < numMats; nmat++)
 		{
-			dObjMatNum = dObj->seekMat(nmat, numMats);
-
-			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -9896,18 +9925,16 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 				}
 
 #if (USEOMP)
-					}
-#endif
-				}
 			}
-	else
+#endif
+		}
+	}
+	else if (dObj->getDims() == valueObj->getDims())
 	{
 		for (int nmat = 0; nmat < numMats; nmat++)
 		{
-			dObjMatNum = dObj->seekMat(nmat, numMats);
-			valMatNum = valueObj->seekMat(nmat, numMats);
-			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[dObjMatNum]);
-			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[valMatNum]);
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[nmat]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -9932,10 +9959,44 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 				}
 
 #if (USEOMP)
-					}
-#endif
-				}
 			}
+#endif
+		}
+	}
+	else //valueObj has 2 dimensions
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[0]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
 	return 0;
 }
 
@@ -9946,25 +10007,30 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 	\throws cv::Exception if undefined data type (e.g. real data types)
 	\sa ArgFunc
 */
-DataObject setImag(DataObject &dObj, DataObject &valuesObj)
+RetVal DataObject::setImag(DataObject &valuesObj)
 {
-	if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
+	if (this->getType() >= TYPE_OFFSET_COMPLEX && this->getType() < TYPE_OFFSET_RGBA)
 	{
-		if (dObj.getType() == ito::tComplex128)
+		if (this->getType() == ito::tComplex128)
 		{
-			SetImagFunc<ito::complex128, ito::float64>(&dObj, &valuesObj);
+			SetImagFunc<ito::complex128, ito::float64>(this, &valuesObj);
+		}
+		else if (this->getType() == ito::tComplex64 && valuesObj.getType() == ito::tFloat32)
+		{
+			SetImagFunc<ito::complex64, ito::float32>(this, &valuesObj);
 		}
 		else
 		{
-			SetImagFunc<ito::complex64, ito::float32>(&dObj, &valuesObj);
+			cv::error(cv::Exception(CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+			return ito::retError;
 		}
 
-		return valuesObj;
+		return ito::retOk;
 	}
 	else
 	{
 		cv::error(cv::Exception(CV_StsAssert, "Imag not defined for real input parameter type", "", __FILE__, __LINE__));
-		return DataObject();
+		return ito::retError;
 	}
 }
 

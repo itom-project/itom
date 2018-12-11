@@ -778,6 +778,9 @@ namespace ito {
         
         RetVal copyTagMapTo(DataObject &rhs) const;  /*!< Deep copies the tagmap with all entries to rhs object */
         RetVal copyAxisTagsTo(DataObject &rhs) const;  /*!< Deep copies the axistags to rhs object */
+
+		RetVal setReal(DataObject &valuesObj); /*change the real part of a complex data object*/
+		RetVal setImag(DataObject &valuesObj); /*change the imaginary part of a complex data object*/
         
         // END TAGSPACE
         
@@ -1379,8 +1382,6 @@ namespace ito {
     DATAOBJ_EXPORT DataObject arg(const DataObject &dObj);              /*!< calculates the argument of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject real(const DataObject &dObj);             /*!< calculates the real part of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject imag(const DataObject &dObj);             /*!< calculates the imaginary part of each element in the given data object and returns the result as new data object */
-	DATAOBJ_EXPORT DataObject setReal(DataObject &Obj, DataObject &valuesObj);
-	DATAOBJ_EXPORT DataObject setImag(DataObject &Obj, DataObject &valuesObj);
 
     DATAOBJ_EXPORT DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
     

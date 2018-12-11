@@ -5199,9 +5199,11 @@ PyDoc_STRVAR(dataObjectAttrReal_doc, "real -> return a new data object with the 
 This method extracts the real part of each element in source and writes the result to the output object.\
 This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
 \n\
-This method also changes the real part of the complex input object. \n\
-The input value must be a numpy.array or a data object of the same shape as the data object. \n\
-If a single integer or float value is given, all real values will be changed to this value. \n\
+This method also changes the real part of the complex data object. \n\
+In the case of a complex128 data object type, the input must be float64. \n\
+In the case of a complex64 data object type, the input must be float32. \n\
+The input can be a data object or numpy.array of the same shape as the data object. \n\
+If a scalar of an integer or float datatype is given, all real values will be changed to this value. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -5247,11 +5249,12 @@ PyObject* PythonDataObject::PyDataObject_getReal(PyDataObject *self, void * /*cl
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, void * /*closure*/)
 {
-	if (value == NULL)
+
+	if (self->dataObject == NULL)
 	{
-		PyErr_SetString(PyExc_TypeError, "Value is not defined.");
-		return NULL;
-	}
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return -1;
+	}	
 	
 	ito::DataObject *newValues = NULL;
 	bool singleValue = false;
@@ -5261,12 +5264,13 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
 	{
 		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
-		return NULL;
+		return -1;
 	}
-
+	
+	//newvalues as data object
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
-		newValues = (((PyDataObject*)(value))->dataObject);		
+		newValues = (((PyDataObject*)(value))->dataObject);			
 	}
 	else if (PyArray_Check(value)) //check if value is numpy array
 	{
@@ -5308,7 +5312,25 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	else //error
 	{
 		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
-		return NULL;
+		return -1;
+	}
+
+	if (!((dataObjectType == ito::tComplex128 && newValues->getType() == ito::tFloat64) || (dataObjectType == ito::tComplex64 && newValues->getType() == ito::tFloat32)))
+	{
+		if (dataObjectType == ito::tComplex128)
+		{
+			PyErr_SetString(PyExc_TypeError, "For data object type \"complex128\" the value object must be \"float64\".");
+		}
+		else if (dataObjectType == ito::tComplex64)
+		{
+			PyErr_SetString(PyExc_TypeError, "For data object type \"complex64\" the value object must be \"float32\".");
+		}
+		else
+		{
+			PyErr_SetString(PyExc_TypeError, "Wrong datatype of the values object.");
+		}
+		
+		return -1;
 	}
 
 	const int dObjDims = self->dataObject->getDims();
@@ -5320,8 +5342,8 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 		{
 			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
 			{
-				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
-				return NULL;
+				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims + 1);
+				return -1;
 			}
 		}
 	}
@@ -5332,28 +5354,28 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
-				return NULL;
+				return -1;
 			}
 		}
 		else 
 		{
 			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
-			return NULL;
+			return -1;
 		}
 	}
 
 	try 
 	{
-		ito::DataObject(ito::setReal((*(self->dataObject)), (*(newValues))));
+		self->dataObject->setReal(*newValues);
 	}
 	catch (cv::Exception &exc)
 	{
 		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-		return NULL;
+		return -1;
 	}
 
 	self->dataObject->addToProtocol("Changed real part of complex data object via real.");
-
+	
 	return 0;
 }
 
@@ -5363,9 +5385,11 @@ PyDoc_STRVAR(dataObjectAttrImag_doc, "imag -> return a new data object with the 
 This method extracts the imaginary part of each element in source and writes the result to the output object.\
 This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
 \n\
-This method also changes the imaginary part of the complex input object. \n\
-The input value must be a numpy.array or a data object of the same shape as the data object. \n\
-If a single integer or float value is given, all imaginary values will be changed to this value. \n\
+This method also changes the real part of the complex data object. \n\
+In the case of a complex128 data object type, the input must be float64. \n\
+In the case of a complex64 data object type, the input must be float32. \n\
+The input can be a data object or numpy.array of the same shape as the data object. \n\
+If a scalar of an integer or float datatype is given, all real values will be changed to this value. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -5410,11 +5434,11 @@ PyObject* PythonDataObject::PyDataObject_getImag(PyDataObject *self, void * /*cl
 
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, void * /*closure*/)
-{
-	if (value == NULL)
+{	
+	if (self->dataObject == NULL)
 	{
-		PyErr_SetString(PyExc_TypeError, "Value is not defined.");
-		return NULL;
+		PyErr_SetString(PyExc_TypeError, "data object is NULL");
+		return -1;
 	}
 
 	ito::DataObject *newValues = NULL;
@@ -5425,9 +5449,10 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
 	{
 		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
-		return NULL;
+		return -1;
 	}
 
+	//newvalues as data object
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
 		newValues = (((PyDataObject*)(value))->dataObject);
@@ -5472,7 +5497,25 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	else //error
 	{
 		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
-		return NULL;
+		return -1;
+	}
+
+	if (!((dataObjectType == ito::tComplex128 && newValues->getType() == ito::tFloat64) || (dataObjectType == ito::tComplex64 && newValues->getType() == ito::tFloat32)))
+	{
+		if (dataObjectType == ito::tComplex128)
+		{
+			PyErr_SetString(PyExc_TypeError, "For data object type \"complex128\" the value object must be \"float64\".");
+		}
+		else if (dataObjectType == ito::tComplex64)
+		{
+			PyErr_SetString(PyExc_TypeError, "For data object type \"complex64\" the value object must be \"float32\".");
+		}
+		else
+		{
+			PyErr_SetString(PyExc_TypeError, "Wrong datatype of the values object.");
+		}
+
+		return -1;
 	}
 
 	const int dObjDims = self->dataObject->getDims();
@@ -5484,8 +5527,8 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 		{
 			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
 			{
-				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims);
-				return NULL;
+				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims + 1);
+				return -1;
 			}
 		}
 	}
@@ -5496,24 +5539,24 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
-				return NULL;
+				return -1;
 			}
 		}
 		else
 		{
 			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
-			return NULL;
+			return -1;
 		}
 	}
 
 	try
 	{
-		ito::DataObject(ito::setImag((*(self->dataObject)), (*(newValues))));
+		self->dataObject->setImag(*newValues);
 	}
 	catch (cv::Exception &exc)
 	{
 		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-		return NULL;
+		return -1;
 	}
 
 	self->dataObject->addToProtocol("Changed imaginary part of complex data object via real.");
