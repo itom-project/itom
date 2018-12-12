@@ -42,8 +42,9 @@
 
 #define NOMINMAX //see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e, this is only an issue with OpenCV 2.4.3, not 2.3.x
 
-#include "opencv/cv.h"
+#include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
+#include "opencv2/core/types_c.h"
 
 #include "../common/sharedStructures.h"
 #include "../common/color.h"

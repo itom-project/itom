@@ -1740,10 +1740,12 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
        cv::error(cv::Exception(CV_BadDataPtr, "data pointer must be empty if matrix is not continuous" ,"", __FILE__, __LINE__));
    }
 
+	//CV_USRTYPE1 support has been dropped in OpenCV 4.0
+   /* 
    if (cv::DataType<_Tp>::type == CV_USRTYPE1)
    {
        cv::error(cv::Exception(CV_BadDepth, "unsupported type (e.g. uint32 not possible)", "", __FILE__, __LINE__));
-   }
+   }*/
 
    dObj->m_owndata = (continuousDataPtr == NULL);
 
