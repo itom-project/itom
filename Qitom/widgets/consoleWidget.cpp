@@ -64,6 +64,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_inputStartLine(0),
     m_autoWheel(true)
 {
+    m_inputTextMode.inputModeEnabled = false;
+
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
     m_receiveStreamBufferTimer.setSingleShot(true);
@@ -428,6 +430,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             m_inputStreamWaitCond->release();
             m_inputStreamWaitCond->deleteSemaphore();
             m_inputStreamWaitCond = NULL;
+            disableInputTextMode();
             append(ConsoleWidget::lineBreak);
         }
         else
@@ -541,6 +544,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
                     m_inputStreamWaitCond = NULL;
+                    disableInputTextMode();
                     append(ConsoleWidget::lineBreak);
                 }
 
@@ -643,6 +647,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
                     m_inputStreamWaitCond = NULL;
+                    disableInputTextMode();
 
                     append(ConsoleWidget::lineBreak);
                     acceptEvent = true;
@@ -965,6 +970,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::clearCommandLine()
 {
+    m_receiveStreamBuffer.text = "";
     clear();
     m_markErrorLineMode->clearAllMarkers();
     m_markCurrentLineMode->clearAllMarkers();
@@ -975,6 +981,9 @@ void ConsoleWidget::clearCommandLine()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond)
 {
+    enableInputTextMode();
+
+    processStreamBuffer(); //
     m_inputStreamWaitCond = inputWaitCond;
     m_inputStreamBuffer = buffer;
     m_inputStartLine = lines() - 1;
@@ -983,6 +992,30 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     m_caretLineHighlighter->setEnabled(false);
     //TODO setCaretLineVisible(false);
     setFocus();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::enableInputTextMode()
+{
+    if (!m_inputTextMode.inputModeEnabled)
+    {
+        m_inputTextMode.inputModeEnabled = true;
+        m_inputTextMode.autoCompletionModeCurrentState = m_codeCompletionMode->enabled();
+        m_inputTextMode.calltipsModeCurrentState = m_calltipsMode->enabled();
+        m_codeCompletionMode->setEnabled(false);
+        m_calltipsMode->setEnabled(false);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::disableInputTextMode()
+{
+    if (m_inputTextMode.inputModeEnabled)
+    {
+        m_inputTextMode.inputModeEnabled = false;
+        m_codeCompletionMode->setEnabled(m_inputTextMode.autoCompletionModeCurrentState);
+        m_calltipsMode->setEnabled(m_inputTextMode.calltipsModeCurrentState);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1107,16 +1140,16 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         for (int i = beginLine; i <= endLine; i++)
         {
             singleLine = text(i);
-if (singleLine.endsWith('\n'))
-{
-    singleLine.chop(1);
-}
-if (singleLine.startsWith(">>"))
-{
-    singleLine.remove(0, 2);
-}
+            if (singleLine.endsWith('\n'))
+            {
+                singleLine.chop(1);
+            }
+            if (singleLine.startsWith(">>"))
+            {
+                singleLine.remove(0, 2);
+            }
 
-buffer.append(singleLine);
+            buffer.append(singleLine);
         }
 
         const PythonEngine *pyEng = PythonEngine::getInstance();

@@ -120,6 +120,13 @@ private:
         ito::tStreamMessageType msgType;
     };
 
+    struct InputTextMode
+    {
+        bool inputModeEnabled;
+        bool calltipsModeCurrentState; //current enable state of calltips mode before starting input text mode (only valid if inputModeEnabled = true)
+        bool autoCompletionModeCurrentState; //current enable state of completion mode before starting input text mode (only valid if inputModeEnabled = true)
+    };
+
     RetVal initEditor();
     RetVal clearEditor();
     RetVal startNewCommand(bool clearEditorFirst = false);
@@ -133,6 +140,9 @@ private:
     void moveCursorToValidRegion();
 
     int checkValidDropRegion(const QPoint &pos);
+
+    void enableInputTextMode();
+    void disableInputTextMode();
     
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
     
@@ -162,6 +172,9 @@ private:
     bool m_autoWheel; //!< true if command line should automatically move to the last line if new lines are appended, this is set to false upon a wheel event and will be reset to true if the command line is cleared (clc) or if a new input is added
 
     QMap<QString, QAction*> m_contextMenuActions;
+
+    InputTextMode m_inputTextMode;
+
 };
 
 class DequeCommandList
