@@ -207,6 +207,10 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
 
+        ito::uint8 m_lineCutType;
+        ito::uint8 m_zSliceType;
+        ito::uint8 m_zoomCutType;
+        ito::uint8 m_volumeCutType;
         QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots*/
 
     private:
