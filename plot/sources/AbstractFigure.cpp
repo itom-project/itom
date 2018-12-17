@@ -45,6 +45,7 @@
 #include <qshortcut.h>
 
 
+
 namespace ito 
 {
 
@@ -58,7 +59,8 @@ public:
         propertyObservedObject(NULL),
         toolbarsVisible(true),
 		windowTitleSuffix("")
-    {}
+    {
+    }
 
     QList<QMenu*> menus;
     QList<AbstractFigure::ToolBarItem> toolbars;
@@ -71,6 +73,7 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
+    QMap<QString, ito::uint8> m_subplotStates;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -82,12 +85,17 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_apiFunctionsGraphBasePtr(NULL),
     m_apiFunctionsBasePtr(NULL),
     m_mainParent(parent),
-    m_windowMode(windowMode),    
     m_lineCutType(tNoChildPlot),
     m_zSliceType(tNoChildPlot),
-    m_zoomCutType(tNoChildPlot)
+    m_zoomCutType(tNoChildPlot),
+    m_volumeCutType(tNoChildPlot),
+    m_windowMode(windowMode)
 {
     d = new AbstractFigurePrivate();
+    d->m_subplotStates["lineCut"] = tNoChildPlot;
+    d->m_subplotStates["zSlice"] = tNoChildPlot;
+    d->m_subplotStates["zoomCut"] = tNoChildPlot;
+    d->m_subplotStates["volumeCut"] = tNoChildPlot;
 
     initialize();
 }
@@ -733,5 +741,9 @@ void AbstractFigure::setWindowTitleExtension(const QString& title)
 		}
 	}
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+QMap<QString, ito::uint8>& AbstractFigure::subplotStates()
+{
+    return d->m_subplotStates;
+}
 } //end namespace ito
