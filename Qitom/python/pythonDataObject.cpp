@@ -5351,7 +5351,7 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	{
 		if (dObjDims > valDims && valDims == 2)
 		{
-			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
+			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
 				return -1;
@@ -5536,7 +5536,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 	{
 		if (dObjDims > valDims && valDims == 2)
 		{
-			if (!(self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(2) || self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1)))//last 2 dimensions are the same
+			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
 			{
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
 				return -1;
