@@ -5565,7 +5565,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
+PyDoc_STRVAR(pyDataObjectAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
 \n\
 This method calculates the abs value of each element in source and writes the result to the output object.\
 In case of floating point or real object, the type of the output will not change. For complex values\
@@ -5575,7 +5575,7 @@ Returns \n\
 ------- \n\
 res : {dataObject} \n\
     output dataObject of same shape but the type may be changed.");
-PyObject* PythonDataObject::PyDataObject_getAbs(PyDataObject *self, void * /*closure*/)
+PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
 	{
@@ -5604,7 +5604,7 @@ PyObject* PythonDataObject::PyDataObject_getAbs(PyDataObject *self, void * /*clo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrArg_doc, "arg() -> return a new data object with the argument values of the source\n\
+PyDoc_STRVAR(pyDataObjectArg_doc, "arg() -> return a new data object with the argument values of the source\n\
 \n\
 This method calculates the argument value of each element in source and writes the result to the output object.\
 This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
@@ -5613,7 +5613,7 @@ Returns \n\
 ------- \n\
 res : {dataObject} \n\
     output dataObject of same shape but the type is changed.");
-PyObject* PythonDataObject::PyDataObject_getArg(PyDataObject *self, void * /*closure*/)
+PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
 	{
@@ -8659,14 +8659,16 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
 		{"nans",(PyCFunction)PythonDataObject::PyDataObj_StaticNans, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticNans_doc },
         {"rand",(PyCFunction)PythonDataObject::PyDataObj_StaticRand, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRand_doc},
         {"randN",(PyCFunction)PythonDataObject::PyDataObj_StaticRandN, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRandN_doc},
-        { "eye", (PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc },
+        {"eye", (PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc },
         {"fromNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_StaticFromNumpyColor, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticFromNumpyColor_doc},
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
-        { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
-		{ "dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
+        {"createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
+		{"dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
 		{"lineCut",(PyCFunction)PythonDataObject::PyDataObj_lineCut, METH_VARARGS , pyDataObjectLineCut_doc},
+        {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc },
+        {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
 
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
@@ -8712,9 +8714,6 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"xyRotationalMatrix", (getter)PyDataObject_getXYRotationalMatrix, (setter)PyDataObject_setXYRotationalMatrix, dataObjectAttrRotationalMatrix_doc, NULL},
 	{"real", (getter)PyDataObject_getReal, (setter)PyDataObject_setReal, dataObjectAttrReal_doc, NULL},
 	{"imag", (getter)PyDataObject_getImag, (setter)PyDataObject_setImag, dataObjectAttrImag_doc, NULL},
-	{"abs", (getter)PyDataObject_getAbs, NULL, dataObjectAttrAbs_doc, NULL},
-	{"arg", (getter)PyDataObject_getArg, NULL, dataObjectAttrArg_doc, NULL},
-
 
     {"__array_struct__", (getter)PyDataObj_Array_StructGet, NULL, dataObjectArray_StructGet_doc, NULL},
     {"__array_interface__", (getter)PyDataObj_Array_Interface, NULL, dataObjectArray_Interface_doc ,NULL},
