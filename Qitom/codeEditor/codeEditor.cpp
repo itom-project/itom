@@ -745,6 +745,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         {
             doHomeKey(e, int(e->modifiers()) & Qt::ShiftModifier);
         }
+        else if ((e->modifiers() & Qt::ShiftModifier) && \
+            ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return)))
+        {
+            //deny soft line break. not desired in editor.
+            e->accept(); //do not further process this key
+        }
+
         if (!e->isAccepted())
         {
             e->setAccepted(initial_state);
