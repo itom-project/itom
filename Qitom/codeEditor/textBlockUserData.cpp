@@ -49,7 +49,7 @@ TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
     m_breakpointType(TypeNoBp),
     m_bookmark(false),
     m_codeEditor(editor),
-    m_noSyntaxHighlighting(false)
+    m_syntaxStyle(StylePython)
 {
     m_codeEditor->textBlockUserDataList() << this;
 }

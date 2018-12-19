@@ -115,9 +115,9 @@ void SyntaxHighlighterBase::highlightBlock(const QString &text)
 
         //qDebug() << current_block.blockNumber();
         TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
-        if (userData && userData->m_noSyntaxHighlighting)
+        if (userData && userData->m_syntaxStyle != TextBlockUserData::StylePython)
         {
-            default_highlight_block(text);
+            default_highlight_block(text, userData->m_syntaxStyle == TextBlockUserData::StyleOutput);
         }
         else
         {

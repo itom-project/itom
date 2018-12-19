@@ -129,6 +129,9 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
     case KeyStreamOutput:
         m_name = QObject::tr("Stream Output (Command Line)");
         break;
+    case KeyStreamError:
+        m_name = QObject::tr("Stream Error (Command Line)");
+        break;
     default:
         m_name = "";
         m_valid = false;
@@ -260,6 +263,7 @@ CodeEditorStyle::CodeEditorStyle()
     m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
 
     m_formats[StyleItem::KeyStreamOutput] = StyleItem(StyleItem::KeyStreamOutput, StyleItem::createFormat("Courier New", defaultPointSize, "#000000", Qt::white, false));
+    m_formats[StyleItem::KeyStreamError] = StyleItem(StyleItem::KeyStreamError, StyleItem::createFormat("Courier New", defaultPointSize, "#000000", Qt::white, false));
     
 }
 

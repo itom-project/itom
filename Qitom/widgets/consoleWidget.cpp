@@ -1237,7 +1237,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
     {
         userData = getConstTextBlockUserData(lineIdx);
-        if (userData == NULL || !userData->m_noSyntaxHighlighting)
+        if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
         {
             temp = lineText(lineIdx);
 
@@ -1325,7 +1325,7 @@ void ConsoleWidget::processStreamBuffer()
         for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
         {
             userData = getTextBlockUserData(lineIdx, true);
-            userData->m_noSyntaxHighlighting = true;
+            userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
         }
         rehighlightBlock(fromLine, toLine);
 
@@ -1363,7 +1363,7 @@ void ConsoleWidget::processStreamBuffer()
         for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
         {
             userData = getTextBlockUserData(lineIdx, true);
-            userData->m_noSyntaxHighlighting = true;
+            userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
         }
         rehighlightBlock(fromLine, toLine);
 

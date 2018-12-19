@@ -119,9 +119,16 @@ hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches,
 #endif
 
 
-void PythonSyntaxHighlighter::default_highlight_block(const QString &text)
+void PythonSyntaxHighlighter::default_highlight_block(const QString &text, bool outputNotError)
 {
-    setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamOutput));
+    if (outputNotError)
+    {
+        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamOutput));
+    }
+    else
+    {
+        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamError));
+    }
 }
 //-------------------------------------------------------------------
 /*

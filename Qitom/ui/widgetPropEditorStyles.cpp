@@ -808,6 +808,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         mapIdx[StyleItem::KeyConstant] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyOperatorWord] = 10; //Operator
                         mapIdx[StyleItem::KeyStreamOutput] = 0; //Default
+                        mapIdx[StyleItem::KeyStreamError] = 4; //SingleQuotedString
 
                         QVector<int> stylesFound;
                         int styleId;
