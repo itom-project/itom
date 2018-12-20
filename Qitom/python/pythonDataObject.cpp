@@ -5257,11 +5257,13 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	}	
 	
 	ito::DataObject *newValues = NULL;
+    bool deleteNewValues = false;
 	bool singleValue = false;
+    PyObject *pyNewValues = NULL; //if new values are borrowed from a PyObject, set it here (it will be decremented at the end)
 
 	int dataObjectType = self->dataObject->getType();
 
-	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
+	if (dataObjectType != ito::tComplex64 && dataObjectType != ito::tComplex128) //input object must be complex
 	{
 		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
 		return -1;
@@ -5270,11 +5272,19 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	//newvalues as data object
 	if (PyDataObject_Check(value)) //check if value is dataObject
 	{
-		newValues = (((PyDataObject*)(value))->dataObject);			
+		newValues = (((PyDataObject*)(value))->dataObject);	
 	}
 	else if (PyArray_Check(value)) //check if value is numpy array
 	{
-		newValues = (((PyDataObject*)(createPyDataObjectFromArray(value)))->dataObject);
+        pyNewValues = createPyDataObjectFromArray(value); //new reference
+        if (pyNewValues)
+        {
+            newValues = ((PyDataObject*)(pyNewValues))->dataObject;
+        }
+        else
+        {
+            return -1; //error is already set by createPyDataObjectFromArray
+        }
 	}
 	else if (PyLong_Check(value)) //check if value is integer single value
 	{
@@ -5283,12 +5293,14 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 			newValues = new ito::DataObject(1, 1, ito::tFloat32);
 			ito::float32 newValue = PyLong_AsLong(value);
 			newValues->at<ito::float32>(0, 0) = newValue;
+            deleteNewValues = true;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
 			newValues = new ito::DataObject(1, 1, ito::tFloat64);
 			ito::float64 newValue = PyLong_AsLong(value);
 			newValues->at<ito::float64>(0, 0) = newValue;
+            deleteNewValues = true;
 		}
 		singleValue = true;
 		
@@ -5300,52 +5312,139 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 			newValues = new ito::DataObject(1, 1, ito::tFloat32);
 			ito::float32 newValue = PyFloat_AsDouble(value);
 			newValues->at<ito::float32>(0, 0) = newValue;
+            deleteNewValues = true;
 		}
 		else if (dataObjectType == ito::tComplex128)
 		{
 			newValues = new ito::DataObject(1, 1, ito::tFloat64);
 			ito::float64 newValue = PyFloat_AsDouble(value);
 			newValues->at<ito::float64>(0, 0) = newValue;
+            deleteNewValues = true;
 		}
 		singleValue = true;
 	}
 	else //error
 	{
-		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
+        Py_XDECREF(pyNewValues);
+        pyNewValues = NULL;
+        if (deleteNewValues)
+        {
+            DELETE_AND_SET_NULL(newValues);
+        }
+		PyErr_SetString(PyExc_TypeError, "Type of assigned value is invalid (real dataObject, real np.array or real scalar value).");
 		return -1;
 	}
 
-	if (!((dataObjectType == ito::tComplex128 && newValues->getType() == ito::tFloat64) || (dataObjectType == ito::tComplex64 && newValues->getType() == ito::tFloat32)))
-	{
-		if (dataObjectType == ito::tComplex128)
-		{
-			PyErr_SetString(PyExc_TypeError, "For data object type \"complex128\" the value object must be \"float64\".");
-		}
-		else if (dataObjectType == ito::tComplex64)
-		{
-			PyErr_SetString(PyExc_TypeError, "For data object type \"complex64\" the value object must be \"float32\".");
-		}
-		else
-		{
-			PyErr_SetString(PyExc_TypeError, "Wrong datatype of the values object.");
-		}
-		
-		return -1;
-	}
+    if (dataObjectType == ito::tComplex64)
+    {
+        if (newValues->getType() != ito::tFloat32)
+        {
+            //try to convert newValues to float32...
+            ito::DataObject *newValuesFloat = new ito::DataObject();
+            ito::RetVal ret;
+            try
+            {
+                ret = newValues->convertTo(*newValuesFloat, ito::tFloat32);
+            }
+            catch (cv::Exception &exc)
+            {
+                ret = ito::RetVal::format(ito::retError, 0, "Cannot convert assigned value to a float32 dataObject (%s)", exc.err.c_str());
+            }
+
+            if (ret == ito::retOk)
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                newValues = newValuesFloat;
+                deleteNewValues = true;
+            }
+            else
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                DELETE_AND_SET_NULL(newValuesFloat);
+
+                PythonCommon::transformRetValToPyException(ret);
+                return -1;
+            }
+        }
+    }
+    else if (dataObjectType == ito::tComplex128)
+    {
+        if (newValues->getType() != ito::tFloat64)
+        {
+            //try to convert newValues to float64...
+            ito::DataObject *newValuesFloat = new ito::DataObject();
+            ito::RetVal ret;
+            try
+            {
+                ret = newValues->convertTo(*newValuesFloat, ito::tFloat64);
+            }
+            catch (cv::Exception &exc)
+            {
+                ret = ito::RetVal::format(ito::retError, 0, "Cannot convert assigned value to a float64 dataObject (%s)", exc.err.c_str());
+            }
+
+            if (ret == ito::retOk)
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                newValues = newValuesFloat;
+                deleteNewValues = true;
+            }
+            else
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                DELETE_AND_SET_NULL(newValuesFloat);
+
+                PythonCommon::transformRetValToPyException(ret);
+                return -1;
+            }
+        }
+    }
 
 	const int dObjDims = self->dataObject->getDims();
 	const int valDims = newValues->getDims();
 
-	if (dObjDims == valDims) //error if same dimensions but differenz shape
+    if (singleValue)
+    {
+
+    }
+	else if (dObjDims == valDims) //error if same dimensions but different shape
 	{
-		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
-		{
-			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
-			{
-				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims + 1);
-				return -1;
-			}
-		}
+        if (self->dataObject->getSize() != newValues->getSize())
+        {
+            Py_XDECREF(pyNewValues);
+            pyNewValues = NULL;
+            if (deleteNewValues)
+            {
+                DELETE_AND_SET_NULL(newValues);
+            }
+
+            PyErr_Format(PyExc_IndexError, "The size of this dataObject and the assigned dataObject or np.array must be equal.");
+            return -1;
+        }
 	}
 	else //dObjDims must be greater than valDims
 	{
@@ -5353,12 +5452,26 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 		{
 			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
 			{
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
 				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
 				return -1;
 			}
 		}
 		else 
 		{
+            Py_XDECREF(pyNewValues);
+            pyNewValues = NULL;
+            if (deleteNewValues)
+            {
+                DELETE_AND_SET_NULL(newValues);
+            }
+
 			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
 			return -1;
 		}
@@ -5370,11 +5483,25 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	}
 	catch (cv::Exception &exc)
 	{
+        Py_XDECREF(pyNewValues);
+        pyNewValues = NULL;
+        if (deleteNewValues)
+        {
+            DELETE_AND_SET_NULL(newValues);
+        }
+
 		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
 		return -1;
 	}
 
 	self->dataObject->addToProtocol("Changed real part of complex data object via real.");
+
+    Py_XDECREF(pyNewValues);
+    pyNewValues = NULL;
+    if (deleteNewValues)
+    {
+        DELETE_AND_SET_NULL(newValues);
+    }
 	
 	return 0;
 }
@@ -5435,133 +5562,260 @@ PyObject* PythonDataObject::PyDataObject_getImag(PyDataObject *self, void * /*cl
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, void * /*closure*/)
 {	
-	if (self->dataObject == NULL)
-	{
-		PyErr_SetString(PyExc_TypeError, "data object is NULL");
-		return -1;
-	}
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return -1;
+    }
 
-	ito::DataObject *newValues = NULL;
-	bool singleValue = false;
+    ito::DataObject *newValues = NULL;
+    bool deleteNewValues = false;
+    bool singleValue = false;
+    PyObject *pyNewValues = NULL; //if new values are borrowed from a PyObject, set it here (it will be decremented at the end)
 
-	int dataObjectType = self->dataObject->getType();
+    int dataObjectType = self->dataObject->getType();
 
-	if (!(dataObjectType == ito::tComplex64 || dataObjectType == ito::tComplex128)) //input object must be complex
-	{
-		PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
-		return -1;
-	}
+    if (dataObjectType != ito::tComplex64 && dataObjectType != ito::tComplex128) //input object must be complex
+    {
+        PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
+        return -1;
+    }
 
-	//newvalues as data object
-	if (PyDataObject_Check(value)) //check if value is dataObject
-	{
-		newValues = (((PyDataObject*)(value))->dataObject);
-	}
-	else if (PyArray_Check(value)) //check if value is numpy array
-	{
-		newValues = (((PyDataObject*)(createPyDataObjectFromArray(value)))->dataObject);
-	}
-	else if (PyLong_Check(value)) //check if value is integer single value
-	{
-		if (dataObjectType == ito::tComplex64)
-		{
-			newValues = new ito::DataObject(1, 1, ito::tFloat32);
-			ito::float32 newValue = PyLong_AsLong(value);
-			newValues->at<ito::float32>(0, 0) = newValue;
-		}
-		else if (dataObjectType == ito::tComplex128)
-		{
-			newValues = new ito::DataObject(1, 1, ito::tFloat64);
-			ito::float64 newValue = PyLong_AsLong(value);
-			newValues->at<ito::float64>(0, 0) = newValue;
-		}
-		singleValue = true;
+    //newvalues as data object
+    if (PyDataObject_Check(value)) //check if value is dataObject
+    {
+        newValues = (((PyDataObject*)(value))->dataObject);
+    }
+    else if (PyArray_Check(value)) //check if value is numpy array
+    {
+        pyNewValues = createPyDataObjectFromArray(value); //new reference
+        if (pyNewValues)
+        {
+            newValues = ((PyDataObject*)(pyNewValues))->dataObject;
+        }
+        else
+        {
+            return -1; //error is already set by createPyDataObjectFromArray
+        }
+    }
+    else if (PyLong_Check(value)) //check if value is integer single value
+    {
+        if (dataObjectType == ito::tComplex64)
+        {
+            newValues = new ito::DataObject(1, 1, ito::tFloat32);
+            ito::float32 newValue = PyLong_AsLong(value);
+            newValues->at<ito::float32>(0, 0) = newValue;
+            deleteNewValues = true;
+        }
+        else if (dataObjectType == ito::tComplex128)
+        {
+            newValues = new ito::DataObject(1, 1, ito::tFloat64);
+            ito::float64 newValue = PyLong_AsLong(value);
+            newValues->at<ito::float64>(0, 0) = newValue;
+            deleteNewValues = true;
+        }
+        singleValue = true;
 
-	}
-	else if (PyFloat_Check(value)) //check if value is float single value
-	{
-		if (dataObjectType == ito::tComplex64)
-		{
-			newValues = new ito::DataObject(1, 1, ito::tFloat32);
-			ito::float32 newValue = PyFloat_AsDouble(value);
-			newValues->at<ito::float32>(0, 0) = newValue;
-		}
-		else if (dataObjectType == ito::tComplex128)
-		{
-			newValues = new ito::DataObject(1, 1, ito::tFloat64);
-			ito::float64 newValue = PyFloat_AsDouble(value);
-			newValues->at<ito::float64>(0, 0) = newValue;
-		}
-		singleValue = true;
-	}
-	else //error
-	{
-		PyErr_SetString(PyExc_TypeError, "Type of input value is not valid.");
-		return -1;
-	}
+    }
+    else if (PyFloat_Check(value)) //check if value is float single value
+    {
+        if (dataObjectType == ito::tComplex64)
+        {
+            newValues = new ito::DataObject(1, 1, ito::tFloat32);
+            ito::float32 newValue = PyFloat_AsDouble(value);
+            newValues->at<ito::float32>(0, 0) = newValue;
+            deleteNewValues = true;
+        }
+        else if (dataObjectType == ito::tComplex128)
+        {
+            newValues = new ito::DataObject(1, 1, ito::tFloat64);
+            ito::float64 newValue = PyFloat_AsDouble(value);
+            newValues->at<ito::float64>(0, 0) = newValue;
+            deleteNewValues = true;
+        }
+        singleValue = true;
+    }
+    else //error
+    {
+        Py_XDECREF(pyNewValues);
+        pyNewValues = NULL;
+        if (deleteNewValues)
+        {
+            DELETE_AND_SET_NULL(newValues);
+        }
+        PyErr_SetString(PyExc_TypeError, "Type of assigned value is invalid (real dataObject, real np.array or real scalar value)");
+        return -1;
+    }
 
-	if (!((dataObjectType == ito::tComplex128 && newValues->getType() == ito::tFloat64) || (dataObjectType == ito::tComplex64 && newValues->getType() == ito::tFloat32)))
-	{
-		if (dataObjectType == ito::tComplex128)
-		{
-			PyErr_SetString(PyExc_TypeError, "For data object type \"complex128\" the value object must be \"float64\".");
-		}
-		else if (dataObjectType == ito::tComplex64)
-		{
-			PyErr_SetString(PyExc_TypeError, "For data object type \"complex64\" the value object must be \"float32\".");
-		}
-		else
-		{
-			PyErr_SetString(PyExc_TypeError, "Wrong datatype of the values object.");
-		}
+    if (dataObjectType == ito::tComplex64)
+    {
+        if (newValues->getType() != ito::tFloat32)
+        {
+            //try to convert newValues to float32...
+            ito::DataObject *newValuesFloat = new ito::DataObject();
+            ito::RetVal ret;
+            try
+            {
+                ret = newValues->convertTo(*newValuesFloat, ito::tFloat32);
+            }
+            catch (cv::Exception &exc)
+            {
+                ret = ito::RetVal::format(ito::retError, 0, "Cannot convert assigned value to a float32 dataObject (%s)", exc.err.c_str());
+            }
 
-		return -1;
-	}
+            if (ret == ito::retOk)
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
 
-	const int dObjDims = self->dataObject->getDims();
-	const int valDims = newValues->getDims();
+                newValues = newValuesFloat;
+                deleteNewValues = true;
+            }
+            else
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
 
-	if (dObjDims == valDims) //error if same dimensions but differenz shape
-	{
-		for (int cntDims = 0; cntDims < dObjDims; cntDims++)
-		{
-			if (!(self->dataObject->getSize(cntDims) == newValues->getSize(cntDims) || singleValue))
-			{
-				PyErr_Format(PyExc_IndexError, "%i. dimension do not match of the data object and the values.", cntDims + 1);
-				return -1;
-			}
-		}
-	}
-	else //dObjDims must be greater than valDims
-	{
-		if (dObjDims > valDims && valDims == 2)
-		{
-			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
-			{
-				PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
-				return -1;
-			}
-		}
-		else
-		{
-			PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
-			return -1;
-		}
-	}
+                DELETE_AND_SET_NULL(newValuesFloat);
 
-	try
-	{
-		self->dataObject->setImag(*newValues);
-	}
-	catch (cv::Exception &exc)
-	{
-		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-		return -1;
-	}
+                PythonCommon::transformRetValToPyException(ret);
+                return -1;
+            }
+        }
+    }
+    else if (dataObjectType == ito::tComplex128)
+    {
+        if (newValues->getType() != ito::tFloat64)
+        {
+            //try to convert newValues to float64...
+            ito::DataObject *newValuesFloat = new ito::DataObject();
+            ito::RetVal ret;
+            try
+            {
+                ret = newValues->convertTo(*newValuesFloat, ito::tFloat64);
+            }
+            catch (cv::Exception &exc)
+            {
+                ret = ito::RetVal::format(ito::retError, 0, "Cannot convert assigned value to a float64 dataObject (%s)", exc.err.c_str());
+            }
 
-	self->dataObject->addToProtocol("Changed imaginary part of complex data object via real.");
+            if (ret == ito::retOk)
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
 
-	return 0;
+                newValues = newValuesFloat;
+                deleteNewValues = true;
+            }
+            else
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                DELETE_AND_SET_NULL(newValuesFloat);
+
+                PythonCommon::transformRetValToPyException(ret);
+                return -1;
+            }
+        }
+    }
+
+    const int dObjDims = self->dataObject->getDims();
+    const int valDims = newValues->getDims();
+
+    if (singleValue)
+    {
+
+    }
+    else if (dObjDims == valDims) //error if same dimensions but different shape
+    {
+        if (self->dataObject->getSize() != newValues->getSize())
+        {
+            Py_XDECREF(pyNewValues);
+            pyNewValues = NULL;
+            if (deleteNewValues)
+            {
+                DELETE_AND_SET_NULL(newValues);
+            }
+
+            PyErr_Format(PyExc_IndexError, "The size of this dataObject and the assigned dataObject or np.array must be equal.");
+            return -1;
+        }
+    }
+    else //dObjDims must be greater than valDims
+    {
+        if (dObjDims > valDims && valDims == 2)
+        {
+            if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
+            {
+                Py_XDECREF(pyNewValues);
+                pyNewValues = NULL;
+                if (deleteNewValues)
+                {
+                    DELETE_AND_SET_NULL(newValues);
+                }
+
+                PyErr_SetString(PyExc_IndexError, "last 2 dimensions differs in size.");
+                return -1;
+            }
+        }
+        else
+        {
+            Py_XDECREF(pyNewValues);
+            pyNewValues = NULL;
+            if (deleteNewValues)
+            {
+                DELETE_AND_SET_NULL(newValues);
+            }
+
+            PyErr_SetString(PyExc_IndexError, "the shape of the data object must be greater than the shape of the values.");
+            return -1;
+        }
+    }
+
+    try
+    {
+        self->dataObject->setImag(*newValues);
+    }
+    catch (cv::Exception &exc)
+    {
+        Py_XDECREF(pyNewValues);
+        pyNewValues = NULL;
+        if (deleteNewValues)
+        {
+            DELETE_AND_SET_NULL(newValues);
+        }
+
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return -1;
+    }
+
+    self->dataObject->addToProtocol("Changed imaginary part of complex data object via imag.");
+
+    Py_XDECREF(pyNewValues);
+    pyNewValues = NULL;
+    if (deleteNewValues)
+    {
+        DELETE_AND_SET_NULL(newValues);
+    }
+
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
