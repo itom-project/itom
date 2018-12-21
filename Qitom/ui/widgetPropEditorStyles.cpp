@@ -793,7 +793,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         mapIdx[StyleItem::KeyDocstring] = 6; //TripleSingleQuotedString
                         mapIdx[StyleItem::KeyClass] = 8; //ClassName
                         mapIdx[StyleItem::KeyFunction] = 9; //FunctionMethodName
-                        mapIdx[StyleItem::KeyOperator] = 0; //Default
+                        mapIdx[StyleItem::KeyOperator] = 10; //Operator
                         mapIdx[StyleItem::KeyDecorator] = 15; //Decorator
                         //mapIdx[StyleItem::KeyHighlight] = 0; //Default
                         mapIdx[StyleItem::KeyNamespace] = 5; //Keyword
@@ -876,7 +876,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 //m_styles[i].m_fillToEOL = false;
                                 m_styles[i].m_backgroundColor = globalBackgroundColor;
                                 m_styles[i].m_foregroundColor = globalForegroundColor;
-                                m_styles[i].m_font = globalOverrideFont.family();
+                                m_styles[i].m_font = globalOverrideFont;
                             }
                         }
 
