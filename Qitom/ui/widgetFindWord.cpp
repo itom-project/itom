@@ -128,7 +128,7 @@ void WidgetFindWord::setCursorToTextField()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetFindWord::setText(QString &text)
+void WidgetFindWord::setText(const QString &text)
 {
 	ui.txtFind->setText(text);
 }
