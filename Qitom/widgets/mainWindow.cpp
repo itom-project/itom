@@ -356,8 +356,6 @@ MainWindow::MainWindow() :
     }
 
     qDebug(".. main window build done");
-
-    //showInfoMessageLine("Hey folks...!", "TestInfo");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2277,9 +2275,13 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
             m_infoBoxWidgets[winKey] = QPointer<WidgetInfoBox>(w);
         }
     }
-    else
+    else if (text != "")
     {
         w->setInfoText(text);
+    }
+    else
+    {
+        w->deleteLater();
     }
 }
 

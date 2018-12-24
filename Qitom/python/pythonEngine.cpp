@@ -181,7 +181,8 @@ PythonEngine::PythonEngine() :
     m_includeItomImportString(""),
     m_pUserDefinedPythonHome(NULL),
     m_pyModJedi(NULL),
-    m_pyModJediChecked(false)
+    m_pyModJediChecked(false),
+    m_syntaxCheckerEnabled(true)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -303,7 +304,7 @@ PythonEngine::~PythonEngine()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonSetup(ito::RetVal *retValue)
+void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
@@ -741,6 +742,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
+                if (PyErr_ExceptionMatches(PyExc_ModuleNotFoundError) && m_syntaxCheckerEnabled)
+                {
+                    (*infoMessages)["PyFlakes"] = "Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.";
+                }
                 PyErr_Clear();
             }
 
@@ -841,8 +846,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             (*retValue) += ito::RetVal(ito::retError, 2, tr("Deadlock in python setup.").toLatin1().data());
         }
     }
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -852,6 +855,27 @@ void PythonEngine::readSettings()
     settings.beginGroup("CodeEditor");
 
     m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
+
+    bool syntaxCheckerEnabled = m_syntaxCheckerEnabled;
+    m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
+    
+    if (m_syntaxCheckerEnabled && !syntaxCheckerEnabled && !m_pyModSyntaxCheck)
+    {
+        QObject* mainWin = AppManagement::getMainWindow();
+        if (mainWin)
+        {
+            QString text = tr("Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
+            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PyFlakes"));
+        }
+    }
+    else if (!m_syntaxCheckerEnabled)
+    {
+        QObject* mainWin = AppManagement::getMainWindow();
+        if (mainWin)
+        {
+            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, ""), Q_ARG(QString, "PyFlakes"));
+        }
+    }
 
     settings.endGroup();
 }
