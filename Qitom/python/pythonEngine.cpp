@@ -742,7 +742,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
+#if PY_VERSION_HEX < 0x03060000
+                if (PyErr_ExceptionMatches(PyExc_ImportError) && m_syntaxCheckerEnabled)
+#else
                 if (PyErr_ExceptionMatches(PyExc_ModuleNotFoundError) && m_syntaxCheckerEnabled)
+#endif
                 {
                     (*infoMessages)["PyFlakes"] = "Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.";
                 }
