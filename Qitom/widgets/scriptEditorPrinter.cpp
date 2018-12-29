@@ -51,28 +51,33 @@ ScriptEditorPrinter::~ScriptEditorPrinter()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
+QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRect& area, int pageNumber, int pageCount)
 {
-    QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
-    QString page = QString::number(pagenr);
-    int width = area.width();
-    int dateWidth = painter.fontMetrics().width(date);
-    filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
-        
     painter.save();
     painter.setFont(QFont("Helvetica", 10, QFont::Normal, false));
     painter.setPen(QColor(Qt::black)); 
+
+    QString filename = this->docName();
+    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString page = QObject::tr("Page %1/%2").arg(pageNumber).arg(pageCount);
+    int width = area.width();
+    int dateWidth = painter.fontMetrics().width(date);
+    filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
+
     if (drawing)
     {
         //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
-        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
-        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
+        painter.drawText(area.left(), area.top() + painter.fontMetrics().ascent(), filename);
+        painter.drawText(area.right() - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
         painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
     }
-    area.setTop(area.top() + painter.fontMetrics().height() + 30);
-    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
+
+    QRect textArea = area;
+    textArea.setTop(area.top() + 1.5 * painter.fontMetrics().height());
+    textArea.setBottom(area.bottom() - 1.5 * painter.fontMetrics().height());
     painter.restore();
+
+    return textArea;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -88,16 +93,8 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
     QTextDocument *doc = editor->document();
 
     QSizeF f = doc->pageSize();
-    QSizeF pageSize = pageRect().size(); // page size in pixels
-    // Calculate the rectangle where to lay out the text
-    const double tm = mmToPixels(12);
-    qreal footerHeight;
-
+    const QSize pageSize = pageRect().size(); // page size in pixels
     QPainter painter(this);
-    {
-        footerHeight = painter.fontMetrics().height();
-    }
-    const QRectF textRect(0, 0, pageSize.width(), pageSize.height() - footerHeight);
 
     QTextDocument *clone = doc ? doc->clone() : NULL;
 
@@ -114,11 +111,12 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
 #endif
         }
 
-        qDebug() << painter.transform() << resolution();
-
         float scale = (float)GuiHelper::getScreenLogicalDpi() / (float)resolution();
 
-        clone->setPageSize(pageRect().size() * scale);
+        QRect textRect(0, 0, pageSize.width(), pageSize.height());
+        QRect textOnlyRect = formatPage(painter, false, textRect, 1, 1); //do not print something, only reduce textRect to cover header and footer
+
+        clone->setPageSize(textOnlyRect.size() * scale);
         const int pageCount = clone->pageCount();
 
         bool firstPage = true;
@@ -129,7 +127,8 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
                 newPage();
             }
 
-            paintPage(pageIndex, pageCount, &painter, clone, textRect, scale, footerHeight);
+            formatPage(painter, true, textRect, pageIndex + 1, pageCount);
+            paintPage(pageIndex, pageCount, &painter, clone, textOnlyRect, scale);
             firstPage = false;
         }
 
@@ -138,16 +137,10 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
     return true;
 }
 
-double ScriptEditorPrinter::mmToPixels(int mm)
-{
-    return mm * 0.039370147 * resolution();
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // Print a range of lines to a printer.
-void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale, qreal footerHeaderHeight)
+void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale)
 {
-    //qDebug() << "Printing page" << pageNumber;
     const QSizeF pageSize = paperRect().size();
     const QRect page = pageRect();
 
@@ -159,47 +152,15 @@ void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* pai
     // and starting at (0,0) for the first page. Second page is at y=doc->pageSize().height().
     const QRectF textPageRect(0, pageNumber * doc->pageSize().height(), doc->pageSize().width(), doc->pageSize().height());
     // Clip the drawing so that the text of the other pages doesn't appear in the margins
-    painter->setClipRect(textRect);
-    painter->scale(1./scale, 1./scale);
-    // Translate so that 0,0 is now the page corner
-    painter->translate(0, -textPageRect.top());
+    //painter->setClipRect(textRect);
     // Translate so that 0,0 is the text rect corner
     painter->translate(textRect.left(), textRect.top());
-    doc->drawContents(painter);
+    painter->scale(1. / scale, 1. / scale);
+    // Translate so that 0,0 is now the page corner
+    painter->translate(0, -textPageRect.top());
+
+    doc->drawContents(painter, textPageRect);
     painter->restore();
-
-    // Footer: page number or "end"
-    QRectF footerRect = textRect;
-    footerRect.setTop(textRect.bottom());
-    footerRect.setHeight(footerHeaderHeight);
-
-    QRectF headerRect = textRect;
-    headerRect.setHeight(footerHeaderHeight);
-
-    QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
-    QString pageStr = QString("%1/%2").arg(pageNumber + 1).arg(pageCount);
-    int width = footerRect.width();
-    
-
-    painter->save();
-    painter->setFont(QFont("Helvetica", 10, QFont::Normal, false));
-    painter->setPen(QColor(Qt::black));
-
-    int dateWidth = painter->fontMetrics().width(date);
-    filename = painter->fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
-
-    //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
-    painter->drawText(footerHeaderHeight, Qt::AlignVCenter | Qt::AlignLeft, filename);
-    painter->drawText(footerHeaderHeight, Qt::AlignVCenter | Qt::AlignRight, date);
-    painter->drawText(footerRect, Qt::AlignVCenter | Qt::AlignRight, pageStr);
-
-    painter->restore();
-
-    /*if (pageNumber == pageCount - 1)
-        painter->drawText(footerRect, Qt::AlignCenter, QObject::tr("Fin du Bordereau de livraison"));
-    else
-        painter->drawText(footerRect, Qt::AlignVCenter | Qt::AlignRight, QObject::tr("Page %1/%2").arg(pageNumber + 1).arg(pageCount));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -207,12 +168,6 @@ void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* pai
 void ScriptEditorPrinter::setMagnification(int magnification)
 {
     m_magnification = magnification;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorPrinter::setAlphaLevel(int level)
-{
-    m_alphaLevel = level;
 }
 
 } // end namespace ito

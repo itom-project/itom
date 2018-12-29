@@ -43,7 +43,7 @@ public:
 
     virtual ~ScriptEditorPrinter();
 
-    virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
+    virtual QRect formatPage( QPainter &painter, bool drawing, const QRect &area, int pageNumber, int pageCount);
 
     //! Return the number of points to add to each font when printing.
     //!
@@ -63,10 +63,7 @@ public:
     //! error.
     virtual int printRange(CodeEditor *editor, int from = -1, int to = -1);
 
-    virtual void setAlphaLevel(int level);
-
-    virtual void paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale, qreal footerHeight);
-    double mmToPixels(int mm);
+    virtual void paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale);
 
 private:
     int m_magnification;
