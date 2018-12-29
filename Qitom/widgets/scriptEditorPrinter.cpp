@@ -144,8 +144,8 @@ void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* pai
     const QSizeF pageSize = paperRect().size();
     const QRect page = pageRect();
 
-    const QRectF borderRect(0, 0, page.width(), page.height());
-    painter->drawRect(borderRect);
+    /*const QRectF borderRect(0, 0, page.width(), page.height());
+    painter->drawRect(borderRect);*/
 
     painter->save();
     // textPageRect is the rectangle in the coordinate system of the QTextDocument, in pixels,
