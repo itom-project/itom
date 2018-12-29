@@ -90,9 +90,6 @@ void SyntaxHighlighterBase::highlightWhitespaces(const QString &text)
     int index = m_regWhitespaces.indexIn(text, 0);
     int length;
 
-    QTextCharFormat tcf = m_editorStyle->format(StyleItem::KeyWhitespace);
-    qDebug() << "KeyWhitespace: " << tcf.font();
-
     while (index >= 0)
     {
         index = m_regWhitespaces.pos(0);
