@@ -65,6 +65,9 @@ public:
 
     virtual void setAlphaLevel(int level);
 
+    virtual void paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale, qreal footerHeight);
+    double mmToPixels(int mm);
+
 private:
     int m_magnification;
     int m_alphaLevel;

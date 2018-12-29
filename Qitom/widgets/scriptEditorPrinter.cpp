@@ -26,9 +26,11 @@
 #include <qpainter.h>
 #include <qstack.h>
 #include <qrect.h>
+#include <qdebug.h>
 
 #include "../codeEditor/codeEditor.h"
 #include "../global.h"
+#include "../helper/guiHelper.h"
 
 namespace ito
 {
@@ -73,27 +75,37 @@ void ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, QRect &are
     painter.restore();
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // Print a range of lines to a printer.
-int ScriptEditorPrinter::printRange(CodeEditor *editor, int /*from*/, int /*to*/)
+int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
 {
-    
     // Sanity check.
     if (!editor)
     {
         return false;
     }
-    
-    const QTextDocument *doc = editor->document();
-    doc->print(this);
-    /*QTextDocument *clone = doc ? doc->clone() : NULL;
+
+    QTextDocument *doc = editor->document();
+
+    QSizeF f = doc->pageSize();
+    QSizeF pageSize = pageRect().size(); // page size in pixels
+    // Calculate the rectangle where to lay out the text
+    const double tm = mmToPixels(12);
+    qreal footerHeight;
+
+    QPainter painter(this);
+    {
+        footerHeight = painter.fontMetrics().height();
+    }
+    const QRectF textRect(0, 0, pageSize.width(), pageSize.height() - footerHeight);
+
+    QTextDocument *clone = doc ? doc->clone() : NULL;
 
     if (clone)
     {
         for (QTextBlock srcBlock = doc->firstBlock(), dstBlock = clone->firstBlock();
-             srcBlock.isValid() && dstBlock.isValid();
-             srcBlock = srcBlock.next(), dstBlock = dstBlock.next()) 
+            srcBlock.isValid() && dstBlock.isValid();
+            srcBlock = srcBlock.next(), dstBlock = dstBlock.next())
         {
 #if QT_VERSION < 0x050600
             dstBlock.layout()->setAdditionalFormats(srcBlock.layout()->additionalFormats());
@@ -102,124 +114,92 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int /*from*/, int /*to*/
 #endif
         }
 
-        clone->setPageSize(pageRect(QPrinter::Millimeter).size());
-        clone->print(this);
+        qDebug() << painter.transform() << resolution();
+
+        float scale = (float)GuiHelper::getScreenLogicalDpi() / (float)resolution();
+
+        clone->setPageSize(pageRect().size() * scale);
+        const int pageCount = clone->pageCount();
+
+        bool firstPage = true;
+        for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex)
+        {
+            if (!firstPage)
+            {
+                newPage();
+            }
+
+            paintPage(pageIndex, pageCount, &painter, clone, textRect, scale, footerHeight);
+            firstPage = false;
+        }
 
         DELETE_AND_SET_NULL(clone);
-    }*/
-/*
-    // Setup the printing area.
-    QRect def_area;
-
-    def_area.setX(0);
-    def_area.setY(0);
-    def_area.setWidth(width());
-    def_area.setHeight(height());
-
-    // Get the page range.
-    int pgFrom, pgTo;
-
-    pgFrom = fromPage();
-    pgTo = toPage();
-
-    // Find the position range.
-    long startPos, endPos;
-
-    endPos = qsb->SendScintilla(QsciScintillaBase::SCI_GETLENGTH);
-
-    startPos = (from > 0 ? qsb -> SendScintilla(QsciScintillaBase::SCI_POSITIONFROMLINE,from) : 0);
-
-    if (to >= 0)
-    {
-        long toPos = qsb -> SendScintilla(QsciScintillaBase::SCI_POSITIONFROMLINE,to + 1);
-
-        if (endPos > toPos)
-            endPos = toPos;
     }
-
-    if (startPos >= endPos)
-        return false;
-
-    QPainter painter(this);
-    bool reverse = (pageOrder() == LastPageFirst);
-    bool needNewPage = false;
-
-    qsb -> SendScintilla(QsciScintillaBase::SCI_SETPRINTMAGNIFICATION,mag);
-    qsb -> SendScintilla(QsciScintillaBase::SCI_SETPRINTWRAPMODE,wrap);
-
-    for (int i = 1; i <= numCopies(); ++i)
-    {
-        // If we are printing in reverse page order then remember the start
-        // position of each page.
-        QStack<long> pageStarts;
-
-        int currPage = 1;
-        long pos = startPos;
-
-        while (pos < endPos)
-        {
-            // See if we have finished the requested page range.
-            if (pgTo > 0 && pgTo < currPage)
-                break;
-
-            // See if we are going to render this page, or just see how much
-            // would fit onto it.
-            bool render = false;
-
-            if (pgFrom == 0 || pgFrom <= currPage)
-            {
-                if (reverse)
-                    pageStarts.push(pos);
-                else
-                {
-                    render = true;
-
-                    if (needNewPage)
-                    {
-                        if (!newPage())
-                            return false;
-                    }
-                    else
-                        needNewPage = true;
-                }
-            }
-
-            QRect area = def_area;
-
-            formatPage(painter,render,area,currPage);
-            pos = qsb -> SendScintilla(QsciScintillaBase::SCI_FORMATRANGE,render,&painter,area,pos,endPos);
-
-            ++currPage;
-        }
-
-        // All done if we are printing in normal page order.
-        if (!reverse)
-            continue;
-
-        // Now go through each page on the stack and really print it.
-        while (!pageStarts.isEmpty())
-        {
-            --currPage;
-
-            long ePos = pos;
-            pos = pageStarts.pop();
-
-            if (needNewPage)
-            {
-                if (!newPage())
-                    return false;
-            }
-            else
-                needNewPage = true;
-
-            QRect area = def_area;
-
-            formatPage(painter,true,area,currPage);
-            qsb->SendScintilla(QsciScintillaBase::SCI_FORMATRANGE,true,&painter,area,pos,ePos);
-        }
-    }*/
-
     return true;
+}
+
+double ScriptEditorPrinter::mmToPixels(int mm)
+{
+    return mm * 0.039370147 * resolution();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Print a range of lines to a printer.
+void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale, qreal footerHeaderHeight)
+{
+    //qDebug() << "Printing page" << pageNumber;
+    const QSizeF pageSize = paperRect().size();
+    const QRect page = pageRect();
+
+    const QRectF borderRect(0, 0, page.width(), page.height());
+    painter->drawRect(borderRect);
+
+    painter->save();
+    // textPageRect is the rectangle in the coordinate system of the QTextDocument, in pixels,
+    // and starting at (0,0) for the first page. Second page is at y=doc->pageSize().height().
+    const QRectF textPageRect(0, pageNumber * doc->pageSize().height(), doc->pageSize().width(), doc->pageSize().height());
+    // Clip the drawing so that the text of the other pages doesn't appear in the margins
+    painter->setClipRect(textRect);
+    painter->scale(1./scale, 1./scale);
+    // Translate so that 0,0 is now the page corner
+    painter->translate(0, -textPageRect.top());
+    // Translate so that 0,0 is the text rect corner
+    painter->translate(textRect.left(), textRect.top());
+    doc->drawContents(painter);
+    painter->restore();
+
+    // Footer: page number or "end"
+    QRectF footerRect = textRect;
+    footerRect.setTop(textRect.bottom());
+    footerRect.setHeight(footerHeaderHeight);
+
+    QRectF headerRect = textRect;
+    headerRect.setHeight(footerHeaderHeight);
+
+    QString filename = this->docName();
+    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString pageStr = QString("%1/%2").arg(pageNumber + 1).arg(pageCount);
+    int width = footerRect.width();
+    
+
+    painter->save();
+    painter->setFont(QFont("Helvetica", 10, QFont::Normal, false));
+    painter->setPen(QColor(Qt::black));
+
+    int dateWidth = painter->fontMetrics().width(date);
+    filename = painter->fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
+
+    //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
+    painter->drawText(footerHeaderHeight, Qt::AlignVCenter | Qt::AlignLeft, filename);
+    painter->drawText(footerHeaderHeight, Qt::AlignVCenter | Qt::AlignRight, date);
+    painter->drawText(footerRect, Qt::AlignVCenter | Qt::AlignRight, pageStr);
+
+    painter->restore();
+
+    /*if (pageNumber == pageCount - 1)
+        painter->drawText(footerRect, Qt::AlignCenter, QObject::tr("Fin du Bordereau de livraison"));
+    else
+        painter->drawText(footerRect, Qt::AlignVCenter | Qt::AlignRight, QObject::tr("Page %1/%2").arg(pageNumber + 1).arg(pageCount));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

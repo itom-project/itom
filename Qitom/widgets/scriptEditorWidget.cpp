@@ -160,8 +160,6 @@ ScriptEditorWidget::~ScriptEditorWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::initEditor()
 {
-    //setBackground(QColor(1,81,107));
-
     m_foldingPanel = QSharedPointer<FoldingPanel>(new FoldingPanel(false, "FoldingPanel"));
     panels()->append(m_foldingPanel.dynamicCast<ito::Panel>());
     m_foldingPanel->setOrderInZone(1);
@@ -306,11 +304,6 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut")));
     m_editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut")));
     m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
-    /*editorMenu->addSeparator();
-    editorMenu->addAction(bookmarkMenuActions["toggleBM"]);
-    editorMenu->addAction(bookmarkMenuActions["nextBM"]);
-    editorMenu->addAction(bookmarkMenuActions["prevBM"]);
-    editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);*/
     editorMenu->addSeparator();
 
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
@@ -1654,7 +1647,10 @@ void ScriptEditorWidget::print()
     else
     {
         ScriptEditorPrinter printer(QPrinter::HighResolution);
-       
+        printer.setPageSize(QPagedPaintDevice::A4);
+        printer.setOrientation(QPrinter::Portrait);
+        printer.setPageMargins(20, 15, 20, 15, QPrinter::Millimeter);
+
         if (hasNoFilename() == false)
         {
             printer.setDocName(getFilename());
@@ -1664,7 +1660,6 @@ void ScriptEditorWidget::print()
             printer.setDocName(tr("Unnamed"));
         }
 
-        printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);
         //todo
         //printer.setMagnification(-1); //size one point smaller than the one displayed in itom.
 
