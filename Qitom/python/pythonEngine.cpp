@@ -1255,12 +1255,17 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 PyObject *dictItem = PyDict_GetItemString(PyModule_GetDict(m_autoReload.modAutoReload), "ItomAutoreloader"); // both borrowed references
                 if (dictItem == NULL)
                 {
-                    std::cerr << "The class 'ItomAutoreloader' could not be found" << std::endl;
+                    std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' in module 'autoreload' could not be found:\n" << std::endl;
                     PyErr_PrintEx(0);
                 }
                 else
                 {
                     m_autoReload.classAutoReload = PyObject_CallObject(dictItem, NULL); //!< http://bytes.com/topic/python/answers/649229-_pyobject_new-pyobject_init-pyinstance_new-etc, new reference
+                    if (m_autoReload.classAutoReload == NULL)
+                    {
+                        std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' could not be instantiated.\n" << std::endl;
+                        PyErr_PrintEx(0);
+                    }
                 }
             }
 
