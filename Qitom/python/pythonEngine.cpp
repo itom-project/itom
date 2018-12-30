@@ -4042,6 +4042,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject* temp2;
     PyObject* globalDict = NULL;
     PyObject* localDict = NULL;
+    PyObject* callRet = NULL;
 
     tPythonDbgCmd recentDbgCmd = pyDbgNone;
 
@@ -4128,10 +4129,13 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     if (filename == "<string>") //indicates that an exception has been thrown while debugging, then let the debugger run and finish in order that the exception is printed out
     {
-        if (!PyObject_CallMethod(self, "set_continue", ""))
+        callRet = PyObject_CallMethod(self, "set_continue", ""); //new ref
+        if (!callRet)
         {
             PyErr_PrintEx(0);
         }
+        Py_XDECREF(callRet);
+        callRet = NULL;
     }
     else //proceed the normal debug turnus
     {
@@ -4185,34 +4189,49 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         switch (recentDbgCmd)
         {
         case ito::pyDbgStep:
-            if (!PyObject_CallMethod(self, "set_step", ""))
+            callRet = PyObject_CallMethod(self, "set_step", "");
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgContinue:
-            if (!PyObject_CallMethod(self, "set_continue", ""))
+            callRet = PyObject_CallMethod(self, "set_continue", "");
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgStepOver:
-            if (!PyObject_CallMethod(self, "set_next", "O", frame))
+            callRet = PyObject_CallMethod(self, "set_next", "O", frame);
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgStepOut:
-            if (!PyObject_CallMethod(self,"set_return", "O", frame))
+            callRet = PyObject_CallMethod(self, "set_return", "O", frame);
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgQuit:
-            if (!PyObject_CallMethod(self,"do_quit", "O", frame)) //!< do_quit instead of set_quit, since one member-variable is set in itoDebugger.py
+            callRet = PyObject_CallMethod(self, "do_quit", "O", frame);
+            if (!callRet) //!< do_quit instead of set_quit, since one member-variable is set in itoDebugger.py
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
@@ -6008,7 +6027,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return retval;
     }
 
-    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
+    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //new reference
 
     if (builtinsModule == NULL)
     {
@@ -6016,22 +6035,23 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return retval;
     }
 
-    PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //both: borrowed
     
-    PyObject* pyMode = PyUnicode_FromString("wb\0");
+    Py_DECREF(builtinsModule);
+    builtinsModule = NULL;
+    
+    PyObject* pyMode = PyUnicode_FromString("wb\0"); //new reference
     PyObject* fileHandle = NULL;
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
     
     if (pyFileName != NULL)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
     
-    if (pyMode) Py_DECREF(pyMode);
-
+    Py_XDECREF(pyMode);
 
     if (fileHandle == NULL)
     {
@@ -6041,11 +6061,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     {
         PyObject *result = NULL;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
-        PyObject *dumpObj = PyUnicode_FromString("dump");
+        PyObject *dumpObj = PyUnicode_FromString("dump"); //new reference
         
         try
         {
-            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL);
+            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL); //new reference
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -6077,10 +6097,13 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
         Py_XDECREF(result);
 
-        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        result = PyObject_CallMethod(fileHandle, "close", ""); //new reference
+        if (!result)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
+
+        Py_XDECREF(result);
     }
 
     Py_XDECREF(fileHandle);
@@ -6216,7 +6239,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         return retval;
     }
 
-    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
+    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //new reference
 
     if (builtinsModule == NULL)
     {
@@ -6225,7 +6248,9 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    
+    Py_DECREF(builtinsModule);
+    builtinsModule = NULL;
     
     PyObject* pyMode = PyUnicode_FromString("rb\0");
     PyObject* fileHandle = NULL;
@@ -6234,7 +6259,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     
     if (pyFileName != NULL)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
     
@@ -6333,11 +6358,13 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
   
         }
 
-        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        PyObject *callRet = PyObject_CallMethod(fileHandle, "close", ""); //new reference
+        if (!callRet)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
 
+        Py_XDECREF(callRet);
         Py_XDECREF(fileHandle);
         Py_XDECREF(unpickledItem);
     }
