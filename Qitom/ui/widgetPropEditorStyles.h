@@ -49,13 +49,9 @@ class WidgetPropEditorStyles : public AbstractPropertyPageWidget
 public:
     struct StyleNode
     {
-        StyleNode(ito::StyleItem::StyleType index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), /*m_fillToEOL(fillToEOL), */m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
-        StyleNode() {}
-        StyleNode(ito::StyleItem::StyleType index, QString name) : m_index(index), m_name(name)/*, m_fillToEOL(0)*/ {}
         ito::StyleItem::StyleType m_index;
         QString m_name;
         QFont m_font;
-        //bool m_fillToEOL;
         QColor m_foregroundColor;
         QColor m_backgroundColor;
     };
@@ -85,6 +81,7 @@ private:
     QColor m_foldMarginBgcolor;
     QColor m_marginFgcolor;
     QColor m_marginBgcolor;
+    QColor m_markerScriptErrorBgcolor;
     QColor m_markerCurrentBgcolor;
     QColor m_markerInputBgcolor;
     QColor m_markerErrorBgcolor;
@@ -108,7 +105,6 @@ private slots:
     void on_btnBackgroundColor_colorChanged(QColor color);
     void on_btnFont_clicked();
     void on_btnForegroundColor_colorChanged(QColor color);
-    void on_checkFillEOL_stateChanged(int state);
     void on_btnFontSizeDec_clicked();
     void on_btnFontSizeInc_clicked();
     void on_btnReset_clicked();

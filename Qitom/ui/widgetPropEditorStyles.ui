@@ -73,7 +73,7 @@
           <property name="text">
            <string>Foreground Color</string>
           </property>
-          <property name="displayColorName" stdset="0">
+          <property name="displayColorName">
            <bool>false</bool>
           </property>
          </widget>
@@ -83,7 +83,7 @@
           <property name="text">
            <string>Background Color</string>
           </property>
-          <property name="displayColorName" stdset="0">
+          <property name="displayColorName">
            <bool>false</bool>
           </property>
          </widget>
@@ -98,13 +98,6 @@
           </property>
           <property name="text">
            <string>Font</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkFillEOL">
-          <property name="text">
-           <string>Fill to end of line</string>
           </property>
          </widget>
         </item>
