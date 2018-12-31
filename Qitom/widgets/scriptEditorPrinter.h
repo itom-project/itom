@@ -24,6 +24,7 @@
 #define SCRIPTEDITORPRINTER_H
 
 #include <qprinter.h>
+#include <qtextdocument.h>
 
 QT_BEGIN_NAMESPACE
 class QRect;
