@@ -47,12 +47,13 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     ENDIF (ITOM_SDK_PCL_SUPPORT)
 
     IF (BUILD_TARGET64)
-        IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "TRUE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "ON")))
-            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK")
+        string( TOLOWER "${ITOM_SDK_BUILD_TARGET64}" ITOM_SDK_BUILD_TARGET64_LOWER )
+        IF (NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "true") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "on")))
+            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
         ENDIF()
     ELSE (BUILD_TARGET64)
-        IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "FALSE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "OFF")))
-            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK")
+        IF (NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "false") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "off")))
+            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
         ENDIF()
     ENDIF (BUILD_TARGET64)
 
@@ -256,5 +257,4 @@ ENDIF(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
 
 #====================================================
-
 
