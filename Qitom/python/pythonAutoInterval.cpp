@@ -53,7 +53,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
 
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval([min=-inf, max=inf, auto=true]) -> creates a new auto interval object.\n\
+PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval(min=-inf, max=inf, auto=true) -> creates a new auto interval object.\n\
 \n\
 Parameters \n\
 ----------- \n\

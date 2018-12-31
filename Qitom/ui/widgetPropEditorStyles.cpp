@@ -24,6 +24,7 @@
 #include "../global.h"
 #include "../AppManagement.h"
 
+
 #include <qcolordialog.h>
 #include <qfontdialog.h>
 #include <qfiledialog.h>
@@ -47,32 +48,34 @@ const int MARKERINPUTCOLOR = 9;
 const int CARETCOLOR = 10;
 const int SELECTIONCOLOR = 11;
 const int MARKERSAMESTRINGCOLOR = 12;
+const int MARKERSCRIPTERRORCOLOR = 13;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
-    m_changing(false)
+    m_changing(false),
+    m_pCodeEditorStyle(new CodeEditorStyle())
 {
     ui.setupUi(this);
 
     //ui.lblSampleText->setBackgroundRole(QPalette::Highlight);
     ui.lblSampleText->setAutoFillBackground(false);
 
-    qSciLex = new QsciLexerPython(this);
+    QList<int> styleKeys = m_pCodeEditorStyle->styleKeys();
+    int noOfStyles = m_pCodeEditorStyle->numStyles();
+    StyleItem styleItem;
 
-    int noOfStyles = qSciLex->styleBitsNeeded();
-
-    for (int i = 0; i < (2 << noOfStyles); i++)
+    for (int i = 0; i < noOfStyles; i++)
     {
-        if (!qSciLex->description(i).isEmpty())
+        styleItem = (*m_pCodeEditorStyle)[(StyleItem::StyleType)styleKeys[i]];
+        if (styleItem.name() != "")
         {
             StyleNode entry;
-            entry.m_index = i;
-            entry.m_name = qSciLex->description(i);
-            entry.m_fillToEOL = qSciLex->defaultEolFill(entry.m_index);
-            entry.m_backgroundColor = qSciLex->defaultPaper(entry.m_index);
-            entry.m_foregroundColor = qSciLex->defaultColor(entry.m_index);
-            entry.m_font = qSciLex->defaultFont(entry.m_index);
+            entry.m_index = styleItem.type();
+            entry.m_name = styleItem.name();
+            entry.m_backgroundColor = styleItem.format().background().color();
+            entry.m_foregroundColor = styleItem.format().foreground().color();
+            entry.m_font = styleItem.format().font();
 
             ui.listWidget->addItem(entry.m_name);
 
@@ -94,20 +97,20 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for error messages"), NULL, MARKERERRORCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for currently executed line"), NULL, MARKERCURRENTCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for python input"), NULL, MARKERINPUTCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Script: Background for erroneous line"), NULL, MARKERSCRIPTERRORCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Background color and text color of current selection"), NULL, SELECTIONCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Background color of words equal to the currently selected string"), NULL, MARKERSAMESTRINGCOLOR));
 
     ui.btnForegroundColor->setEnabled(false);
     ui.btnBackgroundColor->setEnabled(false);
     ui.btnFont->setEnabled(false);
-    ui.checkFillEOL->setEnabled(false);
     ui.checkShowCaretBackground->setVisible(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::~WidgetPropEditorStyles()
 {
-    DELETE_AND_SET_NULL(qSciLex);
+    DELETE_AND_SET_NULL(m_pCodeEditorStyle);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -130,20 +133,19 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     StyleNode entry;
     foreach(entry, m_styles)
     {
-        settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(entry.m_index));
+        settings.beginGroup("PythonLexerStyle" + QString().setNum(entry.m_index));
         settings.setValue("backgroundColor", entry.m_backgroundColor.name());
         settings.setValue("backgroundColorAlpha", entry.m_backgroundColor.alpha());
         settings.setValue("foregroundColor", entry.m_foregroundColor.name());
         settings.setValue("foregroundColorAlpha", entry.m_foregroundColor.alpha());
-        settings.setValue("fillToEOL", entry.m_fillToEOL);
         settings.setValue("fontFamily", entry.m_font.family()),
-            settings.setValue("pointSize", entry.m_font.pointSize()),
-            settings.setValue("weight", entry.m_font.weight()),
-            settings.setValue("italic", entry.m_font.italic());
+        settings.setValue("pointSize", entry.m_font.pointSize()),
+        settings.setValue("weight", entry.m_font.weight()),
+        settings.setValue("italic", entry.m_font.italic());
         settings.endGroup();
     }
 
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
     settings.setValue("paperBackgroundColor", m_paperBgcolor);
     settings.setValue("marginBackgroundColor", m_marginBgcolor);
     settings.setValue("marginForegroundColor", m_marginFgcolor);
@@ -152,6 +154,7 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("caretBackgroundShow", ui.checkShowCaretBackground->isChecked());
     settings.setValue("foldMarginBackgroundColor", m_foldMarginBgcolor);
     settings.setValue("foldMarginForegroundColor", m_foldMarginFgcolor);
+    settings.setValue("markerScriptErrorBackgroundColor", m_markerScriptErrorBgcolor);
     settings.setValue("markerCurrentBackgroundColor", m_markerCurrentBgcolor);
     settings.setValue("markerInputForegroundColor", m_markerInputBgcolor);
     settings.setValue("markerErrorForegroundColor", m_markerErrorBgcolor);
@@ -175,23 +178,23 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
 
     for (int i = 0; i < m_styles.size(); i++)
     {
-        settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(m_styles[i].m_index));
+        settings.beginGroup("PythonLexerStyle" + QString().setNum(m_styles[i].m_index));
         m_styles[i].m_backgroundColor = QColor(settings.value("backgroundColor", m_styles[i].m_backgroundColor.name()).toString());
         m_styles[i].m_backgroundColor.setAlpha(settings.value("backgroundColorAlpha", m_styles[i].m_backgroundColor.alpha()).toInt());
         m_styles[i].m_foregroundColor = QColor(settings.value("foregroundColor", m_styles[i].m_foregroundColor.name()).toString());
         m_styles[i].m_backgroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
-        m_styles[i].m_fillToEOL = settings.value("fillToEOL", m_styles[i].m_fillToEOL).toBool();
         m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
         settings.endGroup();
     }
 
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
     //the following default values are also written in on_btnReset_clicked()
     m_paperBgcolor = QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
     m_marginBgcolor = QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString());
     m_marginFgcolor = QColor(settings.value("marginForegroundColor", QColor(Qt::black)).toString());
     m_foldMarginBgcolor = QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString());
     m_foldMarginFgcolor = QColor(settings.value("foldMarginForegroundColor", QColor(233, 233, 233)).toString());
+    m_markerScriptErrorBgcolor = QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString());
     m_markerCurrentBgcolor = QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString());
     m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
     m_markerErrorBgcolor = QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString());
@@ -221,7 +224,6 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
         if (current->type() == 0)
         {
             int index = ui.listWidget->currentIndex().row();
-            ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
             ui.btnBackgroundColor->setColor(m_styles[index].m_backgroundColor);
             ui.btnForegroundColor->setColor(m_styles[index].m_foregroundColor);
 
@@ -233,13 +235,10 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.btnForegroundColor->setEnabled(true);
             ui.btnBackgroundColor->setEnabled(true);
             ui.btnFont->setEnabled(true);
-            ui.checkFillEOL->setEnabled(true);
             ui.checkShowCaretBackground->setVisible(false);
         }
         else if (current->type() < 1000)
         {
-            ui.checkFillEOL->setEnabled(false);
-            ui.checkFillEOL->setChecked(false);
             ui.btnFont->setEnabled(false);
             ui.btnBackgroundColor->setEnabled(true);
             ui.checkShowCaretBackground->setVisible(false);
@@ -279,6 +278,10 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 break;
             case MARKERERRORCOLOR:
                 bg = m_markerErrorBgcolor;
+                ui.btnForegroundColor->setEnabled(false);
+                break;
+            case MARKERSCRIPTERRORCOLOR:
+                bg = m_markerScriptErrorBgcolor;
                 ui.btnForegroundColor->setEnabled(false);
                 break;
             case MARKERCURRENTCOLOR:
@@ -336,7 +339,6 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.btnForegroundColor->setEnabled(false);
             ui.btnBackgroundColor->setEnabled(false);
             ui.btnFont->setEnabled(false);
-            ui.checkFillEOL->setEnabled(false);
         }
     }
     m_changing = false;
@@ -378,6 +380,9 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_colorChanged(QColor color)
                 break;
             case MARKERERRORCOLOR:
                 m_markerErrorBgcolor = color;
+                break;
+            case MARKERSCRIPTERRORCOLOR:
+                m_markerScriptErrorBgcolor = color;
                 break;
             case MARKERCURRENTCOLOR:
                 m_markerCurrentBgcolor = color;
@@ -467,16 +472,6 @@ void WidgetPropEditorStyles::on_btnFont_clicked()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorStyles::on_checkFillEOL_stateChanged(int state)
-{
-    int index = ui.listWidget->currentIndex().row();
-    if (index >= 0 && index < m_styles.size())
-    {
-        m_styles[index].m_fillToEOL = (state != Qt::Unchecked);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::setFontSizeGeneral(const int fontSizeAdd)
 {
     int selectedRow = ui.listWidget->currentIndex().row();
@@ -507,20 +502,26 @@ void WidgetPropEditorStyles::on_btnFontSizeInc_clicked()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_btnReset_clicked()
 {
-    qSciLex = new QsciLexerPython(this);
     int selectedRow = ui.listWidget->currentIndex().row();
-    int noOfStyles = qSciLex->styleBitsNeeded();
-    int pos = 0;
 
-    for (int i = 0; i < (2 << noOfStyles); i++)
+    QList<int> styleKeys = m_pCodeEditorStyle->styleKeys();
+    int noOfStyles = m_pCodeEditorStyle->numStyles();
+    StyleItem styleItem;
+    m_styles.clear();
+
+    for (int i = 0; i < noOfStyles; i++)
     {
-        if (!qSciLex->description(i).isEmpty())
+        styleItem = (*m_pCodeEditorStyle)[(StyleItem::StyleType)styleKeys[i]];
+        if (styleItem.name() != "")
         {
-            m_styles[pos].m_fillToEOL = qSciLex->defaultEolFill(i);
-            m_styles[pos].m_backgroundColor = qSciLex->defaultPaper(i);
-            m_styles[pos].m_foregroundColor = qSciLex->defaultColor(i);
-            m_styles[pos].m_font = qSciLex->defaultFont(i);
-            ++pos;
+            StyleNode entry;
+            entry.m_index = styleItem.type();
+            entry.m_name = styleItem.name();
+            entry.m_backgroundColor = styleItem.format().background().color();
+            entry.m_foregroundColor = styleItem.format().foreground().color();
+            entry.m_font = styleItem.format().font();
+
+            m_styles.push_back(entry);
         }
     }
 
@@ -529,9 +530,11 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     m_marginFgcolor = QColor(Qt::black);
     m_foldMarginBgcolor = QColor(Qt::white);
     m_foldMarginFgcolor = QColor(233, 233, 233);
+    m_markerSameStringBgcolor = QColor(255, 192, 192);
     m_markerCurrentBgcolor = QColor(255, 255, 128);
     m_markerInputBgcolor = QColor(179, 222, 171);
     m_markerErrorBgcolor = QColor(255, 192, 192);
+    m_markerScriptErrorBgcolor = QColor(255, 192, 192);
     m_whitespaceFgcolor = QColor(Qt::black);
     m_unmatchedBraceBgcolor = QColor(Qt::white);
     m_unmatchedBraceFgcolor = QColor(128, 0, 0);
@@ -755,16 +758,63 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             
                         }
 
+                        QMap<StyleItem::StyleType, int> mapIdx;
+                        //Default = 0, 
+                        //Comment = 1, 
+                        //Number = 2,
+                        //DoubleQuotedString = 3, 
+                        //SingleQuotedString = 4, 
+                        //Keyword = 5,
+                        //TripleSingleQuotedString = 6, 
+                        //TripleDoubleQuotedString = 7, 
+                        //ClassName = 8,
+                        //FunctionMethodName = 9, 
+                        //Operator = 10, 
+                        //Identifier = 11,
+                        //CommentBlock = 12, 
+                        //UnclosedString = 13, 
+                        //HighlightedIdentifier = 14,
+                        //Decorator = 15 
+
+
+                        //the numbers are the lexer style ids of QScintilla, python lexer
+                        mapIdx[StyleItem::KeyDefault] = 0; //Default
+                        mapIdx[StyleItem::KeyComment] = 1; //Comment
+                        mapIdx[StyleItem::KeyNumber] = 2; //Number
+                        mapIdx[StyleItem::KeyString] = 4; //SingleQuotedString
+                        mapIdx[StyleItem::KeyKeyword] = 5; //Keyword
+                        mapIdx[StyleItem::KeyDocstring] = 6; //TripleSingleQuotedString
+                        mapIdx[StyleItem::KeyClass] = 8; //ClassName
+                        mapIdx[StyleItem::KeyFunction] = 9; //FunctionMethodName
+                        mapIdx[StyleItem::KeyOperator] = 10; //Operator
+                        mapIdx[StyleItem::KeyDecorator] = 15; //Decorator
+                        //mapIdx[StyleItem::KeyHighlight] = 0; //Default
+                        mapIdx[StyleItem::KeyNamespace] = 5; //Keyword
+                        mapIdx[StyleItem::KeyType] = 0; //Default
+                        mapIdx[StyleItem::KeyKeywordReserved] = 0; //Default
+                        mapIdx[StyleItem::KeyBuiltin] = 11; //Identifier
+                        mapIdx[StyleItem::KeyDefinition] = 9; //FunctionMethodName
+                        mapIdx[StyleItem::KeyInstance] = 0; //Default
+                        mapIdx[StyleItem::KeyTag] = 0; //Default
+                        mapIdx[StyleItem::KeySelf] = 11; //Identifier  
+                        mapIdx[StyleItem::KeyPunctuation] = 10; //Operator
+                        mapIdx[StyleItem::KeyConstant] = 9; //FunctionMethodName
+                        mapIdx[StyleItem::KeyOperatorWord] = 10; //Operator
+                        mapIdx[StyleItem::KeyStreamOutput] = 0; //Default
+                        mapIdx[StyleItem::KeyStreamError] = 4; //SingleQuotedString
+
                         QVector<int> stylesFound;
+                        int styleId;
                         bool ok;
                         foreach(const QXmlStreamAttributes &attr, pythonStyles)
                         {
                             for (int i = 0; i < m_styles.size(); ++i)
                             {
-                                if (m_styles[i].m_index == attr.value("styleID").toString().toInt(&ok) && ok)
+                                styleId = attr.value("styleID").toString().toInt(&ok);
+
+                                if (ok && mapIdx.contains(m_styles[i].m_index) && styleId == mapIdx[m_styles[i].m_index])
                                 {
                                     stylesFound << m_styles[i].m_index;
-                                    m_styles[i].m_fillToEOL = false;
                                     if (attr.hasAttribute("bgColor") && !attr.value("bgColor").isEmpty())
                                     {
                                         m_styles[i].m_backgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
@@ -815,10 +865,9 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         {
                             if (!stylesFound.contains(m_styles[i].m_index))
                             {
-                                m_styles[i].m_fillToEOL = false;
                                 m_styles[i].m_backgroundColor = globalBackgroundColor;
                                 m_styles[i].m_foregroundColor = globalForegroundColor;
-                                m_styles[i].m_font = globalOverrideFont.family();
+                                m_styles[i].m_font = globalOverrideFont;
                             }
                         }
 

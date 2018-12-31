@@ -37,11 +37,14 @@
     <file>icons/class.png</file>
     <file>icons/method.png</file>
     <file>icons/method_private.png</file>
+    <file>icons/method_protected.png</file>
     <file>icons/method_clmethod.png</file>
     <file>icons/method_clmethod_private.png</file>
     <file>icons/method_static.png</file>
     <file>icons/method_static_private.png</file>
+    <file>icons/namespace.png</file>
     <file>icons/global.png</file>
+    <file>icons/var.png</file>
   </qresource>
   <qresource prefix="/application">
     <file>icons/itomicon/itomLogo3_64.png</file>

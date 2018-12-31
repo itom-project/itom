@@ -30,23 +30,17 @@
 #include <qstring.h>
 #include <qfont.h>
 #include <qcolor.h>
-
-// Under Windows, define QSCINTILLA_MAKE_DLL to create a Scintilla DLL, or
-// define QSCINTILLA_DLL to link against a Scintilla DLL, or define neither
-// to either build or link against a static Scintilla library.
-//!< this text is coming from qsciglobal.h
-#define QSCINTILLA_DLL  //http://www.riverbankcomputing.com/pipermail/qscintilla/2007-March/000034.html
-
-#include <Qsci/qsciscintilla.h>
-#include <Qsci/qscilexerpython.h>
-
 #include <qstring.h>
 #include <qcolor.h>
+
+#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
 
 #include "ui_widgetPropEditorStyles.h"
 
 namespace ito
 {
+
+class CodeEditorStyle;
 
 class WidgetPropEditorStyles : public AbstractPropertyPageWidget
 {
@@ -55,13 +49,9 @@ class WidgetPropEditorStyles : public AbstractPropertyPageWidget
 public:
     struct StyleNode
     {
-        StyleNode(int index, QString name, QFont font, bool fillToEOL, QColor foregroundColor, QColor backgroundColor) : m_index(index), m_name(name), m_font(font), m_fillToEOL(fillToEOL), m_foregroundColor(foregroundColor), m_backgroundColor(backgroundColor) {}
-        StyleNode() {}
-        StyleNode(int index, QString name) : m_index(index), m_name(name), m_fillToEOL(0) {}
-        int m_index;
+        ito::StyleItem::StyleType m_index;
         QString m_name;
         QFont m_font;
-        bool m_fillToEOL;
         QColor m_foregroundColor;
         QColor m_backgroundColor;
     };
@@ -78,9 +68,8 @@ private:
     Ui::WidgetPropEditorStyles ui;
 
     QVector<StyleNode> m_styles;
-
-    QsciLexerPython* qSciLex;
     bool m_changing;
+    CodeEditorStyle* m_pCodeEditorStyle;
     
     void setFontSizeGeneral(const int fontSizeAdd);
 
@@ -92,6 +81,7 @@ private:
     QColor m_foldMarginBgcolor;
     QColor m_marginFgcolor;
     QColor m_marginBgcolor;
+    QColor m_markerScriptErrorBgcolor;
     QColor m_markerCurrentBgcolor;
     QColor m_markerInputBgcolor;
     QColor m_markerErrorBgcolor;
@@ -115,7 +105,6 @@ private slots:
     void on_btnBackgroundColor_colorChanged(QColor color);
     void on_btnFont_clicked();
     void on_btnForegroundColor_colorChanged(QColor color);
-    void on_checkFillEOL_stateChanged(int state);
     void on_btnFontSizeDec_clicked();
     void on_btnFontSizeInc_clicked();
     void on_btnReset_clicked();

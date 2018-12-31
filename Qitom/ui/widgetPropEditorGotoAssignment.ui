@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetPropEditorGotoAssignment</class>
+ <widget class="QWidget" name="WidgetPropEditorGotoAssignment">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>454</width>
+    <height>236</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupGotoDefinition">
+     <property name="title">
+      <string>Go to definition and assignment enabled (requires Python packages jedi and parso)</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QGroupBox" name="groupMouseClick">
+        <property name="title">
+         <string>Check &quot;goto definition&quot; if Ctrl-key is pressed and mouse is moved over word</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Which &quot;goto mode&quot; should be checked, if mouse is moved over word:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboWordClickMode">
+           <item>
+            <property name="text">
+             <string>Goto definition (returns the end, not the first definition)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Goto assignment (returns the first definition)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Goto assignment and follow imports (the goto call will also follow imports)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>104</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

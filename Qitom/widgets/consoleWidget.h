@@ -30,7 +30,10 @@
 #include "../python/qDebugStream.h"
 #include "../global.h"
 
-#include "abstractPyScintillaWidget.h"
+#include "abstractCodeEditorWidget.h"
+#include "../codeEditor/modes/lineBackgroundMarker.h"
+#include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/panels/lineNumber.h"
 
 #include <QKeyEvent>
 #include <QDropEvent>
@@ -39,6 +42,7 @@
 #include <qstringlist.h>
 #include <qdebug.h>
 #include <qsettings.h>
+#include <qtimer.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -49,7 +53,7 @@ namespace ito
 
 class DequeCommandList;
 
-class ConsoleWidget : public AbstractPyScintillaWidget
+class ConsoleWidget : public AbstractCodeEditorWidget
 {
     Q_OBJECT
 
@@ -59,9 +63,13 @@ public:
 
     static const QString lineBreak;
 
+    virtual QString codeText(int &line, int &column) const;
+
 protected:
     virtual void loadSettings();
-    void autoAdaptLineNumberColumnWidth();
+    virtual void contextMenuAboutToShow(int contextMenuLine);
+
+    void initMenus();
 
 public slots:
     virtual void copy();
@@ -81,18 +89,20 @@ signals:
 
 
 protected:
-    void keyPressEvent (QKeyEvent *event);
+    virtual bool keyPressInternalEvent(QKeyEvent *event);
     void dropEvent (QDropEvent *event);
     void dragEnterEvent (QDragEnterEvent *event);
     void dragMoveEvent (QDragMoveEvent *event);
     void wheelEvent(QWheelEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
+    void mouseDoubleClickEvent(QMouseEvent *e);
 
 private slots:
     void selChanged(); 
     void textDoubleClicked(int position, int line, int modifiers);
     void clearAndStartNewCommand();
+    void toggleAutoWheel(bool enable);
+    void processStreamBuffer();
 
 private:
     struct cmdQueueStruct
@@ -102,6 +112,19 @@ private:
         QString singleLine;
         int m_lineBegin;
         int m_nrOfLines;
+    };
+
+    struct StreamBuffer
+    {
+        QString text;
+        ito::tStreamMessageType msgType;
+    };
+
+    struct InputTextMode
+    {
+        bool inputModeEnabled;
+        bool calltipsModeCurrentState; //current enable state of calltips mode before starting input text mode (only valid if inputModeEnabled = true)
+        bool autoCompletionModeCurrentState; //current enable state of completion mode before starting input text mode (only valid if inputModeEnabled = true)
     };
 
     RetVal initEditor();
@@ -117,6 +140,9 @@ private:
     void moveCursorToValidRegion();
 
     int checkValidDropRegion(const QPoint &pos);
+
+    void enableInputTextMode();
+    void disableInputTextMode();
     
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
     
@@ -126,21 +152,29 @@ private:
 
     bool m_canCopy;
     bool m_canCut;
+    StreamBuffer m_receiveStreamBuffer;
+    QTimer m_receiveStreamBufferTimer;
 
-    unsigned int m_markErrorLine;
-    unsigned int m_markCurrentLine;
-    unsigned int m_markInputLine;
+    QSharedPointer<LineBackgroundMarkerMode> m_markErrorLineMode;
+    QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;
+    QSharedPointer<LineBackgroundMarkerMode> m_markInputLineMode;
+    QSharedPointer<LineNumberPanel> m_lineNumberPanel;
 
     bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
 
-    QString m_temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
+    QString m_temporaryRemovedCommands; //!< removed commands, if python busy, caused by another console instance or script (we assume that these removed commands are always python commands and no printed text)
 
     ItomSharedSemaphore *m_inputStreamWaitCond; //!< if this is != NULL, a input(...) command is currently running in Python and the command line is ready to receive inputs from the user.
     QSharedPointer<QByteArray> m_inputStreamBuffer;
     int m_inputStartLine; //!< if python-input command is currently used to ask for user-input, this variable holds the line of the input command
     int m_inputStartCol; //!< if python-input command is currently used to ask for user-input, this variable holds the column in line m_inputStartLine, where the first input character starts
     bool m_autoWheel; //!< true if command line should automatically move to the last line if new lines are appended, this is set to false upon a wheel event and will be reset to true if the command line is cleared (clc) or if a new input is added
+
+    QMap<QString, QAction*> m_contextMenuActions;
+
+    InputTextMode m_inputTextMode;
+
 };
 
 class DequeCommandList

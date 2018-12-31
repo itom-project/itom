@@ -737,5 +737,21 @@
         <source>DataIO</source>
         <translation></translation>
     </message>
+    <message>
+        <source>dataIO(&quot;%1&quot;%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>actuator(&quot;%1&quot;%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filter(&quot;%1&quot;%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ui.createNewPluginWidget(&quot;%1%2&quot;)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

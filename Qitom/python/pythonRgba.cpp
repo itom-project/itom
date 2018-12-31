@@ -51,7 +51,7 @@ PyObject* PythonRgba::PyRgba_new(PyTypeObject *type, PyObject * /*args*/, PyObje
 
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(rgbaInit_doc,"rgba(r, g, b [, alpha=255]) -> creates a new color value from red, green, blue and optional alpha\n\
+PyDoc_STRVAR(rgbaInit_doc,"rgba(r, g, b, alpha=255) -> creates a new color value from red, green, blue and optional alpha\n\
 \n\
 Parameters \n\
 ----------- \n\
