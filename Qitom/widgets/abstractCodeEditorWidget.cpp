@@ -319,6 +319,15 @@ void AbstractCodeEditorWidget::loadSettings()
 
             if (item.isValid())
             {
+                //set font of whitespace to default
+                QTextCharFormat &whitespaceFormat = m_editorStyle->rformat(ito::StyleItem::KeyWhitespace);
+                if (whitespaceFormat.font() != currentFormat.font())
+                {
+                    whitespaceFormat.setFont(currentFormat.font());
+                    updateTabStopAndIndentationWidth();
+                    updateSyntaxHighlighter = true;
+                }
+
                 if (fontName() != currentFormat.fontFamily())
                 {
                     setFontName(currentFormat.fontFamily());

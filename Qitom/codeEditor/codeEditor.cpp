@@ -483,7 +483,7 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
 
     m_whitespacesForeground = value;
 
-    updateTabStopAndIndentationWidth();
+    //updateTabStopAndIndentationWidth();
 }
 
 //-----------------------------------------------------------
@@ -561,9 +561,11 @@ void CodeEditor::updateTabStopAndIndentationWidth()
 {
     QFontMetrics fm = fontMetrics();
 
-    if (syntaxHighlighter() && showWhitespaces())
+    if (syntaxHighlighter())
     {
-        fm = QFontMetrics(syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).font());
+        QFont f = syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).font();
+        qDebug() << f.family() << f.pixelSize() << f.weight() << " width: " << fm.width("    ");
+        fm = QFontMetrics(f);
     }
 
     QString tab_text = useSpacesInsteadOfTabs() ? QString(tabLength(), ' ') : "\t";
@@ -2321,7 +2323,6 @@ void CodeEditor::markWholeDocDirty()
 {
     QTextCursor text_cursor = textCursor();
     text_cursor.select(QTextCursor::Document);
-    qDebug() << "markContentsDirty" << text_cursor.selectionStart() << " - " <<  text_cursor.selectionEnd();
     document()->markContentsDirty(text_cursor.selectionStart(),
                                                 text_cursor.selectionEnd());
 }
