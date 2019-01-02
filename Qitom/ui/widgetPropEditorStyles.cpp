@@ -555,6 +555,15 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 {
     static QString importFilePath;
 
+    if (importFilePath.isNull())
+    {
+        QDir basePath = QCoreApplication::applicationDirPath();
+        if (basePath.cd("styles/editorThemes"))
+        {
+            importFilePath = basePath.canonicalPath();
+        }
+    }
+
     QString filename = QFileDialog::getOpenFileName(this, tr("Import style file"), importFilePath, "All supported style files (*.ini *.xml);;itom style file (*.ini);;Notepad++ styles (*.xml)");
 
     if (!filename.isEmpty())
@@ -890,6 +899,15 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 void WidgetPropEditorStyles::on_btnExport_clicked()
 {
     static QString exportFilePath;
+
+    if (exportFilePath.isNull())
+    {
+        QDir basePath = QCoreApplication::applicationDirPath();
+        if (basePath.cd("styles/editorThemes"))
+        {
+            exportFilePath = basePath.canonicalPath();
+        }
+    }
 
     QString filename = QFileDialog::getSaveFileName(this, tr("Export style data"), exportFilePath, "itom style file (*.ini)");
 
