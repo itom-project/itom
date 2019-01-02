@@ -102,7 +102,6 @@ private slots:
     void textDoubleClicked(int position, int line, int modifiers);
     void clearAndStartNewCommand();
     void toggleAutoWheel(bool enable);
-    void dumpSlot();
     void processStreamBuffer();
 
 private:
@@ -121,6 +120,13 @@ private:
         ito::tStreamMessageType msgType;
     };
 
+    struct InputTextMode
+    {
+        bool inputModeEnabled;
+        bool calltipsModeCurrentState; //current enable state of calltips mode before starting input text mode (only valid if inputModeEnabled = true)
+        bool autoCompletionModeCurrentState; //current enable state of completion mode before starting input text mode (only valid if inputModeEnabled = true)
+    };
+
     RetVal initEditor();
     RetVal clearEditor();
     RetVal startNewCommand(bool clearEditorFirst = false);
@@ -134,6 +140,9 @@ private:
     void moveCursorToValidRegion();
 
     int checkValidDropRegion(const QPoint &pos);
+
+    void enableInputTextMode();
+    void disableInputTextMode();
     
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
     
@@ -154,7 +163,7 @@ private:
     bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
 
-    QString m_temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
+    QString m_temporaryRemovedCommands; //!< removed commands, if python busy, caused by another console instance or script (we assume that these removed commands are always python commands and no printed text)
 
     ItomSharedSemaphore *m_inputStreamWaitCond; //!< if this is != NULL, a input(...) command is currently running in Python and the command line is ready to receive inputs from the user.
     QSharedPointer<QByteArray> m_inputStreamBuffer;
@@ -164,8 +173,8 @@ private:
 
     QMap<QString, QAction*> m_contextMenuActions;
 
-    QString m_codeHistory; //!< history of all code lines that have been executed in this command line (used for calltips and code completion)
-    int m_codeHistoryLines;
+    InputTextMode m_inputTextMode;
+
 };
 
 class DequeCommandList

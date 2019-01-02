@@ -32,6 +32,8 @@
 #include <qtreeview.h>
 #include <qtableview.h>
 #include <qsplitter.h>
+#include <qstatusbar.h>
+#include <qlabel.h>
 
 namespace ito
 {
@@ -96,6 +98,7 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qWidgetList;
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("resize(int,int)"), "void", 1001, ok );
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setGeometry(int,int,int,int)"), "void", 1002, ok );
+        qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setCursor(int)"), "void", 1003, ok);
         methodHash["QWidget"] = qWidgetList;
 
 
@@ -164,6 +167,12 @@ void WidgetWrapper::initMethodHash()
 		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("isCollapsible(int)"), "bool", 8004, ok);
 		qSplitter << buildMethodDescription(QMetaObject::normalizedSignature("setCollapsible(int,bool)"), "void", 8005, ok);
 		methodHash["QSplitter"] = qSplitter;
+
+        //QStatusBar
+        MethodDescriptionList qStatusBar;
+        qStatusBar << buildMethodDescription(QMetaObject::normalizedSignature("addLabelWidget(QString)"), "ito::PythonQObjectMarshal", 9001, ok);
+        qStatusBar << buildMethodDescription(QMetaObject::normalizedSignature("currentMessage()"), "QString", 9002, ok);
+        methodHash["QStatusBar"] = qStatusBar;
     }
 }
 
@@ -549,6 +558,21 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     //(*reinterpret_cast< bool*>(_a[0])) = _r;
                     return ito::retOk;
                 }
+                case 1003: //setCursor
+                {
+                    int c = (*reinterpret_cast<const int(*)>(_a[1]));
+                    if (c < 0)
+                    {
+                        object2->unsetCursor();
+                    }
+                    else
+                    {
+                        QCursor cursor((Qt::CursorShape)(c));
+                        object2->setCursor(cursor);
+                    }
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
+                }
             }
         }
         else if(QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
@@ -725,6 +749,28 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
 					//(*reinterpret_cast< bool*>(_a[0])) = _r;
 					return ito::retOk;
 				}
+            }
+        }
+        else if (QString::compare(className, "QStatusBar", Qt::CaseInsensitive) == 0)
+        {
+            QStatusBar *object2 = qobject_cast<QStatusBar*>(object);
+            if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QStatusBar object is null").toLatin1().data());
+            switch (methodIndex)
+            {
+                case 9001: //addLabelWidget
+                {
+                    QLabel *lbl = new QLabel(object2);
+                    lbl->setObjectName(*reinterpret_cast<QString(*)>(_a[1]));
+                    object2->addWidget(lbl);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(lbl->objectName().toLatin1(), lbl->metaObject()->className(), (void*)lbl);
+                    return ito::retOk;
+                }
+                case 9002: //currentMessage
+                {
+                    QString _r = object2->currentMessage();
+                    (*reinterpret_cast<QString*>(_a[0])) = _r;
+                    return ito::retOk;
+                }
             }
         }
 

@@ -240,8 +240,8 @@ public:
 
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
-    QString lineText(int lineNbr) const;
-    QString text(int lineNbr) const { return lineText(lineNbr); } //TODO: remove this, if QScintilla is removed!
+    QString lineText(int lineIdx) const;
+    QString text(int lineIdx) const { return lineText(lineIdx); } //TODO: remove this, if QScintilla is removed!
     QString text() const { return toPlainText(); } //TODO: remove this, if QScintilla is removed!
     void markWholeDocDirty();
     void callResizeEvent(QResizeEvent *evt) { resizeEvent(evt); }
@@ -256,6 +256,7 @@ public:
 
     void resetStylesheet();
     void rehighlight();
+    void rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/);
 
     void showTooltip(const QPoint &pos, const QString &tooltip);
     void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
@@ -276,10 +277,11 @@ public:
     QString wordAtPosition(int line, int index, bool selectWholeWord) const;
     QTextCursor wordUnderMouseCursor() const;
 
-    TextBlockUserData* getTextBlockUserData(int lineNbr, bool createIfNotExist = true);
+    TextBlockUserData* getTextBlockUserData(int lineIndex, bool createIfNotExist = true);
     TextBlockUserData* getTextBlockUserData(QTextBlock &block, bool createIfNotExist = true);
     QSet<TextBlockUserData*>& textBlockUserDataList() { return m_textBlockUserDataList; }
     const QSet<TextBlockUserData*>& textBlockUserDataList() const { return m_textBlockUserDataList; }
+    const TextBlockUserData* getConstTextBlockUserData(int lineIndex) const;
     
     virtual bool removeTextBlockUserData(TextBlockUserData* userData);
     
@@ -287,8 +289,6 @@ public:
     bool breakpointsAvailable() const;
 
     void callWheelEvent(QWheelEvent *e);
-
-    void dump();
 
 protected:
     CodeEditor &operator =(const CodeEditor &) { return *this; };

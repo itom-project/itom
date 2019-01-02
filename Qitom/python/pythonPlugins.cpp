@@ -1344,17 +1344,17 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
         return -1;
     }
-
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    if (!retval.containsError())
+    else
     {
+        params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
+
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
+            Py_XDECREF(params);
             PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
             return -1;
         }
-        Py_DECREF(params);
+        Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
@@ -2618,17 +2618,17 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
         return -1;
     }
-
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    if (!retval.containsError())
+    else
     {
+        params = PyTuple_GetSlice(args, 1, PyTuple_Size(args)); //new reference
+
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
+            Py_XDECREF(params);
             PyErr_SetString(PyExc_ValueError, "error while parsing parameters.");
             return -1;
         }
-        Py_DECREF(params);
+        Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 

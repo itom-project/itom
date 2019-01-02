@@ -1602,7 +1602,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 		return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U' (e.g. it cannot be pickled).", self->objName, name);
 	}
 
-    PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name);
+    PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name); //new reference
     if(ret != NULL)
     {
         return ret;
@@ -3392,13 +3392,14 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
         return NULL;
     }
 
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
+    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args)); //new reference
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)
     {
+        Py_XDECREF(params);
         PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
     }
-    Py_DECREF(params);
+    Py_XDECREF(params);
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if(uiOrga == NULL)

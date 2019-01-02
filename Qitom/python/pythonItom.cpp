@@ -158,9 +158,12 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
         }
         else if (PyObject_HasAttrString(obj, "__file__"))
         {
-            PyObject *__file__ = PyObject_GetAttrString(obj, "__file__");
+            PyObject *__file__ = PyObject_GetAttrString(obj, "__file__"); //new reference
             bool ok;
             QString f = PythonQtConversion::PyObjGetString(__file__,true,ok);
+            Py_DECREF(__file__);
+            __file__ = NULL;
+
             if (ok)
             {
                 filename2 = f.toLatin1();
@@ -3311,9 +3314,9 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
     bool ok;
     if (gc)
     {
-        gc_collect = PyObject_CallMethod(gc, "collect","");
+        gc_collect = PyObject_CallMethod(gc, "collect",""); //new reference
         Py_XDECREF(gc_collect);
-        obj_list = PyObject_CallMethod(gc, "get_objects", "");
+        obj_list = PyObject_CallMethod(gc, "get_objects", ""); //new reference
         if (!obj_list)
         {
             PyErr_SetString(PyExc_RuntimeError, "Call to gc.get_objects() failed");
@@ -3355,9 +3358,9 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 
     if (gc)
     {
-        gc_collect = PyObject_CallMethod(gc, "collect","");
+        gc_collect = PyObject_CallMethod(gc, "collect",""); //new reference
         Py_XDECREF(gc_collect);
-        obj_list = PyObject_CallMethod(gc, "get_objects", "");
+        obj_list = PyObject_CallMethod(gc, "get_objects", ""); //new reference
         if (!obj_list)
         {
             PyErr_SetString(PyExc_RuntimeError, "call to gc.get_objects() failed");
@@ -3693,22 +3696,20 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 	PyObject *nameobj = PyUnicode_FromString("savemat");
 	PyObject *fiveobj = PyUnicode_FromString("5");
 	PyObject *rowobj = PyUnicode_FromString("row");
-	if (!PyObject_CallMethodObjArgs(scipyIoModule, nameobj, filename, saveDict, Py_True, fiveobj, Py_True, Py_False, rowobj, NULL))
+    PyObject *res = PyObject_CallMethodObjArgs(scipyIoModule, nameobj, filename, saveDict, Py_True, fiveobj, Py_True, Py_False, rowobj, NULL); //new reference
+    Py_XDECREF(nameobj);
+    Py_XDECREF(fiveobj);
+    Py_XDECREF(rowobj);
+    Py_XDECREF(saveDict);
+    Py_XDECREF(scipyIoModule);
+
+	if (res == NULL)
     {
-		Py_XDECREF(nameobj);
-		Py_XDECREF(fiveobj);
-		Py_XDECREF(rowobj);
-        Py_XDECREF(saveDict);
-        Py_XDECREF(scipyIoModule);
         return NULL;
     }
 	else
 	{
-		Py_XDECREF(nameobj);
-		Py_XDECREF(fiveobj);
-		Py_XDECREF(rowobj);
-		Py_XDECREF(saveDict);
-		Py_XDECREF(scipyIoModule);
+        Py_DECREF(res);
 		Py_RETURN_NONE;
 	}
 }
@@ -3851,7 +3852,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                                     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
                                     if (pyEngine)
                                     {
-										PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, importMatlabMatAsDataObjectObj, value, NULL);
+										PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, importMatlabMatAsDataObjectObj, value, NULL); //new reference
 
                                         if (result == NULL || PyErr_Occurred())
                                         {
@@ -3972,7 +3973,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
     ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
 
-    Py_DECREF(params);
+    Py_XDECREF(params);
 
     if (ret.containsError())
     {

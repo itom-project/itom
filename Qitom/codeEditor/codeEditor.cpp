@@ -138,11 +138,6 @@ CodeEditor::~CodeEditor()
     m_pContextMenu = NULL;
 }
 
-void CodeEditor::dump()
-{
-    this->decorations()->dump();
-}
-
 //-----------------------------------------------------------
 /*
 Returns a reference to the :class:`pyqode.core.managers.PanelsManager`
@@ -750,6 +745,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         {
             doHomeKey(e, int(e->modifiers()) & Qt::ShiftModifier);
         }
+        else if ((e->modifiers() & Qt::ShiftModifier) && \
+            ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return)))
+        {
+            //deny soft line break. not desired in editor.
+            e->accept(); //do not further process this key
+        }
+
         if (!e->isAccepted())
         {
             e->setAccepted(initial_state);
@@ -1287,18 +1289,18 @@ void CodeEditor::copy()
 /*
 Gets the text of the specified line
 
-:param line_nbr: The line number of the text to get
+:param line_idx: The line number of the text to get
 :return: Entire line's text
 :rtype: str
 */
-QString CodeEditor::lineText(int lineNbr) const
+QString CodeEditor::lineText(int lineIdx) const
 {
-    if (lineNbr < 0)
+    if (lineIdx < 0)
     {
         return "";
     }
 
-    const QTextBlock &block = document()->findBlockByNumber(lineNbr);
+    const QTextBlock &block = document()->findBlockByNumber(lineIdx);
     return block.text();
 }
 
@@ -1958,7 +1960,7 @@ void CodeEditor::unfoldCursorPosition()
 
                 while (block.isValid())
                 {
-                    qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+                    //qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
                     if (Utils::TextBlockHelper::isCollapsed(block))
                     {
                         fp->toggleFoldTrigger(block);
@@ -1982,15 +1984,15 @@ void CodeEditor::ensureLineVisible(int line)
 
 //------------------------------------------------------------
 /*
-Returns a pointer to the TextBlockUserData, assigned to line 'lineNbr'.
+Returns a pointer to the TextBlockUserData, assigned to line 'lineIndex'.
 If no userData is currently assigned to this line, a new TextBlockUserData
 structure is allocated, attached to the line and returned.
 
 Returns NULL if the line does not exist
 */
-TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNotExist /*= true*/)
+TextBlockUserData* CodeEditor::getTextBlockUserData(int lineIndex, bool createIfNotExist /*= true*/)
 {
-    QTextBlock block = document()->findBlockByNumber(lineNbr);
+    QTextBlock block = document()->findBlockByNumber(lineIndex);
 
     if (block.isValid())
     {
@@ -1999,10 +2001,25 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineNbr, bool createIfNo
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
-            userData->m_currentLineNr = lineNbr;
+            userData->m_currentLineIdx = lineIndex;
             block.setUserData(userData);
         }
         return userData;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//------------------------------------------------------------
+const TextBlockUserData* CodeEditor::getConstTextBlockUserData(int lineIndex) const
+{
+    QTextBlock block = document()->findBlockByNumber(lineIndex);
+
+    if (block.isValid())
+    {
+        return dynamic_cast<TextBlockUserData*>(block.userData());
     }
     else
     {
@@ -2027,7 +2044,7 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(QTextBlock &block, bool crea
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
-            userData->m_currentLineNr = block.blockNumber();
+            userData->m_currentLineIdx = block.blockNumber();
             block.setUserData(userData);
         }
         return userData;
@@ -2318,6 +2335,26 @@ void CodeEditor::rehighlight()
     if (syntaxHighlighter())
     {
         syntaxHighlighter()->rehighlight();
+    }
+}
+
+//------------------------------------------------------------
+/*
+Calls ``rehighlightBlock`` on the installed syntax highlighter mode.
+*/
+void CodeEditor::rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/)
+{
+    if (syntaxHighlighter())
+    {
+        QTextBlock begin = document()->findBlockByNumber(lineFromIdx);
+        QTextBlock end = lineToIdx == -1 ? begin : document()->findBlockByNumber(qMax(lineFromIdx, lineToIdx));
+        end = end.next();
+        
+        while (begin != end)
+        {
+            syntaxHighlighter()->rehighlightBlock(begin);
+            begin = begin.next();
+        }
     }
 }
 

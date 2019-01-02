@@ -116,14 +116,7 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
         int line = tc.blockNumber();
         int col = tc.columnNumber();
 
-        //QString fn = "";
         QString encoding = "utf8";
-
-        /*ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-        if (sew)
-        {
-            fn = sew->getFilename();
-        }*/
 
         QString source = editor()->codeText(line, col); // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
         // jedi has a bug if the statement has a closing parenthesis

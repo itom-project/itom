@@ -160,8 +160,6 @@ ScriptEditorWidget::~ScriptEditorWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::initEditor()
 {
-    //setBackground(QColor(1,81,107));
-
     m_foldingPanel = QSharedPointer<FoldingPanel>(new FoldingPanel(false, "FoldingPanel"));
     panels()->append(m_foldingPanel.dynamicCast<ito::Panel>());
     m_foldingPanel->setOrderInZone(1);
@@ -283,6 +281,8 @@ void ScriptEditorWidget::loadSettings()
     m_pyGotoAssignmentMode->setMouseClickEnabled(settings.value("gotoAssignmentMouseClickEnabled", m_pyGotoAssignmentMode->mouseClickEnabled()).toBool());
     m_pyGotoAssignmentMode->setDefaultWordClickMode(settings.value("gotoAssignmentMouseClickMode", m_pyGotoAssignmentMode->defaultWordClickMode()).toInt());
 
+    m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -306,11 +306,6 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut")));
     m_editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut")));
     m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
-    /*editorMenu->addSeparator();
-    editorMenu->addAction(bookmarkMenuActions["toggleBM"]);
-    editorMenu->addAction(bookmarkMenuActions["nextBM"]);
-    editorMenu->addAction(bookmarkMenuActions["prevBM"]);
-    editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);*/
     editorMenu->addSeparator();
 
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
@@ -1654,7 +1649,10 @@ void ScriptEditorWidget::print()
     else
     {
         ScriptEditorPrinter printer(QPrinter::HighResolution);
-       
+        printer.setPageSize(QPagedPaintDevice::A4);
+        printer.setOrientation(QPrinter::Portrait);
+        printer.setPageMargins(20, 15, 20, 15, QPrinter::Millimeter);
+
         if (hasNoFilename() == false)
         {
             printer.setDocName(getFilename());
@@ -1664,7 +1662,6 @@ void ScriptEditorWidget::print()
             printer.setDocName(tr("Unnamed"));
         }
 
-        printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);
         //todo
         //printer.setMagnification(-1); //size one point smaller than the one displayed in itom.
 
@@ -1750,7 +1747,7 @@ RetVal ScriptEditorWidget::changeFilename(const QString &newFilename)
             BreakPointModel *bpModel = PythonEngine::getInstance() ? PythonEngine::getInstance()->getBreakPointModel() : NULL;
             if (bpModel)
             {
-                bpModel->deleteBreakPoint(bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineNr));
+                bpModel->deleteBreakPoint(bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineIdx));
             }
         }
         return true;
@@ -1781,18 +1778,18 @@ void ScriptEditorWidget::nrOfLinesChanged()
                 it = textBlockUserDataList().find(userData);
                 if (it != textBlockUserDataList().end())
                 {
-                    if (block.blockNumber() != userData->m_currentLineNr)
+                    if (block.blockNumber() != userData->m_currentLineIdx)
                     {
                         if (bpModel && userData->m_breakpointType != TextBlockUserData::TypeNoBp)
                         {
-                            index = bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineNr);
+                            index = bpModel->getFirstBreakPointIndex(getFilename(), userData->m_currentLineIdx);
                             item = bpModel->getBreakPoint(index);
                             item.lineno = block.blockNumber(); //new line
                             changedIndices << index;
                             changedBpItems << item;
                         }
 
-                        userData->m_currentLineNr = block.blockNumber();
+                        userData->m_currentLineIdx = block.blockNumber();
                     }
                 }
             }

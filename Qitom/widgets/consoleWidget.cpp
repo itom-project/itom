@@ -62,9 +62,10 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_pCmdList(NULL),
     m_inputStreamWaitCond(NULL),
     m_inputStartLine(0),
-    m_autoWheel(true),
-    m_codeHistoryLines(0)
+    m_autoWheel(true)
 {
+    m_inputTextMode.inputModeEnabled = false;
+
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
     m_receiveStreamBufferTimer.setSingleShot(true);
@@ -120,9 +121,6 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     }
 
     startNewCommand(true);
-
-    m_codeHistory = "from itom import *"; //this command is directly executed at the start of itom
-    m_codeHistoryLines = 1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -159,8 +157,6 @@ ConsoleWidget::~ConsoleWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ConsoleWidget::initEditor()
 {
-    //setBackground(QColor(1,81,107));
-
     m_lineNumberPanel = QSharedPointer<LineNumberPanel>(new LineNumberPanel("LineNumberPanel"));
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
@@ -281,11 +277,14 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             for (int i = m_startLineBeginCmd; i <= lines() - 1; i++)
             {
                 temp.push_back(text(i));
+                if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+                {
+                    //lines with a smooth line break have no endline character. add it to distinguish these lines
+                    temp.push_back(lineBreak);
+                }
             }
             m_temporaryRemovedCommands = temp.join("");
-
             setSelection(m_startLineBeginCmd, 0, lines() - 1, lineLength(lines() - 1));
-
             removeSelectedText();
         }
         else
@@ -431,6 +430,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             m_inputStreamWaitCond->release();
             m_inputStreamWaitCond->deleteSemaphore();
             m_inputStreamWaitCond = NULL;
+            disableInputTextMode();
             append(ConsoleWidget::lineBreak);
         }
         else
@@ -544,6 +544,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
                     m_inputStreamWaitCond = NULL;
+                    disableInputTextMode();
                     append(ConsoleWidget::lineBreak);
                 }
 
@@ -646,6 +647,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
                     m_inputStreamWaitCond = NULL;
+                    disableInputTextMode();
 
                     append(ConsoleWidget::lineBreak);
                     acceptEvent = true;
@@ -968,6 +970,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::clearCommandLine()
 {
+    m_receiveStreamBuffer.text = "";
     clear();
     m_markErrorLineMode->clearAllMarkers();
     m_markCurrentLineMode->clearAllMarkers();
@@ -978,6 +981,9 @@ void ConsoleWidget::clearCommandLine()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond)
 {
+    enableInputTextMode();
+
+    processStreamBuffer(); //
     m_inputStreamWaitCond = inputWaitCond;
     m_inputStreamBuffer = buffer;
     m_inputStartLine = lines() - 1;
@@ -986,6 +992,30 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     m_caretLineHighlighter->setEnabled(false);
     //TODO setCaretLineVisible(false);
     setFocus();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::enableInputTextMode()
+{
+    if (!m_inputTextMode.inputModeEnabled)
+    {
+        m_inputTextMode.inputModeEnabled = true;
+        m_inputTextMode.autoCompletionModeCurrentState = m_codeCompletionMode->enabled();
+        m_inputTextMode.calltipsModeCurrentState = m_calltipsMode->enabled();
+        m_codeCompletionMode->setEnabled(false);
+        m_calltipsMode->setEnabled(false);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::disableInputTextMode()
+{
+    if (m_inputTextMode.inputModeEnabled)
+    {
+        m_inputTextMode.inputModeEnabled = false;
+        m_codeCompletionMode->setEnabled(m_inputTextMode.autoCompletionModeCurrentState);
+        m_calltipsMode->setEnabled(m_inputTextMode.calltipsModeCurrentState);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1072,12 +1102,6 @@ RetVal ConsoleWidget::executeCmdQueue()
 
             m_pCmdList->add(value.singleLine);
 
-            if (value.singleLine != "")
-            {
-                m_codeHistory += ConsoleWidget::lineBreak + value.singleLine;
-                m_codeHistoryLines += value.m_nrOfLines;
-            }
-
             emit sendToLastCommand(value.singleLine);
         }
 
@@ -1152,7 +1176,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             lines.append(buffer.length() + 1); //append last index
             for (int i = 0; i < lines.length() - 1; i++)
             {
-                temp = buffer.mid(lines[i] - 1 , lines[i+1] - lines[i]);
+                temp = buffer.mid(lines[i] - 1, lines[i + 1] - lines[i]);
 
                 //remove empty (besides whitechars) lines at the end of each block, else an error can occur if the block is indented
                 while (temp.size() > 1)
@@ -1187,6 +1211,11 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     for (int i = endLine + 1; i < lines(); i++)
     {
         temp.push_back(text(i));
+        if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+        {
+            //lines with a smooth line break have no endline character. add it to distinguish these lines
+            temp.push_back(lineBreak);
+        }
     }
     m_temporaryRemovedCommands = temp.join("");
     setSelection(endLine + 1, 0, lines() - 1, lineLength(lines() - 1));
@@ -1201,45 +1230,36 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
 {
-    return toPlainText(); //todo: remove if ready
+    QStringList textLines;
+    const ito::TextBlockUserData *userData = NULL;
+    QString temp;
 
-    if (m_startLineBeginCmd == -1)
+    for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
     {
-        line = -1; //invalid
-        column = -1; //invalid
-        return m_codeHistory;
-    }
-    else
-    {
-        QStringList current;
-        for (int i = m_startLineBeginCmd; i < lineCount(); ++i)
+        userData = getConstTextBlockUserData(lineIdx);
+        if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
         {
-            if (i == 0 && lineText(i).startsWith(">>"))
+            temp = lineText(lineIdx);
+
+            if (temp.startsWith(">>"))
             {
-                current << lineText(i).mid(2);
+                temp = temp.mid(2);
+                if (line == lineIdx)
+                {
+                    column -= 2;
+                    line = textLines.size();
+                }
             }
-            else
+            else if (line == lineIdx)
             {
-                current << lineText(i);
-            }            
-        }
+                line = textLines.size();
+            }
 
-        if (line == m_startLineBeginCmd)
-        {
-            column -= 2;
-        }
-
-        line = m_codeHistoryLines + (line - m_startLineBeginCmd);
-
-        if (current.size() > 0)
-        {
-            return m_codeHistory + ConsoleWidget::lineBreak + current.join(ConsoleWidget::lineBreak);
-        }
-        else
-        {
-            return m_codeHistory;
+            textLines.append(temp);
         }
     }
+
+    return textLines.join(ConsoleWidget::lineBreak);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1276,6 +1296,7 @@ void ConsoleWidget::processStreamBuffer()
     }
 
     int fromLine, toLine;
+    TextBlockUserData *userData = NULL;
 
     switch (m_receiveStreamBuffer.msgType)
     {
@@ -1301,8 +1322,15 @@ void ConsoleWidget::processStreamBuffer()
             m_markErrorLineMode->addMarker(fromLine, toLine);
         }
 
+        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        {
+            userData = getTextBlockUserData(lineIdx, true);
+            userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
+        }
+        rehighlightBlock(fromLine, toLine);
+
         moveCursorToEnd();
-        //m_startLineBeginCmd = -1;
+
         if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
@@ -1316,8 +1344,28 @@ void ConsoleWidget::processStreamBuffer()
         break;
 
     case ito::msgStreamOut:
+
+        fromLine = lines() - 1;
+        if (lineLength(fromLine) > 0)
+        {
+            fromLine++;
+        }
+
         //!> insert msg after last line
         append(m_receiveStreamBuffer.text);
+
+        toLine = lines() - 1;
+        if (lineLength(toLine) == 0)
+        {
+            toLine--;
+        }
+
+        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        {
+            userData = getTextBlockUserData(lineIdx, true);
+            userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
+        }
+        rehighlightBlock(fromLine, toLine);
 
         moveCursorToEnd();
 
@@ -1717,15 +1765,6 @@ void ConsoleWidget::initMenus()
     m_contextMenuActions["select_all"] = menu->addAction(tr("Select All"), this, SLOT(selectAll()));
     menu->addSeparator();
     m_contextMenuActions["auto_scroll"] = menu->addAction(tr("Auto Scroll"), this, SLOT(toggleAutoWheel(bool)));
-#ifdef _DEBUG
-    menu->addSeparator();
-    m_contextMenuActions["dump"] = menu->addAction(tr("Dump"), this, SLOT(dumpSlot()));
-#endif
-}
-
-void ConsoleWidget::dumpSlot()
-{
-    this->dump();
 }
 
 
