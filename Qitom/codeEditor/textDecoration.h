@@ -112,7 +112,10 @@ public:
     void emitClicked(TextDecoration::Ptr selection) const;
 
     QString tooltip() const { return m_tooltip; }
-    void setTooltip(const QString &tooltip) { m_tooltip = tooltip; }
+    void setTooltip(const QString &tooltip) 
+    {
+        m_tooltip = tooltip; 
+    }
 
     bool isValid() const { return m_drawOrder >= 0; }
 

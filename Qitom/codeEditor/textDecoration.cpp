@@ -38,7 +38,7 @@
 #include "textDecoration.h"
 
 #include <QTextBlock>
-//#include <qdebug.h>
+#include <qdebug.h>
 
 namespace ito {
 
@@ -99,13 +99,26 @@ TextDecoration::TextDecoration(const QTextCursor &cursor, int startPos /*=-1*/, 
 
     if (startLine >= 0)
     {
-        this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+        //this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+
+        QTextBlock b = cursor.document()->findBlockByNumber(startLine);
+        this->cursor.setPosition(b.position(), QTextCursor::MoveAnchor);
     }
 
     if (endLine >= 0)
     {
-        this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
+        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
+
+        QTextBlock b = cursor.document()->findBlockByNumber(endLine);
+        if (b.isValid())
+        {
+            this->cursor.setPosition(b.position(), QTextCursor::KeepAnchor);
+        }
+        else
+        {
+            this->cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        }
     }
 }
 
@@ -157,20 +170,27 @@ TextDecoration::TextDecoration(QTextDocument *document, int startPos /*=-1*/, in
 
     if (startLine >= 0)
     {
-        this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+        //this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
+
+        QTextBlock b = document->findBlockByNumber(startLine);
+        cursor.setPosition(b.position(), QTextCursor::MoveAnchor);
     }
 
     if (endLine >= 0)
     {
-        this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
-    }
+        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
 
-    /*QTextCursor startc(document);
-    startc.setPosition(this->cursor.selectionStart());
-    QTextCursor endc(document);
-    endc.setPosition(this->cursor.selectionEnd());
-    qDebug() << this->cursor.selectedText() << "(" << startLine << ":" << endLine << ")" << this->cursor.selectionStart() << this->cursor.selectionEnd() << startc.blockNumber() << endc.blockNumber();*/
+        QTextBlock b = document->findBlockByNumber(endLine);
+        if (b.isValid())
+        {
+            cursor.setPosition(b.position(), QTextCursor::KeepAnchor);
+        }
+        else
+        {
+            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        }
+    }
 }
 
 //-----------------------------------------------------------
@@ -178,6 +198,7 @@ TextDecoration::~TextDecoration()
 {
 }
 
+//-----------------------------------------------------------
 bool TextDecoration::operator==(const TextDecoration &other) const
 {
     bool f = (format == other.format);
@@ -196,8 +217,8 @@ Checks if the textCursor is in the decoration
 */
 bool TextDecoration::containsCursor(const QTextCursor &cursor) const
 {
-    int start = cursor.selectionStart();
-    int end = cursor.selectionEnd();
+    int start = this->cursor.selectionStart();
+    int end = this->cursor.selectionEnd();
     if (cursor.atBlockEnd())
     {
         end -= 1;

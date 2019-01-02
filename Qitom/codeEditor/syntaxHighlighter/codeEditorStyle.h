@@ -93,7 +93,9 @@ public:
         KeySelf,  
         KeyPunctuation,
         KeyConstant,
-        KeyOperatorWord
+        KeyOperatorWord,
+        KeyStreamOutput,
+        KeyStreamError
     };
 
 #if QT_VERSION >= 0x050500

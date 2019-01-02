@@ -2026,7 +2026,8 @@ void ScriptDockWidget::mnuFindTextExpr()
 
         if (lineFrom >= 0 && lineTo == lineFrom)
         {
-            m_pWidgetFindWord->setText(sew->selectedText());
+            QString marked = sew->selectedText();
+            m_pWidgetFindWord->setText(marked);
         }
     }
 

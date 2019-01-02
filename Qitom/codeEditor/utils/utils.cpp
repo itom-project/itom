@@ -58,7 +58,10 @@ namespace Utils
         QTextCursor cursor(block);
         cursor.movePosition(QTextCursor::StartOfBlock);
         int pos = text.indexOf(character, 0);
-        cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
+        if (pos >= 0)
+        {
+            cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
+        }
 
         while (pos != -1)
         {
@@ -70,7 +73,10 @@ namespace Utils
             }
             pos = text.indexOf(character, pos + 1);
             cursor.movePosition(QTextCursor::StartOfBlock);
-            cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
+            if (pos >= 0)
+            {
+                cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
+            }
         }
         return symbols;
     }

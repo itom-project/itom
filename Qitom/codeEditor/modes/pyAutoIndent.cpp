@@ -150,7 +150,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
         {
             handleIndentAfterParen(cursor, post);
         }
-        else if (!fullline.endsWith("\\") &&
+        else if (!fullline.endsWith("\\") && !fullline.replace(" ", "").endsWith("import*") && 
                 (end_with_op || !atBlockEnd(cursor, fullline)))
         {
             handleIndentInStatement(fullline, lastwordu, post, pre);

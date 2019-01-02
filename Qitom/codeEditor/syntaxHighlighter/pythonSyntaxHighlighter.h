@@ -81,6 +81,8 @@ public:
     */
     void highlight_block(const QString &text, QTextBlock &block);
 
+    void default_highlight_block(const QString &text, bool outputNotError);
+
     virtual void rehighlight();
 
 private:
@@ -106,9 +108,6 @@ private:
     static QRegExp regExpIdProg;
     static QRegExp regExpAsProg;
     static QQRegExp regExpOeComment; //comments suitable for outline explorer
-
-    QList<QTextBlock> m_docstrings;
-    QList<QTextBlock> m_importStatements;
 
     QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());

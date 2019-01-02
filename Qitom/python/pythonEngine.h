@@ -116,7 +116,7 @@ public:
     PythonEngine();                                 //constructor
     ~PythonEngine();                                //destructor
 
-    Q_INVOKABLE void pythonSetup(ito::RetVal *retValue);               //setup
+    Q_INVOKABLE void pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages);               //setup
     Q_INVOKABLE ito::RetVal scanAndRunAutostartFolder(QString currentDirAfterScan = QString() );
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
@@ -199,6 +199,7 @@ private:
 
     //member variables
     bool m_started;
+    bool m_syntaxCheckerEnabled;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;

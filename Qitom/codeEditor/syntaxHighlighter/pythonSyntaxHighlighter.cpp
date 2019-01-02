@@ -118,6 +118,18 @@ hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches,
 }
 #endif
 
+
+void PythonSyntaxHighlighter::default_highlight_block(const QString &text, bool outputNotError)
+{
+    if (outputNotError)
+    {
+        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamOutput));
+    }
+    else
+    {
+        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamError));
+    }
+}
 //-------------------------------------------------------------------
 /*
 Highlights the block using a pygments lexer.
@@ -160,13 +172,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
     {
         offset = 0;
     }
-
-    QString import_stmt;
-        
-    //set docstring dynamic attribute, used by the fold detector.
-    TextBlockUserData *userData = editor()->getTextBlockUserData(block.blockNumber(), true);
-
-    userData->m_docstring = false;
 
     setFormat(0, text2.size(), getFormatFromStyle(StyleItem::KeyDefault));
 
@@ -246,14 +251,12 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
             {
                 setFormat(start, length,
                     getFormatFromStyle(StyleItem::KeyDocstring));
-                userData->m_docstring = true;
                 state = InsideSq3String;
             }
             else if (key == "uf_dq3string")
             {
                 setFormat(start, length,
                     getFormatFromStyle(StyleItem::KeyDocstring));
-                userData->m_docstring = true;
                 state = InsideDq3String;
             }
             else if (key == "uf_sqstring")
@@ -280,7 +283,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 if ((value.contains("\"\"\"") || value.contains("'''")) && key != "comment")
                 {
                     // highlight docstring with a different color
-                    userData->m_docstring = true;
                     setFormat(start, length,
                         getFormatFromStyle(StyleItem::KeyDocstring));
                 }
@@ -354,7 +356,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 }
                 else if (key == "namespace")
                 {
-                    import_stmt = text2.trimmed();
                     // color all the "as" words on same line, except
                     // if in a comment; cheap approximation to the
                     // truth
@@ -390,19 +391,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 #endif
 
     Utils::TextBlockHelper::setState(block, state);
-
-    //update import zone
-    if (import_stmt != "")
-    {
-        //block.import_stmt = import_stmt;
-        userData->m_importStmt = true;
-        m_importStatements.append(block);
-        //block.import_stmt = true;
-    }
-    else if (userData->m_docstring)
-    {
-        m_docstrings.append(block);
-    }
 }
 
 
@@ -419,8 +407,6 @@ QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(StyleItem::StyleType
 //--------------------------------------------------------------------
 /*virtual*/ void PythonSyntaxHighlighter::rehighlight()
 {
-    m_docstrings.clear();
-    m_importStatements.clear();
 }
 
 

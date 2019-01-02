@@ -7293,11 +7293,6 @@ The result is stored in a result matrix of the same plane size and type. Only on
 	{
 		cv::error(cv::Exception(CV_StsAssert, "A length less than one was given", "", __FILE__, __LINE__));
 	}
-	else if (num == 1)
-	{
-        //TODO: is this good? (Marc: I would return a 3d object, too)
-		return mats[0];
-	}
 	if (axis >= 3)
 	{
 		cv::error(cv::Exception(CV_StsAssert, "An axis greater 2 was given", "", __FILE__, __LINE__));

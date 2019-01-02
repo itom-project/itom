@@ -193,13 +193,13 @@ void BreakpointPanel::mouseReleaseEvent(QMouseEvent *e)
     m_contextMenuActions["prevBP"]->setEnabled(breakpointsAvail);
     m_contextMenuActions["clearALLBP"]->setEnabled(breakpointsAvail);
 
-    int line = editor()->lineNbrFromPosition(e->pos().y());
+    int lineIndex = editor()->lineNbrFromPosition(e->pos().y());
 
-    if (line > -1)
+    if (lineIndex > -1)
     {
-        m_contextMenuLine = line;
+        m_contextMenuLine = lineIndex;
 
-        TextBlockUserData *tbud = editor()->getTextBlockUserData(line, false);
+        TextBlockUserData *tbud = editor()->getTextBlockUserData(lineIndex, false);
         if (tbud && tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
         {
             m_contextMenuActions["toggleBP"]->setEnabled(true);

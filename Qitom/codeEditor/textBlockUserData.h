@@ -168,7 +168,13 @@ public:
         TypeFlagDisabled = 0x0004,
         TypeBpDisabled = TypeBp | TypeFlagDisabled,
         TypeBpEditDisabled = TypeBpEdit | TypeFlagDisabled
-        
+    };
+
+    enum StyleType
+    {
+        StylePython,
+        StyleOutput,
+        StyleError
     };
 
     TextBlockUserData(CodeEditor *editor);
@@ -189,11 +195,9 @@ public:
 
     QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
 
-    bool m_docstring; //special item for python-related code editor
+    int m_currentLineIdx;
 
-    bool m_importStmt;
-
-    int m_currentLineNr;
+    StyleType m_syntaxStyle;
 
 private:
     QPointer<CodeEditor> m_codeEditor;

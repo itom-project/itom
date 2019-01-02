@@ -71,7 +71,7 @@ def calltipModuleItomModification(sig, params):
     except:
         return None
     
-    arrow_idx = doc.index("->")
+    arrow_idx = doc.find("->")
     
     if arrow_idx == -1 or not doc.startswith(sig.name):
         return None
