@@ -564,7 +564,6 @@ void CodeEditor::updateTabStopAndIndentationWidth()
     if (syntaxHighlighter())
     {
         QFont f = syntaxHighlighter()->editorStyle()->rformat(StyleItem::KeyWhitespace).font();
-        qDebug() << f.family() << f.pixelSize() << f.weight() << " width: " << fm.width("    ");
         fm = QFontMetrics(f);
     }
 
