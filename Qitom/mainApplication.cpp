@@ -309,7 +309,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #ifdef WIN32
     if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
-        QByteArray oldpath = getenv("path");
+        QByteArray oldpath = qgetenv("path");
         QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
         QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
         QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
