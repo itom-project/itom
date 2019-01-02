@@ -655,17 +655,19 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 xml.skipCurrentElement();
                             }
 
-                            if (!LexerStylesFound)
+                            if (xml.error() != QXmlStreamReader::NoError)
+                            {
+                                //xml syntax error
+                            }
+                            else if (!LexerStylesFound)
                             {
                                 xml.raiseError(tr("Missing node 'LexerStyles' as child of 'NotepadPlus' in xml file."));
                             }
-
-                            if (!PythonLexerFound)
+                            else if (!PythonLexerFound)
                             {
                                 xml.raiseError(tr("Missing node 'LexerType' with name 'python' as child of 'LexerStyles' in xml file."));
                             }
-
-                            if (!GlobalStylesFound)
+                            else if (!GlobalStylesFound)
                             {
                                 xml.raiseError(tr("Missing node 'GlobalStyles' as child of 'NotepadPlus' in xml file."));
                             }
@@ -679,7 +681,17 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                     QXmlStreamReader::Error err = xml.error();
                     if (err != QXmlStreamReader::NoError)
                     {
-                        QMessageBox::critical(this, tr("Error reading xml file."), tr("The content of the file '%1' could not be properly analyzed (%2): %3").arg(filename).arg(err).arg(xml.errorString()));
+                        if (err == QXmlStreamReader::CustomError)
+                        {
+                            QMessageBox::critical(this, tr("Error reading xml file."), tr("The content of the file '%1' could not be properly analyzed (%2): %3"). \
+                                arg(filename).arg(err).arg(xml.errorString()));
+                        }
+                        else
+                        {
+                            QMessageBox::critical(this, tr("Error reading xml file."), tr("The content of the file '%1' could not be properly analyzed (%2): %3 in line %4, column %5"). \
+                                arg(filename).arg(err). \
+                                arg(xml.errorString().toHtmlEscaped()).arg(xml.lineNumber()).arg(xml.columnNumber()));
+                        }
                     }
                     else
                     {
