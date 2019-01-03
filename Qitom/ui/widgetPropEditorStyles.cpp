@@ -159,6 +159,7 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("markerInputForegroundColor", m_markerInputBgcolor);
     settings.setValue("markerErrorForegroundColor", m_markerErrorBgcolor);
     settings.setValue("whitespaceForegroundColor", m_whitespaceFgcolor);
+    settings.setValue("whitespaceBackgroundColor", m_whitespaceBgcolor);
     settings.setValue("unmatchedBraceBackgroundColor", m_unmatchedBraceBgcolor);
     settings.setValue("unmatchedBraceForegroundColor", m_unmatchedBraceFgcolor);
     settings.setValue("matchedBraceBackgroundColor", m_matchedBraceBgcolor);
@@ -182,7 +183,7 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
         m_styles[i].m_backgroundColor = QColor(settings.value("backgroundColor", m_styles[i].m_backgroundColor.name()).toString());
         m_styles[i].m_backgroundColor.setAlpha(settings.value("backgroundColorAlpha", m_styles[i].m_backgroundColor.alpha()).toInt());
         m_styles[i].m_foregroundColor = QColor(settings.value("foregroundColor", m_styles[i].m_foregroundColor.name()).toString());
-        m_styles[i].m_backgroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
+        m_styles[i].m_foregroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
         m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
         settings.endGroup();
     }
@@ -199,6 +200,7 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
     m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
     m_markerErrorBgcolor = QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString());
     m_whitespaceFgcolor = QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString());
+    m_whitespaceBgcolor = QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString());
     m_unmatchedBraceBgcolor = QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString());
     m_unmatchedBraceFgcolor = QColor(settings.value("unmatchedBraceForegroundColor", QColor(128, 0, 0)).toString());
     m_matchedBraceBgcolor = QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString());
@@ -216,6 +218,53 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnTextBackgroundsTransparent_clicked()
+{
+    for (int i = 0; i < m_styles.size(); i++)
+    {
+        m_styles[i].m_backgroundColor = Qt::transparent;
+    }
+
+    m_markerCurrentBgcolor = Qt::transparent;
+    m_whitespaceBgcolor = Qt::transparent;
+    m_unmatchedBraceBgcolor = Qt::transparent;
+    m_matchedBraceBgcolor = Qt::transparent;
+    m_caretBgcolor = Qt::transparent;
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString WidgetPropEditorStyles::colorStringMixedWithPaperBgColor(const QColor &color)
+{
+    if (color.alpha() == 255)
+    {
+        return color.name();
+    }
+    else
+    {
+        float sum = m_paperBgcolor.alphaF() + color.alphaF();
+        QColor mixedColor = Qt::transparent;
+
+        if (sum > 0)
+        {
+            float r = m_paperBgcolor.alphaF() / (m_paperBgcolor.alphaF() + color.alphaF());
+
+            mixedColor = QColor(
+                color.red() * (1 - r) + m_paperBgcolor.red() * r,
+                color.green() * (1 - r) + m_paperBgcolor.green() * r,
+                color.blue() * (1 - r) + m_paperBgcolor.blue() * r,
+                255
+            );
+        }
+
+        return QString("rgba(%1,%2,%3,%4);"). \
+            arg(mixedColor.red()). \
+            arg(mixedColor.green()).arg(mixedColor.blue()).arg(mixedColor.alpha());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem * /* previous */)
 {
     m_changing = true;
@@ -224,12 +273,18 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
         if (current->type() == 0)
         {
             int index = ui.listWidget->currentIndex().row();
-            ui.btnBackgroundColor->setColor(m_styles[index].m_backgroundColor);
-            ui.btnForegroundColor->setColor(m_styles[index].m_foregroundColor);
+
+            QColor bgColor = m_styles[index].m_backgroundColor;
+            QColor fgColor = m_styles[index].m_foregroundColor;
+            ui.btnBackgroundColor->setColor(bgColor);
+            ui.btnForegroundColor->setColor(fgColor);
 
             ui.lblSampleText->setText(tr("Sample Text"));
             ui.lblSampleText->setFont(m_styles[index].m_font);
-            ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(m_styles[index].m_foregroundColor.name()).arg(m_styles[index].m_backgroundColor.name()));
+
+            ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;"). \
+                    arg(fgColor.name()).arg(colorStringMixedWithPaperBgColor(bgColor)));
+            
             ui.lblSampleText->repaint();
             
             ui.btnForegroundColor->setEnabled(true);
@@ -262,8 +317,8 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 ui.btnForegroundColor->setEnabled(true);
                 break;
             case WHITESPACECOLOR:
-                ui.btnBackgroundColor->setEnabled(false);
                 fg = m_whitespaceFgcolor;
+                bg = m_whitespaceBgcolor;
                 ui.btnForegroundColor->setEnabled(true);
                 break;
             case UNMATCHEDBRACECOLOR:
@@ -323,7 +378,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
             if (ui.btnBackgroundColor->isEnabled())
             {
-                ui.lblSampleText->setStyleSheet(tr("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
+                ui.lblSampleText->setStyleSheet(tr("color: %1; background-color: %2;").arg(fg.name()).arg(colorStringMixedWithPaperBgColor(bg)));
                 ui.btnBackgroundColor->setColor(bg);
             }
             else
@@ -398,6 +453,9 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_colorChanged(QColor color)
                 break;
             case MARKERSAMESTRINGCOLOR:
                 m_markerSameStringBgcolor = color;
+                break;
+            case WHITESPACECOLOR:
+                m_whitespaceBgcolor = color;
                 break;
             }
 
@@ -536,6 +594,7 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     m_markerErrorBgcolor = QColor(255, 192, 192);
     m_markerScriptErrorBgcolor = QColor(255, 192, 192);
     m_whitespaceFgcolor = QColor(Qt::black);
+    m_whitespaceBgcolor = QColor(Qt::white);
     m_unmatchedBraceBgcolor = QColor(Qt::white);
     m_unmatchedBraceFgcolor = QColor(128, 0, 0);
     m_matchedBraceBgcolor = QColor(Qt::white);
@@ -725,6 +784,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 m_paperBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 m_selectionFgcolor = globalBackgroundColor;
+                                m_whitespaceBgcolor = globalBackgroundColor;
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Line number margin")
                             {

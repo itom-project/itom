@@ -76,6 +76,8 @@ private:
     void writeSettingsInternal(const QString &filename);
     void readSettingsInternal(const QString &filename);
 
+    QString colorStringMixedWithPaperBgColor(const QColor &color);
+
     QColor m_paperBgcolor;
     QColor m_foldMarginFgcolor;
     QColor m_foldMarginBgcolor;
@@ -86,6 +88,7 @@ private:
     QColor m_markerInputBgcolor;
     QColor m_markerErrorBgcolor;
     QColor m_whitespaceFgcolor;
+    QColor m_whitespaceBgcolor;
     QColor m_matchedBraceFgcolor;
     QColor m_matchedBraceBgcolor;
     QColor m_unmatchedBraceFgcolor;
@@ -110,6 +113,7 @@ private slots:
     void on_btnReset_clicked();
     void on_btnImport_clicked();
     void on_btnExport_clicked();
+    void on_btnTextBackgroundsTransparent_clicked();
 };
 
 } //end namespace ito

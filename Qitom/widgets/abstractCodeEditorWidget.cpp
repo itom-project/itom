@@ -186,9 +186,9 @@ void AbstractCodeEditorWidget::loadSettings()
 
         QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
 
-        if (keyWhitespaceFormat.background() != m_pythonSyntaxHighlighter->editorStyle()->background())
+        if (keyWhitespaceFormat.background() != QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()))
         {
-            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(m_pythonSyntaxHighlighter->editorStyle()->background()); //invalid color -> default from lexer is user! //setWhitespaceBackgroundColor(QColor()); 
+            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
             updateSyntaxHighlighter = true;
         }
 

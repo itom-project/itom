@@ -86,6 +86,9 @@
           <property name="displayColorName">
            <bool>false</bool>
           </property>
+          <property name="dialogOptions">
+           <set>ColorPickerButton::ShowAlphaChannel</set>
+          </property>
          </widget>
         </item>
         <item>
@@ -212,6 +215,14 @@
           </property>
           <property name="text">
            <string>Reset All To Default</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnTextBackgroundsTransparent">
+          <property name="text">
+           <string>Set All Text Backgrounds
+To Transparent</string>
           </property>
          </widget>
         </item>

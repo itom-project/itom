@@ -6,7 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <height>281</height>   </rect>
+    <width>478</width>
+    <height>281</height>
+   </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -219,7 +221,17 @@
          </widget>
         </item>
         <item>
-         <widget class="ColorPickerButton" name="colorEdgeBg"/>
+         <widget class="ColorPickerButton" name="colorEdgeBg">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="dialogOptions">
+           <set>ColorPickerButton::ShowAlphaChannel</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

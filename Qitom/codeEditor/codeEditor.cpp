@@ -640,7 +640,6 @@ the painted e->
 void CodeEditor::paintEvent(QPaintEvent *e)
 {
     updateVisibleBlocks(); //_update_visible_blocks
-    QPlainTextEdit::paintEvent(e);
 
     switch (m_edgeMode)
     {
@@ -649,24 +648,25 @@ void CodeEditor::paintEvent(QPaintEvent *e)
     case EdgeLine:
         {
         QPainter painter(viewport());
-        QColor color(m_edgeColor);
-        color.setAlphaF(.5);
-        painter.setPen(color);
+        painter.setPen(m_edgeColor);
 
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
         painter.drawLine(x, 0, x, size().height());
         }
+        break;
     case EdgeBackground:
         {
         QPainter painter(viewport());
-        QColor color(m_edgeColor);
-        color.setAlphaF(.5);
-        painter.setBrush(color);
+        painter.setBrush(m_edgeColor);
+        painter.setPen(Qt::NoPen);
 
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
         painter.drawRect(x, 0, size().width() - x, size().height());
         }
+        break;
     }
+
+    QPlainTextEdit::paintEvent(e);
 
     if (m_showIndentationGuides)
     {
