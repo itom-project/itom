@@ -127,6 +127,7 @@ private:
     bool m_globalNotLocal;
 
     PyObject *dictUnicode;
+    PyObject *slotsUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
