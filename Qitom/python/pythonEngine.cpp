@@ -1412,6 +1412,10 @@ ito::RetVal PythonEngine::runString(const QString &command)
         {
             result = setPyErrFromException(exc);
         }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python command (maybe stack overflow?)");
+        }
 
         if (result == NULL)
         {
@@ -1583,6 +1587,10 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             {
                 result = setPyErrFromException(exc);
             }
+            catch (...)
+            {
+                result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python script (maybe stack overflow?)");
+            }
 
             if (result == NULL)
             {
@@ -1657,6 +1665,10 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
     catch(std::exception &exc)
     {
         ret = setPyErrFromException(exc);
+    }
+    catch (...)
+    {
+        ret = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python method (maybe stack overflow?)");
     }
 
     if (ret == NULL)
@@ -1767,6 +1779,10 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         catch(std::exception &exc)
         {
             result = setPyErrFromException(exc);
+        }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python method (maybe stack overflow?)");
         }
 
         clearDbgCmdLoop();
@@ -1897,6 +1913,10 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             result = setPyErrFromException(exc);
         }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python script (maybe stack overflow?)");
+        }
 
         clearDbgCmdLoop();
 
@@ -2025,6 +2045,10 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         catch(std::exception &exc)
         {
             result = setPyErrFromException(exc);
+        }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python command (maybe stack overflow?)");
         }
 
         clearDbgCmdLoop();
@@ -2894,8 +2918,9 @@ void PythonEngine::pythonRunFile(QString filename)
     case pyStateIdle:
         {
         pythonStateTransition(pyTransBeginRun);
+
         list = filename.split(";");
-        foreach (const QString &filenameTemp, list)
+        foreach(const QString &filenameTemp, list)
         {
             if (filenameTemp != "")
             {
