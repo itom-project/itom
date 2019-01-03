@@ -46,7 +46,6 @@ The following list describe packages that are required or recommended for buildi
 Required packages:
 
 * **Qt**
-* **QScintilla2**
 * **git**
 * **Cmake**
 
@@ -84,7 +83,6 @@ To install all in one rush run the follwing list of commands. This might take a 
     brew install qt --with-developer --with-docs
     brew install pyqt --with-python3
     brew install doxygen --with-doxywizard --with-graphviz
-    brew install qscintilla2 --with-python3
     brew install ffmpeg glew fftw
     brew install numpy --with-python3
     brew link numpy --overwrite
@@ -217,14 +215,6 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
         * **OpenCV_BIN_DIR**: /../bin
         * **OpenCV_CONFIG_PATH**: /usr/local/share/OpenCV
         * **OpenCV_DIR**: /usr/local/share/OpenCV
-
-    * **QScintilla2**:
-        * **QSCINTILLA_INCLUDE_DIR**: /usr/local/Cellar/qscintilla2/2.8.3/include
-        * **QSCINTILLA_LIBRARY**: debug;/usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib;optimized;/usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
-        * **QSCINTILLA_LIBRARY_DEBUG**: /usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
-        * **QSCINTILLA_LIBRARY_RELEASE**: /usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
-
-    The version 2.8.3 might also be different. It is also supported to use any other version of QScintilla2.
 
     * **PointCloudLibrary** (optonal):
         * **PCL_COMMON_INCLUDE_DIR**: /usr/local/include/pcl-1.7
