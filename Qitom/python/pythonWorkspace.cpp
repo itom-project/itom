@@ -64,12 +64,14 @@ PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLoc
     m_blackListType = QSet<QByteArray>() << "builtin_function_or_method" << "module" << "type" << "function"; // << "dict"; //blacklist of python types, which should not be displayed in the workspace
 
     dictUnicode = PyUnicode_FromString("__dict__");
+    slotsUnicode = PyUnicode_FromString("__slots__");
 }
 
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::~PyWorkspaceContainer()
 {
     Py_XDECREF(dictUnicode);
+    Py_XDECREF(slotsUnicode);
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -234,10 +236,37 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
             else if(PyObject_HasAttr(obj, dictUnicode))
             {
                 PyObject *subdict = PyObject_GetAttr(obj, dictUnicode); //new ref
-                keys = PyDict_Keys(subdict); //new ref
-                values = PyDict_Values(subdict); //new ref
+                keys = PyDict_Keys(subdict); //new ref (list)
+                values = PyDict_Values(subdict); //new ref (list)
                 Py_DECREF(subdict);
                 keyType[0] = PY_ATTR;
+            }
+            else if (PyObject_HasAttr(obj, slotsUnicode))
+            {
+                PyObject *subitem = NULL;
+                keys = PyObject_GetAttr(obj, slotsUnicode); //new ref (list)
+                if (keys)
+                {
+                    values = PyList_New(PyList_GET_SIZE(keys)); //new ref (list)
+
+                    for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(keys); ++idx)
+                    {
+                        subitem = PyObject_GetAttr(obj, PyList_GET_ITEM(keys, idx)); //new ref
+                        if (subitem)
+                        {
+                            PyList_SET_ITEM(values, idx, subitem); //steals a reference
+                        }
+                        else
+                        {
+                            //this is kind of an error case
+                            qDebug() << "error parsing attribute of PyObject";
+                            Py_INCREF(Py_None);
+                            PyList_SET_ITEM(values, idx, Py_None); //steals a reference
+                        }
+                    }
+
+                    keyType[0] = PY_ATTR;
+                }
             }
 
             if(keys && values)
@@ -245,8 +274,8 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                 int overflow;
                 for( i = 0 ; i < PyList_Size(values) ; i++)
                 {
-                    value = PyList_GetItem(values, i); //borrowed
-                    key = PyList_GetItem(keys, i); //borrowed
+                    value = PyList_GET_ITEM(values, i); //borrowed
+                    key = PyList_GET_ITEM(keys, i); //borrowed
 
                     if(!m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
                     {
@@ -385,9 +414,9 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         item->m_extendedValue = "";
         item->m_compatibleParamBaseType = 0; //not compatible
     }
-    else if(PyObject_HasAttr(value,dictUnicode))
+    else if(PyObject_HasAttr(value,dictUnicode) || PyObject_HasAttr(value, slotsUnicode))
     {
-        //user-defined class (has attr '__dict__')
+        //user-defined class (has attr '__dict__' or '__slots__')
         expandableType = true;
         item->m_compatibleParamBaseType = 0; //not compatible
 
