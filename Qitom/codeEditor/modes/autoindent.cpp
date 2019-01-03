@@ -39,6 +39,8 @@
 
 #include "../codeEditor.h"
 
+#include <qdebug.h>
+
 namespace ito {
 
 AutoIndentMode::AutoIndentMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
@@ -106,7 +108,9 @@ void AutoIndentMode::onKeyPressed(QKeyEvent *e)
 {
     if (!e->isAccepted())
     {
-        if (e->modifiers() == m_keyPressedModifiers && ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)))
+        //if Key_Enter on keypad is pressed, KeypadModifier is set, too --> ignore it
+        if ((e->modifiers() ^ Qt::KeypadModifier) == m_keyPressedModifiers && \
+            ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)))
         {
             QTextCursor cursor = editor()->textCursor();
             QPair<QString,QString> pre_post = getIndent(cursor);
