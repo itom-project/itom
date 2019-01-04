@@ -49,7 +49,6 @@ void WidgetPropConsoleWrap::readSettings()
     settings.beginGroup("CodeEditor");
 
     bool ok = false;
-    int index;
 
     int wrapMode = settings.value("WrapMode", 0).toInt(&ok);
     if (!ok)
