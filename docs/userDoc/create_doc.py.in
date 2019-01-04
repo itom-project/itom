@@ -99,10 +99,17 @@ for buildername in buildernames:
                     with open(qhpName, 'wt') as fp:
                         fp.write(newContent)
         
-        if _platform == "darwin":   # OS X
-            ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
+        if itom.version(1)["itom"]["QT_Version"] >= "5.12.0": #https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
+            if _platform == "darwin":   # OS X
+                ret = subprocess.call([itom.getQtToolPath("qhelpgenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
+            else:
+                ret = subprocess.call([itom.getQtToolPath("qhelpgenerator"), filenames[0]])
         else:
-            ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), filenames[0]])
+            if _platform == "darwin":   # OS X
+                ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
+            else:
+                ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), filenames[0]])
+        
         if(ret != 0 and ret != 127):
             raise RuntimeError("qcollectiongenerator failed")
         else:
