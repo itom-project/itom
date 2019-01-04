@@ -33,6 +33,8 @@ WidgetPropConsoleWrap::WidgetPropConsoleWrap(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
+
+    ui.groupVisualFlags->setVisible(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -58,36 +60,6 @@ void WidgetPropConsoleWrap::readSettings()
     ui.radioWrapMode2->setChecked(wrapMode == 1);
     ui.radioWrapMode3->setChecked(wrapMode == 2);
 
-    QString flagStart = settings.value("WrapFlagStart", "NoFlag").toString();
-    if (flagStart == "NoFlag")
-    {
-        index = 0;
-    }
-    if (flagStart == "FlagText")
-    {
-        index = 1;
-    }
-    if (flagStart == "FlagBorder")
-    {
-        index = 2;
-    }
-    ui.comboFlagStart->setCurrentIndex(index);
-
-    QString flagEnd = settings.value("WrapFlagEnd", "NoFlag").toString();
-    if (flagEnd == "NoFlag")
-    {
-        index = 0;
-    }
-    if (flagEnd == "FlagText")
-    {
-        index = 1;
-    }
-    if (flagEnd == "FlagBorder")
-    {
-        index = 2;
-    }
-    ui.comboFlagEnd->setCurrentIndex(index);
-
     int indent = settings.value("WrapIndent", 2).toInt(&ok);
     if (!ok)
     {
@@ -95,14 +67,8 @@ void WidgetPropConsoleWrap::readSettings()
     }
     ui.spinFlagIndent->setValue(indent);
 
-    int indentMode = settings.value("WrapIndentMode", 0).toInt(&ok);
-    if (!ok)
-    {
-        indentMode = 0;
-    }
-    ui.radioIndentMode1->setChecked(indentMode == 0);
-    ui.radioIndentMode2->setChecked(indentMode == 1);
-    ui.radioIndentMode3->setChecked(indentMode == 2);
+    ui.groupTextLineSplit->setChecked(settings.value("SplitLongLines", true).toBool());
+    ui.spinMaxLineLength->setValue(settings.value("SplitLongLinesMaxLength", 200).toInt());
 
     settings.endGroup();
 }
@@ -128,39 +94,10 @@ void WidgetPropConsoleWrap::writeSettings()
     }
     settings.setValue("WrapMode", wrapMode);
 
-    QString flagStart, flagEnd;
-    switch(ui.comboFlagStart->currentIndex())
-    {
-    case 0: flagStart = "NoFlag"; break;
-    case 1: flagStart = "FlagText"; break;
-    case 2: flagStart = "FlagBorder"; break;
-    }
-    switch(ui.comboFlagEnd->currentIndex())
-    {
-    case 0: flagEnd = "NoFlag"; break;
-    case 1: flagEnd = "FlagText"; break;
-    case 2: flagEnd = "FlagBorder"; break;
-    }
-
-    settings.setValue("WrapFlagStart", flagStart);
-    settings.setValue("WrapFlagEnd", flagEnd);
-
     settings.setValue("WrapIndent", ui.spinFlagIndent->value());
 
-    int wrapIndentMode;
-    if (ui.radioIndentMode1->isChecked())
-    {
-        wrapIndentMode = 0;
-    }
-    if (ui.radioIndentMode2->isChecked())
-    {
-        wrapIndentMode = 1;
-    }
-    if (ui.radioIndentMode3->isChecked())
-    {
-        wrapIndentMode = 2;
-    }
-    settings.setValue("WrapIndentMode", wrapIndentMode);
+    settings.setValue("SplitLongLines", ui.groupTextLineSplit->isChecked());
+    settings.setValue("SplitLongLinesMaxLength", ui.spinMaxLineLength->value());
 
     settings.endGroup();
 }

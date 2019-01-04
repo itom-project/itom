@@ -154,6 +154,8 @@ private:
     bool m_canCut;
     StreamBuffer m_receiveStreamBuffer;
     QTimer m_receiveStreamBufferTimer;
+    bool m_splitLongLines;
+    int m_splitLongLinesMaxLength;
 
     QSharedPointer<LineBackgroundMarkerMode> m_markErrorLineMode;
     QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;

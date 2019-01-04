@@ -62,7 +62,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_pCmdList(NULL),
     m_inputStreamWaitCond(NULL),
     m_inputStartLine(0),
-    m_autoWheel(true)
+    m_autoWheel(true),
+    m_splitLongLines(true),
+    m_splitLongLinesMaxLength(200)
 {
     m_inputTextMode.inputModeEnabled = false;
 
@@ -181,9 +183,7 @@ void ConsoleWidget::loadSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    /*bool ok = false;
-    QsciScintilla::WrapVisualFlag start, end;
-
+    bool ok = false;
     int wrapMode = settings.value("WrapMode", 0).toInt(&ok);
     if (!ok)
     {
@@ -192,58 +192,30 @@ void ConsoleWidget::loadSettings()
 
     switch (wrapMode)
     {
-        case 0: setWrapMode(QsciScintilla::WrapNone); break;
-        case 1: setWrapMode(QsciScintilla::WrapWord); break;
-        case 2: setWrapMode(QsciScintilla::WrapCharacter); break;
+        case 0: 
+            setLineWrapMode(QPlainTextEdit::NoWrap); 
+            break;
+        case 1: 
+            setLineWrapMode(QPlainTextEdit::WidgetWidth); 
+            setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+            break;
+        case 2: 
+            setLineWrapMode(QPlainTextEdit::WidgetWidth); 
+            setWordWrapMode(QTextOption::WrapAnywhere);
+            break;
     };
 
-    QString flagStart = settings.value("WrapFlagStart", "NoFlag").toString();
-    if (flagStart == "NoFlag")
-    {
-        start = QsciScintilla::WrapFlagNone;
-    }
-    if (flagStart == "FlagText")
-    {
-        start = QsciScintilla::WrapFlagByText;
-    }
-    if (flagStart == "FlagBorder")
-    {
-        start = QsciScintilla::WrapFlagByBorder;
-    }
+    
+    m_splitLongLines = settings.value("SplitLongLines", true).toBool();
+    m_splitLongLinesMaxLength = qMax(10, settings.value("SplitLongLinesMaxLength", 200).toInt());
 
-    QString flagEnd = settings.value("WrapFlagEnd", "NoFlag").toString();
-    if (flagEnd == "NoFlag")
-    {
-        end = QsciScintilla::WrapFlagNone;
-    }
-    if (flagEnd == "FlagText")
-    {
-        end = QsciScintilla::WrapFlagByText;
-    }
-    if (flagEnd == "FlagBorder")
-    {
-        end = QsciScintilla::WrapFlagByBorder;
-    }
+    /*
 
     int indent = settings.value("WrapIndent", 2).toInt(&ok);
     if (!ok)
     {
         indent = 2;
-    }
-
-    setWrapVisualFlags(end, start, indent);
-
-    int indentMode = settings.value("WrapIndentMode", 0).toInt(&ok);
-    if (!ok)
-    {
-        indentMode = 0;
-    }
-    switch (indentMode)
-    {
-        case 0: setWrapIndentMode(QsciScintilla::WrapIndentFixed); break;
-        case 1: setWrapIndentMode(QsciScintilla::WrapIndentSame); break;
-        case 2: setWrapIndentMode(QsciScintilla::WrapIndentIndented); break;
-    };*/
+    }*/
 
     m_markErrorLineMode->setBackground(QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString()));
     m_markCurrentLineMode->setBackground(QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString()));
@@ -1297,6 +1269,33 @@ void ConsoleWidget::processStreamBuffer()
 
     int fromLine, toLine;
     TextBlockUserData *userData = NULL;
+
+    //process very long lines
+    if (m_splitLongLines && m_receiveStreamBuffer.text.size() > m_splitLongLinesMaxLength)
+    {
+        QStringList splits = m_receiveStreamBuffer.text.split("\n");
+        QStringList outputs;
+        foreach(const QString &t, splits)
+        {
+            if (t.size() > m_splitLongLinesMaxLength)
+            {
+                outputs.append(t.left(m_splitLongLinesMaxLength));
+                QString rest = t.mid(m_splitLongLinesMaxLength);
+                QString prefix = "... ";
+                while (rest.size() > m_splitLongLinesMaxLength)
+                {
+                    outputs.append(prefix + rest.left(m_splitLongLinesMaxLength));
+                    rest.remove(0, m_splitLongLinesMaxLength);
+                }
+            }
+            else
+            {
+                outputs.append(t);
+            }
+        }
+        m_receiveStreamBuffer.text = outputs.join("\n");
+
+    }
 
     switch (m_receiveStreamBuffer.msgType)
     {
