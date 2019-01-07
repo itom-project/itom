@@ -651,13 +651,13 @@ void MainWindow::createActions()
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close all floatable Figures"), this);
+        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
         connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
 
-        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show all floatable Figures"), this);
+        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
         connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
         
-        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize all floatable Figures"), this);
+        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
         connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
 
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
@@ -783,7 +783,7 @@ void MainWindow::createMenus()
     m_pMenuFigure->addAction(m_actions["close_all_plots"]);
     m_pMenuFigure->addAction(m_actions["show_all_plots"]);
     m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
-    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Show open Figure"));
+    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
     if (uOrg->hasFeature(featDeveloper))
@@ -903,7 +903,7 @@ void MainWindow::mnuFigureAboutToShow()
         QAction *a;
         if (widgetNames->isEmpty())
         {
-            a = new QAction(QString("No Figures available"), this);
+            a = new QAction(QString("No Figures Available"), this);
             m_pShowOpenFigure->addAction(a);
         }
         else
