@@ -233,6 +233,7 @@ private:
     Qt::HANDLE m_pythonThreadId;
 
     PyObject *dictUnicode;
+    PyObject *slotsUnicode;
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;

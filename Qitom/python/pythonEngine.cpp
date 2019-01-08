@@ -447,6 +447,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             }
 
             dictUnicode = PyUnicode_FromString("__dict__");
+            slotsUnicode = PyUnicode_FromString("__slots__");
 
             PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
 
@@ -1034,6 +1035,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         }
 
         Py_XDECREF(dictUnicode);
+        Py_XDECREF(slotsUnicode);
 
         //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
@@ -3758,11 +3760,34 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                 return NULL;
             }
         }
+        else if (PyObject_HasAttr(obj, slotsUnicode))
+        {
+            if (itemKeyType == 's') //string
+            {
+                tempObj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+                if (validVariableName)
+                {
+                    *validVariableName = itemKey;
+                }
+            }
+
+            obj = tempObj;
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj);
+                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
+            }
+
+            objIsNewRef = (tempObj != NULL);
+        }
         else
         {
             return NULL; //error
         }
+
         items.removeFirst();
+        tempObj = NULL;
     }
 
     if (objIsNewRef == false)

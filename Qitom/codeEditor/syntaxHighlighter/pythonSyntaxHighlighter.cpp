@@ -511,10 +511,10 @@ QString any(const QString &name, const QStringList &alternates)
 #endif
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
-    QString sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";
-    QString dqstring = QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?").arg(prefix); //"(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?";
-    QString uf_sqstring = QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*(\\\\)\\n(?!')$").arg(prefix);
-    QString uf_dqstring = QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*(\\\\)\\n(?!\")$").arg(prefix);
+    QString sqstring =     QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";
+    QString dqstring =     QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?").arg(prefix); //"(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*\"?";
+    QString uf_sqstring =  QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*(\\\\)\\n(?!')$").arg(prefix);
+    QString uf_dqstring =  QString("(\\b(%1))?\"[^\"\\\\\\n]*(\\\\.[^\"\\\\\\n]*)*(\\\\)\\n(?!\")$").arg(prefix);
     QString sq3string =    QString("(\\b(%1))?'''[^'\\\\]*((\\\\.|'(?!''))[^'\\\\]*)*(''')?").arg(prefix);
     QString dq3string =    QString("(\\b(%1))?\"\"\"[^\"\\\\]*((\\\\.|\"(?!\"\"))[^\"\\\\]*)*(\"\"\")?").arg(prefix);
     QString uf_sq3string = QString("(\\b(%1))?'''[^'\\\\]*((\\\\.|'(?!''))[^'\\\\]*)*(\\\\)?(?!''')$").arg(prefix);
