@@ -252,7 +252,7 @@ PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
     PyRgba *rgba1 = (PyRgba*)(o1);
 
     int overflow;
-    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+    long shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
     if (overflow)
     {
@@ -261,16 +261,14 @@ PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
     }
 
     if(PyErr_Occurred()) return NULL;
-    if(shift<0)
+    if(shift < 0)
     {
         PyErr_SetString(PyExc_TypeError,"shift value must not be negative");
         return NULL;
     }
 
-    PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-    // not implemented yet !!  retRgba->rgba = rgba1->rgba << shift;
-
-    return (PyObject*)retRgba;
+    PyErr_SetString(PyExc_NotImplementedError, "left shift of itom.rgba not implemented yet.");
+    return NULL;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -281,7 +279,7 @@ PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
     PyRgba *rgba1 = (PyRgba*)(o1);
 
     int overflow;
-    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+    long shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
     if (overflow)
     {
@@ -296,10 +294,8 @@ PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
         return NULL;
     }
 
-    PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
-    // not implemented yet !!  retRgba->rgba = rgba1->rgba >> shift;
-
-    return (PyObject*)retRgba;
+    PyErr_SetString(PyExc_NotImplementedError, "right shift of itom.rgba not implemented yet.");
+    return NULL;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -394,7 +390,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
     PyRgba *rgba1 = (PyRgba*)(o1);
 
     int overflow;
-    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+    long shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
     if (overflow)
     {
@@ -409,11 +405,8 @@ PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
         return NULL;
     }
 
-    Py_INCREF(o1);
-
-    // not implemented yet !!  rgba1->rgba <<= shift;
-
-    return (PyObject*)o1;
+    PyErr_SetString(PyExc_NotImplementedError, "inplace left shift of itom.rgba not implemented yet.");
+    return NULL;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -424,7 +417,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceRshift(PyObject* o1, PyObject* o2)
     PyRgba *rgba1 = (PyRgba*)(o1);
 
     int overflow;
-    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+    long shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
     if (overflow)
     {
@@ -439,11 +432,8 @@ PyObject* PythonRgba::PyRgba_nbInplaceRshift(PyObject* o1, PyObject* o2)
         return NULL;
     }
 
-    Py_INCREF(o1);
-
-    // not implemented yet !!  rgba1->rgba >>= shift;
-
-    return (PyObject*)o1;
+    PyErr_SetString(PyExc_NotImplementedError, "inplace right shift of itom.rgba not implemented yet.");
+    return NULL;
 }
 
 PyObject* PythonRgba::PyRgba_nbInplaceAnd(PyObject* o1, PyObject* o2)
