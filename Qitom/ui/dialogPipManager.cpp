@@ -26,14 +26,18 @@
 #include <qscrollbar.h>
 #include <qdir.h>
 #include <qheaderview.h>
-
+#include <qsettings.h>
 
 #include "../global.h"
+#include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include "dialogPipManagerInstall.h"
 
 
 namespace ito {
+
+QString DialogPipManager::invisiblePwStr = "[invisible_password]";
 
 //--------------------------------------------------------------------------------
 DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /*= false*/) :
@@ -95,11 +99,61 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
 
         QMessageBox::critical(this, tr("Python initialization error"), retval.errorMessage());
     }
+
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("pipManager");
+
+    QString proxy = settings.value("proxy", "").toString();
+
+    if (proxy.contains(invisiblePwStr))
+    {
+        outputReceived(tr("A proxy server was restored from the settings file. This proxy contained a password, which was not saved in the settings. Please set it again in the pip settings (below)."), false);
+    }
+
+    ui.txtProxy->setText(proxy);
+    
+    ui.spinTimeout->setValue(settings.value("timeout", 15).toInt());
+    ui.spinRetries->setValue(settings.value("retries", 5).toInt());
+    ui.checkTrustedHosts->setChecked(settings.value("trustedHostsEnabled", false).toBool());
+    ui.txtTrustedHosts->setText(settings.value("trustedHosts", "pypi.python.org; files.pythonhosted.org; pypi.org").toString());
+    ui.txtTrustedHosts->setEnabled(ui.checkTrustedHosts->isChecked());
+    ui.checkIsolated->setChecked(settings.value("isolated", false).toBool());
+
+    settings.endGroup();
 }
 
 //--------------------------------------------------------------------------------
 DialogPipManager::~DialogPipManager()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("pipManager");
+
+    settings.setValue("timeout", ui.spinTimeout->value());
+    settings.setValue("retries", ui.spinRetries->value());
+    settings.setValue("trustedHostsEnabled", ui.checkTrustedHosts->isChecked());
+    settings.setValue("trustedHosts", ui.txtTrustedHosts->text());
+    settings.setValue("isolated", ui.checkIsolated->isChecked());
+
+    QString proxy = ui.txtProxy->text();
+    int atidx = proxy.indexOf("@");
+    if (atidx > 1)
+    {
+        QString left = proxy.left(atidx);
+        int colonidx = left.indexOf(":");
+        if (colonidx >= 0)
+        {
+            left = left.left(colonidx + 1) + invisiblePwStr;
+        }
+        proxy = left + proxy.mid(atidx);
+    }
+    
+    settings.setValue("proxy", proxy);
+
+    settings.setValue("isolated", ui.checkIsolated->isChecked());
+
+    settings.endGroup();
+
     DELETE_AND_SET_NULL(m_pPipManager);
 }
 
@@ -107,12 +161,16 @@ DialogPipManager::~DialogPipManager()
 void DialogPipManager::setColorMessage(const QColor &color)
 {
     m_colorMessage = color;
+
+    outputReceived("", true);
 }
 
 //--------------------------------------------------------------------------------
 void DialogPipManager::setColorError(const QColor &color)
 {
     m_colorError = color;
+
+    outputReceived("", true);
 }
 
 //--------------------------------------------------------------------------------
@@ -155,48 +213,57 @@ void DialogPipManager::pipVersion(const QString &version)
 //--------------------------------------------------------------------------------
 void DialogPipManager::outputReceived(const QString &text, bool success)
 {
-    QString text_html = text;
-    text_html.replace("\n", "<br>");
-
-    if (success)
+    if (text != "")
     {
-        if (!m_outputSilent)
+        QString text_html = text;
+        text_html.replace("\n", "<br>");
+
+        if (success)
+        {
+            if (!m_outputSilent)
+            {
+                switch (m_lastLogEntry)
+                {
+                case -1:
+                    m_logHtml = QString("<p class='message'>%1").arg(text_html);
+                    break;
+                case 0:
+                    m_logHtml += text_html;
+                    break;
+                default:
+                    m_logHtml += QString("</p><p class='message'>%1").arg(text_html);
+                    break;
+                }
+
+                m_lastLogEntry = 0;
+            }
+        }
+        else
         {
             switch (m_lastLogEntry)
             {
             case -1:
-                logHtml = QString("<p class='message'>%1").arg(text_html);
+                m_logHtml = QString("<p class='error'>%1").arg(text_html);
                 break;
-            case 0:
-                logHtml += text_html;
+            case 1:
+                m_logHtml += text_html;
                 break;
             default:
-                logHtml += QString("</p><p class='message'>%1").arg(text_html);
+                m_logHtml += QString("</p><p class='error'>%1").arg(text_html);
                 break;
             }
 
-            m_lastLogEntry = 0;
+            m_lastLogEntry = 1;
         }
     }
-    else
-    {
-        switch (m_lastLogEntry)
-        {
-        case -1:
-            logHtml = QString("<p class='error'>%1").arg(text_html);
-            break;
-        case 1:
-            logHtml += text_html;
-            break;
-        default:
-            logHtml += QString("</p><p class='error'>%1").arg(text_html);
-            break;
-        }
-
-        m_lastLogEntry = 1;
-    }
+    
+    float factor = GuiHelper::screenDpiFactor();
     QString output;
-    output = QString("<html><head></head><body style='font-size:8pt; font-weight:400; font-style:normal; p.message {color:%2;}; p.error {color:%3;}'>%1</p></body></html>").arg(logHtml).arg(m_colorMessage.name()).arg(m_colorError.name());
+    output = QString("<html><head><style>body{ font-size:%4pt; font-weight:400; } \
+    p.message{ color:%2; } \
+    p.error{ color:%3; }</style> \
+    <body>%1</p></body></html>"). \
+        arg(m_logHtml).arg(m_colorMessage.name()).arg(m_colorError.name()).arg(8 * factor);
     ui.txtLog->setHtml(output);
     QScrollBar *sb = ui.txtLog->verticalScrollBar();
     sb->setValue(sb->maximum());

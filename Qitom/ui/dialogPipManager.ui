@@ -177,7 +177,7 @@ p, li { white-space: pre-wrap; }
          <string>Proxy in the form [user:passwd@]proxy.server:port</string>
         </property>
         <property name="placeholderText">
-         <string>[user:passwd]@proxy.server:port</string>
+         <string>[user:passwd@]proxy.server:port</string>
         </property>
        </widget>
       </item>
