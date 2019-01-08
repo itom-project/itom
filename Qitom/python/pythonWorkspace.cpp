@@ -501,7 +501,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         else if(PyLong_Check(value))
         {
             int overflow;
-            item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLongAndOverflow(value, &overflow));
+            item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLongLongAndOverflow(value, &overflow));
             if (overflow)
             {
                 item->m_extendedValue = item->m_value = (overflow > 0 ? "int too big" : "int too small");
