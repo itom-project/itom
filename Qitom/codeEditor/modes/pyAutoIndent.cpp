@@ -149,8 +149,8 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
             // one level higher
             post += QString(editor()->tabLength(), ' ');
         }
-        else if ((fullline.endsWith((')', '}', ']')) &&
-                lastword.endsWith((')', '}', ']'))))
+        else if ((fullline.endsWith(')') || fullline.endsWith('}') || fullline.endsWith(']')) &&
+                (lastword.endsWith(')') || lastword.endsWith('}') || lastword.endsWith(']')))
         {
             handleIndentAfterParen(cursor, post);
         }
