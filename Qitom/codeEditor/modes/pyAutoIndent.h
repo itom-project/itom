@@ -93,6 +93,8 @@ protected:
     static bool atBlockEnd(const QTextCursor &cursor, const QString &fullline);
     static bool atBlockStart(const QTextCursor &cursor, const QString &line);
 
+    static QStringList newScopeKeywords;
+
 };
 
 } //end namespace ito

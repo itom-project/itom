@@ -45,6 +45,10 @@
 
 namespace ito {
 
+
+/*static*/ QStringList PyAutoIndentMode::newScopeKeywords = QStringList() << "if" << "class" << "def" << "while" << "for" << \
+                                                                "else" << "elif" << "except" << "finally" << "try" << "with";
+
 PyAutoIndentMode::PyAutoIndentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     AutoIndentMode("PyAutoIndentMode", description, parent)
 {
@@ -499,19 +503,16 @@ QString PyAutoIndentMode::handleNewScopeIndentation(const QTextCursor &cursor, c
     {
         // e.g indent is None (meaning the line does not ends with ):, ]:
         // or }:
-        QStringList kw;
-        kw << "if" << "class" << "def" << "while" << "for" << \
-              "else" << "elif" << "except" << "finally" << "try" << "with";
         QString l = fullline;
         int ln = cursor.blockNumber();
 
-        while (!checkKwInLine(kw, l) && ln > 0)
+        while (!checkKwInLine(PyAutoIndentMode::newScopeKeywords, l) && ln > 0)
         {
             ln -= 1;
             l = editor()->lineText(ln);
         }
 
-        QString indentStr = QString((l.size() - Utils::strip(l).size()), ' ');
+        QString indentStr = QString((l.size() - Utils::lstrip(l).size()), ' ');
         indentStr += QString(editor()->tabLength(), ' ');
         post = indentStr;
     }
