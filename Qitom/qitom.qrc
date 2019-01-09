@@ -44,7 +44,6 @@
     <file>icons/method_static_private.png</file>
     <file>icons/namespace.png</file>
     <file>icons/global.png</file>
-    <file>icons/var.png</file>
   </qresource>
   <qresource prefix="/application">
     <file>icons/itomicon/itomLogo3_64.png</file>
