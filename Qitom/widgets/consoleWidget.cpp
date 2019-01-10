@@ -1287,6 +1287,11 @@ void ConsoleWidget::processStreamBuffer()
                     outputs.append(prefix + rest.left(m_splitLongLinesMaxLength));
                     rest.remove(0, m_splitLongLinesMaxLength);
                 }
+
+                if (rest.size() > 0)
+                {
+                    outputs.append(prefix + rest);
+                }
             }
             else
             {
