@@ -45,7 +45,7 @@ DialogReloadModule::DialogReloadModule(QWidget* parent) :
     connect(ui.checkShowBuildin, SIGNAL(clicked(bool)), this, SLOT(checkBuildinClicked(bool)));
     connect(ui.checkShowFromPythonPath, SIGNAL(clicked(bool)), this, SLOT(checkPythonPathClicked(bool)));
 
-    ui.treeWidget->setHeaderLabel("Module Name");
+    ui.treeWidget->setHeaderLabel(tr("Module Name"));
     ui.treeWidget->sortByColumn(0, Qt::AscendingOrder);
     ui.treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
@@ -194,7 +194,7 @@ void DialogReloadModule::currentItemChanged(QTreeWidgetItem *current, QTreeWidge
     }
     else
     {
-        ui.lblModuleName->setText( "<click on item to view detailed information>");
+        ui.lblModuleName->setText( tr("<click on item to view detailed information>"));
         ui.lblPath->setText("");
     }
 }
