@@ -16,7 +16,6 @@ Software packages
 - IDE, Compiler (e.g. Visual Studio 2010 Professional, QtCreator...)
 - CMake (recommended 2.8.9 or higher)
 - Qt-framework (4.7 or higher, 4.8 or >= 5.3 recommended)
-- QScintilla2 (2.6 or higher)
 - OpenCV 2.3 or higher (2.4 or 3.x recommended)
 - Python 3.2 or higher
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
@@ -148,55 +147,9 @@ Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddI
         
 .. note::
     
-    Visual Studio Express
+    Visual Studio Community Edition
     
-    You can also use the Express Versions of Visual Studio (e.g. Visual Studo 2013 Express) to compile itom. In order to easily debug the special data structures from Qt (QString,
-    QVector...) you need to do the following steps, since the AddIn is not available in the Express editions: Get the file **qt5.natvis** from https://github.com/qtproject/qt-labs-vstools/blob/master/tools/Qt4EEAddin/qt5.natvis . Copy the file into a folder similar to this one: C:\Users\YourUserName\Documents\Visual Studio 2013\Visualizers, hence the documents folder of the respective user. Restart Visual Studio Express and try debugging itom.
-
-**QScintilla2** (mandatory)
-
-Download **QScintilla** (2.6 or higher) from http://www.riverbankcomputing.com/software/qscintilla/download and build the debug and release version. The original
-QtCreator project file of QScintilla finally copies the entire output to the **bin** directory of **Qt** so that no other settings need to be adapted. However, the original 
-project settings are not ready for a multi-configuration build in **Visual Studio**. As a result, you need to adapt the Qt-project file. To do this follow these steps:
-
-    * Copy the downloaded files to a directory of your choise (preferably **NOT** the windows program directory, we are assuming in the following that you placed them in **C:\\QScintilla2**)
-    * Open the Visual-Studio 2010 32-bit commandline (or 64-bit if installed)
-    * Open the file **C:\\QScintilla2\\Qt4\\QScintilla.pro** or **C:\\QScintilla2\\Qt4Qt5\\QScintilla.pro** (version 2.8 or higher) in a text editor and replace the line **CONFIG** with::
-        
-        CONFIG += qt warn_off debug_and_release build_all dll thread
-        
-      Or
-      
-       CONFIG += qt warn_off debug_and_release build_all dll thread exceptions
-       
-      for QScintilla >= 2.9.0
-    
-    and add the lines::
-        
-        CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
-    
-    (see also: http://www.mantidproject.org/Debugging_MantidPlot)
-    
-    
-    * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
-    * Execute the following commands from the command-line, whereas **win32-msvc2010** should be replaced by the makespec corresponding to your desired IDE (e.g. win32-msvc2013 for Visual Studio 2013) ::
-        
-        - cd C:\\QScintilla2\\Qt4Qt5
-        - nmake distclean 
-        - %QTDIR%\\bin\\qmake qscintilla.pro spec=win32-msvc2010
-        - nmake
-        - nmake install
-    
-    * copy the library files qscintilla2.dll and qscintilla2d.dll from %QTDIR%\\lib to %QTDIR%\\bin 
-
-.. note::
-    
-    This is for ITO only (internal use): An easier approach is to get the sources from **\\Obelix\\software\\m\\ITOM\\Installationen\\4. QScintilla2** and copy the folder **QScintilla2.8** to a directory on your hard drive (e.g. **C:\QScintilla2.8**, avoid Windows program directory due to restrictions in write access). Open your Visual Studio Command Line and change to the directory of **QScintilla** on your hard drive. Just execute the batch file **qscintilla_install.bat** and answer the given questions.
-
-.. note::
-    
-    If the batch file breaks with some strange error messages, please make sure, that the location where **QScintilla** is installed is writable by the batch file (e.g. the
-    Windows program directory under Windows Vista or higher). Therefore it is recommended to locate **QScintilla** in another directory than the program-directory.
+    You can also use the Community Editions of Visual Studio (e.g. Visual Studo 2015 Community Editions) to compile itom. 
 
 .. _install-depend-opencv:
 

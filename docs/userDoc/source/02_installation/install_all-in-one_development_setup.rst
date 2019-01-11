@@ -23,7 +23,7 @@ The all-in-one development setup comes with the following features and 3rd party
 * Qt 5.3.2 (prebuild)
 * OpenCV 2.4.10 (prebuild for VS2010)
 * CMake 3.0.2 (prebuild)
-* QScintilla 2.8 (prebuild inside of Qt 5.3.2)
+* QScintilla 2.8 (prebuild inside of Qt 5.3.2 - not required any more for itom)
 * Doxygen
 
 Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
@@ -44,7 +44,7 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * Qt 5.4.1 (prebuild)
 * OpenCV 2.4.11 (prebuild for VS2013)
 * CMake 3.2.2 (prebuild)
-* QScintilla 2.9 (prebuild inside of Qt 5.4.1)
+* QScintilla 2.9 (prebuild inside of Qt 5.4.1 - not required any more for itom)
 * Doxygen
 
 Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
@@ -65,7 +65,7 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * Qt 5.6.0 (prebuild)
 * OpenCV 3.1.0 (prebuild for VS2013)
 * CMake 3.5.1 (prebuild)
-* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0)
+* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0 - not required any more for itom)
 * Doxygen
 
 Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
@@ -86,7 +86,7 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * Qt 5.6.1-1 (prebuild)
 * OpenCV 3.1.0 (prebuild for VS2013)
 * CMake 3.5.1 (prebuild)
-* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0)
+* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0 - not required any more for itom)
 * Doxygen
 
 Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:

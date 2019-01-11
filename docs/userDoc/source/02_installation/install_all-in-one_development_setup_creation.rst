@@ -28,7 +28,6 @@ First download alle the needed software and packages. This download links are fo
 * `Git 2.8.1 64-bit <http://git-scm.com/download/win/>`_ (Git-2.8.1-64-bit.exe)
 * `TortoiseGit 2.1.0.0 <http://tortoisegit.org/download/>`_ (TortoiseGit-2.1.0.0-64bit.msi)
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
-* `QScintilla 2.9.2 <http://www.riverbankcomputing.com/software/qscintilla/download/>`_ (QScintilla_gpl-2.9.2.zip)
 * `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
 Download packages for the 3rdPartyPCL tools
@@ -148,35 +147,6 @@ Start the compilation of the **INSTALL** build solution.
    
 optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|.
 Delete the executable (*.exe) from the install_x64/x64/vc14/bin folder. They are not needed for the compilation of |itom|. 
-
-
-Compile QScintilla
-``````````````````
-
-First copy the **qscintilla_install.bat** file into the QScintilla folder. Open the **${MAINDIR}\\QScintilla-gpl-2.9.1\\Qt4Qt5\\qscintilla.pro** file with the editor. 
-
-* In line 26 the TARGET must be defined as **qscintilla2**.
-
-.. code-block:: rest
-
-   TARGET = qscintilla2
-   
-* Replace in the line 27 **CONFIG** by.
-
-.. code-block:: rest
-
-   CONFIG += qt warn_off debug_and_release build_all dll thread exceptions
-   CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
-
-    
-Open the native Visual Studio 2013 64-bit COMMAND PROMPT (or 32-bit). Set the QScintilla folder. Set the $QTDIR$ variable to the Qt Folder ${MAINDIR}\\3rdParty\\Qt5.6.0\\msvc2013_x64. 
-
-.. note:: 
-
-    example: SET QTDIR= E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2013_qt5.6.0\\3rdParty\\Qt5.6.0\\5.6\\msvc2013
-
-Execute the **qscintilla_install.bat** file. After the successfull compilation, delete form the QScintilla folder following folder: example, doc, python, Qt4Qt5/debug, Qt4QT5/release. 
-
 
 Creating the 3rdPartyPCL folder
 -------------------------------

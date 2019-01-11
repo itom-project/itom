@@ -721,7 +721,6 @@ namespace ito {
         bool deleteAllTags();
         int addToProtocol(const std::string &value);
         
-        
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
          */
@@ -779,6 +778,9 @@ namespace ito {
         
         RetVal copyTagMapTo(DataObject &rhs) const;  /*!< Deep copies the tagmap with all entries to rhs object */
         RetVal copyAxisTagsTo(DataObject &rhs) const;  /*!< Deep copies the axistags to rhs object */
+
+		RetVal setReal(DataObject &valuesObj); /*change the real part of a complex data object*/
+		RetVal setImag(DataObject &valuesObj); /*change the imaginary part of a complex data object*/
         
         // END TAGSPACE
         
@@ -1380,7 +1382,7 @@ namespace ito {
     DATAOBJ_EXPORT DataObject arg(const DataObject &dObj);              /*!< calculates the argument of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject real(const DataObject &dObj);             /*!< calculates the real part of each element in the given data object and returns the result as new data object */
     DATAOBJ_EXPORT DataObject imag(const DataObject &dObj);             /*!< calculates the imaginary part of each element in the given data object and returns the result as new data object */
-    
+
     DATAOBJ_EXPORT DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
     
     //! templated method for converting a given scalar value to the data type, indicated by the template parameter

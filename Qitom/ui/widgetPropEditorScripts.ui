@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>479</width>
+    <width>478</width>
     <height>281</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupSyntaxCheck">
      <property name="title">
-      <string>Python Syntax-Checker (uses Python-Module &quot;frosted&quot;)</string>
+      <string>Python Syntax-Checker (uses Python-Module &quot;pyflakes&quot; or &quot;frosted&quot;)</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -221,7 +221,17 @@
          </widget>
         </item>
         <item>
-         <widget class="ColorPickerButton" name="colorEdgeBg"/>
+         <widget class="ColorPickerButton" name="colorEdgeBg">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="dialogOptions">
+           <set>ColorPickerButton::ShowAlphaChannel</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

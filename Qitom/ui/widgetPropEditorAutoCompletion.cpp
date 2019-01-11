@@ -47,22 +47,16 @@ WidgetPropEditorAutoCompletion::~WidgetPropEditorAutoCompletion()
 void WidgetPropEditorAutoCompletion::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     ui.checkCaseSensitivity->setChecked( settings.value("autoComplCaseSensitive", false).toBool());
-    ui.checkFillUps->setChecked( settings.value("autoComplFillUps", true).toBool());
-    ui.checkReplaceWord->setChecked( settings.value("autoComplReplaceWord", false).toBool());
-    ui.checkShowSingle->setChecked( settings.value("autoComplShowSingle", false).toBool());
     ui.groupAutoCompletion->setChecked( settings.value("autoComplEnabled", true).toBool());
+    ui.checkShowTooltips->setChecked( settings.value("autoComplShowTooltips", false).toBool());
+    ui.spinThreshold->setValue( settings.value("autoComplThreshold", 2).toInt());
 
-    ui.spinThreshold->setValue( settings.value("autoComplThreshold", 3).toInt());
-
-    QString source = settings.value("autoComplSource", "AcsAPIs").toString();
-
-    ui.radioACSource1->setChecked( source == "AcsAll" );
-    ui.radioACSource2->setChecked( source == "AcsDocument" );
-    ui.radioACSource3->setChecked( source == "AcsAPIs" );
-
+    int filterMode = qBound(0, settings.value("autoComplFilterMode", 2).toInt(), 2);
+    ui.comboFilterMode->setCurrentIndex(filterMode);
+    
     settings.endGroup();
 }
 
@@ -70,28 +64,14 @@ void WidgetPropEditorAutoCompletion::readSettings()
 void WidgetPropEditorAutoCompletion::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     settings.setValue("autoComplCaseSensitive", ui.checkCaseSensitivity->isChecked() );
-    settings.setValue("autoComplFillUps", ui.checkFillUps->isChecked() );
-    settings.setValue("autoComplReplaceWord", ui.checkReplaceWord->isChecked() );
-    settings.setValue("autoComplShowSingle", ui.checkShowSingle->isChecked() );
+    settings.setValue("autoComplShowTooltips", ui.checkShowTooltips->isChecked() );
     settings.setValue("autoComplEnabled", ui.groupAutoCompletion->isChecked() );
 
     settings.setValue("autoComplThreshold", ui.spinThreshold->value());
-
-    if (ui.radioACSource1->isChecked())
-    {
-        settings.setValue("autoComplSource", "AcsAll" );
-    }
-    else if (ui.radioACSource2->isChecked())
-    {
-        settings.setValue("autoComplSource", "AcsDocument" );
-    }
-    else
-    {
-        settings.setValue("autoComplSource", "AcsAPIs" );
-    }
+    settings.setValue("autoComplFilterMode", ui.comboFilterMode->currentIndex());
 
     settings.endGroup();
 }

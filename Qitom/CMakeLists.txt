@@ -51,8 +51,7 @@ ELSE()
     #uses the old QtAssistant as help viewer.
     FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 ENDIF()
-find_package(PythonLibs 3.0 REQUIRED)  
-find_package(QScintilla REQUIRED)  
+find_package(PythonLibs 3.0 REQUIRED)   
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
@@ -158,7 +157,6 @@ INCLUDE_DIRECTORIES(
     ${Qt5Network_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
-    ${QSCINTILLA_INCLUDE_DIR}
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
@@ -175,7 +173,7 @@ LINK_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${OpenCV_DIR}/lib
 )
-
+ 
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
@@ -228,7 +226,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/qsciApiManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
@@ -243,6 +240,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
@@ -294,14 +292,14 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.h
@@ -312,7 +310,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h    
@@ -326,6 +324,7 @@ set(qitom_HEADERS
 #    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
@@ -337,6 +336,39 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/delayJobRunner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/manager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/modesManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/panelsManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
 )
 
 IF (QT5_FOUND)
@@ -373,10 +405,10 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
@@ -443,7 +475,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/qsciApiManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
@@ -505,9 +536,9 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.cpp
@@ -523,7 +554,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
@@ -536,12 +567,46 @@ set(qitom_SOURCES
 #    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/delayJobRunner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/modesManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/panelsManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/managers/textDecorationsManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
 )
 
 if(MSVC)
@@ -563,6 +628,13 @@ ADD_SOURCE_GROUP(python)
 ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
 ADD_SOURCE_GROUP(helpViewer)
+ADD_SOURCE_GROUP(codeEditor)
+ADD_SOURCE_GROUP(codeEditor/foldDetector)
+ADD_SOURCE_GROUP(codeEditor/managers)
+ADD_SOURCE_GROUP(codeEditor/modes)
+ADD_SOURCE_GROUP(codeEditor/panels)
+ADD_SOURCE_GROUP(codeEditor/syntaxHighlighter)
+ADD_SOURCE_GROUP(codeEditor/utils)
 #end add filters to visual studio
 
 if(MSVC)
@@ -759,12 +831,12 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
     if (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
     else (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
     endif (WIN32)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
  
 BUILD_PARALLEL_LINUX(${target_name})

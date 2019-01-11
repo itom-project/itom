@@ -44,7 +44,7 @@ WidgetPropConsoleGeneral::~WidgetPropConsoleGeneral()
 void WidgetPropConsoleGeneral::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     ui.checkBoxFormatCopyCode->setChecked(settings.value("formatCopyCode", "false").toBool());
     ui.checkBoxFormatPastCode->setChecked(settings.value("formatPastCode", "false").toBool());
@@ -56,7 +56,7 @@ void WidgetPropConsoleGeneral::readSettings()
 void WidgetPropConsoleGeneral::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     settings.setValue("formatCopyCode", ui.checkBoxFormatCopyCode->isChecked());
     settings.setValue("formatPastCode", ui.checkBoxFormatPastCode->isChecked());

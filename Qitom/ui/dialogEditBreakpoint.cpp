@@ -25,7 +25,8 @@
 namespace ito
 {
 
-DialogEditBreakpoint::DialogEditBreakpoint(QString filename, int linenr, bool enabled, bool temporary, int ignoreCount, QString condition)
+DialogEditBreakpoint::DialogEditBreakpoint(QString filename, int linenr, bool enabled, bool temporary, int ignoreCount, QString condition, QWidget *parent/* = NULL*/) :
+    QDialog(parent)
 {
     ui.setupUi(this);
 

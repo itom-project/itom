@@ -227,7 +227,6 @@ Source: "{#SourceDirQT}\Qt5QuickWidgets.dll"; DestDir: "{app}"; Flags: ignorever
 ;Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\QtWebEngineProcess.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\resources\icudtl.dat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\resources\qtwebengine_resources.pak"; DestDir: "{app}"; Flags: ignoreversion
@@ -330,7 +329,6 @@ Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignorev
 ; itom-packages
 Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\apps\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: ignoreversion
 ;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\cameraToolbox\*.*"; DestDir: "{app}\itom-packages\cameraToolbox"; Flags: ignoreversion
@@ -512,7 +510,7 @@ Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; F
 [Run]
 ;Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
 ;Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
-Filename: "{tmp}\Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026..."; Components: CREDPACK2015;
+Filename: "{tmp}\Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026.exe"; Parameters: "/install /quiet /norestart"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026..."; Components: CREDPACK2015;
 ;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
 ;Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: PYTHON\NUMPY

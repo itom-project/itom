@@ -975,16 +975,20 @@ ENDMACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 
 
 MACRO (ADD_SOURCE_GROUP subfolder)
+    #pass a subfolder. Its directory is scanned an all header, ui and sources files
+    #are distributed into filters or subfilters (MSVC only)
+    #if you want to pass a nested subfolder, use the 'slash' (not the 'backslash')
+    string(REPLACE "/" "\\" subfolder_backslash "${subfolder}")
     FILE(GLOB GROUP_FILES_H
         ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.h
         ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.ui
     )
-    SOURCE_GROUP("Header Files\\${subfolder}" FILES ${GROUP_FILES_H})
+    SOURCE_GROUP("Header Files\\${subfolder_backslash}" FILES ${GROUP_FILES_H})
     
     FILE(GLOB GROUP_FILES_S
         ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.cpp
     )
-    SOURCE_GROUP("Source Files\\${subfolder}" FILES ${GROUP_FILES_S})
+    SOURCE_GROUP("Source Files\\${subfolder_backslash}" FILES ${GROUP_FILES_S})
 ENDMACRO (ADD_SOURCE_GROUP subfolder)
 
 

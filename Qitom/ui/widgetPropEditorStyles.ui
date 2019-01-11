@@ -73,7 +73,7 @@
           <property name="text">
            <string>Foreground Color</string>
           </property>
-          <property name="displayColorName" stdset="0">
+          <property name="displayColorName">
            <bool>false</bool>
           </property>
          </widget>
@@ -83,8 +83,11 @@
           <property name="text">
            <string>Background Color</string>
           </property>
-          <property name="displayColorName" stdset="0">
+          <property name="displayColorName">
            <bool>false</bool>
+          </property>
+          <property name="dialogOptions">
+           <set>ColorPickerButton::ShowAlphaChannel</set>
           </property>
          </widget>
         </item>
@@ -98,13 +101,6 @@
           </property>
           <property name="text">
            <string>Font</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkFillEOL">
-          <property name="text">
-           <string>Fill to end of line</string>
           </property>
          </widget>
         </item>
@@ -219,6 +215,14 @@
           </property>
           <property name="text">
            <string>Reset All To Default</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnTextBackgroundsTransparent">
+          <property name="text">
+           <string>Set All Text Backgrounds
+To Transparent</string>
           </property>
          </widget>
         </item>

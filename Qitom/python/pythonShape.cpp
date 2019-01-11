@@ -110,7 +110,7 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2, index = -1, name = '']) -> creates a shape object of a specific type. \n\
+PyDoc_STRVAR(PyShape_doc,"shape(type = shape.Invalid, param1 = None, param2 = None, index = -1, name = '') -> creates a shape object of a specific type. \n\
 \n\
 Depending on the type, the following parameters are allowed: \n\
 \n\
@@ -293,7 +293,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Point.\n\
+PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Point.\n\
 \n\
 Parameters \n\
 -----------\n\
@@ -351,7 +351,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2 [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Line.\n\
+PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Line.\n\
 \n\
 Parameters \n\
 -----------\n\
@@ -412,7 +412,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Circle.\n\
+PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Circle.\n\
 \n\
 Parameters \n\
 -----------\n\
@@ -472,7 +472,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticEllipse_doc,  "createEllipse([corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Ellipse.\n\
+PyDoc_STRVAR(shape_staticEllipse_doc,  "createEllipse(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Ellipse.\n\
 \n\
 Basically, there are two different ways to construct the ellipse: Either by the top left and bottom right corner points of the outer bounding box (corner1 and corner2), \n\
 or by the center point (x,y) and the size, as array of (width, height). \n\
@@ -604,7 +604,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Square.\n\
+PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Square.\n\
 \n\
 Parameters \n\
 -----------\n\
@@ -664,7 +664,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticRectangle_doc,  "createRectangle([corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Rectangle.\n\
+PyDoc_STRVAR(shape_staticRectangle_doc,  "createRectangle(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Rectangle.\n\
 \n\
 Basically, there are two different ways to construct a rectangle: Either by the top left and bottom right corner points (corner1 and corner2), \n\
 or by the center point (x,y) and the size, as array of (width, height). \n\
@@ -795,7 +795,7 @@ This static method is equal to the command:: \n\
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points [, index = -1, name = '', flags = 0]) -> returns a new shape object of type shape.Polygon.\n\
+PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Polygon.\n\
 \n\
 Parameters \n\
 -----------\n\
@@ -1730,7 +1730,9 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, however if the shape is a geometric shape of a plot, an auto-incremented index is assigned once the shape is drawn or set. If >= 0 it is possible to modify an existing shape with the same index.");
+PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, however if the shape is a \n\
+geometric shape of a plot, an auto-incremented index is assigned once the shape is drawn or set. \n\
+If >= 0 it is possible to modify an existing shape with the same index.");
 PyObject* PythonShape::PyShape_getIndex(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1800,7 +1802,8 @@ int PythonShape::PyShape_setName(PyShape *self, PyObject *value, void * /*closur
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getColor_doc,  "Get/set color of the shape (default: invalid color (None). In this case the default color for shapes is used for visualization.)");
+PyDoc_STRVAR(shape_getColor_doc,  "Get/set color of the shape (default: invalid color (None). \n\
+In this case the default color for shapes is used for visualization.)");
 PyObject* PythonShape::PyShape_getColor(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -2139,7 +2142,7 @@ PyObject* PythonShape::PyShape_region(PyShape *self)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_contour_doc, "contour([applyTrafo = True, tol = -1.0]) -> return contour points as a 2xNumPoints float64 dataObject \n\
+PyDoc_STRVAR(shape_contour_doc, "contour(applyTrafo = True, tol = -1.0) -> return contour points as a 2xNumPoints float64 dataObject \n\
 \n\
 If a transformation matrix is set, the base points can be transformed if 'applyTrafo' is True. For point, line and rectangle \n\
 based shapes, the contour is directly given. For ellipses and circles, a polygon is approximated to the form of the ellipse \n\
@@ -2184,6 +2187,7 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
     return (PyObject*)obj;
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(shape_contains_doc, "contains(points) -> return contour points as a 2xNumPoints float64 dataObject \n\
 \n\
 Tests one or multiple points if they lie within the contour of the given shape. If the shape has an empty area (e.g. points, line...) \n\

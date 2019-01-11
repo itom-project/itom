@@ -123,10 +123,6 @@ A standard distribution of |itom| links to the following third-party library (sh
 
 - `QT-Framework <http://qt.nokia.com/>`_ by Nokia under LGPL.
 
-- `QScintilla <http://www.riverbankcomputing.co.uk/software/qscintilla/intro>`_ in by Riverbank Computed Limited under GPL with additional exceptions.
-
-- QScintilla is a port to Qt of Neil Hodgson's `Scintilla <http://www.scintilla.org/>`_ C++ editor control.
-
 - `Python <http://www.python.org/>`_ by Python Software Foundation unter Python-License (similar to BSD license).
 
 - Python-package `NumPy <http://numpy.scipy.org/>`_ under BSD compatible license.

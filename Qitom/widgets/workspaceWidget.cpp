@@ -76,6 +76,8 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     sortByColumn(0,Qt::AscendingOrder);
     setTextElideMode(Qt::ElideMiddle);
 
+    setExpandsOnDoubleClick(false); //dont expand or collapse items on double-click (since double-click opens the content information dialog)
+
     clear();
     m_itemHash.clear();
 
