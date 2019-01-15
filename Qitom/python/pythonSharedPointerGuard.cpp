@@ -22,9 +22,47 @@
 
 #include "pythonSharedPointerGuard.h"
 
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent/qtconcurrentrun.h>
+#else
+#include <qtconcurrentrun.h>
+#endif
+
 namespace ito
 {
 
 QHash<void*, PyObject*> PythonSharedPointerGuard::m_hashTable = QHash<void*, PyObject*>();
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// the following method is only called by PythonSharedPointerGuard::deleter within a QtConcurrent::run worker thread
+void safeDecrefPyObject2(PyObject *obj)
+{
+#if (PY_VERSION_HEX >= 0x03040000)
+    if (PyGILState_Check())
+    {
+        Py_DECREF(obj);
+    }
+    else
+    {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+        Py_DECREF(obj);
+        PyGILState_Release(gstate);
+    }
+#else
+    //we don't know if we need to acquire the GIL here, or not.
+    Py_DECREF(obj);
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ void PythonSharedPointerGuard::safeDecrefPyObject2Async(PyObject* obj)
+{
+    //the current thread has no Python GIL. However, it might be
+    //that the GIL is currently hold by another thread, which has called
+    //the current thread, such that directly waiting for the GIL here might
+    //lead to a dead-lock. Therefore, we open a worker thread to finally delete the guarded base object!
+    QtConcurrent::run(safeDecrefPyObject2, obj);
+}
+
 
 } //end namespace ito
