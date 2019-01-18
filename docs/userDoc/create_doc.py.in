@@ -11,6 +11,7 @@ from sphinx.util.console import darkred, nocolor
 from sphinx.application import Sphinx
 
 from docutils.utils import SystemMessage
+from packaging import version
 import subprocess
 import itom
 import __main__
@@ -35,11 +36,11 @@ confoverrides = {}
 freshenv = False
 
 basedir = getCurrentPath()
-srcdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"                #basedir + "\\source"
-confdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"               #basedir + "\\source"
-aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"    #basedir + "\\source\\AboutItom"
+srcdir = "C:/itom/sources/itom/docs/userDoc/source"                #basedir + "\\source"
+confdir = "C:/itom/sources/itom/docs/userDoc/source"               #basedir + "\\source"
+aboutDir = "C:/itom/sources/itom/docs/userDoc/source/AboutItem"    #basedir + "\\source\\AboutItom"
 
-__main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
+__main__.__dict__["__doxygen__xml"] = "C:/itom/build/itom/docs/doxygen/xml"
 
 buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
 
@@ -60,7 +61,7 @@ for buildername in buildernames:
     app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
                  confoverrides, sys.stdout, sys.stderr, freshenv)
     
-    if("${BUILD_WITH_PCL}" in ("ON", "on", "TRUE", "true")): #the first variable is automatically set by CMake
+    if("ON" in ("ON", "on", "TRUE", "true")): #the first variable is automatically set by CMake
         app.tags.add('PCL')
     else:
         app.tags.add('NOPCL')
@@ -99,7 +100,7 @@ for buildername in buildernames:
                     with open(qhpName, 'wt') as fp:
                         fp.write(newContent)
         
-        if itom.version(1)["itom"]["QT_Version"] >= "5.12.0": #https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
+        if version.parse(itom.version(1)["itom"]["QT_Version"]) >= version.parse("5.12.0"): #https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
             if _platform == "darwin":   # OS X
                 ret = subprocess.call([itom.getQtToolPath("qhelpgenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
             else:
@@ -126,7 +127,7 @@ for buildername in buildernames:
                 #subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
             
     elif(buildername == "htmlhelp"):
-        hhc = "${HTML_HELP_COMPILER}" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"
+        hhc = "C:/Program Files (x86)/HTML Help Workshop/hhc.exe" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"
         
         if( os.path.exists( hhc )):
             print("Compile chm with", hhc, "...")
@@ -145,7 +146,7 @@ for buildername in buildernames:
         if ctypes.windll.shell32.IsUserAnAdmin() == 0:
             raise RuntimeError("Latex file can only be modified, if itom is executed as admin.")
             
-        pdflatex  = "${PDFLATEX_COMPILER}" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
+        pdflatex  = "PDFLATEX_COMPILER-NOTFOUND" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
         texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
         
         # replace some lines in tex files
