@@ -77,6 +77,8 @@
 #include <langinfo.h>
 #endif
 
+#include "opencv2/core/core_c.h"
+
 namespace ito
 {
 

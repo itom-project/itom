@@ -32,7 +32,7 @@
 #include <qdir.h>
 #include <qmutex.h>
 #include <qregexp.h>
-#include "opencv/cv.h"
+#include "opencv2/opencv.hpp"
 #include <iostream>
 #include "DataObject\dataobj.h"
 #include "common/typeDefs.h"
