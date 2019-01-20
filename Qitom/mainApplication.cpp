@@ -234,6 +234,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     RetVal retValue = retOk;
     RetVal pyRetValue;
     QStringList startupScripts;
+    QSharedPointer<QVariantMap> infoMessages(new QVariantMap());
 
     registerMetaObjects();
 
@@ -308,7 +309,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #ifdef WIN32
     if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
-        QByteArray oldpath = getenv("path");
+        QByteArray oldpath = qgetenv("path");
         QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
         QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
         QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
@@ -552,11 +553,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
     qDebug("..python engine started");
 
-    //retValue += m_pyEngine->pythonSetup();
     m_pyThread = new QThread();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
-    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue));
+    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue), Q_ARG(QSharedPointer<QVariantMap>, infoMessages));
 
     qDebug("..python engine moved to new thread");
 
@@ -582,6 +582,16 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         m_mainWin = new MainWindow();
         AppManagement::setMainWindow(qobject_cast<QObject*>(m_mainWin));
+
+        if (m_mainWin && infoMessages->size() > 0)
+        {
+            QMapIterator<QString, QVariant> it(*infoMessages);
+            while (it.hasNext()) 
+            {
+                it.next();
+                m_mainWin->showInfoMessageLine(it.value().toString(), it.key());
+            }
+        }
 
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();

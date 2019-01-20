@@ -745,6 +745,28 @@ DObjIterator DObjIterator::operator ++(int)
         cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
     }
 
+#define CHECK_NUM_PLANES_AND_PLANE_SIZE(otherObject) \
+    if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size)) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__)); \
+    } \
+    else if (getNumPlanes() != otherObject.getNumPlanes()) \
+    { \
+        /*dataObjects have different numbers of planes.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal number of planes)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size())) \
+    { \
+        /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
+        /*but the size of both planes (last two dimensions) is not equal.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal size of each plane)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0) \
+    { \
+        /*One of the matrix dimensions is zeros, so matrix operations are meaningless*/ \
+        cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
+    }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method for freeing allocated data blocks
 /*!
@@ -7273,11 +7295,6 @@ The result is stored in a result matrix of the same plane size and type. Only on
 	{
 		cv::error(cv::Exception(CV_StsAssert, "A length less than one was given", "", __FILE__, __LINE__));
 	}
-	else if (num == 1)
-	{
-        //TODO: is this good? (Marc: I would return a 3d object, too)
-		return mats[0];
-	}
 	if (axis >= 3)
 	{
 		cv::error(cv::Exception(CV_StsAssert, "An axis greater 2 was given", "", __FILE__, __LINE__));
@@ -9686,9 +9703,332 @@ DataObject real(const DataObject &dObj)
     }
     else
     {
-        cv::error(cv::Exception(CV_StsAssert, "Real() not defined for real input parameter type", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Real not defined for real input parameter type", "", __FILE__, __LINE__));
         return DataObject();
     }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+//! low-level, double templated method to save the element-wise real value of each element in source matrix to result matrix
+/*!
+	This method takes the real value of a complex valued input matrix and stores it in the equivalent real typed result matrix
+
+	\param *dObj is source matrix, must have complex type
+	\param *resObj is the resulting data object, which has the real data type which corresponds to the complex type
+	\return retOk
+	\sa std::abs
+*/
+template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, DataObject *valueObj)
+{
+	int numMats = dObj->getNumPlanes();
+
+	cv::Mat_<_Tp> * dObjMat = NULL;
+	const cv::Mat_<_Tp> * valMat = NULL;
+	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+
+
+	if (valueObj->getTotal() == 1) //just a single value
+	{
+		const int valMat = valueObj->seekMat(0);
+		const _Tp *valPtr = NULL;
+		valPtr = (_Tp*)valueObj->rowPtr(valMat, 0);
+		const _Tp val = valPtr[0];
+
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = val;
+					}
+				}
+
+#if (USEOMP)
+		}
+#endif
+	}
+	}
+	else if (dObj->getDims() == valueObj->getDims())
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[nmat]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	else //valueObj has 2 dimensions
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[0]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	return 0;
+}
+
+//! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
+/*!
+	\param &dObj
+	\return new data object with real values
+	\throws cv::Exception if undefined data type (e.g. real data types)
+	\sa ArgFunc
+*/
+RetVal DataObject::setReal(DataObject &valuesObj)
+{
+	if (this->getType() >= TYPE_OFFSET_COMPLEX && this->getType() < TYPE_OFFSET_RGBA) //data object only complex
+	{
+		if (this->getType() == ito::tComplex128 && valuesObj.getType() == ito::tFloat64)
+		{
+			SetRealFunc<ito::complex128, ito::float64>(this, &valuesObj);
+		}
+		else if (this->getType() == ito::tComplex64 && valuesObj.getType() == ito::tFloat32)
+		{
+			SetRealFunc<ito::complex64, ito::float32>(this, &valuesObj);
+		}
+		else
+		{
+			cv::error(cv::Exception(CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+			return ito::retError;
+		}
+
+		return 0;
+	}
+	else
+	{
+		cv::error(cv::Exception(CV_StsAssert, "Real not defined for real input parameter type", "", __FILE__, __LINE__));
+		return ito::retError;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+//! low-level, double templated method to save the element-wise real value of each element in source matrix to result matrix
+/*!
+	This method takes the real value of a complex valued input matrix and stores it in the equivalent real typed result matrix
+
+	\param *dObj is source matrix, must have complex type
+	\param *resObj is the resulting data object, which has the real data type which corresponds to the complex type
+	\return retOk
+	\sa std::abs
+*/
+template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, DataObject *valueObj)
+{
+	int numMats = dObj->getNumPlanes();
+
+	cv::Mat_<_Tp> * dObjMat = NULL;
+	const cv::Mat_<_Tp> * valMat = NULL;
+	int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+	int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+
+
+	if (valueObj->getTotal() == 1) //just a single value
+	{
+		const int valMat = valueObj->seekMat(0);
+		const _Tp *valPtr = NULL;
+		valPtr = (_Tp*)valueObj->rowPtr(valMat, 0);
+		const _Tp val = valPtr[0];
+
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = val;
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	else if (dObj->getDims() == valueObj->getDims())
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[nmat]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	else //valueObj has 2 dimensions
+	{
+		for (int nmat = 0; nmat < numMats; nmat++)
+		{
+			dObjMat = static_cast<cv::Mat_<_Tp> *>(dObj->get_mdata()[nmat]);
+			valMat = static_cast<const cv::Mat_<_Tp> *>(valueObj->get_mdata()[0]);
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+			{
+#endif
+				_Tp* dObjPtr = NULL;
+				const _Tp* valPtr = NULL;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+
+				for (int y = 0; y < sizey; y++)
+				{
+					dObjPtr = (_Tp*)dObjMat->ptr(y);
+					valPtr = (_Tp*)valMat->ptr(y);
+
+					for (int x = 0; x < sizex; x++)
+					{
+						dObjPtr[2 * x + 1] = valPtr[x];
+					}
+				}
+
+#if (USEOMP)
+			}
+#endif
+		}
+	}
+	return 0;
+}
+
+//! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
+/*!
+	\param &dObj
+	\return new data object with real values
+	\throws cv::Exception if undefined data type (e.g. real data types)
+	\sa ArgFunc
+*/
+RetVal DataObject::setImag(DataObject &valuesObj)
+{
+	if (this->getType() >= TYPE_OFFSET_COMPLEX && this->getType() < TYPE_OFFSET_RGBA)
+	{
+		if (this->getType() == ito::tComplex128)
+		{
+			SetImagFunc<ito::complex128, ito::float64>(this, &valuesObj);
+		}
+		else if (this->getType() == ito::tComplex64 && valuesObj.getType() == ito::tFloat32)
+		{
+			SetImagFunc<ito::complex64, ito::float32>(this, &valuesObj);
+		}
+		else
+		{
+			cv::error(cv::Exception(CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+			return ito::retError;
+		}
+
+		return ito::retOk;
+	}
+	else
+	{
+		cv::error(cv::Exception(CV_StsAssert, "Imag not defined for real input parameter type", "", __FILE__, __LINE__));
+		return ito::retError;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -9769,7 +10109,7 @@ DataObject imag(const DataObject &dObj)
     }
     else
     {
-        cv::error(cv::Exception(CV_StsAssert, "Imag() not defined for real input parameter type", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Imag not defined for real input parameter type", "", __FILE__, __LINE__));
         return DataObject();
     }
 }

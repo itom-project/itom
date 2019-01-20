@@ -45,6 +45,7 @@
 #include "pythonFont.h"
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
+#include "pythonJedi.h"
 
 #include "../../AddInManager/addInManager.h"
 #include "common/interval.h"
@@ -180,7 +181,10 @@ PythonEngine::PythonEngine() :
     dictUnicode(NULL),
     m_pythonThreadId(0),
     m_includeItomImportString(""),
-    m_pUserDefinedPythonHome(NULL)
+    m_pUserDefinedPythonHome(NULL),
+    m_pyModJedi(NULL),
+    m_pyModJediChecked(false),
+    m_syntaxCheckerEnabled(true)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -250,6 +254,13 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
+    qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
+    qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
+    qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
+    qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
+    qRegisterMetaType<ito::JediCompletionRequest>("ito::JediCompletionRequest");
+    qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
+    qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -295,7 +306,7 @@ PythonEngine::~PythonEngine()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonSetup(ito::RetVal *retValue)
+void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
@@ -438,6 +449,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 
             dictUnicode = PyUnicode_FromString("__dict__");
+            slotsUnicode = PyUnicode_FromString("__slots__");
 
             PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
 
@@ -733,6 +745,14 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
+#if PY_VERSION_HEX < 0x03060000
+                if (PyErr_ExceptionMatches(PyExc_ImportError) && m_syntaxCheckerEnabled)
+#else
+                if (PyErr_ExceptionMatches(PyExc_ModuleNotFoundError) && m_syntaxCheckerEnabled)
+#endif
+                {
+                    (*infoMessages)["PyFlakes"] = "Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.";
+                }
                 PyErr_Clear();
             }
 
@@ -833,17 +853,36 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             (*retValue) += ito::RetVal(ito::retError, 2, tr("Deadlock in python setup.").toLatin1().data());
         }
     }
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
+
+    bool syntaxCheckerEnabled = m_syntaxCheckerEnabled;
+    m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
+    
+    if (m_syntaxCheckerEnabled && !syntaxCheckerEnabled && !m_pyModSyntaxCheck)
+    {
+        QObject* mainWin = AppManagement::getMainWindow();
+        if (mainWin)
+        {
+            QString text = tr("Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
+            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PyFlakes"));
+        }
+    }
+    else if (!m_syntaxCheckerEnabled)
+    {
+        QObject* mainWin = AppManagement::getMainWindow();
+        if (mainWin)
+        {
+            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, ""), Q_ARG(QString, "PyFlakes"));
+        }
+    }
 
     settings.endGroup();
 }
@@ -977,6 +1016,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         Py_XDECREF(m_pyModSyntaxCheck);
         m_pyModSyntaxCheck = NULL;
 
+        Py_XDECREF(m_pyModJedi);
+        m_pyModJedi = NULL;
+
         Py_XDECREF(m_pyModGC);
         m_pyModGC = NULL;
 
@@ -995,6 +1037,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         }
 
         Py_XDECREF(dictUnicode);
+        Py_XDECREF(slotsUnicode);
 
         //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
@@ -1216,12 +1259,17 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 PyObject *dictItem = PyDict_GetItemString(PyModule_GetDict(m_autoReload.modAutoReload), "ItomAutoreloader"); // both borrowed references
                 if (dictItem == NULL)
                 {
-                    std::cerr << "The class 'ItomAutoreloader' could not be found" << std::endl;
+                    std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' in module 'autoreload' could not be found:\n" << std::endl;
                     PyErr_PrintEx(0);
                 }
                 else
                 {
                     m_autoReload.classAutoReload = PyObject_CallObject(dictItem, NULL); //!< http://bytes.com/topic/python/answers/649229-_pyobject_new-pyobject_init-pyinstance_new-etc, new reference
+                    if (m_autoReload.classAutoReload == NULL)
+                    {
+                        std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' could not be instantiated.\n" << std::endl;
+                        PyErr_PrintEx(0);
+                    }
                 }
             }
 
@@ -1367,6 +1415,10 @@ ito::RetVal PythonEngine::runString(const QString &command)
         catch(std::exception &exc)
         {
             result = setPyErrFromException(exc);
+        }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python command (maybe stack overflow?)");
         }
 
         if (result == NULL)
@@ -1539,6 +1591,10 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             {
                 result = setPyErrFromException(exc);
             }
+            catch (...)
+            {
+                result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python script (maybe stack overflow?)");
+            }
 
             if (result == NULL)
             {
@@ -1613,6 +1669,10 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
     catch(std::exception &exc)
     {
         ret = setPyErrFromException(exc);
+    }
+    catch (...)
+    {
+        ret = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python method (maybe stack overflow?)");
     }
 
     if (ret == NULL)
@@ -1723,6 +1783,10 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         catch(std::exception &exc)
         {
             result = setPyErrFromException(exc);
+        }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python method (maybe stack overflow?)");
         }
 
         clearDbgCmdLoop();
@@ -1853,6 +1917,10 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             result = setPyErrFromException(exc);
         }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python script (maybe stack overflow?)");
+        }
 
         clearDbgCmdLoop();
 
@@ -1982,6 +2050,10 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         {
             result = setPyErrFromException(exc);
         }
+        catch (...)
+        {
+            result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when debugging python command (maybe stack overflow?)");
+        }
 
         clearDbgCmdLoop();
 
@@ -2032,6 +2104,355 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool PythonEngine::tryToLoadJediIfNotYetDone()
+{
+    if (m_pyModJediChecked)
+    {
+        return m_pyModJedi != NULL;
+    }
+    else
+    {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
+        m_pyModJediChecked = true;
+        m_pyModJedi = PyImport_ImportModule("itomJediLib"); //new reference
+
+        if (m_pyModJedi == NULL)
+        {
+            QObject* mainWin = AppManagement::getMainWindow();
+            if (mainWin)
+            {
+                QString text = tr("Auto completion, calltips, goto definition... not possible, since the package 'jedi' could not be loaded (Python packages 'jedi' and 'parso' are required for this feature).");
+                QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PythonEngine"));
+            }
+
+            PyErr_Clear();
+            PyGILState_Release(gstate);
+            return false;
+        }
+        PyGILState_Release(gstate);
+        return true;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCalltipRequestEnqueued()
+//void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
+{
+    QVector<ito::JediCalltip> calltips;
+
+    ito::JediCalltipRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCalltipRequests.isEmpty())
+        {
+            request = m_queuedJediCalltipRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+    int lineOffset = 0;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        lineOffset = 1;
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", request.m_source.toUtf8().constData(), \
+            request.m_line, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycalltip = NULL;
+        const char* calltip;
+        int column;
+        int bracketStartCol;
+        int bracketStartLine;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pycalltip = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycalltip))
+            {
+                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                {
+                    calltips.append(ito::JediCalltip(QLatin1String(calltip), column, bracketStartLine - lineOffset, bracketStartCol));
+                }
+                else
+                {
+                    std::cerr << "Error in calltip: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in calltip: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting calltips from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+        
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCalltipRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCalltipRequests.clear();
+    }
+
+    m_queuedJediCalltipRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCalltipRequestEnqueued");
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName)
+{
+    QVector<ito::JediAssignment> assignments;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    int lineOffset = 0;
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        lineOffset = 1;
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", source.toUtf8().constData(), line, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pydefinition = NULL;
+        const char* path2;
+        const char* fullName;
+        int column;
+        int line;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pydefinition = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pydefinition))
+            {
+                if (PyArg_ParseTuple(pydefinition, "siis", &path2, &line, &column, &fullName))
+                {
+                    if (line >= 0)
+                    {
+                        QFileInfo filepath2 = QString(QLatin1String(path2));
+                        if (lineOffset == 1)
+                        {
+                            QFileInfo filepath = path;
+                            if (filepath != filepath2)
+                            {
+                                lineOffset = 0;
+                            }
+                        }
+                        assignments.append(ito::JediAssignment(filepath2.canonicalFilePath(), line - lineOffset, column, QLatin1String(fullName)));
+                    }
+                }
+                else
+                {
+                    std::cerr << "Error in assignment / definition: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in assignment / definition: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting assignments or definitions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = sender();
+    if (s && callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QVector<ito::JediAssignment>, assignments));
+        
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::jediCompletionRequestEnqueued()
+{
+    ito::JediCompletionRequest request;
+
+    {
+        QMutexLocker locker(&m_jediRequestMutex);
+
+        if (!m_queuedJediCompletionRequests.isEmpty())
+        {
+            request = m_queuedJediCompletionRequests.dequeue();
+
+            if (request.m_sender.isNull())
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    QVector<ito::JediCompletion> completions;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *result = NULL;
+
+    if (m_includeItomImportBeforeSyntaxCheck)
+    {
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
+            request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pycompletion = NULL;
+        const char* calltip;
+        const char* tooltip;
+        const char* icon;
+        const char* docstring;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pycompletion = PyList_GetItem(result, idx); //borrowed ref
+            
+            if (PyTuple_Check(pycompletion))
+            {
+                if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                {
+                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), \
+                        QLatin1String(icon), QLatin1String(docstring)));
+                }
+                else
+                {
+                    std::cerr << "Error in completion: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in completion: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+//#ifdef _DEBUG
+        std::cerr << "Error when getting completions from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+//#endif
+    }
+
+    
+
+    PyGILState_Release(gstate);
+
+    QObject *s = request.m_sender.data();
+    if (s && request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(int, request.m_line), \
+            Q_ARG(int, request.m_col), Q_ARG(int, request.m_requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
+        
+    }
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
+{
+    QMutexLocker locker(&m_jediRequestMutex);
+
+    if (!m_queuedJediCompletionRequests.isEmpty())
+    {
+        //clear queue and add new request
+        m_queuedJediCompletionRequests.clear();
+    }
+
+    m_queuedJediCompletionRequests.enqueue(request);
+
+    QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
 /*!
     This function calls the pyflakes or frosted python module. This module is able to check the syntax.
@@ -2042,7 +2463,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
 */
-void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender)
+void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName)
 {
     if (m_pyModSyntaxCheck)
     {
@@ -2058,7 +2479,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().constData());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
         {
@@ -2142,9 +2563,9 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             }
 
             QObject *s = sender.data();
-            if (s)
+            if (s && callbackFctName != "")
             {
-                QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
+                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
             }
         }
 #ifdef _DEBUG
@@ -2501,8 +2922,9 @@ void PythonEngine::pythonRunFile(QString filename)
     case pyStateIdle:
         {
         pythonStateTransition(pyTransBeginRun);
+
         list = filename.split(";");
-        foreach (const QString &filenameTemp, list)
+        foreach(const QString &filenameTemp, list)
         {
             if (filenameTemp != "")
             {
@@ -3340,11 +3762,34 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                 return NULL;
             }
         }
+        else if (PyObject_HasAttr(obj, slotsUnicode))
+        {
+            if (itemKeyType == 's') //string
+            {
+                tempObj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+                if (validVariableName)
+                {
+                    *validVariableName = itemKey;
+                }
+            }
+
+            obj = tempObj;
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj);
+                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
+            }
+
+            objIsNewRef = (tempObj != NULL);
+        }
         else
         {
             return NULL; //error
         }
+
         items.removeFirst();
+        tempObj = NULL;
     }
 
     if (objIsNewRef == false)
@@ -3649,6 +4094,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject* temp2;
     PyObject* globalDict = NULL;
     PyObject* localDict = NULL;
+    PyObject* callRet = NULL;
 
     tPythonDbgCmd recentDbgCmd = pyDbgNone;
 
@@ -3735,10 +4181,13 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     if (filename == "<string>") //indicates that an exception has been thrown while debugging, then let the debugger run and finish in order that the exception is printed out
     {
-        if (!PyObject_CallMethod(self, "set_continue", ""))
+        callRet = PyObject_CallMethod(self, "set_continue", ""); //new ref
+        if (!callRet)
         {
             PyErr_PrintEx(0);
         }
+        Py_XDECREF(callRet);
+        callRet = NULL;
     }
     else //proceed the normal debug turnus
     {
@@ -3792,34 +4241,49 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         switch (recentDbgCmd)
         {
         case ito::pyDbgStep:
-            if (!PyObject_CallMethod(self, "set_step", ""))
+            callRet = PyObject_CallMethod(self, "set_step", "");
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgContinue:
-            if (!PyObject_CallMethod(self, "set_continue", ""))
+            callRet = PyObject_CallMethod(self, "set_continue", "");
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgStepOver:
-            if (!PyObject_CallMethod(self, "set_next", "O", frame))
+            callRet = PyObject_CallMethod(self, "set_next", "O", frame);
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgStepOut:
-            if (!PyObject_CallMethod(self,"set_return", "O", frame))
+            callRet = PyObject_CallMethod(self, "set_return", "O", frame);
+            if (!callRet)
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             break;
         case ito::pyDbgQuit:
-            if (!PyObject_CallMethod(self,"do_quit", "O", frame)) //!< do_quit instead of set_quit, since one member-variable is set in itoDebugger.py
+            callRet = PyObject_CallMethod(self, "do_quit", "O", frame);
+            if (!callRet) //!< do_quit instead of set_quit, since one member-variable is set in itoDebugger.py
             {
                 PyErr_PrintEx(0);
             }
+            Py_XDECREF(callRet);
+            callRet = NULL;
             PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
@@ -5615,7 +6079,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return retval;
     }
 
-    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
+    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //new reference
 
     if (builtinsModule == NULL)
     {
@@ -5623,22 +6087,23 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return retval;
     }
 
-    PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //both: borrowed
     
-    PyObject* pyMode = PyUnicode_FromString("wb\0");
+    Py_DECREF(builtinsModule);
+    builtinsModule = NULL;
+    
+    PyObject* pyMode = PyUnicode_FromString("wb\0"); //new reference
     PyObject* fileHandle = NULL;
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
     
     if (pyFileName != NULL)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
     
-    if (pyMode) Py_DECREF(pyMode);
-
+    Py_XDECREF(pyMode);
 
     if (fileHandle == NULL)
     {
@@ -5648,11 +6113,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     {
         PyObject *result = NULL;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
-        PyObject *dumpObj = PyUnicode_FromString("dump");
+        PyObject *dumpObj = PyUnicode_FromString("dump"); //new reference
         
         try
         {
-            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL);
+            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL); //new reference
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5684,10 +6149,13 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
         Py_XDECREF(result);
 
-        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        result = PyObject_CallMethod(fileHandle, "close", ""); //new reference
+        if (!result)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
+
+        Py_XDECREF(result);
     }
 
     Py_XDECREF(fileHandle);
@@ -5823,7 +6291,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         return retval;
     }
 
-    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //borrowed
+    PyObject *builtinsModule = PyObject_GetAttrString(mainModule, "__builtins__"); //new reference
 
     if (builtinsModule == NULL)
     {
@@ -5832,7 +6300,9 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(), "rb\0"); //new reference
+    
+    Py_DECREF(builtinsModule);
+    builtinsModule = NULL;
     
     PyObject* pyMode = PyUnicode_FromString("rb\0");
     PyObject* fileHandle = NULL;
@@ -5841,7 +6311,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     
     if (pyFileName != NULL)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
     
@@ -5940,11 +6410,13 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
   
         }
 
-        if (!PyObject_CallMethod(fileHandle, "close", ""))
+        PyObject *callRet = PyObject_CallMethod(fileHandle, "close", ""); //new reference
+        if (!callRet)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
 
+        Py_XDECREF(callRet);
         Py_XDECREF(fileHandle);
         Py_XDECREF(unpickledItem);
     }

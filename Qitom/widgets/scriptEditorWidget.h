@@ -25,7 +25,14 @@
 
 #include "../models/breakPointModel.h"
 
-#include "abstractPyScintillaWidget.h"
+#include "abstractCodeEditorWidget.h"
+#include "../codeEditor/panels/foldingPanel.h"
+#include "../codeEditor/panels/checkerBookmarkPanel.h"
+#include "../codeEditor/panels/breakpointPanel.h"
+#include "../codeEditor/modes/errorLineHighlight.h"
+#include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/panels/lineNumber.h"
+
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
@@ -35,15 +42,10 @@
 #include <qmenu.h>
 #include <qevent.h>
 #include <qmetaobject.h>
+#include <qsharedpointer.h>
 #include "../models/classNavigatorItem.h"
 
-#if QT_VERSION >= 0x050000
-    #include <QtPrintSupport/qprinter.h>
-#else
-    #include <qprinter.h>
-#endif
-
-#include <Qsci/qsciprinter.h>
+#include <QtPrintSupport/qprinter.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -69,16 +71,14 @@ Q_DECLARE_METATYPE(QList<ito::ScriptEditorStorage>) //must be outside of namespa
 namespace ito
 {
 
-class ScriptEditorWidget : public AbstractPyScintillaWidget
+
+class ScriptEditorWidget : public AbstractCodeEditorWidget
 {
     Q_OBJECT
 
 public:
     ScriptEditorWidget(QWidget* parent = NULL);
     ~ScriptEditorWidget();
-
-    bool m_errorMarkerVisible;
-    int m_errorMarkerNr; //number of indicator which marks the line with current error
 
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
@@ -99,18 +99,24 @@ public:
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
 
+    RetVal toggleBookmark(int line);
+    RetVal clearAllBookmarks();
+    RetVal gotoNextBookmark();
+    RetVal gotoPreviousBookmark();
+
+    virtual bool removeTextBlockUserData(TextBlockUserData* userData);
+
 protected:
-    //void keyPressEvent (QKeyEvent *event);
     bool canInsertFromMimeData(const QMimeData *source) const;
-    void autoAdaptLineNumberColumnWidth();
-//    void dragEnterEvent(QDragEnterEvent *event);
+
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
-private:
+    virtual void contextMenuAboutToShow(int contextMenuLine);
 
+private:
     enum markerType
     {   
         markerBookmark = 1,
@@ -119,24 +125,7 @@ private:
     };
 
     RetVal initEditor();
-
-    void contextMenuEvent (QContextMenuEvent * event);
-
-    int getMarginNumber(int xPos);
-
-    RetVal initMenus();
-
-    RetVal toggleBookmark(int line);
-    RetVal clearAllBookmarks();
-    RetVal gotoNextBookmark();
-    RetVal gotoPreviousBookmark();
-
-    RetVal toggleBreakpoint(int line);
-    RetVal toggleEnableBreakpoint(int line);
-    RetVal editBreakpoint(int line);
-    RetVal clearAllBreakpoints();
-    RetVal gotoNextBreakPoint();
-    RetVal gotoPreviousBreakPoint();
+    void initMenus();
     
     bool lineAcceptsBPs(int line);
 
@@ -145,61 +134,15 @@ private:
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex fileSystemWatcherMutex;
 
-    //!< marker handling
-    struct BookmarkErrorEntry
-    {
-        int handle;
-        int type; //entry of enum markerType
-        QString errorMessage;
-        QString errorComment;
-        int errorPos;
-    };
-    QList<BookmarkErrorEntry> bookmarkErrorHandles;
-    int syntaxErrorHandle;
-
     bool m_syntaxCheckerEnabled;
     int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
-    // int m_lastTipLine; // TODO: not used anymore?
-
-    struct BPMarker
-    {
-        int bpHandle;
-        int lineNo;
-        bool markedForDeletion;
-    };
-
-    QList<BPMarker> m_breakPointMap; //!< <int bpHandle, int lineNo>
-
-    unsigned int markBreakPoint;
-    unsigned int markCBreakPoint;
-    unsigned int markBreakPointDisabled;
-    unsigned int markCBreakPointDisabled;
-    unsigned int markBookmark;
-    unsigned int markSyntaxError;
-    unsigned int markBookmarkSyntaxError;
-
-    unsigned int markCurrentLine;
-    int markCurrentLineHandle;
-
-    unsigned int markMask1;
-    unsigned int markMask2;
-    unsigned int markMaskBreakpoints;
-
-    //QsciLexerPython* qSciLex;
-    //QsciAPIs* qSciApi;
 
     //!< menus
-    QMenu *bookmarkMenu;
-    QMenu *syntaxErrorMenu;
-    QMenu *breakpointMenu;
-    QMenu *editorMenu;
+    QMenu *m_contextMenu;
 
     std::map<QString,QAction*> bookmarkMenuActions;
-    std::map<QString,QAction*> breakpointMenuActions;
-    std::map<QString,QAction*> editorMenuActions;
-
-    int contextMenuLine;
+    std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
     int unnamedNumber;
@@ -208,6 +151,13 @@ private:
     bool m_pythonExecutable;
 
     bool canCopy;
+
+    QSharedPointer<FoldingPanel> m_foldingPanel;
+    QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
+    QSharedPointer<BreakpointPanel> m_breakpointPanel;
+    QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
+    QSharedPointer<LineNumberPanel> m_lineNumberPanel;
+    QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
 
     static const QString lineBreak;
     static int unnamedAutoIncrement;
@@ -232,20 +182,10 @@ signals:
     void requestModelRebuild(ScriptEditorWidget *editor);
 
 public slots:
-    void menuToggleBookmark();
+    
     void checkSyntax();
     void syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors); //if frosted is used, syntaxErrors are contained in flakes
     void errorListChange(const QStringList &errorList);
-    void menuClearAllBookmarks();
-    void menuGotoNextBookmark();
-    void menuGotoPreviousBookmark();
-
-    void menuToggleBreakpoint();
-    void menuToggleEnableBreakpoint();
-    void menuEditBreakpoint();
-    void menuClearAllBreakpoints();
-    void menuGotoNextBreakPoint();
-    void menuGotoPreviousBreakPoint();
 
     void menuCut();
     void menuCopy();
@@ -255,6 +195,7 @@ public slots:
     void menuComment();
     void menuUncomment();
 
+    void menuFoldAll();
     void menuUnfoldAll();
     void menuFoldUnfoldToplevel();
     void menuFoldUnfoldAll();
@@ -281,25 +222,27 @@ public slots:
     void print();
 
 private slots:
-    void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
+    void toggleBookmarkRequested(int line);
+    void gotoBookmarkRequested(bool next);
+    void clearAllBookmarksRequested();
+
+    RetVal toggleBreakpoint(int line);
+    RetVal toggleEnableBreakpoint(int line);
+    RetVal editBreakpoint(int line);
+    RetVal clearAllBreakpoints();
+    RetVal gotoNextBreakPoint();
+    RetVal gotoPreviousBreakPoint();
+
+    void gotoAssignmentOutOfDoc(PyAssignment ref);
+
     void copyAvailable(const bool yes);
 
     void classNavTimerElapsed();
 
     void nrOfLinesChanged();
 
-    RetVal preShowContextMenuMargin();
-    RetVal preShowContextMenuEditor();
-
     void fileSysWatcherFileChanged ( const QString & path );
     void printPreviewRequested(QPrinter *printer);
-};
-
-class ItomQsciPrinter : public QsciPrinter
-{
-public:
-    ItomQsciPrinter(QPrinter::PrinterMode mode=QPrinter::ScreenResolution) : QsciPrinter(mode) {}
-    virtual void formatPage( QPainter &painter, bool drawing, QRect &area, int pagenr );
 };
 
 } //end namespace ito

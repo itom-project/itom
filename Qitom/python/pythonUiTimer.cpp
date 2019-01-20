@@ -134,7 +134,7 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc [, argTuple, singleShot]) -> new callback timer \n\
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = [], singleShot = False) -> new callback timer \n\
 \n\
 Creates a timer object that continuously calls a python callback function or method with a certain interval. The timer is active after construction and \n\
 stops when this instance is destroyed or stop() is called. \n\

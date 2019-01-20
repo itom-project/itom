@@ -3,5 +3,11 @@
         <file alias="icons/undockButtonGlyph.png">icons/undockButtonGlyph.png</file>
         <file alias="icons/dockButtonGlyph.png">icons/dockButtonGlyph.png</file>
     </qresource>
+    <qresource prefix="/application">
+        <file alias="icons/itomicon/itologo64.png">icons/itomicon/itologo64.png</file>
+    </qresource>
+    <qresource prefix="/classNavigator">
+        <file alias="icons/var.png">icons/var.png</file>
+    </qresource>
 </RCC>
 

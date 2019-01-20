@@ -857,7 +857,7 @@ See Also \n\
 --------- \n\
 getParam, setParam, getParamListInfo");
 
-PyDoc_STRVAR(pyPluginGetParamListInfo_doc, "getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters. \n\
+PyDoc_STRVAR(pyPluginGetParamListInfo_doc, "getParamListInfo(detailLevel = 1) -> prints detailed information about all plugin parameters. \n\
 \n\
 Each plugin defines a set of parameters, where each parameter has got a name and maps to any value. The value is represented by \n\
 the C++ class ito::ParamBase and can have one of the following types: \n\
@@ -1227,7 +1227,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name[, mandparams, optparams]) -> creates new instance of actuator plugin 'name' \n\
+PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name, *mandparams, *optparams) -> creates new instance of actuator plugin 'name' \n\
 \n\
 This is the constructor for an `actuator` plugin. It initializes an new instance of the plugin specified by 'name'. \n\
 The initialisation parameters are parsed and unnamed parameters are used in their incoming order to fill first \n\
@@ -1344,17 +1344,17 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
         return -1;
     }
-
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    if (!retval.containsError())
+    else
     {
+        params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
+
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
+            Py_XDECREF(params);
             PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
             return -1;
         }
-        Py_DECREF(params);
+        Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
@@ -2506,7 +2506,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name' \n\
+PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name, *mandparams, *optparams) -> creates new instance of dataIO plugin 'name' \n\
 \n\
 This is the constructor for a `dataIO` plugin. It initializes an new instance of the plugin specified by 'name'. \n\
 The initialisation parameters are parsed and unnamed parameters are used in their incoming order to fill first \n\
@@ -2618,17 +2618,17 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
         return -1;
     }
-
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    if (!retval.containsError())
+    else
     {
+        params = PyTuple_GetSlice(args, 1, PyTuple_Size(args)); //new reference
+
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
+            Py_XDECREF(params);
             PyErr_SetString(PyExc_ValueError, "error while parsing parameters.");
             return -1;
         }
-        Py_DECREF(params);
+        Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 
@@ -2787,7 +2787,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParamInfo(PyDataIOPlugin* self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_startDevice_doc,"startDevice([count=1]) -> starts the given dataIO-plugin. \n\
+PyDoc_STRVAR(PyDataIOPlugin_startDevice_doc,"startDevice(count = 1) -> starts the given dataIO-plugin. \n\
 \n\
 This command starts the dataIO plugin such that it is ready for data acquisition. Call this method before you start \n\
 using commands like acquire, `getVal` or `copyVal`. If the device already is started, an internal start-counter is incremented \n\
@@ -2870,7 +2870,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_stopDevice_doc,"stopDevice([count=1]) -> stops the given dataIO-plugin. \n\
+PyDoc_STRVAR(PyDataIOPlugin_stopDevice_doc,"stopDevice(count = 1) -> stops the given dataIO-plugin. \n\
 \n\
 If this method is called as many times as the corresponding `startDevice` (or if the counts are equal), the \n\
 dataIO device is stopped (not deleted) and it is not possible to acquire further data. \n\
@@ -2999,7 +2999,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers a new the camera acquisition \n\
+PyDoc_STRVAR(PyDataIOPlugin_acquire_doc,"acquire(trigger = dataIO.TRIGGER_SOFTWARE) -> triggers a new the camera acquisition \n\
 \n\
 This method triggers a new data acquisition. This method immediately returns even if the acquisition is not finished yet. \n\
 Use `getVal` or `copyVal` to get the acquired data. Both methods block until the data is available. \n\
@@ -3068,7 +3068,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=`dataObject`|`bytearray`|`bytes` [,length=maxlength]) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
+PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=`dataObject`|`bytearray`|`bytes` , length = maxlength) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
 \n\
 Returns a reference (shallow copy) of the recently acquired image (located in the internal memory if the plugin) if the plugin is a grabber or camera and the buffer is a `dataObject`. \n\
 Please consider that the values of the `dataObject` might change if a new image is acquired since it is only a reference. Therefore consider copying the `dataObject` or directly use \n\
@@ -3214,7 +3214,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_copyVal_doc,"copyVal(dataObject) -> gets deep copy of data of this plugin, stored in the given data object. \n\
+PyDoc_STRVAR(PyDataIOPlugin_copyVal_doc,"copyVal(destObject) -> gets deep copy of data of this plugin, stored in the given data object. \n\
 \n\
 Returns a deep copy of the recently acquired data (for grabber and ADDA only) of the camera or AD-converter device. \n\
 The deep copy sometimes requires one copy operation more than the similar command `getVal`. However, `getVal` only returns \n\
@@ -3225,7 +3225,7 @@ blocks and waits until the end of the acquisition. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dataObject : {`dataObject`}\n\
+destObject : {dataObject}\n\
     `dataObject` where the plugin data is copied to. Either provide an empty `dataObject` or a `dataObject` whose size (or region of interest) \n\
     exactly has the same size than the available data of the plugin. Therefore you can allocate a 3D data object, set a region of interest \n\
     to one plane such that the data from the plugin is copied into this plane. \n\

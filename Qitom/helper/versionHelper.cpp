@@ -53,8 +53,6 @@
     #include "patchlevel.h"
 #endif
 
-#include <Qsci/qsciglobal.h>
-
 #ifndef PCL_REVISION_VERSION
     #define PCL_REVISION_VERSION 0
 #endif
@@ -188,9 +186,6 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //Python
     items["Py_Version"] = PY_VERSION;
-
-    //QScintilla
-    items["QScintilla_Version"] = QSCINTILLA_VERSION_STR;
 
     //newPair.first = "QwtPlot_Version";
     //newPair.second = QWT_VERSION_STR;

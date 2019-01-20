@@ -41,13 +41,12 @@ public:
     ~WidgetFindWord();
 
     void setCursorToTextField();
-	void setText(QString &text);
+	void setText(const QString &text);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    
     Ui::WidgetFindWord ui;
 
 private slots:

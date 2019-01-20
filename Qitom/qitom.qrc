@@ -37,10 +37,12 @@
     <file>icons/class.png</file>
     <file>icons/method.png</file>
     <file>icons/method_private.png</file>
+    <file>icons/method_protected.png</file>
     <file>icons/method_clmethod.png</file>
     <file>icons/method_clmethod_private.png</file>
     <file>icons/method_static.png</file>
     <file>icons/method_static_private.png</file>
+    <file>icons/namespace.png</file>
     <file>icons/global.png</file>
   </qresource>
   <qresource prefix="/application">
@@ -57,7 +59,6 @@
     <file>icons/showAllPlots.png</file>
     <file>icons/hideAllPlots.png</file>
     <file>icons/showPlot.png</file>
-    <file>icons/itomicon/itologo64.png</file>
     <file>icons/itomicon/itomLogo3_32.png</file>
     <file>icons/adBlockAction.png</file>
     <file>icons/itomicon/itomLogo3_1024.png</file>

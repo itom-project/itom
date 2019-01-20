@@ -185,7 +185,7 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
         }
         else
         {
-            mtd = PyObject_CallMethod(self->func, "__get__", "OO", wr, self->klass);
+            mtd = PyObject_CallMethod(self->func, "__get__", "OO", wr, self->klass); //new reference
         }
     }
     else
@@ -195,7 +195,7 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
         Py_INCREF(mtd);
     }
 
-    res = PyObject_Call(mtd, args, kwds);
+    res = PyObject_Call(mtd, args, kwds); //new reference
     Py_XDECREF(mtd);
     return res;
 }

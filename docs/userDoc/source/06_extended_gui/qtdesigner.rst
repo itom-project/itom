@@ -466,6 +466,7 @@ Widget / ClassName       Public Method
 ======================= ================================================================================================================================================================================================================================
 QWidget                 void resize(int,int)
 QWidget                 void setGeometry(int,int,int,int)
+QWidget                 void setCursor(int) *sets the given cursor for this uiItem. The number is a value of the enum Qt::CursorShape. A number < 0 will unset the current cursor.
 QListWidget             void addItem(QString)
 QListWidget             void addItems(QStringList)
 QListWidget             void selectedRows() *returns a tuple of all selected row indices*
@@ -504,6 +505,8 @@ QSplitter               sizes() *returns the sizes (in pixel) of each section as
 QSplitter               setSizes(QList<int> sizes) *sets the sizes of all sections (in pixels). Pass sizes as tuple or list of integers*
 QSplitter               isCollapsible(int section) *returns True if the given section is collapsible, else False*
 QSplitter               setCollapsible(int section, bool value) *set if the given section should be collapsible (True) or not (False)*
+QStatusBar              uiItem addLabelWidget(QString) *adds an empty label to the status bar with the given object name and returns its reference
+QStatusBar              currentText() *Returns the temporary message currently shown, or an empty string if there is no such message.
 ======================= ================================================================================================================================================================================================================================
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
