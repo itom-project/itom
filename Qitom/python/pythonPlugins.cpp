@@ -384,6 +384,47 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 }
 
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** returns the names of extended Functionality available in a plugin
+*   @param [in] aib the plugin for which the parameter names are requested
+*   @return     python object with a string list with the execFuncs' names
+*/
+PyObject * getExecFuncsList(ito::AddInBase *aib)
+{
+    PyObject *result = NULL;
+    QMap<QString, ExecFuncParams> *funcList = NULL;
+    const char *name;
+    result = PyList_New(0);
+    aib->getExecFuncList(&funcList);
+
+    if (funcList)
+    {
+        result = PyList_New(0);
+        QStringList execFuncs = funcList->keys();		
+        PyObject *temp = NULL;
+        QStringList::const_iterator funcName;
+        for (funcName = execFuncs.constBegin(); funcName != execFuncs.constEnd(); ++funcName)
+        {
+			name = funcName->toLatin1().data();
+            if (name)
+            {
+				temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
+				PyList_Append(result, temp);
+            }
+            else
+            {
+				temp = PyUnicode_FromString("<invalid name>");
+                PyList_Append(result, temp);
+            }
+			Py_XDECREF(temp);
+        }
+    }
+
+    return result;
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** returns a list of execFunction available in a plugin similar to filterHelp 
 *   @param [in] aib     the plugin for which the execFuncs names are requested
@@ -1460,6 +1501,21 @@ PyObject* PythonPlugins::PyActuatorPlugin_getParamListInfo(PyActuatorPlugin* sel
     return getParamListInfo(aib, args);
 }
 
+/** returns the list of available ExecFunctions' names
+*   @param [in] self    the actuator object (python)
+*   @return             a dictionary with all available parameters for this actuator
+*
+*   All ExecFunctions of the plugin are shown or one specific ExecFunctions with additional information as min, max and infostring is shown.
+*   This can be useful as there are only few standard parameters for an actuator. The majority is
+*   depending on the actual hardware and accordingly is different for each plugin.
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_getExecFuncsList(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    return getExecFuncsList(aib);
+}
+
+
 /** returns the list of available parameters and additional information about the plugin ExecFunctions
 *   @param [in] self    the actuator object (python)
 *   @return             a dictionary with all available parameters for this actuator
@@ -2355,6 +2411,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
+   {"getExecFuncsList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsList, METH_NOARGS, pyPluginGetParamList_doc},/*wrong doc atm.*/
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyPluginName_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParam, METH_VARARGS, pyPluginGetParam_doc},

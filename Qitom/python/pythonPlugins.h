@@ -85,6 +85,7 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_name(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_getParamList(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_getParamListInfo(PyActuatorPlugin *self,  PyObject *args);
+       static PyObject *PyActuatorPlugin_getExecFuncsList(PyActuatorPlugin *self);
        static PyObject* PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyActuatorPlugin_getParam(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_getParamInfo(PyActuatorPlugin *self, PyObject *args);
