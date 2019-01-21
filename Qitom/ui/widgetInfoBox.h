@@ -26,6 +26,8 @@
 #include <QtGui>
 #include <qwidget.h>
 
+#include "../helper/guiHelper.h"
+
 #include "ui_widgetInfoBox.h"
 
 namespace ito
@@ -41,9 +43,14 @@ public:
     {
         ui.setupUi(this);
         ui.lblInfo->setText(infoText);
+        QFont f = ui.lblInfo->font();
+        float factor = GuiHelper::screenDpiFactor();
+        f.setPointSize(factor * f.pointSize());
+        ui.lblInfo->setFont(f);
+
         ui.btnClose->setIcon( QIcon(":/plugins/icons/pluginCloseInstance.png") );
         ui.btnClose->setText("");
-        ui.btnClose->setIconSize( QSize(12, 12) );
+        ui.btnClose->setIconSize( QSize(12 * factor, 12 * factor) );
 
         //setStyleSheet(QString("background-color: %1").arg(QColor(255, 255, 166).name()));
         //setStyleSheet( "QWidget { background-color: blue; }" );

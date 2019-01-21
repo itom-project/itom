@@ -18,7 +18,6 @@ The following list describe packages that are required or recommended for buildi
 Required:
 
 * **Qt4** or **Qt5** (libqtcore4, libqt4-dev, libqt4-...)
-* Editor **QScintilla** (libqscintilla2-8 or similar, libqscintilla2-dev)
 * **OpenCV** (libopencv-core2.3 or libopencv-core2.4, libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
 * **Python3** (python3, python3-dev, python3-dbg)
 * **Numpy** (python3-numpy, python3-numpy-dbg)
@@ -39,7 +38,7 @@ for Ubuntu 12.04 based distributions the following command should install all ne
 
 .. code-block:: bash
 
-    sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
+    sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
     
 for Ubuntu 16.04 based distributions the following command should install all necessary packages and its dependencies:
 
@@ -49,7 +48,6 @@ for Ubuntu 16.04 based distributions the following command should install all ne
     sudo apt install python3 python3-dev python3-numpy python3-pip python3-apt-dbg
     sudo apt install libopencv-dev
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
-    sudo apt install libqt5scintilla2-dev #this will install libqt5scintilla2-xx
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt-get install libv4l-dev #this is optional to get the video for linux drivers
     sudo apt-get install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
@@ -63,7 +61,6 @@ for Ubuntu 18.04 based distributtions the following command should install all n
     sudo apt install libopencv-dev
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
     sudo apt install qtwebengine5-dev libqt5webenginewidgets5 libqt5webengine-data
-    sudo apt install libqscintilla2-qt5-dev libqscintilla2-qt5-13-dbg
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt update && sudo apt-get install build-essential
     sudo apt install fftw-dev libfftw3-single3 libfftw3-double3 libfftw3-long3 libfftw3-dev #this is optional for being able to compile fftw plugins
@@ -94,9 +91,12 @@ Similar to Windows, the following folder structure is recommended:
     ./build_debug # build folder for debug makefiles of...
         ./itom    # ...core
         ./plugins # ...plugins
+        ./designerPlugins # ... designer plugins
         ...
     ./build_release # build folder for release makefiles of...
         ./itom      # ...core
+        ./plugins # ...plugins
+        ./designerPlugins # ... designer plugins
         ...
 
 Under linux, the debug and release versions are separated in two different build folders. If you are using QtCreator as IDE you can however create two different configurations, one mapping to the debug build folder, the other mapping ot the release build folder. Both use the same source folder.

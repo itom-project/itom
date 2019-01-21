@@ -19,7 +19,6 @@ Please execute the following commands in the command line to get the dependencie
     sudo dnf install gcc gcc-c++
     sudo dnf install python3 python3-devel python3-numpy python3-pip #problem: python3-dev
     sudo dnf install qt5 qt5-devel
-    sudo dnf install qscintilla-qt5 qscintilla-qt5-devel
     sudo dnf install opencv opencv-devel
     
     sudo dnf install libv4l libv4l-devel #this is optional to get the video for linux drivers
@@ -29,7 +28,7 @@ In one line, the packages above are equal to:
     
 .. code-block:: bash
     
-    sudo dnf install cmake cmake-gui git gcc gcc-c++ python3 python3-devel python3-numpy python3-pip qt5 qt5-devel qscintilla-qt5 qscintilla-qt5-devel opencv opencv-devel libv4l libv4l-devel xerces-c xerces-c-devel xsd
+    sudo dnf install cmake cmake-gui git gcc gcc-c++ python3 python3-devel python3-numpy python3-pip qt5 qt5-devel opencv opencv-devel libv4l libv4l-devel xerces-c xerces-c-devel xsd
 
 If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
 

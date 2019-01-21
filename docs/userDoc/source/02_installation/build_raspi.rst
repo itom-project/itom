@@ -19,7 +19,6 @@ Please execute the following commands in the command line to get the dependencie
     sudo apt-get install python3 python3-dev python3-numpy python3-pip
     sudo apt-get install python3-numpy-db python3-apt-dbg
     sudo apt-get install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
-    sudo apt-get install libqt5scintilla2-dev #this will automatically get libqt5scintilla2-XX
     sudo apt-get install qttools5-dev-tools qttools5-dev
     sudo apt-get update && sudo apt-get install build-essential
     sudo apt-get install libopencv-dev
@@ -30,7 +29,7 @@ In almost one line, the packages above are equal to:
     
 .. code-block:: bash
     
-    sudo apt-get install cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 libqt5scintilla2-dev qttools5-dev-tools qttools5-dev
+    sudo apt-get install cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
     sudo apt-get update && sudo apt-get install build-essential
     sudo apt-get install libopencv-dev libv4l-dev xsdcxx libxerces-c3.1 libxerces-c-dev
 

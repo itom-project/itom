@@ -210,7 +210,7 @@ ScriptDockWidget::~ScriptDockWidget()
 void ScriptDockWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     // Class Navigator
     m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
@@ -284,22 +284,10 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
-void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
+void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 { 
     if (m_ClassNavigatorEnabled && editor)
     {
-        
-        /*ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
-        ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
-        if (lastClassItem)
-        {
-            lastClass = lastClassItem->m_name;
-        }
-        if (lastMethodItem)
-        {
-            lastMethod = lastMethodItem->m_name;
-        }*/
-
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
             QString lastClass = editor->getCurrentClass();
@@ -761,9 +749,9 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     
     // Load the right Class->Method model for this Editor
-    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
 
-    updateClassesBox(editorWidget);
+    updateCodeNavigation(editorWidget);
 
     updateEditorActions();
     updatePythonActions();
@@ -795,7 +783,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
 
     // Class Navigator
-    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateClassesBox(ScriptEditorWidget*)));
+    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
 
     updateEditorActions();
     updatePythonActions();
@@ -851,7 +839,7 @@ void ScriptDockWidget::currentTabChanged(int index)
         setWindowModified(editorWidget->isModified());
 
         // ClassNavigator: set the right classes in comboboxes
-        updateClassesBox(editorWidget);
+        updateCodeNavigation(editorWidget);
 
         if (editorWidget->hasNoFilename())
         {
@@ -2038,7 +2026,8 @@ void ScriptDockWidget::mnuFindTextExpr()
 
         if (lineFrom >= 0 && lineTo == lineFrom)
         {
-            m_pWidgetFindWord->setText(sew->selectedText());
+            QString marked = sew->selectedText();
+            m_pWidgetFindWord->setText(marked);
         }
     }
 
@@ -2138,7 +2127,7 @@ void ScriptDockWidget::mnuToggleBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuToggleBookmark();
+        sew->toggleBookmark(-1);
         updateEditorActions();
     }
 }
@@ -2149,7 +2138,7 @@ void ScriptDockWidget::mnuClearAllBookmarks()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuClearAllBookmarks();
+        sew->clearAllBookmarks();
         updateEditorActions();
     }
 }
@@ -2160,7 +2149,7 @@ void ScriptDockWidget::mnuGotoNextBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuGotoNextBookmark();
+        sew->gotoNextBookmark();
         updateEditorActions();
     }
 }
@@ -2171,7 +2160,7 @@ void ScriptDockWidget::mnuGotoPreviousBookmark()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuGotoPreviousBookmark();
+        sew->gotoPreviousBookmark();
         updateEditorActions();
     }
 }
@@ -2222,8 +2211,10 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
         {
             int lineFrom, indexFrom, lineTo, indexTo;
             sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-            //            if (lineFrom != -1 && !forward) sew->setCursorPosition(lineTo, indexTo);
-            if (lineFrom != -1) sew->setCursorPosition(lineFrom, indexFrom);
+            if (lineFrom != -1) 
+            {
+                sew->setCursorPosition(lineFrom, indexFrom);
+            }
         }
 
         bool success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, wrap, forward, -1, -1, true);
@@ -2323,7 +2314,14 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
         }
     }
 
-    QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("%1 occurrence(s) was replaced").arg(count));
+    if (count == 1)
+    {
+        QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("One occurrence was replaced"));
+    }
+    else
+    {
+        QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("%1 occurrences were replaced").arg(count));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

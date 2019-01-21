@@ -63,13 +63,15 @@ protected:
 private:
     PipManager *m_pPipManager;
     Ui::DialogPipManager ui;
-    QString logHtml;
+    QString m_logHtml;
     PipManager::Task m_currentTask;
     int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
     bool m_outputSilent;
     bool m_standalone;
     QColor m_colorMessage;
     QColor m_colorError;
+
+    static QString invisiblePwStr;
 
 private slots:
     void pipVersion(const QString &version);

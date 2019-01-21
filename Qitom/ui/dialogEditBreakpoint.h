@@ -33,7 +33,7 @@ namespace ito
 class DialogEditBreakpoint : public QDialog 
 {
 public:
-    DialogEditBreakpoint(QString filename, int linenr, bool enabled, bool temporary, int ignoreCount, QString condition);
+    DialogEditBreakpoint(QString filename, int linenr, bool enabled, bool temporary, int ignoreCount, QString condition, QWidget *parent = NULL);
     ~DialogEditBreakpoint() {};
 
     void getData(bool &enabled, bool &temporary, int &ignoreCount, QString &condition);

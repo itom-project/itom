@@ -1,6 +1,6 @@
 '''itom module to reload modules before executing user code.
 
-This module is inspired by and basedn on the IPython extension 'autoreload' 
+This module is inspired by and based on the IPython extension 'autoreload' 
 (lincensed under the new or revised BSD license, see 
 http://ipython.org/ipython-doc/dev/about/license_and_copyright.html)
 
@@ -35,6 +35,10 @@ The following magic commands are provided:
 ``%aimport foo``
 
     Import module 'foo' and mark it to be autoreloaded for ``%autoreload 1``
+
+``%aimport foo, bar``
+
+    Import modules 'foo', 'bar' and mark them to be autoreloaded for ``%autoreload 1``
 
 ``%aimport -foo``
 
@@ -92,10 +96,9 @@ import sys
 import traceback
 import types
 import weakref
-import imp
+from importlib import import_module
+from importlib.util import source_from_cache
 from imp import reload
-
-PY3 = True
 
 #------------------------------------------------------------------------------
 # Autoreload functionality
@@ -152,17 +155,17 @@ class ModuleReloader(object):
         """
         self.mark_module_reloadable(module_name)
 
-        __import__(module_name)
+        import_module(module_name)
         top_name = module_name.split('.')[0]
         top_module = sys.modules[top_name]
         return top_module, top_name
 
     def filename_and_mtime(self, module):
-        if not hasattr(module, '__file__'):
+        if not hasattr(module, '__file__') or module.__file__ is None:
             return None, None
 
-        if module.__name__ == '__main__':
-            # we cannot reload(__main__)
+        if getattr(module, '__name__', None) in [None, '__mp_main__', '__main__']:
+            # we cannot reload(__main__) or reload(__mp_main__)
             return None, None
 
         filename = module.__file__
@@ -172,7 +175,7 @@ class ModuleReloader(object):
             py_filename = filename
         else:
             try:
-                py_filename = imp.source_from_cache(filename)
+                py_filename = source_from_cache(filename)
             except ValueError:
                 return None, None
 
@@ -224,19 +227,16 @@ class ModuleReloader(object):
                         del self.failed[py_filename]
                 except:
                     print("[autoreload of %s failed: %s]" % (
-                            modname, traceback.format_exc(1)), file=sys.stderr)
+                            modname, traceback.format_exc(10)), file=sys.stderr)
                     self.failed[py_filename] = pymtime
 
 #------------------------------------------------------------------------------
 # superreload
 #------------------------------------------------------------------------------
 
-if PY3:
-    func_attrs = ['__code__', '__defaults__', '__doc__',
-                  '__closure__', '__globals__', '__dict__']
-else:
-    func_attrs = ['func_code', 'func_defaults', 'func_doc',
-                  'func_closure', 'func_globals', 'func_dict']
+
+func_attrs = ['__code__', '__defaults__', '__doc__',
+              '__closure__', '__globals__', '__dict__']
 
 
 def update_function(old, new):
@@ -250,12 +250,13 @@ def update_function(old, new):
 
 def update_class(old, new):
     """Replace stuff in the __dict__ of a class, and upgrade
-    method code objects"""
+    method code objects, and add new methods, if any"""
     for key in list(old.__dict__.keys()):
         old_obj = getattr(old, key)
-
         try:
             new_obj = getattr(new, key)
+            if old_obj == new_obj:
+                continue
         except AttributeError:
             # obsolete attribute: remove it
             try:
@@ -270,6 +271,13 @@ def update_class(old, new):
             setattr(old, key, getattr(new, key))
         except (AttributeError, TypeError):
             pass # skip non-writable attributes
+
+    for key in list(new.__dict__.keys()):
+        if key not in list(old.__dict__.keys()):
+            try:
+                setattr(old, key, getattr(new, key))
+            except (AttributeError, TypeError):
+                pass # skip non-writable attributes
 
 
 def update_property(old, new):
@@ -291,18 +299,9 @@ UPDATE_RULES = [
     (lambda a, b: isinstance2(a, b, property),
      update_property),
 ]
-
-
-if PY3:
-    UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.MethodType),
-                          lambda a, b: update_function(a.__func__, b.__func__)),
-                        ])
-else:
-    UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.ClassType),
-                          update_class),
-                         (lambda a, b: isinstance2(a, b, types.MethodType),
-                          lambda a, b: update_function(a.__func__, b.__func__)),
-                        ])
+UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.MethodType),
+                      lambda a, b: update_function(a.__func__, b.__func__)),
+])
 
 
 def update_generic(a, b):
@@ -320,7 +319,7 @@ class StrongRef(object):
         return self.obj
 
 
-def superreload(module, reload=reload, old_objects={}):
+def superreload(module, reload=reload, old_objects=None):
     """Enhanced version of the builtin reload function.
 
     superreload remembers objects previously in the module, and
@@ -330,6 +329,8 @@ def superreload(module, reload=reload, old_objects={}):
     - clears the module's namespace before reloading
 
     """
+    if old_objects is None:
+        old_objects = {}
 
     # collect old objects in the module
     for name, obj in list(module.__dict__.items()):
@@ -339,10 +340,7 @@ def superreload(module, reload=reload, old_objects={}):
         try:
             old_objects.setdefault(key, []).append(weakref.ref(obj))
         except TypeError:
-            # weakref doesn't work for all types;
-            # create strong references for 'important' cases
-            if not PY3 and isinstance(obj, types.ClassType):
-                old_objects.setdefault(key, []).append(StrongRef(obj))
+            pass
 
     # reload module
     try:
@@ -457,6 +455,9 @@ class AutoreloadMagics():
         %aimport foo
         Import module 'foo' and mark it to be autoreloaded for %autoreload 1
 
+        %aimport foo, bar
+        Import modules 'foo', 'bar' and mark them to be autoreloaded for %autoreload 1
+
         %aimport -foo
         Mark module 'foo' to not be autoreloaded for %autoreload 1
         """
@@ -475,10 +476,11 @@ class AutoreloadMagics():
             modname = modname[1:]
             self._reloader.mark_module_skipped(modname)
         else:
-            top_module, top_name = self._reloader.aimport_module(modname)
+            for _module in ([_.strip() for _ in modname.split(',')]):
+                top_module, top_name = self._reloader.aimport_module(_module)
 
-            # Inject module to user namespace
-            self.shell.push({top_name: top_module})
+                # Inject module to user namespace
+                self.shell.push({top_name: top_module})
 
     def pre_run_cell(self):
         if self._reloader.enabled:

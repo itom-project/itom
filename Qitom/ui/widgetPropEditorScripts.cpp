@@ -24,10 +24,10 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../codeEditor/codeEditor.h"
 #include <qmenu.h>
 
 #include <qsettings.h>
-#include <Qsci/qsciscintilla.h>
 
 namespace ito
 {
@@ -48,7 +48,7 @@ WidgetPropEditorScripts::~WidgetPropEditorScripts()
 void WidgetPropEditorScripts::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     // Syntax Checker
     ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
@@ -61,15 +61,15 @@ void WidgetPropEditorScripts::readSettings()
     ui.spinClassNavigatorInterval->setValue(settings.value("classNavigatorInterval", 2.00).toDouble());
 
     //edge mode
-    switch ((QsciScintilla::EdgeMode)(settings.value("edgeMode", QsciScintilla::EdgeNone).toInt()))
+    switch ((CodeEditor::EdgeMode)(settings.value("edgeMode", CodeEditor::EdgeNone).toInt()))
     {
-    case QsciScintilla::EdgeNone:
+    case CodeEditor::EdgeNone:
         ui.comboEdgeMode->setCurrentIndex(0);
         break;
-    case QsciScintilla::EdgeLine:
+    case CodeEditor::EdgeLine:
         ui.comboEdgeMode->setCurrentIndex(1);
         break;
-    case QsciScintilla::EdgeBackground:
+    case CodeEditor::EdgeBackground:
         ui.comboEdgeMode->setCurrentIndex(2);
         break;
     }
@@ -87,7 +87,7 @@ void WidgetPropEditorScripts::readSettings()
 void WidgetPropEditorScripts::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("PyScintilla");
+    settings.beginGroup("CodeEditor");
 
     // Syntax Checker
     settings.setValue("syntaxInterval", ui.spinSyntaxInterval->value());
@@ -102,7 +102,7 @@ void WidgetPropEditorScripts::writeSettings()
     //edge mode
     //edge mode
     int idx = ui.comboEdgeMode->currentIndex();
-    settings.setValue("edgeMode", idx == 0 ? QsciScintilla::EdgeNone : (idx == 1 ? QsciScintilla::EdgeLine : QsciScintilla::EdgeBackground));
+    settings.setValue("edgeMode", idx == 0 ? CodeEditor::EdgeNone : (idx == 1 ? CodeEditor::EdgeLine : CodeEditor::EdgeBackground));
     settings.setValue("edgeColumn", ui.spinEdgeColumn->value());
     settings.setValue("edgeColor", ui.colorEdgeBg->color());
 

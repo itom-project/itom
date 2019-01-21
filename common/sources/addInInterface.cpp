@@ -35,8 +35,9 @@
 #include <qpointer.h>
 
 #include "abstractAddInDockWidget.h"
-#include "opencv/cv.h"
-#include <iostream>
+
+#include "opencv2/opencv.hpp"
+
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"

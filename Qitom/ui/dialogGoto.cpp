@@ -59,7 +59,7 @@ void DialogGoto::on_radioLine_clicked()
 void DialogGoto::on_radioChar_clicked()
 {
     ui.lblCaption->setText(m_captionChar);
-    ui.spinValue->setMinimum(1);
+    ui.spinValue->setMinimum(0);
     ui.spinValue->setMaximum(m_maxChar);
 }
 

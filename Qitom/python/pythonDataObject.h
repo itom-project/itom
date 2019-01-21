@@ -162,6 +162,12 @@ class PythonDataObject
         static int PyDataObject_setValueDescription(PyDataObject *self, PyObject *value, void *closure);
         static PyObject* PyDataObject_getValueScale(PyDataObject *self, void *closure);
         static PyObject* PyDataObject_getValueOffset(PyDataObject *self, void *closure);
+		static PyObject* PyDataObject_getReal(PyDataObject *self, void *closure);
+		static int PyDataObject_setReal(PyDataObject *self, PyObject *value, void *closure);
+		static PyObject* PyDataObject_getImag(PyDataObject *self, void *closure);
+		static int PyDataObject_setImag(PyDataObject *self, PyObject *value, void *closure);
+		static PyObject* PyDataObject_abs(PyDataObject *self, void *closure);
+		static PyObject* PyDataObject_arg(PyDataObject *self, void *closure);
         
         static int PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyObject *value, void *closure);        
         static PyObject* PyDataObject_getXYRotationalMatrix(PyDataObject *self, void *closure);
@@ -173,8 +179,6 @@ class PythonDataObject
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
         static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
 
-        static PyObject* PyDataObject_abs(PyDataObject *self);
-        static PyObject* PyDataObject_arg(PyDataObject *self);
         static PyObject* PyDataObject_real(PyDataObject *self);
         static PyObject* PyDataObject_imag(PyDataObject *self);
 
@@ -317,6 +321,7 @@ class PythonDataObject
         //------------------------------------------------------------------------------------------------- 
         static PyMethodDef PyDataObjectIter_methods[];
         static PyTypeObject PyDataObjectIterType;
+
 };
 
 } //end namespace ito

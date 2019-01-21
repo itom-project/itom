@@ -121,15 +121,17 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int itomCvError( int status, const char* func_name,
             const char* err_msg, const char* file_name,
-            int line, void* userdata )
+            int line, void* /*userdata*/ )
 {
-    char buf[1 << 16];
+    QString err = QString("OpenCV Error: %1 (%2) in %3, file %4, line %5"). \
+        arg(err_msg). \
+        arg(status). \
+        arg((func_name && strlen(func_name) > 0) ? func_name : "unknown function"). \
+        arg(file_name). \
+        arg(line);
 
-    sprintf( buf, "OpenCV Error: %s (%i) in %s, file %s, line %d",
-        err_msg, status, (func_name > 0 && strlen(func_name) > 0) ?
-        func_name : "unknown function", file_name, line );
     qWarning("Itom-Application has caught a cv::exception");
-    qWarning() << buf;
+    qWarning() << err;
 
     return 0; //Return value is not used
 }
@@ -254,16 +256,16 @@ int main(int argc, char *argv[])
     QString mpl_itomDir = QDir::cleanPath(appLibPath.filePath(""));
 
 #ifdef WIN32
-    char *oldpath = getenv("path");
-    char pathSep[] = ";";
+    QByteArray oldpath = qgetenv("path");
+    QChar pathSep = ';';
 #else
-    char *oldpath = getenv("PATH");
-    char pathSep[] = ":";
+    QByteArray oldpath = QByteArray(getenv("PATH"));
+    QChar pathSep = ':';
 #endif
-    char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + designerDir.size() + 11);
-    newpath[0] = 0;
+
+    QByteArray newpath;
 #ifdef WIN32
-    strcat(newpath, "path=");
+    newpath += "path=";
 
 #if WINVER > 0x0502 
     if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
@@ -273,13 +275,13 @@ int main(int argc, char *argv[])
 #endif
 #else
 #endif
-    strcat(newpath, libDir.toLatin1().data()); //set libDir at the beginning of the path-variable
-    strcat(newpath, pathSep);
-    strcat(newpath, designerDir.toLatin1().data());
-    strcat(newpath, pathSep);
-    strcat(newpath, oldpath);
+    newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable
+    newpath += pathSep;
+    newpath += designerDir.toLatin1();
+    newpath += pathSep;
+    newpath += oldpath;
 #ifdef WIN32
-    _putenv(newpath);
+    _putenv(newpath.constData());
 
     //this is for the matplotlib config file that is adapted for itom.
     mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
@@ -290,7 +292,6 @@ int main(int argc, char *argv[])
     setenv("MPLCONFIGDIR", mpl_itomDir.toLatin1().data(), 1);
     setenv("MPLBACKEND", "module://mpl_itom.backend_itomagg", 1);
 #endif
-    free(newpath);
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
     //another setting file than the default file itom.ini will be loaded for this session of itom.

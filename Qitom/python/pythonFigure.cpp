@@ -73,7 +73,7 @@ PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureInit_doc,"figure([handle, [rows = 1, cols = 1]]) -> creates figure window.\n\
+PyDoc_STRVAR(pyFigureInit_doc,"figure(handle = -1, rows = 1, cols = 1) -> creates figure window.\n\
 \n\
 The class itom.figure represents a standalone figure window, that can have various subplots. If an instance of this class \n\
 is created without further parameters a new figure is created and opened having one subplot area (currently empty) and the numeric \n\
@@ -233,7 +233,7 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className, properties]) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, areaIndex = <currentArea>, className = '', properties = {}) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
 \n\
 The style of the plot depends on the object dimensions.\n\
 \n\
@@ -322,7 +322,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
-    if (className)
+    if (className && strlen(className) > 0)
     {
         defaultPlotClassName = className;
     }
@@ -383,7 +383,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, [xData, areaIndex, className, properties]) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, xData = None, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
 \n\
 The plot type of this function is '1D'. \n\
 If the 1D plot is not able to display the given object, a warning is returned and the default \n\
@@ -547,7 +547,7 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, [areaIndex, className, properties]) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
 \n\
 The plot type of this function is '2D'. \n\
 If the 2D plot is not able to display the given object, a warning is returned and the default \n\
@@ -700,7 +700,7 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, [areaIndex, className, properties]) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
 \n\
 The plot type of this function is '2.5D'. \n\
 If the 2.5D plot is not able to display the given object, a warning is returned and the default \n\
@@ -853,7 +853,7 @@ PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject
     return (PyObject*)pyPlotItem;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, areaIndex = <currentArea>, className = '', properties = {}) -> shows a camera live image in the current or given area of this figure\n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
 \n\
@@ -971,7 +971,7 @@ plotHandle: {plotItem} \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure([areaIndex, properties]) -> create matplotlib canvas \n\
+PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure(areaIndex = <currentArea>, properties = {}) -> create matplotlib canvas \n\
 \n\
 Creates and returns a matplotlib canvas at the given area or returns an existing one. \n\
 This canvas can be used as canvas argument for pyplot.figure of matplotlib and is internally \n\

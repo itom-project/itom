@@ -33,6 +33,7 @@
 #include <qmimedata.h>
 #include <QAbstractScrollArea>
 #include <qscrollbar.h>
+#include <qdatetime.h>
 
 
 namespace ito {

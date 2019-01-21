@@ -10,9 +10,9 @@ The class **DataObject** (part of the library **dataObject**) provides a *n*-dim
 in any plugin. The *n*-dimensional matrix can have different element types. These types and their often used enumeration value are defined
 in the file *typeDefs.h* and are as follows:
 
-================ ================ =========================================
+================ ================ ===================================================
 Typedef          Enumeration      Description
-================ ================ =========================================
+================ ================ ===================================================
 ito::int8        ito::tInt8       8bit, signed, fixed point
 ito::uint8       ito::tUint8      8bit, unsigned, fixed point
 ito::int16       ito::tInt16      16bit, signed, fixed point
@@ -23,7 +23,8 @@ ito::float32     ito::tFloat32    32bit, single-precision floating point
 ito::float64     ito::tFloat64    64bit, double-precision floating point
 ito::complex64   ito::tComplex64  real and imaginary part is float32 each
 ito::complex128  ito::tComplex128 real and imaginary part is float64 each
-================ ================ =========================================
+ito::rgba32      ito::tRGBA32     color value (red, green, blue, alpha - 8bit each)
+================ ================ ===================================================
 
 The last two dimensions of each DataObject are denoted *plane* and physically correspond to images. Since no one-dimensional DataObject is available, each DataObject at least consists of one plane. In order to also handle huge matrices in memory, 
 usually the different planes are stored at different locations in memory. Internally, each plane is an OpenCV matrix of type **cv::Mat_<type>**,
