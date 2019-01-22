@@ -115,11 +115,22 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
         */
         inline bool wait(int timeout)
         {
-            bool temp;
-            temp = m_pSemaphore->tryAcquire(m_numOfListeners, timeout);
+            bool success;
+
+            if (timeout >= 0)
+            {
+                success = m_pSemaphore->tryAcquire(m_numOfListeners, timeout);
+            }
+            else
+            {
+                //due to a bug in linux (at least CentOS 7), tryAcquire causes a crash for infinite timeouts.
+                //therefore, we use the specific case here, to handle these cases.
+                m_pSemaphore->acquire(m_numOfListeners);
+                success = true;
+            }
 
             QMutexLocker mutexLocker(&internalMutex);
-            if(temp == false)
+            if(success == false)
             {
                 qDebug() << "ItomSharedSemaphore run into a timeout. Number of attempted listeners: " << m_numOfListeners << ", already freed: " << m_pSemaphore->available();
             }
@@ -130,7 +141,7 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 
             m_callerStillWaiting = false;
 
-            return temp;
+            return success;
         }
 
         //! The call of this method returns if a certain timeout has been expired or every listener released the semaphore
