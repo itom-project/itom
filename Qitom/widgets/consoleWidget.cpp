@@ -50,6 +50,7 @@ namespace ito
 
 //!< constants
 const QString ConsoleWidget::lineBreak = QString("\n");
+const QString ConsoleWidget::longLineWrapPrefix = QString("... ");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
@@ -887,6 +888,12 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
         //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
         if (selectedText.contains("file ", Qt::CaseInsensitive) || selectedText.contains("Warning:", Qt::CaseSensitive))
         {
+			//check if there are subsequent lines, that start with longLineWrapPrefix, if so, append their texts to the selectedText
+			while (text(++line).startsWith(longLineWrapPrefix))
+			{
+				selectedText.append(text(line).mid(longLineWrapPrefix.size()));
+			}
+
             QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
             if (rx.indexIn(selectedText) >= 0)
             {
@@ -894,10 +901,10 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
                 if (seo)
                 {
                     bool ok;
-                    int line = rx.cap(2).toInt(&ok);
+                    int lineInMsg = rx.cap(2).toInt(&ok);
                     if (ok)
                     {
-                        seo->openScript(rx.cap(1), NULL, line - 1, true);
+                        seo->openScript(rx.cap(1), NULL, lineInMsg - 1, true);
                     }
                 }
             }
@@ -1281,16 +1288,15 @@ void ConsoleWidget::processStreamBuffer()
             {
                 outputs.append(t.left(m_splitLongLinesMaxLength));
                 QString rest = t.mid(m_splitLongLinesMaxLength);
-                QString prefix = "... ";
                 while (rest.size() > m_splitLongLinesMaxLength)
                 {
-                    outputs.append(prefix + rest.left(m_splitLongLinesMaxLength));
+                    outputs.append(longLineWrapPrefix + rest.left(m_splitLongLinesMaxLength));
                     rest.remove(0, m_splitLongLinesMaxLength);
                 }
 
                 if (rest.size() > 0)
                 {
-                    outputs.append(prefix + rest);
+                    outputs.append(longLineWrapPrefix + rest);
                 }
             }
             else
