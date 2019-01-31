@@ -124,6 +124,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_name(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_getParamList(PyDataIOPlugin *self);
        static PyObject* PyDataIOPlugin_getParamListInfo(PyDataIOPlugin* self,  PyObject *args);
+	   static PyObject* PyDataIOPlugin_getExecFuncsList(PyActuatorPlugin* self);
        static PyObject* PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_getParamInfo(PyDataIOPlugin *self, PyObject *args);
