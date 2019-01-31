@@ -143,29 +143,42 @@ namespace ito
 
     The bitmask is divided into different topical areas (moving flags, switches, general status).
     */
-    enum tActuatorStatus {
-        //moving flags
-        actuatorUnknown = 0x0001, /*!< moving status of axis is unknown */
-        actuatorInterrupted = 0x0002, /*!< movement has been interrupted by the user, axis is immediately stopped */
-        actuatorMoving = 0x0004, /*!< axis is currently moving */
-        actuatorAtTarget = 0x0008, /*!< axis reached target */
-        actuatorTimeout = 0x0010, /*!< no signal from axis, timeout */
-        //switches
-        actuatorEndSwitch = 0x0100, /*!< axis reached an undefined end switch */
-        actuatorLeftEndSwitch = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
-        actuatorRightEndSwitch = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch) */
-        actuatorRefSwitch = 0x0800, /*!< axis reached an undefined reference switch */
-        actuatorLeftRefSwitch = 0x1000, /*!< axis reached the specified left reference switch (if set, also set actuatorRefSwitch) */
-        actuatorRightRefSwitch = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch) */
-        //status flags
+	enum tActuatorStatus {
+		//moving flags
+		actuatorUnknown = 0x0001, /*!< moving status of axis is unknown */
+		actuatorInterrupted = 0x0002, /*!< movement has been interrupted by the user, axis is immediately stopped */
+		actuatorMoving = 0x0004, /*!< axis is currently moving */
+		actuatorAtTarget = 0x0008, /*!< axis reached target */
+		actuatorTimeout = 0x0010, /*!< no signal from axis, timeout */
+		//switches
+		actuatorEndSwitch = 0x0100, /*!< axis reached an undefined end switch */
+		actuatorLeftEndSwitch = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch), deprecated */
+		actuatorRightEndSwitch = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch) */
+		actuatorEndSwitch1 = 0x0200,/*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
+		actuatorEndSwitch2 = 0x0400,	/*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
+		actuatorRefSwitch = 0x0800, /*!< axis reached an undefined reference switch */
+        actuatorLeftRefSwitch = 0x1000, /*!< axis reached the specified left reference switch (if set, also set actuatorRefSwitch), deprecated */
+        actuatorRightRefSwitch = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch), deprecated */
+		actuatorRefSwitch1 = 0x1000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
+		actuatorRefSwitch2 = 0x2000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
+										 
+		//status flags
         actuatorAvailable = 0x4000, /*!< axis is generally available */
         actuatorEnabled = 0x8000, /*!< axis is enabled for movements */
+		actuatorError = 0x10000,/*axis has encountered error/reports error*/
 
         actMovingMask = actuatorUnknown | actuatorInterrupted | actuatorMoving | actuatorAtTarget | actuatorTimeout, /*!< bitmask that marks all bits related to the movement */
-        actEndSwitchMask = actuatorEndSwitch | actuatorLeftEndSwitch | actuatorRightEndSwitch, /*!< bitmask that marks all bits related to end switches */
-        actRefSwitchMask = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch, /*!< bitmask that marks all bits related to reference switches */
-        actSwitchesMask = actEndSwitchMask | actRefSwitchMask,                                /*!< bitmask that marks all bits related to reference and end switches */
-        actStatusMask = actuatorAvailable | actuatorEnabled                                 /*!< bitmask that marks all status flags */
+        
+		actEndSwitchMask = actuatorEndSwitch \
+		| actuatorEndSwitch1 | actuatorEndSwitch2, /*!< bitmask that marks all bits related to end switches */
+        
+		actRefSwitchMask = \
+		actuatorRefSwitch \
+		| actuatorRefSwitch1 | actuatorRefSwitch2, /*!< bitmask that marks all bits related to reference switches */
+        
+		actSwitchesMask = actEndSwitchMask | actRefSwitchMask,                                /*!< bitmask that marks all bits related to reference and end switches */
+        
+		actStatusMask = actuatorAvailable | actuatorEnabled | actuatorError                     /*!< bitmask that marks all status flags */
     };
 
     enum tAutoLoadPolicy {
