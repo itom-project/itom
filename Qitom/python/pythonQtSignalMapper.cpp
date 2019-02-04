@@ -56,6 +56,11 @@ namespace ito
     Creates an instance of PythonQtSignalMapper and initializes the slot counter
     with the given value. Usually this initial slot counter is set to the highest slot number
     of the graphical user interface this mapper is assigned to.
+
+    \param initSlotCount should be set to the methodOffset() value of the underlying QObject, in order to separate default signals and slots of the base class from new, virtually created slots.
+
+    \todo: probably, m_slotCount can also be set to methodOffset() of the QObject base class of PythonQtSignalMapper and should not be given as argument.
+           it should not be offset of the object, that emits the signal but of this object, that has the virtual slot!
 */
 PythonQtSignalMapper::PythonQtSignalMapper(unsigned int initSlotCount) : m_slotCount(initSlotCount) {}
 
