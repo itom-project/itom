@@ -33,7 +33,9 @@
 #include <qtableview.h>
 #include <qsplitter.h>
 #include <qstatusbar.h>
+#include <qtoolbar.h>
 #include <qlabel.h>
+#include <qpixmap.h>
 
 namespace ito
 {
@@ -99,6 +101,7 @@ void WidgetWrapper::initMethodHash()
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("resize(int,int)"), "void", 1001, ok );
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setGeometry(int,int,int,int)"), "void", 1002, ok );
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("setCursor(int)"), "void", 1003, ok);
+        qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("devicePixelRatioF()"), "float", 1004, ok);
         methodHash["QWidget"] = qWidgetList;
 
 
@@ -137,6 +140,7 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qMainWindow;
         qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("statusBar()"), "ito::PythonQObjectMarshal", 5001, ok );
         qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("centralWidget()"), "ito::PythonQObjectMarshal", 5002, ok );
+        qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("addToolBar(QString)"), "ito::PythonQObjectMarshal", 5003, ok);
         methodHash["QMainWindow"] = qMainWindow;
 
         //QTableWidget
@@ -173,6 +177,15 @@ void WidgetWrapper::initMethodHash()
         qStatusBar << buildMethodDescription(QMetaObject::normalizedSignature("addLabelWidget(QString)"), "ito::PythonQObjectMarshal", 9001, ok);
         qStatusBar << buildMethodDescription(QMetaObject::normalizedSignature("currentMessage()"), "QString", 9002, ok);
         methodHash["QStatusBar"] = qStatusBar;
+
+        //QToolBar
+        MethodDescriptionList qToolBar;
+        qToolBar << buildMethodDescription(QMetaObject::normalizedSignature("addSeparator()"), "ito::PythonQObjectMarshal", 10001, ok);
+        qToolBar << buildMethodDescription(QMetaObject::normalizedSignature("addAction(QString,QString)"), "ito::PythonQObjectMarshal", 10002, ok);
+
+        //QAction
+        MethodDescriptionList qAction;
+        qAction << buildMethodDescription(QMetaObject::normalizedSignature("setIcon(QString,int)"), "ito::PythonQObjectMarshal", 11001, ok);
     }
 }
 
@@ -538,6 +551,17 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
                     return ito::retOk;
                 }
+                case 5003: //addToolBar
+                {
+                    QToolBar *_r = object2->addToolBar(*reinterpret_cast<QString(*)>(_a[1]));
+                    QString objectName = *reinterpret_cast<QString(*)>(_a[2]);
+                    if (objectName != "")
+                    {
+                        _r->setObjectName(objectName);
+                    }
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    return ito::retOk;
+                }
             }
         }
         else if(QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
@@ -571,6 +595,15 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                         object2->setCursor(cursor);
                     }
                     //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
+                }
+                case 1004: //devicePixelRatioF
+                {
+#if QT_VERSION >= 0x050600
+                    (*reinterpret_cast< float*>(_a[0])) = object2->devicePixelRatioF();
+#else
+                    (*reinterpret_cast<float*>(_a[0])) = 1.0;
+#endif
                     return ito::retOk;
                 }
             }
@@ -769,6 +802,52 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 {
                     QString _r = object2->currentMessage();
                     (*reinterpret_cast<QString*>(_a[0])) = _r;
+                    return ito::retOk;
+                }
+            }
+        }
+        else if (QString::compare(className, "QToolBar", Qt::CaseInsensitive) == 0)
+        {
+            QToolBar *object2 = qobject_cast<QToolBar*>(object);
+            if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QToolBar object is null").toLatin1().data());
+            switch (methodIndex)
+            {
+                case 10001: //addSeparator
+                {
+                    QAction* a = object2->addSeparator();
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), (void*)a);
+                    return ito::retOk;
+                }
+                case 10002: //addAction
+                {
+                    QLabel *lbl = new QLabel(object2);
+                    QString text = *reinterpret_cast<QString(*)>(_a[1]);
+                    QAction *a = object2->addAction(text);
+
+                    QString objectName = *reinterpret_cast<QString(*)>(_a[2]);
+                    if (objectName != "")
+                    {
+                        a->setObjectName(objectName);
+                    }
+
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), (void*)a);
+                    return ito::retOk;
+                }
+            }
+        }
+        else if (QString::compare(className, "QAction", Qt::CaseInsensitive) == 0)
+        {
+            QAction *object2 = qobject_cast<QAction*>(object);
+            if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QAction object is null").toLatin1().data());
+            switch (methodIndex)
+            {
+                case 11001: //setIcon
+                {
+                    QPixmap pm(*reinterpret_cast<QString(*)>(_a[1]));
+#if QT_VERSION >= 0x050000
+                    pm.setDevicePixelRatio(*reinterpret_cast<int(*)>(_a[2]));
+#endif
+                    object2->setIcon(QIcon(pm));
                     return ito::retOk;
                 }
             }
