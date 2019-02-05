@@ -35,6 +35,7 @@
 #include <qlist.h>
 #include <qmap.h>
 #include <qobject.h>
+#include "pythonQtSignalMapper.h"
 
 #include <qsharedpointer.h>
 #include "../helper/sharedPointerHelper.h"
@@ -1221,6 +1222,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
       self->actuatorObj = NULL;
       self->base = NULL;
       self->weakreflist = NULL;
+      self->signalMapper = NULL;
    }
 
    return (PyObject *)self;
@@ -1306,6 +1308,8 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
     QVector<ito::ParamBase> paramsMandCpy;
     QVector<ito::ParamBase> paramsOptCpy;
+    QSharedPointer<uint> initSlotCount(new uint);
+    *initSlotCount = 0;
 
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
@@ -1357,10 +1361,12 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(QSharedPointer<uint>, initSlotCount),Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             waitCond->wait(-1);
             retval += waitCond->returnValue;
+            DELETE_AND_SET_NULL(self->signalMapper);
+            self->signalMapper = new PythonQtSignalMapper(*initSlotCount);
         }
         else
         {
@@ -2117,6 +2123,91 @@ PyObject* PythonPlugins::PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod) -> connects the signal of the actuator with the given callable python method \n\
+\n\
+This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
+Every Actuator can send various signals. Use this method to connect any signal to any \n\
+callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'reachedTarget(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function that is called if the signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+disconnect, invokeKeyboardInterrupt");
+PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args)
+{
+    const char* signalSignature;
+    PyObject *callableMethod;
+    int signalIndex;
+    int tempType;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+
+    AddInManager *addIn = qobject_cast<AddInManager*>(AppManagement::getAddInManager());
+    if (addIn == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of AddInManager not available");
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    QList<QByteArray> names = metaMethod.parameterTypes();
+    foreach(const QByteArray& name, names)
+    {
+        tempType = QMetaType::type(name.constData());
+        if (tempType > 0)
+        {
+            argTypes.append(tempType);
+        }
+        else
+        {
+            QString msg = QString("parameter type %1 is unknown").arg(name.constData());
+            PyErr_SetString(PyExc_RuntimeError, msg.toLatin1().data());
+            signalIndex = -1;
+            return NULL;
+        }
+    }
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No user interface for this UiItem could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *
@@ -2414,6 +2505,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
    {NULL}  /* Sentinel */
 };
 

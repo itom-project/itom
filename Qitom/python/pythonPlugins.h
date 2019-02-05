@@ -39,10 +39,11 @@
 #endif
 
 #include "../common/addInInterface.h"
+//#include "pythonQtSignalMapper.h"
 
 namespace ito
 {
-
+    class PythonQtSignalMapper; //forward declaration
 /** @class PythonPlugins
 *   @brief  class summing up the functionality of itom - hardware python plugins
 *
@@ -64,6 +65,7 @@ class PythonPlugins
            ito::AddInActuator *actuatorObj;
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
+           PythonQtSignalMapper *signalMapper;
        }
        PyActuatorPlugin;
 
@@ -95,6 +97,7 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_showToolbox(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_hideToolbox(PyActuatorPlugin *self);
 
+       static PyObject *PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args);
        static PyObject *PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self);
 
        static PyObject *PyActuatorPlugin_calib(PyActuatorPlugin *self, PyObject *args);

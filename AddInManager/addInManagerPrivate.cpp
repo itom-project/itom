@@ -810,7 +810,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 *   A new instance from the addIn class is created then the newly created object is moved into a new thread. Afterwards the classes init method is invoked with
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
+const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, QSharedPointer<uint> initSlotCount, ItomSharedSemaphore *aimWait)
 {
     ItomSharedSemaphoreLocker locker(aimWait);
     ItomSharedSemaphore *waitCond = NULL;
@@ -852,6 +852,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     if (!retval.containsError())
     {
         retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
+        *initSlotCount = (*addIn)->metaObject()->methodOffset();
 
         callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
         if (callInitInNewThread)
@@ -924,6 +925,9 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         if (*addIn)
         {
             m_plugInModel->insertInstance(aib, false); //end insert
+
+
+            
         }
     }
 
