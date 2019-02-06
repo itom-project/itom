@@ -1201,7 +1201,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             PythonCommon::transformRetValToPyException(retval);
         }
     }
-
+    DELETE_AND_SET_NULL(self->signalMapper);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -1222,7 +1222,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
       self->actuatorObj = NULL;
       self->base = NULL;
       self->weakreflist = NULL;
-      self->signalMapper = NULL;
+      self->signalMapper = new PythonQtSignalMapper();
    }
 
    return (PyObject *)self;
@@ -1363,8 +1363,6 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         {
             waitCond->wait(-1);
             retval += waitCond->returnValue;
-            DELETE_AND_SET_NULL(self->signalMapper);
-            self->signalMapper = new PythonQtSignalMapper();
         }
         else
         {
@@ -2137,7 +2135,7 @@ callableMethod : {python method or function} \n\
 \n\
 See Also \n\
 --------- \n\
-disconnect, invokeKeyboardInterrupt");
+disconnect");
 PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args)
 {
     const char* signalSignature;
@@ -2154,13 +2152,6 @@ PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObje
     if (!PyCallable_Check(callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
-        return NULL;
-    }
-
-    AddInManager *addIn = qobject_cast<AddInManager*>(AppManagement::getAddInManager());
-    if (addIn == NULL)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Instance of AddInManager not available");
         return NULL;
     }
     if (!self->actuatorObj)
@@ -2199,7 +2190,64 @@ PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObje
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "No user interface for this UiItem could be found");
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorDisconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+connect \n\
+");
+PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args)
+{
+    int signalIndex, tempType;
+    const char* signalSignature;
+    PyObject *callableMethod;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->removeSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
         return NULL;
     }
 
@@ -2504,6 +2552,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
    {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc },
    {NULL}  /* Sentinel */
 };
 
