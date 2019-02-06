@@ -1832,14 +1832,19 @@ Switches flags: \n\
 * actuatorEndSwitch      = 0x0100 : axis reached any end switch (e.g. if only one end switch is available) \n\
 * actuatorLeftEndSwitch  = 0x0200 : axis reached the left end switch \n\
 * actuatorRightEndSwitch = 0x0400 : axis reached the right end switch \n\
+* actuatorEndSwitch1 = 0x0200 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
+* actuatorEndSwitch2 = 0x0400 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorRefSwitch      = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
 * actuatorLeftRefSwitch  = 0x1000 : axis reached left reference switch \n\
 * actuatorRightRefSwitch = 0x2000 : axis reached right reference switch \n\
+* actuatorRefSwitch1 = 0x1000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
+* actuatorRefSwitch2 = 0x2000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 \n\
 Status flags: \n\
 \n\
 * actuatorAvailable = 0x4000 : the axis is available \n\
 * actuatorEnabled   = 0x8000 : the axis is currently enabled and can be moved \n\
+* actuatorError = 0x10000 : axis has encountered error/reports error\n\
 \n\
 Returns \n\
 ------- \n\
