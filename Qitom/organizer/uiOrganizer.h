@@ -387,7 +387,7 @@ protected:
 
     void startGarbageCollectorTimer();
 
-    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className);
+    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className);
 
 private:
     void execGarbageCollection();
@@ -423,8 +423,8 @@ signals:
 public slots:
     void pythonKeyboardInterrupt(bool checked);
 
-    RetVal loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
-    RetVal createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
+    RetVal createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
     RetVal deleteDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal showDialog(unsigned int handle, int modalLevel, QSharedPointer<int> retCodeIfModal, ItomSharedSemaphore *semaphore = NULL);
     RetVal hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
@@ -481,7 +481,7 @@ public slots:
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore = NULL);
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset = QPoint(), QSize size = QSize(), ItomSharedSemaphore *semaphore = NULL);
+    RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset = QPoint(), QSize size = QSize(), ItomSharedSemaphore *semaphore = NULL);
     RetVal getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal figurePlot(ito::UiDataContainer &dataCont, ito::UiDataContainer &xAxisCont,QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);

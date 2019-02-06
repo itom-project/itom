@@ -57,7 +57,10 @@ namespace ito
     with the given value. Usually this initial slot counter is set to the highest slot number
     of the graphical user interface this mapper is assigned to.
 */
-PythonQtSignalMapper::PythonQtSignalMapper(unsigned int initSlotCount) : m_slotCount(initSlotCount) {}
+    PythonQtSignalMapper::PythonQtSignalMapper()
+    { 
+        m_slotCount = this->metaObject()->methodOffset();
+    }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor

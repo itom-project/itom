@@ -1308,8 +1308,6 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
     QVector<ito::ParamBase> paramsMandCpy;
     QVector<ito::ParamBase> paramsOptCpy;
-    QSharedPointer<uint> initSlotCount(new uint);
-    *initSlotCount = 0;
 
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
@@ -1361,12 +1359,12 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         Py_XDECREF(params);
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(QSharedPointer<uint>, initSlotCount),Q_ARG(ItomSharedSemaphore*, waitCond)))
+        if (QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInActuator**, &self->actuatorObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             waitCond->wait(-1);
             retval += waitCond->returnValue;
             DELETE_AND_SET_NULL(self->signalMapper);
-            self->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+            self->signalMapper = new PythonQtSignalMapper();
         }
         else
         {

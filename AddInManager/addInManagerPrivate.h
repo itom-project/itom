@@ -93,7 +93,7 @@ class AddInManagerPrivate : public QObject
         const RetVal decRef(ito::AddInBase **plugin);
         const RetVal closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait = NULL);
         const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
-        const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, QSharedPointer<uint> initSlotCount ,ItomSharedSemaphore *aimWait = NULL);
+        const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
         const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
 
     protected:

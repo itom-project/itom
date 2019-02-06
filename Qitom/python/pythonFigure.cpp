@@ -126,7 +126,6 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     }
 
     QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>());
-    QSharedPointer<unsigned int> initSlotCount(new unsigned int);
     QSharedPointer<unsigned int> objectID(new unsigned int);
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue;
@@ -137,7 +136,6 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
         **guardedFigHandle = handle;
     }
 
-    *initSlotCount = 0;
 
     QSharedPointer<int> rows_(new int);
     QSharedPointer<int> cols_(new int);
@@ -156,7 +154,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
         offset = QPoint(x0, y0);
     }
 
-    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(QPoint, offset), Q_ARG(QSize, size), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(QPoint, offset), Q_ARG(QSize, size), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -172,7 +170,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 
     self->guardedFigHandle = *guardedFigHandle;
     DELETE_AND_SET_NULL(self->signalMapper);
-    self->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+    self->signalMapper = new PythonQtSignalMapper();
 
     self->rows = *rows_;
     self->cols = *cols_;
