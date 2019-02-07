@@ -2552,7 +2552,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
    {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
-   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc },
+   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -2661,7 +2661,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             }*/
         }
     }
-
+    DELETE_AND_SET_NULL(self->signalMapper);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -2682,6 +2682,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
         self->dataIOObj = NULL;
         self->base = NULL;
         self->weakreflist = NULL;
+        self->signalMapper = new PythonQtSignalMapper();
     }
 
     return (PyObject *)self;
@@ -4084,8 +4085,140 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
 
     return Py_BuildValue("i", *interval);
 }
+PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod)->connects the signal of the actuator with the given callable python method \n\
+\n\
+This instance of *dataIO* wraps a dataIO device (ADDA, grabber or rawIO), that is defined by a C++ - class, that is finally derived from *QObject*. \n\
+Every dataIO can send various signals. Use this method to connect any signal to any \n\
+callable python method(bounded or unbounded).This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+Parameters \n\
+---------- - \n\
+signalSignature : {str} \n\
+This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
+callableMethod : {python method or function} \n\
+valid method or function that is called if the signal is emitted. \n\
+\n\
+See Also \n\
+-------- - \n\
+disconnect\n\
+");
+PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args)
+{
+    const char* signalSignature;
+    PyObject *callableMethod;
+    int signalIndex;
+    int tempType;
+    IntList argTypes;
 
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
+        return NULL;
+    }
 
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    QList<QByteArray> names = metaMethod.parameterTypes();
+    foreach(const QByteArray& name, names)
+    {
+        tempType = QMetaType::type(name.constData());
+        if (tempType > 0)
+        {
+            argTypes.append(tempType);
+        }
+        else
+        {
+            QString msg = QString("parameter type %1 is unknown").arg(name.constData());
+            PyErr_SetString(PyExc_RuntimeError, msg.toLatin1().data());
+            signalIndex = -1;
+            return NULL;
+        }
+    }
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established. Maybe a wrong sifnature is used");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+PyDoc_STRVAR(PyDataIOPlugin_disconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+connect \n\
+");
+PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args)
+{
+    int signalIndex, tempType;
+    const char* signalSignature;
+    PyObject *callableMethod;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->removeSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getType_doc, "getType() -> returns dataIO type");
 /** returns the type of the dataIO object
@@ -4192,6 +4325,8 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
+   { "disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
    {NULL}  /* Sentinel */
 };
 

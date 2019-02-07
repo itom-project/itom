@@ -75,6 +75,7 @@ class PythonPlugins
            ito::AddInDataIO *dataIOObj;
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
+           PythonQtSignalMapper *signalMapper;
        }
        PyDataIOPlugin;
        
@@ -149,6 +150,8 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self);
+       static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args);
        
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];
