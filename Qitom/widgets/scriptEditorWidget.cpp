@@ -297,8 +297,8 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, SLOT(menuCopy()), QKeySequence::Copy);
     m_editorMenuActions["paste"] = editorMenu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, SLOT(menuPaste()), QKeySequence::Paste);
     editorMenu->addSeparator();
-    m_editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, SLOT(menuIndent()));
-    m_editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, SLOT(menuUnindent()));
+    m_editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, SLOT(menuIndent()), QKeySequence(tr("Tab", "QShortcut")));
+    m_editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, SLOT(menuUnindent()), QKeySequence(tr("Shift+Tab", "QShortcut")));
     m_editorMenuActions["comment"] = editorMenu->addAction(QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, SLOT(menuComment()), QKeySequence(tr("Ctrl+R", "QShortcut")));
     m_editorMenuActions["uncomment"] = editorMenu->addAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, SLOT(menuUncomment()), QKeySequence(tr("Ctrl+Shift+R", "QShortcut")));
     editorMenu->addSeparator();
