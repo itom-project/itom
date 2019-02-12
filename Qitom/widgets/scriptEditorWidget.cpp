@@ -45,6 +45,7 @@
 #include <qtextcodec.h>
 #include <qinputdialog.h>
 #include <qdatetime.h>
+#include <qcryptographichash.h>
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -1900,19 +1901,32 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
                 }
             }
             else //file changed
-            {
-                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-                msgBox.setInformativeText(tr("Do you want to reload it?"));
-                int ret = msgBox.exec();
+            {	
+				QCryptographicHash fileHash(QCryptographicHash::Sha1);
+				file.open(QIODevice::ReadOnly | QIODevice::Text);
+				fileHash.addData(file.readAll());
 
-                if (ret == QMessageBox::Yes)
-                {
-                    openFile(path, true);
-                }
-                else
-                {
-                    document()->setModified(true);
-                }
+				QCryptographicHash fileHash2(QCryptographicHash::Sha1);
+				fileHash2.addData(text().toLatin1());
+
+				//fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
+				
+				if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
+				{
+					msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
+					msgBox.setInformativeText(tr("Do you want to reload it?"));
+					int ret = msgBox.exec();
+
+					if (ret == QMessageBox::Yes)
+					{
+						openFile(path, true);
+					}
+					else
+					{
+						document()->setModified(true);
+					}
+				}
+                
             }
         }
 
