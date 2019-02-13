@@ -28,6 +28,7 @@
 #include "../global.h"
 #include "../Qitom/AppManagement.h"
 #include "../helper/guiHelper.h"
+#include "../helper/sleeper.h"
 
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
@@ -1883,6 +1884,14 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
         if (path == getFilename())
         {
             QFile file(path);
+
+			if (!file.exists())
+			{
+				//if git updates a file, the file is deleted and then the modified file is created.
+				//this will cause a 'delete' notification, however the 'modified' notification would be correct.
+				//try to sleep for a while and recheck the state of the file again...
+				ito::Sleeper::sleep(0.4);
+			}
 
             if (!file.exists()) //file deleted
             {
