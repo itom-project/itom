@@ -816,6 +816,8 @@ void CodeEditor::focusInEvent(QFocusEvent *e)
 {   
     emit focusedIn(e);
     QPlainTextEdit::focusInEvent(e);
+
+    qDebug() << "focusInEvent: " << textInteractionFlags();
 }
 
 //-----------------------------------------------------------

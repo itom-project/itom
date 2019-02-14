@@ -1845,7 +1845,11 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     {
     case pyTransBeginRun:
     case pyTransBeginDebug:
-        if (!hasNoFilename()) setReadOnly(true);
+        if (!hasNoFilename())
+        {
+            setReadOnly(true);
+            //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
+        }
         pythonBusy = true;
         m_pythonExecutable = false;
         break;
@@ -1856,6 +1860,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransEndRun:
     case pyTransEndDebug:
         setReadOnly(false);
+        //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
         m_breakpointPanel->setCurrentLine(-1);
         pythonBusy = false;
         m_pythonExecutable = true;
