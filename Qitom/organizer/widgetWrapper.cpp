@@ -542,13 +542,13 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 case 5001: //statusBar
                 {
                     QWidget* _r = (QWidget*)( object2->statusBar() );
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), _r);
                     return ito::retOk;
                 }
                 case 5002: //centralWidget
                 {
                     QWidget* _r = ( object2->centralWidget() );
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), _r);
                     return ito::retOk;
                 }
                 case 5003: //addToolBar
@@ -559,7 +559,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     {
                         _r->setObjectName(objectName);
                     }
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), _r);
                     return ito::retOk;
                 }
             }
@@ -735,13 +735,13 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 case 7001: //horizontalHeader
                 {
                     QHeaderView* _r = (QHeaderView*)( object2->horizontalHeader() );
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), _r);
                     return ito::retOk;
                 }
                 case 7002: //verticalHeader
                 {
                     QHeaderView* _r = (QHeaderView*)( object2->verticalHeader() );
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), _r);
                     return ito::retOk;
                 }
             }
@@ -795,7 +795,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     QLabel *lbl = new QLabel(object2);
                     lbl->setObjectName(*reinterpret_cast<QString(*)>(_a[1]));
                     object2->addWidget(lbl);
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(lbl->objectName().toLatin1(), lbl->metaObject()->className(), (void*)lbl);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(lbl->objectName().toLatin1(), lbl->metaObject()->className(), lbl);
                     return ito::retOk;
                 }
                 case 9002: //currentMessage
@@ -815,7 +815,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 case 10001: //addSeparator
                 {
                     QAction* a = object2->addSeparator();
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), (void*)a);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), a);
                     return ito::retOk;
                 }
                 case 10002: //addAction
@@ -830,7 +830,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                         a->setObjectName(objectName);
                     }
 
-                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), (void*)a);
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(a->objectName().toLatin1(), a->metaObject()->className(), a);
                     return ito::retOk;
                 }
             }

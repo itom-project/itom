@@ -17,7 +17,7 @@ from matplotlib._pylab_helpers import Gcf
 from matplotlib.backend_bases import (
     _Backend, FigureCanvasBase, FigureManagerBase, NavigationToolbar2,
     TimerBase, cursors, ToolContainerBase, StatusbarBase)
-#import mpl_itom.qt_editor.figureoptions as figureoptions
+import mpl_itom.figureoptions as figureoptions
 #from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
 from matplotlib.figure import Figure
 from matplotlib.backend_managers import ToolManager
@@ -30,7 +30,7 @@ import weakref
 #itom specific imports (end)
 
 backend_version = "3.0.0"
-DEBUG = True
+DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
 # instead they have manually specified names
@@ -438,7 +438,8 @@ class FigureCanvasItom(FigureCanvasBase):
         self._keyautorepeat = bool(val)
     
     def resizeEvent(self, w, h, draw = True):
-        print("resizeEvent: %i, %i, %i" % (w, h, draw))
+        if DEBUG:
+            print("resizeEvent: %i, %i, %i" % (w, h, draw))
         # _dpi_ratio_prev will be set the first time the canvas is painted, and
         # the rendered buffer is useless before anyways.
         if self._dpi_ratio_prev is None:
@@ -771,7 +772,7 @@ class FigureManagerItom( FigureManagerBase ):
     def show(self):
         if(self.embeddedWidget== False):
             try:
-                self.itomFig.show()
+                self.windowUi.show()
             except RuntimeError:
                 self._widgetclosed()
             except:
@@ -793,8 +794,8 @@ class FigureManagerItom( FigureManagerBase ):
                 except:
                     pass
                 try:
-                    self.itomFig.hide()
-                    itom.close(self.itomFig.handle)
+                    self.windowUi.hide()
+                    itom.close(self.windowUi.handle)
                 except:
                     pass
             else:
@@ -804,9 +805,10 @@ class FigureManagerItom( FigureManagerBase ):
                     pass
         del self.matplotlibplotUiItem
         self.matplotlibplotUiItem = None
-        del self.itomFig
-        self.itomFig = None
-        if self.toolbar: self.toolbar.destroy()
+        del self.windowUi
+        self.windowUi = None
+        if self.toolbar:
+            self.toolbar.destroy()
         self.canvas.destroy()
         self.canvas._destroying = True
 
@@ -819,7 +821,7 @@ class FigureManagerItom( FigureManagerBase ):
     def set_window_title(self, title):
         self.windowTitle = title
         if(self.embeddedWidget == False):
-            self.itomFig["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
+            self.windowUi["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
 
 class Signal:
     def __init__(self):
@@ -851,6 +853,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self.coordinates = coordinates
         #self._actions = {}
         self.message = Signal()
+        self.subplotConfigDialog = None
         
         """A mapping of toolitem method names to their QActions"""
 
@@ -879,7 +882,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
     def _icon_filename(self, name):
         return name.replace('.png', '_large.png')
     
-    def _action_name(name):
+    def _action_name(self, name):
         objectName = "action_%s" % name
         return re.sub('[^a-zA-Z0-9_]', '_', objectName) #replace all characters, which are not among the given set, by an underscore
 
@@ -890,7 +893,13 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         if not w:
             return
         
-        for text, tooltip_text, image_file, callback in self.toolitems:
+        items = self.toolitems
+        callbacks = [i[3] for i in items]
+        if "configure_subplots" in callbacks and not "subplots" in callbacks:
+            icon = "" #self._icon_filename()
+            items = items + (("Subplots", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
+        
+        for text, tooltip_text, image_file, callback in items:
             if text is None:
                 #raise NotImplementedError("addSeparator not implemented for NavigationToolbar2Itom")
                 #self.addSeparator()
@@ -903,7 +912,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                                          action_name,
                                          text, self._icon_filename(image_file + '.png'), "", "default")
                     
-                    a = self.matplotlibplotUiItem().action_name
+                    a = eval("self.matplotlibplotUiItem().%s" % action_name)
                 else:
                     a["visible"] = True
                 
@@ -921,12 +930,6 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 
                 if tooltip_text is not None:
                     a["toolTip"] = tooltip_text
-                if text == 'Subplots':
-                    a = self._get_predef_action(callback)
-                    #a = self.addAction(self._icon("qt4_editor_options.png"),
-                    #                   'Customize', self.edit_parameters)
-                    a["toolTip"] = ('Edit axis, curve and image parameters')
-                    a.connect("triggered()", self.edit_parameters)
 
         self.buttons = {}
 
@@ -967,7 +970,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
     def edit_parameters(self):
         allaxes = self.canvas.figure.get_axes()
         if not allaxes:
-            itom.ui.msgWarning("Error", "There are no axes to edit.", parent = self.parentUi)
+            itom.ui.msgWarning("Error", "There are no axes to edit.", parent = self.matplotlibplotUiItem())
             return
         elif len(allaxes) == 1:
             axes, = allaxes
@@ -980,14 +983,13 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                         "<anonymous {} (id: {:#x})>".format(
                             type(axes).__name__, id(axes)))
                 titles.append(name)
-            item, ok = itom.ui.getItem(
-                self.parent, 'Customize', 'Select axes:', titles, 0, False, parent = self.parentUi)
+            item, ok = itom.ui.getItem('Customize', 'Select axes:', titles, 0, False, parent = self.matplotlibplotUiItem())
             if ok:
                 axes = allaxes[titles.index(six.text_type(item))]
             else:
                 return
 
-        figureoptions.figure_edit(axes, self)
+        figureoptions.figure_edit(self.matplotlibplotUiItem(), axes, self)
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
@@ -1026,11 +1028,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self.canvas.drawRectangle(None)
 
     def configure_subplots(self):
-        image = os.path.join(matplotlib.rcParams['datapath'],
-                             'images', 'matplotlib.png')
-        dia = SubplotToolQt(self.canvas.figure, self.parent)
-        dia.setWindowIcon(QtGui.QIcon(image))
-        dia.exec_()
+        # itom specific start
+        if(self.subplotConfigDialog is None):
+            self.subplotConfigDialog = SubplotToolItom(self.canvas.figure, self.matplotlibplotUiItem())
+        self.subplotConfigDialog.showDialog()
+        # itom specific end
 
     def save_figure(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
@@ -1062,75 +1064,99 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 self.canvas.figure.savefig(six.text_type(fname))
             except Exception as e:
                 itom.ui.msgCritical("Error saving file", six.text_type(e), ui.MsgBoxOk, ui.MsgBoxNoButton, parent = self.parentUi)
+    
+    def destroy(self):
+        pass
 
 
-'''class SubplotToolQt(UiSubplotTool):
-    def __init__(self, targetfig, parent):
-        UiSubplotTool.__init__(self, None)
-
+class SubplotToolItom:
+    def __init__(self, targetfig, itomUI):
         self._figure = targetfig
-
-        for lower, higher in [("bottom", "top"), ("left", "right")]:
-            self._widgets[lower].valueChanged.connect(
-                lambda val: self._widgets[higher].setMinimum(val + .001))
-            self._widgets[higher].valueChanged.connect(
-                lambda val: self._widgets[lower].setMaximum(val - .001))
-
+        self.itomUI = weakref.ref(itomUI)
+        itomUI.connect("subplotConfigSliderChanged(int,int)", self.funcgeneral)
+        itomUI.connect("subplotConfigTight()", self.functight)
+        itomUI.connect("subplotConfigReset()", self.reset)
+        
         self._attrs = ["top", "bottom", "left", "right", "hspace", "wspace"]
-        self._defaults = {attr: vars(self._figure.subplotpars)[attr]
-                          for attr in self._attrs}
+        self._defaults = {attr: vars(self._figure.subplotpars)[attr] for attr in self._attrs}
+        
+    def _setSliderPositions(self):
+        valLeft = int(self._figure.subplotpars.left*1000)
+        valBottom = int(self._figure.subplotpars.bottom*1000)
+        valRight = int(self._figure.subplotpars.right*1000)
+        valTop = int(self._figure.subplotpars.top*1000)
+        valWSpace = int(self._figure.subplotpars.wspace*1000)
+        valHSpace = int(self._figure.subplotpars.hspace*1000)
+        
+        r = self.itomUI()
+        if(not r is None):
+            r.call("modifySubplotSliders", valLeft, valTop, valRight, valBottom, valWSpace, valHSpace)
+        
+    def showDialog(self):
+        self.defaults = {}
+        for attr in ('left', 'bottom', 'right', 'top', 'wspace', 'hspace', ):
+            val = getattr(self._figure.subplotpars, attr)
+            self.defaults[attr] = val
+        self._setSliderPositions()
+        
+        valLeft = int(self._figure.subplotpars.left*1000)
+        valBottom = int(self._figure.subplotpars.bottom*1000)
+        valRight = int(self._figure.subplotpars.right*1000)
+        valTop = int(self._figure.subplotpars.top*1000)
+        valWSpace = int(self._figure.subplotpars.wspace*1000)
+        valHSpace = int(self._figure.subplotpars.hspace*1000)
+        
+        r = self.itomUI()
+        if(not r is None):
+            r.call("showSubplotConfig", valLeft, valTop, valRight, valBottom, valWSpace, valHSpace)
+    
+    def funcgeneral(self, type, val):
+        if(type == 0):
+            self.funcleft(val)
+        elif(type == 1):
+            self.functop(val)
+        elif(type == 2):
+            self.funcright(val)
+        elif(type == 3):
+            self.funcbottom(val)
+        elif(type == 4):
+            self.funcwspace(val)
+        elif(type == 5):
+            self.funchspace(val)
 
-        # Set values after setting the range callbacks, but before setting up
-        # the redraw callbacks.
-        self._reset()
-
-        for attr in self._attrs:
-            self._widgets[attr].valueChanged.connect(self._on_value_changed)
-        for action, method in [("Export values", self._export_values),
-                               ("Tight layout", self._tight_layout),
-                               ("Reset", self._reset),
-                               ("Close", self.close)]:
-            self._widgets[action].clicked.connect(method)
-
-    def _export_values(self):
-        # Explicitly round to 3 decimals (which is also the spinbox precision)
-        # to avoid numbers of the form 0.100...001.
-        dialog = QtWidgets.QDialog()
-        layout = QtWidgets.QVBoxLayout()
-        dialog.setLayout(layout)
-        text = QtWidgets.QPlainTextEdit()
-        text.setReadOnly(True)
-        layout.addWidget(text)
-        text.setPlainText(
-            ",\n".join("{}={:.3}".format(attr, self._widgets[attr].value())
-                       for attr in self._attrs))
-        # Adjust the height of the text widget to fit the whole text, plus
-        # some padding.
-        size = text.maximumSize()
-        size.setHeight(
-            QtGui.QFontMetrics(text.document().defaultFont())
-            .size(0, text.toPlainText()).height() + 20)
-        text.setMaximumSize(size)
-        dialog.exec_()
-
-    def _on_value_changed(self):
-        self._figure.subplots_adjust(**{attr: self._widgets[attr].value()
-                                        for attr in self._attrs})
+    def funcleft(self, val):
+        self._figure.subplots_adjust(left=val/1000.)
         self._figure.canvas.draw_idle()
 
-    def _tight_layout(self):
+    def funcright(self, val):
+        self._figure.subplots_adjust(right=val/1000.)
+        self._figure.canvas.draw_idle()
+
+    def funcbottom(self, val):
+        self._figure.subplots_adjust(bottom=val/1000.)
+        self._figure.canvas.draw_idle()
+
+    def functop(self, val):
+        self._figure.subplots_adjust(top=val/1000.)
+        self._figure.canvas.draw_idle()
+
+    def funcwspace(self, val):
+        self._figure.subplots_adjust(wspace=val/1000.)
+        self._figure.canvas.draw_idle()
+
+    def funchspace(self, val):
+        self._figure.subplots_adjust(hspace=val/1000.)
+        self._figure.canvas.draw_idle()
+
+    def functight(self):
         self._figure.tight_layout()
-        for attr in self._attrs:
-            widget = self._widgets[attr]
-            widget.blockSignals(True)
-            widget.setValue(vars(self._figure.subplotpars)[attr])
-            widget.blockSignals(False)
+        self._setSliderPositions()
         self._figure.canvas.draw_idle()
 
-    def _reset(self):
-        for attr, value in self._defaults.items():
-            self._widgets[attr].setValue(value)
-'''
+    def reset(self):
+        self._figure.subplots_adjust(**self.defaults)
+        self._setSliderPositions()
+        self._figure.canvas.draw_idle()
 
 class ToolbarItom(ToolContainerBase):
     def __init__(self, toolmanager, matplotlibplotUiItem):
