@@ -561,7 +561,7 @@ class FigureCanvasItom(FigureCanvasBase):
             super(FigureCanvasItom, self).draw()
         finally:
             self._is_drawing = False
-        #self.update() #itom: not necessary
+        self.paintEvent()
 
     def draw_idle(self):
         """Queue redraw of the Agg buffer and request Qt paintEvent.
@@ -583,8 +583,7 @@ class FigureCanvasItom(FigureCanvasBase):
             return
         try:
             if self.matplotlibWidgetUiItem:
-                super(FigureCanvasItom, self).draw()
-                self.paintEvent()
+                self.draw()
         except Exception:
             # Uncaught exceptions are fatal for PyQt5, so catch them instead.
             traceback.print_exc()
@@ -880,6 +879,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         return None
 
     def _icon_filename(self, name):
+        if name.startswith(":"):
+            return name
         return name.replace('.png', '_large.png')
     
     def _action_name(self, name):
@@ -896,8 +897,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         items = self.toolitems
         callbacks = [i[3] for i in items]
         if "configure_subplots" in callbacks and not "subplots" in callbacks:
-            icon = "" #self._icon_filename()
-            items = items + (("Subplots", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
+            icon = ":/itomDesignerPlugins/general/icons/settings" #self._icon_filename()
+            items = items + (("Edit parameters", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
         
         for text, tooltip_text, image_file, callback in items:
             if text is None:

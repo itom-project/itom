@@ -52,6 +52,8 @@ _log = logging.getLogger(__name__)
 
 BLACKLIST = {"title", "label"}
 
+__dialogCache__ = [] #cache to current instances of DialogEditProperties (as long as the real dialog is visible)
+
 class FormWidget():
     def __init__(self, data, title, comment="", with_margin=False, parentUiItem=None):
         """
@@ -188,9 +190,9 @@ class FormWidget():
             elif isinstance(value, bool):
                 value = field["checked"]
             elif isinstance(value, Integral):
-                value = int(field["value"])
+                value = field["value"]
             elif isinstance(value, Real):
-                value = float(str(field["text"]))
+                value = field["value"]
             elif isinstance(value, datetime.datetime):
                 value = field.dateTime().toPyDateTime()
             elif isinstance(value, datetime.date):
@@ -203,8 +205,8 @@ class FormWidget():
 
 class FormComboWidget():
 
-    def __init__(self, datalist, comment, parentUiItem):
-        self.comboWidget = parentUiItem.call("addFormComboWidget", comment)
+    def __init__(self, datalist, title, comment, parentUiItem):
+        self.comboWidget = parentUiItem.call("addFormComboWidget", title, comment)
         self.widgetlist = []
         for data, title, comment in datalist:
             widget = FormWidget(data, title, comment=comment, parentUiItem=self.comboWidget)
@@ -220,12 +222,12 @@ class FormComboWidget():
 
 class FormTabWidget():
 
-    def __init__(self, datalist, comment, parentUiItem):
-        self.tabWidget = parentUiItem.call("addFormTabWidget", comment)
+    def __init__(self, datalist, title, comment, parentUiItem):
+        self.tabWidget = parentUiItem.call("addFormTabWidget", title, comment)
         self.widgetlist = []
         for data, title, comment in datalist:
             if len(data[0]) == 3:
-                widget = FormComboWidget(data, comment=comment, parentUiItem=self.tabWidget)
+                widget = FormComboWidget(data, title, comment=comment, parentUiItem=self.tabWidget)
             else:
                 widget = FormWidget(data, title, with_margin=True, comment=comment,
                                     parentUiItem=self.tabWidget)
@@ -250,17 +252,18 @@ class DialogEditProperties:
         self.dialog.connect("accepted()", self.accepted)
         self.dialog.connect("applied()", self.applied)
         self.dialog.connect("rejected()", self.rejected)
+        self.dialog["modal"] = True
         
         self.float_fields = []
         
         # Form
         if isinstance(data[0][0], (list, tuple)):
             contenttype = "FormTabWidget"
-            self.formwidget = FormTabWidget(data, comment=comment,
+            self.formwidget = FormTabWidget(data, title = "", comment=comment,
                                             parentUiItem=self.dialog)
         elif len(data[0]) == 3:
             contenttype = "FormComboWidget"
-            self.formwidget = FormComboWidget(data, comment=comment,
+            self.formwidget = FormComboWidget(data, title = "", comment=comment,
                                               parentUiItem=self.dialog)
         else:
             contenttype = "FormWidget"
@@ -289,13 +292,24 @@ class DialogEditProperties:
     def accepted(self):
         self.data = self.formwidget.get()
         self.apply_callback(self.data)
+        self._deleteDialog()
+        global __dialogCache__
+        __dialogCache__ = None
 
     def rejected(self):
         self.data = None
+        self._deleteDialog()
+        global __dialogCache__
+        __dialogCache__ = None
 
     def applied(self):
         self.apply_callback(self.formwidget.get())
-
+    
+    def _deleteDialog(self):
+        if not self.dialog is None:
+            self.dialog.call("deleteLater")
+            self.dialog = None
+        
     def get(self):
         """Return form result"""
         return self.data
@@ -333,6 +347,9 @@ def fedit(matplotlibplotUiItem, data, title="", comment="", icon=None, apply=Non
     
     dialog = DialogEditProperties(matplotlibplotUiItem, data, title, comment, icon, apply)
     dialog.show()
+    
+    global __dialogCache__
+    __dialogCache__ = dialog
 
 
 if __name__ == "__main__":
