@@ -76,7 +76,7 @@ class MatplotGuiAutoUpdate(ItomUi):
             #subsequent calls: the existing AxesImage object is updated, this is much faster than replotting a new object
             self.axisImage.set_data(dataObject.randN([200,200],'uint8'))
             self.axisImage.set_extent( [0,200,0,200] ) #update the new size
-            fig.canvas.draw_idle()
+            fig.canvas.draw()
     
     def show(self):
         ret = self.gui.show()

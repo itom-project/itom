@@ -898,7 +898,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         callbacks = [i[3] for i in items]
         if "configure_subplots" in callbacks and not "subplots" in callbacks:
             icon = ":/itomDesignerPlugins/general/icons/settings" #self._icon_filename()
-            items = items + (("Edit parameters", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
+            items = items + (("Edit parameters...", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
         
         for text, tooltip_text, image_file, callback in items:
             if text is None:

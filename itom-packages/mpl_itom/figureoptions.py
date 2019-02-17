@@ -1,4 +1,4 @@
-# Copyright Â© 2009 Pierre Raybaut
+# Copyright © 2009 Pierre Raybaut
 # Licensed under the terms of the MIT License
 # see the mpl licenses directory for a copy of the license
 
@@ -12,10 +12,6 @@ import matplotlib
 from matplotlib import cm, colors as mcolors, markers, image as mimage
 from mpl_itom import _dialogEditProperties
 
-
-def get_icon(name):
-    basedir = os.path.join(matplotlib.rcParams['datapath'], 'images')
-    return os.path.join(basedir, name) #QtGui.QIcon(os.path.join(basedir, name))
 
 
 LINESTYLES = {'-': 'Solid',
@@ -255,5 +251,4 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
             figure.canvas.toolbar.push_current()
 
     _dialogEditProperties.fedit(matplotlibplotUiItem, datalist, title="Figure options", 
-                             icon=get_icon('qt4_editor_options.svg'),
                              apply=apply_callback)

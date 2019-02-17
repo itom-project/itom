@@ -103,8 +103,7 @@ class FormWidget():
         except ValueError:
             cbook._warn_external('Ignoring invalid color %r' % color)
             return itom.rgba(0,0,0)  # return invalid QColor
-        qcolor.setRgbF(*rgba)
-        return itom.rgba(r*255,g*255,b*255,a*255)
+        return itom.rgba(int(r*255), int(g*255), int(b*255), int(a*255))
 
     def setup(self):
         for label, value in self.data:
@@ -244,7 +243,7 @@ class FormTabWidget():
 class DialogEditProperties:
     """Form Dialog"""
     def __init__(self, matplotlibplotUiItem, data, title="", comment="",
-                 icon=None, apply=None):
+                 apply=None):
         
         self.apply_callback = apply
         
@@ -252,7 +251,7 @@ class DialogEditProperties:
         self.dialog.connect("accepted()", self.accepted)
         self.dialog.connect("applied()", self.applied)
         self.dialog.connect("rejected()", self.rejected)
-        self.dialog["modal"] = True
+        #self.dialog["modal"] = True
         
         self.float_fields = []
         
@@ -315,7 +314,7 @@ class DialogEditProperties:
         return self.data
 
 
-def fedit(matplotlibplotUiItem, data, title="", comment="", icon=None, apply=None):
+def fedit(matplotlibplotUiItem, data, title="", comment="", apply=None):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -323,7 +322,6 @@ def fedit(matplotlibplotUiItem, data, title="", comment="", icon=None, apply=Non
     data: datalist, datagroup
     title: string
     comment: string
-    icon: QIcon instance
     parent: parent QWidget
     apply: apply callback (function)
 
@@ -345,7 +343,7 @@ def fedit(matplotlibplotUiItem, data, title="", comment="", icon=None, apply=Non
     """
     
     
-    dialog = DialogEditProperties(matplotlibplotUiItem, data, title, comment, icon, apply)
+    dialog = DialogEditProperties(matplotlibplotUiItem, data, title, comment, apply)
     dialog.show()
     
     global __dialogCache__
