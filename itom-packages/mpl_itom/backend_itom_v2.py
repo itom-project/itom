@@ -842,8 +842,8 @@ class Signal:
             self.callbacks.append({"uiItem":weakref.ref(widget), "slot":slot})
 
 class NavigationToolbar2Itom(NavigationToolbar2):
-    #message = QtCore.Signal(str)
-
+    
+    
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
         """ coordinates: should we show the coordinates on the right? """
         self.canvas = canvas
@@ -1010,7 +1010,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         if self.coordinates:
             r = self.matplotlibplotUiItem()
             if not r is None:
-                s2 = text.encode('latin-1', 'backslashreplace').decode('latin-1')
+                s2 = s.encode('latin-1', 'backslashreplace').decode('latin-1')
                 r.call("setLabelText", s2.replace(', ', '\n'))
 
     def set_cursor(self, cursor):
