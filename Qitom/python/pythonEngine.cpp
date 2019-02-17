@@ -1736,31 +1736,10 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         }
 
         //!< submit all breakpoints
-        QList<BreakPointItem> bp = bpModel->getBreakpoints();
-        QList<BreakPointItem>::iterator it;
-        int pyBpNumber;
-        QModelIndex modelIndex;
-
-        ito::RetVal retValueTemp;
-
-        for (it = bp.begin() ; it != bp.end() ; ++it)
+        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
+        if (retValueBp.containsError())
         {
-
-            if (it->pythonDbgBpNumber == -1)
-            {
-
-                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
-                if (retValueTemp == ito::retOk)
-                {
-                    bpModel->setPyBpNumber(*it,pyBpNumber);
-                }
-                else
-                {
-                    bpModel->setPyBpNumber(*it,-1);
-                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
-                }
-            }
-
+            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -1873,27 +1852,10 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         }
 
         //!< submit all breakpoints
-        QList<BreakPointItem> bp = bpModel->getBreakpoints();
-        QList<BreakPointItem>::iterator it;
-        int pyBpNumber;
-        QModelIndex modelIndex;
-        ito::RetVal retValueTemp;
-
-        for (it = bp.begin() ; it != bp.end() ; ++it)
+        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
+        if (retValueBp.containsError())
         {
-            if (it->pythonDbgBpNumber == -1)
-            {
-                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
-                if (retValueTemp == ito::retOk)
-                {
-                    bpModel->setPyBpNumber(*it,pyBpNumber);
-                }
-                else
-                {
-                    bpModel->setPyBpNumber(*it,-1);
-                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
-                }
-            }
+            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -2005,27 +1967,10 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         }
 
         //!< submit all breakpoints
-        QList<BreakPointItem> bp = bpModel->getBreakpoints();
-        QList<BreakPointItem>::iterator it;
-        int pyBpNumber;
-        QModelIndex modelIndex;
-        ito::RetVal retValueTemp;
-
-        for (it = bp.begin() ; it != bp.end() ; ++it)
+        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
+        if (retValueBp.containsError())
         {
-            if (it->pythonDbgBpNumber == -1)
-            {
-                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
-                if (retValueTemp == ito::retOk)
-                {
-                    bpModel->setPyBpNumber(*it,pyBpNumber);
-                }
-                else
-                {
-                    bpModel->setPyBpNumber(*it,-1);
-                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
-                }
-            }
+            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -2583,6 +2528,38 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//!< submits all breakpoints to the debugger. This should be called before code is debugged.
+ito::RetVal PythonEngine::submitAllBreakpointsToDebugger()
+{
+    //when calling this method, the Python GIL must already be locked
+    QList<BreakPointItem> bp = bpModel->getBreakpoints();
+    QList<BreakPointItem>::iterator it;
+    int pyBpNumber;
+    QModelIndex modelIndex;
+    ito::RetVal retVal;
+    ito::RetVal retValTemp;
+
+    for (it = bp.begin(); it != bp.end(); ++it)
+    {
+        if (it->pythonDbgBpNumber == -1)
+        {
+            retValTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
+            if (retValTemp == ito::retOk)
+            {
+                bpModel->setPyBpNumber(*it, pyBpNumber);
+            }
+            else
+            {
+                bpModel->setPyBpNumber(*it, -1);
+                retVal += retValTemp;
+            }
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
 {
     RetVal retval;
@@ -2611,10 +2588,11 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
 
         if (result == NULL)
         {
-            //this is an exception case that should not occure under normal circumstances
-            std::cerr << tr("Error while transmitting breakpoints to debugger.").toLatin1().data() << "\n" << std::endl;
+            //this is an exception case that should not occur under normal circumstances
+            std::cerr << tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.").arg(filename).arg(lineno + 1).toLatin1().constData() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            retval += RetVal(retError, 0, tr("Exception raised while adding breakpoint in debugger.").toLatin1().data());
+            retval += RetVal(retError, 0, tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.").arg(filename).arg(lineno + 1).toLatin1().constData());
+            PyErr_Clear();
         }
         else
         {

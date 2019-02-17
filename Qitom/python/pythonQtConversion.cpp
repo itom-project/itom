@@ -158,7 +158,23 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
         if (latin1repr != NULL)
         {
             r = QString::fromLatin1(PyObjGetBytes(latin1repr, strict, ok));
-            Py_XDECREF(latin1repr);
+            Py_DECREF(latin1repr);
+        }
+        else
+        {
+            PyErr_Clear();
+            PyObject* utf16repr = PyUnicode_AsUTF16String(val);
+            if (utf16repr)
+            {
+                Py_ssize_t bytes_length = PyBytes_GET_SIZE(utf16repr);
+                r = QString::fromUtf16((const char16_t*)PyBytes_AS_STRING(utf16repr), bytes_length / 2);
+                Py_DECREF(utf16repr);
+            }
+            else
+            {
+                PyErr_Clear();
+                ok = false;
+            }
         }
     } 
     else if (!strict) 
