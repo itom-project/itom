@@ -10,6 +10,10 @@ from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .backend_itom_v2 import FigureCanvasItom, _BackendItom
 
+import itom
+
+DEBUG = True
+
 
 class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
 
@@ -18,18 +22,26 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         FigureCanvasAgg.__init__( self, figure )
         self._bbox_queue = []
         self.canvasInitialized = False #will be set to True once the paintEvent has been called for the first time
+        #self.paintEventTimer = None
+        
+        self.paintEvent() #paint initialization!
 
     @property
     @cbook.deprecated("2.1")
     def blitbox(self):
         return self._bbox_queue
 
-    def paintEvent(self):
+    def paintEvent(self, rect = None):
         """Copy the image from the Agg canvas to the itom plugin 'matplotlibWidgetUiItem'.
 
         In itom, all drawing should be done inside of here when a widget is
         shown onscreen.
         """
+        self.paintEventTimer = None
+        
+        if DEBUG and (not rect is None):
+            print("rect given:", rect)
+        
         if not self.canvasInitialized:
             self.canvasInitialized = True
             self.matplotlibWidgetUiItem["updatePlotOnResize"] = True
@@ -37,7 +49,7 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         if self._update_dpi():
             # The dpi update triggered its own paintEvent.
             return
-        self.draw_idle()  # Only does something if a draw is pending.
+        #self._draw_idle()  # Only does something if a draw is pending.
 
         # if the canvas does not have a renderer, then give up and wait for
         # FigureCanvasAgg.draw(self) to be called
@@ -45,18 +57,27 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             return
 
         #painter = QtGui.QPainter(self) (not for itom)
-
+        
+        if not rect is None:
+            x0,y0,w,h = rect
+            bbox_queue = [Bbox([[x0,y0], [w,h]])]
+            blit = True
         if self._bbox_queue:
             bbox_queue = self._bbox_queue
+            blit = True
         else:
             #painter.eraseRect(self.rect()) (not for itom)
             bbox_queue = [
                 Bbox([[0, 0], [self.renderer.width, self.renderer.height]])]
+            blit = False
         self._bbox_queue = []
         for bbox in bbox_queue:
-            l, b, r, t = map(int, bbox.extents)
-            w = r - l
-            h = t - b
+            x0, y0, w2, h2 = map(int, bbox.extents)
+            w = w2 - x0
+            h = h2- y0
+            
+            if DEBUG:
+                print("paint: %i,%i,%i,%i, blit=%s" % (x0,y0,w,h,str(blit)))
             
             #<-- itom specific start
             reg = self.copy_from_bbox(bbox)
@@ -84,7 +105,7 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
                 else:
                     return
             try:
-                self.matplotlibWidgetUiItem.call("paintResult", buf, 0, 0, W, H, False)
+                self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
             except RuntimeError as e:
                 # it is possible that the figure has currently be closed by the user
                 self.signalDestroyedWidget()
@@ -136,6 +157,8 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
     def blit(self, bbox=None):
         """Blit the region in bbox.
         """
+        if DEBUG:
+            print("blit:", str(bbox))
         # If bbox is None, blit the entire canvas. Otherwise
         # blit only the area defined by the bbox.
         if bbox is None and self.figure:
@@ -144,9 +167,14 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         self._bbox_queue.append(bbox)
 
         # repaint uses logical pixels, not physical pixels like the renderer.
-        l, b, w, h = [pt / self._dpi_ratio for pt in bbox.bounds]
-        t = b + h
-        self.paintEvent()
+        dpi_ratio = self._dpi_ratio
+        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.bounds]
+        
+        #if self.paintEventTimer:
+        #    self.paintEventTimer.stop()
+        
+        self.paintEvent((x0,y0,w,h))
+        #self.paintEventTimer = itom.timer(20, self.paintEvent, ((x0, y0, w, h),), singleShot = True)
         #self.repaint(l, self.renderer.height / self._dpi_ratio - t, w, h)
 
     def print_figure(self, *args, **kwargs):

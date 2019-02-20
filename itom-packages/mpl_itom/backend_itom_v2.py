@@ -30,7 +30,7 @@ import weakref
 #itom specific imports (end)
 
 backend_version = "3.0.0"
-DEBUG = False
+DEBUG = True
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
 # instead they have manually specified names
@@ -283,6 +283,8 @@ class FigureCanvasItom(FigureCanvasBase):
         # Return whether we triggered a resizeEvent (and thus a paintEvent)
         # from within this function.
         if self._dpi_ratio != self._dpi_ratio_prev:
+            if DEBUG:
+                print("update dpi ratio to %.2f" % self._dpi_ratio)
             # We need to update the figure DPI.
             self._update_figure_dpi()
             self._dpi_ratio_prev = self._dpi_ratio
@@ -1169,7 +1171,7 @@ class ToolbarItom(ToolContainerBase):
     def _icon_extension(self):
         return '_large.png'
     
-    def _action_name(name):
+    def _action_name(self, name):
         objectName = "action_%s" % name
         return re.sub('[^a-zA-Z0-9_]', '_', objectName) #replace all characters, which are not among the given set, by an underscore
 
@@ -1184,19 +1186,19 @@ class ToolbarItom(ToolContainerBase):
         
         action_name = self._action_name(name)
         
-        self.matplotlibplotUiItem().call("addUserDefinedAction",
+        parent = self.matplotlibplotUiItem()
+        
+        parent.call("addUserDefinedAction",
                                          action_name,
                                          name, image_file, description, group)
         
-        button = self.matplotlibplotUiItem().action_name
+        button = eval("parent.%s" % action_name)
         
         def handler():
             self.trigger_tool(name)
         if toggle:
             button["checkable"] = True
-            button.toggled.connect(handler)
-        else:
-            button.clicked.connect(handler)
+        button.connect("triggered()", handler)
 
         self._last = button
         self._toolitems.setdefault(name, [])
@@ -1252,10 +1254,13 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(['*.%s' % ext for ext in exts])
-            filter = '%s (%s)' % (name, exts_list)
+            filtername = '%s (%s)' % (name, exts_list)
             if default_filetype in exts:
-                selectedFilter = filter
-            filters.append(filter)
+                selectedFilter = filtername
+            filters.append(filtername)
+        selectedFilterIndex = -1
+        if selectedFilter and selectedFilter in filters:
+            selectedFilterIndex = filters.index(selectedFilter)
         filters = ';;'.join(filters)
 
         parent = self.canvas.matplotlibWidgetUiItem
