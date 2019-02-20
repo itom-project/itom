@@ -646,6 +646,12 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
+    //returns the Qt-internal signal index of the requested signal signature of the QWidget that can emit this signal
+    /* Hint: by Qt's moc process, all signals and slots of a class (having the Q_OBJECT macro) get an auto-incremented index
+       and the 'hidden' method qt_metacall is added to the specific class via its auto-generated _moc.cpp code.
+       This qt_metacall method mainly consists of a switch-case that maps the signal and slot indices to real slot calls
+       or signal invocations (in other objects via their qt_metacall-method).
+    */
     QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
@@ -1917,7 +1923,11 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-    QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+
+    //initSlotCount contains the number of slots, signals and methods that the widget including all its parent widgets contain.
+    //this value can be handled as a kind of offset for signal or slot indices that will maybe be added by any connection, made at runtime,
+    //between signals and python slots (python methods or functions)
+    QSharedPointer<unsigned int> initSlotCount(new unsigned int); 
     *dialogHandle = 0;
     *initSlotCount = 0;
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -1964,7 +1974,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 
     self->uiHandle = static_cast<int>(*dialogHandle);
     DELETE_AND_SET_NULL( self->signalMapper );
-    self->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+    self->signalMapper = new PythonQtSignalMapper(*initSlotCount); //creates a signal mapper for this ui object (including all its child widgets) that is able to act as destination for all virtual python slot methods, that should be connected to any real signals of the widget
 
     PyObject *args2 = PyTuple_New(3);
     PyTuple_SetItem(args2,0,PyLong_FromLong(*objectID) );

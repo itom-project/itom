@@ -169,15 +169,19 @@ Create a fold-able region from a fold trigger block.
 :param block: The block **must** be a fold trigger.
 :type block: QTextBlock
 
-:raise: `ValueError` if the text block is not a fold trigger.
+:param valid: false if the block is not a fold trigger
+:type valid: bool
 */
-FoldScope::FoldScope(const QTextBlock &block)
+FoldScope::FoldScope(const QTextBlock &block, bool &valid)
 {
     if (!Utils::TextBlockHelper::isFoldTrigger(block))
     {
-        throw; //not a fold trigger
+        valid = false; //not a fold trigger
+        return;
     }
+
     m_trigger = block;
+    valid = true;
 }
 
 //------------------------------------------------
@@ -314,6 +318,7 @@ void FoldScope::unfold(bool unfoldChildBlocks /*= true*/)
     else if (subblocksOfTrigger.size() > 0)
     {
         int lvl = Utils::TextBlockHelper::getFoldLvl(subblocksOfTrigger[0]);
+        bool valid;
 
         foreach (QTextBlock block, subblocksOfTrigger)
         {
@@ -323,7 +328,7 @@ void FoldScope::unfold(bool unfoldChildBlocks /*= true*/)
 
                 if (Utils::TextBlockHelper::isFoldTrigger(block) && !Utils::TextBlockHelper::isCollapsed(block))
                 {
-                    FoldScope subblock(block);
+                    FoldScope subblock(block, valid); //valid is true always, since block is a fold trigger (see check above)
                     subblock.unfold(unfoldChildBlocks);
                 }
             }
@@ -366,13 +371,15 @@ QList<FoldScope> FoldScope::childRegions() const
     bool trigger;
     int lvl;
     QList<FoldScope> retlist;
+    bool valid;
+
     while ((block.blockNumber() <= start_end.second) && block.isValid())
     {
         lvl = Utils::TextBlockHelper::getFoldLvl(block);
         trigger = Utils::TextBlockHelper::isFoldTrigger(block);
         if ((lvl == ref_lvl) && trigger)
         {
-            retlist << FoldScope(block);
+            retlist << FoldScope(block, valid); //valid has to be true, since check for fold trigger was already done above
         }
         block = block.next();
     }
@@ -402,7 +409,8 @@ QSharedPointer<FoldScope> FoldScope::parent() const
 
         if (Utils::TextBlockHelper::isFoldTrigger(block))
         {
-            return QSharedPointer<FoldScope>(new FoldScope(block));
+            bool valid; 
+            return QSharedPointer<FoldScope>(new FoldScope(block, valid));  //valid has to be true, since check for fold trigger was already done above
         }
         else
         {
