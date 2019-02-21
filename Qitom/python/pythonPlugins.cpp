@@ -393,19 +393,19 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 PyObject * getExecFuncsList(ito::AddInBase *aib)
 {
     PyObject *result = NULL;
+
     QMap<QString, ExecFuncParams> *funcList = NULL;
-    const char *name;
     aib->getExecFuncList(&funcList);
 
-    if (funcList)
+    if (funcList && !funcList->isEmpty())
     {
         result = PyList_New(0);
-        QStringList execFuncs = funcList->keys();        
-        PyObject *temp = NULL;
-        QStringList::const_iterator funcName;
-        for (funcName = execFuncs.constBegin(); funcName != execFuncs.constEnd(); ++funcName)
+        QMap<QString, ExecFuncParams>::const_iterator fn;
+        for (fn = funcList->begin();fn != funcList->end(); fn++)
         {
-            name = funcName->toLatin1().data();
+            PyObject* temp = NULL;
+            char name[50];
+            strcpy_s(name, fn.key().toLatin1().data());
             if (name)
             {
                 temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
