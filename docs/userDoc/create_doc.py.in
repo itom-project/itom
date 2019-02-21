@@ -150,33 +150,33 @@ for buildername in buildernames:
         texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
         
         # replace some lines in tex files
-        print("\n*.tex wird mit modify_doc korrigiert")
+        print("\n*.tex is corrected by modify_doc")
         modify_doc.replaceInFiles(texfolder,".tex")
         
         # Convert into pdf 
         dirList=os.listdir(texfolder)
-        # Files in Ordner durchlaufen
+        # iterate through files in folder
         for fname in dirList:
             if fname.endswith(".tex"):
                 print("\nstarte Latex => pdf")
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                # mit dem Kommentar ganz hinten kann man die fenster verstecken
-                # vorsicht: man kann den Prozess nicht veraendern wenn fehler auftreten und auf eine eingabe gewartet wird
+                # the window is hidden with the very last command
+                # Attention: you cannot change the process when errors occur and you are waiting for input
                 ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
                 if ret == 0:
                     print("------------------------------")
-                    print("******* pdf erstellt *******")
+                    print("******* pdf created *******")
                     print("------------------------------")
                 elif ret == 1:
-                    print("ERROR: Fehler beim Erstellen des pdf")
-                # Verlinkung im pdf funktioniert nur wenn der befehl zweimal aufgerufen wird
+                    print("ERROR: Can not create pdf")
+                # The link within the PDF only works if the command is called twice.
                 ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
                 if ret == 0:
                     print("------------------------------")
-                    print("******* pdf verlinkt *******")
+                    print("******* pdf linked *******")
                     print("------------------------------")
                 elif ret == 1:
-                    print("ERROR: Fehler beim Erstellen des pdf")
+                    print("ERROR: Can not create pdf")
 
 del __main__.__dict__["__doxygen__xml"]
