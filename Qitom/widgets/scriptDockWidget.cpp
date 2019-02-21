@@ -1274,10 +1274,10 @@ void ScriptDockWidget::createActions()
     m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, QKeySequence(tr("Ctrl+Shift+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_uncommentAction->connectTrigger(this, SLOT(mnuUncomment()));
 
-    m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this);
+    m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, QKeySequence(tr("Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_indentAction->connectTrigger(this, SLOT(mnuIndent()));
 
-    m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this);
+    m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, QKeySequence(tr("Shift+Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
 
     m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);

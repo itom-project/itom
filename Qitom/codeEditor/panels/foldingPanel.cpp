@@ -199,21 +199,24 @@ void FoldingPanel::highlightCaretScopeSlot()
 {
     QTextCursor cursor = editor()->textCursor();
     int block_nbr = cursor.blockNumber();
+    bool valid;
+
     if (m_blockNbr != block_nbr)
     {
         QTextBlock block = FoldScope::findParentScope( \
             editor()->textCursor().block());
-        try
-        {
-            FoldScope s(block);
 
+        FoldScope s(block, valid);
+
+        if (valid)
+        {
             m_mouseOverLine = block.blockNumber();
             if (Utils::TextBlockHelper::isFoldTrigger(block))
             {
                 highlightSurroundingScopes(block);
             }
         }
-        catch (...)
+        else
         {
             clearScopeDecos();
         }            
@@ -318,13 +321,7 @@ void FoldingPanel::paintEvent(QPaintEvent *e)
     if (m_mouseOverLine != -1)
     {
         block = editor()->document()->findBlockByNumber(m_mouseOverLine);
-        try
-        {
-            drawFoldRegionBackground(block, painter);
-        }
-        catch(...)
-        {
-        }
+        drawFoldRegionBackground(block, painter);
     }
 
     int top_position, line_number;
@@ -363,7 +360,8 @@ void FoldingPanel::paintEvent(QPaintEvent *e)
 
                 if (!found)//TODO: was ist das für eine Struktur
                 {
-                    addFoldDecoration(block, FoldScope(block));
+                    bool valid;  //valid should always be true, since check for fold trigger was already done above
+                    addFoldDecoration(block, FoldScope(block, valid));
                 }
             }
             else
@@ -397,8 +395,12 @@ indicator.
 */
 void FoldingPanel::drawFoldRegionBackground(const QTextBlock &block, QPainter &painter) const
 {
-    //qDebug() << block.text();
-    FoldScope r(block);
+    bool valid;
+    FoldScope r(block, valid);
+    if (!valid)
+    {
+        return;
+    }
     QPair<int,int> start_end = r.getRange(true);
     int top = 0;
     if (start_end.first > 0)
@@ -645,7 +647,8 @@ void FoldingPanel::toggleFoldTrigger(const QTextBlock &block, bool refreshEditor
         return;
     }
 
-    FoldScope region(block);
+    bool valid;
+    FoldScope region(block, valid); //valid is true always, since block is a fold trigger (see check above)
 
     if (region.collapsed())
     {
@@ -700,7 +703,14 @@ Show a scope decoration on the editor widget
 */
 void FoldingPanel::addScopeDecorations(const QTextBlock &block, int start, int end)
 {
-    QSharedPointer<FoldScope> parent = FoldScope(block).parent();
+    bool valid;
+    FoldScope blockScope(block, valid);
+    if (!valid)
+    {
+        qDebug() << "FoldingPanel::addScopeDecorations: block is no fold trigger (this should not happen!)";
+        return;
+    }
+    QSharedPointer<FoldScope> parent = blockScope.parent();
     
     if (Utils::TextBlockHelper::isFoldTrigger(block))
     {
@@ -954,7 +964,13 @@ Highlights the scopes surrounding the current fold scope.
 */
 void FoldingPanel::highlightSurroundingScopes(QTextBlock block)
 {
-    FoldScope scope(block);
+    bool valid;
+    FoldScope scope(block, valid);
+    if (!valid)
+    {
+        return;
+    }
+
     if (!m_currentScope.isValid() || 
             (m_currentScope.getRange() != scope.getRange()))
     {
@@ -1065,6 +1081,7 @@ void FoldingPanel::onKeyPressed(QKeyEvent *e)
         int start, end;
         FoldScope scope;
         QPair<int,int> start_end;
+        bool valid;
 
         if (cursor.hasSelection())
         {
@@ -1085,7 +1102,12 @@ void FoldingPanel::onKeyPressed(QKeyEvent *e)
                 toggleFoldTrigger(block);
                 if (delete_request && cursor.hasSelection())
                 {
-                    scope = FoldScope(FoldingPanel::findParentScope(block));
+                    scope = FoldScope(FoldingPanel::findParentScope(block), valid);
+                    if (!valid)
+                    {
+                        continue; //this should never happen
+                    }
+
                     start_end = scope.getRange();
                     tc = editor()->selectLines(start_end.first, start_end.second);
                     if (tc.selectionStart() > cursor.selectionStart())

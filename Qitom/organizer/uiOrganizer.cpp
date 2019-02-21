@@ -2179,6 +2179,19 @@ RetVal UiOrganizer::getObjectChildrenInfo(unsigned int objectID, bool recursive,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// returns the Qt internal signal index of the given signal signature and the widget instance.
+/*
+Every class, that has the Q_OBJECT macro defined and is derived from QObject (like any widget), can define several signals.
+The Qt moc process turns every signal into an auto-incremented number, the so called signal index. This method tries to find
+out the corresponding signal index of this signal.
+
+\param objectID is the indentifier, that references the emitting object
+\param signalSignature is the original signature of the signal, e.g. 'clicked(bool)'
+\param signalIndex is the returned signal index, or -1 if the signal could not be found
+\param objPtr is the object pointer that belongs to objectID. Hint: only use this pointer within another thread as long as you are sure that the object still exists
+\param argTypes returned list of Qt meta type ids of the different arguments of the found signal
+
+*/
 RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QByteArray &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
 {
     *signalIndex = -1;
@@ -2191,9 +2204,12 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QByteArray &sign
 
     if (obj)
     {
-        const QMetaObject *mo = obj->metaObject();
+        const QMetaObject *mo = obj->metaObject(); //the QMetaObject object of obj is able to return the signal index by the following method
         *signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.data()));
 
+        //every argument that can be used in signal-slot connections has to be registered to the Qt meta type system, hence,
+        //every type gets a unique identifier of the meta type system. The following block tries to find out all type ids
+        //of all arguments of the desired signal.
         QMetaMethod metaMethod = mo->method(*signalIndex);
         QList<QByteArray> names = metaMethod.parameterTypes();
         foreach (const QByteArray& name, names)
@@ -3550,7 +3566,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                     *rows = fig->rows();
                     *cols = fig->cols();
                     *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
-                    *initSlotCount = fig->metaObject()->methodOffset();
+                    *initSlotCount = fig->metaObject()->methodOffset(); //number of methods (slots, signals...) this widget including its parent widgets define.
                     *objectID = addObjectToList(const_cast<FigureWidget*>(fig));
                     found = true;
                 }

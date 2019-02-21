@@ -177,6 +177,8 @@ private:
 
     InputTextMode m_inputTextMode;
 
+	static const QString longLineWrapPrefix;
+
 };
 
 class DequeCommandList

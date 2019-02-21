@@ -107,7 +107,7 @@ class FoldScope
 {
 public:
     FoldScope();
-    FoldScope(const QTextBlock &block);
+    FoldScope(const QTextBlock &block, bool &valid);
     virtual ~FoldScope();
 
     int triggerLevel() const;

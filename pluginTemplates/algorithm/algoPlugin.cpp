@@ -126,12 +126,12 @@ ito::RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito
     if(retval.containsError()) return retval;
 
     paramsMand->clear();
-    paramsMand->append( ito::Param("mandParam1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "description") );
+    paramsMand->append( ito::Param("mandParam1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toLatin1().data()));
     
     paramsOpt->clear();
-    paramsOpt->append( ito::Param("optParam1", ito::ParamBase::String | ito::ParamBase::In, "default", "description") );
+    paramsOpt->append( ito::Param("optParam1", ito::ParamBase::String | ito::ParamBase::In, "default", tr("description").toLatin1().data()));
     
-    paramsOut->append( ito::Param("outParam1", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, ito::DoubleMeta::all(), "description") );
+    paramsOut->append( ito::Param("outParam1", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("description").toLatin1().data()));
 
     return retval;
 }
