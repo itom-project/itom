@@ -1,8 +1,3 @@
-import matplotlib
-#registeres itom as backend for matplotlib (important!)
-#the false parameter indicates that no warning is emitted when the registering is called twice
-matplotlib.use('module://mpl_itom.backend_itomagg',False)
-
 """
 Demo using fontdict to control style of text and labels.
 """

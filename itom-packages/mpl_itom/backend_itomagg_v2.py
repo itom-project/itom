@@ -12,7 +12,7 @@ from .backend_itom_v2 import FigureCanvasItom, _BackendItom
 
 import itom
 
-DEBUG = True
+DEBUG = False
 
 
 class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
@@ -22,7 +22,6 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         FigureCanvasAgg.__init__( self, figure )
         self._bbox_queue = []
         self.canvasInitialized = False #will be set to True once the paintEvent has been called for the first time
-        #self.paintEventTimer = None
         
         self.paintEvent() #paint initialization!
 
@@ -55,18 +54,15 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # FigureCanvasAgg.draw(self) to be called
         if not hasattr(self, 'renderer'):
             return
-
-        #painter = QtGui.QPainter(self) (not for itom)
         
         if not rect is None:
             x0,y0,w,h = rect
             bbox_queue = [Bbox([[x0,y0], [w,h]])]
             blit = True
-        if self._bbox_queue:
+        elif self._bbox_queue:
             bbox_queue = self._bbox_queue
             blit = True
         else:
-            #painter.eraseRect(self.rect()) (not for itom)
             bbox_queue = [
                 Bbox([[0, 0], [self.renderer.width, self.renderer.height]])]
             blit = False
@@ -82,16 +78,6 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             #<-- itom specific start
             reg = self.copy_from_bbox(bbox)
             buf = reg.to_string_argb()
-            '''qimage = QtGui.QImage(buf, w, h, QtGui.QImage.Format_ARGB32)
-            # Adjust the buf reference count to work around a memory leak bug
-            # in QImage under PySide on Python 3.
-            if QT_API == 'PySide' and six.PY3:
-                ctypes.c_long.from_address(id(buf)).value = 1
-            if hasattr(qimage, 'setDevicePixelRatio'):
-                # Not available on Qt4 or some older Qt5.
-                qimage.setDevicePixelRatio(self._dpi_ratio)
-            origin = QtCore.QPoint(l, self.renderer.height - t)
-            #painter.drawImage(origin / self._dpi_ratio, qimage)'''
             W = round(w)
             H = round(h)
             #workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
@@ -105,6 +91,8 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
                 else:
                     return
             try:
+                #if blit: W and H are a sum of the real width/height and the offset x0 or y0.
+                #else: W and H are the real width and height of the image
                 self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
             except RuntimeError as e:
                 # it is possible that the figure has currently be closed by the user
@@ -168,14 +156,10 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
 
         # repaint uses logical pixels, not physical pixels like the renderer.
         dpi_ratio = self._dpi_ratio
-        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.bounds]
-        
-        #if self.paintEventTimer:
-        #    self.paintEventTimer.stop()
+        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.extents]
         
         self.paintEvent((x0,y0,w,h))
-        #self.paintEventTimer = itom.timer(20, self.paintEvent, ((x0, y0, w, h),), singleShot = True)
-        #self.repaint(l, self.renderer.height / self._dpi_ratio - t, w, h)
+
 
     def print_figure(self, *args, **kwargs):
         #<-- itom specific start

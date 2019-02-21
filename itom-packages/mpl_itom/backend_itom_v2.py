@@ -30,7 +30,7 @@ import weakref
 #itom specific imports (end)
 
 backend_version = "3.0.0"
-DEBUG = True
+DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
 # instead they have manually specified names
@@ -240,9 +240,6 @@ class FigureCanvasItom(FigureCanvasBase):
         self.resize(*self.get_width_height())
         # Key auto-repeat enabled by default
         self._keyautorepeat = True
-
-        ##palette = QtGui.QPalette(QtCore.Qt.white)
-        ##self.setPalette(palette)
         
         #--> itom specific start
         self.initialized = True
@@ -293,8 +290,6 @@ class FigureCanvasItom(FigureCanvasBase):
             # that event.
             
             #--> itom specific start
-            ##event = QtGui.QResizeEvent(self.size(), self.size())
-            ##self.resizeEvent(event)
             width, height = self.matplotlibWidgetUiItem["size"]
             self.matplotlibWidgetUiItem.call("externalResize",width,height)
             # itom specific end <--
@@ -321,13 +316,6 @@ class FigureCanvasItom(FigureCanvasBase):
         else:
             itom.setApplicationCursor(-1)
             FigureCanvasBase.leave_notify_event(self)
-        
-    ##def enterEvent(self, event):
-    ##    FigureCanvasBase.enter_notify_event(self, guiEvent=event)
-    ##
-    ##def leaveEvent(self, event):
-    ##    QtWidgets.QApplication.restoreOverrideCursor()
-    ##    FigureCanvasBase.leave_notify_event(self, guiEvent=event)
 
     def mouseEventCoords(self, x, y):
         """Calculate mouse coordinates in physical pixels
@@ -363,32 +351,6 @@ class FigureCanvasItom(FigureCanvasBase):
                 FigureCanvasBase.button_release_event( self, x, y, button)
         except RuntimeError:
             self.signalDestroyedWidget()
-            
-    ##def mousePressEvent(self, event):
-    ##    x, y = self.mouseEventCoords(event.pos())
-    ##    button = self.buttond.get(event.button())
-    ##    if button is not None:
-    ##        FigureCanvasBase.button_press_event(self, x, y, button,
-    ##                                            guiEvent=event)
-
-    ##def mouseDoubleClickEvent(self, event):
-    ##    x, y = self.mouseEventCoords(event.pos())
-    ##    button = self.buttond.get(event.button())
-    ##    if button is not None:
-    ##        FigureCanvasBase.button_press_event(self, x, y,
-    ##                                            button, dblclick=True,
-    ##                                            guiEvent=event)
-
-    ##def mouseMoveEvent(self, event):
-    ##    x, y = self.mouseEventCoords(event)
-    ##    FigureCanvasBase.motion_notify_event(self, x, y, guiEvent=event)
-
-    ##def mouseReleaseEvent(self, event):
-    ##    x, y = self.mouseEventCoords(event)
-    ##    button = self.buttond.get(event.button())
-    ##    if button is not None:
-    ##        FigureCanvasBase.button_release_event(self, x, y, button,
-    ##                                              guiEvent=event)
     
     def wheelEvent(self, x, y, delta, orientation):
         x, y = self.mouseEventCoords(x, y)
@@ -396,17 +358,6 @@ class FigureCanvasItom(FigureCanvasBase):
         steps = delta/120
         if (orientation == 1): #vertical
             FigureCanvasBase.scroll_event( self, x, y, steps)
-            
-    ##def wheelEvent(self, event):
-    ##    x, y = self.mouseEventCoords(event)
-    ##    # from QWheelEvent::delta doc
-    ##    if event.pixelDelta().x() == 0 and event.pixelDelta().y() == 0:
-    ##        steps = event.angleDelta().y() / 120
-    ##    else:
-    ##        steps = event.pixelDelta().y()
-    ##    if steps:
-    ##        FigureCanvasBase.scroll_event(
-    ##            self, x, y, steps, guiEvent=event)
     
     def keyEvent(self, type, key, modifiers, autoRepeat):
         key = self._get_key(key, modifiers, autoRepeat)
@@ -417,16 +368,6 @@ class FigureCanvasItom(FigureCanvasBase):
             FigureCanvasBase.key_press_event( self, key )
         elif(type == 1): #keyReleaseEvent
             FigureCanvasBase.key_release_event( self, key )
-
-    ##def keyPressEvent(self, event):
-    ##    key = self._get_key(event)
-    ##    if key is not None:
-    ##        FigureCanvasBase.key_press_event(self, key, guiEvent=event)
-
-    ##def keyReleaseEvent(self, event):
-    ##    key = self._get_key(event)
-    ##    if key is not None:
-    ##        FigureCanvasBase.key_release_event(self, key, guiEvent=event)
     
     @property
     def keyAutoRepeat(self):
@@ -457,22 +398,6 @@ class FigureCanvasItom(FigureCanvasBase):
             # emit our resize events
             FigureCanvasBase.resize_event(self)
             self._is_drawing = status
-                
-    ##def resizeEvent(self, event):
-    ##    # _dpi_ratio_prev will be set the first time the canvas is painted, and
-    ##    # the rendered buffer is useless before anyways.
-    ##    if self._dpi_ratio_prev is None:
-    ##        return
-    ##    w = event.size().width() * self._dpi_ratio
-    ##    h = event.size().height() * self._dpi_ratio
-    ##    dpival = self.figure.dpi
-    ##    winch = w / dpival
-    ##    hinch = h / dpival
-    ##    self.figure.set_size_inches(winch, hinch, forward=False)
-    ##    # pass back into Qt to let it finish
-    ##    QtWidgets.QWidget.resizeEvent(self, event)
-    ##    # emit our resize events
-    ##    FigureCanvasBase.resize_event(self)
     
     def copyToClipboardEvent(self, dpi):
         self.copyToClipboard(dpi)
@@ -719,8 +644,9 @@ class FigureManagerItom( FigureManagerBase ):
         def notify_axes_change(fig):
             # This will be called whenever the current axes is changed
             if self.toolbar is not None:
-                self.toolbar.update()
-        self.canvas.figure.add_axobserver(notify_axes_change)
+                #self.toolbar.update()
+                pass
+        #self.canvas.figure.add_axobserver(notify_axes_change)
         ##self.windowUi.raise_()
 
     def full_screen_toggle(self):
@@ -1190,7 +1116,7 @@ class ToolbarItom(ToolContainerBase):
         
         parent.call("addUserDefinedAction",
                                          action_name,
-                                         name, image_file, description, group)
+                                         name, image_file, description, group, position)
         
         button = eval("parent.%s" % action_name)
         
@@ -1208,13 +1134,16 @@ class ToolbarItom(ToolContainerBase):
         if name not in self._toolitems:
             return
         for button, handler in self._toolitems[name]:
-            button.disconnect("toggled()", self.handler) #button.toggled.disconnect(handler)
+            try:
+                button.disconnect("triggered()", handler)
+            except Exception:
+                pass
             button["checked"] = toggled
-            button.connect("toggled()", self.handler) #button.toggled.connect(handler)
+            button.connect("triggered()", handler)
 
     def remove_toolitem(self, name):
         if self.matplotlibplotUiItem():
-            self.matplotlibplotUiItem().call("removeUserDefinedAction", name)
+            self.matplotlibplotUiItem().call("removeUserDefinedAction", self._action_name(name))
         del self._toolitems[name]
 
 
@@ -1227,14 +1156,15 @@ class StatusbarItom(StatusbarBase):
         self.label["text"] = s
 
 
-class ConfigureSubplotsQt(backend_tools.ConfigureSubplotsBase):
+class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
+    def __init__(self, name, *args, **kwargs):
+        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
+        self.subplotConfigDialog = None
+    
     def trigger(self, *args):
-        image = os.path.join(matplotlib.rcParams['datapath'],
-                             'images', 'matplotlib.png')
-        parent = self.canvas.manager.window
-        dia = SubplotToolQt(self.figure, parent)
-        dia.setWindowIcon(QtGui.QIcon(image))
-        dia.exec_()
+        if(self.subplotConfigDialog is None):
+            self.subplotConfigDialog = SubplotToolItom(self.canvas.figure, self.canvas.manager.matplotlibplotUiItem)
+        self.subplotConfigDialog.showDialog()
 
 
 class SaveFigureItom(backend_tools.SaveFigureBase):
@@ -1298,7 +1228,7 @@ class RubberbandItom(backend_tools.RubberbandBase):
 
 
 backend_tools.ToolSaveFigure = SaveFigureItom
-backend_tools.ToolConfigureSubplots = ConfigureSubplotsQt
+backend_tools.ToolConfigureSubplots = ConfigureSubplotsItom
 backend_tools.ToolSetCursor = SetCursorItom
 backend_tools.ToolRubberband = RubberbandItom
 
