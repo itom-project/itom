@@ -2511,7 +2511,7 @@ PyObject* PythonQtConversion::QStringListToPyObject(const QStringList& list)
     QString str;
     foreach (str, list) 
     {
-        PyTuple_SET_ITEM(result, i, PythonQtConversion::QStringToPyObject(str));
+        PyTuple_SET_ITEM(result, i, PythonQtConversion::QStringToPyObject(str)); //steals reference
         i++;
     }
     // why is the error state bad after this?

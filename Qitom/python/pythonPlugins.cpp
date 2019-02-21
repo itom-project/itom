@@ -172,12 +172,12 @@ PyObject * getParamList(ito::AddInBase *aib)
             name = paramIt.value().getName();
             if (name)
             {
-                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
+                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL); //new ref
                 PyList_Append(result, temp);
             }
             else
             {
-                temp = PyUnicode_FromString("<invalid name>");
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
                 PyList_Append(result, temp);
             }
             Py_XDECREF(temp);
@@ -392,28 +392,26 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 */
 PyObject * getExecFuncsList(ito::AddInBase *aib)
 {
-    PyObject *result = NULL;
+    PyObject *result = PyList_New(0);
 
     QMap<QString, ExecFuncParams> *funcList = NULL;
     aib->getExecFuncList(&funcList);
 
     if (funcList && !funcList->isEmpty())
     {
-        result = PyList_New(0);
         QMap<QString, ExecFuncParams>::const_iterator fn;
-        for (fn = funcList->begin();fn != funcList->end(); fn++)
+        for (fn = funcList->constBegin(); fn != funcList->constEnd(); fn++)
         {
             PyObject* temp = NULL;
-            char name[50];
-            strcpy_s(name, fn.key().toLatin1().data());
-            if (name)
+            QByteArray name = fn.key().toLatin1();
+            if (name != "")
             {
-                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
+                temp = PyUnicode_DecodeLatin1(name.constData(), name.length(), NULL); //new ref
                 PyList_Append(result, temp);
             }
             else
             {
-                temp = PyUnicode_FromString("<invalid name>");
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
                 PyList_Append(result, temp);
             }
             Py_XDECREF(temp);

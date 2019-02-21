@@ -716,13 +716,17 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                     QDir appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
                     if (appPath.exists())
                     {
-                        PyList_Append(syspath, PythonQtConversion::QStringToPyObject(appPath.absolutePath()));
+                        PyObject *str = PythonQtConversion::QStringToPyObject(appPath.absolutePath()); //new ref
+                        PyList_Append(syspath, str);
+                        Py_DECREF(str);
                     }
 
                     //path to site-packages folder
                     if (appPath.cd("itom-packages"))
                     {
-                        PyList_Append(syspath, PythonQtConversion::QStringToPyObject(appPath.absolutePath()));
+                        PyObject *str = PythonQtConversion::QStringToPyObject(appPath.absolutePath()); //new ref
+                        PyList_Append(syspath, str);
+                        Py_DECREF(str);
                     }
                     else
                     {
@@ -4703,6 +4707,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
             PyObject* tempElem = NULL;
+            PyObject* keyListItem = NULL;
             QString validVariableName;
 
             for (int i = 0 ; i < varNames.size() ; i++)
@@ -4715,9 +4720,11 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
                 }
                 else
                 {
-                    PyList_Append(keyList, PyUnicode_DecodeLatin1(validVariableName.toLatin1().data(), validVariableName.length(), NULL));
+                    keyListItem = PyUnicode_DecodeLatin1(validVariableName.toLatin1().constData(), validVariableName.length(), NULL); //new ref
+                    PyList_Append(keyList, keyListItem);
                     PyList_Append(valueList, tempElem);
                     Py_DECREF(tempElem);
+                    Py_DECREF(keyListItem);
                 }
             }
 
