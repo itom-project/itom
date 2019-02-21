@@ -2203,6 +2203,7 @@ void PythonEngine::jediCalltipRequestEnqueued()
                 }
                 else
                 {
+                    PyErr_Clear();
                     std::cerr << "Error in calltip: invalid format of tuple\n" << std::endl;
                 }
             }
@@ -2306,6 +2307,7 @@ void PythonEngine::jediAssignmentRequested(const QString &source, int line, int 
                 }
                 else
                 {
+                    PyErr_Clear();
                     std::cerr << "Error in assignment / definition: invalid format of tuple\n" << std::endl;
                 }
             }
@@ -2362,80 +2364,117 @@ void PythonEngine::jediCompletionRequestEnqueued()
         }
     }
 
+#ifdef _DEBUG
+    qDebug() << "jediCompletionRequestEnqueued1";
+#endif
+
     QVector<ito::JediCompletion> completions;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
-    PyObject *result = NULL;
-
-    if (m_includeItomImportBeforeSyntaxCheck)
+    try
     {
-        //add from itom import * as first line (this is afterwards removed from results)
-        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
-            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
-    }
-    else
-    {
-        result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
-            request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
-    }
+        PyObject *result = NULL;
 
-    if (result && PyList_Check(result))
-    {
-        PyObject *pycompletion = NULL;
-        const char* calltip;
-        const char* tooltip;
-        const char* icon;
-        const char* docstring;
-
-        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        if (m_includeItomImportBeforeSyntaxCheck)
         {
-            pycompletion = PyList_GetItem(result, idx); //borrowed ref
-            
-            if (PyTuple_Check(pycompletion))
+            //add from itom import * as first line (this is afterwards removed from results)
+            result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+                request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+
+#ifdef _DEBUG
+            qDebug() << "jediCompletionRequestEnqueued2a";
+#endif
+        }
+        else
+        {
+            result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
+                request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+
+#ifdef _DEBUG
+            qDebug() << "jediCompletionRequestEnqueued2b";
+#endif
+        }
+
+        if (result && PyList_Check(result))
+        {
+            PyObject *pycompletion = NULL;
+            const char* calltip;
+            const char* tooltip;
+            const char* icon;
+            const char* docstring;
+
+            for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
             {
-                if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                pycompletion = PyList_GetItem(result, idx); //borrowed ref
+
+                if (PyTuple_Check(pycompletion))
                 {
-                    completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), \
-                        QLatin1String(icon), QLatin1String(docstring)));
+                    if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                    {
+                        completions.append(ito::JediCompletion(QLatin1String(calltip), QLatin1String(tooltip), \
+                            QLatin1String(icon), QLatin1String(docstring)));
+                    }
+                    else
+                    {
+                        PyErr_Clear();
+                        std::cerr << "Error in completion: invalid format of tuple\n" << std::endl;
+                    }
                 }
                 else
                 {
-                    std::cerr << "Error in completion: invalid format of tuple\n" << std::endl;
+                    std::cerr << "Error in completion: list of tuples required\n" << std::endl;
                 }
             }
-            else
-            {
-                std::cerr << "Error in completion: list of tuples required\n" << std::endl;
-            }
+
+#ifdef _DEBUG
+            qDebug() << "jediCompletionRequestEnqueued3";
+#endif
+            
+            Py_DECREF(result);
         }
-
-        Py_DECREF(result);
+        else
+        {
+            Py_XDECREF(result);
+            //#ifdef _DEBUG
+            std::cerr << "Error when getting completions from jedi\n" << std::endl;
+            PyErr_PrintEx(0);
+            //#endif
+        }
     }
-
-    else
+    catch (...)
     {
-        Py_XDECREF(result);
-//#ifdef _DEBUG
-        std::cerr << "Error when getting completions from jedi\n" << std::endl;
-        PyErr_PrintEx(0);
-//#endif
+        qDebug() << "jediCompletionRequestEnqueued4: exception";
+        std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n" << std::endl;
     }
-
-    
 
     PyGILState_Release(gstate);
+
+#ifdef _DEBUG
+    qDebug() << "jediCompletionRequestEnqueued5";
+#endif
 
     QObject *s = request.m_sender.data();
     if (s && request.m_callbackFctName != "")
     {
+#ifdef _DEBUG
+        qDebug() << "jediCompletionRequestEnqueued6: " << request.m_callbackFctName;
+#endif
+
         QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(int, request.m_line), \
             Q_ARG(int, request.m_col), Q_ARG(int, request.m_requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
         
     }
 
+#ifdef _DEBUG
+    qDebug() << "jediCompletionRequestEnqueued7";
+#endif
+
     if (!m_queuedJediCompletionRequests.isEmpty())
     {
+#ifdef _DEBUG
+        qDebug() << "jediCompletionRequestEnqueued8";
+#endif
         QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
     }
 }
