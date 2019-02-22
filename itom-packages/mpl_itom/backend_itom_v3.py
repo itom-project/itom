@@ -1,18 +1,14 @@
 # coding=iso-8859-15
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-import six
-
 import functools
 import os
 import re
 import signal
 import sys
-from six import unichr
 import traceback
 
 import matplotlib
 
+from matplotlib import backend_tools, cbook
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.backend_bases import (
     _Backend, FigureCanvasBase, FigureManagerBase, NavigationToolbar2,
@@ -21,7 +17,6 @@ import mpl_itom.figureoptions as figureoptions
 #from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
 from matplotlib.figure import Figure
 from matplotlib.backend_managers import ToolManager
-from matplotlib import backend_tools
 
 #itom specific imports
 import itom
@@ -194,8 +189,7 @@ class FigureCanvasItom(FigureCanvasBase):
             True, if matplotlib widget is embedded into a loaded ui file, 
             False: matplotlib widget is displayed in figure window
         '''
-        ##_create_qApp()
-        super(FigureCanvasItom, self).__init__(figure=figure)
+        super().__init__(figure=figure)
 
         self.figure = figure
         
@@ -233,6 +227,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self._dpi_ratio_prev = None
 
         self._draw_pending = False
+        self._erase_before_paint = False
         self._is_drawing = False
 
         ##self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)
@@ -370,6 +365,8 @@ class FigureCanvasItom(FigureCanvasBase):
             FigureCanvasBase.key_release_event( self, key )
     
     @property
+    @cbook.deprecated("3.0", "Manually check `event.guiEvent.isAutoRepeat()` "
+                      "in the event handler.")
     def keyAutoRepeat(self):
         """
         If True, enable auto-repeat for key events.
@@ -377,6 +374,8 @@ class FigureCanvasItom(FigureCanvasBase):
         return self._keyautorepeat
 
     @keyAutoRepeat.setter
+    @cbook.deprecated("3.0", "Manually check `event.guiEvent.isAutoRepeat()` "
+                      "in the event handler.")
     def keyAutoRepeat(self, val):
         self._keyautorepeat = bool(val)
     
@@ -428,7 +427,7 @@ class FigureCanvasItom(FigureCanvasBase):
             if event_key > MAX_UNICODE:
                 return None
 
-            key = unichr(event_key)
+            key = chr(event_key)
             # qt delivers capitalized letters.  fix capitalization
             # note that capslock is ignored
             if 'shift' in mods:
@@ -483,11 +482,9 @@ class FigureCanvasItom(FigureCanvasBase):
         # that uses the result of the draw() to update plot elements.
         if self._is_drawing:
             return
-        self._is_drawing = True
-        try:
-            super(FigureCanvasItom, self).draw()
-        finally:
-            self._is_drawing = False
+        with cbook._setattr_cm(self, _is_drawing=True):
+            super().draw()
+        self._erase_before_paint = True
         self.paintEvent()
 
     def draw_idle(self):
@@ -640,8 +637,6 @@ class FigureManagerItom( FigureManagerBase ):
         if matplotlib.is_interactive():
             self.windowUi.show()
             self.canvas.draw_idle()
-        
-        ##self.windowUi.raise_()
 
     def full_screen_toggle(self):
         raise NotImplementedError("no fullscreen mode available for itom backend")
@@ -909,7 +904,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 titles.append(name)
             item, ok = itom.ui.getItem('Customize', 'Select axes:', titles, 0, False, parent = self.matplotlibplotUiItem())
             if ok:
-                axes = allaxes[titles.index(six.text_type(item))]
+                axes = allaxes[titles.index(item)]
             else:
                 return
 
@@ -921,11 +916,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self._get_predef_action('zoom')["checked"] = (self._active == 'ZOOM')
 
     def pan(self, *args):
-        super(NavigationToolbar2Itom, self).pan(*args)
+        super().pan(*args)
         self._update_buttons_checked()
 
     def zoom(self, *args):
-        super(NavigationToolbar2Itom, self).zoom(*args)
+        super().zoom(*args)
         self._update_buttons_checked()
 
     def set_message(self, s):
@@ -960,7 +955,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def save_figure(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(six.iteritems(filetypes))
+        sorted_filetypes = sorted(filetypes.items())
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(
@@ -983,11 +978,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
                 matplotlib.rcParams['savefig.directory'] = (
-                    os.path.dirname(six.text_type(fname)))
+                    os.path.dirname(fname))
             try:
-                self.canvas.figure.savefig(six.text_type(fname))
+                self.canvas.figure.savefig(fname)
             except Exception as e:
-                itom.ui.msgCritical("Error saving file", six.text_type(e), ui.MsgBoxOk, ui.MsgBoxNoButton, parent = self.parentUi)
+                itom.ui.msgCritical("Error saving file", str(e), ui.MsgBoxOk, ui.MsgBoxNoButton, parent = self.parentUi)
     
     def destroy(self):
         pass
@@ -1168,7 +1163,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         
     def trigger(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(six.iteritems(filetypes))
+        sorted_filetypes = sorted(filetypes.items())
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(
@@ -1196,12 +1191,12 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
                 matplotlib.rcParams['savefig.directory'] = (
-                    os.path.dirname(six.text_type(fname)))
+                    os.path.dirname(fname))
             try:
-                self.canvas.figure.savefig(six.text_type(fname))
+                self.canvas.figure.savefig(fname)
                 self.defaultSaveFileName = fname
             except Exception as e:
-                itom.ui.msgCritical("Error saving file", six.text_type(e), parent = parent)
+                itom.ui.msgCritical("Error saving file", str(e), parent = parent)
 
 
 class SetCursorItom(backend_tools.SetCursorBase):
@@ -1220,20 +1215,30 @@ class RubberbandItom(backend_tools.RubberbandBase):
     def remove_rubberband(self):
         self.canvas.drawRectangle(None)
 
+class HelpItom(backend_tools.ToolHelpBase):
+    def trigger(self, *args):
+        ui.msgInformation("Help", self._get_help_html(), parent = self.canvas.matplotlibWidgetUiItem)
+
+
+class ToolCopyToClipboardItom(backend_tools.ToolCopyToClipboardBase):
+    def trigger(self, *args, **kwargs):
+        self.canvas.copyToClipboard(self.canvas._dpi_ratio)
 
 backend_tools.ToolSaveFigure = SaveFigureItom
 backend_tools.ToolConfigureSubplots = ConfigureSubplotsItom
 backend_tools.ToolSetCursor = SetCursorItom
 backend_tools.ToolRubberband = RubberbandItom
+backend_tools.ToolHelp = HelpItom
+backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
 
-
+@cbook.deprecated("3.0")
 def error_msg_itom(msg, parent=None):
-    if not isinstance(msg, six.string_types):
+    if not isinstance(msg, str):
         msg = ','.join(map(str, msg))
     
     itom.ui.msgWarning("Matplotlib", msg)
 
-
+@cbook.deprecated("3.0")
 def exception_handler(type, value, tb):
     """Handle uncaught exceptions
     It does not catch SystemExit
@@ -1245,7 +1250,7 @@ def exception_handler(type, value, tb):
     if hasattr(value, 'strerror') and value.strerror is not None:
         msg += value.strerror
     else:
-        msg += six.text_type(value)
+        msg += str(value)
 
     if len(msg):
         error_msg_itom(msg)

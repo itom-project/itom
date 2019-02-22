@@ -1,16 +1,14 @@
 """
 Render to itom (qt) from agg
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-from matplotlib import cbook
 from matplotlib.transforms import Bbox
 
+from matplotlib import cbook
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from .backend_itom_v2 import FigureCanvasItom, _BackendItom
+from .backend_itom_v3 import FigureCanvasItom, _BackendItom
 
 import itom
+import numpy as np #for color channel conversion in copy to clipboard
 
 DEBUG = False
 
@@ -20,15 +18,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
     def __init__(self, figure, num, matplotlibWidgetUiItem, embeddedWidget):
         FigureCanvasItom.__init__( self, figure, num, matplotlibWidgetUiItem, embeddedWidget)
         FigureCanvasAgg.__init__( self, figure )
-        self._bbox_queue = []
         self.canvasInitialized = False #will be set to True once the paintEvent has been called for the first time
         
         self.paintEvent() #paint initialization!
-
-    @property
-    @cbook.deprecated("2.1")
-    def blitbox(self):
-        return self._bbox_queue
 
     def paintEvent(self, rect = None):
         """Copy the image from the Agg canvas to the itom plugin 'matplotlibWidgetUiItem'.
@@ -57,48 +49,43 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         
         if not rect is None:
             x0,y0,w,h = rect
-            bbox_queue = [Bbox([[x0,y0], [w,h]])]
-            blit = True
-        elif self._bbox_queue:
-            bbox_queue = self._bbox_queue
+            bbox = Bbox([[x0,y0], [w,h]])
             blit = True
         else:
-            bbox_queue = [
-                Bbox([[0, 0], [self.renderer.width, self.renderer.height]])]
+            bbox = Bbox([[0, 0], [self.renderer.width, self.renderer.height]])
             blit = False
-        self._bbox_queue = []
-        for bbox in bbox_queue:
-            x0, y0, w2, h2 = map(int, bbox.extents)
-            w = w2 - x0
-            h = h2- y0
-            
-            if DEBUG:
-                print("paint: %i,%i,%i,%i, blit=%s" % (x0,y0,w,h,str(blit)))
-            
-            #<-- itom specific start
-            reg = self.copy_from_bbox(bbox)
-            buf = reg.to_string_argb()
-            W = round(w)
-            H = round(h)
-            #workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
-            #If the length is a multiple of either the width or the length we readjust them.
-            if not int(W*H*4) ==len(buf):
-                numberElements= len(buf)/4
-                if numberElements%H == 0:
-                    W=int(numberElements/H)
-                elif numberElements%W == 0:
-                    H=int(numberElements/W)
-                else:
-                    return
-            try:
-                #if blit: W and H are a sum of the real width/height and the offset x0 or y0.
-                #else: W and H are the real width and height of the image
-                self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
-            except RuntimeError as e:
-                # it is possible that the figure has currently be closed by the user
-                self.signalDestroyedWidget()
-                print("Matplotlib figure is not available (err: %s)" % str(e))
-            #itom specific end -->
+        
+        x0, y0, w2, h2 = map(int, bbox.extents)
+        w = w2 - x0
+        h = h2- y0
+        
+        if DEBUG:
+            print("paint: %i,%i,%i,%i, blit=%s" % (x0,y0,w,h,str(blit)))
+        
+        #<-- itom specific start
+        reg = self.copy_from_bbox(bbox)
+        buf = reg.to_string_argb() #this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
+        W = round(w)
+        H = round(h)
+        #workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
+        #If the length is a multiple of either the width or the length we readjust them.
+        if not int(W*H*4) ==len(buf):
+            numberElements= len(buf)/4
+            if numberElements%H == 0:
+                W=int(numberElements/H)
+            elif numberElements%W == 0:
+                H=int(numberElements/W)
+            else:
+                return
+        try:
+            #if blit: W and H are a sum of the real width/height and the offset x0 or y0.
+            #else: W and H are the real width and height of the image
+            self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
+        except RuntimeError as e:
+            # it is possible that the figure has currently be closed by the user
+            self.signalDestroyedWidget()
+            print("Matplotlib figure is not available (err: %s)" % str(e))
+        #itom specific end -->
             
     def copyToClipboard(self, dpi):
         if not hasattr(self, 'renderer'):
@@ -123,9 +110,12 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         renderer = self.get_renderer()
         original_dpi = renderer.dpi
         renderer.dpi = dpi
-        stringBuffer = renderer._renderer.tostring_bgra()
-        width = renderer.width
-        height = renderer.height
+        stringBuffer = renderer._renderer.buffer_rgba()
+        width = int(renderer.width)
+        height = int(renderer.height)
+        arr = np.frombuffer(stringBuffer, 'uint8').reshape([height, width, 4])
+        stringBuffer = arr.take([2,1,0,3], axis=2).tobytes()
+        
         renderer.dpi = original_dpi
         try:
             self.matplotlibWidgetUiItem.call("copyToClipboardResult", stringBuffer, 0, 0, width, height)
@@ -151,8 +141,6 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # blit only the area defined by the bbox.
         if bbox is None and self.figure:
             bbox = self.figure.bbox
-
-        self._bbox_queue.append(bbox)
 
         # repaint uses logical pixels, not physical pixels like the renderer.
         dpi_ratio = self._dpi_ratio
