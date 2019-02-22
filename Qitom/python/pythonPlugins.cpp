@@ -172,12 +172,12 @@ PyObject * getParamList(ito::AddInBase *aib)
             name = paramIt.value().getName();
             if (name)
             {
-                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
+                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL); //new ref
                 PyList_Append(result, temp);
             }
             else
             {
-                temp = PyUnicode_FromString("<invalid name>");
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
                 PyList_Append(result, temp);
             }
             Py_XDECREF(temp);
@@ -392,28 +392,26 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 */
 PyObject * getExecFuncsList(ito::AddInBase *aib)
 {
-    PyObject *result = NULL;
+    PyObject *result = PyList_New(0);
+
     QMap<QString, ExecFuncParams> *funcList = NULL;
-    const char *name;
     aib->getExecFuncList(&funcList);
 
-    if (funcList)
+    if (funcList && !funcList->isEmpty())
     {
-        result = PyList_New(0);
-        QStringList execFuncs = funcList->keys();        
-        PyObject *temp = NULL;
-        QStringList::const_iterator funcName;
-        for (funcName = execFuncs.constBegin(); funcName != execFuncs.constEnd(); ++funcName)
+        QMap<QString, ExecFuncParams>::const_iterator fn;
+        for (fn = funcList->constBegin(); fn != funcList->constEnd(); fn++)
         {
-            name = funcName->toLatin1().data();
-            if (name)
+            PyObject* temp = NULL;
+            QByteArray name = fn.key().toLatin1();
+            if (name != "")
             {
-                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
+                temp = PyUnicode_DecodeLatin1(name.constData(), name.length(), NULL); //new ref
                 PyList_Append(result, temp);
             }
             else
             {
-                temp = PyUnicode_FromString("<invalid name>");
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
                 PyList_Append(result, temp);
             }
             Py_XDECREF(temp);
