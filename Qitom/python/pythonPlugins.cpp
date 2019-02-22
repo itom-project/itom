@@ -2254,6 +2254,67 @@ PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyO
     Py_RETURN_NONE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorInfo_doc, "info(verbose = 0) -> returns information about signal and slots.\n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only slots and signals from the plugin class are printed (default) \n\
+    1: all slots and signals from all inherited classes are printed\n\
+");
+PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject* args)
+{
+    int showAll = 0;
+
+    if (!PyArg_ParseTuple(args, "|i", &showAll))
+    {
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+    QList<QByteArray> signalSignatureList, slotSignatureList;
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    QMetaMethod metaFunc;
+    if (showAll == 0)
+    {
+        for (int methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+        {
+            metaFunc = mo->method(methodIdx);
+            if (metaFunc.methodType() == QMetaMethod::Signal)
+            {
+                signalSignatureList.append(metaFunc.methodSignature());
+
+            }
+            if (metaFunc.methodType() == QMetaMethod::Slot)
+            {
+                slotSignatureList.append(metaFunc.methodSignature());
+            }
+
+        }
+    }
+    else if (showAll == 1)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "verbose level one not implemented yet");
+        return NULL;
+    }
+    QByteArray val;
+    std::cout << "Signals: \n";
+    foreach(val, signalSignatureList)
+    {
+        std::cout <<"\t"<< QString(val).toLatin1().data() << "\n";
+    }
+    std::cout << "\nSlots: \n";
+    foreach(val, slotSignatureList)
+    {
+        std::cout <<  "\t" << QString(val).toLatin1().data() << "\n";
+    }
+
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
 *
@@ -2553,6 +2614,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
    {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
    {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc},
+   {"info",(PyCFunction)PythonPlugins::PyActuatorPlugin_info, METH_VARARGS, pyActuatorInfo_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -4326,7 +4388,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
-   { "disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
+   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
    {NULL}  /* Sentinel */
 };
 

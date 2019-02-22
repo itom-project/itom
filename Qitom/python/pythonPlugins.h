@@ -100,6 +100,7 @@ class PythonPlugins
 
        static PyObject *PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args);
        static PyObject *PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args);
+       static PyObject *PyActuatorPlugin_info(PyActuatorPlugin *self, PyObject* args);
        static PyObject *PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self);
 
        static PyObject *PyActuatorPlugin_calib(PyActuatorPlugin *self, PyObject *args);
