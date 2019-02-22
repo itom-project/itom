@@ -2,6 +2,11 @@ import jedi
 import sys
 import itom
 
+#avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
+maxreclimit = 2000
+if sys.getrecursionlimit() > maxreclimit:
+    sys.setrecursionlimit(maxreclimit)
+
 if jedi.__version__ >= '0.12.0':
     jedienv = jedi.api.environment.InterpreterEnvironment()
     
