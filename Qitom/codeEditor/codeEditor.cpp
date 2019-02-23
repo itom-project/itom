@@ -52,6 +52,8 @@
 #include "delayJobRunner.h"
 #include "utils/utils.h"
 
+#include <iostream>
+
 namespace ito {
 
 CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*= true*/)
@@ -108,6 +110,12 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700);
 
     m_pContextMenu = new QMenu(this);
+
+    //TODO: remove, if all issues are fixed
+    m_pDebugAction = m_pContextMenu->addAction("Enable Debug Outputs");
+    m_pDebugAction->setCheckable(true);
+    m_pDebugAction->setChecked(false);
+    m_pContextMenu->addSeparator();
 
     initStyle();
     resetStylesheet();
@@ -839,6 +847,11 @@ void CodeEditor::focusOutEvent(QFocusEvent *e)
 */
 void CodeEditor::mousePressEvent(QMouseEvent *e)
 {
+    if (m_pDebugAction->isChecked())
+    {
+        std::cout << "focus: " << hasFocus() << ", textInteractionFlags:" << this->textInteractionFlags() << "\n" << std::endl;
+    }
+
     bool initialState = e->isAccepted();
     e->ignore();
     emit mousePressed(e);

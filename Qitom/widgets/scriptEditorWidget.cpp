@@ -313,6 +313,7 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
+    //editorMenu->addAction("dump folds", this, SLOT(dumpFoldsToConsole(bool)));
 
     QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
     m_editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
@@ -2115,6 +2116,46 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     {
         return NULL;
     }
+}
+
+void ScriptEditorWidget::dumpFoldsToConsole(bool)
+{
+    int lvl;
+    bool trigger;
+    bool valid;
+
+    QTextBlock block = document()->firstBlock();
+
+    std::cout << "block foldings:\n" << std::endl;
+
+    while (block.isValid())
+    {
+        lvl = Utils::TextBlockHelper::getFoldLvl(block);
+        trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+        QTextBlock tb = FoldScope::findParentScope(block);
+
+        if (1 || trigger)
+        {
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << "Block " << block.blockNumber() + 1 << ": lvl " << lvl << ", trigger: " << trigger << 
+                " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
+        }
+
+        if (trigger)
+        {
+            FoldScope scope(block, valid);
+            QPair<int,int> range = scope.getRange();
+            
+
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << " --> [" << range.first+1 << 
+                "-" << range.second+1 << "] << ," << scope.scopeLevel() << ", " << scope.triggerLevel() << 
+                " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
+
+        }
+        
+        block = block.next();
+    }
+
+    
 }
 
 } // end namespace ito
