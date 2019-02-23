@@ -953,6 +953,12 @@ void ConsoleWidget::clearCommandLine()
     clear();
     m_markErrorLineMode->clearAllMarkers();
     m_markCurrentLineMode->clearAllMarkers();
+
+    if (m_codeCompletionMode)
+    {
+        m_codeCompletionMode->hidePopup();
+    }
+
     m_autoWheel = true;
     m_startLineBeginCmd = -1;
 }
