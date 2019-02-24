@@ -104,6 +104,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         ui.btnUninstall->setEnabled(false);
         ui.btnSudoUninstall->setEnabled(false);
         ui.btnReload->setEnabled(false);
+        ui.btnCheckForUpdates->setEnabled(false);
         ui.btnOk->setEnabled(false);
         ui.btnCheckForUpdates->setEnabled(false);
 
@@ -291,8 +292,9 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
     ui.btnUninstall->setEnabled(false);
     ui.btnSudoUninstall->setEnabled(false);
     ui.btnReload->setEnabled(false);
-    ui.btnOk->setEnabled(false);
     ui.btnCheckForUpdates->setEnabled(false);
+    ui.btnOk->setEnabled(false);
+    ui.btnVerifyInstalledPackages->setEnabled(false);
 
     m_currentTask = task;
 }
@@ -313,8 +315,9 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     ui.btnUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnSudoUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnReload->setEnabled(true);
-    ui.btnOk->setEnabled(true);
     ui.btnCheckForUpdates->setEnabled(true);
+    ui.btnOk->setEnabled(true);
+    ui.btnVerifyInstalledPackages->setEnabled(true);
 
     if (task == PipManager::taskCheckAvailable && success)
     {
@@ -352,6 +355,12 @@ void DialogPipManager::on_btnReload_clicked()
 }
 
 //--------------------------------------------------------------------------------
+void DialogPipManager::on_btnVerifyInstalledPackages_clicked()
+{
+    m_pPipManager->checkVerifyInstalledPackages(createOptions());
+}
+
+//--------------------------------------------------------------------------------
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
@@ -360,24 +369,37 @@ void DialogPipManager::on_btnCheckForUpdates_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnInstall_clicked()
 {
-    installOrUpdatePackage();
+    installOrUpdatePackage(false);
 }
 
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUpdate_clicked()
 {
-    installOrUpdatePackage();
+    installOrUpdatePackage(true);
 }
 //---------------------------------------------------------------------------------
-void DialogPipManager::installOrUpdatePackage()
+void DialogPipManager::installOrUpdatePackage(bool update /*=false*/)
 {
     const QModelIndex &mi = ui.tablePackages->currentIndex();
-    
-    QString package = "";
-    if (m_pPipManager->data(mi, Qt::UserRole + 1).toBool())
+
+    QString package = ""; //pre-defined package
+
+    if (update)
     {
-        QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
-        package = m_pPipManager->data(miCol0, 0).toString();
+        /*
+        //if an update is available of the currently selected item, use this
+        if (m_pPipManager->data(mi, Qt::UserRole + 1).toBool())
+        {
+            QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
+            package = m_pPipManager->data(miCol0, 0).toString();
+        }*/
+
+        //always pre-set the currently set package
+        if (mi.isValid())
+        {
+            QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
+            package = m_pPipManager->data(miCol0, 0).toString();
+        }
     }
 
     DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this, package);
@@ -502,16 +524,22 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    bool updatedAvailabe = false;
+    bool updateAvailabe = false;
 
-    foreach (const QModelIndex &mi, selected.indexes())
+    if (selected.size() > 0)
+    {
+        updateAvailabe = true;
+    }
+
+    /*foreach (const QModelIndex &mi, selected.indexes())
     {
         if (mi.column() == 0)
         {
-            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+            updateAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
         }
-    }
-    ui.btnUpdate->setEnabled(updatedAvailabe);
+    }*/
+
+    ui.btnUpdate->setEnabled(updateAvailabe);
 }
 
 //---------------------------------------------------------------------------------
