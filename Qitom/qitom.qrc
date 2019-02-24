@@ -110,6 +110,7 @@
         <file>icons/newDir.png</file>
         <file>icons/dirCopy.png</file>
         <file>icons/dirPaste.png</file>
+        <file>icons/clipboard.png</file>
     </qresource>
     <qresource prefix="/breakpoints">
         <file>icons/itomBreak.png</file>
