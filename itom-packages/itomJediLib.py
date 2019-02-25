@@ -3,7 +3,7 @@ import sys
 import itom
 
 #avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
-maxreclimit = 2000
+maxreclimit = 1600
 if sys.getrecursionlimit() > maxreclimit:
     sys.setrecursionlimit(maxreclimit)
 
