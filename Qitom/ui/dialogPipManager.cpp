@@ -27,6 +27,11 @@
 #include <qdir.h>
 #include <qheaderview.h>
 #include <qsettings.h>
+#include <qmenu.h>
+#include <qaction.h>
+#include <qfiledialog.h>
+#include <qclipboard.h>
+#include <qfile.h>
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -50,6 +55,8 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     m_colorError(Qt::red),
     m_currentTask(PipManager::taskNo)
 {
+    setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
+
     ui.setupUi(this);
 
     ui.btnExit->setVisible(standalone);
@@ -66,6 +73,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task, QString, bool)), this, SLOT(pipRequestStarted(PipManager::Task, QString, bool)));
         connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task, QString, bool)), this, SLOT(pipRequestFinished(PipManager::Task, QString, bool)));
         connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection, QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection, QItemSelection)));
+        connect(ui.tablePackages, SIGNAL(customContextMenuRequested(QPoint)),this, SLOT(tableCustomContextMenuRequested(QPoint)));
 
         m_pPipManager->checkPipAvailable(createOptions());
 
@@ -78,8 +86,10 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         ui.tablePackages->verticalHeader()->setDefaultSectionSize(ui.tablePackages->verticalHeader()->minimumSectionSize());
         ui.tablePackages->setSelectionBehavior(QAbstractItemView::SelectRows);
         ui.tablePackages->setSelectionMode(QAbstractItemView::SingleSelection);
-        ui.tablePackages->setColumnWidth(1, 50);
-        ui.tablePackages->setColumnWidth(2, 200);
+        ui.tablePackages->setColumnWidth(1, 50 * GuiHelper::screenDpiFactor());
+        ui.tablePackages->setColumnWidth(2, 200 * GuiHelper::screenDpiFactor());
+        ui.tablePackages->setContextMenuPolicy(Qt::CustomContextMenu);
+
         ui.groupPipSettings->setCollapsed(true);
 
 #if WIN32
@@ -94,6 +104,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         ui.btnUninstall->setEnabled(false);
         ui.btnSudoUninstall->setEnabled(false);
         ui.btnReload->setEnabled(false);
+        ui.btnCheckForUpdates->setEnabled(false);
         ui.btnOk->setEnabled(false);
         ui.btnCheckForUpdates->setEnabled(false);
 
@@ -281,8 +292,9 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
     ui.btnUninstall->setEnabled(false);
     ui.btnSudoUninstall->setEnabled(false);
     ui.btnReload->setEnabled(false);
-    ui.btnOk->setEnabled(false);
     ui.btnCheckForUpdates->setEnabled(false);
+    ui.btnOk->setEnabled(false);
+    ui.btnVerifyInstalledPackages->setEnabled(false);
 
     m_currentTask = task;
 }
@@ -303,8 +315,9 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     ui.btnUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnSudoUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnReload->setEnabled(true);
-    ui.btnOk->setEnabled(true);
     ui.btnCheckForUpdates->setEnabled(true);
+    ui.btnOk->setEnabled(true);
+    ui.btnVerifyInstalledPackages->setEnabled(true);
 
     if (task == PipManager::taskCheckAvailable && success)
     {
@@ -342,6 +355,12 @@ void DialogPipManager::on_btnReload_clicked()
 }
 
 //--------------------------------------------------------------------------------
+void DialogPipManager::on_btnVerifyInstalledPackages_clicked()
+{
+    m_pPipManager->checkVerifyInstalledPackages(createOptions());
+}
+
+//--------------------------------------------------------------------------------
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
@@ -350,24 +369,37 @@ void DialogPipManager::on_btnCheckForUpdates_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnInstall_clicked()
 {
-    installOrUpdatePackage();
+    installOrUpdatePackage(false);
 }
 
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUpdate_clicked()
 {
-    installOrUpdatePackage();
+    installOrUpdatePackage(true);
 }
 //---------------------------------------------------------------------------------
-void DialogPipManager::installOrUpdatePackage()
+void DialogPipManager::installOrUpdatePackage(bool update /*=false*/)
 {
     const QModelIndex &mi = ui.tablePackages->currentIndex();
-    
-    QString package = "";
-    if (m_pPipManager->data(mi, Qt::UserRole + 1).toBool())
+
+    QString package = ""; //pre-defined package
+
+    if (update)
     {
-        QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
-        package = m_pPipManager->data(miCol0, 0).toString();
+        /*
+        //if an update is available of the currently selected item, use this
+        if (m_pPipManager->data(mi, Qt::UserRole + 1).toBool())
+        {
+            QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
+            package = m_pPipManager->data(miCol0, 0).toString();
+        }*/
+
+        //always pre-set the currently set package
+        if (mi.isValid())
+        {
+            QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
+            package = m_pPipManager->data(miCol0, 0).toString();
+        }
     }
 
     DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this, package);
@@ -492,16 +524,108 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    bool updatedAvailabe = false;
+    bool updateAvailabe = false;
 
-    foreach (const QModelIndex &mi, selected.indexes())
+    if (selected.size() > 0)
+    {
+        updateAvailabe = true;
+    }
+
+    /*foreach (const QModelIndex &mi, selected.indexes())
     {
         if (mi.column() == 0)
         {
-            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+            updateAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        }
+    }*/
+
+    ui.btnUpdate->setEnabled(updateAvailabe);
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::tableCustomContextMenuRequested(const QPoint &pos)
+{
+    QModelIndex index = ui.tablePackages->indexAt(pos);
+
+    QMenu *menu = new QMenu(this);
+    QAction *copyToClipboard = menu->addAction(QIcon(":/files/icons/clipboard.png"), tr("Export table to clipboard"));
+    connect(copyToClipboard, SIGNAL(triggered()), this, SLOT(exportTableToClipboard()));
+    QAction *saveToCsv = menu->addAction(QIcon(":/files/icons/fileSave.png"), tr("Export table to csv-file..."));
+    connect(saveToCsv, SIGNAL(triggered()), this, SLOT(exportTableToCsv()));
+    menu->popup(ui.tablePackages->viewport()->mapToGlobal(pos));
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::exportTableToClipboard()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(exportPackageTableToString(), QClipboard::Clipboard);
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::exportTableToCsv()
+{
+    QString filters(tr("CSV files (*.csv);;All files (*.*)"));
+    QString defaultFilter(tr("CSV files (*.csv)"));
+    QString fileName = QFileDialog::getSaveFileName(0, tr("Export to file"), QCoreApplication::applicationDirPath(),
+        filters, &defaultFilter);
+
+    if (fileName != "")
+    {
+        QFile file(fileName);
+
+        if (file.open(QFile::WriteOnly | QFile::Truncate)) 
+        {
+            QTextStream data(&file);
+
+            data << exportPackageTableToString();
+            
+            file.close();
+        }
+        else
+        {
+            QMessageBox::warning(this, tr("Export to file"), tr("The file '%s' could not be opened").arg(fileName));
         }
     }
-    ui.btnUpdate->setEnabled(updatedAvailabe);
+}
+
+//---------------------------------------------------------------------------------
+QString DialogPipManager::exportPackageTableToString() const
+{
+    QStringList output;
+    QStringList strList;
+    for (int i = 0; i < m_pPipManager->columnCount(); i++) 
+    {
+        if (m_pPipManager->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString().length() > 0)
+        {
+            strList.append("\"" + m_pPipManager->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "\"");
+        }
+        else
+        {
+            strList.append("");
+        }
+    }
+
+
+    output << strList.join(";") << "\n";
+    for (int i = 0; i < m_pPipManager->rowCount(); i++)
+    {
+        strList.clear();
+        for (int j = 0; j < m_pPipManager->columnCount(); j++) {
+
+            if (m_pPipManager->data(m_pPipManager->index(i, j), Qt::DisplayRole).toString().length() > 0)
+            {
+                strList.append("\"" + m_pPipManager->data(m_pPipManager->index(i, j), Qt::DisplayRole).toString() + "\"");
+            }
+            else
+            {
+                strList.append("");
+            }
+        }
+        output << strList.join(";") + "\n";
+    }
+
+    return output.join("");
 }
 
 } //end namespace ito

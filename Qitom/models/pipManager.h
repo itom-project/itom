@@ -81,7 +81,16 @@ class PipManager : public QAbstractItemModel
         PipManager(ito::RetVal &retval, QObject *parent = 0);
         ~PipManager();
 
-        enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstall, taskUninstall};
+        enum Task {
+            taskNo, 
+            taskCheckAvailable, 
+            taskListPackages1,
+            taskListPackages2, 
+            taskCheckUpdates, 
+            taskInstall, 
+            taskUninstall,
+            taskVerifyInstalledPackages
+        };
 
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -98,6 +107,7 @@ class PipManager : public QAbstractItemModel
         void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions());
         void listAvailablePackages2(const QStringList &names);
         void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
+        void checkVerifyInstalledPackages(const PipGeneralOptions &options = PipGeneralOptions());
         void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
         void uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options = PipGeneralOptions());
         void finalizeTask(int exitCode = 0);
