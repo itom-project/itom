@@ -31,10 +31,13 @@ namespace ito
 {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap) :
+DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWidget *parent /*= NULL*/) :
+    QDialog(parent),
     m_textColor(Qt::black),
     m_linkColor(Qt::blue)
 {
+    setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
+
     m_VersionString.clear();
     QFile file(":/license/about.html"); //:/license/about.html");
     if (!file.open(QIODevice::ReadOnly)) 

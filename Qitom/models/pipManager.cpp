@@ -487,7 +487,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 		{
 			arguments << "--format=legacy";
 		}
-        arguments << parseGeneralOptions(options, false, false);
+        arguments << parseGeneralOptions(options, false, true);
         m_pipProcess.start(m_pythonPath, arguments);
     }
 }
@@ -554,6 +554,34 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         {
             arguments << "--format=legacy";
         }
+        arguments << parseGeneralOptions(options, false, true);
+        m_pipProcess.start(m_pythonPath, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+{
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskVerifyInstalledPackages, "Verify installed packages have compatible dependencies...\n");
+        clearBuffers();
+        m_currentTask = taskVerifyInstalledPackages;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "check"; //version has already been checked in listAvailablePackages. This is sufficient.
         arguments << parseGeneralOptions(options, false, true);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -1049,6 +1077,17 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 emit dataChanged(createIndex(0,4), createIndex(m_pythonPackages.length()-1, 4));
 
                 emit pipRequestFinished(temp, "Packages checked.\n", true);
+            }
+        }
+        else if (temp == taskVerifyInstalledPackages)
+        {
+            if (error != "" && output == "")
+            {
+                emit pipRequestFinished(temp, "Error verifying if installed packages have compatible dependencies. (check)\n", false);
+            }
+            else
+            {
+                emit pipRequestFinished(temp, "Finished.\n", true);
             }
         }
         else if (temp == taskInstall)

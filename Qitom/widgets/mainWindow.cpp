@@ -624,7 +624,7 @@ void MainWindow::createActions()
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     //m_aboutQt->setShortcut(QKeySequence("F3"));
 
-    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/itomIcon32"), tr("About itom..."), this);
+    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
     m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);

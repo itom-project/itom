@@ -50,7 +50,7 @@ class FoldDetectorPrivate
 {
 public:
     FoldDetectorPrivate() :
-        m_limit(std::numeric_limits<int>::max())
+        m_limit(0x3FF) //see capacity of fold level in TextBlockHelper::setFoldLvl
     {
         /*
         //: Reference to the parent editor, automatically set by the syntax
@@ -317,19 +317,26 @@ void FoldScope::unfold(bool unfoldChildBlocks /*= true*/)
     }
     else if (subblocksOfTrigger.size() > 0)
     {
-        int lvl = Utils::TextBlockHelper::getFoldLvl(subblocksOfTrigger[0]);
+        int hideUntilThisBlockNumber = -1; //if >= 0, don't show blocks until this number (inclusive)
         bool valid;
 
-        foreach (QTextBlock block, subblocksOfTrigger)
+        foreach(QTextBlock block, subblocksOfTrigger)
         {
-            if (Utils::TextBlockHelper::getFoldLvl(block) == lvl)
+            if ((hideUntilThisBlockNumber == -1) ||
+                (block.blockNumber() > hideUntilThisBlockNumber))
             {
                 block.setVisible(true);
+                hideUntilThisBlockNumber = -1;
 
-                if (Utils::TextBlockHelper::isFoldTrigger(block) && !Utils::TextBlockHelper::isCollapsed(block))
+                if (Utils::TextBlockHelper::isFoldTrigger(block) &&
+                    Utils::TextBlockHelper::isCollapsed(block))
                 {
-                    FoldScope subblock(block, valid); //valid is true always, since block is a fold trigger (see check above)
-                    subblock.unfold(unfoldChildBlocks);
+                    FoldScope scope(block, valid);
+                    if (valid)
+                    {
+                        QPair<int, int> scopeRange = scope.getRange(true);
+                        hideUntilThisBlockNumber = scopeRange.second;
+                    }
                 }
             }
         }

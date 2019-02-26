@@ -40,7 +40,7 @@ class DialogAboutQItom : public QDialog
     Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor DESIGNABLE true);
 
     public:
-        DialogAboutQItom(const QMap<QString, QString> &versionMap);
+        DialogAboutQItom(const QMap<QString, QString> &versionMap, QWidget *parent = NULL);
 
         ~DialogAboutQItom() {m_VersionString.clear();};
 

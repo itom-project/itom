@@ -2141,7 +2141,6 @@ bool PythonEngine::tryToLoadJediIfNotYetDone()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::jediCalltipRequestEnqueued()
-//void PythonEngine::jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName)
 {
     QVector<ito::JediCalltip> calltips;
 
@@ -2219,10 +2218,10 @@ void PythonEngine::jediCalltipRequestEnqueued()
     else
     {
         Py_XDECREF(result);
-//#ifdef _DEBUG
+#ifdef _DEBUG
         std::cerr << "Error when getting calltips from jedi\n" << std::endl;
         PyErr_PrintEx(0);
-//#endif
+#endif
     }
 
     
@@ -2323,10 +2322,10 @@ void PythonEngine::jediAssignmentRequested(const QString &source, int line, int 
     else
     {
         Py_XDECREF(result);
-//#ifdef _DEBUG
+#ifdef _DEBUG
         std::cerr << "Error when getting assignments or definitions from jedi\n" << std::endl;
         PyErr_PrintEx(0);
-//#endif
+#endif
     }
 
     
@@ -2436,10 +2435,10 @@ void PythonEngine::jediCompletionRequestEnqueued()
         else
         {
             Py_XDECREF(result);
-            //#ifdef _DEBUG
+#ifdef _DEBUG
             std::cerr << "Error when getting completions from jedi\n" << std::endl;
             PyErr_PrintEx(0);
-            //#endif
+#endif
         }
     }
     catch (...)
