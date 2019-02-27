@@ -2275,12 +2275,15 @@ PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject*
         PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
         return NULL;
     }
-    QList<QByteArray> signalSignatureList, slotSignatureList;
+    //QList<QByteArray> signalSignatureList, slotSignatureList;
+    QStringList signalSignatureList, slotSignatureList;
     const QMetaObject *mo = self->actuatorObj->metaObject();
     QMetaMethod metaFunc;
-    if (showAll == 0)
+    bool again = true;
+    int methodIdx;
+    while (again)
     {
-        for (int methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+        for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
         {
             metaFunc = mo->method(methodIdx);
             if (metaFunc.methodType() == QMetaMethod::Signal)
@@ -2294,24 +2297,44 @@ PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject*
             }
 
         }
-    }
-    else if (showAll == 1)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "verbose level one not implemented yet");
-        return NULL;
-    }
-    QByteArray val;
-    std::cout << "Signals: \n";
-    foreach(val, signalSignatureList)
-    {
-        std::cout <<"\t"<< QString(val).toLatin1().data() << "\n";
-    }
-    std::cout << "\nSlots: \n";
-    foreach(val, slotSignatureList)
-    {
-        std::cout <<  "\t" << QString(val).toLatin1().data() << "\n";
-    }
+        if (showAll == 1)
+        {
+            mo = mo->superClass();
+            if (mo)
+            {
+                again = true;
+                continue;
+            }
+        }
+        again = false;
 
+    }
+    signalSignatureList.sort();
+    slotSignatureList.sort();
+    if (signalSignatureList.length() || slotSignatureList.length())
+    {
+        //QByteArray val;
+        QString val;
+        QString previous;
+        std::cout << "Signals: \n";
+        foreach(val, signalSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+        std::cout << "\nSlots: \n";
+        foreach(val, slotSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+    }
     Py_RETURN_NONE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
