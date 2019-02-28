@@ -239,6 +239,8 @@ class FigureCanvasItom(FigureCanvasBase):
         #--> itom specific start
         self.initialized = True
         #itom specific end <--
+        
+        self.lastResizeSize = (0,0)
     
     def destroy(self):
         '''itom specific function. not in qt5 backend'''
@@ -266,7 +268,11 @@ class FigureCanvasItom(FigureCanvasBase):
         except AttributeError:
             return 1
         '''
-        return self.matplotlibWidgetUiItem.call("devicePixelRatioF")
+        try:
+            dpi_ratio = self.matplotlibWidgetUiItem.call("devicePixelRatioF")
+        except Exception:
+            dpi_ratio = 1
+        return dpi_ratio
 
     def _update_dpi(self):
         # As described in __init__ above, we need to be careful in cases with
@@ -300,7 +306,10 @@ class FigureCanvasItom(FigureCanvasBase):
 
     def get_width_height(self):
         w, h = FigureCanvasBase.get_width_height(self)
-        return int(w / self._dpi_ratio), int(h / self._dpi_ratio)
+        if self.matplotlibWidgetUiItem.exists():
+            return int(w / self._dpi_ratio), int(h / self._dpi_ratio)
+        else:
+            return 0, 0
     
     def leaveEnterEvent(self, enter):
         '''itom specific: 
@@ -380,13 +389,17 @@ class FigureCanvasItom(FigureCanvasBase):
         self._keyautorepeat = bool(val)
     
     def resizeEvent(self, w, h, draw = True):
+        if self._destroying or (w,h) == self.lastResizeSize:
+            return
+        
         if DEBUG:
-            print("resizeEvent: %i, %i, %i" % (w, h, draw))
+            print("resizeEvent: %i, %i, %i, last: %s" % (w, h, draw, str(self.lastResizeSize)))
+        
         # _dpi_ratio_prev will be set the first time the canvas is painted, and
         # the rendered buffer is useless before anyways.
         if self._dpi_ratio_prev is None:
             return
-        if not self.figure is None:
+        if not self.figure is None and self.matplotlibWidgetUiItem.exists():
             dpival = self.figure.dpi
             winch = self._dpi_ratio * w / dpival
             hinch = self._dpi_ratio * h / dpival
@@ -397,6 +410,7 @@ class FigureCanvasItom(FigureCanvasBase):
             # emit our resize events
             FigureCanvasBase.resize_event(self)
             self._is_drawing = status
+            self.lastResizeSize = (w, h)
     
     def copyToClipboardEvent(self, dpi):
         self.copyToClipboard(dpi)

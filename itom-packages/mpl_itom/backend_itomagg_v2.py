@@ -36,6 +36,10 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         In itom, all drawing should be done inside of here when a widget is
         shown onscreen.
         """
+        
+        if self._destroying:
+            return
+        
         self.paintEventTimer = None
         
         if DEBUG and (not rect is None):
