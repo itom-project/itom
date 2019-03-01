@@ -49,6 +49,8 @@
 #include <qdesktopwidget.h>
 #include <qstringlist.h>
 
+#include "opencv2/core/core_c.h"
+
 QHash<size_t, QString> ito::PythonItom::m_gcTrackerList;
 
 namespace ito

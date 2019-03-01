@@ -36,7 +36,7 @@
 #include "../../common/itomPlotHandle.h"
 #include "../../common/shape.h"
 
-#include "opencv/cv.h"
+#include "opencv2/opencv.hpp"
 #include <qvariant.h>
 #include <qmetaobject.h>
 #include <qlist.h>

@@ -166,22 +166,22 @@ PyObject * getParamList(ito::AddInBase *aib)
     {
         result = PyList_New(0);
         QMap<QString, ito::Param>::const_iterator paramIt;
-		PyObject *temp = NULL;
+        PyObject *temp = NULL;
 
         for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); ++paramIt)
         {
             name = paramIt.value().getName();
             if (name)
             {
-				temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL);
-				PyList_Append(result, temp);
+                temp = PyUnicode_DecodeLatin1(name, strlen(name), NULL); //new ref
+                PyList_Append(result, temp);
             }
             else
             {
-				temp = PyUnicode_FromString("<invalid name>");
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
                 PyList_Append(result, temp);
             }
-			Py_XDECREF(temp);
+            Py_XDECREF(temp);
         }
     }
 
@@ -382,6 +382,44 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
     }
 
     Py_RETURN_NONE;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** returns the names of extended Functionality available in a plugin
+*   @param [in] aib the plugin for which the parameter names are requested
+*   @return     python object with a string list with the execFuncs' names
+*/
+PyObject * getExecFuncsList(ito::AddInBase *aib)
+{
+    PyObject *result = PyList_New(0);
+
+    QMap<QString, ExecFuncParams> *funcList = NULL;
+    aib->getExecFuncList(&funcList);
+
+    if (funcList && !funcList->isEmpty())
+    {
+        QMap<QString, ExecFuncParams>::const_iterator fn;
+        for (fn = funcList->constBegin(); fn != funcList->constEnd(); fn++)
+        {
+            PyObject* temp = NULL;
+            QByteArray name = fn.key().toLatin1();
+            if (name != "")
+            {
+                temp = PyUnicode_DecodeLatin1(name.constData(), name.length(), NULL); //new ref
+                PyList_Append(result, temp);
+            }
+            else
+            {
+                temp = PyUnicode_FromString("<invalid name>"); //new ref
+                PyList_Append(result, temp);
+            }
+            Py_XDECREF(temp);
+        }
+    }
+
+    return result;
 }
 
 
@@ -828,6 +866,14 @@ name : {str} \n\
 See Also \n\
 --------- \n\
 getParam");
+
+PyDoc_STRVAR(pyPluginGetExecFuncsList_doc, "getExecFuncList() -> returns a list of the names of the additional Functions of this plugin\n\
+\n\
+Each plugin may define a set of functions, extending the standard interface. These functions are not common to plugins of the same type. \n\
+These functions are executed using instance.exec(\"funcname\",params)\
+\n\
+to check exact function call use instance.getExecFuncsInfo()\
+getExecFuncsInfo");
 
 PyDoc_STRVAR(pyPluginGetParamList_doc, "getParamList() -> returns a list of the names of the internal parameters of the plugin\n\
 \n\
@@ -1462,6 +1508,21 @@ PyObject* PythonPlugins::PyActuatorPlugin_getParamListInfo(PyActuatorPlugin* sel
     return getParamListInfo(aib, args);
 }
 
+/** returns the list of available ExecFunctions' names
+*   @param [in] self    the actuator object (python)
+*   @return             a list with all available parameters for this actuator
+*
+*   All ExecFunctions of the plugin are shown or one specific ExecFunctions with additional information as min, max and infostring is shown.
+*   This can be useful as there are only few standard parameters for an actuator. The majority is
+*   depending on the actual hardware and accordingly is different for each plugin.
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_getExecFuncsList(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    return getExecFuncsList(aib);
+}
+
+
 /** returns the list of available parameters and additional information about the plugin ExecFunctions
 *   @param [in] self    the actuator object (python)
 *   @return             a dictionary with all available parameters for this actuator
@@ -1771,14 +1832,19 @@ Switches flags: \n\
 * actuatorEndSwitch      = 0x0100 : axis reached any end switch (e.g. if only one end switch is available) \n\
 * actuatorLeftEndSwitch  = 0x0200 : axis reached the left end switch \n\
 * actuatorRightEndSwitch = 0x0400 : axis reached the right end switch \n\
+* actuatorEndSwitch1 = 0x0200 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
+* actuatorEndSwitch2 = 0x0400 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorRefSwitch      = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
 * actuatorLeftRefSwitch  = 0x1000 : axis reached left reference switch \n\
 * actuatorRightRefSwitch = 0x2000 : axis reached right reference switch \n\
+* actuatorRefSwitch1 = 0x1000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
+* actuatorRefSwitch2 = 0x2000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 \n\
 Status flags: \n\
 \n\
 * actuatorAvailable = 0x4000 : the axis is available \n\
 * actuatorEnabled   = 0x8000 : the axis is currently enabled and can be moved \n\
+* actuatorError = 0x10000 : axis has encountered error/reports error\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2627,6 +2693,7 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
+   {"getExecFuncsList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsList, METH_NOARGS, pyPluginGetExecFuncsList_doc},/*wrong doc atm.*/
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyPluginName_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParam, METH_VARARGS, pyPluginGetParam_doc},
@@ -3006,6 +3073,20 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParamListInfo(PyDataIOPlugin* self, P
 {
     ito::AddInBase *aib = self->dataIOObj;
     return getParamListInfo(aib, args);
+}
+
+/** returns the list of available ExecFunctions' names
+*   @param [in] self    the actuator object (python)
+*   @return             a List with all available parameters for this actuator
+*
+*   All ExecFunctions of the plugin are shown or one specific ExecFunctions with additional information as min, max and infostring is shown.
+*   This can be useful as there are only few standard parameters for an actuator. The majority is
+*   depending on the actual hardware and accordingly is different for each plugin.
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_getExecFuncsList(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    return getExecFuncsList(aib);
 }
 /** returns the list of available parameters and additional information about the plugin ExecFunctions
 *   @param [in] self    the actuator object (python)
@@ -4488,6 +4569,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
+   {"getExecFuncsList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsList, METH_NOARGS, pyPluginGetExecFuncsList_doc },
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, pyPluginName_doc},
    {"getParam", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParam, METH_VARARGS, pyPluginGetParam_doc},

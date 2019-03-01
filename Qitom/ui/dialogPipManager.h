@@ -58,7 +58,8 @@ protected:
     void closeEvent(QCloseEvent *e);
     PipGeneralOptions createOptions() const;
 
-    void installOrUpdatePackage();
+    void installOrUpdatePackage(bool update = false);
+    QString exportPackageTableToString() const;
 
 private:
     PipManager *m_pPipManager;
@@ -73,6 +74,8 @@ private:
 
     static QString invisiblePwStr;
 
+
+
 private slots:
     void pipVersion(const QString &version);
     void outputReceived(const QString &text, bool success);
@@ -84,7 +87,11 @@ private slots:
     void on_btnUninstall_clicked();
     void on_btnUpdate_clicked();
     void on_btnSudoUninstall_clicked();
+    void on_btnVerifyInstalledPackages_clicked();
     void treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+    void tableCustomContextMenuRequested(const QPoint &pos);
+    void exportTableToClipboard();
+    void exportTableToCsv();
 };
 
 } //end namespace ito

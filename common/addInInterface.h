@@ -152,20 +152,33 @@ namespace ito
         actuatorTimeout = 0x0010, /*!< no signal from axis, timeout */
         //switches
         actuatorEndSwitch = 0x0100, /*!< axis reached an undefined end switch */
-        actuatorLeftEndSwitch = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
+        actuatorLeftEndSwitch = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch), deprecated */
         actuatorRightEndSwitch = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch) */
+        actuatorEndSwitch1 = 0x0200,/*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
+        actuatorEndSwitch2 = 0x0400,    /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
         actuatorRefSwitch = 0x0800, /*!< axis reached an undefined reference switch */
-        actuatorLeftRefSwitch = 0x1000, /*!< axis reached the specified left reference switch (if set, also set actuatorRefSwitch) */
-        actuatorRightRefSwitch = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch) */
+        actuatorLeftRefSwitch = 0x1000, /*!< axis reached the specified left reference switch (if set, also set actuatorRefSwitch), deprecated */
+        actuatorRightRefSwitch = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch), deprecated */
+        actuatorRefSwitch1 = 0x1000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
+        actuatorRefSwitch2 = 0x2000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
+                                         
         //status flags
         actuatorAvailable = 0x4000, /*!< axis is generally available */
         actuatorEnabled = 0x8000, /*!< axis is enabled for movements */
+        actuatorError = 0x10000,/*axis has encountered error/reports error*/
 
         actMovingMask = actuatorUnknown | actuatorInterrupted | actuatorMoving | actuatorAtTarget | actuatorTimeout, /*!< bitmask that marks all bits related to the movement */
-        actEndSwitchMask = actuatorEndSwitch | actuatorLeftEndSwitch | actuatorRightEndSwitch, /*!< bitmask that marks all bits related to end switches */
-        actRefSwitchMask = actuatorRefSwitch | actuatorLeftRefSwitch | actuatorRightRefSwitch, /*!< bitmask that marks all bits related to reference switches */
+        
+        actEndSwitchMask = actuatorEndSwitch \
+        | actuatorEndSwitch1 | actuatorEndSwitch2, /*!< bitmask that marks all bits related to end switches */
+        
+        actRefSwitchMask = \
+        actuatorRefSwitch \
+        | actuatorRefSwitch1 | actuatorRefSwitch2, /*!< bitmask that marks all bits related to reference switches */
+        
         actSwitchesMask = actEndSwitchMask | actRefSwitchMask,                                /*!< bitmask that marks all bits related to reference and end switches */
-        actStatusMask = actuatorAvailable | actuatorEnabled                                 /*!< bitmask that marks all status flags */
+        
+        actStatusMask = actuatorAvailable | actuatorEnabled | actuatorError                     /*!< bitmask that marks all status flags */
     };
 
     enum tAutoLoadPolicy {
@@ -1118,7 +1131,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.4.0", //outdated on 2016-07-12 due to new library itomCommonPlotLib.
     "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
     "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
-	"ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
+    "ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
     "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots  
     NULL
 };

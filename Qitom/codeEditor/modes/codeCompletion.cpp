@@ -584,14 +584,6 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 //-------------------------------------------------------------------
 void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
 {
-    //qDebug() << "completion result obtained " << requestId;
-    //debug("completion results (completions=%r), prefix=%s",
-    //                results, self.completion_prefix)
-
-    //debug('request context: %r', context)
-    //debug('latest context: %r', (self._last_cursor_line,
-    //                                        self._last_cursor_column,
-    //                                        self._request_id))
     m_lastRequestId = requestId;
     if (line == m_lastCursorLine && \
             col == m_lastCursorColumn)
@@ -732,7 +724,6 @@ Hides the completer popup
 */
 void CodeCompletionMode::hidePopup()
 {
-    //debug('hide popup')
     if (m_pCompleter->popup() && \
             m_pCompleter->popup()->isVisible())
     {

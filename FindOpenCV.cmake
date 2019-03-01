@@ -48,7 +48,7 @@
 #----------------------------------------------------------
 
 #on linux the hint helps to find opencv obtained by the package manager
-find_path(OpenCV_DIR "OpenCVConfig.cmake" HINTS "/usr/share/OpenCV" "/usr/local/share/OpenCV" "/usr/lib64/OpenCV" "/usr/lib/OpenCV" DOC "Root directory of OpenCV")
+find_path(OpenCV_DIR "OpenCVConfig.cmake" HINTS "/usr/share/OpenCV" "/usr/local/share/OpenCV" "/usr/lib64/OpenCV" "/usr/lib64/cmake/OpenCV" "/usr/lib/OpenCV" DOC "Root directory of OpenCV")
 
 set(CVLIB_LIBSUFFIX "/lib")
 #set(OpenCV_LIB_VERSION "0815" CACHE PATH "version of OpenCV")

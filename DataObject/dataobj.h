@@ -42,8 +42,9 @@
 
 #define NOMINMAX //see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e, this is only an issue with OpenCV 2.4.3, not 2.3.x
 
-#include "opencv/cv.h"
+#include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
+#include "opencv2/core/types_c.h"
 
 #include "../common/sharedStructures.h"
 #include "../common/color.h"
@@ -125,6 +126,7 @@ namespace cv
     template<> inline ito::float32 saturate_cast(ito::Rgba32 v){return v.gray();};
     template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
 
+#if (CV_MAJOR_VERSION > 3) || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3)
     //from CV 3.3.1 on, the default implementation of DataType is dropped:
     //Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
     template<> class DataType<ito::uint32>
@@ -137,6 +139,7 @@ namespace cv
         enum { generic_type = 1, depth = -1, channels = 1, fmt=0,
             type = CV_MAKETYPE(depth, channels) };
     };
+#endif
     
     template<> class DataType<ito::Rgba32>
     {

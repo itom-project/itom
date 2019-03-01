@@ -243,6 +243,8 @@ private slots:
 
     void fileSysWatcherFileChanged ( const QString & path );
     void printPreviewRequested(QPrinter *printer);
+
+    void dumpFoldsToConsole(bool);
 };
 
 } //end namespace ito

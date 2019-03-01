@@ -107,13 +107,15 @@ class FoldScope
 {
 public:
     FoldScope();
-    FoldScope(const QTextBlock &block);
+    FoldScope(const QTextBlock &block, bool &valid);
     virtual ~FoldScope();
 
     int triggerLevel() const;
     int scopeLevel() const;
     bool collapsed() const;
     bool isValid() const;
+
+    //returns index of first and last line of entire fold range
     QPair<int, int> getRange(bool ignoreBlankLines = true) const;
     void fold();
     void unfold(bool unfoldChildBlocks = true);

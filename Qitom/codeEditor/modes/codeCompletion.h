@@ -158,6 +158,7 @@ public:
     virtual void onInstall(CodeEditor *editor);
     virtual void onUninstall();
     
+    void hidePopup();
 
 private slots:
     void onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions);
@@ -170,9 +171,6 @@ private slots:
     void onSelectedCompletionChanged(const QString &completion);
     void displayCompletionTooltip(const QString &completion) const;
 
-signals:
-    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
-
 protected:
     bool requestCompletion();
     
@@ -184,13 +182,11 @@ protected:
     void resetSyncData();
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
-    void hidePopup();
     void showPopup(int index = 0);
     void showCompletions(const QVector<JediCompletion> &completions);
     QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
     
     static bool isNavigationKey(QKeyEvent *e);
-
 
 private:
     QObject *m_pPythonEngine;

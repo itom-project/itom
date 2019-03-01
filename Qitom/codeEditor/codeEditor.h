@@ -334,6 +334,9 @@ protected:
 
     virtual bool keyPressInternalEvent(QKeyEvent *e) { return true; };
 
+    //TODO: Remove if all issues are solved!
+    QAction *m_pDebugAction;
+
 private:
     struct FindOptions
     {

@@ -30,7 +30,6 @@
 #include <qmessagebox.h>
 #include <qtimer.h>
 #include <qdebug.h>
-#include <QCryptographicHash>
 
 namespace ito {
 

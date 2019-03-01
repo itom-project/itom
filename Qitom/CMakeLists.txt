@@ -3,7 +3,7 @@ SET (target_name qitom)
 project(${target_name})
 
 cmake_minimum_required(VERSION 2.8.9)
-
+  
 #CMAKE Policies
 if (POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found

@@ -22,6 +22,7 @@
 
 #include "dialogIconBrowser.h"
 #include "../global.h"
+#include "helper/guiHelper.h"
 
 #include <qclipboard.h>
 #include <qboxlayout.h>
@@ -43,8 +44,6 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
     QStringList sublist;
     QList<QTreeWidgetItem *> items;
 
-//    list.clear();
-
     QDirIterator it(":", QDirIterator::NoIteratorFlags);
     while (it.hasNext())
     {
@@ -56,8 +55,6 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
         QDirIterator subIT(curDir, QDirIterator::Subdirectories);
         while (subIT.hasNext())
         {
-            //sublist.append(subIT.next());
-            //QResource temp(subIT.filePath());
             QIcon thisIcon(subIT.next());
             if (subIT.fileName().contains(".png"))
             {
@@ -73,12 +70,12 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
     ui.treeWidget->setItemsExpandable(true);
     ui.treeWidget->setExpandsOnDoubleClick(true);
     ui.treeWidget->expandAll();
-    ui.treeWidget->setIconSize(QSize(16, 16));
+    int size = 16 * GuiHelper::screenDpiFactor();
+    ui.treeWidget->setIconSize(QSize(size, size));
     ui.treeWidget->sortItems(0, Qt::AscendingOrder);
 
-    this->setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
-    this->setWindowTitle(tr("Icon Browser"));
-//    this->setWhatsThis(tr("itom resource file browser\nDouble-Click icon to copy icon path to the clipboard\nand close this window."));
+    setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
+    setWindowTitle(tr("Icon Browser"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

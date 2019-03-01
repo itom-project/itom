@@ -41,6 +41,7 @@
 
 #include <qhash.h>
 #include <qsharedpointer.h>
+#include <qdebug.h>
 
 namespace ito
 {
@@ -50,10 +51,12 @@ class PythonSharedPointerGuard
 public:
     static PyObject *tParamToPyObject(ito::ParamBase &param);
 
+    static void safeDecrefPyObject2Async(PyObject* obj);
+
     template<typename _Tp> static void deleter(_Tp *sharedPointerData)
     {
         QHash<void*, PyObject*>::iterator i = m_hashTable.find((void*)sharedPointerData);
-        if(i != m_hashTable.end())
+        if (i != m_hashTable.end())
         {
             if (i.value())
             {
@@ -64,9 +67,7 @@ public:
                 }
                 else
                 {
-                    PyGILState_STATE gstate = PyGILState_Ensure();
-                    Py_DECREF(i.value());
-                    PyGILState_Release(gstate);
+                    safeDecrefPyObject2Async(i.value());
                 }
 #else
                 //we don't know if we need to acquire the GIL here, or not.
@@ -80,9 +81,6 @@ public:
 
     template<typename _Tp> static QSharedPointer<_Tp> createPythonSharedPointer(_Tp *sharedPointerData, PyObject *pyObjOwner)
     {
-
-
-
         Py_XINCREF(pyObjOwner);
         m_hashTable.insert((void*)sharedPointerData, pyObjOwner);
         return QSharedPointer<_Tp>(sharedPointerData, deleter<_Tp>);

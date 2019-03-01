@@ -104,7 +104,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+25"/>
         <source>%v s</source>
-        <translation type="unfinished"></translation>
+        <translation>%v s</translation>
     </message>
 </context>
 <context>
@@ -520,11 +520,12 @@ p, li { white-space: pre-wrap; }
         <translation>以下格式的代理: [Benutzer:Passwort@]Proxy.Server:Port</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>[user:passwd]@proxy.server:port</source>
-        <translation type="vanished">[user:passwd]@proxy.server:port</translation>
+        <translation>[user:passwd]@proxy.server:port</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+7"/>
         <source>Timeout:</source>
         <translation>超时</translation>
     </message>
@@ -555,29 +556,24 @@ p, li { white-space: pre-wrap; }
         <translation>隔离模式下运行Pip</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <source>[user:passwd@]proxy.server:port</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
+        <location line="+7"/>
         <source>Retries:</source>
         <translation>重复:</translation>
     </message>
     <message>
         <location line="+33"/>
         <source>Semicolon-separated list of hosts. These hosts are trusted (avoiding SSL security issues).</source>
-        <translation type="unfinished"></translation>
+        <translation>以分号分隔的主机列表。这些主机是可信的（避免了SSL安全问题）</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>pypi.python.org; files.pythonhosted.org; pypi.org</source>
-        <translation type="unfinished"></translation>
+        <translation>pypi.python.org; files.pythonhosted.org; pypi.org</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Hint: From some networks, you also have to properly set the environment variables http_proxy and https_proxy!</source>
-        <translation type="unfinished"></translation>
+        <translation>提示：在某些网络必须恰当地设置环境变量http_proxy和https_proxy</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -722,7 +718,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+12"/>
         <source>Module Name:</source>
-        <translation>模块名称:</translation>
+        <translation>模块名称：</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1227,14 +1223,14 @@ p, li { white-space: pre-wrap; }
         <translation>这类形状未定义中心</translation>
     </message>
     <message>
-        <location line="+982"/>
+        <location line="+978"/>
         <source>%1 missing</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 未找到</translation>
     </message>
     <message>
         <location line="+54"/>
         <source>%1: float64 array with two elements required (x,y)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: Float64-数组必须有两元素 (x,y)</translation>
     </message>
     <message>
         <source>%s missing</source>
@@ -1245,30 +1241,30 @@ p, li { white-space: pre-wrap; }
         <translation type="vanished">%s: Float64-数组必须有两元素 (x,y)</translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+3354"/>
+        <location filename="../python/pythonUi.cpp" line="+3349"/>
         <source>no widget name specified</source>
         <translation>未指定部件名称</translation>
     </message>
     <message>
         <location line="+15"/>
-        <location line="+194"/>
+        <location line="+193"/>
         <source>no addin-manager found</source>
         <translation>未找到 &apos;AddInManager&apos;</translation>
     </message>
     <message>
-        <location line="-186"/>
+        <location line="-185"/>
         <source>the first parameter must contain the widget name as string</source>
         <translation>第一个参数必须是包含部件名称的字符串</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+186"/>
+        <location line="+185"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
         <translation>插件部件 &apos;%1&apos;未找到</translation>
     </message>
     <message>
-        <location line="-179"/>
-        <location line="+186"/>
+        <location line="-178"/>
+        <location line="+185"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
         <translation>无法获取插件部件&apos;%1&apos;的参数</translation>
     </message>
@@ -1546,7 +1542,7 @@ p, li { white-space: pre-wrap; }
         <translation>python中Itom的DataIOPlugin类型</translation>
     </message>
     <message>
-        <location filename="../python/pythonPCL.cpp" line="+1862"/>
+        <location filename="../python/pythonPCL.cpp" line="+1861"/>
         <location line="+111"/>
         <location line="+2027"/>
         <location line="+88"/>
@@ -1606,7 +1602,7 @@ p, li { white-space: pre-wrap; }
         <translation>存储的数据必须是可以重建点云的字节流</translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2825"/>
+        <location filename="../python/pythonItom.cpp" line="+2853"/>
         <source>Button must have a valid name.</source>
         <translation>按键必须有正确的名称.</translation>
     </message>
@@ -1641,7 +1637,7 @@ p, li { white-space: pre-wrap; }
         <translation>菜单项&apos;menu&apos;不能执行任何函数方法.代码参数将被忽略.</translation>
     </message>
     <message>
-        <location line="+887"/>
+        <location line="+889"/>
         <source>Error while parsing parameters.</source>
         <translation>解析参数出错</translation>
     </message>
@@ -1802,13 +1798,14 @@ p, li { white-space: pre-wrap; }
         <source>Wrong number of parameters
  Mandatory parameters are:
 </source>
-        <translation type="unfinished"></translation>
+        <translation>错误的参数个数，必要的参数是：</translation>
     </message>
     <message>
         <location line="+782"/>
         <source>%s with message: 
 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>%s 指定消息: 
+%s</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1968,7 +1965,7 @@ p, li { white-space: pre-wrap; }
         <translation>无法打开&apos;Collection&apos;项目文件</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+55"/>
         <source>Error calling qcollectiongenerator</source>
         <translation>qcollectiongenerator调用错误</translation>
     </message>
@@ -2200,7 +2197,7 @@ p, li { white-space: pre-wrap; }
         <translation>属性 &apos;%s&apos;不存在</translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+81"/>
+        <location filename="../helper/versionHelper.cpp" line="+83"/>
         <source>none</source>
         <translation>无</translation>
     </message>
@@ -2317,7 +2314,7 @@ p, li { white-space: pre-wrap; }
         <translation>python无法获取。</translation>
     </message>
     <message>
-        <location filename="../organizer/widgetWrapper.cpp" line="+300"/>
+        <location filename="../organizer/widgetWrapper.cpp" line="+291"/>
         <source>QListWidget object is null</source>
         <translation>QListWidget对象为空</translation>
     </message>
@@ -2342,7 +2339,7 @@ p, li { white-space: pre-wrap; }
         <translation>QWidget对象为空</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+20"/>
         <source>QTableWidget object is null</source>
         <translation>QTableWidget对象为空</translation>
     </message>
@@ -2358,154 +2355,9 @@ p, li { white-space: pre-wrap; }
         <translation>QTableView对象为空</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <source>QStatusBar object is null</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
+        <location line="+41"/>
         <source>Slot or widget not found</source>
         <translation>槽或部件未找到</translation>
-    </message>
-    <message>
-        <location filename="../codeEditor/textBlockUserData.h" line="+105"/>
-        <source>Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Warning</source>
-        <translation type="unfinished">警告</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Error</source>
-        <translation type="unfinished">错误</translation>
-    </message>
-    <message>
-        <location filename="../codeEditor/syntaxHighlighter/codeEditorStyle.cpp" line="+57"/>
-        <source>Current selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Keyword</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Namespace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type</source>
-        <translation type="unfinished">类型</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Keyword Reserved</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Builtin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Definition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Comment</source>
-        <translation type="unfinished">注释</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>String</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Docstring</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Instance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Self</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Decorator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Punctuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Constant</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Operator Word</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Class Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Stream Output (Command Line)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Stream Error (Command Line)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/scriptEditorPrinter.cpp" line="+62"/>
-        <source>Page %1/%2</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2664,13 +2516,9 @@ p, li { white-space: pre-wrap; }
         <translation>表格</translation>
     </message>
     <message>
-        <source>Line Wrap</source>
-        <translation type="vanished">折行</translation>
-    </message>
-    <message>
         <location line="+6"/>
-        <source>Line Wrap (based on width of console widget)</source>
-        <translation type="unfinished"></translation>
+        <source>Line Wrap</source>
+        <translation>折行</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2688,84 +2536,85 @@ p, li { white-space: pre-wrap; }
         <translation>从字符边界折行</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+10"/>
         <source>Visual Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Split Long Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>For performance reasons, it is recommended to split very long lines of text into several lines.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Maximum line length:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location line="+6"/>
         <source>Flag at start of every wrapped line</source>
-        <translation type="vanished">标志位于每一折行的开始</translation>
+        <translation>标志位于每一折行的开始</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <location line="+26"/>
         <source>No wrap flag</source>
-        <translation type="vanished">无折行标志</translation>
+        <translation>无折行标志</translation>
     </message>
     <message>
+        <location line="-21"/>
+        <location line="+26"/>
         <source>Wrap flag displayed by the text</source>
-        <translation type="vanished">在文本旁显示折行标志</translation>
+        <translation>在文本旁显示折行标志</translation>
     </message>
     <message>
+        <location line="-21"/>
+        <location line="+26"/>
         <source>Wrap flag displayed by the border</source>
-        <translation type="vanished">在边界旁显示折行标志</translation>
+        <translation>在边界旁显示折行标志</translation>
     </message>
     <message>
+        <location line="-18"/>
         <source>Flag at end of every wrapped line</source>
-        <translation type="vanished">标志位于每一折行的结束</translation>
+        <translation>标志位于每一折行的结束</translation>
     </message>
     <message>
-        <location line="-41"/>
+        <location line="+26"/>
         <source>Number of characters a wrapped line is indented by</source>
         <translation>折行缩进的字符数</translation>
     </message>
     <message>
+        <location line="+23"/>
         <source>Wrap Indentation Mode</source>
-        <translation type="vanished">折行缩进模式</translation>
+        <translation>折行缩进模式</translation>
     </message>
     <message>
+        <location line="+6"/>
         <source>Wrapped sub-lines are indented by the amount indicated above</source>
-        <translation type="vanished">后续折行按上面指定的量缩进</translation>
+        <translation>后续折行按上面指定的量缩进</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line</source>
-        <translation type="vanished">后续的折行按第一折行的量缩进</translation>
+        <translation>后续的折行按第一折行的量缩进</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line plus one mor level of indentation</source>
-        <translation type="vanished">后续的折行按第一折行缩进量再增加一级缩进</translation>
+        <translation>后续的折行按第一折行缩进量再增加一级缩进</translation>
     </message>
 </context>
 <context>
     <name>WidgetPropEditorAPI</name>
     <message>
+        <location filename="../ui/widgetPropEditorAPI.ui" line="+14"/>
         <source>Form</source>
-        <translation type="vanished">表格</translation>
+        <translation>表格</translation>
     </message>
     <message>
+        <location line="+17"/>
         <source>Add API</source>
-        <translation type="vanished">增加API</translation>
+        <translation>增加API</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>Remove</source>
-        <translation type="vanished">移除</translation>
+        <translation>移除</translation>
     </message>
     <message>
+        <location line="+24"/>
         <source>Base path: </source>
-        <translation type="vanished">基本路径: </translation>
+        <translation>基本路径: </translation>
     </message>
 </context>
 <context>
@@ -2776,76 +2625,54 @@ p, li { white-space: pre-wrap; }
         <translation>表格</translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Auto-completion enabled (requires Python packages jedi and parso)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <source>Filter Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Completion is based on prefix only - fast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Completion checks if prefix is contained in the suggestions - fast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Fuzzy filtering - most powerful method - slow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
+        <location line="+46"/>
         <source>Case sensitive</source>
         <translation>大小写敏感</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show tooltips</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Use fill-up characters</source>
-        <translation type="vanished">使用填充字符</translation>
+        <translation>使用填充字符</translation>
     </message>
     <message>
+        <location line="-47"/>
         <source>Auto-completion enabled</source>
-        <translation type="vanished">打开自动补全</translation>
+        <translation>打开自动补全</translation>
     </message>
     <message>
-        <location line="-85"/>
+        <location line="+11"/>
         <source>Threshold</source>
         <translation>阈值</translation>
     </message>
     <message>
+        <location line="+43"/>
         <source>Replace word right of the cursor if entry from list is selected</source>
-        <translation type="vanished">若列表项选中，则替换光标右侧单词</translation>
+        <translation>若列表项选中，则替换光标右侧单词</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Show single</source>
-        <translation type="vanished">显示单词</translation>
+        <translation>显示单词</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Sources for auto-completion</source>
-        <translation type="vanished">自动补全来源</translation>
+        <translation>自动补全来源</translation>
     </message>
     <message>
+        <location line="+6"/>
         <source>Use all available sources</source>
-        <translation type="vanished">使用全部可用来源</translation>
+        <translation>使用全部可用来源</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Use text in the current document as source</source>
-        <translation type="vanished">使用当前文档中的文本作为来源</translation>
+        <translation>使用当前文档中的文本作为来源</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>Use any installed APIs as source</source>
-        <translation type="vanished">使用安装的API作为来源</translation>
+        <translation>使用安装的API作为来源</translation>
     </message>
 </context>
 <context>
@@ -2857,36 +2684,38 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+6"/>
-        <source>Calltips enabled (requires Python packages jedi and parso)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Calltips enabled</source>
-        <translation type="vanished">打开调用提示</translation>
+        <translation>打开调用提示</translation>
     </message>
     <message>
+        <location line="+11"/>
         <source>Number of calltips</source>
-        <translation type="vanished">调用提示的数量</translation>
+        <translation>调用提示的数量</translation>
     </message>
     <message>
+        <location line="+29"/>
         <source>Context display options</source>
-        <translation type="vanished">上下文选项</translation>
+        <translation>上下文选项</translation>
     </message>
     <message>
+        <location line="+6"/>
         <source>Don&apos;t show context information</source>
-        <translation type="vanished">不显示上下文信息</translation>
+        <translation>不显示上下文信息</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Show context information, if no prior autocompletion</source>
-        <translation type="vanished">如果没有自动补全，则显示上下文信息</translation>
+        <translation>如果没有自动补全，则显示上下文信息</translation>
     </message>
     <message>
+        <location line="+10"/>
         <source>Show context information</source>
-        <translation type="vanished">显示上下文信息</translation>
+        <translation>显示上下文信息</translation>
     </message>
     <message>
+        <location line="+14"/>
         <source>A context is any scope (e.g. Python module) prior to the function/method name</source>
-        <translation type="vanished">上下文是函数或方法名称前的任何限定域</translation>
+        <translation>上下文是函数或方法名称前的任何限定域</translation>
     </message>
 </context>
 <context>
@@ -2912,11 +2741,12 @@ p, li { white-space: pre-wrap; }
         <translation>显示缩进指示</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Use tabs for indentation</source>
-        <translation type="vanished">缩进使用Tab键</translation>
+        <translation>缩进使用Tab键</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
         <source>Show Whitespace</source>
         <translation>显示空格</translation>
     </message>
@@ -2961,7 +2791,7 @@ p, li { white-space: pre-wrap; }
         <translation>缩进包含tab</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+122"/>
         <source>Extra ascent (above each line)</source>
         <translation>额外提升(以上)</translation>
     </message>
@@ -2971,17 +2801,12 @@ p, li { white-space: pre-wrap; }
         <translation>额外下降(以下)</translation>
     </message>
     <message>
-        <location line="-76"/>
+        <location line="-139"/>
         <source>End-of-line (EOL) mode</source>
         <translation>行结束(EOL)模式</translation>
     </message>
     <message>
-        <location line="-107"/>
-        <source>Use Tabs for Indentation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+122"/>
+        <location line="+15"/>
         <source>Windows</source>
         <translation>窗口</translation>
     </message>
@@ -2991,7 +2816,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+81"/>
         <source>Line Spacing</source>
         <translation>行间距</translation>
     </message>
@@ -3002,75 +2827,44 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="-75"/>
+        <location line="-138"/>
         <source>Mac</source>
         <translation></translation>
     </message>
     <message>
+        <location line="+32"/>
         <source>Folding Style</source>
-        <translation type="vanished">折叠风格</translation>
-    </message>
-    <message>
-        <source>Plus/Minus</source>
-        <translation type="vanished">加/减</translation>
-    </message>
-    <message>
-        <source>Squares</source>
-        <translation type="vanished">正方形</translation>
-    </message>
-    <message>
-        <source>Circles</source>
-        <translation type="vanished">圆</translation>
-    </message>
-    <message>
-        <source>Squares + Tree</source>
-        <translation type="vanished">正方形 + 树</translation>
-    </message>
-    <message>
-        <source>Circles + Tree</source>
-        <translation type="vanished">圆 + 树</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="vanished">无</translation>
-    </message>
-</context>
-<context>
-    <name>WidgetPropEditorGotoAssignment</name>
-    <message>
-        <location filename="../ui/widgetPropEditorGotoAssignment.ui" line="+14"/>
-        <source>Form</source>
-        <translation type="unfinished">表格</translation>
+        <translation>折叠风格</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Go to definition and assignment enabled (requires Python packages jedi and parso)</source>
-        <translation type="unfinished"></translation>
+        <source>Plus/Minus</source>
+        <translation>加/减</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Check &quot;goto definition&quot; if Ctrl-key is pressed and mouse is moved over word</source>
-        <translation type="unfinished"></translation>
+        <location line="+10"/>
+        <source>Squares</source>
+        <translation>正方形</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Which &quot;goto mode&quot; should be checked, if mouse is moved over word:</source>
-        <translation type="unfinished"></translation>
+        <location line="+7"/>
+        <source>Circles</source>
+        <translation>圆</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Goto definition (returns the end, not the first definition)</source>
-        <translation type="unfinished"></translation>
+        <location line="+7"/>
+        <source>Squares + Tree</source>
+        <translation>正方形 + 树</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Goto assignment (returns the first definition)</source>
-        <translation type="unfinished"></translation>
+        <location line="+10"/>
+        <source>Circles + Tree</source>
+        <translation>圆 + 树</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Goto assignment and follow imports (the goto call will also follow imports)</source>
-        <translation type="unfinished"></translation>
+        <location line="+7"/>
+        <source>None</source>
+        <translation>无</translation>
     </message>
 </context>
 <context>
@@ -3166,13 +2960,14 @@ p, li { white-space: pre-wrap; }
         <translation>背景色</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+16"/>
         <source>Font</source>
         <translation>字体</translation>
     </message>
     <message>
+        <location line="+7"/>
         <source>Fill to end of line</source>
-        <translation type="vanished">填充到行尾</translation>
+        <translation>填充到行尾</translation>
     </message>
     <message>
         <location line="+114"/>
@@ -3180,7 +2975,7 @@ p, li { white-space: pre-wrap; }
         <translation>重置为默认值</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+31"/>
         <source>Import Style...</source>
         <translation>导入风格...</translation>
     </message>
@@ -3190,7 +2985,7 @@ p, li { white-space: pre-wrap; }
         <translation>导出风格...</translation>
     </message>
     <message>
-        <location line="-228"/>
+        <location line="-224"/>
         <source>Sample Text</source>
         <translation>文字样本</translation>
     </message>
@@ -3208,7 +3003,7 @@ p, li { white-space: pre-wrap; }
         <translation type="vanished">背景颜色</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+61"/>
         <source>Highlight current line</source>
         <translation>高亮显示当前行</translation>
     </message>
@@ -3233,13 +3028,7 @@ p, li { white-space: pre-wrap; }
         <translation>通用设置</translation>
     </message>
     <message>
-        <location line="+34"/>
-        <source>Set All Text Backgrounds
-To Transparent</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
+        <location line="+37"/>
         <source>Import / Export</source>
         <translation>导入/导出</translation>
     </message>
@@ -4443,45 +4232,6 @@ Message: %1</source>
     </message>
 </context>
 <context>
-    <name>ito::BreakpointPanel</name>
-    <message>
-        <location filename="../codeEditor/panels/breakpointPanel.cpp" line="+76"/>
-        <source>&amp;Toggle Breakpoint</source>
-        <translation type="unfinished">&amp;T切换断点</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+138"/>
-        <source>&amp;Disable Breakpoint</source>
-        <translation type="unfinished">&amp;D取消断点</translation>
-    </message>
-    <message>
-        <location line="-137"/>
-        <source>&amp;Edit Condition</source>
-        <translation type="unfinished">&amp;E编辑条件</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Next Breakpoint</source>
-        <translation type="unfinished">&amp;N下一断点</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Previous Breakpoint</source>
-        <translation type="unfinished">&amp;P前一断点</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Delete All Breakpoints</source>
-        <translation type="unfinished">&amp;D删除所有断点</translation>
-    </message>
-    <message>
-        <location line="+130"/>
-        <source>&amp;Enable Breakpoint</source>
-        <translation type="unfinished">&amp;E设置断点</translation>
-    </message>
-</context>
-<context>
     <name>ito::CallStackDockWidget</name>
     <message>
         <location filename="../widgets/callStackDockWidget.cpp" line="+62"/>
@@ -4497,37 +4247,6 @@ Message: %1</source>
         <location line="+0"/>
         <source>Method</source>
         <translation>方法</translation>
-    </message>
-</context>
-<context>
-    <name>ito::CheckerBookmarkPanel</name>
-    <message>
-        <location filename="../codeEditor/panels/checkerBookmarkPanel.cpp" line="+70"/>
-        <source>&amp;Toggle Bookmark</source>
-        <translation type="unfinished">&amp;T切换书签</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Next Bookmark</source>
-        <translation type="unfinished">下一个书签</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Previous Bookmark</source>
-        <translation type="unfinished">前一书签</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Clear All Bookmarks</source>
-        <translation type="unfinished">清除所有书签</translation>
-    </message>
-</context>
-<context>
-    <name>ito::CodeCompletionMode</name>
-    <message>
-        <location filename="../codeEditor/modes/codeCompletion.cpp" line="+890"/>
-        <source>...</source>
-        <translation type="unfinished">...</translation>
     </message>
 </context>
 <context>
@@ -4551,56 +4270,51 @@ Message: %1</source>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+1052"/>
-        <location line="+16"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+1064"/>
+        <location line="+17"/>
         <source>Python is not available</source>
         <translation>Python无法获得</translation>
     </message>
     <message>
-        <location line="-16"/>
-        <location line="+16"/>
+        <location line="-17"/>
+        <location line="+17"/>
         <source>Script Execution</source>
         <translation>脚本执行</translation>
     </message>
     <message>
-        <location line="+688"/>
+        <location line="+574"/>
         <source>&amp;Undo</source>
         <translation>&amp;U撤销</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>&amp;Redo</source>
         <translation>&amp;R重做</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+5"/>
         <source>&amp;Cut</source>
         <translation>&amp;C剪切</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Cop&amp;y</source>
         <translation>&amp;y拷贝</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>&amp;Paste</source>
         <translation>&amp;P粘贴</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Clear Command Line</source>
         <translation>清除命令行</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+7"/>
         <source>Select All</source>
         <translation>全选</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Auto Scroll</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4943,17 +4657,12 @@ Message: %1</source>
 <context>
     <name>ito::DialogPipManager</name>
     <message>
-        <location filename="../ui/dialogPipManager.cpp" line="+100"/>
+        <location filename="../ui/dialogPipManager.cpp" line="+96"/>
         <source>Python initialization error</source>
         <translation>Python初始化错误</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>A proxy server was restored from the settings file. This proxy contained a password, which was not saved in the settings. Please set it again in the pip settings (below).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+215"/>
+        <location line="+163"/>
         <source>Abort</source>
         <translation>放弃</translation>
     </message>
@@ -5128,6 +4837,11 @@ Message: %1</source>
     </message>
     <message>
         <location line="+1"/>
+        <source>API</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Calltips</source>
         <translation>调用提示</translation>
     </message>
@@ -5137,7 +4851,7 @@ Message: %1</source>
         <translation>自动补全</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
         <source>Styles</source>
         <translation>风格</translation>
     </message>
@@ -5157,8 +4871,9 @@ Message: %1</source>
         <translation>编辑器 - 脚本</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Editor - API Files</source>
-        <translation type="vanished">编辑器 - API-文件</translation>
+        <translation>编辑器 - API-文件</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5169,16 +4884,6 @@ Message: %1</source>
         <location line="+1"/>
         <source>Editor - Auto Completion</source>
         <translation>编辑器 - 自动补全</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Goto Assignment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Editor - Goto Assignment</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5403,19 +5108,14 @@ Message: %1</source>
         <translation>重新加载模块出错</translation>
     </message>
     <message>
-        <location line="+26"/>
-        <source>&lt;click on item to view detailed information&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-111"/>
+        <location line="-85"/>
         <source>No information about loaded modules could be retrieved by python.</source>
         <translation>python无法获取加载的模块信息</translation>
     </message>
     <message>
         <location line="-38"/>
         <source>Module Name</source>
-        <translation type="unfinished"></translation>
+        <translation>模块名称</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -6214,7 +5914,7 @@ Message: %1</source>
     <message>
         <location line="+4"/>
         <source>Wildcard: &lt;no pattern given&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>通配符: &lt;未指定模式&gt;</translation>
     </message>
     <message>
         <source>Wildcard: &lt;未指定模式&gt;</source>
@@ -6632,7 +6332,7 @@ Message: %1</source>
 <context>
     <name>ito::LastCommandDockWidget</name>
     <message>
-        <location filename="../widgets/lastCommandDockWidget.cpp" line="+191"/>
+        <location filename="../widgets/lastCommandDockWidget.cpp" line="+190"/>
         <source>Clear List</source>
         <translation>清除列表</translation>
     </message>
@@ -6640,7 +6340,7 @@ Message: %1</source>
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+253"/>
+        <location filename="../mainApplication.cpp" line="+252"/>
         <location line="+4"/>
         <source>Version %1
 %2</source>
@@ -6683,12 +6383,12 @@ Message: %1</source>
         <translation>启动Python...</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>load main window...</source>
         <translation>加载主窗口...</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+6"/>
         <source>load ui organizer...</source>
         <translation>加载&apos;UI Organizer&apos;...</translation>
     </message>
@@ -6765,27 +6465,12 @@ Message: %1</source>
         <translation>插件</translation>
     </message>
     <message>
-        <location line="+383"/>
+        <location line="+385"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location line="+46"/>
-        <source>Close All Floatable Figures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Show All Floatable Figures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Minimize All Floatable Figures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+60"/>
         <source>Continue</source>
         <translation>继续</translation>
     </message>
@@ -6835,12 +6520,7 @@ Message: %1</source>
         <translation>最近使用的文件</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <source>Current Figures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+182"/>
+        <location line="+209"/>
         <source>No Opened Scripts</source>
         <translation>没有打开的脚本</translation>
     </message>
@@ -6857,7 +6537,7 @@ Message: %1</source>
     <message>
         <location line="+145"/>
         <source>timeout while closing figures</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭图超时</translation>
     </message>
     <message>
         <location line="+297"/>
@@ -6914,7 +6594,7 @@ Message: %1</source>
         <translation type="vanished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-454"/>
+        <location line="-456"/>
         <source>Command History</source>
         <translation>历史命令</translation>
     </message>
@@ -6931,7 +6611,7 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
 使用参数&apos;log&apos;重新启动itom，在文件&apos;itomlog.txt&apos;中查看错误信息.</translation>
     </message>
     <message>
-        <location line="+368"/>
+        <location line="+370"/>
         <source>Loaded Plugins...</source>
         <translation>已加载的插件...</translation>
     </message>
@@ -7026,27 +6706,32 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
         <translation>无</translation>
     </message>
     <message>
+        <location line="-202"/>
         <source>Close all floatable Figures</source>
-        <translation type="vanished">关闭所有浮动的图</translation>
+        <translation>关闭所有浮动的图</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Show all floatable Figures</source>
-        <translation type="vanished">显示所有浮动的图</translation>
+        <translation>显示所有浮动的图</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Minimize all floatable Figures</source>
-        <translation type="vanished">最小化所有浮动的图</translation>
+        <translation>最小化所有浮动的图</translation>
     </message>
     <message>
+        <location line="+126"/>
         <source>Show open Figure</source>
-        <translation type="vanished">显示打开的图</translation>
+        <translation>显示打开的图</translation>
     </message>
     <message>
+        <location line="+120"/>
         <source>No Figures available</source>
-        <translation type="vanished">无图</translation>
+        <translation>无图</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+35"/>
         <source>Toolboxes</source>
         <translation>工具箱</translation>
     </message>
@@ -7486,64 +7171,14 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
 </context>
 <context>
-    <name>ito::PyGotoAssignmentMode</name>
-    <message>
-        <location filename="../codeEditor/modes/pyGotoAssignment.cpp" line="+79"/>
-        <source>Go To Definition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Go To Assignment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Go To Assignment (Follow Imports)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+125"/>
-        <location line="+243"/>
-        <source>No definition found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-243"/>
-        <location line="+243"/>
-        <source>No definition could be found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-30"/>
-        <source>Choose a definition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Choose the definition you want to go to:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Source of definition not reachable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>The source of this definition is not reachable.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+1034"/>
+        <location filename="../python/pythonEngine.cpp" line="+992"/>
         <source>Python not initialized</source>
         <translation>Python未初始化</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+140"/>
         <source>Qt text encoding not compatible to python. Python encoding is set to latin 1</source>
         <translation>Qt文本编码%1与python不兼容。python编码格式设置为latin 1</translation>
     </message>
@@ -7553,7 +7188,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>Qt文本编码%1与python不兼容。python编码格式设置为latin 1</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+164"/>
         <source>An automatic reload cannot be executed since auto reloader is not enabled.</source>
         <translation>因未打开自动加载模块，自动重新加载不能执行。</translation>
     </message>
@@ -7564,24 +7199,24 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
     <message>
         <location line="+28"/>
-        <location line="+608"/>
+        <location line="+588"/>
         <source>syntax error</source>
         <translation>语法错误</translation>
     </message>
     <message>
-        <location line="-562"/>
+        <location line="-546"/>
         <source>exiting desired.</source>
         <translation>期望退出。</translation>
     </message>
     <message>
-        <location line="+298"/>
-        <location line="+143"/>
-        <location line="+132"/>
+        <location line="+290"/>
+        <location line="+139"/>
+        <location line="+128"/>
         <source>Error while clearing all breakpoints in itoDebugger.</source>
         <translation>清除ITO-Debugger中所有断点时出错。</translation>
     </message>
     <message>
-        <location line="+2666"/>
+        <location line="+2270"/>
         <source>It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation>在pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy模式下不允许保存一个变量</translation>
     </message>
@@ -7636,7 +7271,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>名称和值的数量必须相等</translation>
     </message>
     <message>
-        <location line="-4862"/>
+        <location line="-4409"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
         <translation>itom目录下的python子目录&apos;%s&apos;不存在。请在itom的属性对话框中更改设置。
@@ -7664,7 +7299,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         请在itom首选对话框中，将环境变量PYTHONHOME设置为python基目录或其它正确的目录。</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+41"/>
         <source>Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.</source>
         <translation>导入Numpy.core.multiarray失败。请确保安装了numpy 1.6或更高版本。</translation>
     </message>
@@ -7705,7 +7340,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>在启动python引擎中重导向stdin出错</translation>
     </message>
     <message>
-        <location line="+252"/>
+        <location line="+244"/>
         <source>The module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.</source>
         <translation>无法加载模块&apos;itoFunctions&apos;确保在itom根目录下存在脚本itoFunctions.py</translation>
     </message>
@@ -7730,17 +7365,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>python 设置时死锁.</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+503"/>
+        <location line="+496"/>
         <source>Main dictionary is empty</source>
         <translation>主词典为空</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+53"/>
         <source>Error while evaluating python string.</source>
         <translation>求python字符串的值时出错.</translation>
     </message>
@@ -7755,12 +7385,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>文件无法以&quot;ReadOnly&quot;模式打开</translation>
     </message>
     <message>
-        <location line="+561"/>
-        <source>Auto completion, calltips, goto definition... not possible, since the package &apos;jedi&apos; could not be loaded (Python packages &apos;jedi&apos; and &apos;parso&apos; are required for this feature).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+490"/>
+        <location line="+682"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation>向调试器传输断点出错</translation>
     </message>
@@ -7821,7 +7446,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>Python调试过程中删除断点返回未知错误字符串</translation>
     </message>
     <message>
-        <location line="+2553"/>
+        <location line="+2510"/>
         <source>Error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation>当将&apos;%s&apos;变换为PyObject*时出错</translation>
     </message>
@@ -7898,7 +7523,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
     <message>
         <location line="+57"/>
-        <location line="+212"/>
+        <location line="+208"/>
         <source>MainModule is empty or cannot be accessed</source>
         <translation>主模块为空或无法访问</translation>
     </message>
@@ -7913,12 +7538,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>因无法获取词典，变量无法恢复</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+153"/>
         <source>Unpickling error. This file contains no dictionary as base element.</source>
         <translation>恢复对像错误。文件中没有词典基元素</translation>
     </message>
     <message>
-        <location line="-1566"/>
+        <location line="-1560"/>
         <source>Given value is empty. No save to matlab possible.</source>
         <translation>指定值为空。不能保存到matlab</translation>
     </message>
@@ -7985,7 +7610,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>插件必须具有&apos;DataIO&apos;或&apos;Motor&apos;类型</translation>
     </message>
     <message>
-        <location line="+520"/>
+        <location line="+519"/>
         <source>No more memory available during pickling.</source>
         <translation>恢复对象过程中内存不足</translation>
     </message>
@@ -8001,7 +7626,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>保存对象错误。出现未知异常。</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+190"/>
         <source>No more memory available during unpickling.</source>
         <translation>恢复对象过程中内存不足。</translation>
     </message>
@@ -8027,22 +7652,25 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::QsciApiManager</name>
     <message>
+        <location filename="../organizer/qsciApiManager.cpp" line="+303"/>
         <source>The python syntax documents have changed. The API has been updated.</source>
-        <translation type="vanished">python语法文档已更动。API已更新。</translation>
+        <translation>python语法文档已更动。API已更新。</translation>
     </message>
     <message>
+        <location line="+47"/>
         <source>The generation of the python syntax API has been cancelled.</source>
-        <translation type="vanished">已取消python语法API生成</translation>
+        <translation>已取消python语法API生成</translation>
     </message>
     <message>
+        <location line="+21"/>
         <source>The python syntax documents have changed. The API is being updated...</source>
-        <translation type="vanished">python语法文档已更动。API正更新...</translation>
+        <translation>python语法文档已更动。API正更新...</translation>
     </message>
 </context>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+649"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+661"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>以下文件已更改，应保存:</translation>
     </message>
@@ -8096,23 +7724,23 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+918"/>
+        <location line="+916"/>
         <source>&apos;%1&apos; was not found</source>
         <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+0"/>
-        <location line="+89"/>
-        <location line="+4"/>
+        <location line="+87"/>
         <source>Find And Replace</source>
         <translation>查找和替换</translation>
     </message>
     <message>
+        <location line="+0"/>
         <source>%1 occurrence(s) was replaced</source>
-        <translation type="vanished">替换%1个实例 </translation>
+        <translation>替换%1个实例 </translation>
     </message>
     <message>
-        <location line="-1008"/>
+        <location line="-1000"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -8432,16 +8060,6 @@ or correct the base directory in the preferences dialog of itom.</source>
         <source>Bookmark Toolbar</source>
         <translation>书签工具条</translation>
     </message>
-    <message>
-        <location line="+754"/>
-        <source>One occurrence was replaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>%1 occurrences were replaced</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ito::ScriptEditorOrganizer</name>
@@ -8464,12 +8082,12 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+749"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1018"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>为文件选择一种编码格式，该格式将记录到脚本的第一行</translation>
     </message>
     <message>
-        <location line="+898"/>
+        <location line="+935"/>
         <source>Print</source>
         <translation>打印</translation>
     </message>
@@ -8479,44 +8097,55 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>无打印内容</translation>
     </message>
     <message>
+        <location line="-1659"/>
         <source>&amp;Toggle Bookmark</source>
-        <translation type="vanished">&amp;T切换书签</translation>
+        <translation>&amp;T切换书签</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Next Bookmark</source>
-        <translation type="vanished">下一个书签</translation>
+        <translation>下一个书签</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Previous Bookmark</source>
-        <translation type="vanished">前一书签</translation>
+        <translation>前一书签</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Clear All Bookmarks</source>
-        <translation type="vanished">清除所有书签</translation>
+        <translation>清除所有书签</translation>
     </message>
     <message>
+        <location line="+5"/>
         <source>&amp;Toggle Breakpoint</source>
-        <translation type="vanished">&amp;T切换断点</translation>
+        <translation>&amp;T切换断点</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <location line="+215"/>
         <source>&amp;Disable Breakpoint</source>
-        <translation type="vanished">&amp;D取消断点</translation>
+        <translation>&amp;D取消断点</translation>
     </message>
     <message>
+        <location line="-214"/>
         <source>&amp;Edit Condition</source>
-        <translation type="vanished">&amp;E编辑条件</translation>
+        <translation>&amp;E编辑条件</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>&amp;Next Breakpoint</source>
-        <translation type="vanished">&amp;N下一断点</translation>
+        <translation>&amp;N下一断点</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>&amp;Previous Breakpoint</source>
-        <translation type="vanished">&amp;P前一断点</translation>
+        <translation>&amp;P前一断点</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>&amp;Delete All Breakpoints</source>
-        <translation type="vanished">&amp;D删除所有断点</translation>
+        <translation>&amp;D删除所有断点</translation>
     </message>
     <message>
         <source>&amp;Cut</source>
@@ -8563,7 +8192,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="vanished">&amp;p中止脚本</translation>
     </message>
     <message>
-        <location line="-1351"/>
+        <location line="+5"/>
         <source>Cut</source>
         <translation>剪切</translation>
     </message>
@@ -8610,7 +8239,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Run Script</source>
         <translation>运行脚本</translation>
     </message>
@@ -8674,39 +8303,35 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>&amp;U展开所有</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>&amp;Fold All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+2"/>
         <source>&amp;Insert Codec...</source>
         <translation>&amp;I插入编码...</translation>
     </message>
     <message>
+        <location line="+182"/>
         <source>&amp;Enable Breakpoint</source>
-        <translation type="vanished">&amp;E设置断点</translation>
+        <translation>&amp;E设置断点</translation>
     </message>
     <message>
-        <location line="+428"/>
+        <location line="+496"/>
         <source>Insert Codec</source>
         <translation>插入编码</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+38"/>
         <location line="+84"/>
-        <location line="+49"/>
+        <location line="+48"/>
         <source>Unsaved Changes</source>
         <translation>未保存更动</translation>
     </message>
     <message>
-        <location line="-133"/>
-        <location line="+133"/>
+        <location line="-132"/>
+        <location line="+132"/>
         <source>There are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>当前文档中有未保存更动.要先保存吗?</translation>
     </message>
     <message>
-        <location line="-116"/>
+        <location line="-115"/>
         <source>Error while opening file</source>
         <translation>打开文件时错误</translation>
     </message>
@@ -8722,13 +8347,13 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+64"/>
+        <location line="+63"/>
         <source>Error while accessing file</source>
         <translation>存取文件错误</translation>
     </message>
     <message>
-        <location line="-64"/>
-        <location line="+64"/>
+        <location line="-63"/>
+        <location line="+63"/>
         <source>File %1 could not be accessed</source>
         <translation>无法访问文件 %1 </translation>
     </message>
@@ -8738,12 +8363,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>另存为...</translation>
     </message>
     <message>
-        <location line="+719"/>
+        <location line="+761"/>
         <source>Unnamed</source>
         <translation>未命名的</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+240"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>文件&apos;%1&apos;不再存在.</translation>
     </message>
@@ -8753,7 +8378,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>保留文件在编辑器中?</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+17"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>文件&apos;%1&apos;已被其它程序更动.</translation>
     </message>
@@ -8763,7 +8388,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>要重新加载吗?</translation>
     </message>
     <message>
-        <location line="+170"/>
+        <location line="+172"/>
         <source>{Global Scope}</source>
         <translation>{全域}</translation>
     </message>
@@ -8878,7 +8503,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+2445"/>
         <source>could not get figure with handle %i.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法获取句柄为%i的图。</translation>
     </message>
     <message>
         <location line="+67"/>
@@ -8896,7 +8521,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+110"/>
         <source>could not find figure with given handle %1</source>
-        <translation type="unfinished"></translation>
+        <translation>无法找到句柄为%i的图。</translation>
     </message>
     <message>
         <location line="-2486"/>
@@ -9234,20 +8859,24 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::WidgetPropEditorAPI</name>
     <message>
+        <location filename="../ui/widgetPropEditorAPI.cpp" line="+49"/>
         <source>Base path for relative pathes: </source>
-        <translation type="vanished">相对路径的基本路径: </translation>
+        <translation>相对路径的基本路径: </translation>
     </message>
     <message>
+        <location line="+4"/>
         <source>[does not exist]</source>
-        <translation type="vanished">[不存在]</translation>
+        <translation>[不存在]</translation>
     </message>
     <message>
+        <location line="+93"/>
         <source>Load python api file</source>
-        <translation type="vanished">加载Pyhton 接口文件</translation>
+        <translation>加载Pyhton 接口文件</translation>
     </message>
     <message>
+        <location line="+0"/>
         <source>Python api file (*.api)</source>
-        <translation type="vanished">Pyhton接口文件(*.api)</translation>
+        <translation>Pyhton接口文件(*.api)</translation>
     </message>
 </context>
 <context>
@@ -9266,7 +8895,7 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::WidgetPropEditorStyles</name>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.cpp" line="+90"/>
+        <location filename="../ui/widgetPropEditorStyles.cpp" line="+87"/>
         <source>Paper color</source>
         <translation>纸面颜色</translation>
     </message>
@@ -9317,11 +8946,6 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Script: Background for erroneous line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Background color and text color of current selection</source>
         <translation>当前选中区域的前景色和背景色</translation>
     </message>
@@ -9332,8 +8956,8 @@ or correct the base directory in the preferences dialog of itom.</source>
 </translation>
     </message>
     <message>
-        <location line="+180"/>
-        <location line="+88"/>
+        <location line="+130"/>
+        <location line="+84"/>
         <source>Sample Text</source>
         <translation>样例文本</translation>
     </message>
@@ -9344,7 +8968,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>前景色: %1, 背景色: %2;</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+227"/>
         <source>Import style file</source>
         <translation>导入样式文件</translation>
     </message>
@@ -9370,28 +8994,27 @@ or correct the base directory in the preferences dialog of itom.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+90"/>
-        <location line="+5"/>
+        <location line="+86"/>
         <source>Error reading xml file.</source>
         <translation>XML文件读取错误.</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-86"/>
         <source>The content of the file &apos;%1&apos; seems to be corrupt.</source>
         <translation>文件内容 &apos;%1&apos; 已损坏.</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+64"/>
         <source>Missing node &apos;LexerStyles&apos; as child of &apos;NotepadPlus&apos; in xml file.</source>
         <translation>xml文件中的节点 &apos;NotepadPlus&apos;丢失了子节点 &apos;LexerStyles&apos;.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Missing node &apos;LexerType&apos; with name &apos;python&apos; as child of &apos;LexerStyles&apos; in xml file.</source>
         <translation>xml文件中的节点 &apos;LexerStyles&apos;丢失了子节点 &apos;LexerStyles&apos;名称为&apos;python&apos;.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Missing node &apos;GlobalStyles&apos; as child of &apos;NotepadPlus&apos; in xml file.</source>
         <translation>xml文件中的节点 &apos;NotepadPlus&apos;丢失了子节点&apos;GlobalStyles&apos;.</translation>
     </message>
@@ -9401,17 +9024,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>此文件不是Notepad++风格的文件.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>The content of the file &apos;%1&apos; could not be properly analyzed (%2): %3</source>
         <translation>文件&apos;%1&apos;的内容不能正常解析(%2): %3</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>The content of the file &apos;%1&apos; could not be properly analyzed (%2): %3 in line %4, column %5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+234"/>
+        <location line="+175"/>
         <source>Export style data</source>
         <translation>导出风格数据</translation>
     </message>
@@ -9807,7 +9425,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+2"/>
         <source>2.5D Isometric Plot</source>
-        <translation>2,5维图</translation>
+        <translation>2.5维图</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -9827,7 +9445,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+5"/>
         <source>Clear All Variables</source>
-        <translation type="unfinished"></translation>
+        <translation>清除所有变量</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -9966,7 +9584,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>本地</translation>
     </message>
     <message>
-        <location line="+403"/>
+        <location line="+401"/>
         <source>timeout while asking python for detailed information</source>
         <translation>请求Python详细信息超时</translation>
     </message>

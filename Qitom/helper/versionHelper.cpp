@@ -106,14 +106,6 @@ QMap<QString, QString> ito::getItomVersionMap()
 #endif
         default:                        items["itom_SysType"] = "Windows";              break;
     }
-    #if (defined _WIN64)
-        items["itom_SysType"].append(" 64-Bit");
-    #else
-        items["itom_SysType"].append(" 32-Bit");
-    #endif
-    #if (defined _DEBUG)
-        items["itom_SysType"].append(" DEBUG");
-    #endif
 #elif (defined Q_OS_MACX)
     switch( QSysInfo::MacintoshVersion )
     {
@@ -132,11 +124,39 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::MV_10_9+2:   items["itom_SysType"] = "OS X 10.11";       break;
         default:                    items["itom_SysType"] = "OS X";             break;
     }
-    #if (defined _DEBUG)
-        items["itom_SysType"].append(" DEBUG");
-    #endif
 #else
     items["itom_SysType"] = "undefined system";
+#endif
+
+    //detect compiler
+    items["itom_compiler"] = "Unknown compiler";
+
+#ifdef Q_CC_BOR
+    items["itom_compiler"] = "Borland/Turbo C++";
+#endif 
+#ifdef Q_CC_CLANG
+    items["itom_compiler"] = "Clang";
+#endif
+#ifdef Q_CC_GNU
+    items["itom_compiler"] = "GNU C++";
+#endif
+#ifdef Q_CC_INTEL
+    items["itom_compiler"] = "Intel C++ for Linux or Windows";
+#endif
+#ifdef Q_CC_MSVC
+    items["itom_compiler"] = "Microsoft Visual C/C++";
+#endif
+
+#if (defined _WIN64)
+    items["itom_compiler"].append(", 64-Bit");
+#else
+    items["itom_compiler"].append(", 32-Bit");
+#endif
+
+#if (defined _DEBUG)
+    items["itom_compiler"].append(", Debug");
+#else
+    items["itom_compiler"].append(", Release");
 #endif
      
     items["itom_compileDate"] = __DATE__;

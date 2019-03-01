@@ -28,6 +28,7 @@
 #include "../global.h"
 #include "../Qitom/AppManagement.h"
 #include "../helper/guiHelper.h"
+#include "../helper/sleeper.h"
 
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
@@ -45,6 +46,7 @@
 #include <qtextcodec.h>
 #include <qinputdialog.h>
 #include <qdatetime.h>
+#include <qcryptographichash.h>
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -297,8 +299,8 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, SLOT(menuCopy()), QKeySequence::Copy);
     m_editorMenuActions["paste"] = editorMenu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, SLOT(menuPaste()), QKeySequence::Paste);
     editorMenu->addSeparator();
-    m_editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, SLOT(menuIndent()));
-    m_editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, SLOT(menuUnindent()));
+    m_editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, SLOT(menuIndent()), QKeySequence(tr("Tab", "QShortcut")));
+    m_editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, SLOT(menuUnindent()), QKeySequence(tr("Shift+Tab", "QShortcut")));
     m_editorMenuActions["comment"] = editorMenu->addAction(QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, SLOT(menuComment()), QKeySequence(tr("Ctrl+R", "QShortcut")));
     m_editorMenuActions["uncomment"] = editorMenu->addAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, SLOT(menuUncomment()), QKeySequence(tr("Ctrl+Shift+R", "QShortcut")));
     editorMenu->addSeparator();
@@ -311,6 +313,7 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
+    //editorMenu->addAction("dump folds", this, SLOT(dumpFoldsToConsole(bool)));
 
     QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
     m_editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
@@ -1843,7 +1846,11 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     {
     case pyTransBeginRun:
     case pyTransBeginDebug:
-        if (!hasNoFilename()) setReadOnly(true);
+        if (!hasNoFilename())
+        {
+            setReadOnly(true);
+            //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
+        }
         pythonBusy = true;
         m_pythonExecutable = false;
         break;
@@ -1854,6 +1861,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransEndRun:
     case pyTransEndDebug:
         setReadOnly(false);
+        //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
         m_breakpointPanel->setCurrentLine(-1);
         pythonBusy = false;
         m_pythonExecutable = true;
@@ -1883,6 +1891,14 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
         {
             QFile file(path);
 
+			if (!file.exists())
+			{
+				//if git updates a file, the file is deleted and then the modified file is created.
+				//this will cause a 'delete' notification, however the 'modified' notification would be correct.
+				//try to sleep for a while and recheck the state of the file again...
+				ito::Sleeper::sleep(0.4);
+			}
+
             if (!file.exists()) //file deleted
             {
                 msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
@@ -1900,19 +1916,32 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
                 }
             }
             else //file changed
-            {
-                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-                msgBox.setInformativeText(tr("Do you want to reload it?"));
-                int ret = msgBox.exec();
+            {	
+				QCryptographicHash fileHash(QCryptographicHash::Sha1);
+				file.open(QIODevice::ReadOnly | QIODevice::Text);
+				fileHash.addData(file.readAll());
 
-                if (ret == QMessageBox::Yes)
-                {
-                    openFile(path, true);
-                }
-                else
-                {
-                    document()->setModified(true);
-                }
+				QCryptographicHash fileHash2(QCryptographicHash::Sha1);
+				fileHash2.addData(text().toLatin1());
+
+				//fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
+				
+				if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
+				{
+					msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
+					msgBox.setInformativeText(tr("Do you want to reload it?"));
+					int ret = msgBox.exec();
+
+					if (ret == QMessageBox::Yes)
+					{
+						openFile(path, true);
+					}
+					else
+					{
+						document()->setModified(true);
+					}
+				}
+                
             }
         }
 
@@ -2086,6 +2115,46 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     {
         return NULL;
     }
+}
+
+void ScriptEditorWidget::dumpFoldsToConsole(bool)
+{
+    int lvl;
+    bool trigger;
+    bool valid;
+
+    QTextBlock block = document()->firstBlock();
+
+    std::cout << "block foldings:\n" << std::endl;
+
+    while (block.isValid())
+    {
+        lvl = Utils::TextBlockHelper::getFoldLvl(block);
+        trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+        QTextBlock tb = FoldScope::findParentScope(block);
+
+        if (1 || trigger)
+        {
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << "Block " << block.blockNumber() + 1 << ": lvl " << lvl << ", trigger: " << trigger << 
+                " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
+        }
+
+        if (trigger)
+        {
+            FoldScope scope(block, valid);
+            QPair<int,int> range = scope.getRange();
+            
+
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << " --> [" << range.first+1 << 
+                "-" << range.second+1 << "] << ," << scope.scopeLevel() << ", " << scope.triggerLevel() << 
+                " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
+
+        }
+        
+        block = block.next();
+    }
+
+    
 }
 
 } // end namespace ito
