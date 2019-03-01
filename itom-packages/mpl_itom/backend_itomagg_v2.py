@@ -77,7 +77,7 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             h = h2- y0
             
             if DEBUG:
-                print("paint: %i,%i,%i,%i, blit=%s" % (x0,y0,w,h,str(blit)))
+                print("paint: %i,%i,%i,%i, blit=%s, fig: %i" % (x0,y0,w,h,str(blit), self.num))
             
             #<-- itom specific start
             reg = self.copy_from_bbox(bbox)

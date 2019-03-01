@@ -590,7 +590,6 @@ class FigureManagerItom( FigureManagerBase ):
         
         self.matplotlibplotUiItem["focusPolicy"] = 0x2 #QtCore.Qt.ClickFocus
         self.matplotlibplotUiItem.connect("destroyed()", self._widgetclosed)
-        self.matplotlibplotUiItem.connect("destroyed()", canvas.close_event)
         
         if(embeddedWidget == False and self.windowUi):
             self.windowUi["windowTitle"] = ("Figure %d" % num)

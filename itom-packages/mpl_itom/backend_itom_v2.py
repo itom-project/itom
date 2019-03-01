@@ -289,7 +289,7 @@ class FigureCanvasItom(FigureCanvasBase):
         # from within this function.
         if self._dpi_ratio != self._dpi_ratio_prev:
             if DEBUG:
-                print("update dpi ratio to %.2f" % self._dpi_ratio)
+                print("update dpi ratio to %.2f (fig %i)" % (self._dpi_ratio, self.num))
             # We need to update the figure DPI.
             self._update_figure_dpi()
             self._dpi_ratio_prev = self._dpi_ratio
@@ -347,7 +347,7 @@ class FigureCanvasItom(FigureCanvasBase):
         x, y = self.mouseEventCoords(x, y)
         button = self.buttond.get(button)
         if DEBUG:
-            print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x,y,button))
+            print("mouseEvent %s (%.2f,%.2f), button: %s (fig %i)" % (eventType, x,y,button, self.num))
         try:
             #button: left 1, middle 2, right 3
             if(eventType == 0): #mousePressEvent
@@ -397,7 +397,7 @@ class FigureCanvasItom(FigureCanvasBase):
             return
         
         if DEBUG:
-            print("resizeEvent: %i, %i, %i, last: %s" % (w, h, draw, str(self.lastResizeSize)))
+            print("resizeEvent: %i, %i, %i, last: %s (fig %i)" % (w, h, draw, str(self.lastResizeSize), self.num))
         
         # _dpi_ratio_prev will be set the first time the canvas is painted, and
         # the rendered buffer is useless before anyways.
@@ -556,6 +556,8 @@ class FigureCanvasItom(FigureCanvasBase):
         is not accessible any more, then the manager is closed as quick as possible, such that
         a new figure can be opened, if desired.
         '''
+        if (DEBUG):
+            print("signalDestroyedWidget: (fig %i)" % (self.num,))
         
         if(self._destroying == False):
             self._destroying = True
@@ -596,7 +598,6 @@ class FigureManagerItom( FigureManagerBase ):
         
         self.matplotlibplotUiItem["focusPolicy"] = 0x2 #QtCore.Qt.ClickFocus
         self.matplotlibplotUiItem.connect("destroyed()", self._widgetclosed)
-        self.matplotlibplotUiItem.connect("destroyed()", canvas.close_event)
         
         if(embeddedWidget == False and self.windowUi):
             self.windowUi["windowTitle"] = ("Figure %d" % num)
@@ -669,6 +670,10 @@ class FigureManagerItom( FigureManagerBase ):
 
     def _widgetclosed(self):
         if self.canvas._destroying: return
+        
+        if (DEBUG):
+            print("FigManager._widgetclosed: (fig %i)" % (self.canvas.num,))
+            
         self.canvas._destroying = True
         self.canvas.close_event()
         try:
