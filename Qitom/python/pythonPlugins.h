@@ -153,6 +153,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args);
        
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];

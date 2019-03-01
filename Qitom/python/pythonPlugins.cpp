@@ -4336,7 +4336,90 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
     
     return result; 
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyDataIOPlugin_info_doc, "info(verbose = 0) -> returns information about signal and slots.\n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only slots and signals from the plugin class are printed (default) \n\
+    1: all slots and signals from all inherited classes are printed\n\
+");
+PyObject* PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args)
+{
+    int showAll = 0;
 
+    if (!PyArg_ParseTuple(args, "|i", &showAll))
+    {
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
+        return NULL;
+    }
+    //QList<QByteArray> signalSignatureList, slotSignatureList;
+    QStringList signalSignatureList, slotSignatureList;
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    QMetaMethod metaFunc;
+    bool again = true;
+    int methodIdx;
+    while (again)
+    {
+        for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+        {
+            metaFunc = mo->method(methodIdx);
+            if (metaFunc.methodType() == QMetaMethod::Signal)
+            {
+                signalSignatureList.append(metaFunc.methodSignature());
+
+            }
+            if (metaFunc.methodType() == QMetaMethod::Slot)
+            {
+                slotSignatureList.append(metaFunc.methodSignature());
+            }
+
+        }
+        if (showAll == 1)
+        {
+            mo = mo->superClass();
+            if (mo)
+            {
+                again = true;
+                continue;
+            }
+        }
+        again = false;
+
+    }
+    signalSignatureList.sort();
+    slotSignatureList.sort();
+    if (signalSignatureList.length() || slotSignatureList.length())
+    {
+        //QByteArray val;
+        QString val;
+        QString previous;
+        std::cout << "Signals: \n";
+        foreach(val, signalSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+        std::cout << "\nSlots: \n";
+        foreach(val, slotSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+    }
+    Py_RETURN_NONE;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonPlugins::PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
@@ -4412,6 +4495,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
    {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
+   { "info",(PyCFunction)PythonPlugins::PyDataIOPlugin_info, METH_VARARGS,PyDataIOPlugin_info_doc },
    {NULL}  /* Sentinel */
 };
 
