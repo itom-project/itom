@@ -680,6 +680,7 @@ bool CodeCompletionMode::requestCompletion()
                 //debug('request sent: %r', data)
                 m_lastCursorColumn = col;
                 m_lastCursorLine = line;
+
                 m_requestId += 1;
 
                 if (m_requestId == INT_MAX)
@@ -724,12 +725,14 @@ Hides the completer popup
 */
 void CodeCompletionMode::hidePopup()
 {
+    m_lastCursorColumn = -1;
+    m_lastCursorLine = -1;
+
     if (m_pCompleter->popup() && \
             m_pCompleter->popup()->isVisible())
     {
         m_pCompleter->popup()->hide();
-        m_lastCursorColumn = -1;
-        m_lastCursorLine = -1;
+
         QToolTip::hideText();
     }
 }

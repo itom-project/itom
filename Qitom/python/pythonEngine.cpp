@@ -2308,10 +2308,6 @@ void PythonEngine::jediCompletionRequestEnqueued()
         }
     }
 
-#ifdef _DEBUG
-    qDebug() << "jediCompletionRequestEnqueued1";
-#endif
-
     QVector<ito::JediCompletion> completions;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
@@ -2325,19 +2321,11 @@ void PythonEngine::jediCompletionRequestEnqueued()
             //add from itom import * as first line (this is afterwards removed from results)
             result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
                 request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
-
-#ifdef _DEBUG
-            qDebug() << "jediCompletionRequestEnqueued2a";
-#endif
         }
         else
         {
             result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
                 request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
-
-#ifdef _DEBUG
-            qDebug() << "jediCompletionRequestEnqueued2b";
-#endif
         }
 
         if (result && PyList_Check(result))
@@ -2370,10 +2358,6 @@ void PythonEngine::jediCompletionRequestEnqueued()
                     std::cerr << "Error in completion: list of tuples required\n" << std::endl;
                 }
             }
-
-#ifdef _DEBUG
-            qDebug() << "jediCompletionRequestEnqueued3";
-#endif
             
             Py_DECREF(result);
         }
@@ -2394,31 +2378,16 @@ void PythonEngine::jediCompletionRequestEnqueued()
 
     PyGILState_Release(gstate);
 
-#ifdef _DEBUG
-    qDebug() << "jediCompletionRequestEnqueued5";
-#endif
-
     QObject *s = request.m_sender.data();
     if (s && request.m_callbackFctName != "")
     {
-#ifdef _DEBUG
-        qDebug() << "jediCompletionRequestEnqueued6: " << request.m_callbackFctName;
-#endif
-
         QMetaObject::invokeMethod(s, request.m_callbackFctName.constData(), Q_ARG(int, request.m_line), \
             Q_ARG(int, request.m_col), Q_ARG(int, request.m_requestId), Q_ARG(QVector<ito::JediCompletion>, completions));
         
     }
 
-#ifdef _DEBUG
-    qDebug() << "jediCompletionRequestEnqueued7";
-#endif
-
     if (!m_queuedJediCompletionRequests.isEmpty())
     {
-#ifdef _DEBUG
-        qDebug() << "jediCompletionRequestEnqueued8";
-#endif
         QMetaObject::invokeMethod(this, "jediCompletionRequestEnqueued");
     }
 }
