@@ -37,6 +37,7 @@
 #include <qsharedpointer.h>
 #include <qmessagebox.h>
 #include <qmetaobject.h>
+#include <qelapsedtimer.h>
 
 QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
 
@@ -342,12 +343,20 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
+    QElapsedTimer t;
+    t.start();
+
     QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, self->objectID), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while writing property");
         return -1;
+    }
+
+    if (t.elapsed() > 500)
+    {
+        int i = 1;
     }
 
     retValue += locker.getSemaphore()->returnValue;
@@ -999,12 +1008,20 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
+    QElapsedTimer t;
+    t.start();
+
     QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while writing property/properties");
         return NULL;
+    }
+
+    if (t.elapsed() > 500)
+    {
+        int i = 1;
     }
 
     retValue += locker.getSemaphore()->returnValue;

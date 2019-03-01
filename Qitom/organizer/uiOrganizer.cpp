@@ -2317,6 +2317,17 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
                 m->m_object = NULL;
             }
         }
+        else if (args->getRetType() == QMetaType::type("QWidget*"))
+        {
+            QWidget *w = *((QWidget**)args->args()[0]);
+            ito::PythonQObjectMarshal m;
+            m.m_className = w->metaObject()->className();
+            m.m_object = NULL;
+            m.m_objectID = addObjectToList(w);
+            m.m_objName = w->objectName().toLatin1();
+            args->initRetArg(QMetaType::type("ito::PythonQObjectMarshal"));
+            *((ito::PythonQObjectMarshal*)args->args()[0]) = m;
+        }
     }
     else
     {

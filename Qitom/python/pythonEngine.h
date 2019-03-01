@@ -189,6 +189,7 @@ private:
     ito::RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
     ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
     ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
+    ito::RetVal submitAllBreakpointsToDebugger();
 
     ito::RetVal autoReloaderCheck();
 

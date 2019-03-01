@@ -1,7 +1,4 @@
 import numpy as np
-import matplotlib
-matplotlib.use('module://mpl_itom.backend_itomagg',False)
-
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 

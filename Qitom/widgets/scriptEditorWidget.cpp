@@ -757,6 +757,7 @@ void ScriptEditorWidget::menuInsertCodec()
         if (items.size() > 0)
         {
             setText(QString("# coding=%1\n%2").arg(items[0]).arg(text()));
+            setModified(true);
         }
     }
 }
