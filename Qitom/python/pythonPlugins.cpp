@@ -35,6 +35,7 @@
 #include <qlist.h>
 #include <qmap.h>
 #include <qobject.h>
+#include "pythonQtSignalMapper.h"
 
 #include <qsharedpointer.h>
 #include "../helper/sharedPointerHelper.h"
@@ -1246,7 +1247,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             PythonCommon::transformRetValToPyException(retval);
         }
     }
-
+    DELETE_AND_SET_NULL(self->signalMapper);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -1267,6 +1268,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
       self->actuatorObj = NULL;
       self->base = NULL;
       self->weakreflist = NULL;
+      self->signalMapper = new PythonQtSignalMapper();
    }
 
    return (PyObject *)self;
@@ -1811,7 +1813,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus() -> returns a list of status values for each axis\n\
+PyDoc_STRVAR(pyActuatorGetStatus_doc, "getStatus([axis = -1]) -> returns a list of status values for each axis or the status value for a specific axis\n\
 \n\
 Each axis of an actuator plugin has got a status value that is used for informing about the current status of the axis. \n\
 \n\
@@ -1844,6 +1846,12 @@ Status flags: \n\
 * actuatorEnabled   = 0x8000 : the axis is currently enabled and can be moved \n\
 * actuatorError = 0x10000 : axis has encountered error/reports error\n\
 \n\
+Parameters \n\
+----------- \n\
+axis : {int}, optional\n\
+    index of desired axis. If given, the returned status value is a single value. \n\
+    If not given (default), the status of all axes is requested and returned as list. \n\
+\n\
 Returns \n\
 ------- \n\
 status : {list of integers} \n\
@@ -1862,49 +1870,86 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     ito::RetVal ret = ito::retOk;
     int length = PyTuple_Size(args);
 
-    QSharedPointer<QVector<int> > status(new QVector<int>());
-
+    int axis = -1;
     PyObject *result = NULL;
 
-    if (length != 0)
+    if (!PyArg_ParseTuple(args, "|i", &axis))
     {
-        PyErr_SetString(PyExc_ValueError, "too many parameters");
         return NULL;
     }
-
-    if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    
+    if (axis == -1)
     {
-        bool timeout = false;
-        while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+        QSharedPointer<QVector<int> > status(new QVector<int>());
+
+        if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(QSharedPointer<QVector<int> >, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
-            if (!self->actuatorObj->isAlive())
+            bool timeout = false;
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
-                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting Status").toLatin1().data());
-                timeout = true;
-                break;
+                if (!self->actuatorObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting status").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
+            }
+
+            if (!timeout)
+            {
+                ret += locker.getSemaphore()->returnValue;
             }
         }
-
-        if (!timeout)
+        else
         {
-            ret += locker.getSemaphore()->returnValue;
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+        }
+
+        if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
+        {
+            return NULL;
+        }
+
+        int size = status->size();
+        result = PyList_New(size); //new ref
+        for (int i = 0; i < size; ++i)
+        {
+            PyList_SetItem(result, i, PyLong_FromLong((*status)[i]));
         }
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
-    }
+        QSharedPointer<int> status(new int);
 
-    if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
-    {
-        return NULL;
-    }
+        if (QMetaObject::invokeMethod(self->actuatorObj, "getStatus", Q_ARG(int, axis), Q_ARG(QSharedPointer<int>, status), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        {
+            bool timeout = false;
+            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                if (!self->actuatorObj->isAlive())
+                {
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while getting status").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
+            }
 
-    int size = status->size();
-    result = PyList_New(size); //new ref
-    for (int i = 0; i < size; ++i)
-    {
-        PyList_SetItem(result,i, PyLong_FromLong((*status)[i]));
+            if (!timeout)
+            {
+                ret += locker.getSemaphore()->returnValue;
+            }
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+        }
+
+        if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
+        {
+            return NULL;
+        }
+
+        result = PyLong_FromLong(*status);
     }
 
     return result;
@@ -2139,6 +2184,233 @@ PyObject* PythonPlugins::PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self)
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod) -> connects the signal of the actuator with the given callable python method \n\
+\n\
+This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
+Every Actuator can send various signals. Use this method to connect any signal to any \n\
+callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'reachedTarget(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function that is called if the signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+disconnect");
+PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args)
+{
+    const char* signalSignature;
+    PyObject *callableMethod;
+    int signalIndex;
+    int tempType;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    QList<QByteArray> names = metaMethod.parameterTypes();
+    foreach(const QByteArray& name, names)
+    {
+        tempType = QMetaType::type(name.constData());
+        if (tempType > 0)
+        {
+            argTypes.append(tempType);
+        }
+        else
+        {
+            QString msg = QString("parameter type %1 is unknown").arg(name.constData());
+            PyErr_SetString(PyExc_RuntimeError, msg.toLatin1().data());
+            signalIndex = -1;
+            return NULL;
+        }
+    }
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorDisconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+connect \n\
+");
+PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args)
+{
+    int signalIndex, tempType;
+    const char* signalSignature;
+    PyObject *callableMethod;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->removeSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorInfo_doc, "info(verbose = 0) -> returns information about signal and slots.\n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only slots and signals from the plugin class are printed (default) \n\
+    1: all slots and signals from all inherited classes are printed\n\
+");
+PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject* args)
+{
+    int showAll = 0;
+
+    if (!PyArg_ParseTuple(args, "|i", &showAll))
+    {
+        return NULL;
+    }
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+    //QList<QByteArray> signalSignatureList, slotSignatureList;
+    QStringList signalSignatureList, slotSignatureList;
+    const QMetaObject *mo = self->actuatorObj->metaObject();
+    QMetaMethod metaFunc;
+    bool again = true;
+    int methodIdx;
+    if (showAll == 0 || showAll == 1)
+    {
+        while (again)
+        {
+            for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+            {
+                metaFunc = mo->method(methodIdx);
+                if (metaFunc.methodType() == QMetaMethod::Signal)
+                {
+                    signalSignatureList.append(metaFunc.methodSignature());
+
+                }
+                if (metaFunc.methodType() == QMetaMethod::Slot)
+                {
+                    slotSignatureList.append(metaFunc.methodSignature());
+                }
+
+            }
+            if (showAll == 1)
+            {
+                mo = mo->superClass();
+                if (mo)
+                {
+                    again = true;
+                    continue;
+                }
+            }
+            again = false;
+
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid verbose level. Use level 0 to display all signals and slots defined by the plugin itself. Level 1 also displays all inherited signals and slots");
+        return NULL;
+    }
+    signalSignatureList.sort();
+    slotSignatureList.sort();
+    if (signalSignatureList.length() || slotSignatureList.length())
+    {
+        //QByteArray val;
+        QString val;
+        QString previous;
+        std::cout << "Signals: \n";
+        foreach(val, signalSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+        std::cout << "\nSlots: \n";
+        foreach(val, slotSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+    }
+    Py_RETURN_NONE;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 /** returns the list of available parameters
 *   @param [in] self    the actuator object (python)
@@ -2438,6 +2710,9 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc},
+   {"info",(PyCFunction)PythonPlugins::PyActuatorPlugin_info, METH_VARARGS, pyActuatorInfo_doc},
    {NULL}  /* Sentinel */
 };
 
@@ -2546,7 +2821,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             }*/
         }
     }
-
+    DELETE_AND_SET_NULL(self->signalMapper);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -2567,6 +2842,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
         self->dataIOObj = NULL;
         self->base = NULL;
         self->weakreflist = NULL;
+        self->signalMapper = new PythonQtSignalMapper();
     }
 
     return (PyObject *)self;
@@ -3983,8 +4259,140 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
 
     return Py_BuildValue("i", *interval);
 }
+PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod)->connects the signal of the actuator with the given callable python method \n\
+\n\
+This instance of *dataIO* wraps a dataIO device (ADDA, grabber or rawIO), that is defined by a C++ - class, that is finally derived from *QObject*. \n\
+Every dataIO can send various signals. Use this method to connect any signal to any \n\
+callable python method(bounded or unbounded).This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+Parameters \n\
+---------- - \n\
+signalSignature : {str} \n\
+This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
+callableMethod : {python method or function} \n\
+valid method or function that is called if the signal is emitted. \n\
+\n\
+See Also \n\
+-------- - \n\
+disconnect\n\
+");
+PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args)
+{
+    const char* signalSignature;
+    PyObject *callableMethod;
+    int signalIndex;
+    int tempType;
+    IntList argTypes;
 
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
+        return NULL;
+    }
 
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    QList<QByteArray> names = metaMethod.parameterTypes();
+    foreach(const QByteArray& name, names)
+    {
+        tempType = QMetaType::type(name.constData());
+        if (tempType > 0)
+        {
+            argTypes.append(tempType);
+        }
+        else
+        {
+            QString msg = QString("parameter type %1 is unknown").arg(name.constData());
+            PyErr_SetString(PyExc_RuntimeError, msg.toLatin1().data());
+            signalIndex = -1;
+            return NULL;
+        }
+    }
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established. Maybe a wrong sifnature is used");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+PyDoc_STRVAR(PyDataIOPlugin_disconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+callableMethod : {python method or function} \n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+connect \n\
+");
+PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args)
+{
+    int signalIndex, tempType;
+    const char* signalSignature;
+    PyObject *callableMethod;
+    IntList argTypes;
+
+    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->removeSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this plugin could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getType_doc, "getType() -> returns dataIO type");
 /** returns the type of the dataIO object
@@ -4017,7 +4425,98 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
     
     return result; 
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyDataIOPlugin_info_doc, "info(verbose = 0) -> returns information about signal and slots.\n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only slots and signals from the plugin class are printed (default) \n\
+    1: all slots and signals from all inherited classes are printed\n\
+");
+PyObject* PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args)
+{
+    int showAll = 0;
 
+    if (!PyArg_ParseTuple(args, "|i", &showAll))
+    {
+        return NULL;
+    }
+    if (!self->dataIOObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
+        return NULL;
+    }
+    //QList<QByteArray> signalSignatureList, slotSignatureList;
+    QStringList signalSignatureList, slotSignatureList;
+    const QMetaObject *mo = self->dataIOObj->metaObject();
+    QMetaMethod metaFunc;
+    bool again = true;
+    int methodIdx;
+    if (showAll == 0 || showAll == 1)
+    {
+        while (again)
+        {
+            for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+            {
+                metaFunc = mo->method(methodIdx);
+                if (metaFunc.methodType() == QMetaMethod::Signal)
+                {
+                    signalSignatureList.append(metaFunc.methodSignature());
+
+                }
+                if (metaFunc.methodType() == QMetaMethod::Slot)
+                {
+                    slotSignatureList.append(metaFunc.methodSignature());
+                }
+
+            }
+            if (showAll == 1)
+            {
+                mo = mo->superClass();
+                if (mo)
+                {
+                    again = true;
+                    continue;
+                }
+            }
+            again = false;
+
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid verbose level. Use level 0 to display all signals and slots defined by the plugin itself. Level 1 also displays all inherited signals and slots");
+        return NULL;
+    }
+    signalSignatureList.sort();
+    slotSignatureList.sort();
+    if (signalSignatureList.length() || slotSignatureList.length())
+    {
+        //QByteArray val;
+        QString val;
+        QString previous;
+        std::cout << "Signals: \n";
+        foreach(val, signalSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+        std::cout << "\nSlots: \n";
+        foreach(val, slotSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+    }
+    Py_RETURN_NONE;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonPlugins::PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
@@ -4092,6 +4591,9 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
+   { "info",(PyCFunction)PythonPlugins::PyDataIOPlugin_info, METH_VARARGS,PyDataIOPlugin_info_doc },
    {NULL}  /* Sentinel */
 };
 

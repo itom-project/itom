@@ -292,7 +292,7 @@ UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retValue = ito::retOk;
     ito::AddInAlgo::t_algoWidget func = reinterpret_cast<ito::AddInAlgo::t_algoWidget>(algoWidgetFunc);
@@ -336,7 +336,7 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, co
 
         uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
 
-        retValue += addWidgetToOrganizer(widget, uiDescription, dialogButtons, dialogHandle, initSlotCount, objectID, className);
+        retValue += addWidgetToOrganizer(widget, uiDescription, dialogButtons, dialogHandle, objectID, className);
 
         if (retValue.containsError())
         {
@@ -355,7 +355,7 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, co
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className)
+RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className)
 {
     ito::RetVal retValue;
 
@@ -395,7 +395,6 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                 containerItem.container = set;
                 m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = widget->metaObject()->methodOffset();
                 *objectID = addObjectToList(widget);
                 *className = widget->metaObject()->className();
             }
@@ -430,7 +429,6 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                     *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                     containerItem.container = set;
                     m_dialogList[*dialogHandle] = containerItem;
-                    *initSlotCount = dialog->metaObject()->methodOffset();
                     *objectID = addObjectToList(dialog);
                     *className = dialog->metaObject()->className();
                 }
@@ -459,7 +457,6 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                 containerItem.container = set;
                 m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = win->metaObject()->methodOffset();
                 *objectID = addObjectToList(win);
                 *className = win->metaObject()->className();
             }
@@ -476,7 +473,6 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                 containerItem.container = set;
                 m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = widget->metaObject()->methodOffset();
                 *objectID = addObjectToList(widget);
                 *className = widget->metaObject()->className();
             }
@@ -525,7 +521,6 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                     *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                     containerItem.container = set;
                     m_dialogList[*dialogHandle] = containerItem;
-                    *initSlotCount = widget->metaObject()->methodOffset();
                     *objectID = addObjectToList(widget);
                     *className = widget->metaObject()->className();
                 }
@@ -608,7 +603,7 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
     
@@ -630,7 +625,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             *row = 1;
             QSharedPointer<int> col(new int);
             *col = 1;
-            retValue += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
+            retValue += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
             if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
             {
                 *dialogHandle = *(*guardedFigHandle);
@@ -733,7 +728,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
         if (!retValue.containsError())
         {
-            retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, initSlotCount, objectID, className);
+            retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, objectID, className);
         }   
     }
 
@@ -3305,13 +3300,12 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, ito::UiDataC
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>());
-        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> figObjectID(new unsigned int);
         QSharedPointer<int> row(new int);
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
+        retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3397,13 +3391,12 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>());
-        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> figObjectID(new unsigned int);
         QSharedPointer<int> row(new int);
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
+        retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3461,13 +3454,12 @@ RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle,
     {
         //create new figure and gives it its own reference, since no instance is keeping track of it
         QSharedPointer< QSharedPointer<unsigned int> > guardedFigHandle(new QSharedPointer<unsigned int>());
-        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> figObjectID(new unsigned int);
         QSharedPointer<int> row(new int);
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
+        retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3515,7 +3507,7 @@ RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset /*= QPoint()*/, QSize size /*= QSize()*/, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset /*= QPoint()*/, QSize size /*= QSize()*/, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
     unsigned int h;
@@ -3525,7 +3517,6 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     unsigned int forcedHandle = 0;
     bool found = false;
 
-    *initSlotCount = 0;
     *objectID = 0;
 
     //you can pass a figure handle by guardedFigureHandle.
@@ -3555,7 +3546,6 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                     *rows = fig->rows();
                     *cols = fig->cols();
                     *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
-                    *initSlotCount = fig->metaObject()->methodOffset(); //number of methods (slots, signals...) this widget including its parent widgets define.
                     *objectID = addObjectToList(const_cast<FigureWidget*>(fig));
                     found = true;
                 }
@@ -3624,7 +3614,6 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         set = new UiContainer(fig2);
         
         *guardedFigureHandle = QSharedPointer<unsigned int>(handle); //, threadSafeDeleteUi);
-        *initSlotCount = fig2->metaObject()->methodOffset();
         *objectID = addObjectToList(fig2);
         containerItem.container = set;
         containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();

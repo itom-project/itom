@@ -1923,13 +1923,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-
-    //initSlotCount contains the number of slots, signals and methods that the widget including all its parent widgets contain.
-    //this value can be handled as a kind of offset for signal or slot indices that will maybe be added by any connection, made at runtime,
-    //between signals and python slots (python methods or functions)
-    QSharedPointer<unsigned int> initSlotCount(new unsigned int); 
     *dialogHandle = 0;
-    *initSlotCount = 0;
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     StringMap dialogButtonMap;
     ito::RetVal retValue;
@@ -1960,7 +1954,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose, dockWidgetArea);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
-    QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle),Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
 
     if(!locker.getSemaphore()->wait(60000))
@@ -1974,7 +1968,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 
     self->uiHandle = static_cast<int>(*dialogHandle);
     DELETE_AND_SET_NULL( self->signalMapper );
-    self->signalMapper = new PythonQtSignalMapper(*initSlotCount); //creates a signal mapper for this ui object (including all its child widgets) that is able to act as destination for all virtual python slot methods, that should be connected to any real signals of the widget
+    self->signalMapper = new PythonQtSignalMapper();
 
     PyObject *args2 = PyTuple_New(3);
     PyTuple_SetItem(args2,0,PyLong_FromLong(*objectID) );
@@ -3430,13 +3424,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
 
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-    QSharedPointer<unsigned int> initSlotCount(new unsigned int);
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QSharedPointer<QByteArray> className(new QByteArray());
     *dialogHandle = 0;
-    *initSlotCount = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtons), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtons), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3471,7 +3463,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     }
 
     dialog->uiHandle = static_cast<int>(*dialogHandle);
-    dialog->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+    dialog->signalMapper = new PythonQtSignalMapper();
     dialog->uiItem.methodList = NULL;
     dialog->uiItem.objectID = *objectID;
     dialog->uiItem.widgetClassName = new char[className->size()+1];
@@ -3631,13 +3623,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     ito::RetVal retValue = retOk;
 
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-    QSharedPointer<unsigned int> initSlotCount(new unsigned int);
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QSharedPointer<QByteArray> className(new QByteArray());
     *dialogHandle = 0;
-    *initSlotCount = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(-1))
     {
@@ -3672,7 +3662,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     }
 
     dialog->uiHandle = static_cast<int>(*dialogHandle);
-    dialog->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+    dialog->signalMapper = new PythonQtSignalMapper();
     dialog->uiItem.methodList = NULL;
     dialog->uiItem.objectID = *objectID;
     dialog->uiItem.widgetClassName = new char[className->size() + 1];

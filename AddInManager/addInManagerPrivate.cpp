@@ -924,6 +924,9 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         if (*addIn)
         {
             m_plugInModel->insertInstance(aib, false); //end insert
+
+
+            
         }
     }
 

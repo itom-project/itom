@@ -62,7 +62,10 @@ namespace ito
     \todo: probably, m_slotCount can also be set to methodOffset() of the QObject base class of PythonQtSignalMapper and should not be given as argument.
            it should not be offset of the object, that emits the signal but of this object, that has the virtual slot!
 */
-PythonQtSignalMapper::PythonQtSignalMapper(unsigned int initSlotCount) : m_slotCount(initSlotCount) {}
+    PythonQtSignalMapper::PythonQtSignalMapper()
+    { 
+        m_slotCount = this->metaObject()->methodOffset();
+    }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor

@@ -851,13 +851,11 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
             
         UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
         QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<int> retCodeIfModal(new int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
         QSharedPointer<QByteArray> className(new QByteArray());
         *objectID = 0;
         *dialogHandle = 0;
-        *initSlotCount = 0;
 
         int winType = 0xff;
         bool deleteOnClose = false;
@@ -869,7 +867,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
 
         if (uiOrganizer)
         {
-            retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), uiDescription, dialogButtons, &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
+            retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), uiDescription, dialogButtons, &paramsMandBase, &paramsOptBase, dialogHandle, objectID, className, NULL);
             if (!retValue.containsError())
             {
                 if (*dialogHandle > 0)

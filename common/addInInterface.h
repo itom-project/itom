@@ -881,6 +881,8 @@ namespace ito
         virtual ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL) = 0;
         //! retrieve the status of the actuator
         virtual ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond) = 0;
+        //! retrieve the status of one axis of the actuator. By default, this method uses the general implementation of getStatus and returns the requested axis only.
+        virtual ito::RetVal getStatus(const int axis, QSharedPointer<int> status, ItomSharedSemaphore *waitCond);
         //! read the position of one axis
         virtual ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond) = 0;
         //! read the position of a number of axis. The axis' numbers are given in the axis vector

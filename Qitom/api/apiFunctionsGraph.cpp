@@ -413,15 +413,13 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
         QSharedPointer<int> modalRet(new int);
         QSharedPointer<QByteArray> className(new QByteArray());
         *dialogHandle = 0;
-        *initSlotCount = 0;
         *objectID = 0;
         UiContainer *widgetContainer = NULL;
-        QMetaObject::invokeMethod(uiOrg, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<char*>(algoWidgetFunc)), Q_ARG(int, uiOrg->createUiDescription(0, 0, 0, 1, 4)), Q_ARG(const StringMap, StringMap()), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(QSharedPointer<unsigned int>, dialogHandle), Q_ARG(QSharedPointer<unsigned int>, initSlotCount), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrg, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<char*>(algoWidgetFunc)), Q_ARG(int, uiOrg->createUiDescription(0, 0, 0, 1, 4)), Q_ARG(const StringMap, StringMap()), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(QSharedPointer<unsigned int>, dialogHandle), Q_ARG(QSharedPointer<unsigned int>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginInitClose))
         {

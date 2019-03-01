@@ -224,7 +224,7 @@ class PythonQtSignalMapper : public PythonQtSignalMapperBase
 {
 
 public:
-    PythonQtSignalMapper(unsigned int initSlotCount);
+    PythonQtSignalMapper(); 
     ~PythonQtSignalMapper();
 
     bool addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList);
