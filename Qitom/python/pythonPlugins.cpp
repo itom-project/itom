@@ -2281,33 +2281,41 @@ PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject*
     QMetaMethod metaFunc;
     bool again = true;
     int methodIdx;
-    while (again)
+    if (showAll == 0 || showAll == 1)
     {
-        for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+        while (again)
         {
-            metaFunc = mo->method(methodIdx);
-            if (metaFunc.methodType() == QMetaMethod::Signal)
+            for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
             {
-                signalSignatureList.append(metaFunc.methodSignature());
+                metaFunc = mo->method(methodIdx);
+                if (metaFunc.methodType() == QMetaMethod::Signal)
+                {
+                    signalSignatureList.append(metaFunc.methodSignature());
+
+                }
+                if (metaFunc.methodType() == QMetaMethod::Slot)
+                {
+                    slotSignatureList.append(metaFunc.methodSignature());
+                }
 
             }
-            if (metaFunc.methodType() == QMetaMethod::Slot)
+            if (showAll == 1)
             {
-                slotSignatureList.append(metaFunc.methodSignature());
+                mo = mo->superClass();
+                if (mo)
+                {
+                    again = true;
+                    continue;
+                }
             }
+            again = false;
 
         }
-        if (showAll == 1)
-        {
-            mo = mo->superClass();
-            if (mo)
-            {
-                again = true;
-                continue;
-            }
-        }
-        again = false;
-
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid verbose level. Use level 0 to display all signals and slots defined by the plugin itself. Level 1 also displays all inherited signals and slots");
+        return NULL;
     }
     signalSignatureList.sort();
     slotSignatureList.sort();
@@ -4364,33 +4372,41 @@ PyObject* PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* arg
     QMetaMethod metaFunc;
     bool again = true;
     int methodIdx;
-    while (again)
+    if (showAll == 0 || showAll == 1)
     {
-        for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+        while (again)
         {
-            metaFunc = mo->method(methodIdx);
-            if (metaFunc.methodType() == QMetaMethod::Signal)
+            for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
             {
-                signalSignatureList.append(metaFunc.methodSignature());
+                metaFunc = mo->method(methodIdx);
+                if (metaFunc.methodType() == QMetaMethod::Signal)
+                {
+                    signalSignatureList.append(metaFunc.methodSignature());
+
+                }
+                if (metaFunc.methodType() == QMetaMethod::Slot)
+                {
+                    slotSignatureList.append(metaFunc.methodSignature());
+                }
 
             }
-            if (metaFunc.methodType() == QMetaMethod::Slot)
+            if (showAll == 1)
             {
-                slotSignatureList.append(metaFunc.methodSignature());
+                mo = mo->superClass();
+                if (mo)
+                {
+                    again = true;
+                    continue;
+                }
             }
+            again = false;
 
         }
-        if (showAll == 1)
-        {
-            mo = mo->superClass();
-            if (mo)
-            {
-                again = true;
-                continue;
-            }
-        }
-        again = false;
-
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid verbose level. Use level 0 to display all signals and slots defined by the plugin itself. Level 1 also displays all inherited signals and slots");
+        return NULL;
     }
     signalSignatureList.sort();
     slotSignatureList.sort();
