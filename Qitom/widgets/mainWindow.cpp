@@ -1295,62 +1295,38 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuCloseAllPlots()
 {
-    ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
         return;
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    QMetaObject::invokeMethod(uiOrga, "closeAllFloatableFigures", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
-    if (!locker.getSemaphore()->wait(-1))
-    {
-        retval += ito::RetVal(ito::retError,0, tr("timeout while closing figures").toLatin1().data());
-        return;
-    }
-
-    retval = locker.getSemaphore()->returnValue;
-    return;
-
+    QMetaObject::invokeMethod(uiOrga, "closeAllFloatableFigures", Q_ARG(ItomSharedSemaphore*, NULL)); 
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAllPlots()
 {
-    ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
-
+        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
+        return;
     }
-    if (!retval.containsError())
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, 0),Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-    }
-    return;
+    
+    QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, 0), Q_ARG(ItomSharedSemaphore*, NULL));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuMinimizeAllPlots()
 {
-    ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
-
+        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
+        return;
     }
-    if (!retval.containsError())
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureMinimizeAll", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-    }
-    return;
+    QMetaObject::invokeMethod(uiOrga, "figureMinimizeAll", Q_ARG(ItomSharedSemaphore*, NULL));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowScriptReference()

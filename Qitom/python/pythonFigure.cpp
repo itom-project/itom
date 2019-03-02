@@ -1369,7 +1369,7 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
 
     QMetaObject::invokeMethod(uiOrga, "figureClose", Q_ARG(uint, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
-    if (!locker.getSemaphore()->wait(-1))
+    if (!locker.getSemaphore()->waitAndProcessEvents(-1))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while closing figures");
         return NULL;
