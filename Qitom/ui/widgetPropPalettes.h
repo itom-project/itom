@@ -41,14 +41,20 @@ class ColCurve : public QObject, public QGraphicsPathItem
 
     public:
         ColCurve(WidgetPropPalettes *parentWidget, int colChannel, QObject *parent = NULL) 
-            : QObject(parent), QGraphicsPathItem(), m_parentWidget(parentWidget), m_colChannel(colChannel) 
+            : QObject(parent), QGraphicsPathItem(), 
+            m_parentWidget(parentWidget), m_colChannel(colChannel),
+            m_editable(true)
         { }
         int getColChannel() { return m_colChannel; }
+
+        void setEditable(bool editable) { m_editable = editable; }
+        bool editable() const { return m_editable; }
 
     private:
         int m_colChannel;
         WidgetPropPalettes *m_parentWidget;
         QPointF m_insertPos;
+        bool m_editable;
 
     protected slots:
         void mousePressEvent(QGraphicsSceneMouseEvent*);

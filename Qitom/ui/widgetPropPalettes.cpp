@@ -41,6 +41,14 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 void ColCurve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (!m_editable)
+    {
+        event->ignore();
+        return;
+    }
+
+    event->accept();
+
     if (m_parentWidget)
     {
         int selectedColorStop = m_parentWidget->getSelectedColorStop();
@@ -173,6 +181,14 @@ void ColCurve::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ColCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
+    if (!m_editable)
+    {
+        event->ignore();
+        return;
+    }
+
+    event->accept();
+
     QMenu contextMenu(tr("Context menu"), m_parentWidget);
     QAction *action;
 
@@ -348,13 +364,15 @@ void WidgetPropPalettes::drawPalCurves(int selPt, int sx0, int sy0, int sdx, int
     
     QList<QGraphicsItem*> items = sceneCurves->items();
     ColCurve *curveR, *curveG, *curveB;
+    bool editable = (m_curPaletteIndex >= 0) && !m_currentPalette.isWriteProtected();
+
     if (items.size() < 3)
     {
         sceneCurves->clear();
         curveR = new ColCurve(this, 0, ui.gvPalCurves);
         curveG = new ColCurve(this, 1, ui.gvPalCurves);
         curveB = new ColCurve(this, 2, ui.gvPalCurves);
-
+        
         QPen rPen(Qt::red, 2);
         QPen gPen(Qt::green, 2);
         QPen bPen(Qt::blue, 2);
@@ -430,6 +448,9 @@ void WidgetPropPalettes::drawPalCurves(int selPt, int sx0, int sy0, int sdx, int
     curveR->setPath(pathR);
     curveG->setPath(pathG);
     curveB->setPath(pathB);
+    curveR->setEditable(editable);
+    curveB->setEditable(editable);
+    curveG->setEditable(editable);
 
     if (selPt >= 0 && selPt < curPalData.size())
     {
@@ -544,6 +565,27 @@ void WidgetPropPalettes::on_lePalName_textChanged(const QString & text)
     }
 }
 
+void setInvColor(const QColor &color, ColorPickerButton *btn, QLabel *lbl, QLabel *ico)
+{
+    btn->setColor(color);
+
+    QString text = QString("#%1%2%3").arg(color.red(), 2, 16, QLatin1Char('0')) \
+        .arg(color.green(), 2, 16, QLatin1Char('0')).arg(color.blue(), 2, 16, QLatin1Char('0'));
+    lbl->setText(text);
+
+    int _iconSize = ico->style()->pixelMetric(QStyle::PM_SmallIconSize);
+    QPixmap pix(_iconSize, _iconSize);
+    pix.fill(color.isValid() ?
+        ico->palette().button().color() : Qt::transparent);
+    QPainter p(&pix);
+    p.setPen(QPen(Qt::gray));
+    p.setBrush(color.isValid() ?
+        color : QBrush(Qt::NoBrush));
+    p.drawRect(2, 2, pix.width() - 5, pix.height() - 5);
+
+    ico->setPixmap(pix);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPalettes::lwCurrentRowChanged(int row)
 {
@@ -577,9 +619,11 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     m_selectedColorStop = -1;
 
     m_currentPalette = m_palettes[m_curPaletteIndex];
-    ui.btnInvColor1->setColor(m_currentPalette.getInverseColorOne());
-    ui.btnInvColor2->setColor(m_currentPalette.getInverseColorTwo());
-    ui.btnInvColor->setColor(m_currentPalette.getInvalidColor());
+
+    setInvColor(m_currentPalette.getInverseColorOne(), ui.btnInvColor1, ui.lblInvColor1, ui.icoInvColor1);
+    setInvColor(m_currentPalette.getInverseColorTwo(), ui.btnInvColor2, ui.lblInvColor2, ui.icoInvColor2);
+    setInvColor(m_currentPalette.getInvalidColor(), ui.btnInvColor, ui.lblInvColor, ui.icoInvColor);
+
     ui.lePalName->setText(m_currentPalette.getName());
 
     ui.pbDuplicate->setEnabled(row >= 0);
@@ -588,14 +632,19 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
     ui.pbRemove->setEnabled(editable);
     ui.pbExportPalette->setEnabled(row >= 0);
     ui.groupColorStops->setEnabled(editable);
-    ui.btnInvColor1->setEnabled(editable);
-    ui.btnInvColor2->setEnabled(editable);
-    ui.btnInvColor->setEnabled(editable);
     ui.sbR->setEnabled(editable);
     ui.sbG->setEnabled(editable);
     ui.sbB->setEnabled(editable);
+    ui.btnInvColor->setVisible(editable);
+    ui.btnInvColor1->setVisible(editable);
+    ui.btnInvColor2->setVisible(editable);
+    ui.icoInvColor1->setVisible(!editable);
+    ui.lblInvColor1->setVisible(!editable);
+    ui.icoInvColor2->setVisible(!editable);
+    ui.lblInvColor2->setVisible(!editable);
+    ui.icoInvColor->setVisible(!editable);
+    ui.lblInvColor->setVisible(!editable);
     ui.sbIndex->setEnabled(editable);
-    ui.gvPalCurves->setEnabled(editable);
     ui.pbPalSave->setEnabled(editable && m_isDirty);
     ui.lePalName->setReadOnly(!editable);
 
