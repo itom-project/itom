@@ -2333,7 +2333,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 {
     if (!value)
     {
-        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%1 missing", paramName).toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s missing").toLatin1().constData(), paramName);
         return QPointF();
     }
 
@@ -2387,7 +2387,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
     if (!ok)
     {
-        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%1: float64 array with two elements required (x,y)").toLatin1().data(), paramName);
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s: float64 array with two elements required (x,y)").toLatin1().constData(), paramName);
     }
 
     return point;
