@@ -79,7 +79,7 @@ public:
     int m_index; /*!< index of shape, -1: no specific index*/
     QString m_name; /*!< name (label) of shape */
     ito::float64 m_userData[2]; /*!< two user defined value for further meta information */
-    bool m_unclosed; /*!< true if this shape is currently created and hence unclosed, e.g. an open polygon which is closed after the final corner point */
+    bool m_unclosed; /*!< true if this shape is currently created and hence unclosed, e.g. an open polygon which is closed after the final corner point (default: true) */
 	QColor m_color; /*!< color of shape, if the color is invalid (default), the standard shape color of plots is used for visualization */
 };
 
@@ -87,6 +87,10 @@ public:
 Shape::Shape() : d(NULL)
 {
     d = new ShapePrivate();
+    d->m_type = Shape::Invalid;
+    d->m_index = -1;
+    d->m_name = "";
+    memset(d->m_userData, 0, sizeof(d->m_userData));
 }
 
 //----------------------------------------------------------------------------------------------
@@ -98,6 +102,8 @@ Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints,
     d->m_transform = transform;
     d->m_index = -1; //no specific index
     d->m_name = "";
+    memset(d->m_userData, 0, sizeof(d->m_userData));
+    d->m_unclosed = true;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -109,6 +115,8 @@ Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints,
     d->m_transform = transform;
     d->m_index = index;
     d->m_name = "";
+    memset(d->m_userData, 0, sizeof(d->m_userData));
+    d->m_unclosed = true;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -120,6 +128,8 @@ Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints,
     d->m_transform = transform;
     d->m_index = index;
     d->m_name = name;
+    memset(d->m_userData, 0, sizeof(d->m_userData));
+    d->m_unclosed = true;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -131,6 +141,8 @@ Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints,
     d->m_transform = transform;
     d->m_index = -1; //no specific index
     d->m_name = name;
+    memset(d->m_userData, 0, sizeof(d->m_userData));
+    d->m_unclosed = true;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -142,6 +154,9 @@ Shape::Shape(const Shape &other) : d(NULL)
     d->m_transform = other.d->m_transform;
     d->m_index = other.d->m_index;
     d->m_name = other.d->m_name;
+    memcpy(d->m_userData, other.d->m_userData, sizeof(d->m_userData));
+    d->m_unclosed = other.d->m_unclosed;
+    d->m_color = other.d->m_color;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -170,6 +185,9 @@ Shape& Shape::operator =(const Shape &other)
     d->m_transform = other.d->m_transform;
     d->m_index = other.d->m_index;
     d->m_name = other.d->m_name;
+    memcpy(d->m_userData, other.d->m_userData, sizeof(d->m_userData));
+    d->m_unclosed = other.d->m_unclosed;
+    d->m_color = other.d->m_color;
 
     if (d_old)
     {
