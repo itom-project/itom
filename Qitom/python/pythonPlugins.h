@@ -167,6 +167,7 @@ class PythonPlugins
        static PyTypeObject PyDataIOPluginType;
        static PyModuleDef  PyDataIOPluginModule;
        static void PyDataIOPlugin_addTpDict(PyObject *tp_dict);
+       static void PyActuatorPlugin_addTpDict(PyObject* tp_dict);
 
 };
 
