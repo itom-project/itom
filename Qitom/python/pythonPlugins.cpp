@@ -2798,14 +2798,6 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
     PyDict_SetItemString(tp_dict, "actuatorEndSwitch", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i", ito::tActuatorStatus::actuatorLeftEndSwitch);
-    PyDict_SetItemString(tp_dict, "actuatorLeftEndSwitch", value);
-    Py_DECREF(value);
-
-    value = Py_BuildValue("i", ito::tActuatorStatus::actuatorRightEndSwitch);
-    PyDict_SetItemString(tp_dict, "actuatorRightEndSwitch", value);
-    Py_DECREF(value);
-#if ITOM_ADDININTERFACE_VERSION >= 0x30201
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorEndSwitch1);
     PyDict_SetItemString(tp_dict, "actuatorEndSwitch1", value);
     Py_DECREF(value);
@@ -2813,20 +2805,11 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorEndSwitch2);
     PyDict_SetItemString(tp_dict, "actuatorEndSwitch2", value);
     Py_DECREF(value);
-#endif
+
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorRefSwitch);
     PyDict_SetItemString(tp_dict, "actuatorRefSwitch", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i", ito::tActuatorStatus::actuatorLeftRefSwitch);
-    PyDict_SetItemString(tp_dict, "actuatorLeftRefSwitch", value);
-    Py_DECREF(value);
-
-    value = Py_BuildValue("i", ito::tActuatorStatus::actuatorRightRefSwitch);
-    PyDict_SetItemString(tp_dict, "actuatorRightRefSwitch", value);
-    Py_DECREF(value);
-
-#if ITOM_ADDININTERFACE_VERSION >= 0x30201
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorRefSwitch1);
     PyDict_SetItemString(tp_dict, "actuatorRefSwitch1", value);
     Py_DECREF(value);
@@ -2834,7 +2817,6 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorRefSwitch2);
     PyDict_SetItemString(tp_dict, "actuatorRefSwitch2", value);
     Py_DECREF(value);
-#endif
 
     //status Flags
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorAvailable);
@@ -2845,31 +2827,29 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
     PyDict_SetItemString(tp_dict, "actuatorEnabled", value);
     Py_DECREF(value);
 
-#if ITOM_ADDININTERFACE_VERSION >= 0x30201
     value = Py_BuildValue("i", ito::tActuatorStatus::actuatorError);
     PyDict_SetItemString(tp_dict, "actuatorError", value);
     Py_DECREF(value);
-#endif
 
-    value = Py_BuildValue("i", ito::tActuatorStatus::actMovingMask);
-    PyDict_SetItemString(tp_dict, "actMovingMask", value);
+    /*value = Py_BuildValue("i", ito::tActuatorStatus::actMovingMask);
+    PyDict_SetItemString(tp_dict, "actuatorMovingMask", value);
     Py_DECREF(value);
 
     value = Py_BuildValue("i", ito::tActuatorStatus::actEndSwitchMask);
-    PyDict_SetItemString(tp_dict, "actEndSwitchMask", value);
+    PyDict_SetItemString(tp_dict, "actuatorEndSwitchMask", value);
     Py_DECREF(value);
 
     value = Py_BuildValue("i", ito::tActuatorStatus::actRefSwitchMask);
-    PyDict_SetItemString(tp_dict, "actRefSwitchMask", value);
+    PyDict_SetItemString(tp_dict, "actuatorRefSwitchMask", value);
     Py_DECREF(value);
 
     value = Py_BuildValue("i", ito::tActuatorStatus::actSwitchesMask);
-    PyDict_SetItemString(tp_dict, "actSwitchesMask", value);
+    PyDict_SetItemString(tp_dict, "actuatorSwitchesMask", value);
     Py_DECREF(value);
 
     value = Py_BuildValue("i", ito::tActuatorStatus::actStatusMask);
-    PyDict_SetItemString(tp_dict, "actStatusMask", value);
-    Py_DECREF(value);
+    PyDict_SetItemString(tp_dict, "actuatorStatusMask", value);
+    Py_DECREF(value);*/
 }
 
 
