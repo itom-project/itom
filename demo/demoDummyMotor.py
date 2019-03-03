@@ -1,3 +1,5 @@
+import time
+
 # Initialisation of DummyMotor
 stage = actuator("DummyMotor",3)
 
@@ -11,6 +13,10 @@ stage.setParam("speed", 1000)
 
 # Get the current speed, should be 1000 mm/s
 speed = stage.getParam("speed")
+
+''' SECTION 1: Synchronous movement.
+The script waits for the movement to be finished!
+'''
 
 # Set pos of 1. axis (index 0) to the absolute value 10.2 mm
 stage.setPosAbs(0,10.2)
@@ -38,4 +44,49 @@ stage.setPosRel(0,2, 1, 2)
 # Read the axis position of 1./2./3. axis, should be 7 (mm), 2 (mm), 5 (mm)
 [x, y, z] =  stage.getPos(0, 1, 2)
 print('x = ' + str(x) + ' y = ' + str(y)+ ' z = ' + str(z))
+
+''' SECTION 2: Asynchronous movement.
+The script continuous its executing during the movement. However,
+the actuator is 'blocked' until the end of the movement, since the script
+will wait before the next setParam, setPosAbs/Rel, getPosAbs/Rel, getParam, getStatus...
+methods until any previous movement is finished.
+'''
+
+#now switch the motor to an asychronous movement
+stage.setParam("async", 1)
+
+''' SECTION 2a: Control the state of the actuator by the properties
+currentStatus, currentPositions, targetPositions
+'''
+
+#use the currentStatus, currentPositions or targetPositions properties to control the state of the device
+targetReached = False
+stage.setPosAbs(0, 2500.0, 1, -2070.5)
+while not targetReached:
+    state = stage.currentStatus
+    if all([s & 0x0008 for s in state]): #0x0008 stands for 'atTarget'. In future versions this can be replaced by the constant itom.actuator.actuatorAtTarget
+        targetReached = True
+    else:
+        print("Current state: %s, current positions: %s" % (state, stage.currentPositions))
+        time.sleep(0.1)
+
+
+''' SECTION 2b: Control the state of the actuator by connecting to the
+actuatorStatusChanged (or targetChanged) signals of the actuator.
+
+But: The corresponding python methods can only be called if the current script
+executing is finished. Therefore, this approach is better suited for GUI applications which are
+mainly based on events.
+'''
+
+#use an event-driven approach to control the current status and position:
+def statusChanged(state, currentPos):
+    print("motor reported a status changed event. state: %s, current position: %s" % (str(state), str(currentPos)))
+    
+#the method 'statusChanged' can only be called if the script is not executing any more.
+#Therefore this approach is made for GUI applications
+stage.connect("actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged)
+
+stage.setPosAbs(0, 0.0, 1, 0.0)
+
 

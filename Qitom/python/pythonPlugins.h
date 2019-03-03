@@ -112,8 +112,8 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_setPosRel(PyActuatorPlugin *self, PyObject *args);
 
        static PyObject* PyActuatorPlugin_getCurrentStatus(PyActuatorPlugin *self, void *closure);
-       static PyObject* PyActuatorPlugin_getCurrentPosition(PyActuatorPlugin *self, void *closure);
-       static PyObject* PyActuatorPlugin_getTargetPosition(PyActuatorPlugin *self, void *closure);
+       static PyObject* PyActuatorPlugin_getCurrentPositions(PyActuatorPlugin *self, void *closure);
+       static PyObject* PyActuatorPlugin_getTargetPositions(PyActuatorPlugin *self, void *closure);
 
        static PyMemberDef  PyActuatorPlugin_members[];
        static PyMethodDef  PyActuatorPlugin_methods[];
