@@ -64,7 +64,7 @@ targetReached = False
 stage.setPosAbs(0, 2500.0, 1, -2070.5)
 while not targetReached:
     state = stage.currentStatus
-    if all([s & 0x0008 for s in state]): #0x0008 stands for 'atTarget'. In future versions this can be replaced by the constant itom.actuator.actuatorAtTarget
+    if all([s & actuator.actuatorAtTarget for s in state]):
         targetReached = True
     else:
         print("Current state: %s, current positions: %s" % (state, stage.currentPositions))
