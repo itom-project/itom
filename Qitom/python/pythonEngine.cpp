@@ -535,6 +535,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             if (PyType_Ready(&PythonPlugins::PyActuatorPluginType) >= 0)
             {
                 Py_INCREF(&PythonPlugins::PyActuatorPluginType);
+                PythonPlugins::PyActuatorPlugin_addTpDict(PythonPlugins::PyActuatorPluginType.tp_dict);
                 PyModule_AddObject(itomModule, "actuator", (PyObject *)&PythonPlugins::PyActuatorPluginType);
             }
 
