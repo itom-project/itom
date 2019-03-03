@@ -1830,13 +1830,9 @@ Moving flags: \n\
 Switches flags: \n\
 \n\
 * actuatorEndSwitch      = 0x0100 : axis reached any end switch (e.g. if only one end switch is available) \n\
-* actuatorLeftEndSwitch  = 0x0200 : axis reached the left end switch \n\
-* actuatorRightEndSwitch = 0x0400 : axis reached the right end switch \n\
 * actuatorEndSwitch1 = 0x0200 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorEndSwitch2 = 0x0400 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorRefSwitch      = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
-* actuatorLeftRefSwitch  = 0x1000 : axis reached left reference switch \n\
-* actuatorRightRefSwitch = 0x2000 : axis reached right reference switch \n\
 * actuatorRefSwitch1 = 0x1000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 * actuatorRefSwitch2 = 0x2000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 \n\
@@ -2278,7 +2274,7 @@ connect \n\
 ");
 PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args)
 {
-    int signalIndex, tempType;
+    int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;
@@ -2689,6 +2685,138 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetCurrentStatus_doc, "Get the current status (flag mask, see :py:meth:`~itom.actuator.getStatus`) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any current position \n\
+via the signal 'actuatorStatusChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new current positions. \n\
+\n\
+The difference between this property and the method :py:meth:`~itom.actuator.getStatus` is that `getStatus` will only \n\
+return if the actuator plugin is currently idle. This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real current positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentStatus(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "currentStatus", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(status.size());
+    int i = 0;
+    foreach(int s, status)
+    {
+        PyTuple_SET_ITEM(result, i, PyLong_FromLong(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetCurrentPosition_doc, "Get the current positions (in mm or degree) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any current position \n\
+via the signal 'actuatorStatusChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new current positions. \n\
+\n\
+This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real current positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentPosition(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "currentPosition", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(currentPosition.size());
+    int i = 0;
+    foreach(double s, currentPosition)
+    {
+        PyTuple_SET_ITEM(result, i, PyFloat_FromDouble(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetTargetPosition_doc, "Get the target positions (in mm or degree) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current target positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any target position \n\
+via the signal 'targetChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new target positions. \n\
+\n\
+This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real target positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getTargetPosition(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "targetPosition", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(targetPosition.size());
+    int i = 0;
+    foreach(double s, targetPosition)
+    {
+        PyTuple_SET_ITEM(result, i, PyFloat_FromDouble(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//-----------------------------------------------------------------------------
+PyGetSetDef PythonPlugins::PyActuatorPlugin_getseters[] = {
+    {"currentStatus",   (getter)PyActuatorPlugin_getCurrentStatus,    (setter)NULL, pyActuatorGetCurrentStatus_doc, NULL },
+    {"currentPosition", (getter)PyActuatorPlugin_getCurrentPosition,  (setter)NULL, pyActuatorGetCurrentPosition_doc, NULL },
+    {"targetPosition",  (getter)PyActuatorPlugin_getTargetPosition,   (setter)NULL, pyActuatorGetTargetPosition_doc, NULL},
+    {NULL}  /* Sentinel */
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
@@ -2756,7 +2884,7 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    0,                                       /* tp_iternext */
    PyActuatorPlugin_methods,                /* tp_methods */
    PyActuatorPlugin_members,                /* tp_members */
-   0,                                       /* tp_getset */
+   PyActuatorPlugin_getseters,              /* tp_getset */
    0,                                       /* tp_base */
    0,                                       /* tp_dict */
    0,                                       /* tp_descr_get */
@@ -4352,7 +4480,7 @@ connect \n\
 ");
 PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args)
 {
-    int signalIndex, tempType;
+    int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;

@@ -2752,7 +2752,7 @@ PyObject* PythonQtConversion::QVariantListToPyObject(const QVariantList& l)
         PyTuple_SET_ITEM(result, i, PythonQtConversion::QVariantToPyObject(v));
         i++;
     }
-    // why is the error state bad after this?
+    // todo: why is the error state bad after this?
     PyErr_Clear();
     return result;
 }

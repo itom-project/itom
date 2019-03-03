@@ -44,12 +44,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qsharedpointer.h>
 #include <qmutex.h>
 #include <qapplication.h>
+#include <qscopedpointer.h>
 
 #if QT_VERSION < 0x050000
-#include <qpluginloader.h>
 #include <qdockwidget.h>
 #else
-#include <QtCore/qpluginloader.h>
 #include <QtWidgets/qdockwidget.h>
 #endif
 
@@ -115,6 +114,9 @@ algo plugins.
         w->m_pBasePlugin = this; \
         }
 
+QT_BEGIN_NAMESPACE
+class QPluginLoader;
+QT_END_NAMESPACE
 
 namespace ito
 {
@@ -153,7 +155,7 @@ namespace ito
         //switches
         actuatorEndSwitch = 0x0100, /*!< axis reached an undefined end switch */
         actuatorLeftEndSwitch = 0x0200, /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch), deprecated */
-        actuatorRightEndSwitch = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch) */
+        actuatorRightEndSwitch = 0x0400, /*!< axis reached the specified right end switch (if set, also set actuatorEndSwitch), deprecated */
         actuatorEndSwitch1 = 0x0200,/*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
         actuatorEndSwitch2 = 0x0400,    /*!< axis reached the specified left end switch (if set, also set actuatorEndSwitch) */
         actuatorRefSwitch = 0x0800, /*!< axis reached an undefined reference switch */
@@ -208,7 +210,11 @@ namespace ito
 
     class AddInBase;        //!< forward declaration
     class DataObject;
-    class AddInBasePrivate; //!< forward declaration to private container class of AddInBase
+    class AddInBasePrivate;          //!< forward declaration to private container class of AddInBase
+    class AddInInterfaceBasePrivate; //!< forward declaration to private container class of AddInInterfaceBase
+    class AddInActuatorPrivate;      //!< forward declaration to private container class of AddInActuator
+    class AddInDataIOPrivate;        //!< forward declaration to private container class of AddInDataIO
+    class AddInAlgoPrivate;          //!< forward declaration to private container class of AddInAlog
 
     //----------------------------------------------------------------------------------------------------------------------------------
     /** @class AddInInterfaceBase
@@ -242,6 +248,9 @@ namespace ito
         //!< internal function used within the closing process
         virtual ito::RetVal closeThisInst(ito::AddInBase **addInInst) = 0;
 
+        QScopedPointer<AddInInterfaceBasePrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+        Q_DECLARE_PRIVATE(AddInInterfaceBase);
+
     protected:
         int m_type;                                     //!< plugin type
         int m_version;                                  //!< plugin version
@@ -256,14 +265,14 @@ namespace ito
         QList<ito::AddInBase *> m_InstList;             //!< vector holding a list of the actual instantiated classes of the plugin
         QVector<ito::Param> m_initParamsMand;          //!< vector with the mandatory initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
         QVector<ito::Param> m_initParamsOpt;           //!< vector with the optional initialisation parameters, please only read this vector within the init-method of AddInBase (afterwards it might have been changed)
-        //bool m_enableAutoLoad;                          //* Varialbe to enable autoload for plugin. Standard value is false. Must be overwritten in AddInConstructor  */
         tAutoLoadPolicy m_autoLoadPolicy;               /*!< defines the auto-load policy for automatic loading of parameters from xml-file at startup of any instance */
         tAutoSavePolicy m_autoSavePolicy;               /*!< defines the auto-save policy for automatic saving of parameters in xml-file at shutdown of any instance */
         bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
-        QPluginLoader *m_loader;
+        
 
         virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
         virtual void importItomApiGraph(void** apiPtr) = 0;
+        
         //!> check if we have gui support
         inline bool hasGuiSupport()
         {
@@ -281,16 +290,11 @@ namespace ito
         void **m_apiFunctionsBasePtr;
         void **m_apiFunctionsGraphBasePtr;
 
+        //! destructor
         virtual ~AddInInterfaceBase();
 
         //! default constructor
-        AddInInterfaceBase() :
-            m_type(0), m_version(CREATEVERSION(0, 0, 0)), m_filename(""),
-            m_maxItomVer(MAXVERSION), m_minItomVer(MINVERSION),
-            m_author(""), m_description(""), m_detaildescription(""), m_license("LGPL with ITO itom-exception"), m_aboutThis(""),
-            /*m_enableAutoLoad(false),*/ m_autoLoadPolicy(ito::autoLoadNever),
-            m_autoSavePolicy(ito::autoSaveNever), m_callInitInNewThread(true), m_apiFunctionsBasePtr(NULL), m_apiFunctionsGraphBasePtr(NULL), m_loader(NULL)
-        { }
+        AddInInterfaceBase();
 
         //! returns addIn type
         inline int getType(void) const { return m_type; }
@@ -346,8 +350,9 @@ namespace ito
         //! set api function pointer
         void setApiFunctions(void **apiFunctions);
         void setApiFunctionsGraph(void ** apiFunctionsGraph);
-        inline void setLoader(QPluginLoader *loader) { m_loader = loader; }
-        inline QPluginLoader * getLoader(void) { return m_loader; }
+
+        void setLoader(QPluginLoader *loader);
+        QPluginLoader * getLoader(void) const;
 
         bool event(QEvent *e);
     };
@@ -427,10 +432,7 @@ namespace ito
         /*
         The reference counter is zero-based, hence, the value zero means that one reference is pointing to this instance
         */
-        inline int getRefCount(void) const
-        {
-            return m_refCount;
-        }
+        int getRefCount(void) const;
 
         //! Returns true if this plugin provides a dock widget, that can be shown in the main window.
         /*
@@ -456,13 +458,7 @@ namespace ito
         \return current status of alive-flag (1 if "still alive", else 0)
         \sa setAlive
         */
-        int isAlive(void)
-        {
-            //                QMutexLocker locker(&m_atomicMutex);
-            int wasalive = m_alive;
-            m_alive = 0;
-            return wasalive;
-        }
+        int isAlive(void);
 
         //! sets the alive-flag to 1 ("still alive")
         /*
@@ -470,11 +466,7 @@ namespace ito
 
         \sa isAlive
         */
-        void setAlive(void)
-        {
-            //                QMutexLocker locker(&m_atomicMutex);
-            m_alive = 1;
-        }
+        void setAlive(void);
 
         //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
         bool isInitialized(void) const;
@@ -537,27 +529,24 @@ namespace ito
     private:
         Q_DISABLE_COPY(AddInBase)
 
-            //! increments reference counter of this plugin (thread-safe)
-            inline void incRefCount(void);
+        //! increments reference counter of this plugin (thread-safe)
+        void incRefCount(void);
 
         //! decrements reference counter of this plugin (thread-safe)
         void decRefCount(void);
 
-
-        int m_refCount;                                   //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
         QVector<ito::AddInBase::AddInRef *> m_hwDecList;  //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
         QMap<QString, ExecFuncParams> m_execFuncList;     //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
-        QMutex m_refCountMutex;                           //!< mutex for making the reference counting mechanism thread-safe.
-        int m_alive;                                      //!< member to check if thread is still responsive
-        QMutex m_atomicMutex;                             //!< mutex for protecting atomic getter and setter methods (e.g. alive and initialized)
-        AddInBasePrivate *aibp;                           //!< pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
+        
+        QScopedPointer<AddInBasePrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
+        Q_DECLARE_PRIVATE(AddInBase);
 
         friend class AddInInterfaceBase;                  //!< AddInBase is friend with AddInInterfaceBase, such that the interface can access methods like the protected constructor or destructor of this plugin class.
 
         static int m_instCounter;
         static int maxThreadCount;                        //!< maximum number of threads algorithms can use e.g. with OpenMP parallelization. This is a number between 1 and QThread::idealThreadCount()
 
-    signals:
+    Q_SIGNALS:
         //! This signal usually is emitted if the vector m_params is changed.
         /*!
         Emit this signal for instance in setParam if the parameter has been changed in order
@@ -569,7 +558,7 @@ namespace ito
         */
         void parametersChanged(QMap<QString, ito::Param> params);
 
-    public slots:
+    public Q_SLOTS:
         //! method for the initialisation of a new instance of the class (must be overwritten)
         virtual ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL) = 0;
         //! method for closing an instance (must be overwritten)
@@ -602,7 +591,7 @@ namespace ito
         */
         void sendParameterRequest(){ emit parametersChanged(m_params); };
 
-    private slots:
+    private Q_SLOTS:
 
         //! overwrite this slot if you want to get informed when the dock-widget of the plugin becomes (in)visible
         /*!
@@ -650,6 +639,9 @@ namespace ito
     private:
         Q_DISABLE_COPY(AddInDataIO)
 
+        QScopedPointer<AddInDataIOPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+        Q_DECLARE_PRIVATE(AddInDataIO);
+
     protected:
         virtual ~AddInDataIO();
         AddInDataIO();
@@ -666,11 +658,11 @@ namespace ito
     public:
         inline int getAutoGrabbing() { return m_autoGrabbingEnabled; }  /*!< returns the state of m_autoGrabbingEnabled; consider this method as final */
 
-    signals:
+    Q_SIGNALS:
 
-        public slots :
-            //! method to start the device - i.e. get ready to record data
-            virtual ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
+    public Q_SLOTS:
+        //! method to start the device - i.e. get ready to record data
+        virtual ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //! method to stop the device, it is no longer possible to acquire data
         virtual ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //! freeze the current data and prepare it for retrieval
@@ -703,7 +695,6 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
 
-
     /** @class AddInActuator
     *   @brief base class for all actuator plugin classes
     *
@@ -717,8 +708,8 @@ namespace ito
     private:
         Q_DISABLE_COPY(AddInActuator)
 
-            bool m_interruptFlag;               /*!< interrupt flag (true if interrupt is requested, default: false) */
-        QMutex m_interruptMutex;            /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only) */
+        QScopedPointer<AddInActuatorPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+        Q_DECLARE_PRIVATE(AddInActuator);
 
     protected:
         virtual ~AddInActuator();
@@ -729,17 +720,7 @@ namespace ito
         QVector<double> m_targetPos;  /*!< vector (same length than number of axes) containing the target position (mm or degree) of every axis */
 
         //! checks whether any axis is still moving (moving flag is set)
-        bool isMotorMoving() const
-        {
-            foreach(const int &i, m_currentStatus)
-            {
-                if (i & ito::actuatorMoving)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        bool isMotorMoving() const;
 
         void sendStatusUpdate(const bool statusOnly = false); /* emits actuatorStatusChanged signal with the vector of currentStatus (and currentPos if statusOnly = false) to notify connected listeners about the current status (and position)*/
         void sendTargetUpdate(); /* emits targetChanged with the vector of targetPositions to notify connected listeners about the change of the target position(s) */
@@ -762,7 +743,7 @@ namespace ito
 
         \sa tActuatorStatus
         */
-        inline void setStatus(int &status, const int newFlags, const int keepMask = 0) { status = (status & keepMask) | newFlags; }
+        void setStatus(int &status, const int newFlags, const int keepMask = 0);
 
         //! sets status flags of the status of the given axes
         /*!
@@ -775,13 +756,7 @@ namespace ito
 
         \sa setStatus
         */
-        inline void setStatus(const QVector<int> &axis, const int newFlags, const int keepMask = 0)
-        {
-            foreach(const int &i, axis)
-            {
-                setStatus(m_currentStatus[i], newFlags, keepMask);
-            }
-        }
+        void setStatus(const QVector<int> &axis, const int newFlags, const int keepMask = 0);
 
         //! changes the status bit of the given status value from one existing to a new value.
         /*!
@@ -793,7 +768,7 @@ namespace ito
 
         \sa tActuatorStatus
         */
-        inline void replaceStatus(int &status, const int existingFlag, const int replaceFlag) { if (status & existingFlag) { status = (status ^ existingFlag) | replaceFlag; } }
+        void replaceStatus(int &status, const int existingFlag, const int replaceFlag);
 
         //! changes the status flags of the status of the given axes from one existing to a new value
         /*!
@@ -806,13 +781,14 @@ namespace ito
 
         \sa replaceStatus
         */
-        inline void replaceStatus(const QVector<int> &axis, const int existingFlag, const int replaceFlag)
-        {
-            foreach(const int &i, axis)
-            {
-                replaceStatus(m_currentStatus[i], existingFlag, replaceFlag);
-            }
-        }
+        void replaceStatus(const QVector<int> &axis, const int existingFlag, const int replaceFlag);
+
+        //! initializes the current status, current position and target position vectors to the same size and the given start values
+        /*!
+        If sendUpdateSignals is true, the signals targetChanged and actuatorStatusChanged are emitted with the new size and content.
+        In any case, the last signalled states are set to these initial values, too.
+        */
+        void initStatusAndPositions(int numAxes, int status, double currentPosition = 0.0, double targetPosition = 0.0, bool sendUpdateSignals = true);
 
         //! returns interrupt flag (thread-safe)
         /*!
@@ -821,13 +797,7 @@ namespace ito
         \return true if interrupt flag has been set, else false.
         \sa setInterrupt
         */
-        bool isInterrupted()
-        {
-            QMutexLocker locker(&m_interruptMutex);
-            bool res = m_interruptFlag;
-            m_interruptFlag = false;
-            return res;
-        }
+        bool isInterrupted();
 
     public:
         //! set interrupt flag (thread-safe)
@@ -838,15 +808,20 @@ namespace ito
 
         \sa waitForDone, isInterrupted
         */
-        void setInterrupt()
-        {
-            QMutexLocker locker(&m_interruptMutex);
-            m_interruptFlag = true;
-        }
+        void setInterrupt();
 
+        //! put the latest signalled states (current status, position and target position) to the given arguments.
+        /*!
+        "last signalled" signifies that whenever the signal targetChanged or actuatorStatusChanged is emitted,
+        the current value of these states is stored and can be obtained by this method.
 
+        The call to this method is thread-safe.
 
-    signals:
+        \return ito::retOk if all states could be read, ito::retError if no status or position value has been reported up to now.
+        */
+        ito::RetVal getLastSignalledStates(QVector<int> &status, QVector<double> &currentPos, QVector<double> &targetPos);
+
+    Q_SIGNALS:
         //! signal emitted if status or actual position of any axis has been changed.
         /*!
         Usually this signal can be sent using the method sendStatusUpdate(...). This method firstly checks if any slot has been connected to this signal
@@ -870,7 +845,7 @@ namespace ito
         */
         void targetChanged(QVector<double> targetPositions);
 
-        public slots:
+    public Q_SLOTS:
         //! method to calibrate a single axis
         virtual ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL) = 0;
         //! method to calibrate a number of axis. The axis' numbers are given in the axis vector
@@ -897,7 +872,7 @@ namespace ito
         virtual ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL) = 0;
 
         //! overload this function to update the current status and position values, followed by calling sendStatusUpdate and/or sendTargetUpdate
-        virtual ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos); //added 2014-03-04
+        virtual ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -921,6 +896,9 @@ namespace ito
 
     private:
         Q_DISABLE_COPY(AddInAlgo)
+
+        QScopedPointer<AddInAlgoPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+        Q_DECLARE_PRIVATE(AddInAlgo);
 
     public:
         typedef ito::RetVal(*t_filter)(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -1044,27 +1022,10 @@ namespace ito
         QHash<QString, FilterDef *> m_filterList;
         QHash<QString, AlgoWidgetDef *> m_algoWidgetList;
 
-        static ito::RetVal prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
-        {
-            if (!paramsMand)
-            {
-                return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toLatin1().data());
-            }
-            if (!paramsOpt)
-            {
-                return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toLatin1().data());
-            }
-            if (!paramsOut)
-            {
-                return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toLatin1().data());
-            }
-            paramsMand->clear();
-            paramsOpt->clear();
-            paramsOut->clear();
-            return ito::retOk;
-        }
+        //! small check and cleaning of all parameter vectors (can be used in filterParam methods)
+        static ito::RetVal prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        public slots:
+    public Q_SLOTS:
         virtual ito::RetVal getParam(QSharedPointer<ito::Param> /*val*/, ItomSharedSemaphore * /*waitCond*/ = NULL) { return ito::retOk; }
         virtual ito::RetVal setParam(QSharedPointer<ito::ParamBase> /*val*/, ItomSharedSemaphore * /*waitCond*/ = NULL) { return ito::retOk; }
     };
@@ -1133,6 +1094,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
     "ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
     "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots  
+    "ito.AddIn.InterfaceBase/3.2.0", //outdated on 2019-03-03 due to cleanup in AddInInterface including Private-classes for all AddIn classes and the ability to return the last reported state and position of axes (even while the axis is currently moving)
     NULL
 };
 
@@ -1141,10 +1103,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 3
-#define ITOM_ADDININTERFACE_MINOR 2
+#define ITOM_ADDININTERFACE_MINOR 3
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3, 2, 0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3, 3, 0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 
