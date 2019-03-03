@@ -2727,7 +2727,7 @@ only contains the last reported values which can slightly differ from the real c
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetCurrentPosition_doc, "Get the current positions (in mm or degree) of all axes \n\
+PyDoc_STRVAR(pyActuatorGetCurrentPositions_doc, "Get the current positions (in mm or degree) of all axes \n\
 \n\
 This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
 The returned tuple contains the current positions of all axes (in mm or degree). \n\
@@ -2738,7 +2738,7 @@ in order to get instantly informed about new current positions. \n\
 This property always returns immediately, however it \n\
 only contains the last reported values which can slightly differ from the real current positions \n\
 (if the plugin rarely emits its current states for instance due to performance reasons).");
-/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentPosition(PyActuatorPlugin *self, void * /*closure*/)
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentPositions(PyActuatorPlugin *self, void * /*closure*/)
 {
     if (!self->actuatorObj)
     {
@@ -2768,7 +2768,7 @@ only contains the last reported values which can slightly differ from the real c
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetTargetPosition_doc, "Get the target positions (in mm or degree) of all axes \n\
+PyDoc_STRVAR(pyActuatorGetTargetPositions_doc, "Get the target positions (in mm or degree) of all axes \n\
 \n\
 This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
 The returned tuple contains the current target positions of all axes (in mm or degree). \n\
@@ -2779,7 +2779,7 @@ in order to get instantly informed about new target positions. \n\
 This property always returns immediately, however it \n\
 only contains the last reported values which can slightly differ from the real target positions \n\
 (if the plugin rarely emits its current states for instance due to performance reasons).");
-/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getTargetPosition(PyActuatorPlugin *self, void * /*closure*/)
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getTargetPositions(PyActuatorPlugin *self, void * /*closure*/)
 {
     if (!self->actuatorObj)
     {
@@ -2811,8 +2811,8 @@ only contains the last reported values which can slightly differ from the real t
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonPlugins::PyActuatorPlugin_getseters[] = {
     {"currentStatus",   (getter)PyActuatorPlugin_getCurrentStatus,    (setter)NULL, pyActuatorGetCurrentStatus_doc, NULL },
-    {"currentPosition", (getter)PyActuatorPlugin_getCurrentPosition,  (setter)NULL, pyActuatorGetCurrentPosition_doc, NULL },
-    {"targetPosition",  (getter)PyActuatorPlugin_getTargetPosition,   (setter)NULL, pyActuatorGetTargetPosition_doc, NULL},
+    {"currentPositions", (getter)PyActuatorPlugin_getCurrentPositions,  (setter)NULL, pyActuatorGetCurrentPositions_doc, NULL },
+    {"targetPositions",  (getter)PyActuatorPlugin_getTargetPositions,   (setter)NULL, pyActuatorGetTargetPositions_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
