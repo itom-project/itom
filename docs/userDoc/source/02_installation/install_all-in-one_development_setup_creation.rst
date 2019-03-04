@@ -19,36 +19,42 @@ Download minimum required software/packages
 
 First download alle the needed software and packages. This download links are for the current availabe software versions (April 2016). 
 
-* `MS Visual Studio 2013 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (en_visual_studio_community_2013_with_update_5_x86_dvd_6816332.iso) 
-* `Qt Visual Studio Add-in 1.2.5 <http://www.qt.io/download-open-source/#section-2/>`_ (qt-vs-addin-1.2.5.exe)
-* `Qt 5.6.0 for Windows 64-bit (VS 2013) Offline Installer <http://www.qt.io/download-open-source/#section-2/>`_ (qt-opensource-windows-x86-msvc2013_64-5.6.0.exe)
-* `CMake 3.5.1 <http://cmake.org/download/>`_ (cmake-3.5.2-win32-x86.msi)
-* `Python 3.5.1 Windows x85-64 executable installer <http://www.python.org/downloads/windows/>`_ (python-3.5.1-amd64.exe) 
-* `Numpy 1.11.0 cp35 win_amd64 <http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy/>`_ (numpy-1.11.0+mkl-cp35-cp35m-win_amd64.whl) 
-* `Git 2.8.1 64-bit <http://git-scm.com/download/win/>`_ (Git-2.8.1-64-bit.exe)
-* `TortoiseGit 2.1.0.0 <http://tortoisegit.org/download/>`_ (TortoiseGit-2.1.0.0-64bit.msi)
+* `MS Visual Studio 2015/2017 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (vs_community__45489951.1547806605.exe) 
+* `Qt Visual Studio Add-in 2.3.0 <https://download.qt.io/development_releases/vsaddin/>`_ (qt-vsaddin-msvc2017-2.3.0.vsix)
+* `Qt 5.12.0 for Windows 64-bit (VS 2015/ VS 2017) Offline Installer <https://www.qt.io/offline-installers/>`_ (qt-opensource-windows-x86-5.12.1.exe)
+* `CMake 3.13.4 <http://cmake.org/download/>`_ (cmake-3.5.2-win32-x86.msi)
+* `Python 3.7.2 Windows x85-64 executable installer <http://www.python.org/downloads/windows/>`_ (python-3.7.2-amd64.exe) 
+    - `Numpy 1.11.0 cp35 win_amd64 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy>`_ (numpy-1.16.2+mkl-cp37-cp37m-win_amd64.whl) 
+    - `Pip 19.0.2 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#pip>`_ (pip-19.0.2-py2.py3-none-any.whl)
+    - `Setuptools 40.8.0 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools>`_ (setuptools-40.8.0-py2.py3-none-any.whl)
+    - `Wheel 0.33.0 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#wheel>`_ (wheel-0.33.0-py2.py3-none-any.whl)
+    - `Jedi 0.12.3 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#jedi>`_ (jedi-0.13.3-py2.py3-none-any.whl)
+    - `Parso 0.3.4 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#parso>`_ (parso-0.3.4-py2.py3-none-any.whl)
+    - `Pyflakes 2.1.1 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyflakes>`_ (pyflakes-2.1.1-py2.py3-none-any.whl)  
+* `Git 2.21.0 64-bit <http://git-scm.com/download/win/>`_ (Git-2.21.0-64-bit.exe)
+* `TortoiseGit 2.8.0.0 <http://tortoisegit.org/download/>`_ (TortoiseGit-2.8.0.0-64bit.msi)
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
 * `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
 Download packages for the 3rdPartyPCL tools
 ===========================================
 
-* `OpenCV 3.1 source <http://github.com/itseez/opencv/>`_ (opencv-master.zip)
-* `Boost 1.60.0 binaries <http://sourceforge.net/projects/boost/files/boost-binaries/1.60.0/>`_ (boost_1_60_0-msvc-12.0-64.exe) 
-* `Eigen 3.2.7 repository <http://bitbucket.org/eigen/eigen/downloads/>`_ (eigen-eigen-af907dececc0.zip)
-* `VTK 7.0.0 source <http://www.vtk.org/download/>`_ (VTK-7.0.0.zip)
-* `PCL 1.8.0 source <http://github.com/PointCloudLibrary/pcl/>`_ (pcl-master.zip)
+* `OpenCV 3.4.5 source <https://opencv.org/releases.html>`_ (opencv-master.zip)
+* `Boost 1.69.0 binaries <https://sourceforge.net/projects/boost/files/boost-binaries/>`_ (boost_1_69_0-msvc-12.0-64.exe) 
+* `Eigen 3.3.7 repository <http://bitbucket.org/eigen/eigen/downloads/>`_ (eigen-eigen-323c052e1731.zip)
+* `VTK 8.2.0 source <http://www.vtk.org/download/>`_ (VTK-8.2.0.zip)
+* `PCL 1.9.1 source <http://github.com/PointCloudLibrary/pcl/>`_ (pcl-master.zip)
 * FLANN and QHULL can be copied from the current all-in-one development version. 
 
-Install Visual Studio 2013
----------------------------
+Install Visual Studio 2015/2017
+-------------------------------
 
-Install Visual Studio 2013 Community without optional features. 
+Install Visual Studio 2015/2017 Community without optional features. 
 
 Creating the _install_ and 3rdParty folder
 ---------------------------------------------
 
-Create a path on your hard drive with a long, long path name called **${MAINDIR}**. Later, the all-in-one path on the destination computer must be shorter than this path name, due to the Qt patching. For example your path can be called: E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2013_qt5.6.0_x64\\. Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not necessary to create a working |itom|. 
+Create a path on your hard drive with a long, long path name called **${MAINDIR}**. Later, the all-in-one path on the destination computer must be shorter than this path name, due to the Qt patching. For example your path can be called: E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2015_qt5.12.1_x64\\. Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not necessary to create a working |itom|. 
 
 .. figure:: images/all-in-one-create/folder_structure.png
     :scale: 100%
@@ -103,15 +109,15 @@ Creating prebuild version of Qt
 
 For a working |itom| development environment only a prebuild version of Qt is necessary. 
 
-* Install Qt into the **${MAINDIR}**/3rdParty/Qt5.6.0 with the components msvc2013 64-bit, Qt WebView, Qt WebEngine. Qt Creator is not necessary, but can not be unchecked
-* After the installation copy the folder to another location (**${MAINDIR}**/3rdParty/Qt5.6.0_backup) and uninstall Qt in the Windows program settings
-* Rename Qt5.6.0_backup back to Qt5.6.0
-* From Qt5.6.0/Docs/Qt-5.6 copy all |star| .qch files (only in the main folder) to Qt5.6.0/5.6/msvc2013_64/doc 
-* Start the Qt Assistant (**${MAINDIR}**/3rdParty/Qt5.6.0/5.6/msvc2013_64/bin), open **options/documentation** and delete all. Add then the copied documentation files. 
-* From Qt5.6.0 delete the following things: 
+* Install Qt into the **${MAINDIR}**/3rdParty/Qt5.12.1 with the components msvc2015 64-bit, Qt WebView, Qt WebEngine. Qt Creator is not necessary, but can not be unchecked
+* After the installation copy the folder to another location (**${MAINDIR}**/3rdParty/Qt5.12.1_backup) and uninstall Qt in the Windows program settings
+* Rename Qt5.12.1_backup back to Qt5.12.1
+* From Qt5.12.1/Docs/Qt-5.12 copy all |star| .qch files (only in the main folder) to Qt5.12.1/5.12/msvc2015_64/doc 
+* Start the Qt Assistant (**${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2015_64/bin), open **options/documentation** and delete all. Add then the copied documentation files. 
+* From Qt5.12.1 delete the following things: 
     * folder: dist, Examples, Tools, vcredist, Docs (after having copied the qch files)
     * files: all files in the main folder, e. g. components.xml...
-* Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.6.0/5.6/msvc2013_64/bin
+* Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2015_64/bin
 
 .. note:: 
 
@@ -148,6 +154,11 @@ Start the compilation of the **INSTALL** build solution.
 optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|.
 Delete the executable (*.exe) from the install_x64/x64/vc14/bin folder. They are not needed for the compilation of |itom|. 
 
+.. note::
+
+    Check the entry BUILD_opencv_world to combine all modules in one dll-file. 
+
+
 Creating the 3rdPartyPCL folder
 -------------------------------
 
@@ -164,7 +175,7 @@ If you compile Flann or QHull by yourself, add the entry **CMAKE_DEBUG_POSTFIX**
 Create Boost, Eigen, Flann, QHull
 ========================================
 
-Execute the **boost_1_60_0-msvc-12.0-64.exe** file and install boost on your hard drive. Copy than the folders **boost** and **lib** into **${MAINDIR}/3rdPartyPCL/boost1.60.0-64**. 
+Execute the **boost_1_60_0-msvc-12.0-64.exe** file and install boost on your hard drive in a folder with a short path that is different from QT. Copy than the folders **boost** and **lib** into **${MAINDIR}/3rdPartyPCL/boost1.60.0-64**. 
 
 Unzip from the Eigen zip-file the folders **Eigen** and **unupported** into the **${MAINDIR}/3rdPartyPCL/Eigen3.2.7/**. 
 
