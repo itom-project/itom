@@ -19,9 +19,9 @@ Download minimum required software/packages
 
 First download alle the needed software and packages. This download links are for the current availabe software versions (April 2016). 
 
-* `MS Visual Studio 2015/2017 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (vs_community__45489951.1547806605.exe) 
+* `MS Visual Studio 2017 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (vs_community__45489951.1547806605.exe) 
 * `Qt Visual Studio Add-in 2.3.0 <https://download.qt.io/development_releases/vsaddin/>`_ (qt-vsaddin-msvc2017-2.3.0.vsix)
-* `Qt 5.12.0 for Windows 64-bit (VS 2015/ VS 2017) Offline Installer <https://www.qt.io/offline-installers/>`_ (qt-opensource-windows-x86-5.12.1.exe)
+* `Qt 5.12.0 for Windows 64-bit (VS 2017) Offline Installer <https://www.qt.io/offline-installers/>`_ (qt-opensource-windows-x86-5.12.1.exe)    
 * `CMake 3.13.4 <http://cmake.org/download/>`_ (cmake-3.5.2-win32-x86.msi)
 * `Python 3.7.2 Windows x85-64 executable installer <http://www.python.org/downloads/windows/>`_ (python-3.7.2-amd64.exe) 
     - `Numpy 1.11.0 cp35 win_amd64 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy>`_ (numpy-1.16.2+mkl-cp37-cp37m-win_amd64.whl) 
@@ -36,6 +36,16 @@ First download alle the needed software and packages. This download links are fo
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
 * `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
+.. warning::
+
+    **Qt WebEngine**, **Qt WebEngineWidgets** are only available under VS 2017 as it is shown in the figure below! 
+    
+    Qt 5.10.1 supports **Qt WebEngine**, **Qt WebEngineWidgets** for VS2015.
+    
+.. figure:: images/all-in-one-create/QT_WebEngine_hint.png
+    :scale: 100%
+    :align: center
+
 Download packages for the 3rdPartyPCL tools
 ===========================================
 
@@ -46,15 +56,15 @@ Download packages for the 3rdPartyPCL tools
 * `PCL 1.9.1 source <http://github.com/PointCloudLibrary/pcl/>`_ (pcl-master.zip)
 * FLANN and QHULL can be copied from the current all-in-one development version. 
 
-Install Visual Studio 2015/2017
+Install Visual Studio 2017
 -------------------------------
 
-Install Visual Studio 2015/2017 Community without optional features. 
+Install Visual Studio 2017 Community without optional features. 
 
 Creating the _install_ and 3rdParty folder
 ---------------------------------------------
 
-Create a path on your hard drive with a long, long path name called **${MAINDIR}**. Later, the all-in-one path on the destination computer must be shorter than this path name, due to the Qt patching. For example your path can be called: E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2015_qt5.12.1_x64\\. Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not necessary to create a working |itom|. 
+Create a path on your hard drive with a long, long path name called **${MAINDIR}**. Later, the all-in-one path on the destination computer must be shorter than this path name, due to the Qt patching. For example your path can be called: E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2017_qt5.12.1_x64\\. Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not necessary to create a working |itom|. 
 
 .. figure:: images/all-in-one-create/folder_structure.png
     :scale: 100%
@@ -109,15 +119,15 @@ Creating prebuild version of Qt
 
 For a working |itom| development environment only a prebuild version of Qt is necessary. 
 
-* Install Qt into the **${MAINDIR}**/3rdParty/Qt5.12.1 with the components msvc2015 64-bit, Qt WebView, Qt WebEngine. Qt Creator is not necessary, but can not be unchecked
+* Install Qt into the **${MAINDIR}**/3rdParty/Qt5.12.1 with the components msvc2017 64-bit, Qt WebView, Qt WebEngine. Qt Creator is not necessary, but can not be unchecked
 * After the installation copy the folder to another location (**${MAINDIR}**/3rdParty/Qt5.12.1_backup) and uninstall Qt in the Windows program settings
 * Rename Qt5.12.1_backup back to Qt5.12.1
-* From Qt5.12.1/Docs/Qt-5.12 copy all |star| .qch files (only in the main folder) to Qt5.12.1/5.12/msvc2015_64/doc 
-* Start the Qt Assistant (**${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2015_64/bin), open **options/documentation** and delete all. Add then the copied documentation files. 
+* From Qt5.12.1/Docs/Qt-5.12 copy all |star| .qch files (only in the main folder) to Qt5.12.1/5.12/msvc2017_64/doc 
+* Start the Qt Assistant (**${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2017_64/bin), open **options/documentation** and delete all. Add then the copied documentation files. 
 * From Qt5.12.1 delete the following things: 
     * folder: dist, Examples, Tools, vcredist, Docs (after having copied the qch files)
     * files: all files in the main folder, e. g. components.xml...
-* Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2015_64/bin
+* Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2017_64/bin
 
 .. note:: 
 
@@ -196,7 +206,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk8.2.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
-* Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.12.1/msvc2015_64/lib/cmake/Qt5**. 
+* Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.12.1/msvc2017_64/lib/cmake/Qt5**. 
 * Check **VTK_BUILD_QT_DESIGNER_PLUGIN**.
 
 .. note::
@@ -226,9 +236,9 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 * Set **VTK_DIR** to ${MAINDIR}/3rdPartyPCL/vtk8.2.0/lib/cmake/vtk-8.0
 * Add new entry: **QVTK_LIBRARY_DEBUG** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk8.2.0/lib/vtkGUISupportQtOpenGL-8.2-gd.lib
 * Add new entry: **QVTK_LIBRARY_RELEASE** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk8.2.0/lib/vtkGUISupportQtOpenGL-8.2.lib
-* Set **Qt5Concurrent_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2015_64/lib/cmake/Qt5Concurrent
-* Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2015_64/lib/cmake/Qt5OpenGl_DIR
-* Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2015_64/lib/cmake/Qt5Widgets_DIR
+* Set **Qt5Concurrent_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2017_64/lib/cmake/Qt5Concurrent
+* Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2017_64/lib/cmake/Qt5OpenGl_DIR
+* Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2017_64/lib/cmake/Qt5Widgets_DIR
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.9.1
@@ -249,8 +259,8 @@ The setup.py file needs some changes to work with the new version of the softwar
 
 First set the following variables in the beginning of the file. 
 
-* Set the **qtOriginalBuildPath**. E. g.: "C:\\itom_all-in-one_development\\itom_all-in-one_development\\itom_all-in-one_development\\VS2015_Qt5.12.1_x64\\3rdParty\\Qt5.12.1\\5.12.1\\msvc2015_64"
-* Set the **qtNewBuildPath**. E. g.: "../3rdParty/Qt5.12.1/5.12/msvc2015_64"
+* Set the **qtOriginalBuildPath**. E. g.: "C:\\itom_all-in-one_development\\itom_all-in-one_development\\itom_all-in-one_development\\VS2017_Qt5.12.1_x64\\3rdParty\\Qt5.12.1\\5.12.1\\msvc2017_64"
+* Set the **qtNewBuildPath**. E. g.: "../3rdParty/Qt5.12.1/5.12/msvc2017_64"
 * Set the **numpyRequiredVersion** to the Numpy version, which is attached to the all-in-one development setup. E. g.: "1.11.0"
 * Set the **pythonRequiredVersion** to the python version, which is attached to the all-in-one development setup. E. g.: "3.5."
 
