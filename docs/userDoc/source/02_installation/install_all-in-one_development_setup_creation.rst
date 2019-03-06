@@ -252,6 +252,12 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
     PCL version 1.8.0 causes a compilation error due to some syntax error. 
     A workaround can be find here: https://stackoverflow.com/questions/38508319/pcl-visualizer-cpp-vs-2015-build-error/
 
+.. warning::
+
+    In the case of a CMake Error: **Requested modules not available: vtkGUISupportQtWebkit**
+    Delete the VTK_MODULE **vtkGUISupportQtWebkit** in the **VTK_INSTALL_DIR\\lib\\cmake\\vtk-8.2\\VTKConfig.cmake* in line 118: **set(VTK_MODULES_ENABLED "...")**
+    
+
 Changes in the setup.py file
 -----------------------------
 
@@ -263,6 +269,7 @@ First set the following variables in the beginning of the file.
 * Set the **qtNewBuildPath**. E. g.: "../3rdParty/Qt5.12.1/5.12/msvc2017_64"
 * Set the **numpyRequiredVersion** to the Numpy version, which is attached to the all-in-one development setup. E. g.: "1.11.0"
 * Set the **pythonRequiredVersion** to the python version, which is attached to the all-in-one development setup. E. g.: "3.5."
+* Change the whl-file names of Numpy, Jedi and Parso packages. 
 
 Check in the function **generateCMakeDict** the version of Visual Studio and the paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull**.
 
