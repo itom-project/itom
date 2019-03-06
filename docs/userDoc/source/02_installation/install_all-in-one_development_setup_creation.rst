@@ -109,7 +109,7 @@ For the compilation of |itom|, it is not necessary to have a installed Python on
 * Copy the installed **Python** folder into the **${MAINDIR}**/3rdParty/Python folder. 
 * Deinstall it again. 
 
-.. note:: 
+.. important:: 
 
     You have to copy the installed folder, rename and deinstall it does not work!
 
@@ -129,7 +129,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     * files: all files in the main folder, e. g. components.xml...
 * Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2017_64/bin
 
-.. note:: 
+.. important:: 
 
     Create a path on your hard drive with a long, long path name (called ${MAINDIR}) (later, the all-in-one path on destination computers must be shorter than this path name, due to the Qt patching)
 
@@ -137,9 +137,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     
     The QT version **5.6.2** has a bug which prevent the start of the QT designer {'QTBUG-53984': ('https://bugreports.qt.io/browse/QTBUG-53984', 'QTBUG-53984')}. 
     The workaround is to change the name of **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**, then copy the **Qt5Core.dll** and **Qt5Cored.dll** and change the name of these dll-files into **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 (release August 2017).
-	
-
-    
+	  
     
 Compile OpenCV
 ````````````````
@@ -213,11 +211,15 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 
     Check the Entries **Qt5_DIR**, **Qt5Core_DIR**, **Qt5Sql_DIR**, ..., if they are set to the right path. 
 
-.. warning::
+.. important::
 
     1. Before starting the compilation open in the folder **VTK\\build\\GUISupport\\Qt** the **PluginInstall.cmake** file and change in line **5** **"QVTKWidgetPlugin.dll"** to **"QVTKWidgetPlugin-gd.dll"**
     2. Start **DEBUG** compilation in Visual Studio
     3. Change the **"QVTKWidgetPlugin-gd.dll"** back to **"QVTKWidgetPlugin.dll"** and start **RELEASE** compilation
+    
+.. important:: 
+
+    If VTK returns the warning message: **QVTKWIDGET was deprecated for VTK 8.2 and will be removed in a future version.**, open the vtkSetGet.h file of the VTK source files and comment the line 910 **vtkGenericWarningMacro**.
 
 Compile PCL
 ===========
@@ -252,12 +254,6 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
     PCL version 1.8.0 causes a compilation error due to some syntax error. 
     A workaround can be find here: https://stackoverflow.com/questions/38508319/pcl-visualizer-cpp-vs-2015-build-error/
 
-.. warning::
-
-    In the case of a CMake Error: **Requested modules not available: vtkGUISupportQtWebkit**
-    Delete the VTK_MODULE **vtkGUISupportQtWebkit** in the **VTK_INSTALL_DIR\\lib\\cmake\\vtk-8.2\\VTKConfig.cmake* in line 118: **set(VTK_MODULES_ENABLED "...")**
-    
-
 Changes in the setup.py file
 -----------------------------
 
@@ -269,7 +265,6 @@ First set the following variables in the beginning of the file.
 * Set the **qtNewBuildPath**. E. g.: "../3rdParty/Qt5.12.1/5.12/msvc2017_64"
 * Set the **numpyRequiredVersion** to the Numpy version, which is attached to the all-in-one development setup. E. g.: "1.11.0"
 * Set the **pythonRequiredVersion** to the python version, which is attached to the all-in-one development setup. E. g.: "3.5."
-* Change the whl-file names of Numpy, Jedi and Parso packages. 
 
 Check in the function **generateCMakeDict** the version of Visual Studio and the paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull**.
 
