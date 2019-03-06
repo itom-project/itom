@@ -254,6 +254,11 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
     PCL version 1.8.0 causes a compilation error due to some syntax error. 
     A workaround can be find here: https://stackoverflow.com/questions/38508319/pcl-visualizer-cpp-vs-2015-build-error/
 
+.. warning::
+
+    In the case of a CMake Error: **Requested modules not available: vtkGUISupportQtWebkit**
+    Delete the VTK_MODULE **vtkGUISupportQtWebkit** in the **VTK_INSTALL_DIR\\lib\\cmake\\vtk-8.2\\VTKConfig.cmake* in line 118: **set(VTK_MODULES_ENABLED "...")**
+
 Changes in the setup.py file
 -----------------------------
 
