@@ -257,7 +257,7 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 .. warning::
 
     In the case of a CMake Error: **Requested modules not available: vtkGUISupportQtWebkit**
-    Delete the VTK_MODULE **vtkGUISupportQtWebkit** in the **VTK_INSTALL_DIR\\lib\\cmake\\vtk-8.2\\VTKConfig.cmake* in line 118: **set(VTK_MODULES_ENABLED "...")**
+    Delete the VTK_MODULE **vtkGUISupportQtWebkit** in the **VTK_INSTALL_DIR\\lib\\cmake\\vtk-8.2\\VTKConfig.cmake** in line 118: **set(VTK_MODULES_ENABLED "...")**
 
 Changes in the setup.py file
 -----------------------------
