@@ -109,7 +109,7 @@ For the compilation of |itom|, it is not necessary to have a installed Python on
 * Copy the installed **Python** folder into the **${MAINDIR}**/3rdParty/Python folder. 
 * Deinstall it again. 
 
-.. important:: 
+.. warning:: 
 
     You have to copy the installed folder, rename and deinstall it does not work!
 
@@ -129,7 +129,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     * files: all files in the main folder, e. g. components.xml...
 * Copy OpenSSL **libeay32.dll** and **ssleay32.dll** to the **${MAINDIR}**/3rdParty/Qt5.12.1/5.12/msvc2017_64/bin
 
-.. important:: 
+.. warning:: 
 
     Create a path on your hard drive with a long, long path name (called ${MAINDIR}) (later, the all-in-one path on destination computers must be shorter than this path name, due to the Qt patching)
 
@@ -211,13 +211,13 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 
     Check the Entries **Qt5_DIR**, **Qt5Core_DIR**, **Qt5Sql_DIR**, ..., if they are set to the right path. 
 
-.. important::
+.. warning::
 
     1. Before starting the compilation open in the folder **VTK\\build\\GUISupport\\Qt** the **PluginInstall.cmake** file and change in line **5** **"QVTKWidgetPlugin.dll"** to **"QVTKWidgetPlugin-gd.dll"**
     2. Start **DEBUG** compilation in Visual Studio
     3. Change the **"QVTKWidgetPlugin-gd.dll"** back to **"QVTKWidgetPlugin.dll"** and start **RELEASE** compilation
     
-.. important:: 
+.. warning:: 
 
     If VTK returns the warning message: **QVTKWIDGET was deprecated for VTK 8.2 and will be removed in a future version.**, open the vtkSetGet.h file of the VTK source files and comment the line 910 **vtkGenericWarningMacro**.
 
