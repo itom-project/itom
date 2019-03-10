@@ -27,22 +27,34 @@ selection dialog, where you can choose the appropriate user and |itom| loads the
 Section General
 =================
 
-**Application**
+Application
+---------------
 
-* If the "show message before closing the application" checkbox is checked, the application will ask you if you really want to close |itom|.
-* itom is created as multi-threaded application. For instance, every hardware instance runs in its own thread and can therefore run in parallel to the main application.
+* If the "show message before closing the application" checkbox is checked, the application will ask you if you really want to close |itom| before it is really closed.
+
+* |itom| is created as multi-threaded application. For instance, every hardware instance runs in its own thread and can therefore run parallely to the main application.
   Timeout values control the sychronization process between all these threads. Timeout values for different situations can be adjusted using the spin boxes in the group *Timeouts*.
+  
+  There are two specific timeout values for initializing or closing a plugin as well as loading or saving data from or to files. All other timeouts are handled by the general
+  timeout value.
+  
 * Library paths: Before itom starts loading all plugin and designer plugin libraries, the local PATH environment variable of |itom| can be extended by further values.
   This gives the possibility to add further search pathes for 3rd party libraries (e.g. required by plugins) without the need to globally changing the environment variables of
   the operating system. Hereby, the entry *pathes from global PATH variable* is a placeholder for the global PATH variable such that you can define whether a new path
   is prepended or appended to the existing list.
   
-**Language**
+Language
+----------------
 
 The default language of |itom| including |Python| is English. However, it is possible to add further translations for texts of the graphical user interface and further messages.
-Select the desired language in this section and restart |itom| to load the new language strings.
+Select the desired language in this section and restart |itom| to load the new languages.
 
-**Help Viewer**
+.. note::
+    
+    Hint: Strings, which are related to script commands are usually not translated, since the Python script language itself is always in English.
+
+Help Viewer
+----------------
 
 This property section is responsible for the behaviour of the "Help" dialog. If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
 
@@ -50,18 +62,6 @@ This property section is responsible for the behaviour of the "Help" dialog. If 
     :scale: 100%
     :align: center
     
-**Styles and Themes**
-
-Usually, |itom| is started with a look that depends on the default look of the operating system. However, this look can be changed by specific style sheets (named qss files of
-Qt). In this property page, it is possible to select between the following style sheet options:
-
-* no stylesheet (default look)
-* some pre-defined stylesheets (located in the **styles/stylesheets**-folder of |itom|), e.g. a dark theme
-* use-defined stylesheet (indicate a qss style sheet file and an optional rcc resource file)
-
-Some icons have two different representations, one for bright themes and one for dark themes. It is possible to switch between both themes by the drop-down box. 
-Changes to style-sheets and icons are only effectuated after a restart of |itom|.
-
 *Local and remote databases*
 
 Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are saved on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
@@ -72,12 +72,21 @@ If the the internet connection is very slow a timeout error might appear during 
 
 The Algorithms, Widgets, DataIO and Actuator help files are dynamically created during runtime. These help files are displayed when the corresponding checkboxes in the red box are checked.
 
-**Language**
+Styles and Themes
+----------------------
 
-By selecting a language inside the list box and clicking the "Apply" button a new language for itom is selected. Itom must be restarted to load the new language.
+Usually, |itom| is started with a look that depends on the default stylesheet of the operating system. However, this look can be changed by specific style sheets (named qss files of
+Qt). In this property page, it is possible to select between the following style sheet options:
 
-Console
-===============
+* no stylesheet (default look)
+* some pre-defined stylesheets (located in the **styles/stylesheets**-folder of |itom| or its subfolders). For a dark theme, the theme in the **darkStyle** subfolder is recommended.
+* use-defined stylesheet (indicate a qss style sheet file and an optional rcc resource file)
+
+Some icons have two different representations, one for bright themes and one for dark themes. It is possible to switch between both themes by the drop-down box. 
+Changes to style-sheets and icons are only effectuated after a restart of |itom|.
+
+Section Console
+=================
 
 **General**
 
@@ -91,22 +100,31 @@ The first three radio buttons manage when a line is wrapped. The group box under
 
 These options refer to the command history widget that is available under View -> Toolboxes -> Command History. 
 
-Python
+Section Python
 ===============
 
-**General**
+General
+----------------
 
-* Use the drop-down menu to define if changes in scripts should automatically be saved before executing the script
-* If python is started, it tries to find its internal directory for the built-in modules of |Python|. This directory is called PYTHONHOME. Usually, this
-  directory is set during the setup process of |Python|. However, this may fail (e.g. if Python has been installed with another user account). Then, itom might
-  crash at startup since |Python| got a wrong home directory. If this is the case, indicate the right base directory of |Python| and restart |itom|.
+* Use the drop-down menu to define if changes in scripts should automatically be saved before executing the script.
+* Every version of |itom| is compiled against a certain version of Python. At runtime, Python can be loaded from different directories, which can be given in the 2nd part of this
+  property page. Per default, Python is located in the **python3** subdirectory of your |itom| installation. However, if Python is installed as stand-alone application, it also might
+  publish its root dir in the registry (Windows) or in the environment variable PYTHONHOME. Choose the second option to force itom to look for one of these directories. Via the third
+  option is it also possible to indicate a user-defined directory, where the Python installation is located.
+  You have to restart |itom| such that these changes are applied.
 
-**Startup** 
+Startup
+--------------------
 
-By "Add File" is is possible to add python files that are executed when itom is started. It is kind of like the autostart folder in Windows.
+It is possible to indicate one or several python scripts, which will executed after the startup of |itom|. These files can be indicated in this property page. Another possiblity to
+define this list is by editing a user role in the :ref:`user management system <gui-user-management>` of |itom|. You can load new files, remove existing files from the list or change the
+order of execution. 
 
-Editor
-===============
+Usually, all files are stored as absolute path in the settings file. However, it is also possible to let |itom| shorten newly loaded files to a relative path with respect to the root directory
+of |itom|. This option can be enabled by the checkbox below the file list.
+
+Section Editor
+================
 
 .. _gui-prop-py-general:
     
@@ -199,8 +217,23 @@ It is possible to export all styles to an **ini** file that can be imported agai
 with the xml-style files of the open source project **Notepad++**, such that these xml files can be imported, too. Some xml style files are located
 in the **styles/editorThemes** folder.
 
-Plugins
-==========
+Section Workspace
+===================
+
+The properties with this section allow modifying features in the workspace widget. Currently, this is one feature:
+
+**Unpack imported files**
+
+Data container files like *.idc or *.mat contain a main dictionary with one or several items. By this option, you can choose the import behaviour of these file types.
+If the option is checked, the main dictionary in the file is unpacked and all direct children are put as separate variables to the workspace. If unchecked, the main dictionary
+itself with all its children is put as one variable into the workspace where the user is asked for the name of this major dictionary if the file is imported.
+
+.. note::
+    
+    This behaviour can also be changed by the unpack toggle button in the toolbar of the workspace toolbox.
+
+Section Plugins
+==================
 
 **Algorithms and Filters**
 
@@ -209,12 +242,13 @@ available on the machine. However, it is sometimes more powerful to reduce this 
 operating system still can use some processors for their work. Especially old computers might run faster if algorithms are limited to less threads than available.
 This maximum number can be controlled by this property page.
 
-Plots and Figures
+Section Plots and Figures
 ==============================
 
 .. _gui-default-plots:
 
-**Default Plots**
+Default Plots
+------------------
 
 * The first table lists all available plugins to plot data. The different columns show what kind of input data they accept and what they should be used for.
 * The second table shows different categories for plots. For each category a default plugin can be selected. This default plugin will be used to plot the incoming data. To change the standard plugin, double click the last column. 
@@ -223,7 +257,8 @@ Plots and Figures
     :scale: 80%
     :align: center
     
-**Default Style Settings**
+Default Style Settings
+------------------------
 
 Here you have the possibility to set global plot settings like e.g. the legend font. If a setting is not provided by any plot type the setting will be ignored. 
 The figures below are showing some examples of the different settings. 
@@ -236,9 +271,36 @@ The figures below are showing some examples of the different settings.
     :scale: 80%
     :align: center
 
+Palette Settings
+-------------------
 
-.
+The standard plots of |itom| (e.g. *itom2dqwtplot*, ...) provide different color maps, which can be choosen to visualize the data. There is a default list of 
+color palettes, which is pre-defined for each |itom| installation. Using the color palette property page, it is possible to add additional color palettes.
+These palettes can also be exported and / or imported, such that a backup of user-defined palettes is possible. 
 
+.. figure:: images/propEditorColorPalette.png
+    :scale: 80%
+    :align: center
+
+An |itom| color palette is defined by an array of 256 colors, which are mainly defined by a number of color stops. Each color stop consists of a position and
+a color value. The array values inbetween two color stops are calculated by means of a linear interpolation.
+
+If you want to create a new color palette, you can either start from scratch and add a new palette, or you duplicate an existing palette. All user-defined palettes
+can be freely adjusted, indicated by the missing key icon in the list view above.
+
+If you change any option of the selected color palette, you have to apply these changes by clicking the corresponding button. In the options area below, you will
+find the following features:
+
+* **name**: every color palette must have an unique name. This name will be displayed in any newly opened plot.
+* **inverse colors**: Every color does not only consist of an array of colors, but also of two inverse colors (colors with a high contrast with respect to the available
+    colors in the palette itself), as well as of an invalid color, which is used to visualize NaN values. Change these colors by clicking the appropriate color button.
+* **color stops**: Click on any color stop in the line plot to see the color and position (normalized between 0 and 1) of the color stop. Move a color stop with the mouse
+    to change the position or enter a new position in the text field. You can also remove a selected color stop or insert a new color stop right of the currently selected
+    color stop. Furthermore there is a possibility to change the positions of all color stops such that an equidistant distribution is obtained.
+* **toggle color buttons**: You can toggle the red, green and blue color button in order to display or hide the specific red, green and blue line.
+
+Using Python, it is also possible to get a list of all available color palette names, using the method :py:meth:`itom.getPaletteList`. In order to obtain a dictionary
+with all relevant data of one specific color palette, use the method :py:meth:`itom.getPalette` and pass the name of the requested color palette.
 
 
 
