@@ -2181,7 +2181,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod) -> connects the signal of the actuator with the given callable python method \n\
+PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
 \n\
 This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
 Every Actuator can send various signals. Use this method to connect any signal to any \n\
@@ -2194,19 +2194,23 @@ signalSignature : {str} \n\
     This must be the valid signature, known from the Qt-method *connect* (e.g. 'reachedTarget(bool)') \n\
 callableMethod : {python method or function} \n\
     valid method or function that is called if the signal is emitted. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
 --------- \n\
 disconnect");
-PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args)
+PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
     const char* signalSignature;
     PyObject *callableMethod;
     int signalIndex;
     int tempType;
     IntList argTypes;
+    int minRepeatInterval = 0;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -2244,7 +2248,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObje
     }
     if (self->signalMapper)
     {
-        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes))
+        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes, minRepeatInterval))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
@@ -2272,14 +2276,15 @@ See Also \n\
 --------- \n\
 connect \n\
 ");
-PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args)
+PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args, PyObject* kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
     int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -2838,8 +2843,8 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
-   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
-   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS | METH_KEYWORDS, pyActuatorConnect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, pyActuatorDisconnect_doc},
    {"info",(PyCFunction)PythonPlugins::PyActuatorPlugin_info, METH_VARARGS, pyActuatorInfo_doc},
    {NULL}  /* Sentinel */
 };
@@ -4469,7 +4474,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
 
     return Py_BuildValue("i", *interval);
 }
-PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod)->connects the signal of the actuator with the given callable python method \n\
+PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
 \n\
 This instance of *dataIO* wraps a dataIO device (ADDA, grabber or rawIO), that is defined by a C++ - class, that is finally derived from *QObject*. \n\
 Every dataIO can send various signals. Use this method to connect any signal to any \n\
@@ -4479,23 +4484,27 @@ signal definition must be convertable into a python object. \n\
 Parameters \n\
 ---------- - \n\
 signalSignature : {str} \n\
-This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
+    This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
 callableMethod : {python method or function} \n\
-valid method or function that is called if the signal is emitted. \n\
+    valid method or function that is called if the signal is emitted. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
 -------- - \n\
 disconnect\n\
 ");
-PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args)
+PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
     const char* signalSignature;
     PyObject *callableMethod;
     int signalIndex;
     int tempType;
     IntList argTypes;
+    int minRepeatInterval = 0;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -4533,7 +4542,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *
     }
     if (self->signalMapper)
     {
-        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes))
+        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes, minRepeatInterval))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established. Maybe a wrong sifnature is used");
             return NULL;
@@ -4547,6 +4556,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *
 
     Py_RETURN_NONE;
 }
+
+//--------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_disconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
 \n\
 Parameters \n\
@@ -4560,14 +4571,15 @@ See Also \n\
 --------- \n\
 connect \n\
 ");
-PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args)
+PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
     int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -4801,8 +4813,8 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
-   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
-   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
+   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_connect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_disconnect_doc },
    { "info",(PyCFunction)PythonPlugins::PyDataIOPlugin_info, METH_VARARGS,PyDataIOPlugin_info_doc },
    {NULL}  /* Sentinel */
 };

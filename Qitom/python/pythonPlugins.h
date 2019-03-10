@@ -99,8 +99,8 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_showToolbox(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_hideToolbox(PyActuatorPlugin *self);
 
-       static PyObject *PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args);
-       static PyObject *PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args);
+       static PyObject *PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args, PyObject* kwds);
+       static PyObject *PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args, PyObject* kwds);
        static PyObject *PyActuatorPlugin_info(PyActuatorPlugin *self, PyObject* args);
        static PyObject *PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self);
 
@@ -158,8 +158,8 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self);
-       static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args);
-       static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
+       static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args);
        
        static PyMemberDef  PyDataIOPlugin_members[];
