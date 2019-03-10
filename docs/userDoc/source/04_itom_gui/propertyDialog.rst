@@ -5,16 +5,24 @@
 Property Dialog
 ******************
 
-The property dialog stores the main itom settings, including all the widgets settings. The p
-roperty dialog can be found by clicking "File -> "Properties...". It has different sections with 
-subsections corresponding to the sections on this help page. 
+The property dialog of itom provides an overview of many basic itom settings, as well as global settings for many plots etc.
+It can be found by clicking **Properties...** in the **File** menu of itom. It consists of different sections with
+several subsections. Each of these subsections referes to a specific group of settings. In the following list you will
+get more information about the specific sections and subsections.
 
-itom and its settings
-======================
+itom, its settings and the user management
+===========================================
 
-itom saves all settings (including the current state of toolboxes, windows...) in one local **ini** file,
-that is located in the *itomSettings* subfolder. Each registered user of |itom| has its own settings file.
-Many possible configurations of |itom| can be controlled and adjusted by the property dialog.
+In itom, all settings are stored in an **ini** file in the **itomSettings** folder. The default settings file is **itom.ini**.
+If this file does not exist, a copy of **itomDefault.ini** in the same folder is tried to be created and used as initial guess
+for the **itom.ini** file.
+
+Such an **ini**-file does not only contain the settings, that are adjustable via the property dialog, but also the current state
+and / or geometry of windows, toolboxes etc. This state is always stored if itom is closed and restored during a restart of the application.
+
+Using the :ref:`user management system <gui-user-management>` of |itom|, it is possible to create new users. Each user then gets
+its own **ini** settings file in the folder **itomSettings**. If more users than the default users are available, |itom| starts with a user
+selection dialog, where you can choose the appropriate user and |itom| loads the settings from the corresponding settings file.
 
 Section General
 =================
