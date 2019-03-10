@@ -757,7 +757,7 @@ void MainWindow::createToolBars()
 
     
 
-    if (m_actions.contains("python_global_runmode") && m_actions["python_global_rumode"])
+    if (m_actions.contains("python_global_runmode") && m_actions["python_global_runmode"])
     {
         QToolBar *pythonToolBar = addToolBar(tr("Python"));
         pythonToolBar->setObjectName("toolbarPython");
