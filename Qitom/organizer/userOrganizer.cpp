@@ -124,7 +124,9 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
         // User(name) variable is not necessarily OS dependend. So this will give us the best chance to find the actual user name http://stackoverflow.com/questions/26552517/get-system-username-in-qt
         QString curSysUser = qgetenv("USERNAME");
         if (curSysUser.isEmpty())
+        {
             curSysUser = qgetenv("USER");
+        }
 
         if (defUserName.isEmpty())
         {

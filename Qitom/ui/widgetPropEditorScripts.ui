@@ -71,7 +71,7 @@
              <set>Qt::AlignCenter</set>
             </property>
             <property name="suffix">
-             <string>[sec]</string>
+             <string> s</string>
             </property>
             <property name="decimals">
              <number>1</number>
@@ -138,7 +138,7 @@
         <item>
          <widget class="QDoubleSpinBox" name="spinClassNavigatorInterval">
           <property name="suffix">
-           <string>[sec]</string>
+           <string> s</string>
           </property>
           <property name="decimals">
            <number>1</number>

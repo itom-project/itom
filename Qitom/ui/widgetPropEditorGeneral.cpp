@@ -36,6 +36,9 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
+
+    ui.groupExtends->setVisible(false);
+    ui.groupEolMode->setVisible(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -69,13 +72,6 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkIndentUseTabs->setChecked(settings.value("indentationUseTabs", false).toBool());
     ui.spinIndentWidth->setValue(settings.value("indentationWidth", 4).toInt());
 
-    QString indentationWarning = settings.value("indentationWarning", "Inconsistent").toString();
-    ui.radioIndentWarn1->setChecked(indentationWarning == "NoWarning");
-    ui.radioIndentWarn2->setChecked(indentationWarning == "Inconsistent");
-    ui.radioIndentWarn3->setChecked(indentationWarning == "TabsAfterSpaces");
-    ui.radioIndentWarn4->setChecked(indentationWarning == "Spaces");
-    ui.radioIndentWarn5->setChecked(indentationWarning == "Tabs");
-
     ui.checkIndentShowGuides->setChecked(settings.value("showIndentationGuides", true).toBool());
     ui.checkShowWhitespace->setChecked(settings.value("showWhitespace", true).toBool());
 
@@ -107,59 +103,12 @@ void WidgetPropEditorGeneral::writeSettings()
         settings.setValue("eolMode", "EolMac");
     }
 
-    //// Fold Style
-    //if (ui.radioFoldingPM->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "plus_minus");
-    //}
-    //else if (ui.radioFoldingCirclesTree->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "circles_tree");
-    //}
-    //else if (ui.radioFoldingCircles->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "circles");
-    //}
-    //else if (ui.radioFoldingSquaresTree->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "squares_tree");
-    //}
-    //else if (ui.radioFoldingSquares->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "squares");
-    //}
-    //else if (ui.radioFoldingNone->isChecked())
-    //{
-    //        settings.setValue("foldStyle", "none");
-    //}
-
     // Indentation
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
     settings.setValue("indentationWidth", ui.spinIndentWidth->value());
     settings.setValue("showIndentationGuides", ui.checkIndentShowGuides->isChecked());
     settings.setValue("showWhitespace", ui.checkShowWhitespace->isChecked());
-
-    if (ui.radioIndentWarn1->isChecked())
-    {
-        settings.setValue("indentationWarning", "NoWarning");
-    }
-    else if (ui.radioIndentWarn2->isChecked())
-    {
-        settings.setValue("indentationWarning", "Inconsistent");
-    }
-    else if (ui.radioIndentWarn3->isChecked())
-    {
-        settings.setValue("indentationWarning", "TabsAfterSpaces");
-    }
-    else if (ui.radioIndentWarn4->isChecked())
-    {
-        settings.setValue("indentationWarning", "Spaces");
-    }
-    else
-    {
-        settings.setValue("indentationWarning", "Tabs");
-    }
 
     //Extends
     settings.setValue("extraAscent", ui.spinExtraAscent->value());

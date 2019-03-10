@@ -25,6 +25,7 @@
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../helper/IOHelper.h"
+#include "../organizer/userOrganizer.h"
 
 #include <qheaderview.h>
 #include <qclipboard.h>
@@ -328,6 +329,8 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::createActions()
 {
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
     m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
     m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("Change To Parent Folder"), this);
@@ -336,10 +339,15 @@ void FileSystemDockWidget::createActions()
     m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
     m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
-    m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
-    m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
-    m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
-    m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
+
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
+        m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
+        m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
+        m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
+    }
+
     m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("Locate On Disk"), this);
     m_pActLocateOnDisk->connectTrigger(this, SLOT(mnuLocateOnDisk()));
     m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
@@ -367,8 +375,8 @@ void FileSystemDockWidget::createActions()
 void FileSystemDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction(m_pActOpenFile->action());
-    m_pContextMenu->addAction(m_pActExecuteFile->action());
+    if (m_pActOpenFile) m_pContextMenu->addAction(m_pActOpenFile->action());
+    if (m_pActExecuteFile) m_pContextMenu->addAction(m_pActExecuteFile->action());
     m_pContextMenu->addAction(m_pActLocateOnDisk->action());
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_pActRenameItem->action());
@@ -849,7 +857,11 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
     {
         if (!this->m_pFileSystemModel->fileInfo(index).isDir())
         {
-            IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
+            ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+            if (uOrg->hasFeature(featDeveloper))
+            {
+                IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
+            }
         }
         else
         {

@@ -80,7 +80,7 @@ public slots:
     void dockScriptTab(ScriptDockWidget* widget, int index, bool closeDockIfEmpty = false);
     void undockScriptTab(ScriptDockWidget* widget, int index, bool undockToNewScriptWindow = false, bool closeDockIfEmpty = false);
 
-    void openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
+    RetVal openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
     RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false);
 

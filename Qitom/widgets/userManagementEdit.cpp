@@ -62,7 +62,7 @@ bool DialogUserManagementEdit::saveUser()
     QModelIndex startIdx = m_userModel->index(0, 1);
     if (newUser && !m_userModel->match(startIdx, Qt::DisplayRole, uid, -1).isEmpty())
     {
-        QMessageBox::critical(this, tr("Error"), tr("UserID already exists! Cannot create user!"), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Error"), tr("User ID already exists! Cannot create user!"), QMessageBox::Ok);
         return false;
     }
 
@@ -182,6 +182,7 @@ QString DialogUserManagementEdit::clearName(const QString &name)
     name_.replace(QChar(0x00, 0xD6), "Oe"); //german umlaut 'O with diaresis' replaced by Oe
     name_.replace(QChar(0x00, 0xDC), "Ue"); //german umlaut 'U with diaresis' replaced by Ue
     name_.replace(QChar(0x00, 0xDF), "ss"); //german sharp s replaced by ss
+    name_.replace(" ", "_"); //replace space by underscore
 
     return name_;
 }
@@ -190,9 +191,18 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget *parent, Qt::WindowFlags f) :
     QDialog(parent, f),
     m_userModel(userModel),
-    m_fileName(filename)
+    m_fileName(filename),
+    m_osUser("")
 {
     ui.setupUi(this);
+
+    m_osUser = qgetenv("USERNAME");
+    if (m_osUser.isEmpty())
+    {
+        m_osUser = qgetenv("USER");
+    }
+
+    ui.cmdUseWindowsUser->setVisible(m_osUser != "");
 
     if (m_fileName == "")
     {
@@ -356,6 +366,35 @@ void DialogUserManagementEdit::on_pb_upScript_clicked()
         ui.lv_startUpScripts->insertItem(currentRow - 1, text);
         ui.lv_startUpScripts->setCurrentRow(currentRow - 1);
         updateScriptButtons();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_cmdUseWindowsUser_clicked()
+{
+    ui.lineEdit_name->setText(m_osUser);
+
+    if (m_fileName == "" && ui.cmdAutoID->isChecked())
+    {
+        ui.lineEdit_id->setText(clearName(m_osUser));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_lineEdit_name_textChanged(const QString &text)
+{
+    if (m_fileName == "" && ui.cmdAutoID->isChecked())
+    {
+        ui.lineEdit_id->setText(clearName(text));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::on_cmdAutoID_toggled(bool checked)
+{
+    if (checked && m_fileName == "")
+    {
+        ui.lineEdit_id->setText(clearName(ui.lineEdit_name->text()));
     }
 }
 

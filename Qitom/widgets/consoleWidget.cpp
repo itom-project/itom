@@ -876,7 +876,9 @@ void ConsoleWidget::mouseDoubleClickEvent(QMouseEvent *e)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 {
-    if (modifiers == 0)
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+    if (uOrg->hasFeature(featDeveloper) && modifiers == 0)
     {
         QString selectedText = text(line);
 
@@ -1795,7 +1797,7 @@ void ConsoleWidget::contextMenuAboutToShow(int contextMenuLine)
     m_contextMenuActions["undo_redo_separator"]->setVisible(!read_only);
     m_contextMenuActions["cut"]->setVisible(!read_only);
     m_contextMenuActions["paste"]->setVisible(!read_only);
-    m_contextMenuActions["delete"]->setVisible(!read_only);
+    m_contextMenuActions["delete"]->setVisible(true);
 
     if (!read_only)
     {
