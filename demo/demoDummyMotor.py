@@ -67,7 +67,7 @@ while not targetReached:
     if all([s & actuator.actuatorAtTarget for s in state]):
         targetReached = True
     else:
-        print("Current state: %s, current positions: %s" % (state, stage.currentPositions))
+        #print("Current state: %s, current positions: %s" % (state, stage.currentPositions))
         time.sleep(0.1)
 
 
@@ -85,7 +85,10 @@ def statusChanged(state, currentPos):
     
 #the method 'statusChanged' can only be called if the script is not executing any more.
 #Therefore this approach is made for GUI applications
-stage.connect("actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged)
+#since the actuatorStatusChanged signal might be emitted very often, a minimum timeout of 100ms will
+#be added to the connection, such that the statusChanged slot is only called after 100ms again. All intermediate
+#calls are ignored (new in itom 3.2)
+stage.connect("actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged, 100)
 
 stage.setPosAbs(0, 0.0, 1, 0.0)
 
