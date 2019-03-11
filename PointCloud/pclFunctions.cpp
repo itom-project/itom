@@ -45,6 +45,14 @@ namespace ito
 namespace pclHelper
 {
 
+template<typename _Tp> bool is_finite(const _Tp &value) { return std::isfinite(value); }
+template<> bool is_finite<ito::uint8>(const ito::uint8 &/*value*/) { return true; }
+template<> bool is_finite<ito::int8>(const ito::int8 &/*value*/) { return true; }
+template<> bool is_finite<ito::uint16>(const ito::uint16 &/*value*/) { return true; }
+template<> bool is_finite<ito::int16>(const ito::int16 &/*value*/) { return true; }
+template<> bool is_finite<ito::uint32>(const ito::uint32 &/*value*/) { return true; }
+template<> bool is_finite<ito::int32>(const ito::int32 &/*value*/) { return true; }
+
 //------------------------------------------------------------------------------------------------------------------------------
 //! converts pcl::PointXYZRGB to pcl::PointXYZRGBA
 /*!
@@ -788,7 +796,7 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
 
             for (int j = 0; j < x->cols; j++)
             {
-                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
+                if ((std::isfinite(zRow[j]) && std::isfinite(yRow[j]) && std::isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -822,7 +830,7 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
                 point.y = yRow[j];
                 point.z = zRow[j];
 
-                if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
+                if (!std::isfinite(point.z) || !std::isfinite(point.x) || !std::isfinite(point.y))
                 {
                     cloud->is_dense = false;
                 }
@@ -871,7 +879,7 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
 
             for (int j = 0; j < x->cols; j++)
             {
-                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
+                if ((std::isfinite(zRow[j]) && std::isfinite(yRow[j]) && std::isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -907,7 +915,7 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
                 point.z = zRow[j];
                 point.intensity = iRow[j];
 
-                if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
+                if (!std::isfinite(point.z) || !std::isfinite(point.x) || !std::isfinite(point.y))
                 {
                     cloud->is_dense = false;
                 }
@@ -957,7 +965,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
 
             for (int j = 0; j < x->cols; j++)
             {
-                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
+                if ((std::isfinite(zRow[j]) && std::isfinite(yRow[j]) && std::isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -994,7 +1002,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
                 point.z = zRow[j];
                 point.rgba = cRow[j].rgba;
 
-                if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
+                if (!std::isfinite(point.z) || !std::isfinite(point.x) || !std::isfinite(point.y))
                 {
                     cloud->is_dense = false;
                 }
@@ -1154,12 +1162,12 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
 
         for (int i = 0; i < height; i++)
         {
-            _TpM *zRow = (_TpM*)mapDisp->ptr<_TpM>(i);
-            _TpI *iRow = (_TpI*)mapInt->ptr<_TpI>(i);
+            const _TpM *zRow = mapDisp->ptr<_TpM>(i);
+            const _TpI *iRow = mapInt->ptr<_TpI>(i);
 
             for (int j = 0; j < width; j++)
             {
-                if (pcl_isfinite(zRow[j]))
+                if (is_finite<_TpM>(zRow[j]))
                 {
                     point.x = firstX + j * stepX;
                     point.y = firstY + i * stepY;
@@ -1206,7 +1214,7 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
                 point.z = zRow[j];
                 point.intensity = (iRow[j] - minI) * scaleI;
 
-                if (!pcl_isfinite(point.z))
+                if (!std::isfinite(point.z))
                 {
                     cloud->is_dense = false;
                 }
@@ -1242,11 +1250,11 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
 
         for (int i = 0; i < height; i++)
         {
-            _TpM *zRow = (_TpM*)mapDisp->ptr<_TpM>(i);
+            const _TpM *zRow = mapDisp->ptr<_TpM>(i);
 
             for (int j = 0; j < width; j++)
             {
-                if (pcl_isfinite(zRow[j]))
+                if (is_finite<_TpM>(zRow[j]))
                 {
                     point.x = firstX + j * stepX;
                     point.y = firstY + i * stepY;
@@ -1290,7 +1298,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
                 point.y = firstY + i * stepY;
                 point.z = zRow[j];
 
-                if (!pcl_isfinite(point.z))
+                if (!std::isfinite(point.z))
                 {
                     cloud->is_dense = false;
                 }
@@ -1607,7 +1615,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
 
                     for (int j = 0; j < z->cols; j++)
                     {
-                        if (!(pcl_isnan(zRow[j])))
+                        if (!(std::isnan(zRow[j])))
                         {
                             point.x = firstX + j * stepX;
                             point.y = firstY + i * stepY;
@@ -1652,7 +1660,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                         point.y = firstY + i * stepY;
                         point.z = zRow[j];
 
-                        if (!pcl_isfinite(point.z))
+                        if (!std::isfinite(point.z))
                         {
                             cloud->is_dense = false;
                         }
@@ -1687,7 +1695,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
 
                     for (int j = 0; j < z->cols; j++)
                     {
-                        if (!(pcl_isnan(zRow[j])))
+                        if (!(std::isnan(zRow[j])))
                         {
                             point.x = firstX + j * stepX;
                             point.y = firstY + i * stepY;
@@ -1735,7 +1743,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                         point.z = zRow[j];
                         point.rgba = cRow[j].rgba;
 
-                        if (!pcl_isfinite(point.z))
+                        if (!std::isfinite(point.z))
                         {
                             cloud->is_dense = false;
                         }

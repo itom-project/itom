@@ -102,11 +102,6 @@ private:
     QSignalMapper *m_openScriptsMapper;     /*!<  Maps signal from the opened scripts" actions */
     QSignalMapper *m_openFigureMapper;      /*!<  Maps signal from the opened figure actions */
 
-    QToolBar* m_aboutToolBar;
-    QToolBar* m_appToolBar;
-    QToolBar* m_toolToolBar;
-    QToolBar* m_pythonToolBar;
-
     QMap<QString, QToolBar*> m_userDefinedToolBars;
     QMap<QString, QMenu* > m_userDefinedRootMenus;
     QSignalMapper *m_userDefinedSignalMapper;

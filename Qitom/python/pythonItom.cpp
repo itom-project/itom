@@ -92,6 +92,10 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
 
     if (locker.getSemaphore()->wait(PLUGINWAIT))
     {
+        if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+        {
+            return NULL;
+        }
         Py_RETURN_NONE;
     }
     else
@@ -124,6 +128,10 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 
     if (locker.getSemaphore()->wait(PLUGINWAIT))
     {
+        if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+        {
+            return NULL;
+        }
         Py_RETURN_NONE;
     }
     else
@@ -203,11 +211,15 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 
     if (locker.getSemaphore()->wait(60000)) //longer time, since msgbox may appear
     {
+        if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+        {
+            return NULL;
+        }
         Py_RETURN_NONE;
     }
     else
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
         {
             return PyErr_Occurred();
         }

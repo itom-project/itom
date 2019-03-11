@@ -142,11 +142,11 @@ categorized into the global namespace (**Global Scope**).
 Automatic syntax check
 ========================
 
-If desired, the current script can be checked for syntax and other errors or hints. This is done using the python package **frosted** (https://pypi.python.org/pypi/frosted/).
-You need to have this package installed in order to benefit from this service. If **frosted** is not installed, the syntax check is automatically disabled.
+If desired, the current script can be checked for syntax and other errors or hints. This is done using the python package **pyflakes** (https://pypi.python.org/pypi/pyflakes/).
+You need to have this package installed in order to benefit from this service. If **pyflakes** is not installed, the syntax check is automatically disabled.
 
-If **frosted** is installed, the syntax and style check can be dis- or enabled and configured via the :ref:`property dialog of itom <gui-prop-py-styles>`. Syntax bugs or other
-hints, warnings or errors detected by **frosted** will be displayed via a bug symbol in the left margin of the script editor window:
+If **pyflakes** is installed, the syntax and style check can be dis- or enabled and configured via the :ref:`property dialog of itom <gui-prop-py-styles>`. Syntax bugs or other
+hints, warnings or errors detected by **pyflakes** will be displayed via a bug symbol in the left margin of the script editor window:
 
 .. figure:: images/editor-syntax-check.png
     :scale: 100%
@@ -157,12 +157,17 @@ for a bug and a bookmark in one line. Please note, that one line can also contai
 
 .. note::
     
-    You can automatically download and install **frosted** using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible via the *Script* menu of the main window.
-    Click *install* in the manager and search the python package index for the package **frosted**. Try to call::
+    You can automatically download and install **pyflakes** using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible via the *Script* menu of the main window.
+    Click *install* in the manager and search the python package index for the package **pyflakes**. Try to call::
         
-        import frosted
+        import pyflakes
         
-    to check if frosted is installed correctly.
+    to check if pyflakes is installed correctly.
+
+.. note::
+    
+    Older versions of |itom| used the former python package **frosted** to provide the syntax check. This package can still be used. However it is not maintained any more,
+    therefore it is recommended to switch to the equivalent package **pyflakes**.
     
 
 .. _gui-editor-iconbrowser:

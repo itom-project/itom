@@ -85,63 +85,6 @@
           </item>
          </layout>
         </item>
-        <item>
-         <widget class="QGroupBox" name="groupIndentationWarning">
-          <property name="title">
-           <string>Indentation Warning</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Indentation is displayed as being bad, if...</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioIndentWarn1">
-             <property name="text">
-              <string>No warning</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioIndentWarn2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Indentation is made up of a different combination (tabs/spaces) compared to previous line</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioIndentWarn3">
-             <property name="text">
-              <string>Indentation is made up of spaces followed by tabs</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioIndentWarn4">
-             <property name="text">
-              <string>Indentation contains spaces</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioIndentWarn5">
-             <property name="text">
-              <string>Indentation contains tabs</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>

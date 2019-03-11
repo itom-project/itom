@@ -43,8 +43,16 @@ class UserOrganizer : public QObject
         static UserOrganizer * getInstance(void);
         static RetVal closeInstance(void);
 
+        //!< returns the user name of the current user
         inline const QString getUserName() const { return m_userName; }
-        inline int getUserRole() const { return m_userRole; }
+
+        //!< returns the role of the current user (user, developer, administrator).
+        /*
+        The role is only used by the three python methods itom.userIsUser, itom.userIsDeveloper, itom.userIsAdministrator
+        */
+        inline ito::UserRole getUserRole() const { return m_userRole; }
+
+        //!< returns the unique ID of the current user
         QString getUserID(void) const;
 
         inline UserModel* getUserModel() const { return m_userModel; }

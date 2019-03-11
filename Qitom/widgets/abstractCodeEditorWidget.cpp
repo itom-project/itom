@@ -136,31 +136,6 @@ void AbstractCodeEditorWidget::loadSettings()
     //setExtraAscent(settings.value("extraAscent", 0).toInt());
     //setExtraDescent(settings.value("extraDescent", 0).toInt());
 
-    //TODO
-    /*
-    QString indentationWarning = settings.value("indentationWarning", "Inconsistent").toString();
-
-    if (eolMode == "Inconsistent")
-    {
-        qSciLex->setIndentationWarning(QsciLexerPython::Inconsistent);
-    }
-    else if (eolMode == "NoWarning")
-    {
-        qSciLex->setIndentationWarning(QsciLexerPython::NoWarning);
-    }
-    else if (eolMode == "TabsAfterSpaces")
-    {
-        qSciLex->setIndentationWarning(QsciLexerPython::TabsAfterSpaces);
-    }
-    else if (eolMode == "Spaces")
-    {
-        qSciLex->setIndentationWarning(QsciLexerPython::Spaces);
-    }
-    else //Tabs
-    {
-        qSciLex->setIndentationWarning(QsciLexerPython::Tabs);
-    }*/
-
     // ------------ calltips --------------------------------------------------------
     m_calltipsMode->setEnabled(settings.value("calltipsEnabled",true).toBool());
 

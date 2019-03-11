@@ -47,20 +47,23 @@ class DialogUserManagementEdit : public QDialog
         bool saveUser();
         QString m_fileName;
         QByteArray m_oldPassword;
+        QString m_osUser;
 
     protected:
-//        void init();
         QString clearName(const QString &name);
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_lv_startUpScripts_currentRowChanged(int row);
+        void on_lineEdit_name_textChanged(const QString &text);
+        void on_cmdAutoID_toggled(bool checked);
 
     public slots:
         void on_pb_addScript_clicked();
         void on_pb_removeScript_clicked();
         void on_pb_downScript_clicked();
         void on_pb_upScript_clicked();
+        void on_cmdUseWindowsUser_clicked();
 };
 
 } //end namespace ito

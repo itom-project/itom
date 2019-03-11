@@ -26,6 +26,7 @@
 #include "scriptEditorOrganizer.h"
 #include "../widgets/scriptEditorWidget.h"
 #include "../AppManagement.h"
+#include "userOrganizer.h"
 
 #include <qmessagebox.h>
 #include <qmetaobject.h>
@@ -678,15 +679,29 @@ void ScriptEditorOrganizer::undockScriptTab(ScriptDockWidget* widget, int index,
     \param docked indicates whether script window should be docked in MainWindow or not
     \param waitCond ItomSharedSemaphore which will be waked up if process is finished. Use NULL if nothing should happen
 */
-void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore *semaphore)
+ito::RetVal ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore *semaphore)
 {
-    createEmptyScriptDock(docked);
+    ito::RetVal retval;
+
+    ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
+
+    if (userOrg->hasFeature(featDeveloper))
+    {
+        createEmptyScriptDock(docked);
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "Permission denied to open new script window");
+    }
 
     if (semaphore != NULL)
     {
+        semaphore->returnValue = retval;
         semaphore->release();
         semaphore->deleteSemaphore();
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -697,25 +712,40 @@ void ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSemaphore
 */
 RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
 {
-    RetVal retValue(retError);
-    ScriptDockWidget* activeWidget = getActiveDockWidget();
-    if (activeWidget != NULL)
+    RetVal retValue;
+
+    ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
+
+    if (userOrg->hasFeature(featDeveloper))
     {
-        retValue += activeWidget->newScript();
-        activeWidget->raiseAndActivate();
+        ScriptDockWidget* activeWidget = getActiveDockWidget();
+        if (activeWidget != NULL)
+        {
+            retValue = activeWidget->newScript();
+            activeWidget->raiseAndActivate();
+        }
+        else
+        {
+            activeWidget = createEmptyScriptDock(m_dockedNewWidget);
+            if (activeWidget != NULL)
+            {
+                retValue = activeWidget->newScript();
+                activeWidget->raiseAndActivate();
+            }
+            else
+            {
+                retValue = ito::RetVal(ito::retError, 0, "Could not open a new script");
+            }
+        }
     }
     else
     {
-        activeWidget = createEmptyScriptDock(m_dockedNewWidget);
-        if (activeWidget != NULL) 
-        {
-            retValue += activeWidget->newScript();
-            activeWidget->raiseAndActivate();
-        }
+        retValue += ito::RetVal(ito::retError, 0, "Permission denied to open a new script");
     }
 
     if (semaphore != NULL)
     {
+        semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
     }
@@ -735,53 +765,62 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 {
     RetVal retValue(retOk);
 
-    bool exist = false;
+    ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
-    QList<ScriptDockWidget*>::iterator it;
-
-    m_scriptStackMutex.lock();
-
-    for (it = scriptDockElements.begin(); it != scriptDockElements.end() && !exist; ++it)
+    if (userOrg->hasFeature(featDeveloper))
     {
-        if ((*it)->activateTabByFilename(filename))
+        bool exist = false;
+
+        QList<ScriptDockWidget*>::iterator it;
+
+        m_scriptStackMutex.lock();
+
+        for (it = scriptDockElements.begin(); it != scriptDockElements.end() && !exist; ++it)
         {
-            exist = true;
-            fileOpenedOrSaved(filename);
-            (*it)->raiseAndActivate();
-            if (visibleLineNr >= 0)
+            if ((*it)->activateTabByFilename(filename))
             {
-                (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                exist = true;
+                fileOpenedOrSaved(filename);
+                (*it)->raiseAndActivate();
+                if (visibleLineNr >= 0)
+                {
+                    (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                }
+            }
+        }
+        m_scriptStackMutex.unlock();
+
+        if (!exist)
+        {
+            ScriptDockWidget* activeWidget = getActiveDockWidget();
+            if (activeWidget == NULL)
+            {
+                activeWidget = createEmptyScriptDock(m_dockedNewWidget);
+            }
+
+            if (activeWidget != NULL)
+            {
+                if (filename.isNull())
+                {
+                    retValue += activeWidget->openScript();
+                }
+                else
+                {
+                    retValue += activeWidget->openScript(filename, false);
+                }
+
+                if (visibleLineNr >= 0)
+                {
+                    activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                }
+
+                activeWidget->raiseAndActivate();
             }
         }
     }
-    m_scriptStackMutex.unlock();
-
-    if (!exist)
+    else
     {
-        ScriptDockWidget* activeWidget = getActiveDockWidget();
-        if (activeWidget == NULL)
-        {
-            activeWidget = createEmptyScriptDock(m_dockedNewWidget);
-        }
-    
-        if (activeWidget != NULL) 
-        {
-            if (filename.isNull())
-            {
-                retValue += activeWidget->openScript();
-            }
-            else
-            {
-                retValue += activeWidget->openScript(filename, false);
-            }
-
-            if (visibleLineNr >= 0)
-            {
-                activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
-            }
-
-            activeWidget->raiseAndActivate();
-        }
+        retValue = ito::RetVal(ito::retError, 0, "Permission denied to open a script");
     }
 
     if (semaphore != NULL)

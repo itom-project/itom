@@ -75,10 +75,6 @@ MainWindow::MainWindow() :
 	m_callStackDock(NULL),
 	m_fileSystemDock(NULL),
 	m_pAIManagerWidget(NULL),
-	m_aboutToolBar(NULL),
-	m_appToolBar(NULL),
-	m_toolToolBar(NULL),
-	m_pythonToolBar(NULL),
 	m_userDefinedSignalMapper(NULL),
 	m_appFileNew(NULL),
 	m_appFileOpen(NULL),
@@ -99,6 +95,7 @@ MainWindow::MainWindow() :
 	m_isFullscreen(false),
 	m_userDefinedActionCounter(0),
 	m_lastFilesMapper(NULL),
+    m_plastFilesMenu(NULL),
 	m_openScriptsMapper(NULL),
     m_openFigureMapper(NULL)
 {
@@ -140,6 +137,12 @@ MainWindow::MainWindow() :
         qDebug(".. before loading console widget");
         //console (central widget):
         m_console = new ConsoleWidget(this);
+
+        if (uOrg->hasFeature(featConsoleReadWrite) == false)
+        {
+            m_console->setReadOnly(true);
+        }
+
         m_console->setObjectName("console"); //if a drop event onto a scripteditor comes from this object name, the drop event is always executed as copy event such that no text is deleted in the console.
         //setCentralWidget(m_console);
         qDebug(".. console widget loaded");
@@ -599,11 +602,11 @@ void MainWindow::createActions()
         m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
         connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
         m_appFileNew->setShortcut(QKeySequence::New);
-    }
 
-    m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
-    connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
-    m_appFileOpen->setShortcut(QKeySequence::Open);
+        m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
+        connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
+        m_appFileOpen->setShortcut(QKeySequence::Open);
+    }
 
     m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(m_actions["exit"], SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
@@ -630,12 +633,21 @@ void MainWindow::createActions()
     m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
     connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
+    a = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+    a->setShortcut(QKeySequence::HelpContents);
+    connect(a, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
+
+    a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
+    connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
+
+    a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
+    connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
+
+    a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
+    connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
+
     if (uOrg->hasFeature(featDeveloper))
     {
-        a = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
-        a->setShortcut(QKeySequence::HelpContents);
-        connect(a , SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
-
         a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
         connect(a , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
 
@@ -650,15 +662,6 @@ void MainWindow::createActions()
             a->setChecked(pyEngine->execInternalCodeByDebugger());
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
-
-        a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
-        connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
-
-        a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
-        connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
-        
-        a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
-        connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
 
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
@@ -716,51 +719,76 @@ void MainWindow::createActions()
 //! creates toolbar
 void MainWindow::createToolBars()
 {
-    m_appToolBar = addToolBar(tr("Application"));
-    m_appToolBar->setObjectName("toolbarApplication");
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featDeveloper))
+
+    if (m_appFileNew || m_appFileOpen)
     {
-        m_appToolBar->addAction(m_appFileNew);
+        QToolBar* appToolBar = addToolBar(tr("Application"));
+        appToolBar->setObjectName("toolbarApplication");
+
+        if (m_appFileNew)
+        {
+            appToolBar->addAction(m_appFileNew);
+        }
+
+        if (m_appFileOpen)
+        {
+            appToolBar->addAction(m_appFileOpen);
+        }
+
+        appToolBar->setFloatable(false);
     }
-    m_appToolBar->addAction(m_appFileOpen);
-    m_appToolBar->setFloatable(false);
 
-    m_toolToolBar = addToolBar(tr("Tools"));
-    m_toolToolBar->setObjectName("toolbarTools");
-    if (uOrg->hasFeature(featDeveloper))
+    if (m_actions.contains("open_designer") && m_actions["open_designer"])
     {
-        m_toolToolBar->addAction(m_actions["open_designer"]);
+        QToolBar *toolToolBar = addToolBar(tr("Tools"));
+        toolToolBar->setObjectName("toolbarTools");
+        toolToolBar->addAction(m_actions["open_designer"]);
+        toolToolBar->setFloatable(false);
     }
-    m_toolToolBar->setFloatable(false);
 
-    m_aboutToolBar = addToolBar(tr("About"));
-    m_aboutToolBar->setObjectName("toolbarAbout");
-    m_aboutToolBar->setFloatable(false);
-    m_aboutToolBar->addAction(m_actions["open_assistant"]);
-
-    if (uOrg->hasFeature(featDeveloper))
+    if (m_actions.contains("open_assistant") && m_actions["open_assistant"])
     {
-        m_pythonToolBar = addToolBar(tr("Python"));
-        m_pythonToolBar->setObjectName("toolbarPython");
-        m_pythonToolBar->addAction(m_actions["python_global_runmode"]);
-        m_pythonToolBar->setFloatable(false);
+        QToolBar *aboutToolBar = addToolBar(tr("About"));
+        aboutToolBar->setObjectName("toolbarAbout");
+        aboutToolBar->setFloatable(false);
+        aboutToolBar->addAction(m_actions["open_assistant"]);
+    }
+
+    
+
+    if (m_actions.contains("python_global_runmode") && m_actions["python_global_runmode"])
+    {
+        QToolBar *pythonToolBar = addToolBar(tr("Python"));
+        pythonToolBar->setObjectName("toolbarPython");
+        pythonToolBar->addAction(m_actions["python_global_runmode"]);
+        pythonToolBar->setFloatable(false);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::createMenus()
 {
-    m_pMenuFile = menuBar()->addMenu(tr("File"));
-    m_pMenuFile->addAction(m_appFileNew);
-    m_pMenuFile->addAction(m_appFileOpen);
-
-    // dynamically created Menu with the last files
-    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
-    connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
-    // Add these menus dynamically
-
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+    m_pMenuFile = menuBar()->addMenu(tr("File"));
+
+    if (m_appFileNew)
+    {
+        m_pMenuFile->addAction(m_appFileNew);
+    }
+    if (m_appFileOpen)
+    {
+        m_pMenuFile->addAction(m_appFileOpen);
+    }
+
+    if (uOrg->hasFeature(featDeveloper))
+    {
+        // dynamically created Menu with the last files
+        m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
+        connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
+        // Add these menus dynamically
+    }    
 
     if (uOrg->hasFeature(featProperties))
     {
@@ -780,9 +808,22 @@ void MainWindow::createMenus()
     connect(m_pMenuView, SIGNAL(aboutToShow()), this, SLOT(mnuViewAboutToShow()));
 
     m_pMenuFigure = menuBar()->addMenu(tr("Figure"));
-    m_pMenuFigure->addAction(m_actions["close_all_plots"]);
-    m_pMenuFigure->addAction(m_actions["show_all_plots"]);
-    m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
+    
+    if (m_actions.contains("close_all_plots"))
+    {
+        m_pMenuFigure->addAction(m_actions["close_all_plots"]);
+    }
+
+    if (m_actions.contains("show_all_plots"))
+    {
+        m_pMenuFigure->addAction(m_actions["show_all_plots"]);
+    }
+
+    if (m_actions.contains("minimize_all_plots"))
+    {
+        m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
+    }
+
     m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
@@ -812,14 +853,19 @@ void MainWindow::createMenus()
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
-    if (uOrg->hasFeature(featDeveloper))
+
+    if (m_actions.contains("open_assistant"))
     {
         m_pMenuHelp->addAction(m_actions["open_assistant"]);
+    }
+
+    if (m_actions.contains("script_reference"))
+    {
         m_pMenuHelp->addAction(m_actions["script_reference"]);
     }
+
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
-//    m_pMenuHelp->addAction(m_actions["show_loaded_plugins"]);
     
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
@@ -836,6 +882,11 @@ void MainWindow::createMenus()
 /*Slot aboutToOpen*/
 void MainWindow::menuLastFilesAboutToShow()
 {
+    if (!m_plastFilesMenu)
+    {
+        return;
+    }
+
     // Delete old actions
     for (int i = 0; i < m_plastFilesMenu->actions().length(); ++i)
     {
@@ -963,7 +1014,7 @@ void MainWindow::mnuViewAboutToShow()
                     m_openScriptsMapper->setMapping(a, filename);
                 }
             }
-            else
+            else if (m_plastFilesMenu)
             {
                 a = m_plastFilesMenu->addAction(tr("No Opened Scripts"));
                 a->setEnabled(false);

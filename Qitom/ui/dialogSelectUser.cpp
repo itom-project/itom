@@ -172,7 +172,7 @@ void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
     if (checkPassword())
         this->accept();
     else
-        QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select user or try again"));
+        QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select another user or try again"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void DialogSelectUser::on_buttonBox_clicked(QAbstractButton* btn)
         if (checkPassword())
             this->accept();
         else
-            QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select user or try again"));
+            QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select another user or try again"));
     }
     else
     {
