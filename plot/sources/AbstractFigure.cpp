@@ -85,10 +85,6 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_apiFunctionsGraphBasePtr(NULL),
     m_apiFunctionsBasePtr(NULL),
     m_mainParent(parent),
-    m_lineCutType(tNoChildPlot),
-    m_zSliceType(tNoChildPlot),
-    m_zoomCutType(tNoChildPlot),
-    m_volumeCutType(tNoChildPlot),
     m_windowMode(windowMode)
 {
     d = new AbstractFigurePrivate();

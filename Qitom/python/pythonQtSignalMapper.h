@@ -41,6 +41,7 @@
 
 #include <qvariant.h>
 #include <qobject.h>
+#include <qelapsedtimer.h>
 
 namespace ito
 {
@@ -72,17 +73,20 @@ public:
         \param [in] signalId is the index of the emitting signal
         \param [in] callabel is a python method or function (bounded or unbounded) that should be called if the slot is invoked
         \param [in] signal is the signature of the signal (for debugging reasons)
+        \param [in] minRepeatInterval is a minimum amount of time (in ms) which has to be passed until the same signal-slot-connection is accepted again (additional signal emissions are blocked), default: 0 (no timeout)
     */
-    PythonQtSignalTarget(IntList &argTypeList, int slotId, int signalId, PyObject* callable, const char *signal) :
+    PythonQtSignalTarget(IntList &argTypeList, int slotId, int signalId, PyObject* callable, const char *signal, int minRepeatInterval) :
             m_slotId(slotId),
             m_signalId(signalId),
             m_function(NULL),
             m_boundedInstance(NULL),
             m_boundedMethod(false),
-            m_signalName(signal)
+            m_signalName(signal),
+            m_minRepeatInterval(minRepeatInterval)
     {
         m_argTypeList = argTypeList;
         PyObject *temp = NULL;
+        m_elapsedTimer.invalidate();
 
         if(PyMethod_Check(callable))
         {
@@ -123,6 +127,9 @@ public:
         Py_XINCREF(m_function);
         m_boundedInstance = copy.m_boundedInstance;
         Py_XINCREF(m_boundedInstance);
+
+        m_minRepeatInterval = copy.m_minRepeatInterval;
+        m_elapsedTimer.invalidate();
     }
     
     //! destructor
@@ -140,7 +147,7 @@ public:
     inline int slotId()  const { return m_slotId; }
 
     // call the python callable with the given arguments (docs see source file)
-    void call(void ** arguments) const;
+    void call(void ** arguments);
 
     //! returns list of type-numbers of arguments
     inline IntList argTypeList() const { return m_argTypeList; };
@@ -174,6 +181,15 @@ private:
     PyObject *m_boundedInstance; //!< weak reference to the python-class instance of the function (if the function is bounded) or NULL if the function is unbounded
     bool m_boundedMethod;        //!< true if the python function is bounded (non-static member of a class), else false
     QString m_signalName;        //!< signature of the signal (mainly used for debugging reasons)
+    QElapsedTimer m_elapsedTimer;           //!< see m_minRepeatInterval
+
+    /*
+    if > 0, every call of a certain slot by a certain signal with restart m_elapsedTimer. If the same signal-slot-connection is
+    called another time, while less than m_minRepeatInterval ms have expired, this new invoke will be ignored.
+
+    This can be used to prevent that very fast signal emissions will overflow the call queue for the connected callable python method.
+    */
+    int m_minRepeatInterval;
 };
 
 /*! \class PythonQtSignalMapperBase
@@ -227,7 +243,7 @@ public:
     PythonQtSignalMapper(); 
     ~PythonQtSignalMapper();
 
-    bool addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList);
+    bool addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList, int minRepeatInterval);
     bool removeSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable);
     void removeSignalHandlers();
     virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
@@ -235,6 +251,7 @@ public:
 private:
     QList<PythonQtSignalTarget> m_targets;    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
     int m_slotCount;                        //!< index of the last virtual slot managed by this instance (auto-incremented)
+    
 };
 
 } //end namespace ito

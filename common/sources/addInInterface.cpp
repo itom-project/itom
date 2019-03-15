@@ -34,6 +34,12 @@
 #include <qcoreapplication.h>
 #include <qpointer.h>
 
+#if QT_VERSION < 0x050000
+#include <qpluginloader.h>
+#else
+#include <QtCore/qpluginloader.h>
+#endif
+
 #include "abstractAddInDockWidget.h"
 
 #include "opencv2/opencv.hpp"
@@ -45,8 +51,41 @@
 
 namespace ito
 {
+    //----------------------------------------------------------------------------------------------------------------------------------
+    class AddInInterfaceBasePrivate
+    {
+    public:
+        AddInInterfaceBasePrivate() :
+            m_pLoader(NULL)
+        {}
+
+        QPluginLoader *m_pLoader;
+    };
+
+
     int AddInBase::m_instCounter = 0;
     int AddInBase::maxThreadCount = QThread::idealThreadCount();
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    AddInInterfaceBase::AddInInterfaceBase() :
+        m_type(0), 
+        m_version(CREATEVERSION(0, 0, 0)), 
+        m_filename(""),
+        m_maxItomVer(MAXVERSION), 
+        m_minItomVer(MINVERSION),
+        m_author(""), 
+        m_description(""), 
+        m_detaildescription(""), 
+        m_license("LGPL with ITO itom-exception"), 
+        m_aboutThis(""),
+        /*m_enableAutoLoad(false),*/ 
+        m_autoLoadPolicy(ito::autoLoadNever),
+        m_autoSavePolicy(ito::autoSaveNever), 
+        m_callInitInNewThread(true),
+        m_apiFunctionsBasePtr(NULL), 
+        m_apiFunctionsGraphBasePtr(NULL),
+        d_ptr(new AddInInterfaceBasePrivate())
+    { }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase::~AddInInterfaceBase()
@@ -116,6 +155,20 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInInterfaceBase::setLoader(QPluginLoader *loader) 
+    { 
+        Q_D(AddInInterfaceBase);
+        d_ptr->m_pLoader = loader; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    QPluginLoader * AddInInterfaceBase::getLoader(void) const
+    { 
+        Q_D(const AddInInterfaceBase);
+        return d->m_pLoader; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     class AddInBasePrivate
     {
     public:
@@ -123,7 +176,9 @@ namespace ito
             m_pThread(NULL),
             m_pBasePlugin(NULL),
             m_createdByGUI(0),
-            m_initialized(false)
+            m_initialized(false),
+            m_refCount(0),
+            m_alive(0)
         {}
 
         QPointer<QDockWidget> m_dockWidget;     //!< safe pointer to dock widget. This pointer is automatically NULL if the dock widget is deleted e.g. by a previous deletion of the main window.
@@ -132,6 +187,9 @@ namespace ito
         int m_uniqueID;                         //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
         int m_createdByGUI;                     //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
         bool m_initialized;                     //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
+        QMutex m_refCountMutex;                 //!< mutex for making the reference counting mechanism thread-safe.
+        int m_refCount;                         //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
+        int m_alive;                            //!< member to check if thread is still responsive
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -147,11 +205,10 @@ namespace ito
                     finally at the beginning of in the init-method. Afterwards it is used by different organizers and GUI components.
     */
     AddInBase::AddInBase() :
-        m_refCount(0), 
-        m_alive(0)
+        d_ptr(new AddInBasePrivate())
     {
-        aibp = new AddInBasePrivate();
-        aibp->m_uniqueID = (++m_instCounter);
+        Q_D(AddInBase);
+        d->m_uniqueID = (++m_instCounter);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -165,70 +222,78 @@ namespace ito
     */
     AddInBase::~AddInBase() //will be called from main thread
     {
-        if (aibp->m_dockWidget)
+        Q_D(AddInBase);
+        if (d->m_dockWidget)
         {
             //the dock widget has not been destroyed yet (by deconstructor of mainWindow, where it is attached)
-            aibp->m_dockWidget->deleteLater();
+            d->m_dockWidget->deleteLater();
         }
 
         m_params.clear();
 
         //delete own thread if not already happened
-        if (aibp->m_pThread != NULL)
+        if (d->m_pThread != NULL)
         {
-            aibp->m_pThread->quit();
-            aibp->m_pThread->wait(5000);
-            DELETE_AND_SET_NULL(aibp->m_pThread);
+            d->m_pThread->quit();
+            d->m_pThread->wait(5000);
+            DELETE_AND_SET_NULL(d->m_pThread);
         }
-
-        delete aibp;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! retrieve the uniqueID of this instance
     int AddInBase::getID() const 
     { 
-        return aibp->m_uniqueID; 
+        Q_D(const AddInBase);
+        return d->m_uniqueID; 
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! increments reference counter of this plugin (thread-safe)
     void AddInBase::incRefCount(void)
     {
-        m_refCountMutex.lock();
-        m_refCount++;
-        m_refCountMutex.unlock();
+        Q_D(AddInBase);
+        QMutexLocker(&(d->m_refCountMutex));
+        d->m_refCount++;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! decrements reference counter of this plugin (thread-safe)
     void AddInBase::decRefCount(void)
     {
-        m_refCountMutex.lock();
-        m_refCount--;
-        m_refCountMutex.unlock();
+        Q_D(AddInBase);
+        QMutexLocker(&(d->m_refCountMutex));
+        d->m_refCount--;
+    }
+
+    int AddInBase::getRefCount(void) const
+    {
+        Q_D(const AddInBase);
+        return d->m_refCount;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! returns true if this instance has firstly been created by the GUI
     int AddInBase::createdByGUI() const 
     { 
-        return aibp->m_createdByGUI;
+        Q_D(const AddInBase);
+        return d->m_createdByGUI;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
     void AddInBase::setCreatedByGUI(int value) 
     { 
-        aibp->m_createdByGUI = value;
+        Q_D(AddInBase);
+        d->m_createdByGUI = value;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
     bool AddInBase::isInitialized(void) const
     {
-        //QMutexLocker locker(&m_atomicMutex);
-        return aibp->m_initialized;
+        Q_D(const AddInBase);
+        return d->m_initialized;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -238,8 +303,39 @@ namespace ito
     */
     void AddInBase::setInitialized(bool initialized)
     {
-        //QMutexLocker locker(&m_atomicMutex);
-        aibp->m_initialized = initialized;
+        Q_D(AddInBase);
+        d->m_initialized = initialized;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns the alive-flag of this plugin
+    /*
+    Any time-consuming operation of the plugin should regularly set the alive-flag to true
+    by calling setAlive. The state of this flag is returned by this method and afterwards
+    reset to 0. This method is thread-safe.
+
+    \return current status of alive - flag(1 if "still alive", else 0)
+    \sa setAlive
+    */
+    int AddInBase::isAlive(void)
+    {
+        Q_D(AddInBase);
+        int wasalive = d->m_alive;
+        d->m_alive = 0;
+        return wasalive;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! sets the alive-flag to 1 ("still alive")
+    /*
+    This method is thread-safe.
+
+    \sa isAlive
+    */
+    void AddInBase::setAlive(void)
+    {
+        Q_D(AddInBase);
+        d->m_alive = 1;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -308,9 +404,10 @@ namespace ito
     //! creates new thread for the class instance and moves this instance to the new thread
     ito::RetVal AddInBase::MoveToThread(void)
     {
-        aibp->m_pThread = new QThread();
-        moveToThread(aibp->m_pThread);
-        aibp->m_pThread->start();
+        Q_D(AddInBase);
+        d->m_pThread = new QThread();
+        moveToThread(d->m_pThread);
+        d->m_pThread->start();
 
 		/*set new seed for random generator of OpenCV. 
 		This is required to have real random values for any randn or randu command.
@@ -409,7 +506,8 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     bool AddInBase::hasDockWidget(void) const 
     { 
-        return !aibp->m_dockWidget.isNull(); 
+        Q_D(const AddInBase);
+        return !d->m_dockWidget.isNull(); 
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -417,7 +515,11 @@ namespace ito
     /*
     \sa hasDockWidget
     */
-    QDockWidget* AddInBase::getDockWidget(void) const { return aibp->m_dockWidget; }
+    QDockWidget* AddInBase::getDockWidget(void) const 
+    { 
+        Q_D(const AddInBase);
+        return d->m_dockWidget; 
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! Creates the dock-widget for this plugin
@@ -439,22 +541,23 @@ namespace ito
     */
     void AddInBase::createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas, QWidget *content)
     {
-        if (aibp->m_dockWidget.isNull())
+        Q_D(AddInBase);
+        if (d->m_dockWidget.isNull())
         {
-            aibp->m_dockWidget = QPointer<QDockWidget>(new QDockWidget(title + QLatin1String(" - ") + tr("Toolbox")));
-            connect(aibp->m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
+            d->m_dockWidget = QPointer<QDockWidget>(new QDockWidget(title + QLatin1String(" - ") + tr("Toolbox")));
+            connect(d->m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
         }
-        aibp->m_dockWidget->setObjectName(title.simplified() + QLatin1String("_dockWidget#") + QString::number(aibp->m_uniqueID));
-        aibp->m_dockWidget->setFeatures(features);
-        aibp->m_dockWidget->setAllowedAreas(allowedAreas);
+        d->m_dockWidget->setObjectName(title.simplified() + QLatin1String("_dockWidget#") + QString::number(d->m_uniqueID));
+        d->m_dockWidget->setFeatures(features);
+        d->m_dockWidget->setAllowedAreas(allowedAreas);
 
         if (content) 
         {
-            aibp->m_dockWidget->setWidget(content);
-            content->setParent(aibp->m_dockWidget);
+            d->m_dockWidget->setWidget(content);
+            content->setParent(d->m_dockWidget);
             if (content->metaObject()->indexOfSlot("dockWidgetVisibilityChanged(bool)") >= 0)
             {
-                connect(aibp->m_dockWidget, SIGNAL(visibilityChanged(bool)), content, SLOT(dockWidgetVisibilityChanged(bool)));
+                connect(d->m_dockWidget, SIGNAL(visibilityChanged(bool)), content, SLOT(dockWidgetVisibilityChanged(bool)));
             }
         }
     }
@@ -462,11 +565,12 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void AddInBase::setIdentifier(const QString &identifier)
     {
+        Q_D(AddInBase);
         m_identifier = identifier;
 
-        if (aibp->m_dockWidget)
+        if (d->m_dockWidget)
         {
-            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(aibp->m_dockWidget->widget());
+            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(d->m_dockWidget->widget());
             if (adw)
             {
                 QMetaObject::invokeMethod(adw, "identifierChanged", Q_ARG(const QString &, identifier));
@@ -478,7 +582,8 @@ namespace ito
     //! sets the interface of this instance to base. \sa AddInInterfaceBase
     void AddInBase::setBasePlugin(AddInInterfaceBase *base) 
     { 
-        aibp->m_pBasePlugin = base; 
+        Q_D(AddInBase);
+        d->m_pBasePlugin = base; 
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -513,7 +618,8 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase* AddInBase::getBasePlugin(void) const 
     { 
-        return aibp->m_pBasePlugin;
+        Q_D(const AddInBase);
+        return d->m_pBasePlugin;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -617,7 +723,8 @@ namespace ito
     */
      void AddInBase::dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const
      {
-         if (aibp->m_dockWidget)
+         Q_D(const AddInBase);
+         if (d->m_dockWidget)
          {
              floating = false;
              visible = false;
@@ -673,7 +780,9 @@ namespace ito
     {
         ItomSharedSemaphoreLocker locker(waitCond);
 
-        if (aibp->m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
+        Q_D(const AddInBase);
+
+        if (d->m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
         {
             moveToThread(QCoreApplication::instance()->thread());
         }
@@ -687,11 +796,22 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    class AddInDataIOPrivate
+    {
+    public:
+        AddInDataIOPrivate()
+        {}
+
+
+    };
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     AddInDataIO::AddInDataIO() : 
         AddInBase(),
         m_timerID(0),
         m_timerIntervalMS(20),
-        m_autoGrabbingEnabled(true)
+        m_autoGrabbingEnabled(true),
+        d_ptr(new AddInDataIOPrivate)
     {
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
     }
@@ -1025,10 +1145,29 @@ namespace ito
         }
     }
 
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    class AddInActuatorPrivate
+    {
+    public:
+        AddInActuatorPrivate() :
+            m_interruptFlag(false),
+            m_lastSignalledInitialized(false)
+        {}
+
+        bool m_interruptFlag;                      /*!< interrupt flag (true if interrupt is requested, default: false) */
+        QMutex m_directAccessMutex;                /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only), as well as of the last reported stati, current positions or target positions */
+        QVector<int>    m_lastSignalledStatus;      /*!< vector (same length than number of axes) containing the status of every axis. The status is a combination of enumeration ito::tActuatorStatus. */
+        QVector<double> m_lastSignalledCurrentPos;  /*!< vector (same length than number of axes) containing the current position (mm or degree) of every axis. The current position should be updated with a reasonable frequency (depending on the actuator and situation)*/
+        QVector<double> m_lastSignalledTargetPos;   /*!< vector (same length than number of axes) containing the target position (mm or degree) of every axis */
+        bool m_lastSignalledInitialized;            /*!< set to true if the m_lastSignalled...-vectors are set for the first time */
+    };
+    
+
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::AddInActuator() 
         : AddInBase(), 
-        m_interruptFlag(false)
+        d_ptr(new AddInActuatorPrivate())
     {
     }
 
@@ -1045,8 +1184,17 @@ namespace ito
         \param [in] statusOnly indicates whether the status only should be emitted or the current position vector, too. In case of status only, the
                 current position vector is empty, hence has a length of zero. This should be considered by the slot.
     */
-    void AddInActuator::sendStatusUpdate(const bool statusOnly)
+    void AddInActuator::sendStatusUpdate(const bool statusOnly /*= false*/)
     {
+        {
+            Q_D(AddInActuator);
+            QMutexLocker locker(&(d->m_directAccessMutex));
+            d->m_lastSignalledStatus = m_currentStatus;
+            d->m_lastSignalledCurrentPos = m_currentPos;
+            d->m_lastSignalledTargetPos = m_targetPos;
+            d->m_lastSignalledInitialized = true;
+        }
+
         if (statusOnly)
         {
             emit actuatorStatusChanged(m_currentStatus, QVector<double>());
@@ -1064,6 +1212,15 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
+        {
+            Q_D(AddInActuator);
+            QMutexLocker locker(&(d->m_directAccessMutex));
+            d->m_lastSignalledStatus = m_currentStatus;
+            d->m_lastSignalledCurrentPos = m_currentPos;
+            d->m_lastSignalledTargetPos = m_targetPos;
+            d->m_lastSignalledInitialized = true;
+        }
+
         emit targetChanged(m_targetPos);
     }
 
@@ -1090,6 +1247,117 @@ namespace ito
         }
 
         return retval;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal AddInActuator::getLastSignalledStates(QVector<int> &status, QVector<double> &currentPos, QVector<double> &targetPos)
+    {
+        Q_D(AddInActuator);
+        QMutexLocker locker(&(d->m_directAccessMutex));
+
+        if (d->m_lastSignalledInitialized)
+        {
+            status = d->m_lastSignalledStatus;
+            currentPos = d->m_lastSignalledCurrentPos;
+            targetPos = d->m_lastSignalledTargetPos;
+
+            return ito::retOk;
+        }
+        else
+        {
+            return ito::RetVal(ito::retError, 0, "no current state (status / position) has been reported until now.");
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::setStatus(int &status, const int newFlags, const int keepMask /*= 0*/) 
+    { 
+        status = (status & keepMask) | newFlags; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::setStatus(const QVector<int> &axis, const int newFlags, const int keepMask /*= 0*/)
+    {
+        foreach(const int &i, axis)
+        {
+            setStatus(m_currentStatus[i], newFlags, keepMask);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::replaceStatus(const QVector<int> &axis, const int existingFlag, const int replaceFlag)
+    {
+        foreach(const int &i, axis)
+        {
+            replaceStatus(m_currentStatus[i], existingFlag, replaceFlag);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::replaceStatus(int &status, const int existingFlag, const int replaceFlag)
+    { 
+        if (status & existingFlag) 
+        { 
+            status = (status ^ existingFlag) | replaceFlag; 
+        } 
+    }
+
+    //! initializes the current status, current position and target position vectors to the same size and the given start values
+        /*!
+        If sendUpdateSignals is true, the signals targetChanged and actuatorStatusChanged are emitted with the new size and content.
+        In any case, the last signalled states are set to these initial values, too.
+        */
+    void AddInActuator::initStatusAndPositions(int numAxes, int status, double currentPosition /*= 0.0*/, double targetPosition /*= 0.0*/, bool sendUpdateSignals /*= true*/)
+    {
+        m_currentStatus = QVector<int>(numAxes, status);
+        m_currentPos = QVector<double>(numAxes, currentPosition);
+        m_targetPos = QVector<double>(numAxes, targetPosition);
+
+        {
+            Q_D(AddInActuator);
+            QMutexLocker locker(&(d->m_directAccessMutex));
+            d->m_lastSignalledStatus = m_currentStatus;
+            d->m_lastSignalledCurrentPos = m_currentPos;
+            d->m_lastSignalledTargetPos = m_targetPos;
+        }
+
+        if (sendUpdateSignals)
+        {
+            emit targetChanged(m_targetPos);
+            emit actuatorStatusChanged(m_currentStatus, m_currentPos);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! checks whether any axis is still moving (moving flag is set)
+    bool AddInActuator::isMotorMoving() const
+    {
+        foreach(const int &i, m_currentStatus)
+        {
+            if (i & ito::actuatorMoving)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    bool AddInActuator::isInterrupted()
+    {
+        Q_D(AddInActuator);
+        QMutexLocker locker(&(d->m_directAccessMutex));
+        bool res = d->m_interruptFlag;
+        d->m_interruptFlag = false;
+        return res;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::setInterrupt()
+    {
+        Q_D(AddInActuator);
+        QMutexLocker locker(&(d->m_directAccessMutex));
+        d->m_interruptFlag = true;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1128,7 +1396,15 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInAlgo::AddInAlgo() : AddInBase()
+    class AddInAlgoPrivate
+    {
+    public:
+        AddInAlgoPrivate() {}
+    };
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    AddInAlgo::AddInAlgo() : AddInBase(),
+        d_ptr(new AddInAlgoPrivate())
     {
         Q_ASSERT_X(1, "AddInAlgo::AddInAlgo", tr("Constructor must be overwritten").toLatin1().data());
         return;
@@ -1192,6 +1468,27 @@ namespace ito
         }
 
         return ito::retError;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*static*/ ito::RetVal AddInAlgo::prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+    {
+        if (!paramsMand)
+        {
+            return RetVal(ito::retError, 0, tr("uninitialized vector for mandatory parameters!").toLatin1().data());
+        }
+        if (!paramsOpt)
+        {
+            return RetVal(ito::retError, 0, tr("uninitialized vector for optional parameters!").toLatin1().data());
+        }
+        if (!paramsOut)
+        {
+            return RetVal(ito::retError, 0, tr("uninitialized vector for output parameters!").toLatin1().data());
+        }
+        paramsMand->clear();
+        paramsOpt->clear();
+        paramsOut->clear();
+        return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

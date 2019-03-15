@@ -92,14 +92,15 @@ PythonQtSignalMapper::~PythonQtSignalMapper()
     \param [in] sigId is the Qt-internal ID of the signal (obtained by QMetaObject-system)
     \param [in] callable is a reference to the real python method, that should act as slot. This method can be bounded or unbounded.
     \param [in] argTypeList is a list of integer values that describe the Qt-internal type number for all arguments of the signal (type number with respect to QMetaType)
+    \param [in] minRepeatInterval is a minimum amount of time (in ms) which has to be passed until the same signal-slot-connection is accepted again (additional signal emissions are blocked), default: 0 (no timeout)
     \return true if the connection could be established, else false.
 */
-bool PythonQtSignalMapper::addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList)
+bool PythonQtSignalMapper::addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList, int minRepeatInterval)
 {
     bool flag = false;
     if (sigId>=0)
     {
-        PythonQtSignalTarget t(argTypeList, m_slotCount, sigId, callable, signal);
+        PythonQtSignalTarget t(argTypeList, m_slotCount, sigId, callable, signal, minRepeatInterval);
         m_targets.append(t);
         // now connect to ourselves with the new slot id
         if (QMetaObject::connect(obj, sigId, this, m_slotCount, Qt::AutoConnection, 0))
@@ -177,15 +178,20 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
         QObject::qt_metacall(c, id, arguments);
     }
 
-    foreach(const PythonQtSignalTarget& t, m_targets)
+    QList<PythonQtSignalTarget>::iterator it = m_targets.begin();
+
+    while (it != m_targets.end())
     {
-        if (t.slotId() == id)
+        if (it->slotId() == id)
         {
-            t.call(arguments);
+            it->call(arguments);
             break;
         }
+
+        ++it;
     }
-  return 0;
+
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -203,10 +209,28 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
 
     \param [in] arguments are the arguments of the emitted signal.
 */
-void PythonQtSignalTarget::call(void ** arguments) const
+void PythonQtSignalTarget::call(void ** arguments)
 {
-    //qDebug() << "signaltarget::call in thread: " << QThread::currentThreadId ();
-
+    if (m_minRepeatInterval > 0)
+    {
+        if (m_elapsedTimer.isValid() == false)
+        {
+            //start the timer for the first time
+            m_elapsedTimer.start();
+        }
+        else
+        {
+            if (m_elapsedTimer.elapsed() < m_minRepeatInterval)
+            {
+                //the same signal has been fired to the same slot less than m_minRepeatInterval ms ago: ignore this call
+                return;
+            }
+            else
+            {
+                m_elapsedTimer.restart();
+            }
+        }
+    }
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 

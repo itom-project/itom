@@ -599,7 +599,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method \n\
+PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the widget with the given callable python method \n\
 \n\
 This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
 about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
@@ -612,16 +612,20 @@ signalSignature : {str} \n\
     This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
 callableMethod : {python method or function} \n\
     valid method or function that is called if the signal is emitted. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
 --------- \n\
 disconnect, invokeKeyboardInterrupt");
-PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
+PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
     const char* signalSignature;
+    int minRepeatInterval = 0;
     PyObject *callableMethod;
 
-    if(!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -678,7 +682,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     PythonQtSignalMapper *signalMapper = PyUiItem_getTopLevelSignalMapper(self);
     if(signalMapper)
     {
-        if(!signalMapper->addSignalHandler(*objPtr, signalSignature, *sigId, callableMethod, *argTypes))
+        if(!signalMapper->addSignalHandler(*objPtr, signalSignature, *sigId, callableMethod, *argTypes, minRepeatInterval))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
@@ -767,12 +771,13 @@ See Also \n\
 --------- \n\
 connect \n\
 ");
-PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
+PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
     const char* signalSignature;
     PyObject *callableMethod;
 
-    if(!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -1702,8 +1707,8 @@ int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"call", (PyCFunction)PyUiItem_call, METH_VARARGS, PyUiItemCall_doc},
-        {"connect", (PyCFunction)PyUiItem_connect, METH_VARARGS, PyUiItemConnect_doc},
-        {"disconnect", (PyCFunction)PyUiItem_disconnect, METH_VARARGS, PyUiItemDisconnect_doc},
+        {"connect", (PyCFunction)PyUiItem_connect, METH_KEYWORDS | METH_VARARGS, PyUiItemConnect_doc},
+        {"disconnect", (PyCFunction)PyUiItem_disconnect, METH_KEYWORDS | METH_VARARGS, PyUiItemDisconnect_doc},
         {"setProperty", (PyCFunction)PyUiItem_setProperties, METH_VARARGS, PyUiItemSetProperty_doc},
         {"getProperty", (PyCFunction)PyUiItem_getProperties, METH_VARARGS, PyUiItemGetProperty_doc},
         {"getPropertyInfo", (PyCFunction)PyUiItem_getPropertyInfo, METH_VARARGS, PyUiItemGetPropertyInfo_doc},

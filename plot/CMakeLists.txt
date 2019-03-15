@@ -8,7 +8,7 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
         cmake_policy(SET CMP0042 OLD)
     ENDIF(POLICY CMP0042)
 ENDIF()
-
+ 
 if (POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
 ENDIF (POLICY CMP0028)

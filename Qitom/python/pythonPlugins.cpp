@@ -1830,13 +1830,9 @@ Moving flags: \n\
 Switches flags: \n\
 \n\
 * actuatorEndSwitch      = 0x0100 : axis reached any end switch (e.g. if only one end switch is available) \n\
-* actuatorLeftEndSwitch  = 0x0200 : axis reached the left end switch \n\
-* actuatorRightEndSwitch = 0x0400 : axis reached the right end switch \n\
 * actuatorEndSwitch1 = 0x0200 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorEndSwitch2 = 0x0400 : axis reached the specified left end switch (if set, also set actuatorEndSwitch)\n\
 * actuatorRefSwitch      = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
-* actuatorLeftRefSwitch  = 0x1000 : axis reached left reference switch \n\
-* actuatorRightRefSwitch = 0x2000 : axis reached right reference switch \n\
 * actuatorRefSwitch1 = 0x1000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 * actuatorRefSwitch2 = 0x2000 : axis reached the specified right reference switch (if set, also set actuatorRefSwitch)\n\
 \n\
@@ -2185,7 +2181,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setInterrupt(PyActuatorPlugin *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod) -> connects the signal of the actuator with the given callable python method \n\
+PyDoc_STRVAR(pyActuatorConnect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
 \n\
 This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
 Every Actuator can send various signals. Use this method to connect any signal to any \n\
@@ -2198,19 +2194,23 @@ signalSignature : {str} \n\
     This must be the valid signature, known from the Qt-method *connect* (e.g. 'reachedTarget(bool)') \n\
 callableMethod : {python method or function} \n\
     valid method or function that is called if the signal is emitted. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
 --------- \n\
 disconnect");
-PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args)
+PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
     const char* signalSignature;
     PyObject *callableMethod;
     int signalIndex;
     int tempType;
     IntList argTypes;
+    int minRepeatInterval = 0;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -2248,7 +2248,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObje
     }
     if (self->signalMapper)
     {
-        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes))
+        if (!self->signalMapper->addSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod, argTypes, minRepeatInterval))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
@@ -2276,14 +2276,15 @@ See Also \n\
 --------- \n\
 connect \n\
 ");
-PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args)
+PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args, PyObject* kwds)
 {
-    int signalIndex, tempType;
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
+    int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -2689,6 +2690,138 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetCurrentStatus_doc, "Get the current status (flag mask, see :py:meth:`~itom.actuator.getStatus`) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any current position \n\
+via the signal 'actuatorStatusChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new current positions. \n\
+\n\
+The difference between this property and the method :py:meth:`~itom.actuator.getStatus` is that `getStatus` will only \n\
+return if the actuator plugin is currently idle. This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real current positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentStatus(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "currentStatus", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(status.size());
+    int i = 0;
+    foreach(int s, status)
+    {
+        PyTuple_SET_ITEM(result, i, PyLong_FromLong(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetCurrentPositions_doc, "Get the current positions (in mm or degree) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any current position \n\
+via the signal 'actuatorStatusChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new current positions. \n\
+\n\
+This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real current positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getCurrentPositions(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "currentPosition", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(currentPosition.size());
+    int i = 0;
+    foreach(double s, currentPosition)
+    {
+        PyTuple_SET_ITEM(result, i, PyFloat_FromDouble(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyActuatorGetTargetPositions_doc, "Get the target positions (in mm or degree) of all axes \n\
+\n\
+This property returns a tuple whose size corresponds to the number of axes of this actuator. \n\
+The returned tuple contains the current target positions of all axes (in mm or degree). \n\
+This property is always updated if the plugin signals a change of any target position \n\
+via the signal 'targetChanged'. Instead of reading this property, you can also connect to this signal \n\
+in order to get instantly informed about new target positions. \n\
+\n\
+This property always returns immediately, however it \n\
+only contains the last reported values which can slightly differ from the real target positions \n\
+(if the plugin rarely emits its current states for instance due to performance reasons).");
+/*static*/ PyObject* PythonPlugins::PyActuatorPlugin_getTargetPositions(PyActuatorPlugin *self, void * /*closure*/)
+{
+    if (!self->actuatorObj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of actuator available");
+        return NULL;
+    }
+
+    QVector<int> status;
+    QVector<double> currentPosition;
+    QVector<double> targetPosition;
+    ito::RetVal ret = self->actuatorObj->getLastSignalledStates(status, currentPosition, targetPosition);
+
+    if (!PythonCommon::setReturnValueMessage(ret, "targetPosition", PythonCommon::getProperty))
+    {
+        return NULL;
+    }
+
+    PyObject* result = PyTuple_New(targetPosition.size());
+    int i = 0;
+    foreach(double s, targetPosition)
+    {
+        PyTuple_SET_ITEM(result, i, PyFloat_FromDouble(s)); //steals a reference
+        i++;
+    }
+
+    return result;
+}
+
+//-----------------------------------------------------------------------------
+PyGetSetDef PythonPlugins::PyActuatorPlugin_getseters[] = {
+    {"currentStatus",   (getter)PyActuatorPlugin_getCurrentStatus,    (setter)NULL, pyActuatorGetCurrentStatus_doc, NULL },
+    {"currentPositions", (getter)PyActuatorPlugin_getCurrentPositions,  (setter)NULL, pyActuatorGetCurrentPositions_doc, NULL },
+    {"targetPositions",  (getter)PyActuatorPlugin_getTargetPositions,   (setter)NULL, pyActuatorGetTargetPositions_doc, NULL},
+    {NULL}  /* Sentinel */
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
    {"getParamInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
@@ -2710,8 +2843,8 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"showToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyActuatorPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
    {"setInterrupt", (PyCFunction)PythonPlugins::PyActuatorPlugin_setInterrupt, METH_NOARGS, pyActuatorSetInterrupt_doc},
-   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS, pyActuatorConnect_doc},
-   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS, pyActuatorDisconnect_doc},
+   {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS | METH_KEYWORDS, pyActuatorConnect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, pyActuatorDisconnect_doc},
    {"info",(PyCFunction)PythonPlugins::PyActuatorPlugin_info, METH_VARARGS, pyActuatorInfo_doc},
    {NULL}  /* Sentinel */
 };
@@ -2756,7 +2889,7 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    0,                                       /* tp_iternext */
    PyActuatorPlugin_methods,                /* tp_methods */
    PyActuatorPlugin_members,                /* tp_members */
-   0,                                       /* tp_getset */
+   PyActuatorPlugin_getseters,              /* tp_getset */
    0,                                       /* tp_base */
    0,                                       /* tp_dict */
    0,                                       /* tp_descr_get */
@@ -4341,7 +4474,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
 
     return Py_BuildValue("i", *interval);
 }
-PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod)->connects the signal of the actuator with the given callable python method \n\
+PyDoc_STRVAR(PyDataIOPlugin_connect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
 \n\
 This instance of *dataIO* wraps a dataIO device (ADDA, grabber or rawIO), that is defined by a C++ - class, that is finally derived from *QObject*. \n\
 Every dataIO can send various signals. Use this method to connect any signal to any \n\
@@ -4351,23 +4484,27 @@ signal definition must be convertable into a python object. \n\
 Parameters \n\
 ---------- - \n\
 signalSignature : {str} \n\
-This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
+    This must be the valid signature, known from the Qt - method *connect* (e.g. 'reachedTarget(bool)') \n\
 callableMethod : {python method or function} \n\
-valid method or function that is called if the signal is emitted. \n\
+    valid method or function that is called if the signal is emitted. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
 -------- - \n\
 disconnect\n\
 ");
-PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args)
+PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
     const char* signalSignature;
     PyObject *callableMethod;
     int signalIndex;
     int tempType;
     IntList argTypes;
+    int minRepeatInterval = 0;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -4405,7 +4542,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *
     }
     if (self->signalMapper)
     {
-        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes))
+        if (!self->signalMapper->addSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod, argTypes, minRepeatInterval))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established. Maybe a wrong sifnature is used");
             return NULL;
@@ -4419,6 +4556,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *
 
     Py_RETURN_NONE;
 }
+
+//--------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_disconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
 \n\
 Parameters \n\
@@ -4432,14 +4571,15 @@ See Also \n\
 --------- \n\
 connect \n\
 ");
-PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args)
+PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
-    int signalIndex, tempType;
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
+    int signalIndex;
     const char* signalSignature;
     PyObject *callableMethod;
     IntList argTypes;
 
-    if (!PyArg_ParseTuple(args, "sO", &signalSignature, &callableMethod))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
@@ -4673,8 +4813,8 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},
    {"showToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_showToolbox, METH_NOARGS, pyPluginShowToolbox_doc},
    {"hideToolbox", (PyCFunction)PythonPlugins::PyDataIOPlugin_hideToolbox, METH_NOARGS, pyPluginHideToolbox_doc},
-   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS, PyDataIOPlugin_connect_doc},
-   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS, PyDataIOPlugin_disconnect_doc },
+   {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_connect_doc},
+   {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_disconnect_doc },
    { "info",(PyCFunction)PythonPlugins::PyDataIOPlugin_info, METH_VARARGS,PyDataIOPlugin_info_doc },
    {NULL}  /* Sentinel */
 };
