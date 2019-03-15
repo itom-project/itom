@@ -344,7 +344,7 @@ The output will be:
     aperture: 0.6
     sensor: confocal sensor v1.0
     num tags: 2
-    success: 1.0
+    success: True
     
 One special tag is the 'title'-tag. If you plot a dataObject with a string-based 'title'-tag (e.g. with *itom1dqwtplot* or *itom2dqwtplot*), the title tag
 will be used as title for the plot (if the property *title* of the plot is set to **<auto>**):
