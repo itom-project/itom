@@ -112,7 +112,6 @@ Another big feature is the right handling and help for working with indentations
 When you start typing a new command in the editor window or the command line, it is possible to display either an auto completion list or calltips. The auto completion list appears after having typed a certain amount of characters of a new word and displays similar commands or keywords. You can choose from this list using the tab-key. It is possible to choose the sources for this list:
 
 * Use the recently typed words as sources
-* Use words contained in so called API files as sources. The API files can be set in the :ref:`tab API <gui-prop-py-api>` of the property dialog.
 * Use both sources
 
 The auto completion list settings are listed in the :ref:`tab auto completion <gui-prop-auto-completion>` of the property dialog.

@@ -88,15 +88,22 @@ Changes to style-sheets and icons are only effectuated after a restart of |itom|
 Section Console
 =================
 
-**General**
+General
+---------------------
 
 This tab provides options to decide how text is processed before copying it to the clipboard or before pasting it from the clipboard to the command line.
 
-**Line Wrap**
+Line Wrap
+---------------------
 
-The first three radio buttons manage when a line is wrapped. The group box underneath offers the possibility to display small icons at a line wrap and to indent the next line. The lowest group box offers three modes how to indent the wrapped line.  
+At first, it is possible to define the general line wrap mode. You have the possibility to disable the line wrap, or enable a line wrap at a word or character boundary.
 
-**Command History**
+The performance of the editor decreases for very long lines. Additionally, the readability can be increased, if the text is additionally wrapped after a certain
+number of characters. Enable the **long line** wrap by the checkbox **Split long lines** and define the number of characters, after which the wrap occurs. Wrapped
+lines will start with three leading dots (...).
+
+Command History
+---------------------
 
 These options refer to the command history widget that is available under View -> Toolboxes -> Command History. 
 
@@ -128,37 +135,31 @@ Section Editor
 
 .. _gui-prop-py-general:
     
-**General**
+General
+----------------------
 
-The first group box manages the indentation. 
+In this tab, you can mainly set all settings that are related to indentation:
 
-* "Auto indentation" automatically indents a new block after an "if ():" or a for loop occurred. 
-* if "Use tabs for indentation" is checked, tabs are used, otherwise spaces.
-* "Show Whitespaces" displays small light grey dots in each indentation.
-* The "Indentation Width" spinbox sets the standard width for the indentation
+* **Auto indentation** automatically indents the next block after a colon at the end of a line, like after a "if (...):" statement, a method definition or a for loop (among others). 
+* If the **Use tabs for indentation** checkbox is not checked, every tab is automatically replaced by N spaces (N is adjustable by the spinbox below).
+* **Show Whitespaces** displays small dots in each indentation. The color of these dots can be adjusted by the style **whitespace color**
+* The **Indentation Width** spinbox sets the standard width for the indentation. This is the number of spaces which are inserted if a tab is inserted (only if the **Use tabs for indentation** checkbox is unchecked.
+* **Show indentation guides** defines if small, dotted vertical lines should be displayed in front of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
 
-Inside the "Indentation Warning" group box it is possible to select which kind of indentation is marked as wrong. 
-Make sure to not create a conflict with the checkboxes listed above ("use Tabs for Indentation"). 
-The following image shows a warning caused by wrong indentation (tabs).
 
-.. figure:: images/propEditorGeneral.png
-    :scale: 100%
-    :align: center
+Script Editors
+----------------------
 
-The radio buttons inside the "End-of-line (EOL) mode" group box decide whether to use "", "" or "" as eol, depending on your operating system.
+|itom| provides the possiblity to regularily check a script for syntax errors (by means of a code analysis only - the script(s) is / are not executed for this check).
+Enable this syntax check by the checkbox related to the group **Python Syntax Checker**. This feature is only available if either the Python package **pyflakes** or
+**frosted** (legacy) are available. If enabled, one of these packages can be used to check the code for bugs or other syntax-related styles.
 
-On some linux systems, the line spacing of the editors and command line seems to be to thin. If this is the case, extend
-the line spacing by adding some extra ascent or descent above or below each line.
-
-**Script Editors**
-
-The **Python Syntax Checker** checks the code inside the editor widget for bugs. If there are bug, 
-a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a 
+If there are any bugs, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a 
 tooltip shows the error (for more information see the help about the :ref:`script editor window <gui-editor-syntax-check>`).
 
-* The Itom module is always included in every script. This causes wrong bugs appearances because the checking module (frosted) is not able to see the itom inclusion. To avoid these errors check the "Automatically include itom module..." check box. It includes "include itom" in every header before checking the code to avoid wrong bugs. 
-
-* The "Check interval" check box sets the interval the code is send to "frosted" for syntax checks. 
+At startup of |itom|, the module :py:mod:`itom` is globally imported (*from itom import ``*``*). This holds for any commands, executed in the console widget or
+for scripts, which are directly executed. In order to tell *pyflakes* or *frosted* about this imported module :py:mod:`itom`, check the corresponding checkbox.
+Additionally, you can decide when the next check should be executed. This is given in a number of seconds after the last key press in any script editor.
 
 The **Class Navigator** feature allows configuring the :ref:`class navigator <gui-editor-class-navigator>` 
 of any script editor window. The checkbox of the entire groupbox en- or disables this feature. 
@@ -170,61 +171,104 @@ of the script editor windows after a user-defined number of columns. This line c
 script thin and be remembered to add a line break instead of generating long lines that force the reader to horizontally
 scroll in case of smaller displays.
 
-.. _gui-prop-py-api:
-
-**API**
-
-The api files listed in the checkbox are necessary for syntax highlighting. New api files can be added by clicking on the "Add API" button on the right side.
-
-.. _gui-prop-auto-completion:
-
-**Auto Completion**
-
-.. figure:: images/propEditorAutoCompletion.png
-    :scale: 100%
-    :align: center
-
-The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "threshold" spin box).
-
-.. figure:: images/propEditorAutoCompletion_2.png
-    :scale: 100%
-    :align: center
-
-The other function  shows a list of available members of classes after entering a dot. 
-
-.. figure:: images/propEditorAutoCompletion_3.png
-    :scale: 100%
-    :align: center
-
-The three radio buttons in the group box at the bottom of the page set the source of the auto completion. Therefore take a look at API.
-
 .. _gui-prop-calltips:
 
-**Calltips**
+Calltips
+----------------------
 
-Calltips are tooltips that appear to display arguments of functions. They appear after entering "(". The number of calltips is important if there are overloaded functions with different parameter sets.
+Calltips can provide information about possible arguments of a function that is currently typed into the command line or a python script.
+A check for possible calltips is started once the opening brace "(" is entered. If the checkbox is disabled, no check for calltips is executed.
 
 .. figure:: images/propEditorCalltips.png
     :scale: 100%
     :align: center
 
+The highlighted argument of a calltip indicates the argument, that corresponds to the current position of the cursor in the script.
+
+.. note::
+    
+    Calltips can only be checked, if both the Python packages **jedi** (version >= 0.12) and **parso** are installed.
+
+.. _gui-prop-auto-completion:
+
+Auto Completion
+----------------------
+
+The auto completion functionality shows context-related options about possible methods, variable names, module names... that could correspond
+to the current text at the cursor's position. These hint can simplify the coding, since you can always select an entry from the list by selecting
+the entry with the arrow key and press return. All displayed hints are based on a static code analysis and can take methods and variables from any
+available module and package as well as of the current script into account.
+
+The completion popup is shown when the user press **Ctrl+Space** or automatically while the user is typing some code. The possible settings are:
+
+.. figure:: images/propEditorAutoCompletion.png
+    :scale: 100%
+    :align: center
+
+* **Threshold** indicates the number of characters with respect to each new word in a script, after which an auto completion check is requested.
+* **Filter method**: Select the mode, how the auto completion check is executed:
+    
+    1. Filter completion based on the prefix (fast method)
+    2. Filter completions based on whether the prefix is contained in the suggestion (fast method)
+    3. Fuzzy filtering, using the subsequence matcher. This is the most powerful filter mode but also the SLOWEST.
+
+* **case sensitivity**: select whether the search is case sensitive (or not)
+* **show tooltips**: select if a tooltip is shown next to the currently selected item in the auto completion list. This tooltip contains an additional information string about this entry.
+
+This example shows an example for an auto completion list, with an additional tooltip:
+
+.. figure:: images/propEditorAutoCompletion_2.png
+    :scale: 100%
+    :align: center
+
+The other function  shows a list of available members of classes after entering a dot.:
+
+.. figure:: images/propEditorAutoCompletion_3.png
+    :scale: 100%
+    :align: center
+
+.. note::
+    
+    Auto completion hints can only be checked and displayed, if both the Python packages **jedi** (version >= 0.12) and **parso** are installed.
+
+
 .. _gui-prop-py-styles:
 
-**Styles**
+Styles
+----------------
 
-This page is responsible for the highlighting of reserved words, comments, identifier and so on. The style for each type of text, listed in the listbox, can be set individually. 
-It is possible to export all styles to an **ini** file that can be imported again. Furthermore, the editor styles of |itom| are mostly compatible
-with the xml-style files of the open source project **Notepad++**, such that these xml files can be imported, too. Some xml style files are located
-in the **styles/editorThemes** folder.
+All visible python scripts as well as commands, written to the console widget, are parsed by a syntax highlighter, that visualizes the
+components of the code with different styles.
+
+.. figure:: images/propEditorStyles.png
+    :scale: 100%
+    :align: center
+
+This property page is divided into the following parts:
+
+1. Select the style type, that you want to edit using the group 2. The first part of the list contains styles for specific parts of a code, whereas the second part
+   of the list also contains generals styles, like the page style itself.
+2. Setting of the selected style. Depending of the style, you can select the foreground color (text color), the background color (use a transparent color, to use the paper color instead) or the font.
+3. Some general settings: Change the overall font size for all styles, reset all styles to the default values or set all background colors of text to transparent, such that the paper color is the only
+   valid background color.
+4. It is possible to export all styles to an **ini** file that can be imported again. Furthermore, the editor styles of |itom| are mostly compatible
+   with the xml-style files of the open source project **Notepad++**, such that these xml files can be imported, too. Some xml style files are located
+   in the **styles/editorThemes** folder.
+
+.. note::
+    
+    From |itom| 3.2 on, text, that is printed to the console widget (or error texts), are not parsed by the python syntax highlighted, but they are
+    styled with the specific styles **Stream Output** or **Stream Error**.
 
 Section Workspace
 ===================
 
 The properties with this section allow modifying features in the workspace widget. Currently, this is one feature:
 
-**Unpack imported files**
+Unpack imported files
+---------------------------
 
-Data container files like *.idc or *.mat contain a main dictionary with one or several items. By this option, you can choose the import behaviour of these file types.
+Data container files like ``*``.idc or ``*``.mat contain a main dictionary with one or several items. By this option, you can choose the import behaviour of these file types.
 If the option is checked, the main dictionary in the file is unpacked and all direct children are put as separate variables to the workspace. If unchecked, the main dictionary
 itself with all its children is put as one variable into the workspace where the user is asked for the name of this major dictionary if the file is imported.
 
@@ -235,7 +279,8 @@ itself with all its children is put as one variable into the workspace where the
 Section Plugins
 ==================
 
-**Algorithms and Filters**
+Algorithms and Filters
+------------------------------
 
 Some algorithms or filters, programmed in algorithm plugins, use parallelization techniques like OpenMP. Usually they use the maximum number of processors that are
 available on the machine. However, it is sometimes more powerful to reduce this maximum number of available threads such that other applications as well as the
