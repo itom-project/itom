@@ -140,7 +140,7 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qMainWindow;
         qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("statusBar()"), "ito::PythonQObjectMarshal", 5001, ok );
         qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("centralWidget()"), "ito::PythonQObjectMarshal", 5002, ok );
-        qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("addToolBar(QString)"), "ito::PythonQObjectMarshal", 5003, ok);
+        qMainWindow << buildMethodDescription(QMetaObject::normalizedSignature("addToolBar(QString,QString)"), "ito::PythonQObjectMarshal", 5003, ok);
         methodHash["QMainWindow"] = qMainWindow;
 
         //QTableWidget
@@ -182,10 +182,12 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qToolBar;
         qToolBar << buildMethodDescription(QMetaObject::normalizedSignature("addSeparator()"), "ito::PythonQObjectMarshal", 10001, ok);
         qToolBar << buildMethodDescription(QMetaObject::normalizedSignature("addAction(QString,QString)"), "ito::PythonQObjectMarshal", 10002, ok);
+        methodHash["QToolBar"] = qToolBar;
 
         //QAction
         MethodDescriptionList qAction;
         qAction << buildMethodDescription(QMetaObject::normalizedSignature("setIcon(QString,double)"), "void", 11001, ok);
+        methodHash["QAction"] = qAction;
     }
 }
 

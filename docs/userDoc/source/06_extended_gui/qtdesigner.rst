@@ -581,9 +581,10 @@ contained in the following table:
     
     returns a reference to the central widget of the mainWindow as :py:class:`~itom.uiItem`.
 
-.. py:function:: QMainWindow::addToolBar(str name) -> uiItem
+.. py:function:: QMainWindow::addToolBar(str name, str objectName) -> uiItem
     
     adds a new toolbar with the given name to the main window and returns its reference as :py:class:`~itom.uiItem`.
+    If objectName is a nonempty string, it is used as internal object name of the new toolbar.
     
     *New in **itom** 3.2*
 
