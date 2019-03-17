@@ -185,7 +185,7 @@ void WidgetWrapper::initMethodHash()
 
         //QAction
         MethodDescriptionList qAction;
-        qAction << buildMethodDescription(QMetaObject::normalizedSignature("setIcon(QString,int)"), "ito::PythonQObjectMarshal", 11001, ok);
+        qAction << buildMethodDescription(QMetaObject::normalizedSignature("setIcon(QString,double)"), "void", 11001, ok);
     }
 }
 
@@ -820,7 +820,6 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 }
                 case 10002: //addAction
                 {
-                    QLabel *lbl = new QLabel(object2);
                     QString text = *reinterpret_cast<QString(*)>(_a[1]);
                     QAction *a = object2->addAction(text);
 
@@ -845,7 +844,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 {
                     QPixmap pm(*reinterpret_cast<QString(*)>(_a[1]));
 #if QT_VERSION >= 0x050000
-                    pm.setDevicePixelRatio(*reinterpret_cast<int(*)>(_a[2]));
+                    pm.setDevicePixelRatio(*reinterpret_cast<double(*)>(_a[2]));
 #endif
                     object2->setIcon(QIcon(pm));
                     return ito::retOk;
