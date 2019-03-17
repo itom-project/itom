@@ -254,6 +254,7 @@ This property page is divided into the following parts:
 4. It is possible to export all styles to an **ini** file that can be imported again. Furthermore, the editor styles of |itom| are mostly compatible
    with the xml-style files of the open source project **Notepad++**, such that these xml files can be imported, too. Some xml style files are located
    in the **styles/editorThemes** folder.
+5. This sample text can be used to see the style of the currently selected style category.
 
 .. note::
     

@@ -66,7 +66,7 @@ properties that are visible in the property toolbox can afterwards be read or ch
 
 The alignment of control elements on the surface is mainly controlled by so-called layout elements. These layouts together with size policies that can be assigned to every widget 
 control the appearance of the entire user interface and provide the feature that the dialog can be changed in size whereas all widgets are dynamically repositioned. For more information
-about layouting your user interface, see http://qt-project.org/doc/qt-4.8/designer-layouts.html.
+about layouting your user interface, see http://qt-project.org/doc/qt-5/designer-layouts.html.
 
 Finally, save your user interface under a convenient filename with the suffix **.ui**.
 
@@ -264,7 +264,7 @@ and the enabled status of the textfield in dialog *testWidget.ui* from the first
     #2. possibility
     [text,enabled] = dialog.txtInput.getProperty(["text", "enabled"])
 
-.. note:
+.. note::
     
     For accessing single properties, it is shorter and easier to use the mapping-operator **[]**. However, due to the interal thread-structure of |itom|, it is a little bit faster to
     access multiple properties of the same widget using the method :py:meth:`~itom.uiItem.getProperty`.
@@ -353,7 +353,7 @@ define slots in form of ordinary python methods or functions and to also connect
 
 For establishing the connection, you need again a reference to the specific widget on the user interface. This reference is any variable of type :py:class:`~itom.uiItem`. Next, you need the
 name and the arguments of the |Qt| signal, you want to connec to. This information can be obtained by the |Qt| documentation. For instance, if you need any signal that a widget of type
-**QPushButton** (the type of our push button, placed in the user interface in file **testWidget.ui**), go to http://qt-project.org/doc/qt-4.8/qpushbutton.html. Unfortunately, you won't find
+**QPushButton** (the type of our push button, placed in the user interface in file **testWidget.ui**), go to https://doc.qt.io/qt-5/qpushbutton.html. Unfortunately, you won't find
 a headline called **Signals** at this page, since **QPushButton** does not directly declare any signal. However, you can see under **Additional Inherited Members**, that **QPushButton**
 inherits signals from its base classes. The most important signals are inherited from **QAbstractButton**. Click on its link and you will see the available signals for a push button:
 
@@ -433,6 +433,16 @@ the signal **triggered()** of every item in the menu with your method. In |Qt| s
     #actionAddItem is the objectName of the action
     win.show()
 
+.. note::
+    
+    **New in itom 3.2**
+    
+    The method :py:meth:`~itom.uiItem.connect` now has the additional optional argument **minRepeatInterval**. If this is given with a value > 0,
+    the connected slot will only be called, if the last call from the same signal happened at least **minRepeatInterval** ms ago. Else, the new
+    call is ignored. This can be used, to avoid that signals, that are fired very often, will jam the incoming event queue of the corresponding Python method.
+    
+    It is further possible to not only connect signals from widgets to Python slots, but also signals from **dataIO** or **actuator** instances. For this, see
+    the methods :py:meth:`~itom.dataIO.connect` and :py:meth:`itom.actuator.connect`.
 
 Calling slots
 =============
@@ -440,7 +450,8 @@ Calling slots
 Widgets on user interfaces not only emit signals but they also have slots defined, such that you can connect other signals (e.g. from other widgets) to these slots. Using a python
 script in |itom| you can also call (*or:* invoke) these slots. 
 
-.. note:
+.. note::
+    
     With respect to the documentation of |Qt| it is only possible to invoke slots of widgets from python, but it is not possible
     to call public, protected or private member methods. This is a limitation of |itom|. Other python packages like *pySide* or *PyQt* offer this possibility, however their use is not
     possible in |itom|, since they require the python interpreter to be executed in the main thread, which is not the case in |itom|, where |python| runs in its own secondary thread.
@@ -461,61 +472,238 @@ Unfortunately, there are some methods of important widgets in |Qt|, which are no
 However, there are some exceptions defined in |itom| such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These exceptions are 
 contained in the following table:
 
-======================= ================================================================================================================================================================================================================================
-Widget / ClassName       Public Method
-======================= ================================================================================================================================================================================================================================
-QWidget                 void resize(int,int)
-QWidget                 void setGeometry(int,int,int,int)
-QWidget                 void setCursor(int) *sets the given cursor for this uiItem. The number is a value of the enum Qt::CursorShape. A number < 0 will unset the current cursor.
-QListWidget             void addItem(QString)
-QListWidget             void addItems(QStringList)
-QListWidget             void selectedRows() *returns a tuple of all selected row indices*
-QListWidget             void selectedTexts() *returns a tuple of all selected values (as strings)*
-QListWidget             void selectRows(QVector<int>) *select the rows with the given indices (ListWidget must be in multi-selection mode)*
-QListWidget             QString takeItem(int row) *removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does not exist*
-QListWidget             QString item(int row) *returns the text of the item from the given row or raises an exception if the item does not exist*
-QListWidget             Qt::CheckState checkState(int row) *returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
-QListWidget             void setCheckState(int row,Qt::CheckState state) *set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state*
-QListWidget             Qt::ItemFlags flags(int row) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
-QListWidget             void setFlags(int row,Qt::ItemFlags flags) *set the flags of the item in the given row based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
-QComboBox               void addItem(QString)
-QComboBox               void addItems(QStringList)
-QComboBox               void removeItem(int)
-QComboBox               void setItemData(int,QVariant) *sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index*
-QComboBox               void insertItem(int,QString)
-QComboBox               QString itemText(int) *returns the text of the i-th item in the combo-box as string*
-QTabWidget              int isTabEnabled(int)
-QTabWidget              void setTabEnabled(int,bool)
-QMainWindow             uiItem statusBar() *returns a reference to the statusbar widget*
-QMainWindow             uiItem centralWidget() *returns a reference to the central widget of the mainWindow*
-QTableWidget            void setHorizontalHeaderLabels(QStringList)
-QTableWidget            void setVerticalHeaderLabels(QStringList)
-QTableWidget            QVariant getItem(int,int)
-QTableWidget            void setItem(int,int,QVariant)
-QTableWidget            int currentColumn() *returns index of selected column*
-QTableWidget            int currentRow() *returns index of selected row*
-QTableWidget            Qt::CheckState checkState(int row, int column) *returns the check state of the item from the given row and column (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist*
-QTableWidget            void setCheckState(int row, int column,Qt::CheckState state) *set the check state of the item in the given row and column (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state*
-QTableWidget            Qt::ItemFlags flags(int row, int column) *returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).*
-QTableWidget            void setFlags(int row, int column,Qt::ItemFlags flags) *set the flags of the item in the given row and column based on the flags bitmask (use an integer). You have to set the flags properly before changing the state*
-QTableView              uiItem horizontalHeader()
-QTableView              uiItem verticalHeader()
-QSplitter               setStretchFactor(int section, int factor) *sets the stretch factor (size policy) for the given section*
-QSplitter               sizes() *returns the sizes (in pixel) of each section as tuple*
-QSplitter               setSizes(QList<int> sizes) *sets the sizes of all sections (in pixels). Pass sizes as tuple or list of integers*
-QSplitter               isCollapsible(int section) *returns True if the given section is collapsible, else False*
-QSplitter               setCollapsible(int section, bool value) *set if the given section should be collapsible (True) or not (False)*
-QStatusBar              uiItem addLabelWidget(QString) *adds an empty label to the status bar with the given object name and returns its reference
-QStatusBar              currentText() *Returns the temporary message currently shown, or an empty string if there is no such message.
-======================= ================================================================================================================================================================================================================================
+.. py:function:: QWidget::resize(int width, int height) -> None
+
+    resizes the widget to width / height.
+
+.. py:function:: QWidget::setGeometry(int x, int y, int width, int height) -> None
+
+    changes the geometry of the widget.
+
+.. py:function:: QWidget::setCursor(int index) -> None
+    
+    sets the given cursor for this uiItem. The number is a value of the enumeration `Qt::CursorShape <https://doc.qt.io/qt-5/qt.html#CursorShape-enum/>`_. A number < 0 will unset the current cursor.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QWidget::devicePixelRatioF() -> float
+    
+    Returns the device pixel ratio for the device as a floating point number. Only if **itom** is compiled against Qt >= 5.6, else 1.0 is returned always.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QListWidget::addItem(str item) -> None
+    
+    adds the item to the list
+
+.. py:function:: QListWidget::addItems(Sequence[str] items) -> None
+    
+    adds the given items in the given order to the list.
+
+.. py:function:: QListWidget::selectedRows() -> Tuple[int]
+    
+    returns a tuple of all selected row indices
+
+.. py:function:: QListWidget::selectedTexts() -> Tuple[str]
+    
+    returns a tuple of all selected values
+
+.. py:function:: QListWidget::selectRows(Sequence[int] indices) -> None
+    
+    select the rows with the given indices (ListWidget must be in multi-selection mode)
+
+.. py:function:: QListWidget::takeItem(int row) -> str
+    
+    removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does not exist.
+
+.. py:function:: QListWidget::item(int row) -> str
+    
+    returns the text of the item from the given row or raises an exception if the item does not exist
+
+.. py:function:: QListWidget::checkState(int row) -> int (Qt::CheckState)
+    
+    returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist.
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
+
+.. py:function:: QListWidget::setCheckState(int row, Qt::CheckState state) -> None
+    
+    set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state.
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
+
+.. py:function:: QListWidget::flags(int row) -> int (Qt::ItemFlags)
+    
+    returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+
+.. py:function:: QListWidget::setFlags(int row, Qt::ItemFlags flags) -> None
+    
+    set the flags of the item in the given row based on the flags bitmask (use an integer). You have to set the flags properly before changing the state.
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+
+.. py:function:: QComboBox::addItem(str item) -> None
+    
+    appends the given item to the combo box
+
+.. py:function:: QComboBox::addItems(Sequence[str] items) -> None
+    
+    appends the given items to the combo box
+
+.. py:function:: QComboBox::removeItem(int index) -> None
+    
+    remove the item in the combo box given by index
+
+.. py:function:: QComboBox::setItemData(int index, variant value) -> None
+    
+    sets the displayed text of the item given by index to the given value.
+    *value* can be of any type, that can be converted to a string representation (originally: QVariant).
+
+.. py:function:: QComboBox::insertItem(int index , str item) -> None
+    
+    Inserts the item at the position in the list given by index.
+    
+.. py:function:: QComboBox::itemText(int index) -> str
+    
+    returns the text of the item in the combo box given by index.
+
+.. py:function:: QTabWidget::isTabEnabled(int index) -> bool
+    
+    returns True, if the tab, given by index, is enabled; else False
+    
+.. py:function:: QTabWidget::setTabEnabled(int index, bool enabled) -> None
+    
+    sets the enable state of the tab, given by index.
+
+.. py:function:: QMainWindow::statusBar() -> uiItem
+    
+    returns a reference to the statusbar widget as :py:class:`~itom.uiItem`.
+
+.. py:function:: QMainWindow::centralWidget() -> uiItem 
+    
+    returns a reference to the central widget of the mainWindow as :py:class:`~itom.uiItem`.
+
+.. py:function:: QMainWindow::addToolBar(str name) -> uiItem
+    
+    adds a new toolbar with the given name to the main window and returns its reference as :py:class:`~itom.uiItem`.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QTableWidget::setHorizontalHeaderLabels(Sequence[str] labels) -> None
+    
+    sets the labels of the horizontal header labels
+
+.. py:function:: QTableWidget::setVerticalHeaderLabels(Sequence[str] labels) -> None
+    
+    sets the labels of the vertical header labels
+
+.. py:function:: QTableWidget::getItem(int row, int column) -> variant (QVariant)
+    
+    returns the value of the item, given by row and column
+
+.. py:function:: QTableWidget::setItem(int row, int column, variant value) -> None
+    
+    sets the value of the item, given by row and column, to the given value (any type, castable to QVariant).
+
+.. py:function:: QTableWidget::currentColumn() -> int
+    
+    returns the index of the currently selected column
+
+.. py:function:: QTableWidget::currentRow() -> int
+    
+    returns the index of the currently selected row
+
+.. py:function:: QTableWidget::checkState(int row, int column) -> int (Qt::CheckState)
+    
+    returns the check state of the item from the given row and column (0: unchecked, 1: partially checked, 2: checked) or raises an exception if the item does not exist.
+
+.. py:function:: QTableWidget::setCheckState(int row, int column,Qt::CheckState state) -> None
+    
+    set the check state of the item in the given row and column (0: unchecked, 1: partially checked, 2: checked) - set the flags properly before changing the state.
+
+.. py:function:: QTableWidget::flags(int row, int column) -> int (Qt::ItemFlags)
+    
+    returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+
+.. py:function:: QTableWidget::setFlags(int row, int column, Qt::ItemFlags flags) -> None
+    
+    set the flags of the item in the given row and column based on the flags bitmask (use an integer). You have to set the flags properly before changing the state.
+    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+
+.. py:function:: QTableView::horizontalHeader() -> uiItem
+    
+    returns a reference to the horizontal header widget as :py:class:`~itom.uiItem`.
+
+.. py:function:: QTableView::verticalHeader() -> uiItem
+    
+    returns a reference to the vertical header widget as :py:class:`~itom.uiItem`.
+
+.. py:function:: QSplitter::setStretchFactor(int section, int factor) -> None
+    
+    sets the stretch factor (size policy) for the given section.
+
+.. py:function:: QSplitter::sizes() -> Tuple[int]
+    
+    returns the sizes (in pixel) of each section as tuple.
+
+.. py:function:: QSplitter::setSizes(Sequence[int] sizes) -> None
+    
+    sets the sizes of all sections (in pixels). Pass sizes as tuple or list of integers.
+
+.. py:function:: QSplitter::isCollapsible(int section) -> bool
+    
+    returns True if the given section is collapsible, else False
+
+.. py:function:: QSplitter::setCollapsible(int section, bool value) -> None
+    
+    set if the given section should be collapsible (True) or not (False)
+
+.. py:function:: QStatusBar::addLabelWidget(str objectName) -> uiItem 
+    
+    adds an empty label (class: QLabel) to the status bar with the given object name and returns its reference as :py:class:`~itom.uiItem`.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QStatusBar::currentText() -> str 
+    
+    Returns the temporary message currently shown, or an empty string if there is no such message.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QToolBar::addSeparator() -> uiItem
+    
+    adds a new separator to the toolbar and returns its reference as :py:class:`~itom.uiItem`.
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QToolBar::addAction(str label, str objectName) -> uiItem
+    
+    adds a new action to the toolbar and returns its reference (QAction) as :py:class:`~itom.uiItem`.
+    The action has a label text, as well as an optional objectName. No objectName is assigned if it is an empty string.
+    
+    You can assign an icon to this action, by the following sample code:
+    
+    .. code-block:: python
+        
+        #given is the uiItem of the toolbar as 'myToolbar'
+        a = myToolbar.call("addAction", "do it", "do_it")
+        a.call("setIcon", "C:/temp/icon.png", 1.0)
+    
+    *New in **itom** 3.2*
+
+.. py:function:: QAction::setIcon(str filename, float scaleFactor) -> None
+    
+    sets the icon of the action to the given filename and optionally defines a certain scaling factor, which
+    is the pixel ratio that is applied to the icon (usually: 1.0).
+    
+    *New in **itom** 3.2*
 
 Please notice, that every method listed above is also valid for a widget, that is derived from the specific class (derived in C++). Therefore the additional slots of *QWidget*
 hold for every other widget, since every widget is derived from *QWidget*.
 
-.. note:
+.. note::
     
-    Whenever the return value is of type **uiItem**, the original C++ datatype is a pointer to **QWidget**. This pointer is specially wrapped in a thread-safe process to the
-    corresponding instance of **uiItem**, that represents the specific widget.
+    Whenever the return value is of type :py:class:`~itom.uiItem`, the original C++ datatype is a pointer to **QWidget**. This pointer is specially wrapped in a thread-safe process to the
+    corresponding instance of :py:class:`~itom.uiItem`, that represents the specific widget.
     
     The special slots defined in the table above are given in the class **WidgetWrapper** of |itom|.
 

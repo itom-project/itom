@@ -1080,7 +1080,7 @@ out : {variant, list of variants}.\n\
 \n\
 See Also \n\
 -------- \n\
-execFuncsInfo");
+getExecFuncsInfo");
 //general docstrings END
 
 

@@ -120,4 +120,4 @@ Your plugin should at least link agains the following libraries:
 * ...
 
 .. note::
-    For more information about the deployment of plugins, including notes about the |Qt|-version compatibility, see `link to Qt-documentation <http://qt-project.org/doc/qt-4.8/deployment-plugins.html>`_
+    For more information about the deployment of plugins, including notes about the |Qt|-version compatibility, see `link to Qt-documentation <https://doc.qt.io/qt-5/deployment-plugins.html>`_
