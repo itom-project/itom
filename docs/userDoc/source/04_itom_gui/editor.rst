@@ -33,8 +33,8 @@ Basic and advanced functions to edit the current script are contained in the **e
 * cut, copy and paste parts of the script.
 * comment (Ctrl+R) the selected lines using the #-character or uncomment lines (Ctrl+Shift+R).
 * indent or unindent the selected lines.
-* open a search bar at the bottom of the script to search for a string (quick search).
-* open a search and replace dialog.
+* open a search bar at the bottom of the script to search for a string (quick search) (Ctrl+F).
+* open a search and replace dialog (Ctrl+H).
 * open a goto-dialog (Ctrl+G) where you can enter a specific line number the cursor should be moved to.
 * open the :ref:`icon browser <gui-editor-iconbrowser>` to search internal icons of itom and loaded plugins that can also be used for specific user interfaces.
 * You can set bookmarks by clicking the left margin (left from the line numbers). A star icon indicates a bookmarked line. Modify the bookmarks or jump to the next by clicking the corresponding menu entries.
@@ -61,7 +61,8 @@ These are:
 * **Step Out** (Shift+F11): Executes the script until the end of the current function and stops in the next line of the caller.
 * **Stop** (Shift+F10 or Ctrl+C): Stops a currently running script (run or debug mode). Please notice, that the script can not always be stopped immediately. For instance, the stop flag is not checked when a sleep command from python's time module is executed.
 
-The functions **continue**, **step**, **step over**, **step out** and **stop** are only active if a script is currently debugged or run (stop only). These functions are also accessible via the script menu of the |itom| :ref:`main window <gui-mainwindow>`.
+The functions **continue**, **step**, **step over**, **step out** and **stop** are only enabled if a script is currently debugged or run (stop only). 
+These functions are also accessible via the script menu of the |itom| :ref:`main window <gui-mainwindow>`.
 
 More information about breakpoints are given in the next section.
 
@@ -102,28 +103,80 @@ The breakpoints of this and other scripts are all listed in the :ref:`breakpoint
     In order to stop the script execution in a debug-mode in any method that is for instance called by clicking a button in an user-defined interface or via a timer event, you need to set a breakpoint in the corresponding line in the script and toggle the button |vardebugpython| **Run Python in debug mode** in the main window of |itom| (toolbar or menu **script**). The same holds for a method that you call from the command line. Toggle this button and set a breakpoint in the method in order to run this method in debug-mode and let the debugger stop in the line marked with the breakpoint.
 
 
-Syntax highlighting and auto completion
+Syntax highlighting and indentation
+=====================================
+
+A script highlighting mechanism is implemented to simplify the reading and programming of the script. 
+You can change the styles of the syntax highlighting in the :ref:`property dialog <gui-prop-py-styles>` (tab *styles*) of |itom|.
+
+Another big feature is the additional help for working with indentations using spaces or tabs. 
+The python language is structured using indentation. Each indentation level always needs to consist of 
+the same amount of spaces or tabs; additionally you must not switch between tabs and spaces for the indentation 
+within your scripts. The script editor has a feature to automatically replace tabs by a certain amount of 
+spaces (it is recommended to set this feature and use four spaces for one tab). Additionally, you can display 
+spaces or tabs and be warned if you switch between both. All these features are configurable in the :ref:`tab general <gui-prop-py-general>` of the property dialog.
+
+If you press the return key after the begin of a new indented block (usually indicated by a colon character), the next
+line is automatically indented.
+
+Auto completion and calltips
+===================================================
+
+Auto completion and calltips provide two mechanisms for an easier and faster scripting.
+
+.. figure:: images/scripteditor_autocompletion.png
+    :scale: 100%
+    :align: center
+
+Once you typed a certain number of characters of a new statement, a check for possible auto completions is started
+in the background. Once the results are available, they are displayed as list. Select the right item from the list using
+the arrow keys and press Tab or Return to select the word. Quit the auto completion list with Esc.
+
+The auto completion can be configured by the :ref:`tab auto completion <gui-prop-auto-completion>` of the property dialog.
+
+
+Calltips always appear if you open a rounded bracket to give the arguments of a function call. 
+
+.. figure:: images/scripteditor_calltip.png
+    :scale: 100%
+    :align: center
+
+If the statement before the bracket corresponds to a detectable method, the list of arguments of this method
+is shown as a tooltip, such that all arguments are clearly visible during coding. Configure the 
+calltip behaviour in the :ref:`tab calltips <gui-prop-calltips>` of the property dialog.
+
+The introspection for auto completions and calltips uses an offline parsing of the current script as well as all
+imported packages. This might take some time, when a new package is imported and analzyed for the first time (e.g. for numpy).
+
+.. note::
+    
+    Auto completion and calltips require the Python package **jedi** to be installed. **jedi** itself depends on the
+    package **parso**. Please install both packages to benefit from all features of the script editor (*new in **itom** 3.2).
+
+Goto definition or assignment
 ================================================
 
-A script highlighting mechanism is implemented to simplify the reading and programming of the script. You can change the styles of the syntax highlighting in the :ref:`property dialog <gui-prop-py-styles>` (tab *styles*) of |itom|.
+The script editor allows navigating to the definitions (or assignments) of function calls, used variables etc. in a script.
+You can either call the context menu over the word, to whose definition you would like to go to, or you press the shift-key
+and move the cursor over a specific word. If a definition (or assignment) can be found for this word, it is underlined after a short moment.
+Click the click to jump to the definition. A jump can be done within the same script, else the requested script is opened.
 
-Another big feature is the right handling and help for working with indentations using spaces or tabs. The python language is structured using indentation. Each indentation level always needs to consist of the same amount of spaces or tabs; additionally you must not switch between tabs and spaces for the indentation within your scripts. The script editor has a feature to automatically replace tabs by a certain amount of spaces (it is recommended to set this feature and use four spaces for one tab). Additionally, you can display spaces or tabs and be warned if you switch between both. All these features are configurable in the :ref:`tab general <gui-prop-py-general>` of the property dialog.
+.. figure:: images/scripteditor_gotodef.png
+    :scale: 100%
+    :align: center
 
-When you start typing a new command in the editor window or the command line, it is possible to display either an auto completion list or calltips. The auto completion list appears after having typed a certain amount of characters of a new word and displays similar commands or keywords. You can choose from this list using the tab-key. It is possible to choose the sources for this list:
+The difference between an assignment and a definition is shown with respect to the image above. In the depicted sample, the
+definition of the call to **myfunc** is the original definition of the method, here this is the method **calc_diff**. The assignment
+however is the place, where the variable **myfunc** is introduced for the first time.
 
-* Use the recently typed words as sources
-* Use both sources
-
-The auto completion list settings are listed in the :ref:`tab auto completion <gui-prop-auto-completion>` of the property dialog.
-
-Calltips always appear if you open a rounded bracket to give the arguments of a function call. Then the first line of the docstring of all functions that are listed in any loaded API file and have the same name than the written function are displayed. Configure the calltip behaviour in the :ref:`tab calltips <gui-prop-calltips>` of the property dialog.
+*New in |itom| 3.2
 
 .. _gui-editor-class-navigator:
 
 Direction class and method navigator
 ================================================
 
-Above every script, there are two combo boxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
+Above every script, there are two comboboxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
 
 .. figure:: images/editor-class-navigator.png
     :scale: 100%
