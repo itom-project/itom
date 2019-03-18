@@ -98,7 +98,7 @@ These are the steps you need to execute if you want to generate and build |itom|
    QtCreator can now read the cached configurations from CMake. The **QtCreator** will also run CMake, a process that should be safe and should not fail, as everything should have been properly 
    configured in the previous steps using CMake GUI. Usually you don't need the CMake GUI with **QtCreator**, however you can not easily change any settings directly in **QtCreator**. 
 
-.. note:
+.. note::
     
     Please consider: When using CMake, you should not change any project settings or add/delete and source files directly in your development environment (Visual Studio...), since 
     these changes overwritten when updating the CMake-configuration files. Therefore only change the corresponding *CMakeLists.txt* files and update the project files using CMake as described above.
@@ -110,7 +110,7 @@ In principle, the build of plugins or designer-plugins follows the same basic st
 are contained in the **SDK** of |itom|. If you installed |itom| from a setup, the **SDK** is already available, if you built |itom| from sources, you first need to compile |itom| (at least the libraries
 *dataObject*, *pointCloud* and *qpropertyeditor*) in **Debug and Release** before continuing to configure and to generate any plugin project.
 
-.. note:
+.. note::
     
     If the build of any plugin failed due to a linker error concerning *dataObject*, *pointCloud*..., the most common problem tends to be, that CMake has configured and generated the plugin project
     with an incomplete SDK of |itom|. In this case, build |itom| in **Debug and Release** mode and force CMake to reconfigure and regenerate your plugin or designer-plugin project files.
