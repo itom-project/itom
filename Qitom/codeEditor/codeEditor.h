@@ -207,7 +207,6 @@ public:
     int currentColumnNumber() const;
     int lineNbrFromPosition(int yPos) const;
     int lineCount() const;
-    int lines() const { return lineCount(); } //TODO: remove this, if QScintilla is removed!
     int lineLength(int line) const;
     QTextCursor selectWholeLine(int line = -1, bool applySelection = true);
     QTextCursor selectLines(int start = 0, int end = -1, bool applySelection = true);
@@ -227,12 +226,12 @@ public:
     void removeSelectedText();
     
     bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
-    bool forward = true, int line = -1, int index = -1, bool show = true, bool posix = false); 	//TODO: remove posix argument if PyQode only
+    bool forward = true, int line = -1, int index = -1, bool show = true);
     bool findNext();
     void replace(const QString &text);
 
-    void endUndoAction() { textCursor().endEditBlock(); } //TODO: remove this if QScintilla is removed
-    void beginUndoAction() { textCursor().beginEditBlock(); } //TODO: remove this if QScintilla is removed
+    void endUndoAction() { textCursor().endEditBlock(); } 
+    void beginUndoAction() { textCursor().beginEditBlock(); }
     
     QString selectedText() const;
     int length() const { return toPlainText().size(); }
@@ -241,8 +240,6 @@ public:
     int lineIndent(int lineNumber = -1) const;
     int lineIndent(const QTextBlock *lineNbr) const;
     QString lineText(int lineIdx) const;
-    QString text(int lineIdx) const { return lineText(lineIdx); } //TODO: remove this, if QScintilla is removed!
-    QString text() const { return toPlainText(); } //TODO: remove this, if QScintilla is removed!
     void markWholeDocDirty();
     void callResizeEvent(QResizeEvent *evt) { resizeEvent(evt); }
 
@@ -262,8 +259,6 @@ public:
     void showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco);
 
     void setPlainText(const QString &text, const QString &mimeType = "", const QString &encoding = "");
-    void setText(const QString &text) { setPlainText(text); } //TODO: remove this, if QScintilla is removed!
-    void insert(const QString &text) { insertPlainText(text); } //TODO: remove this, if QScintilla is removed!
     void insertAt(const QString &text, int line, int index);
     void append(const QString &text);
 
@@ -334,9 +329,6 @@ protected:
 
     virtual bool keyPressInternalEvent(QKeyEvent *e) { return true; };
 
-    //TODO: Remove if all issues are solved!
-    QAction *m_pDebugAction;
-
 private:
     struct FindOptions
     {
@@ -349,7 +341,6 @@ private:
         bool wrap;
         bool forward;
         bool show;
-        bool posix;
     };
 
     FindOptions m_lastFindOptions;

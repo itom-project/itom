@@ -483,7 +483,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int l
         // regular expression for Classes and Methods
         QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
         reg.setMinimal(true);
-        reg.indexIn(this->text(line), 0);
+        reg.indexIn(this->lineText(line), 0);
         setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
     }
 
@@ -565,7 +565,7 @@ void ScriptEditorWidget::menuComment()
     if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
-        QString lineText;
+        QString lineTextFull;
         QString lineTextTrimmed;
         int searchIndex;
 
@@ -579,10 +579,10 @@ void ScriptEditorWidget::menuComment()
 
         for (int i = lineFrom; i <= lineTo; i++)
         {
-            lineText = text(i);
-            lineTextTrimmed = lineText.trimmed();
+            lineTextFull = lineText(i);
+            lineTextTrimmed = lineTextFull.trimmed();
 
-            searchIndex = lineText.indexOf(lineTextTrimmed);
+            searchIndex = lineTextFull.indexOf(lineTextTrimmed);
             if (searchIndex >= 0)
             {
                 QTextCursor cursor = setCursorPosition(i, searchIndex, false);
@@ -616,7 +616,7 @@ void ScriptEditorWidget::menuUncomment()
     if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
-        QString lineText;
+        QString lineTextFull;
         int searchIndex;
         QString lineTextTrimmed;
 
@@ -630,12 +630,12 @@ void ScriptEditorWidget::menuUncomment()
 
         for (int i = lineFrom; i <= lineTo; i++)
         {
-            lineText = text(i);
-            lineTextTrimmed = lineText.trimmed();
+            lineTextFull = lineText(i);
+            lineTextTrimmed = lineTextFull.trimmed();
 
             if (lineTextTrimmed.left(1) == "#")
             {
-                searchIndex = lineText.indexOf("#");
+                searchIndex = lineTextFull.indexOf("#");
                 if (searchIndex >= 0)
                 {
                     setSelection(i, searchIndex, i, searchIndex + 1);
@@ -756,7 +756,7 @@ void ScriptEditorWidget::menuInsertCodec()
         items = codec.split(" ");
         if (items.size() > 0)
         {
-            setText(QString("# coding=%1\n%2").arg(items[0]).arg(text()));
+            setPlainText(QString("# coding=%1\n%2").arg(items[0]).arg(toPlainText()));
             setModified(true);
         }
     }
@@ -824,7 +824,7 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
 
         clearAllBookmarks();
         clearAllBreakpoints();
-        setText(text);
+        setPlainText(text);
 
         changeFilename(fileName);
 
@@ -901,7 +901,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     //todo
     //convertEols(QsciScintilla::EolUnix);
     
-    QString t = text();
+    QString t = toPlainText();
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
@@ -967,7 +967,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     //todo
     //convertEols(QsciScintilla::EolUnix);
     
-    QString t = text();
+    QString t = toPlainText();
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
@@ -1070,7 +1070,7 @@ void ScriptEditorWidget::checkSyntax()
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), Q_ARG(QByteArray, "syntaxCheckResult"));
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->toPlainText()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), Q_ARG(QByteArray, "syntaxCheckResult"));
     }
 }
 
@@ -1159,12 +1159,12 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
 RetVal ScriptEditorWidget::gotoNextBookmark()
 {
     int line, index;
-    int closestLine = lines();
+    int closestLine = lineCount();
     getCursorPosition(&line, &index);
 	bool found = false;
     line += 1;
 
-    if (line == lines())
+    if (line == lineCount())
     {
         line = 0;
     }
@@ -1222,7 +1222,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
 
     if (line == 0)
     {
-        line = lines()-1;
+        line = lineCount() - 1;
     }
     else
     {
@@ -1280,12 +1280,12 @@ bool ScriptEditorWidget::lineAcceptsBPs(int line)
     // Check if it's a blank or comment line 
     for (int i = 0; i < this->lineLength(line); ++i)
     {
-        QChar c = this->text(line).at(i);
+        QChar c = this->lineText(line).at(i);
         if (c != '\t' && c != ' ' && c != '#' && c != '\n')
         { // it must be a character
             return true;
         }
-        else if (this->text(line)[i] == '#' || i == this->lineLength(line)-1)
+        else if (this->lineText(line)[i] == '#' || i == this->lineLength(line)-1)
         { // up to now there have only been '\t'or' ' if there is a '#' now, return ORend of line reached an nothing found
             return false;
         }
@@ -1434,7 +1434,7 @@ RetVal ScriptEditorWidget::gotoNextBreakPoint()
 
     line += 1;
 
-    if (line == lines())
+    if (line == lineCount())
     {
         line = 0;
     }
@@ -1490,7 +1490,7 @@ RetVal ScriptEditorWidget::gotoPreviousBreakPoint()
 
     if (line == 0)
     {
-        line = lines()-1;
+        line = lineCount()-1;
     }
     else
     {
@@ -1646,7 +1646,7 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::print()
 {
-    if (lines() == 0 || text() == "")
+    if (lineCount() == 0 || toPlainText() == "")
     {
         QMessageBox::warning(this, tr("Print"), tr("There is nothing to print"));
     }
@@ -1923,7 +1923,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
 				fileHash.addData(file.readAll());
 
 				QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-				fileHash2.addData(text().toLatin1());
+				fileHash2.addData(toPlainText().toLatin1());
 
 				//fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
 				
@@ -1992,10 +1992,10 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
 
-    while(i < lines())
+    while(i < lineCount())
     {
-        decoLine = this->text(i-1);
-        line = this->text(i);
+        decoLine = this->lineText(i-1);
+        line = this->lineText(i);
 
         // CLASS
         if (classes.indexIn(line) != -1)

@@ -111,12 +111,6 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 
     m_pContextMenu = new QMenu(this);
 
-    //TODO: remove, if all issues are fixed
-    m_pDebugAction = m_pContextMenu->addAction("Enable Debug Outputs");
-    m_pDebugAction->setCheckable(true);
-    m_pDebugAction->setChecked(false);
-    m_pContextMenu->addSeparator();
-
     initStyle();
     resetStylesheet();
 }
@@ -847,11 +841,6 @@ void CodeEditor::focusOutEvent(QFocusEvent *e)
 */
 void CodeEditor::mousePressEvent(QMouseEvent *e)
 {
-    if (m_pDebugAction->isChecked())
-    {
-        std::cout << "focus: " << hasFocus() << ", textInteractionFlags:" << this->textInteractionFlags() << "\n" << std::endl;
-    }
-
     bool initialState = e->isAccepted();
     e->ignore();
     emit mousePressed(e);
@@ -1463,7 +1452,7 @@ void CodeEditor::replace(const QString &text)
 /*
 */
 bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
-        bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/, bool posix /*= false*/)
+        bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/)
 {
     QTextCursor current_cursor = textCursor();
 
@@ -1533,7 +1522,6 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
     m_lastFindOptions.cs = cs;
     m_lastFindOptions.expr = expr;
     m_lastFindOptions.forward = forward;
-    m_lastFindOptions.posix = posix;
     m_lastFindOptions.re = re;
     m_lastFindOptions.show = show;
     m_lastFindOptions.wo = wo;
@@ -1563,7 +1551,7 @@ bool CodeEditor::findNext()
     const FindOptions &f = m_lastFindOptions;
     if (f.valid)
     {
-        return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show, f.posix);
+        return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show);
     }
     return false;
 }

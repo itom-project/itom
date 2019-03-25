@@ -247,17 +247,17 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             //copy text from m_startLineBeginCmd on to m_temporaryRemovedCommands
             QStringList temp;
 
-            for (int i = m_startLineBeginCmd; i <= lines() - 1; i++)
+            for (int i = m_startLineBeginCmd; i <= lineCount() - 1; i++)
             {
-                temp.push_back(text(i));
-                if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+                temp.push_back(lineText(i));
+                if (!lineText(i).endsWith(lineBreak) && i < (lineCount() - 1))
                 {
                     //lines with a smooth line break have no endline character. add it to distinguish these lines
                     temp.push_back(lineBreak);
                 }
             }
             m_temporaryRemovedCommands = temp.join("");
-            setSelection(m_startLineBeginCmd, 0, lines() - 1, lineLength(lines() - 1));
+            setSelection(m_startLineBeginCmd, 0, lineCount() - 1, lineLength(lineCount() - 1));
             removeSelectedText();
         }
         else
@@ -274,7 +274,7 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 
         if (!m_waitForCmdExecutionDone)
         {
-            m_startLineBeginCmd = lines() - 1;
+            m_startLineBeginCmd = lineCount() - 1;
             append(m_temporaryRemovedCommands);
             //qDebug() << "temp commands: " << m_temporaryRemovedCommands;
             m_temporaryRemovedCommands = "";
@@ -309,25 +309,25 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
         m_autoWheel = true;
     }
 
-    if (text() == "")
+    if (toPlainText() == "")
     {
         //!< empty editor, just start new command
         append(">>");
         //qDebug() << (">> (startNewCommand)");
         moveCursorToEnd();
-        m_startLineBeginCmd = lines() - 1;
+        m_startLineBeginCmd = lineCount() - 1;
     }
     else
     {
         //!< append at the end of the existing text
-        if (lineLength(lines() - 1) > 0)
+        if (lineLength(lineCount() - 1) > 0)
         {
             append(ConsoleWidget::lineBreak);
         }
         append(">>");
         //qDebug() << (">> (startNewCommand 2)");
         moveCursorToEnd();
-        m_startLineBeginCmd = lines() - 1;
+        m_startLineBeginCmd = lineCount() - 1;
     }
 
     return RetVal(retOk);
@@ -367,7 +367,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
         {
             //delete possible commands after m_startLineBeginCmd:
             lineFrom = m_startLineBeginCmd;
-            lineTo = lines() - 1;
+            lineTo = lineCount() - 1;
             indexFrom = 2;
             indexTo = lineLength(lineTo);
             setSelection(lineFrom, indexFrom, lineTo, indexTo);
@@ -466,7 +466,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     getCursorPosition(&lineFrom, &indexFrom);
                 }
 
-                if (lineFrom == lines() - 1 || lineFrom < m_startLineBeginCmd)
+                if (lineFrom == lineCount() - 1 || lineFrom < m_startLineBeginCmd)
                 {
                     acceptEvent = true;
                     forwardEvent = false;
@@ -502,7 +502,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             {
                 if (!m_inputStreamWaitCond)
                 {
-                    lineTo = lines() - 1;
+                    lineTo = lineCount() - 1;
                     indexTo = lineLength(lineTo);
 
                     setSelection(m_startLineBeginCmd, 2, lineTo, indexTo);
@@ -589,7 +589,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     //!< new line for possible error or message
                     append(ConsoleWidget::lineBreak);
 
-                    execCommand(m_startLineBeginCmd, lines() - 2);
+                    execCommand(m_startLineBeginCmd, lineCount() - 2);
                     acceptEvent = true;
                     forwardEvent = false;
 
@@ -597,10 +597,10 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                 }
                 else if (m_inputStreamWaitCond) //startInputCommandLine was called before by pythonStream.cpp to wait for a string input (python command 'input(...)'). The semaphore m_inputStreamWaitCond is blocked until the input is obtained.
                 {
-                    QStringList texts(text(m_inputStartLine).mid(m_inputStartCol));
-                    for (int i = m_inputStartLine + 1; i < lines(); i++)
+                    QStringList texts(lineText(m_inputStartLine).mid(m_inputStartCol));
+                    for (int i = m_inputStartLine + 1; i < lineCount(); i++)
                     {
-                        texts.append(text(i));
+                        texts.append(lineText(i));
                     }
 
                     QByteArray ba = texts.join("").toLatin1().data();
@@ -880,7 +880,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 
     if (uOrg->hasFeature(featDeveloper) && modifiers == 0)
     {
-        QString selectedText = text(line);
+        QString selectedText = lineText(line);
 
         if (selectedText.startsWith(">>"))
         {
@@ -891,9 +891,9 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
         if (selectedText.contains("file ", Qt::CaseInsensitive) || selectedText.contains("Warning:", Qt::CaseSensitive))
         {
 			//check if there are subsequent lines, that start with longLineWrapPrefix, if so, append their texts to the selectedText
-			while (text(++line).startsWith(longLineWrapPrefix))
+			while (lineText(++line).startsWith(longLineWrapPrefix))
 			{
-				selectedText.append(text(line).mid(longLineWrapPrefix.size()));
+				selectedText.append(lineText(line).mid(longLineWrapPrefix.size()));
 			}
 
             QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
@@ -973,8 +973,8 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     processStreamBuffer(); //
     m_inputStreamWaitCond = inputWaitCond;
     m_inputStreamBuffer = buffer;
-    m_inputStartLine = lines() - 1;
-    m_inputStartCol = text(m_inputStartLine).size();
+    m_inputStartLine = lineCount() - 1;
+    m_inputStartCol = lineText(m_inputStartLine).size();
     m_markInputLineMode->addMarker(m_inputStartLine);
     m_caretLineHighlighter->setEnabled(false);
     //TODO setCaretLineVisible(false);
@@ -1111,7 +1111,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 
     if (beginLine == endLine)
     {
-        singleLine = text(beginLine);
+        singleLine = lineText(beginLine);
         if (singleLine.endsWith('\n'))
         {
             singleLine.chop(1);
@@ -1126,7 +1126,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     {
         for (int i = beginLine; i <= endLine; i++)
         {
-            singleLine = text(i);
+            singleLine = lineText(i);
             if (singleLine.endsWith('\n'))
             {
                 singleLine.chop(1);
@@ -1195,17 +1195,17 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     //and add it to m_temporaryRemovedCommands. It is added again after that python has been finished
     QStringList temp;
 
-    for (int i = endLine + 1; i < lines(); i++)
+    for (int i = endLine + 1; i < lineCount(); i++)
     {
-        temp.push_back(text(i));
-        if (!text(i).endsWith(lineBreak) && i < (lines() - 1))
+        temp.push_back(lineText(i));
+        if (!lineText(i).endsWith(lineBreak) && i < (lineCount() - 1))
         {
             //lines with a smooth line break have no endline character. add it to distinguish these lines
             temp.push_back(lineBreak);
         }
     }
     m_temporaryRemovedCommands = temp.join("");
-    setSelection(endLine + 1, 0, lines() - 1, lineLength(lines() - 1));
+    setSelection(endLine + 1, 0, lineCount() - 1, lineLength(lineCount() - 1));
     removeSelectedText();
 
     m_waitForCmdExecutionDone = true;
@@ -1321,7 +1321,7 @@ void ConsoleWidget::processStreamBuffer()
     case ito::msgStreamErr:
         //case msgReturnError:
         //!> insert msg after last line
-        fromLine = lines() - 1;
+        fromLine = lineCount() - 1;
         if (lineLength(fromLine) > 0)
         {
             fromLine++;
@@ -1329,7 +1329,7 @@ void ConsoleWidget::processStreamBuffer()
 
         append(m_receiveStreamBuffer.text);
 
-        toLine = lines() - 1;
+        toLine = lineCount() - 1;
         if (lineLength(toLine) == 0)
         {
             toLine--;
@@ -1355,7 +1355,7 @@ void ConsoleWidget::processStreamBuffer()
         }
         else
         {
-            m_startLineBeginCmd = lines() - 1;
+            m_startLineBeginCmd = lineCount() - 1;
         }
 
         emit sendToPythonMessage(m_receiveStreamBuffer.text);
@@ -1363,7 +1363,7 @@ void ConsoleWidget::processStreamBuffer()
 
     case ito::msgStreamOut:
 
-        fromLine = lines() - 1;
+        fromLine = lineCount() - 1;
         if (lineLength(fromLine) > 0)
         {
             fromLine++;
@@ -1372,7 +1372,7 @@ void ConsoleWidget::processStreamBuffer()
         //!> insert msg after last line
         append(m_receiveStreamBuffer.text);
 
-        toLine = lines() - 1;
+        toLine = lineCount() - 1;
         if (lineLength(toLine) == 0)
         {
             toLine--;
@@ -1393,7 +1393,7 @@ void ConsoleWidget::processStreamBuffer()
         }
         else
         {
-            m_startLineBeginCmd = lines() - 1;
+            m_startLineBeginCmd = lineCount() - 1;
         }
 
         break;
@@ -1827,7 +1827,7 @@ void ConsoleWidget::autoLineDelete()
     const int cutoffLine = 50000;
     const int removeLines = 25000;
 
-	if (lines() > cutoffLine)
+	if (lineCount() > cutoffLine)
 	{
 		setSelection(0, 0, removeLines, lineLength(removeLines));
 		removeSelectedText();	

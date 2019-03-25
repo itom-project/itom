@@ -2101,7 +2101,7 @@ void ScriptDockWidget::mnuGoto()
     int curIndex;
     sew->getCursorPosition(&curLine,&curIndex);
 
-    DialogGoto *d = new DialogGoto(sew->lines(), curLine + 1, sew->length(), sew->positionFromLineIndex(curLine, curIndex), getCanvas());
+    DialogGoto *d = new DialogGoto(sew->lineCount(), curLine + 1, sew->length(), sew->positionFromLineIndex(curLine, curIndex), getCanvas());
     
     if (d->exec())
     {
@@ -2331,7 +2331,7 @@ void ScriptDockWidget::insertIconBrowserText(QString iconLink)
     if (sew != NULL)
     {
         int line, index;
-        sew->insert(iconLink);
+        sew->insertPlainText(iconLink);
         sew->getCursorPosition(&line, &index);
         sew->setCursorPosition(line, index + iconLink.length());
     }
