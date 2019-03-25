@@ -135,13 +135,11 @@ QTextCursor IndenterMode::unindentSelection(QTextCursor cursor) const
     }
     QTextBlock block = editor()->document()->findBlock(cursor.selectionStart());
     int i = 0;
+    int tab_len2;
     //debug('unindent selection: %d lines', nb_lines)
     while (i < nb_lines)
     {
         txt = block.text();
-        //debug('line to unindent: %s', txt)
-        //debug('editor()->use_spaces_instead_of_tabs: %r',
-        //      editor()->use_spaces_instead_of_tabs)
         if (editor()->useSpacesInsteadOfTabs())
         {
             indentation = (txt.size() - Utils::lstrip(txt).size());
@@ -150,12 +148,19 @@ QTextCursor IndenterMode::unindentSelection(QTextCursor cursor) const
         {
             indentation = txt.size() - txt.replace("\t", "").size();
         }
-        //debug('unindent line %d: %d spaces', i, indentation)
+        
         if (indentation > 0)
         {
             c = QTextCursor(block);
             c.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
-            for (int j = 0; j < tab_len; ++j)
+
+            tab_len2 = tab_len;
+            if (indentation % tab_len != 0)
+            {
+                tab_len2 = (indentation % tab_len);
+            }
+
+            for (int j = 0; j < tab_len2; ++j)
             {
                 txt = block.text();
                 if (txt.size() && txt[0] == ' ')
@@ -219,7 +224,17 @@ void IndenterMode::unindent() const
         {
             int tab_len = editor()->tabLength();
             int indentation = cursor.positionInBlock();
-            int max_spaces = tab_len - (indentation - (indentation % tab_len));
+            int max_new_indentation;
+            if (indentation % tab_len == 0)
+            {
+                max_new_indentation = qMax(0, indentation - tab_len);
+            }
+            else
+            {
+                max_new_indentation = qMax(0, indentation - (indentation % tab_len));
+            }
+
+            int max_spaces = indentation - max_new_indentation;
             int spaces = countDeletableSpaces(cursor, max_spaces);
             //debug('deleting %d space before cursor' % spaces)
             cursor.beginEditBlock();
