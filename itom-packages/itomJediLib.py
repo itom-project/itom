@@ -19,6 +19,29 @@ ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png') #':/py
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png') #':/pyqode_python_icons/rc/var.png')
 ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png') #':/pyqode_python_icons/rc/keyword.png')
 
+
+
+class StreamHider:
+    def __init__(self, channels=('stdout',)):
+        self._orig = {ch : None for ch in channels}
+
+    def __enter__(self):
+        for ch in self._orig:
+            self._orig[ch] = getattr(sys, ch)
+            setattr(sys, ch, self)
+        return self
+
+    def write(self, string):
+        pass
+
+    def flush(self):
+        pass
+
+    def __exit__(self, *args):
+        for ch in self._orig:
+            setattr(sys, ch, self._orig[ch])
+
+
 def icon_from_typename(name, icon_type):
     """
     Returns the icon resource filename that corresponds to the given typename.
@@ -148,19 +171,22 @@ def completions(code, line, column, path, prefix, encoding = "utf-8"):
     #the following pairs of [name, type] will not be returned as possible completion
     blacklist = [['and', 'keyword'], ['if', 'keyword'], ['in', 'keyword'], ['is', 'keyword'], ['not', 'keyword'], ['or', 'keyword']]
     
-    for completion in completions:
-        if [completion.name, completion.type] in blacklist:
-            continue
-        try:
-            desc = completion.description
-            result.append( \
-                (completion.name, \
-                desc, \
-                icon_from_typename(completion.name, completion.type), \
-                completion.docstring()) \
-                )
-        except:
-            break #todo, check this further
+    #disable error stream to avoid import errors of jedi, which are directly printed to sys.stderr (no exception)
+    with StreamHider(('stderr',)) as h:
+        for completion in completions:
+            if [completion.name, completion.type] in blacklist:
+                continue
+            try:
+                desc = completion.description
+                result.append( \
+                    (completion.name, \
+                    desc, \
+                    icon_from_typename(completion.name, completion.type), \
+                    completion.docstring()) \
+                    )
+            except:
+                break #todo, check this further
+    
     return result
 
 def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
@@ -196,6 +222,8 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     
 if __name__ == "__main__":
     
+    print(completions("import win", 0, 10, "", "", "utf-8"))
+    raise
     print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
     result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
