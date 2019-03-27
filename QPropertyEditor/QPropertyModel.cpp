@@ -483,13 +483,14 @@ void QPropertyModel::clear()
     if (count > 0)
     {
         beginRemoveRows(parent, 0, count - 1);
-    }
-    delete m_rootItem;
-    m_rootItem = new Property("Root", 0, this);   
-    
-    if (count > 0)
-    {
+        delete m_rootItem;
+        m_rootItem = new Property("Root", 0, this);
         endRemoveRows();
+    }
+    else
+    {
+        delete m_rootItem;
+        m_rootItem = new Property("Root", 0, this);
     }
 }
 
