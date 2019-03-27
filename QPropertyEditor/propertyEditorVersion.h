@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -27,6 +27,6 @@
 
 #define PROPERTYEDITOR_VERSION_MAJOR 1
 #define PROPERTYEDITOR_VERSION_MINOR 0
-#define PROPERTYEDITOR_VERSION_PATCH 0
+#define PROPERTYEDITOR_VERSION_PATCH 1
 #define PROPERTYEDITOR_VERSION_REVISION 0
-#define PROPERTYEDITOR_VERSION_STRING  "1.0.0.0"
+#define PROPERTYEDITOR_VERSION_STRING  "1.0.1.0"
