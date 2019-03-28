@@ -163,7 +163,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
     QString iniFile = ui.lineEdit_iniFile->text();
     QString name = ui.lineEdit_name->text();
     QModelIndex startIdx = m_userModel->index(0, 1);
-    QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1);
+    QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1, Qt::MatchExactly | Qt::MatchWrap);
     QDir appDir(QCoreApplication::applicationDirPath());
 
     if (uidList.isEmpty())
