@@ -8,9 +8,10 @@ Changelog
 The following documents show the changelog for different versions of itom (based on the setup versions):
 
 .. toctree::
-	:numbered:
-	:maxdepth: 2
-	
-	changelog_310.rst
-	changelog_300.rst
-	changelog_le220.rst
+    :numbered:
+    :maxdepth: 2
+    
+    changelog_320.rst
+    changelog_310.rst
+    changelog_300.rst
+    changelog_le220.rst

@@ -444,6 +444,8 @@ the signal **triggered()** of every item in the menu with your method. In |Qt| s
     It is further possible to not only connect signals from widgets to Python slots, but also signals from **dataIO** or **actuator** instances. For this, see
     the methods :py:meth:`~itom.dataIO.connect` and :py:meth:`itom.actuator.connect`.
 
+.. _qtdesigner-slots:
+
 Calling slots
 =============
 

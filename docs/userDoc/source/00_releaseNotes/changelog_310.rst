@@ -199,7 +199,7 @@ Designer Plugins
 
 **Version 3.1.0 (2018-02-20)**
 
-(more than 120 commits in designerPlugins repsository)
+(more than 120 commits in designerPlugins repository)
 
 * plotxy: setXObj returns from now on a RetVal... This can later be used to return a RetVal from a plot
 * itom1dqwtplot, itom2dqwtplot: distance of rotation marker to shape is set to 25px instead of a fixed distance in scale coordinates
