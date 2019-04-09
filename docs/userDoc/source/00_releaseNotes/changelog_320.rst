@@ -132,6 +132,7 @@ Plugins
 * OpenCVGrabber: adaptation for OpenCV 4
 * PclTools: replace deprecated plc_isfinite, pcl_isnan, pcl_isinf... by std::isfinite, std::isnan, std::isinf...
 * PCOCamera: adapted for new SDK.
+* ThorlabsKCubePA: new plugin Thorlabs position aligner.
 * ThorlabsKCubePA: sum signal can also be acquired if desired
 * ThorlabsPowerMeter: adapted Plugin to run with new SDK (1.02)
 * ThorlabsPowerMeter: fix to support legacy Thorlabs Power Meter 1.02 as well as Thorlabs Optical Power Meter 1.1
@@ -146,40 +147,32 @@ Designer Plugins
 
 (more than 89 commits in designerPlugins repository)
 
-New features: support matplotlib 3.x, volumeCut, 
+New features: support matplotlib 3.x including new *edit parameters* dialog, volumeCut in itom2dqwtplot, color of shapes can be assigned indivually (in script) 
 
-* dataObjectSeriesData: adapted boundingRect for objects of type ito::Rgba32. Autointerval works now also for rbgba32 objects
-* itom1DQwtPlot bugfix: line cuts in pure x or y direction are now displayed with regard to their start and endpoint. Until now the x-vector was always displayed in positive direction.
+* itom1dqwtplot: dataObjectSeriesData: adapted boundingRect for objects of type ito::Rgba32. Autointerval works now also for rbgba32 objects
+* itom1dqwtplot: line cuts in pure x or y direction are now displayed with regard to their start and endpoint. Until now the x-vector was always displayed in positive direction.
+* itom1dqwtplot: bugfix when applying z picker on a complex dataObject. The 1DPlot wasn't in the same complex mode as the 2d plot
+* itom1dqwtplot: Grid type can now be chosen from menu
+* itom1dqwtplot: legend titles from previous object are re-used if no new lines are added to the plot
+* itom1dqwtplot: reducePoints is not called for X/Y plots, since this might lead to strange artifacts, depending on the current 'zoom' level or pixel size.
+* itom1dqwtplot: set property *pickerType* to Default at startup (was uninitialized before!)
+* itom2dqwtplot: adapted since m_lineCutType, m_zSliceType, m_zoomCutType and m_volumeCutType is deprecated and replaced by QMap subplotStates. 
+* itom2dqwtplot: contour lines will only be printed if at least one level is given
+* itom2dqwtplot: added new volume cut feature (similar than line cut):
+    
+    * this feature is usable to 3d dataObjects only
+    * draw a line, which opens a new itom2dqwtplot, where the vertical planar cut along the line in z-direction is plot as image
+    * use the 'h' and 'v' hotkey for a x-z or y-z volume cut
+    * for non-parallel cuts to the major axes, the fast Bresenham interpolation algorithm is used
+    * added new output channel *volumeCutBounds*, to remove bad interferences between the modes 'line cut', 'z-picker' and 'volume cut'
+
 * itom1dqwtplot, itom2dqwtplot: don't create marker item on canvas for marker positions containing NaN values. Nevertheless, these NaN points are displayed in the 'Marker Info' toolbox.
 * itom1dqwtplot, itom2dqwtplot: if shape has a color, this color is used as line color, independent on the inverse color of the current color palette (which is usually used if the shape has no explicit color)
 * itom1dqwtplot, itom2dqwtplot: modifications with respect to publishing the title of the current plot in the window bar of its outer window.
 * itom1dqwtplot, itom2dqwtplot: unused methods setLabels removed
-* itom1DQwtPlot: bugfix when applying z picker on a complex dataObject. The 1DPlot wasn't in the same complex mode as the 2d plot
-* itom1dqwtplot: Grid type can now be chosen from menu
-* itom1dqwtplot: legend titles from previous object are re-used if no new lines are added to the plot
-* itom1dqwtplot: reducePoints is not called for X/Y plots, since this might lead to strange artifacts, depending on the current 'zoom' level or pixel size.
-* itom1dqwtplot: reducePoints is not called for X/Y plots, since this might lead to strange artifacts, depending on the current 'zoom' level or pixel size.
-* itom1dqwtplot: set property pickerType to Default at startup (was uninitialized before!)
-* itom2DQwtPlot: adapted since m_lineCutType, m_zSliceType, m_zoomCutType and m_volumeCutType is depreciated and replaced by QMap subplotStates. volumeCut: implemented hotkey h and v and changed icon
-* itom2dqwtplot: added a displayVolumeCut method.
-* itom2dqwtplot: contour lines will only be printed if at least one level is given
 * matplotlibPlot: avoid rendering regression for multi-screens with scaling factors
 * matplotlibPlot: changes in matplotlibPlot to support the variable matplotlib v1.x, v2.x and v3.x backend of itom
-* matplotlibPlot: fix when drawing the zoom rectangle with a negative width and / or height
-* matplotlibPlot: further work on edit parameters dialog
-* matplotlibPlot: necessary adaptions for Matplotlib 3.x
+* matplotlibPlot: new *edit parameters* dialog for live editing properties of axes, lines, ...
 * motorController: if an axis has the new status 'actuatorError', the text fields get a red background (same behaviour than 'actuatorInterrupted')
-* plotCanvas: bug fix in applying horizontal or vertical volume cut by shortcut
-* plotCanvas: bug fix in volume cut for rgba32 objects. Break statement was missing in switch case
-* volumeCut: adapted axis Scale
-* volumeCut: adapted line color to current color map.
-* volumeCut: added Bresenham-Algorithm. Volume cut can now be applied to all data types but rgb and complex
-* volumeCut: always display all planes, regardless of current displayed plane
-* volumeCut: fix axis offset for pure x line
-* volumeCut: inserted new output channel "volumeCutBounds". Interference between line cut, z-picker and volume cut removed. Todo check Itom2dQwtPlot::displayVolumeCut in order to see if channel is updated correct
-* volumeCut: moved volume cut algorithms from DataObjRasterData to plotCanvas. Changed principle from pointer based to value copying to a new allocated dataObject. Pure x and y cut algorithms are working
-* volumeCut: only display icon if a 3d object is displayed
-* volumeCut: supports complex and rgba
 * vtk3dVisualizer: replaced deprecated pcl_isfinite by std::isfinite
-* vtk3dVisualizer: auto-update canvas if scaling changed in properties
 * vtk3dVisualizer: auto-update canvas if scaling changed in properties
