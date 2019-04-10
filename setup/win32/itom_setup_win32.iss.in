@@ -112,6 +112,7 @@
 #define NaPythonOpCVPy "OpenCV Python"
 #define VePythonOpCVPy "3.3.0"
 
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -210,78 +211,11 @@ Source: "{#SourceRedistributableDir}\2010\32 Bit\*.dll"; DestDir: "{app}"; Flags
 Source: "{#SourceRedistributableDir}\2012\32 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceRedistributableDir}\2013\32 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-; DLLs QT
-Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5QuickWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\QtWebEngineProcess.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\resources\icudtl.dat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\resources\qtwebengine_resources.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_100p.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_200p.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\translations\qt_*.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-
-; DLLs QT Assistant
-;Source: "{#SourceDirQT}\Qt5CLucene.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Help.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5MultimediaWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Positioning.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Sensors.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5WebChannel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5WebEngine.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5WebEngineCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5WebEngineWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; DLLs QT Designer
-Source: "{#SourceDirQT}\Qt5Designer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5DesignerComponents.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; DLLs QT OpenCV
+; DLLs OpenCV
 Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-; DLLs QT Plugins
-Source: "{#SourceDirQT}\..\plugins\bearer\qgenericbearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\bearer\qnativewifibearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\iconengines\qsvgicon.dll"; DestDir: "{app}\iconengines"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\..\plugins\imageformats\qdds.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qgif.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qicns.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qico.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\..\plugins\imageformats\qjp2.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qjpeg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\..\plugins\imageformats\qmng.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qsvg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qtga.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qwbmp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\imageformats\qwebp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\printsupport"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlmysql.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlodbc.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlpsql.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
 
 ; DLLs OpenSSL for downloading help files
 Source: "{#SourceOpenSSLDir}\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -296,6 +230,10 @@ Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: ignore
 Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
 
+; QT Files
+Exec('{#SourceDirItomBuild}\setup\win32\start_qt_deployment.bat'))
+Source: "{@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment}\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+
 ; Hilfe
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -304,7 +242,6 @@ Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: igno
 
 ; Sprachen
 Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
-Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
 
 ; EXEs
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
