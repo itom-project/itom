@@ -128,7 +128,7 @@ Plugins
 * IDSuEye: implemented burst mode.
 * IDSuEye: update development sources 4.91.0
 * MSMediaFoundation: adaption for OpenCV 4
-* Newport2936: buffer length was not set correctly, which caused crashes or invalid values in release
+* Newport2936: new plugin for Newport power meter devices Newport 1931-C, Newport 1936-R and Newport 2936-R
 * OpenCVGrabber: adaptation for OpenCV 4
 * PclTools: replace deprecated plc_isfinite, pcl_isnan, pcl_isinf... by std::isfinite, std::isnan, std::isinf...
 * PCOCamera: adapted for new SDK.
