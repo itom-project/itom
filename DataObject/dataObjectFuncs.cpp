@@ -115,7 +115,7 @@ namespace dObjHelper
         int matIndex = 0;
         int m,n;
 
-        cv::Mat_<_Tp> *mat = NULL;
+        const cv::Mat_<_Tp> *mat = NULL;
         const _Tp* rowPtr;
 
         _Tp tempMinValue = std::numeric_limits<_Tp>::max();
@@ -129,7 +129,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]) && rowPtr[n] < tempMinValue) 
@@ -152,7 +152,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] < tempMinValue) 
@@ -212,12 +212,12 @@ namespace dObjHelper
         minValue = std::numeric_limits<float64>::max();
 
         if(firstLocation == NULL)
-            return ito::RetVal(retError, 0, "Location pointer is invalid for Minimum");
+            return ito::RetVal(retError, 0, "firstLocation must not be NULL");
 
         if(dObj == NULL || dObj->getDims() == 0)
-            return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+            return ito::RetVal(retError, 0, "Input dataObject must not be empty");
 
-        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
+        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128 || dObj->getType() == tRGBA32)
         {
             return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
         }
@@ -269,7 +269,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]) && rowPtr[n] > tempMaxValue) 
@@ -292,7 +292,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] > tempMaxValue) 
@@ -317,19 +317,12 @@ namespace dObjHelper
         int matIndex = 0;
         int m, n;
 
-        cv::Mat_<complex64> *mat = NULL;
+        const cv::Mat_<complex64> *mat = NULL;
         const complex64* rowPtr;
 
         float64 tempMaxValue;
 
-        if (std::numeric_limits<complex64>::is_exact)
-        {
-            tempMaxValue = std::numeric_limits<float64>::min(); //integer numbers
-        }
-        else
-        {
-            tempMaxValue = -1 * std::numeric_limits<float64>::max();
-        }
+        tempMaxValue = -1 * std::numeric_limits<float64>::max();
 
         if (ignoreNaN)
         {
@@ -340,7 +333,7 @@ namespace dObjHelper
 
                 for (m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (complex64*)mat->ptr(m);
+                    rowPtr = mat->ptr<complex64>(m);
                     for (n = 0; n < mat->cols; n++)
                     {
                         if (isFinite<complex64>(rowPtr[n]) && abs(rowPtr[n]) > tempMaxValue)
@@ -380,8 +373,6 @@ namespace dObjHelper
 
         maxValue = cv::saturate_cast<float64>(tempMaxValue);
         return ito::retOk;
-//        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
-//        return retError;
     }
 
     template<> RetVal maxValueFunc<complex128>(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreNaN)
@@ -393,16 +384,7 @@ namespace dObjHelper
         cv::Mat_<complex128> *mat = NULL;
         const complex128* rowPtr;
 
-        float64 tempMaxValue;
-
-        if (std::numeric_limits<complex128>::is_exact)
-        {
-            tempMaxValue = std::numeric_limits<float64>::min(); //integer numbers
-        }
-        else
-        {
-            tempMaxValue = -1 * std::numeric_limits<float64>::max();
-        }
+        float64 tempMaxValue = -1 * std::numeric_limits<float64>::max();
 
         if (ignoreNaN)
         {
@@ -453,8 +435,6 @@ namespace dObjHelper
 
         maxValue = cv::saturate_cast<float64>(tempMaxValue);
         return ito::retOk;
-//        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
-//        return retError;
     }
 
     template<> RetVal maxValueFunc<Rgba32>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
@@ -486,17 +466,11 @@ namespace dObjHelper
         ito::RetVal retval = ito::retOk;
 
         if(firstLocation == NULL)
-            return ito::RetVal(retError, 0, "Location pointer is invalid");
+            return ito::RetVal(retError, 0, "firstLocation must not be NULL");
 
         if(dObj == NULL || dObj->getDims() == 0)
-            return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+            return ito::RetVal(retError, 0, "Input dataObject must not be empty");
 
-        /*
-        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
-        {
-            return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
-        }
-        */
         return fListmaxValueFunc[dObj->getType()](dObj, maxValue, firstLocation, ignoreInf);
     }
 
@@ -548,7 +522,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                     
@@ -582,7 +556,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] < tempResultMin) 
@@ -659,7 +633,7 @@ namespace dObjHelper
                     case CMPLX_ABS_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 if(isInf<complex64>(rowPtr[n].real())) continue;
@@ -686,7 +660,7 @@ namespace dObjHelper
                     case CMPLX_IMAGINARY_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 if(isInf<complex64>(rowPtr[n].imag())) continue;
@@ -712,7 +686,7 @@ namespace dObjHelper
                     case CMPLX_REAL_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 if(isInf<complex64>(rowPtr[n].real())) continue;
@@ -738,7 +712,7 @@ namespace dObjHelper
                     case CMPLX_ARGUMENT_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 if(isInf<complex64>(rowPtr[n].real())) continue;
@@ -779,7 +753,7 @@ namespace dObjHelper
                     case CMPLX_ABS_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 tmpVal = abs(rowPtr[n]);
@@ -804,7 +778,7 @@ namespace dObjHelper
                     case CMPLX_IMAGINARY_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 tmpVal = rowPtr[n].imag();
@@ -829,7 +803,7 @@ namespace dObjHelper
                     case CMPLX_REAL_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 tmpVal = rowPtr[n].real();
@@ -854,7 +828,7 @@ namespace dObjHelper
                     case CMPLX_ARGUMENT_VALUE:
                         for(m = 0; m < rows; m++)
                         {
-                            rowPtr = (ito::complex64*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex64>(m);
                             for(n = 0; n < cols; n++)
                             {
                                 tmpVal = arg(rowPtr[n]);
@@ -933,7 +907,7 @@ namespace dObjHelper
                     case CMPLX_ABS_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 if(isInf<complex128>(rowPtr[n].real())) continue;
@@ -957,7 +931,7 @@ namespace dObjHelper
                     case CMPLX_IMAGINARY_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 if(isInf<complex128>(rowPtr[n].imag())) continue;
@@ -980,7 +954,7 @@ namespace dObjHelper
                     case CMPLX_REAL_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 if(isInf<complex128>(rowPtr[n].real())) continue;
@@ -1004,7 +978,7 @@ namespace dObjHelper
                     case CMPLX_ARGUMENT_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 if(isInf<complex128>(rowPtr[n].real())) continue;
@@ -1040,7 +1014,7 @@ namespace dObjHelper
                     case CMPLX_ABS_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 tmpVal = abs(rowPtr[n]);
@@ -1062,7 +1036,7 @@ namespace dObjHelper
                     case CMPLX_IMAGINARY_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 tmpVal = rowPtr[n].imag();
@@ -1084,7 +1058,7 @@ namespace dObjHelper
                     case CMPLX_REAL_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 tmpVal = rowPtr[n].real();
@@ -1106,7 +1080,7 @@ namespace dObjHelper
                     case CMPLX_ARGUMENT_VALUE:
                         for(m = 0; m < mat->rows; m++)
                         {
-                            rowPtr = (ito::complex128*)mat->ptr(m);
+                            rowPtr = mat->ptr<complex128>(m);
                             for(n = 0; n < mat->cols; n++)
                             {
                                 tmpVal = arg(rowPtr[n]);
@@ -1374,13 +1348,13 @@ namespace dObjHelper
         maxValue = -std::numeric_limits<float64>::max();
 
         if(firstMinLocation == NULL)
-            return ito::RetVal(retError, 0, "Location pointer is invalid for Minimum");
+            return ito::RetVal(retError, 0, "firstMinLocation must not be NULL");
 
         if(firstMaxLocation == NULL)
-            return ito::RetVal(retError, 0, "Location pointer is invalid for Minimum");
+            return ito::RetVal(retError, 0, "firstMaxLocation must not be NULL");
 
         if(dObj == NULL || dObj->getDims() == 0)
-            return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+            return ito::RetVal(retError, 0, "Input dataObject must not be empty");
 
         return fListminMaxValueFunc[dObj->getType()](dObj, minValue, firstMinLocation, maxValue, firstMaxLocation, ignoreInf, specialDataTypeFlags);
     }
@@ -1418,7 +1392,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = (_Tp*)mat->ptr(m);
+                    rowPtr = mat->ptr<_Tp>(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]))
@@ -1508,7 +1482,7 @@ namespace dObjHelper
         if(dObj == NULL || dims == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
-        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
+        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128 || dObj->getType() == tRGBA32)
         {
             return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
         }
@@ -1571,7 +1545,7 @@ namespace dObjHelper
 
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //! returns mean-value of the data object
+    //! returns median-value of the data object
     /*!
     NaN-Values & Inf-Value handling depends on NaN-flag. If ignoreNaN == true, both are ignored else not.
     The function does not check if dObj != NULL &&  dObj.type != tComplexXX
@@ -1585,24 +1559,42 @@ namespace dObjHelper
     template<typename _Tp> RetVal medianValueFunc(const DataObject *dObj, float64 &medianResult, bool ignoreNaN)
     {
         ito::DataObject temp;
-        std::vector<_Tp> temp2;
-        _Tp* values;
-        size_t num;
+        size_t num = dObj->getTotal();
+        _Tp* values = new _Tp[num];
+        const cv::Mat *mat;
+        const _Tp* rowPtr;
+
         if (!ignoreNaN)
         {
-            num = dObj->getTotal();
+            //copy all values into a continuous buffer which is also used for sorting (later on)
+            size_t size;
+            unsigned char* values_ptr = (unsigned char*)values;
 
-            if (num > 0)
+            for (int p = 0; p < dObj->getNumPlanes(); ++p)
             {
-                temp = ito::makeContinuous(*dObj); //always a copy
-                values = temp.rowPtr<_Tp>(0, 0);
+                mat = dObj->getCvPlaneMat(p);
+                if (mat->isContinuous())
+                {
+                    size = sizeof(_Tp) * mat->cols * mat->rows;
+                    memcpy(values_ptr, mat->data, size);
+                    values_ptr += size;
+                }
+                else
+                {
+                    size = sizeof(_Tp) * mat->cols;
+                    for (int r = 0; r < mat->rows; ++r)
+                    {
+                        rowPtr = mat->ptr<_Tp>(r);
+                        memcpy(values_ptr, rowPtr, size);
+                        values_ptr += size;
+                    }
+                }
             }
         }
         else
         {
-            temp2.reserve(dObj->getTotal());
-            const cv::Mat *mat;
-            const _Tp* rowPtr;
+            size_t idx = 0;
+
             for (int p = 0; p < dObj->getNumPlanes(); ++p)
             {
                 mat = dObj->getCvPlaneMat(p);
@@ -1613,13 +1605,13 @@ namespace dObjHelper
                     {
                         if (ito::isFinite(rowPtr[c]))
                         {
-                            temp2.push_back(rowPtr[c]);
+                            values[idx++] = rowPtr[c];
                         }
                     }
                 }
             }
-            num = temp2.size();
-            values = temp2.data();
+
+            num = idx;
         }
 
         //this algorithms seems to be like the following: http://www.i-programmer.info/babbages-bag/505-quick-median.html?start=1
@@ -1664,6 +1656,8 @@ namespace dObjHelper
             }
         }
         medianResult = values[halfKernSize];
+
+        DELETE_AND_SET_NULL_ARRAY(values);
         
         return ito::retOk;
     }
@@ -1706,9 +1700,9 @@ namespace dObjHelper
         int dims = dObj->getDims();
 
         if (dObj == NULL || dims == 0)
-            return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+            return ito::RetVal(retError, 0, "DataObject must not be empty");
 
-        if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
+        if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128 || dObj->getType() == tRGBA32)
         {
             return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
         }
@@ -1955,7 +1949,7 @@ namespace dObjHelper
         if(dObj == NULL || dims == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
-        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
+        if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128 || dObj->getType() == tRGBA32)
         {
             return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
         }
