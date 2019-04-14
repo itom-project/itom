@@ -93,6 +93,7 @@ itom
 * added menu **figure** to itom in order to close, show or activate current figure windows
 * dataobj.cpp bug fix for GetStep of dataObject dim > 2
 * fix when passing an invalid coordinate tuple to the constructor or static constructors of the class :py:class:`~itom.shape`
+* bugfix in *ito::dObjHelper::medianValue* for continuous and / or 2d dataObjects or dataObjects with a limited ROI in the last two dimensions.
 * callstack widget: changed column order for a better usability
 * the script command for a specific plugin initialization can be obtained via drag and drop from the plugin toolbox to the script or console
 * many other bugfixes, for instance:
@@ -116,20 +117,20 @@ Plugins
 
 * all plugins: BUILD_TARGET64 default ON in CMake
 * AVTVimba: fixes if some parameters are not supported
-* BasicFilters: adaption for OpenCV 4
+* BasicFilters: adaptions to support OpenCV 4
 * COCamera: added missing include qlibrary.h
-* dataobjectarithmetic: adaption for OpenCV 4
-* dataobjectarithmetic: switch for OpenCV 4
-* DataObjectIO: adaptation for OpenCV 4
-* FileGrabber: adaptation for OpenCV 4
+* dataobjectarithmetic: adaptions to support OpenCV 4
+* dataobjectarithmetic: many docstrings improved
+* DataObjectIO: adaptions to support OpenCV 4
+* FileGrabber: adaptions to support OpenCV 4
 * GenICam: first running version for CoaXPress cameras
 * GenICam: further updates to be able to use Vistek cameras
 * IDSuEye: check if memory needs to be reallocated
 * IDSuEye: implemented burst mode.
 * IDSuEye: update development sources 4.91.0
-* MSMediaFoundation: adaption for OpenCV 4
+* MSMediaFoundation: adaptions to support OpenCV 4
 * Newport2936: new plugin for Newport power meter devices Newport 1931-C, Newport 1936-R and Newport 2936-R
-* OpenCVGrabber: adaptation for OpenCV 4
+* OpenCVGrabber: adaptions to support OpenCV 4
 * PclTools: replace deprecated plc_isfinite, pcl_isnan, pcl_isinf... by std::isfinite, std::isnan, std::isinf...
 * PCOCamera: adapted for new SDK.
 * ThorlabsKCubePA: new plugin Thorlabs position aligner.
