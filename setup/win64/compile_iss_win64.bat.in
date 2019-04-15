@@ -1,0 +1,4 @@
+@echo off
+PATH="@InnoSetupPath@"
+call start_qt_deployment.bat
+compil32 /cc "itom_setup_win64.iss"

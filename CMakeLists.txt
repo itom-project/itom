@@ -12,6 +12,7 @@ SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+OPTION(BUILD_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
@@ -51,7 +52,10 @@ IF(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
     ADD_SUBDIRECTORY(gtest-1.6.0)
     ADD_SUBDIRECTORY(itom_unittests)
-ENDIF(BUILD_UNITTEST)  
+ENDIF(BUILD_UNITTEST)
+IF(BUILD_ISSCONFIG)
+	SET (InnoSetupPath CACHE PATH "base path to inno setup")
+ENDIF(BUILD_ISSCONFIG)
     
 #find current itom version from qitom/global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
@@ -81,9 +85,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.
 
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
+
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
+IF(BUILD_ISSCONFIG)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
+ENDIF(BUILD_ISSCONFIG)
 ################################################################################################################ 
 
 IF(WIN32)

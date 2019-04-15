@@ -217,8 +217,7 @@ Source: "{#SourceRedistributableDir}\2013\64 Bit\*.dll"; DestDir: "{app}"; Flags
 Source: "{#SourceRedistributableDir}\2015\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs QT OpenCV
-Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs OpenSSL for downloading help files
@@ -235,7 +234,6 @@ Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ig
 Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
 
 ; QT Files
-Exec('{#SourceDirItomBuild}\setup\win64\start_qt_deployment.bat')
 Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 ; Hilfe
@@ -340,7 +338,7 @@ Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\p
 Source: "{#SourceDirItomBuild}\plugins\NanotecStepMotor\*.*"; DestDir: "{app}\plugins\NanotecStepMotor"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Newport2936\*.*"; DestDir: "{app}\plugins\Newport2936"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\NI-DAQmx\*.*"; DestDir: "{app}\plugins\NI-DAQmx"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\niDAQmx\*.*"; DestDir: "{app}\plugins\niDAQmx"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\NITWidySWIR\*.*"; DestDir: "{app}\plugins\NITWidySWIR"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\*.*"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: ignoreversion recursesubdirs
@@ -374,12 +372,12 @@ Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio
 Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea"; Flags: ignoreversion recursesubdirs
 
 ; Libs OpenCV
-Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirOpenCV}\opencv_videoio${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_videoio${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 ; Libs Plugins
 Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -403,7 +401,7 @@ Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags:
 Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libiomp5mdPGR.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -412,7 +410,6 @@ Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; F
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Log_MD_VC120_v3_1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\log4cpp_MD_VC120_v3_1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\m3apiX64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC120_v3_1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\NITLabView.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\NITLibrary.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -518,7 +515,7 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 ;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x64) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
 ;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x64) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
-Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistr. x64 (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
+;Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistr. x64 (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
 Name: "CREDPACK2017"; Description: "Microsoft Visual C++ 2017 Redistr. x64 (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP17({#DSetupMode})
 Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
 ;Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone

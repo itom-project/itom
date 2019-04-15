@@ -212,7 +212,7 @@ Source: "{#SourceRedistributableDir}\2012\32 Bit\*.dll"; DestDir: "{app}"; Flags
 Source: "{#SourceRedistributableDir}\2013\32 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs OpenCV
-Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -231,7 +231,6 @@ Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ig
 Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
 
 ; QT Files
-Exec('{#SourceDirItomBuild}\setup\win32\start_qt_deployment.bat'))
 Source: "{@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment}\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 ; Hilfe

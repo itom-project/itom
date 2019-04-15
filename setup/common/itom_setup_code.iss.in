@@ -37,6 +37,12 @@ const
   RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
   RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
   
+  // Visual C++ 2017 Redistributable 14.16.27024
+  RP17_86_MIN = '{F1B0FB3A-E0EA-47A6-9383-3650655403B0}';
+  RP17_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
+  RP17_86_ADD = '{7258184A-EC44-4B1A-A7D3-68D85A35BFD0}';
+  RP17_64_ADD = '{9D29FC96-9EEE-4253-943F-96B3BBFDD0B6}';
+  
   // You can find product codes for other Visual Studio versions in HKEY_CLASSES_ROOT\Installer\Dependencies\, for example HKEY_CLASSES_ROOT\Installer\Dependencies\Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14
   
 function IsMsiProductInstalled(const ProductId: string): Boolean;
@@ -60,6 +66,12 @@ function NeedInstallRP15(SetupMode: Integer): Boolean;
 begin
   Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP15_64_MIN) or IsMsiProductInstalled(RP15_64_ADD))) or
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP15_86_MIN) or IsMsiProductInstalled(RP15_86_ADD)));
+end;
+
+function NeedInstallRP17(SetupMode: Integer): Boolean;
+begin
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP17_64_MIN) or IsMsiProductInstalled(RP17_64_ADD))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP17_86_MIN) or IsMsiProductInstalled(RP17_86_ADD)));
 end;
 
 {procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
