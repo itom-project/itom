@@ -77,7 +77,7 @@
 #define NaPythonNetWorkX "NetworkX"
 #define VePythonNetWorkX "2.1"
 
-#define FNPythonPillow "pillow_scripts-5.0.0-py2.py3-none-any.whl"
+#define FNPythonPillow "Pillow-6.0.0-cp37-cp37m-win_amd64.whl"
 #define NaPythonPillow "Pillow"
 #define VePythonPillow "5.0.0"
 
