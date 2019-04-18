@@ -180,6 +180,10 @@ Source: "{#SourcePythonPackDir}\{#FNPythonOpCVPy}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonParso}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonJedi}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPyFla}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonWheel}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonKiSo}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonSetUpTs}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonImageio}"; DestDir: "{tmp}"
 
 [Languages]
 Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
