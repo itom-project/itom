@@ -232,6 +232,7 @@ Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: igno
 
 ; QT Files
 Source: "{@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment}\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Hilfe
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
