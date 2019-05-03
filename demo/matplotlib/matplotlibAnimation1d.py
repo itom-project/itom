@@ -69,7 +69,6 @@ if accepted:
     
     metadata = dict(title=value, artist='Matplotlib', comment = comment)
     writer = FFMpegWriter(fps = fps, metadata=metadata, bitrate = -1, codec = 'mpeg4')
-    writer.setup(fig, outputfile, dpi = dpi_movie)
     
     with writer.saving(fig, outputfile, dpi_movie):
         for cnt in range(0,numberImages):
