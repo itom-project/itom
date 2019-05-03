@@ -77,7 +77,7 @@
 #define NaPythonNetWorkX "NetworkX"
 #define VePythonNetWorkX "2.1"
 
-#define FNPythonPillow "pillow_scripts-5.0.0-py2.py3-none-any.whl"
+#define FNPythonPillow "Pillow-6.0.0-cp37-cp37m-win_amd64.whl"
 #define NaPythonPillow "Pillow"
 #define VePythonPillow "5.0.0"
 
@@ -180,6 +180,10 @@ Source: "{#SourcePythonPackDir}\{#FNPythonOpCVPy}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonParso}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonJedi}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPyFla}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonWheel}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonKiSo}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonSetUpTs}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonImageio}"; DestDir: "{tmp}"
 
 [Languages]
 Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
@@ -235,9 +239,12 @@ Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: igno
 
 ; QT Files
 Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
 ; Hilfe
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\docs\pluginDoc\build\*.qch"; DestDir: "{app}\docs\pluginDoc\build"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -401,7 +408,7 @@ Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags:
 Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libiomp5mdPGR.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libiompPGR.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion

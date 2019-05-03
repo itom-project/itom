@@ -232,9 +232,12 @@ Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: igno
 
 ; QT Files
 Source: "{@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment}\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
 ; Hilfe
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\docs\pluginDoc\build\*.qch"; DestDir: "{app}\docs\pluginDoc\build"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion

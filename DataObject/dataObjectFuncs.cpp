@@ -129,7 +129,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]) && rowPtr[n] < tempMinValue) 
@@ -152,7 +152,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] < tempMinValue) 
@@ -269,7 +269,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]) && rowPtr[n] > tempMaxValue) 
@@ -292,7 +292,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] > tempMaxValue) 
@@ -522,7 +522,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                     
@@ -556,7 +556,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(rowPtr[n] < tempResultMin) 
@@ -1392,7 +1392,7 @@ namespace dObjHelper
 
                 for(m = 0; m < mat->rows; m++)
                 {
-                    rowPtr = mat->ptr<_Tp>(m);
+                    rowPtr = (_Tp*)mat->ptr(m);
                     for(n = 0; n < mat->cols; n++)
                     {
                         if(isFinite<_Tp>(rowPtr[n]))
