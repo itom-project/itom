@@ -14,7 +14,7 @@ IF EXIST %QT_DEPLOYMENT_FOLDER% (
     @echo on
 ) ELSE (
     echo "create empty directory qt_install"
-    mkdir %QT_INSTALL_FOLDER%
+    mkdir %QT_DEPLOYMENT_FOLDER%
 )
 
 REM Temporarily insertes QT_BIN to the path variable...
