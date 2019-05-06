@@ -274,7 +274,18 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 
         if (!m_waitForCmdExecutionDone)
         {
+            if (lineCount() > 0)
+            {
+                QString txt = lineText(lineCount() - 1);
+
+                if (txt != "" && !txt.endsWith(lineBreak))
+                {
+                    append(lineBreak);
+                }
+            }
+
             m_startLineBeginCmd = lineCount() - 1;
+
             append(m_temporaryRemovedCommands);
             //qDebug() << "temp commands: " << m_temporaryRemovedCommands;
             m_temporaryRemovedCommands = "";
