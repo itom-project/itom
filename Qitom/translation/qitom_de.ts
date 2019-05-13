@@ -2136,7 +2136,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+21"/>
         <source>Property &apos;%s&apos; could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Eigenschaft &apos;%s&apos; kann nicht gelesenwerden</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2147,17 +2147,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-24"/>
         <source>Property &apos;%s&apos; is not writeable.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Eigenschaft &apos;%s&apos; ist nicht beschreibbar.</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Property &apos;%s&apos; could not be set. Maybe wrong input type.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Eigenschaft &apos;%s&apos; kann nicht gesetzt werden. Evtl. ein falscher Input-Typ.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Property &apos;%s&apos; does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Eigenschaft &apos;%s&apos; existiert nicht.</translation>
     </message>
     <message>
         <location filename="../helper/versionHelper.cpp" line="+76"/>
@@ -2401,7 +2401,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+3"/>
         <source>Number</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anzahl</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2441,7 +2441,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+3"/>
         <source>Function</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Funktion</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5392,7 +5392,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+10"/>
         <source>UnixTimestamp%1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">UnixZeitstempel%1</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -6630,17 +6630,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+46"/>
         <source>close all floatable figures</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle freien Grafiken schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>show all floatable figures</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle freien Grafiken einblenden</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>minimize all floatable figures</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle freien Grafiken minimieren</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -6695,7 +6695,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+23"/>
         <source>Figure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Grafiken</translation>
     </message>
     <message>
         <location line="+133"/>
@@ -6715,7 +6715,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+145"/>
         <source>timeout while closing figures</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Schließen der Grafiken</translation>
     </message>
     <message>
         <location line="+297"/>
@@ -8215,12 +8215,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+728"/>
         <source>One occurrence was replaced</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde ein Element ersetzt</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 occurrences were replaced</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurden %1 Elemente ersetzt</translation>
     </message>
 </context>
 <context>
@@ -8436,7 +8436,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Stop Script</source>
-        <translation type="unfinished">Skript stoppen</translation>
+        <translation>Skript stoppen</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -8467,7 +8467,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+2"/>
         <source>&amp;Fold All</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alles er&amp;weitern</translation>
     </message>
     <message>
         <location line="+3"/>
