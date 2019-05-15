@@ -379,7 +379,7 @@ Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio
 Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea"; Flags: ignoreversion recursesubdirs
 
 ; Libs OpenCV
-Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 ;Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 ;Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 ;Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
