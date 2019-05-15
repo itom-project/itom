@@ -71,6 +71,12 @@ class PathLineEditPrivate;
 class ITOMWIDGETS_EXPORT PathLineEdit: public QWidget
 {
   Q_OBJECT
+
+#if QT_VERSION < 0x050500
+    //for >= Qt 5.5.0 see Q_ENUM definition below
+    Q_ENUMS(SizeAdjustPolicy)
+#endif
+
   Q_FLAGS(Filters)
   Q_PROPERTY ( QString label READ label WRITE setLabel )
 
@@ -173,6 +179,12 @@ public:
     /// use this policy on large models.
     AdjustToMinimumContentsLength
   };
+
+#if QT_VERSION >= 0x050500
+  //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+  //values are always accessible.
+  Q_ENUM(SizeAdjustPolicy);
+#endif
 
   /** Default constructor
   */
