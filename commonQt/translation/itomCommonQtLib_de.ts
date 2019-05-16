@@ -693,22 +693,22 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="1036"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1478"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1040"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1482"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1044"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1486"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Ausgabeparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1083"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1409"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Der Konstruktor muss überschrieben sein</translation>
     </message>
@@ -716,22 +716,22 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="396"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="495"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion &apos;execution&apos; wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="442"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="547"/>
         <source>Toolbox</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="598"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="706"/>
         <source>function with this name is already registered.</source>
         <translation type="unfinished">Es existiert bereits eine Funktion mit diesem Namen.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="656"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="765"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Das Plugin hat vermutlich einen Konfigurationsdialog, aber die Methode &apos;showConfDialog&apos; wurde nicht implementiert</translation>
     </message>
@@ -739,73 +739,73 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="716"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="838"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished">&apos;Listener&apos; hat keinen Slot </translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="720"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="842"/>
         <source>this object already has been registered as listener</source>
         <translation type="unfinished">Diese Objekt wurde bereits beim &apos;Listener&apos; registriert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="732"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="856"/>
         <source>timer could not be set</source>
         <translation type="unfinished">Timer kann nicht gesetzt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="757"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="887"/>
         <source>the object could not been removed from the listener list</source>
         <translation type="unfinished">Das Objekt kann nicht aus der &apos;Listener&apos;-Liste entfernt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="850"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="985"/>
         <source>empty interval buffer has been given</source>
         <translation type="unfinished">Es wurde ein leerer Bereichspuffer übergeben</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="888"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="908"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="926"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="944"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="962"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="980"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="998"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1023"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1043"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1061"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1079"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1097"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1115"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1133"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="894"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1029"/>
         <source>method startDevice() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;startDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="912"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1047"/>
         <source>method stopDevice() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;stopDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="930"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1065"/>
         <source>method acquire() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;acquire&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="948"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1083"/>
         <source>method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;getVal(void*, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="966"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1101"/>
         <source>method getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="984"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1119"/>
         <source>method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;copyVal(void*,ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1002"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1137"/>
         <source>method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;setVal(const char*, const int, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>

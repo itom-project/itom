@@ -329,6 +329,14 @@
         <source>itom plot api not available</source>
         <translation type="unfinished">Die itom-Plot-API ist nicht verfügbar</translation>
     </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Bereinigen</translation>
+    </message>
+    <message>
+        <source>Auto Scroll</source>
+        <translation type="unfinished">Auto-Scroll</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
