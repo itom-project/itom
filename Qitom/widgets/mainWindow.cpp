@@ -941,7 +941,7 @@ void MainWindow::mnuFigureAboutToShow()
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
 
     }
     if (!retval.containsError())
@@ -954,7 +954,7 @@ void MainWindow::mnuFigureAboutToShow()
         QAction *a;
         if (widgetNames->isEmpty())
         {
-            a = new QAction(QString("No Figures Available"), this);
+            a = new QAction(tr("No Figures Available"), this);
             m_pShowOpenFigure->addAction(a);
         }
         else
@@ -1054,7 +1054,7 @@ void MainWindow::raiseFigureByHandle(int handle)
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QString("Instance of UiOrganizer not available").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
 
     }
     if (!retval.containsError())
@@ -1274,7 +1274,7 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 		}
 		else
 		{
-			retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is not a valid help collection file or does not exist.", collectionFile.toLatin1().data());
+			retval += ito::RetVal::format(ito::retError, 0, tr("The file '%s' is not a valid help collection file or does not exist.").toLatin1().data(), collectionFile.toLatin1().data());
 		}
 	}
 
@@ -1320,7 +1320,7 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 		}
 		else
 		{
-			retval += ito::RetVal(ito::retError, 0, "Process Organizer could not be loaded");
+			retval += ito::RetVal(ito::retError, 0, tr("Process Organizer could not be loaded").toLatin1().data());
 		}
 #endif
 	}
@@ -1349,7 +1349,7 @@ void MainWindow::mnuCloseAllPlots()
     QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
+        QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
         return;
     }
 
@@ -1361,7 +1361,7 @@ void MainWindow::mnuShowAllPlots()
     QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
+        QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
         return;
     }
     
@@ -1373,7 +1373,7 @@ void MainWindow::mnuMinimizeAllPlots()
     QObject *uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
-        QMessageBox::critical(this, "UiOrganizer", "The UiOrganizer is not available");
+        QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
         return;
     }
 
@@ -1535,12 +1535,12 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
 
         if (!found)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "The button '%s' of toolbar '%s' could not be found.", buttonName.toLatin1().data(), toolbarName.toLatin1().data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), buttonName.toLatin1().data(), toolbarName.toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, "The toolbar '%s' could not be found.", toolbarName.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("The toolbar '%s' could not be found.").toLatin1().data(), toolbarName.toLatin1().data());
     }
 
     if (waitCond)
@@ -1593,7 +1593,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "The button (%i) could not be found.", buttonHandle);
+        retval += ito::RetVal::format(ito::retError, 0, tr("The button (%i) could not be found.").toLatin1().data(), buttonHandle);
     }
 
     if (waitCond)
@@ -1770,7 +1770,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the key sequence '%s' could not be found", key.toLatin1().data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the key sequence '%s' could not be found").toLatin1().data(), key.toLatin1().data());
         }
     }
     else if (keys.size() > 1)
@@ -1816,7 +1816,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the key sequence '%s' could not be found", key.toLatin1().data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the key sequence '%s' could not be found").toLatin1().data(), key.toLatin1().data());
         }
     }
 
@@ -1881,7 +1881,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the handle '%i' could not be found", menuHandle);
+        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%i' could not be found").toLatin1().data(), menuHandle);
     }
 
     if (waitCond)
@@ -1941,6 +1941,7 @@ QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMen
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 QString dumpChildMenus(const QString &baseKey, const QAction *parent)
 {
 	unsigned int id;
