@@ -428,7 +428,22 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
                     || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
                 {
                     QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, event->mimeData()->urls().at(0).toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
+                    event->accept();
                 }
+            }
+
+            if (event->isAccepted())
+            {
+                //fix in order not to freeze the cursor after dropping 
+                //see: https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-dropevent
+                QMimeData mimeData;
+                mimeData.setText("");
+                QDropEvent dummyEvent(event->posF(), event->possibleActions(), &mimeData, event->mouseButtons(), event->keyboardModifiers());
+                AbstractCodeEditorWidget::dropEvent(&dummyEvent);
+            }
+            else
+            {
+                AbstractCodeEditorWidget::dropEvent(event);
             }
         }
         else
