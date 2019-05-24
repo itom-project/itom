@@ -393,8 +393,8 @@ Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flag
 Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\cbw32.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC120_v3_0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC120_v3_1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC120_v3_1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\CLSerCOM.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleCore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
