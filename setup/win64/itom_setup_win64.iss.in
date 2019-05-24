@@ -79,7 +79,7 @@
 
 #define FNPythonPillow "Pillow-6.0.0-cp37-cp37m-win_amd64.whl"
 #define NaPythonPillow "Pillow"
-#define VePythonPillow "5.0.0"
+#define VePythonPillow "6.0.0"
 
 #define FNPythonPyWav "PyWavelets-1.0.2-cp37-cp37m-win_amd64.whl"
 #define NaPythonPyWav "PyWavelets"
@@ -115,8 +115,7 @@
 
 #define FNPythonImageio "imageio-2.5.0-py2.py3-none-any.whl"
 #define NaPythonImageio "Imageio"
-#define VePythonImageio "2.2.0"
-
+#define VePythonImageio "2.5.0"
 
 
 [Setup]
