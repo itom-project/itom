@@ -11,7 +11,8 @@
 #define SourceDirItomBuild "${CMAKE_CURRENT_BINARY_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
-#define SourceDirPCL "${PCL_DIR}\.."
+#define SourceDirPCL "${PCL_DIR}/.."
+#define SourceDirVTK "${VTK_DIR}/../../.."
 
 ; You should change...
 #define SourceDirSys32 "C:\Windows\System32"
@@ -445,17 +446,80 @@ Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: 
 ;Source: "{#SourceDirItomBuild}\lib\msvcr120.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 ; app PCL
-Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_recognition_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_ml_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_recognition_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_segmentation_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+
+; app VTK
+Source: "{#SourceDirVTK}\bin\vtkChartsCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonColor-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonComputationalGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonDataModel-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonExecutionModel-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkexpat-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonMath-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonMisc-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonSystem-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonTransforms-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkDICOMParser-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkdoubleconversion-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersExtraction-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersGeneral-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersHybrid-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersModeling-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersSources-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersStatistics-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkfreetype-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkgl2ps-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkglew-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkGUISupportQt-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingColor-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingFourier-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingGeneral-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingHybrid-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingSources-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInfovisCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInteractionStyle-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInteractionWidgets-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOImage-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOLegacy-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOPLY-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOXML-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOXMLParser-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkjpeg-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtklz4-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtklzma-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkmetaio-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkpng-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingAnnotation-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingContext2D-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingContextOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingFreeType-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingGL2PSOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingLOD-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtksys-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtktiff-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkViewsContext2D-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkViewsCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkzlib-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 [Run]
 ;Filename: "{tmp}\MS_VS_12_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x86)..."; Components: CREDPACK2012;
