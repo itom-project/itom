@@ -72,9 +72,7 @@ If you want to compile with support from Point Cloud Library, also get the follo
 .. code-block:: bash
 
     sudo apt-get install libpcl-dev libproj-dev
-    
 
-    
 
 Recommended folder structure
 -----------------------------
@@ -88,15 +86,15 @@ Similar to Windows, the following folder structure is recommended:
         ./plugins # cloned sources of plugins
         ./designerPlugins # cloned sources of designerPlugins
         ...
-    ./build_debug # build folder for debug makefiles of...
+    ./build_debug # base folder for debug compilation (if desired). The makefiles should be stored in the following subfolders (depending on project):
         ./itom    # ...core
         ./plugins # ...plugins
-        ./designerPlugins # ... designer plugins
+        ./designerPlugins # ...designer plugins
         ...
-    ./build_release # build folder for release makefiles of...
+    ./build_release # base folder for release compilation (if desired). The makefiles should be stored in the following subfolders (depending on project):
         ./itom      # ...core
-        ./plugins # ...plugins
-        ./designerPlugins # ... designer plugins
+        ./plugins   # ...plugins
+        ./designerPlugins # ...designer plugins
         ...
 
 Under linux, the debug and release versions are separated in two different build folders. If you are using QtCreator as IDE you can however create two different configurations, one mapping to the debug build folder, the other mapping ot the release build folder. Both use the same source folder.
