@@ -955,6 +955,7 @@ void MainWindow::mnuFigureAboutToShow()
         if (widgetNames->isEmpty())
         {
             a = new QAction(tr("No Figures Available"), this);
+            a->setEnabled(false);
             m_pShowOpenFigure->addAction(a);
         }
         else
