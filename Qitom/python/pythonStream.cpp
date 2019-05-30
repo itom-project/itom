@@ -205,7 +205,7 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
 
         if(self->type == 1)
         {
-            std::cout << v_; // endl is added directly by Python
+            std::cout << v_; // endl is added directly by Python           
         }
         else if (self->type == 2)
         {

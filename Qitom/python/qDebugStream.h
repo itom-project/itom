@@ -59,6 +59,7 @@ private:
     std::streambuf *m_old_buf;                  /*!<  content of stream at time when this instance starts the observation of the stream is stored here and re-given to the stream, when this instance is destroyed */
     std::string m_string;                       /*!<  buffer string, containing parts of the stream which have not been emitted yet */
     ito::tStreamMessageType msg_type;           /*!<  message type of enumeration ito::tStreamMessageType */
+    int m_randWaitThreshold;
 };
 
 }; // namespace ito

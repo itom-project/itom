@@ -71,8 +71,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
-    m_receiveStreamBufferTimer.setSingleShot(true);
+    //m_receiveStreamBufferTimer.setSingleShot(true);
     m_receiveStreamBufferTimer.setInterval(50);
+    m_receiveStreamBufferTimer.start();
 
     qDebug("console widget start constructor");
 
@@ -1268,26 +1269,28 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
         processStreamBuffer();
         m_receiveStreamBuffer.text = text;
         m_receiveStreamBuffer.msgType = msgType;
+        //m_receiveStreamBufferTimer.start();
     }
     else
     {
         m_receiveStreamBuffer.text += text;
 
-        if (m_receiveStreamBuffer.text.size() > 1500)
-        {
-            processStreamBuffer();
-            repaint();
-        }
-        else
-        {
-            m_receiveStreamBufferTimer.start();
-        }
+        //if (m_receiveStreamBuffer.text.size() > 1500)
+        //{
+        //    processStreamBuffer();
+        ////    repaint();
+        //}
+        //else
+        //{
+        //    m_receiveStreamBufferTimer.start();
+        //}
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::processStreamBuffer()
 {
+    
     if (m_receiveStreamBuffer.text == "")
     {
         return;
@@ -1413,6 +1416,8 @@ void ConsoleWidget::processStreamBuffer()
     m_receiveStreamBuffer.text = "";
 
 	autoLineDelete();
+
+    repaint();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

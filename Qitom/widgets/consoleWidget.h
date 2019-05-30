@@ -43,6 +43,7 @@
 #include <qdebug.h>
 #include <qsettings.h>
 #include <qtimer.h>
+#include <qelapsedtimer.h>
 
 QT_BEGIN_NAMESPACE
 

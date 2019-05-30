@@ -22,6 +22,8 @@
 
 #include "qDebugStream.h"
 
+#include <qthread.h>
+
 namespace ito {
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -39,6 +41,15 @@ QDebugStream::QDebugStream(std::ostream &stream, ito::tStreamMessageType type) :
     m_stream(stream),
     msg_type(type)
 {
+    //Performance issue: if any cout or cerr stream is called very often in a short time,
+    //the flushStream signal is emitted very often and the receiving slots can probably not
+    //handle all these emitted signals. This leads to an increasing input buffer of the receiver thread
+    //This can cause performance issues or crashes due to buffer overflows or deadlocks.
+    //In order to avoid this, a short delay is inserted after each flushStream emission. However the
+    //shortest delay of 1us will take a lot longer in reality. Therefore, the delay is only inserted
+    //in rare cases, defined by a random value and a threshold, given below (here: delay in 4% of all cases)
+    m_randWaitThreshold = RAND_MAX * 0.96;
+
     m_old_buf = stream.rdbuf();
     stream.rdbuf(this);
 }
@@ -71,6 +82,11 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
     emit flushStream(str, msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
     m_string.clear();
 
+    if (qrand() > m_randWaitThreshold)
+    {
+        QThread::usleep(1);
+    }
+
     return n;
 }
 
@@ -83,6 +99,11 @@ std::basic_streambuf<char>::int_type QDebugStream::overflow(int_type v)
         QString str = QString::fromLatin1(m_string.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
         emit flushStream(str, msg_type);
         m_string.erase(m_string.begin(), m_string.end());
+        
+        if (qrand() > m_randWaitThreshold)
+        {
+            QThread::usleep(1);
+        }
     }
     else
     {
