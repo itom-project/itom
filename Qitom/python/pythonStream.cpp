@@ -46,19 +46,6 @@ void PyStream::PythonStream_dealloc(PythonStream* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-//PyObject* PyStream::PythonStream_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
-//{
-//    PythonStream *self;
-//
-//    self = (PythonStream *)type->tp_alloc(type, 0);
-//    if (self != NULL) 
-//    {
-//        self->type = 0;
-//    }
-//
-//    return (PyObject *)self;
-//}
-
 //! static init method, which is called if any variable of type PyStream is initialized. This method extracts type value from args.
 int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds)
 {
@@ -218,10 +205,9 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
 
         if(self->type == 1)
         {
-        
             std::cout << v_; // endl is added directly by Python
         }
-        else
+        else if (self->type == 2)
         {
             std::cerr << v_; // endl is added directly by Python
         }
