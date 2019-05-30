@@ -41,9 +41,7 @@ class QPropertyModel;
 class Property;
 
 /**
- * \mainpage QPropertyEditor
- *
- * \section intro_sec Introduction
+ * QPropertyEditor
  *
  * The main purpose for the QPropertyEditor is the visualization and manipulation of properties defined via the Q_PROPERTY macro in
  * QObject based classes.

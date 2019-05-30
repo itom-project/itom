@@ -45,6 +45,16 @@
 
 //#include "benchmarks.h"
 
+/**
+ * \mainpage itom
+ *
+ * \section intro_sec Introduction
+ *
+ * ITOM is an open source software suite for operating measurement systems, laboratory automation and data evaluation.
+ * It can be used in a multitude of application areas, but especially is devoted to optical systems and image processing.
+ */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 //DOXYGEN FORMAT
 //! brief description
 /*!
@@ -54,6 +64,9 @@
     \return description
     \sa (see also) keywords (comma-separated)
 */
+#endif /*DOXYGEN_SHOULD_SKIP_THIS*/
+
+
 
 QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
