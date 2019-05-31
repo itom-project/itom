@@ -1903,6 +1903,11 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 {
     m_type = type;
 
+    if (type == ito::tUInt32)
+    {
+        cv::error(cv::Exception(CV_BadDepth, "uint32 is an unsupported data type for dataObject.", "", __FILE__, __LINE__));
+    }
+
     if(dimensions <= 2)
     {
         m_continuous = 1; //matrix is always continuous if dimensions are <=2, since there exists only one cv::Mat-plane
@@ -2027,6 +2032,11 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 {
     m_type = type;
     m_owndata = 1;
+
+    if (type == ito::tUInt32)
+    {
+        cv::error(cv::Exception(CV_BadDepth, "uint32 is an unsupported data type for dataObject.", "", __FILE__, __LINE__));
+    }
 
     if(dimensions == 0 || dimensions == 2)
     {
