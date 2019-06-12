@@ -8,7 +8,6 @@ Changelog Version 3.2.0
 itom
 ********
 
-
 **Version 3.2.0 (2019-04-07)**
 
 (more than 440 commits in itom repository)
