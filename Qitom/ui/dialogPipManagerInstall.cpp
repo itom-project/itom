@@ -30,6 +30,9 @@
 
 namespace ito {
 
+/*static*/ DialogPipManagerInstallDefaults DialogPipManagerInstall::defaultsInstall = DialogPipManagerInstallDefaults();
+/*static*/ DialogPipManagerInstallDefaults DialogPipManagerInstall::defaultsUpgrade = DialogPipManagerInstallDefaults();
+
 //--------------------------------------------------------------------------------
 DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString package) :
     QDialog(parent),
@@ -49,6 +52,17 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
         ui.radioWhl->setChecked(true);
         ui.checkUpgrade->setChecked(false);
         ui.txtPackage->setText("");
+        m_upgradeMode = false;
+
+        if (defaultsInstall.valid == true)
+        {
+            ui.checkFindLinks->setChecked(defaultsInstall.findLinks);
+            ui.checkInstallDeps->setChecked(defaultsInstall.installDependencies);
+            ui.checkNoIndex->setChecked(defaultsInstall.ignorePypi);
+            ui.checkRunSudo->setChecked(defaultsInstall.runSudo);
+            ui.checkUpgrade->setChecked(defaultsInstall.upgradeIfNewer);
+            ui.txtFindLinks->setText(defaultsInstall.findLinksPath);
+        }
     }
     else
     {
@@ -56,12 +70,42 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
         ui.radioSearchIndex->setChecked(true);
         ui.checkUpgrade->setChecked(true);
         ui.txtPackage->setText(package);
+        m_upgradeMode = true;
+
+        if (defaultsUpgrade.valid == true)
+        {
+            ui.checkFindLinks->setChecked(defaultsUpgrade.findLinks);
+            ui.checkInstallDeps->setChecked(defaultsUpgrade.installDependencies);
+            ui.checkNoIndex->setChecked(defaultsUpgrade.ignorePypi);
+            ui.checkRunSudo->setChecked(defaultsUpgrade.runSudo);
+            //ui.checkUpgrade->setChecked(defaultsUpgrade.upgradeIfNewer); //-> should always be true on update
+            ui.txtFindLinks->setText(defaultsUpgrade.findLinksPath);
+        }
     }
+
+    ui.txtFindLinks->setEnabled(ui.checkFindLinks->isChecked());
 }
 
 //--------------------------------------------------------------------------------
 DialogPipManagerInstall::~DialogPipManagerInstall()
 {
+    DialogPipManagerInstallDefaults *defaults;
+    if (m_upgradeMode)
+    {
+        defaults = &defaultsUpgrade;
+    }
+    else
+    {
+        defaults = &defaultsInstall;
+    }
+
+    defaults->findLinks = ui.checkFindLinks->isChecked();
+    defaults->installDependencies = ui.checkInstallDeps->isChecked();
+    defaults->ignorePypi = ui.checkNoIndex->isChecked();
+    defaults->runSudo = ui.checkRunSudo->isChecked();
+    defaults->upgradeIfNewer = ui.checkUpgrade->isChecked();
+    defaults->findLinksPath = ui.txtFindLinks->text();
+    defaults->valid = true;
 }
 
 //--------------------------------------------------------------------------------

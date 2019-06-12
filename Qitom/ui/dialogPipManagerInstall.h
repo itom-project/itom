@@ -34,6 +34,18 @@
 
 namespace ito {
 
+struct DialogPipManagerInstallDefaults
+{
+    DialogPipManagerInstallDefaults() : valid(false) {};
+    bool valid;
+    bool upgradeIfNewer;
+    bool installDependencies;
+    bool findLinks;
+    QString findLinksPath;
+    bool ignorePypi;
+    bool runSudo;
+};
+
 class DialogPipManagerInstall : public QDialog 
 {
     Q_OBJECT
@@ -48,8 +60,11 @@ public:
 private:
     Ui::DialogPipManagerInstall ui;
     Type m_selectedType;
+    bool m_upgradeMode;
 
 protected:
+    static DialogPipManagerInstallDefaults defaultsInstall;
+    static DialogPipManagerInstallDefaults defaultsUpgrade;
 
 private slots:
     void on_btnPackage_clicked();
