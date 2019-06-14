@@ -26,7 +26,7 @@ Plugins
 
 * MSMediaFoundation: major improvements concerning necessary CPU consumption (tiny sleeps inserted in while(1) loops)
 * GenICam: there exists devices which cannot report the real access state. Instead they report changed the accessStatus DEVICE_ACCESS_STATUS_UNKNOWN. If this is the case, the plugin assumes a read/write access state and tries to open this device though. 
-* GenICam: Start to support color cameras with the exemplary YCbCr422 encoding (not finished yet)
+* GenICam: Start to support color cameras with the exemplary YCbCr422_8 encoding (tested with Basler puA1280-54uc)
 * FittingFilters: small bug-fix in method **fillInvalidAreas**
 
 Designer Plugins
