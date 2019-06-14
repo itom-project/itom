@@ -52,6 +52,7 @@
 #include "../codeEditor/managers/modesManager.h"
 #include "../codeEditor/textBlockUserData.h"
 #include "scriptEditorPrinter.h"
+#include "../organizer/userOrganizer.h"
 
 namespace ito 
 {
@@ -394,14 +395,20 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 {
     if ((source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
     {
-        if (source->urls().length() == 1)
+        ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+        if (uOrg->hasFeature(featDeveloper))
         {
-            QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
-            if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
-                || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
+            QList<QUrl> list(source->urls());
+            for(int i = 0; i<list.length(); ++i)
             {
-                return true;
+                QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
+                if (!((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
+                    || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx")))
+                {
+                    return false;
+                }
             }
+            return true;
         }
     }
     else
@@ -411,7 +418,6 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 
     return false;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::dropEvent(QDropEvent *event)
 {
@@ -421,15 +427,24 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
     {
         if ((event->mimeData()->hasFormat("FileName") || event->mimeData()->hasFormat("text/uri-list")))
         {
-            if (event->mimeData()->urls().length() == 1)
+            bool areAllLocals = true; //type of file is already checked in ScriptEditorWidget::canInsertFromMimeData
+            QList<QUrl> list(event->mimeData()->urls());
+            for (int i = 0; i < list.length(); ++i)
             {
-                QString fext = QFileInfo(event->mimeData()->urls().at(0).toString()).suffix().toLower();
-                if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
-                    || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
+                if (!list[i].isLocalFile())
                 {
-                    QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, event->mimeData()->urls().at(0).toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
-                    event->accept();
+                    areAllLocals = false;
+                    break;
                 }
+            }
+            if (areAllLocals)
+            {
+                for (int i = 0; i < list.length(); ++i)
+                {
+                    QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, list[i].toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
+                    
+                }
+                event->accept();
             }
 
             if (event->isAccepted())
