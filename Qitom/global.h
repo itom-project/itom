@@ -42,9 +42,9 @@
 /* definition and macros */
 #define ITOM_VERSION_MAJOR  0x03
 #define ITOM_VERSION_MINOR  0x02
-#define ITOM_VERSION_PATCH  0x00
+#define ITOM_VERSION_PATCH  0x01
 #define ITOM_VERSION        CREATEVERSION(ITOM_VERSION_MAJOR,ITOM_VERSION_MINOR,ITOM_VERSION_PATCH) //ITOM_VERSION is (major << 16) + (minor << 8) + patch
-#define ITOM_VERSION_STR    "3.2.0"
+#define ITOM_VERSION_STR    "3.2.1"
 
 #ifdef USEPCL
     #define ITOM_POINTCLOUDLIBRARY 1
