@@ -71,11 +71,22 @@ bool DialogUserManagementEdit::saveUser()
         QMessageBox::critical(this, tr("Error"), tr("No user name entered, aborting!"), QMessageBox::Ok);
         return false;
     }
-
+    if (!m_showsStandardUser && (ui.lineEdit_name->text() == "Standard User"))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("The user name \"Standard User\" is reserved!"), QMessageBox::Ok);
+        return false;
+    }
     if (!ui.lineEdit_name->text().isEmpty())
     {
         if (m_oldPassword != ui.lineEdit_password->text())
-            password = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
+            if (!ui.lineEdit_password->text().isEmpty())
+            {
+                password = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
+            }
+            else
+            {
+                password = QByteArray(); //clear password
+            }
         else
             password = m_oldPassword;
     }
@@ -131,7 +142,7 @@ bool DialogUserManagementEdit::saveUser()
             flags |= featConsoleRead;
         }
 
-        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role, password);
+        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role, password, m_showsStandardUser);
         if (retval.containsError())
         {
             QMessageBox::critical(this, tr("Error"), QLatin1String(retval.errorMessage()), QMessageBox::Ok);
@@ -188,11 +199,12 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget *parent, Qt::WindowFlags f) :
+DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget *parent, Qt::WindowFlags f, bool isStandardUser) :
     QDialog(parent, f),
     m_userModel(userModel),
     m_fileName(filename),
-    m_osUser("")
+    m_osUser(""),
+    m_showsStandardUser(isStandardUser)
 {
     ui.setupUi(this);
 
@@ -261,6 +273,16 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 else
                 {
                     ui.radioButton_consoleOff->setChecked(true);
+                }
+                if (isStandardUser)
+                {
+                    ui.groupBox_features->setEnabled(false);
+                    ui.lineEdit_id->setEnabled(false);
+                    ui.lineEdit_name->setEnabled(false);
+                    ui.cmdUseWindowsUser->setEnabled(false);
+                    ui.cmdAutoID->setEnabled(false);
+                    ui.groupBox_2->setEnabled(false);
+
                 }
 
 

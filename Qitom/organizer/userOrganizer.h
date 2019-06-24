@@ -61,10 +61,9 @@ class UserOrganizer : public QObject
         ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
             UserRole &role, QByteArray &password, QDateTime &lastModified);
         ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
-            const UserRole &role, const QByteArray &password);
+            const UserRole &role, const QByteArray &password, const bool &standardUser = false);
 
         UserFeatures getUserFeatures(void) const { return m_features; }
-
         inline QString getSettingsFile(const QString uid = "") const 
         {
             if (uid == "")
@@ -80,7 +79,15 @@ class UserOrganizer : public QObject
                 }
                 else
                 {
-                    QString filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+                    QString filename;
+                    if (uid != "itom")
+                    {
+                        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+                    }
+                    else
+                    {
+                        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom.ini")));
+                    }
                     QFileInfo fi(filename);
 
                     if (fi.exists() == false)

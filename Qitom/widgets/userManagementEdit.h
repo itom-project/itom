@@ -36,7 +36,7 @@ class DialogUserManagementEdit : public QDialog
     Q_OBJECT
 
     public:
-        DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget * parent = 0, Qt::WindowFlags f = 0);
+        DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget * parent = 0, Qt::WindowFlags f = 0, bool isStandardUser = false);
         ~DialogUserManagementEdit();
         Ui::userManagementEdit ui;
 
@@ -48,6 +48,7 @@ class DialogUserManagementEdit : public QDialog
         QString m_fileName;
         QByteArray m_oldPassword;
         QString m_osUser;
+        bool m_showsStandardUser;
 
     protected:
         QString clearName(const QString &name);

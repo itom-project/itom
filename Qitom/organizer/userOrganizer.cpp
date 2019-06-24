@@ -115,7 +115,8 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
     QString settingsFile;
 
-    if (m_userModel->rowCount() > 1) 
+    int i = m_userModel->rowCount();
+    if (m_userModel->rowCount() > 1 || !m_userModel->index(0, UserModel::umiPassword).data().toByteArray().isEmpty())
     {
         bool foundDefUser = false;
 
@@ -252,6 +253,12 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), tmpArray, true);
 
     QFileInfo fi(itomIniPath);
+    if (fi.exists())
+    {
+        QSettings settings(itomIniPath, QSettings::IniFormat);
+        settings.beginGroup("ITOMIniFile");
+        uis.password = settings.value("password").toByteArray();
+    }
     if (fi.exists() && fi.lastModified() > youngestModificationDate)
     {
         youngestModificationDate = fi.lastModified();
@@ -352,7 +359,7 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
-    const UserRole &role, const QByteArray &password)
+    const UserRole &role, const QByteArray &password, const bool& standardUser /*false*/)
 {
     ito::RetVal retval;
     QString filename;
@@ -364,7 +371,14 @@ ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QS
     }
     else
     {
-        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+        if (standardUser)
+        {
+            filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom").append(".ini")));
+        }
+        else
+        {
+            filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+        }
         QFileInfo fi(filename);
 
         if (fi.exists() == false)

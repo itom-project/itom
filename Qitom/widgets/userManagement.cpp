@@ -84,8 +84,7 @@ void DialogUserManagement::readModel(const QModelIndex &index)
         }
 
 //        ui.userList->setCurrentIndex(index);
-        ui.pushButton_editUser->setEnabled(m_userModel->data(index, Qt::EditRole).isValid());
-        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && m_userModel->data(index, Qt::EditRole).isValid());
+        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && m_userModel->data(index, Qt::EditRole).isValid() && m_userModel->index(index.row(), UserModel::umiIniFile).data().toString().contains("itom_"));
 
         ui.userList->setCurrentIndex(index);
     }
@@ -219,7 +218,7 @@ void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
 {
     if (index.isValid() && ui.pushButton_editUser->isEnabled())
     {
-        DialogUserManagementEdit *dlg = new DialogUserManagementEdit(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), m_userModel);
+        DialogUserManagementEdit *dlg = new DialogUserManagementEdit(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), m_userModel,NULL, 0, !m_userModel->data(index, Qt::EditRole).isValid());
         if (dlg->exec() == QDialog::Accepted)
         {
             loadUserList();
