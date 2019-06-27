@@ -374,7 +374,7 @@ class FigureCanvasItom(FigureCanvasBase):
             FigureCanvasBase.key_release_event( self, key )
     
     @property
-    @cbook.deprecated("3.0", "Manually check `event.guiEvent.isAutoRepeat()` "
+    @cbook.deprecated("3.0", message="Manually check `event.guiEvent.isAutoRepeat()` "
                       "in the event handler.")
     def keyAutoRepeat(self):
         """
@@ -383,7 +383,7 @@ class FigureCanvasItom(FigureCanvasBase):
         return self._keyautorepeat
 
     @keyAutoRepeat.setter
-    @cbook.deprecated("3.0", "Manually check `event.guiEvent.isAutoRepeat()` "
+    @cbook.deprecated("3.0", message="Manually check `event.guiEvent.isAutoRepeat()` "
                       "in the event handler.")
     def keyAutoRepeat(self, val):
         self._keyautorepeat = bool(val)
