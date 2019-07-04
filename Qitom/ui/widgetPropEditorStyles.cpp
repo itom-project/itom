@@ -518,6 +518,35 @@ void WidgetPropEditorStyles::on_btnFont_clicked()
     if (index >= 0 && index < m_styles.size())
     {
         QFont font = m_styles[index].m_font;
+        
+        /* workaround:
+        
+        If the current language of itom does not correspond to the OS language (see with Windows),
+        the style list in the dialog is translated to the OS language, however the styleName of the
+        font is in the itom language (e.g. english). Then, the styles are not correctly selected.
+        Avoid this by testing all available styles of the font family and compare the resulting font with
+        the given font.
+        */
+        QFontDatabase fdb;
+
+        QStringList possibleStyles = fdb.styles(font.family());
+        if (!possibleStyles.contains(font.styleName()))
+        {
+            foreach(const QString &s, possibleStyles)
+            {
+                QFont f = fdb.font(font.family(), s, font.pointSize());
+
+                if (f.italic() == font.italic() &&
+                    f.weight() == font.weight() &&
+                    f.strikeOut() == font.strikeOut() &&
+                    f.underline() == font.underline())
+                {
+                    font = f;
+                    break;
+                }
+            }
+        }
+
         bool ok;
         font = QFontDialog::getFont(&ok, font, this);
 
