@@ -94,8 +94,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(update()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(update()));
-    connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailable(bool)));
-    connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailable(bool)));
+    connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(setUndoAvailable(bool)));
+    connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(setRedoAvailable(bool)));
 
     setMouseTracking(true);
     setCenterOnScroll(true);
@@ -1392,8 +1392,8 @@ void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= "
 
     QPlainTextEdit::setPlainText(text);
     emit newTextSet();
-    emit redoAvailable(false);
-    emit undoAvailable(false);
+    setRedoAvailable(false);
+    setUndoAvailable(false);
 }
 
 //------------------------------------------------------------
@@ -2384,15 +2384,19 @@ void CodeEditor::showTooltipDelayJobRunner(QList<QVariant> args)
 }
 
 //------------------------------------------------------------
-void CodeEditor::undoAvailable(bool available)
+void CodeEditor::setUndoAvailable(bool available)
 {
     m_undoAvailable = available;
+
+    emit updateActions();
 }
 
 //------------------------------------------------------------
-void CodeEditor::redoAvailable(bool available)
+void CodeEditor::setRedoAvailable(bool available)
 {
     m_redoAvailable = available;
+
+    emit updateActions();
 }
 
 //------------------------------------------------------------

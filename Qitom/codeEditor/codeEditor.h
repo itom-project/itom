@@ -392,8 +392,8 @@ private:
 private slots:
     void emitDirtyChanged(bool state);
     void onTextChanged();
-    void undoAvailable(bool available);
-    void redoAvailable(bool available);
+    void setUndoAvailable(bool available);
+    void setRedoAvailable(bool available);
 
 signals:
     void dirtyChanged(bool state); //Signal emitted when the dirty state changed
@@ -413,6 +413,8 @@ signals:
     void unindentRequested(); //Signal emitted when the user press the BACK-TAB (Shift+TAB) key
 
     void updateRequest();
+
+    void updateActions();
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget
 };

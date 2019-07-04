@@ -747,6 +747,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+    connect(editorWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
     
     // Load the right Class->Method model for this Editor
     connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -781,6 +782,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
+    connect(removedWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
 
     // Class Navigator
     disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
