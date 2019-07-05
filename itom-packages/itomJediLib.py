@@ -111,6 +111,10 @@ def calltipModuleItomModification(sig, params):
     
     if len(parts) == len(params):
         return parts
+    elif len(params) >= 1 and \
+        params[0].name == "self" and \
+            len(parts) == len(params) - 1:
+        return ["self",] + parts
     else:
         return None
 
@@ -222,6 +226,8 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     
 if __name__ == "__main__":
     
+    print(calltips("from itom import dataObject\ndataObject.copy(",1,16, "utf-8"))
+    print(calltips("from itom import dataObject\na = dataObject()\na.copy(",2,7, "utf-8"))
     print(completions("import win", 0, 10, "", "", "utf-8"))
     raise
     print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
