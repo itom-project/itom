@@ -4628,13 +4628,14 @@ Returns \n\
 ------- \n\
 cpy : {dataObject} \n\
     Deep copy of this dataObject");
-PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args)
+PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args, PyObject *kwds)
 {
     if (self->dataObject == NULL) return 0;
 
     unsigned char regionOnly = 0;
+    const char *kwlist[] = { "regionOnly", NULL };
 
-    if (!PyArg_ParseTuple(args, "|b", &regionOnly))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|b", const_cast<char**>(kwlist), &regionOnly))
     {
         PyErr_SetString(PyExc_TypeError,"the region only flag must be 0 or 1");
         return NULL;
@@ -4766,7 +4767,7 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newShape) -> return a reshaped shallow copy (if possible) of this dataObject. \n\
+PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(shape) -> return a reshaped shallow copy (if possible) of this dataObject. \n\
 \n\
 This method returns a shallow or deep copy if this data object where the type and data is unchanged. The shape \n\
 of the returned object corresponds to the parameter 'newShape'. The number of values must therefore not be changed. \n\
@@ -4778,7 +4779,7 @@ new size. \n\
 \n\
 Parameters \n\
 ----------- \n\
-newShape : {seq. of int} \n\
+shape : {seq. of int} \n\
     New shape of the returned object. A minimal size of this list or tuple is two. \n\
 \n\
 Returns \n\
@@ -4789,13 +4790,14 @@ reshaped : {dataObject} \n\
 Notes \n\
 ----- \n\
 This method is similar to numpy.reshape");
-PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args)
+PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     if (self->dataObject == NULL) return NULL;
 
     PyObject *shape = NULL;
+    const char *kwlist[] = { "shape", NULL };
 
-    if (!PyArg_ParseTuple(args,"O", &shape))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", const_cast<char**>(kwlist), &shape))
     {
         return NULL;
     }
@@ -5037,7 +5039,7 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsetList) -> adjust the size and position of the region of interest of this data object\n\
+PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsets) -> adjust the size and position of the region of interest of this data object\n\
 \n\
 For every data object, it is possible to define a region of interest such that subsequent commands only refer to this subpart. However, if values within \n\
 the region of interest (ROI) are changed, this also affects the original data object due to the shallow copy principal of python. \n\
@@ -5054,7 +5056,7 @@ Now *droi* is a region of interest of the original data object whose first value
 \n\
 Parameters \n\
 ----------- \n\
-offsetList : {list of integers} \n\
+offsets : {list of integers} \n\
     This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
     current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
     second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
@@ -5063,7 +5065,7 @@ offsetList : {list of integers} \n\
 See Also \n\
 --------- \n\
 locateROI() : method to get the borders of the current ROI");
-PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args)
+PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args, PyObject *kwds)
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.
     //e.g. 2D-Object [dtop, dbottom, dleft, dright], negative d-value means offset towards the center
@@ -5077,8 +5079,9 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         return NULL;
     }
 
+    const char *kwlist[] = { "offsets", NULL };
 
-    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &offsets))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PyList_Type, &offsets))
     {
         PyErr_SetString(PyExc_ValueError, "argument must be a list of offset-values. Its length must be two times the number of matrix-dimensions");
         return NULL;
@@ -8892,11 +8895,11 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"pixToPhys",(PyCFunction)PyDataObj_PixToPhys, METH_KEYWORDS | METH_VARARGS, pyDataObjectPixToPhys_doc},
 		{"copyMetaInfo", (PyCFunction)PyDataObj_CopyMetaInfo, METH_KEYWORDS | METH_VARARGS, pyDataObjectCopyMetaInfo_doc },
         
-        {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
+        {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS | METH_KEYWORDS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},
         {"normalize", (PyCFunction)PythonDataObject::PyDataObject_normalize, METH_VARARGS | METH_KEYWORDS, pyDataObjectNormalize_doc},
         {"locateROI", (PyCFunction)PythonDataObject::PyDataObject_locateROI, METH_NOARGS, pyDataObjectLocateROI_doc},
-        {"adjustROI", (PyCFunction)PythonDataObject::PyDataObject_adjustROI, METH_VARARGS, pyDataObjectAdjustROI_doc},
+        {"adjustROI", (PyCFunction)PythonDataObject::PyDataObject_adjustROI, METH_VARARGS | METH_KEYWORDS, pyDataObjectAdjustROI_doc},
         {"squeeze", (PyCFunction)PythonDataObject::PyDataObject_squeeze, METH_NOARGS, pyDataObjectSqueeze_doc},
         {"size", (PyCFunction)PythonDataObject::PyDataObject_size, METH_VARARGS, pyDataObjectSize_doc},
         {"conj", (PyCFunction)PythonDataObject::PyDataObject_conj, METH_NOARGS, pyDataObjectConj_doc},
@@ -8907,7 +8910,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"div", (PyCFunction)PythonDataObject::PyDataObject_div, METH_VARARGS, pyDataObjectDiv_doc},
         {"mul", (PyCFunction)PythonDataObject::PyDataObject_mul, METH_VARARGS, pyDataObjectMul_doc},
         {"makeContinuous", (PyCFunction)PythonDataObject::PyDataObject_makeContinuous, METH_NOARGS, pyDataObjectMakeContinuous_doc},
-        {"reshape", (PyCFunction)PythonDataObject::PyDataObject_reshape, METH_VARARGS, pyDataObjectReshape_doc},
+        {"reshape", (PyCFunction)PythonDataObject::PyDataObject_reshape, METH_VARARGS | METH_KEYWORDS, pyDataObjectReshape_doc},
         {"zeros", (PyCFunction)PythonDataObject::PyDataObj_StaticZeros, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticZeros_doc},
         {"ones",(PyCFunction)PythonDataObject::PyDataObj_StaticOnes, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticOnes_doc},
 		{"nans",(PyCFunction)PythonDataObject::PyDataObj_StaticNans, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticNans_doc },
