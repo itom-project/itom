@@ -430,7 +430,7 @@ QString any(const QString &name, const QStringList &alternates)
     QStringList kwlist = QStringList() << "self" << "False" << "None" << "True" << "assert" << "break" \
         << "class" << "continue" << "def" << "del" << "elif" << "else" << "except" << "finally" << "for" \
         << "global" << "if" << "lambda" << "nonlocal" << "pass" << "raise" << "return" << "try" \
-        << "while" << "with" << "yield";
+        << "while" << "with" << "yield" << "async" << "await";
 
     QStringList kwNamespaceList = QStringList() << "from" << "import" << "as";
     QStringList wordopList = QStringList() << "and" << "or" << "not" << "in" << "is";
