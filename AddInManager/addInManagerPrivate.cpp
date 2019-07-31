@@ -40,7 +40,7 @@ AddInManagerPrivate::AddInManagerPrivate(AddInManager* addInMgr) :
     m_pMainApplication(NULL),
     m_algoInterfaceValidator(NULL),
     m_timeOutInitClose(30000),
-    m_timeOutGeneral(15000),
+    m_timeOutGeneral(5000),
     m_pQCoreApp(NULL)
 {
     m_plugInModel = new PlugInModel(addInMgr, NULL);
