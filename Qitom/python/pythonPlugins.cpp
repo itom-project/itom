@@ -626,7 +626,10 @@ PyObject* getName(ito::AddInBase *addInObj)
 
     //return PyUnicode_FromString((*qsParam).getVal<char*>());
     char* val = (*qsParam).getVal<char*>();
-    return PyUnicode_DecodeLatin1(val, strlen(val), NULL);
+    QString val2 = QString("%1 (%2)").arg(val).arg(addInObj->getRefCount());
+    QByteArray val2_ = val2.toLatin1();
+    const char* val3 = val2_.constData();
+    return PyUnicode_DecodeLatin1(val3, strlen(val3), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

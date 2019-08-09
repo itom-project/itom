@@ -66,27 +66,26 @@ ito::RetVal AddInManagerPrivate::decRefParamPlugins(ito::AddInBase *ai)
 {
     ito::RetVal retval(ito::retOk);
     QVector<ito::AddInBase::AddInRef *> *argAddInList = ai->getArgAddIns();
-    //ito::AddInManager *aim = m_pAddInManager;
 
-    for (int n = 0; n < (*argAddInList).size(); n++)
+    for (int n = 0; n < argAddInList->size(); n++)
     {
         ito::AddInBase::AddInRef *ref = (*argAddInList)[n];
-        //if (!(ref->type & ito::ParamBase::Axis))
-        //{
-            ito::AddInBase *closeAi = reinterpret_cast<ito::AddInBase*>((*argAddInList)[n]->ptr);
-            ito::AddInInterfaceBase *aib = ai->getBasePlugin();
-            if (aib)
-            {
-                decRef(&closeAi);
-            }
-            else
-            {
-                retval += ito::retError;
-            }
-        //}
+
+        ito::AddInBase *closeAi = reinterpret_cast<ito::AddInBase*>((*argAddInList)[n]->ptr);
+        ito::AddInInterfaceBase *aib = ai->getBasePlugin();
+        if (aib)
+        {
+            decRef(&closeAi);
+        }
+        else
+        {
+            retval += ito::retError;
+        }
+
         delete ref;
     }
-    (*argAddInList).clear();
+
+    argAddInList->clear();
 
     return retval;
 }

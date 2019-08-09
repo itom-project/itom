@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,10 +25,10 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define ADDINMANAGER_VERSION_MAJOR 0
+#define ADDINMANAGER_VERSION_MAJOR 1
 #define ADDINMANAGER_VERSION_MINOR 0
 #define ADDINMANAGER_VERSION_PATCH 0
-#define ADDINMANAGER_VERSION_REVISION 1
-#define ADDINMANAGER_VERSION_STRING  "0.0.0.1"
+#define ADDINMANAGER_VERSION_REVISION 0
+#define ADDINMANAGER_VERSION_STRING  "1.0.0.0"
 
 

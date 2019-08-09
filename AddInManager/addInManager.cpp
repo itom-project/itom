@@ -964,30 +964,63 @@ AddInManager::~AddInManager(void)
     d->m_Translator.clear();
 
     //we need to apply two steps in order to close all hardware-references
-    //1. first -> close all opened instances (instances that keep reference to others must delete them after their deletion)
+    //1. first -> close all opened instances (instances that keep reference to others must delete them after their deletion; ref-count values which are kept by other instances are ignored)
     //2. second -> delete all AddInInterfaceBase classes
 
 
     //step 1:
-    foreach(QObject *obj, d->m_addInListDataIO)
+    QObjectList allHardwarePlugins = d->m_addInListDataIO + d->m_addInListAct;
+    QMap<ito::AddInBase*, int> openedInstances;
+    ito::AddInBase *aib2;
+
+    //identify all opened devices including their current ref count
+    foreach(QObject *obj, allHardwarePlugins)
     {
         aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-        addInInstancesCpy = aib->getInstList(); //this copy is necessary in order to close every instance exactly one times (even if one instance is not deleted here but later, since another plugin still holds a reference to it)
-        while (addInInstancesCpy.size() > 0)
+        foreach(ito::AddInBase* aib, aib->getInstList())
         {
-            addInInstance = (addInInstancesCpy[0]);
-            if (addInInstance)
+            if (aib->getRefCount() >= 0)
             {
-                retval += closeAddIn(addInInstance, NULL);
+                openedInstances[aib] = aib->getRefCount();
             }
-            addInInstancesCpy.removeFirst();
         }
     }
 
-    foreach(QObject *obj, d->m_addInListAct)
+    //screen all opened devices and if they are referencing another plugin instance, decrement the target instance's ref count from openedInstances (since they are decremented by closing the owner plugin
+    foreach(QObject *obj, allHardwarePlugins)
+    {
+        aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+        foreach(ito::AddInBase* aib, aib->getInstList())
+        {
+            QVector<ito::AddInBase::AddInRef *>* referencedInstances = aib->getArgAddIns();
+            for (int i = 0; i < referencedInstances->size(); ++i)
+            {
+                aib2 = (ito::AddInBase*)referencedInstances->at(i)->ptr;
+                if (openedInstances.contains(aib2))
+                {
+                    openedInstances[aib2]--;
+                }
+            }
+        }
+    }
+
+    //try to close all remaining opened instances, whose ref count is still >= 0:
+    QMapIterator<ito::AddInBase*, int> iter(openedInstances);
+    while (iter.hasNext()) 
+    {
+        iter.next();
+        if (iter.value() >= 0)
+        {
+            retval += closeAddIn(iter.key(), NULL);
+        }
+    }
+
+    //now all plugin instances should be closed. If this is not the case, close it now... this is a safety thing.
+    foreach(QObject *obj, allHardwarePlugins)
     {
         aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
         addInInstancesCpy = aib->getInstList(); //this copy is necessary in order to close every instance exactly one times (even if one instance is not deleted here but later, since another plugin still holds a reference to it)
+
         while (addInInstancesCpy.size() > 0)
         {
             addInInstance = (addInInstancesCpy[0]);
