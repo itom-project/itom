@@ -110,7 +110,7 @@ PyModuleDef PyStream::pythonStreamModule = {
 //! static PyTypeObject for type PyStream with function pointers to all required static methods.
 PyTypeObject PyStream::PythonStreamType = {
         PyVarObject_HEAD_INIT(NULL, 0)
-        "pythonStream.PythonStream",             /* tp_name */
+        "itom.pythonStream",             /* tp_name */
         sizeof(PythonStream),             /* tp_basicsize */
         0,                         /* tp_itemsize */
         (destructor)PythonStream_dealloc, /* tp_dealloc */
