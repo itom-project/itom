@@ -870,7 +870,7 @@ See Also \n\
 --------- \n\
 getParam");
 
-PyDoc_STRVAR(pyPluginGetExecFuncsList_doc, "getExecFuncList() -> returns a list of the names of the additional Functions of this plugin\n\
+PyDoc_STRVAR(pyPluginGetExecFuncsList_doc, "getExecFuncsList() -> returns a list of the names of the additional Functions of this plugin\n\
 \n\
 Each plugin may define a set of functions, extending the standard interface. These functions are not common to plugins of the same type. \n\
 These functions are executed using instance.exec(\"funcname\",params)\
