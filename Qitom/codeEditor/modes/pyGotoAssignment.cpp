@@ -379,7 +379,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
 
     foreach (const PyAssignment& a, assignments)
     {
-        if (a.m_line < 0)
+        if (a.m_line < 0 || a.m_fullName == "")
         {
             numUnreachables++;
         }
@@ -389,7 +389,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
     {
         for (int i = 0; i < assignments.size(); ++i)
         {
-            if (assignments[i].m_line >= 0)
+            if (assignments[i].m_line >= 0 && assignments[i].m_fullName != "")
             {
                 doGoto(assignments[i]);
                 break;
@@ -404,17 +404,20 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
         QStringList items;
         foreach (const PyAssignment &a, assignments)
         {
-            if (a.m_line >= 0 && a.m_column >= 0)
+            if (a.m_fullName != "")
             {
-                items << QString("%1 (line %2, column %3)").arg(a.m_fullName).arg(a.m_line+1).arg(a.m_column);
-            }
-            else if (a.m_line >= 0)
-            {
-                items << QString("%1 (line %2)").arg(a.m_fullName).arg(a.m_line+1);
-            }
-            else
-            {
-                items << a.m_fullName;
+                if (a.m_line >= 0 && a.m_column >= 0)
+                {
+                    items << QString("%1 (line %2, column %3)").arg(a.m_fullName).arg(a.m_line + 1).arg(a.m_column);
+                }
+                else if (a.m_line >= 0)
+                {
+                    items << QString("%1 (line %2)").arg(a.m_fullName).arg(a.m_line + 1);
+                }
+                else
+                {
+                    items << a.m_fullName;
+                }
             }
         }
 
