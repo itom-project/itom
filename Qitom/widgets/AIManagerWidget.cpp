@@ -376,6 +376,11 @@ void AIManagerWidget::updateActions()
                             m_pActDockWidget->setChecked(false);
                         }
                     }
+                    else
+                    {
+                        m_pActDockWidget->setText(tr("Plugin Toolbox"));
+                        m_pActDockWidget->setChecked(false);
+                    }
 
                     if (m_pActAutoGrabbing->isVisible())
                     {
