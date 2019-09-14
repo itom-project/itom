@@ -1269,12 +1269,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         if (!retDict)
                         {
                             std::cout << "\nMandatory parameters:\n";
-                            resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
+                            resultmand = printOutParams(&(filterParams->paramsMand), false, true, -1);
                             Py_DECREF(resultmand);
                         }
                         else
                         {
-                            resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1, false);
+                            resultmand = printOutParams(&(filterParams->paramsMand), false, true, -1, false);
                             PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
                             Py_DECREF(resultmand);
                         }
@@ -1290,12 +1290,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         if (!retDict)
                         {
                             std::cout << "\nOptional parameters:\n";
-                            resultopt = ito::PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
+                            resultopt = ito::printOutParams(&(filterParams->paramsOpt), false, true, -1);
                             Py_DECREF(resultopt);
                         }
                         else
                         {
-                            resultopt = ito::PrntOutParams(&(filterParams->paramsOpt), false, true, -1, false);
+                            resultopt = ito::printOutParams(&(filterParams->paramsOpt), false, true, -1, false);
                             PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
                             Py_DECREF(resultopt);
                         }
@@ -1310,12 +1310,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                         if (!retDict)
                         {
                             std::cout << "\nOutput parameters:\n";
-                            resultopt = ito::PrntOutParams(&(filterParams->paramsOut), false, true, -1);
+                            resultopt = ito::printOutParams(&(filterParams->paramsOut), false, true, -1);
                             Py_DECREF(resultopt);
                         }
                         else
                         {
-                            resultopt = ito::PrntOutParams(&(filterParams->paramsOut), false, true, -1, false);
+                            resultopt = ito::printOutParams(&(filterParams->paramsOut), false, true, -1, false);
                             PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
                             Py_DECREF(resultopt);
                         }
@@ -1470,12 +1470,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                             if (!retDict)
                             {
                                 std::cout << "\nMandatory parameters:\n";
-                                resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1);
+                                resultmand = printOutParams(&(filterParams->paramsMand), false, true, -1);
                                 Py_DECREF(resultmand);
                             }
                             else
                             {
-                                resultmand = PrntOutParams(&(filterParams->paramsMand), false, true, -1, false);
+                                resultmand = printOutParams(&(filterParams->paramsMand), false, true, -1, false);
                                 PyDict_SetItemString(resulttemp, "Mandatory Parameters", resultmand);
                                 Py_DECREF(resultmand);
                             }
@@ -1489,12 +1489,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                             if (!retDict)
                             {
                                 std::cout << "\nOptional parameters:\n";
-                                resultopt = PrntOutParams(&(filterParams->paramsOpt), false, true, -1);
+                                resultopt = printOutParams(&(filterParams->paramsOpt), false, true, -1);
                                 Py_DECREF(resultopt);
                             }
                             else
                             {
-                                resultopt = PrntOutParams(&(filterParams->paramsOpt), false, true, -1, false);
+                                resultopt = printOutParams(&(filterParams->paramsOpt), false, true, -1, false);
                                 PyDict_SetItemString(resulttemp, "Optional Parameters", resultopt);
                                 Py_DECREF(resultopt);
                             }
@@ -1508,12 +1508,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                             if (!retDict)
                             {
                                 std::cout << "\nOutput parameters:\n";
-                                resultopt = PrntOutParams(&(filterParams->paramsOut), false, true, -1);
+                                resultopt = printOutParams(&(filterParams->paramsOut), false, true, -1);
                                 Py_DECREF(resultopt);
                             }
                             else
                             {
-                                resultopt = PrntOutParams(&(filterParams->paramsOut), false, true, -1, false);
+                                resultopt = printOutParams(&(filterParams->paramsOut), false, true, -1, false);
                                 PyDict_SetItemString(resulttemp, "Output Parameters", resultopt);
                                 Py_DECREF(resultopt);
                             }
@@ -2344,14 +2344,14 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 {
                     if (retDict)
                     {
-                        resultmand = PrntOutParams(paramsMand, false, true, -1, false);
+                        resultmand = printOutParams(paramsMand, false, true, -1, false);
                         PyDict_SetItemString(result, "Mandatory Parameters", resultmand);
                         Py_DECREF(resultmand);
                     }
                     else
                     {
                         std::cout << "\n Mandatory parameters:\n";
-                        resultmand = PrntOutParams(paramsMand, false, true, -1);
+                        resultmand = printOutParams(paramsMand, false, true, -1);
                         Py_DECREF(resultmand);
                     }
                   
@@ -2372,14 +2372,14 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                 {
                     if (retDict)
                     {
-                        resultopt = PrntOutParams(paramsOpt, false, true, -1, false);
+                        resultopt = printOutParams(paramsOpt, false, true, -1, false);
                         PyDict_SetItemString(result, "Optional Parameters", resultopt);
                         Py_DECREF(resultopt);
                     }
                     else
                     {
                         std::cout << "\n Optional parameters:\n";
-                        resultopt = PrntOutParams(paramsOpt, false, true, -1);
+                        resultopt = printOutParams(paramsOpt, false, true, -1);
                         Py_DECREF(resultopt);
                     }                    
                 }

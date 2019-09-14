@@ -225,7 +225,7 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
             std::cout << "Plugin parameters are:\n";
 
         QVector<ito::Param> parameter = paramList->values().toVector();
-        result = PrntOutParams(&parameter, false, true, -1, output == 0);
+        result = printOutParams(&parameter, false, true, -1, output == 0);
     }
     else
     {
@@ -478,7 +478,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nMandatory parameters:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Mandatory Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
@@ -494,7 +494,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nOptional parameters:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Optional Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
@@ -511,7 +511,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nOutput values:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Output Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
