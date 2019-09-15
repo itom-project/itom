@@ -56,7 +56,7 @@ QIcon StatusLedFactory::icon() const
 // --------------------------------------------------------------------------
 QString StatusLedFactory::includeFile() const
 {
-    return "treeComboBox.h";
+    return "statusLed.h";
 }
 
 // --------------------------------------------------------------------------
