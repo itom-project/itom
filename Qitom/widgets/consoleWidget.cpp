@@ -36,6 +36,7 @@
 #include <QClipboard>
 #include <qevent.h>
 #include <qdebug.h>
+#include <qtextboundaryfinder.h>
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -1302,23 +1303,78 @@ void ConsoleWidget::processStreamBuffer()
     //process very long lines
     if (m_splitLongLines && m_receiveStreamBuffer.text.size() > m_splitLongLinesMaxLength)
     {
-        QStringList splits = m_receiveStreamBuffer.text.split("\n");
         QStringList outputs;
+        QStringList splits = m_receiveStreamBuffer.text.split("\n");
+        int lineStartPos = 0;
+        int prevPos;
+        QString substr;
+   
         foreach(const QString &t, splits)
         {
             if (t.size() > m_splitLongLinesMaxLength)
             {
-                outputs.append(t.left(m_splitLongLinesMaxLength));
-                QString rest = t.mid(m_splitLongLinesMaxLength);
-                while (rest.size() > m_splitLongLinesMaxLength)
+                if (m_receiveStreamBuffer.msgType == ito::msgStreamErr)
                 {
-                    outputs.append(longLineWrapPrefix + rest.left(m_splitLongLinesMaxLength));
-                    rest.remove(0, m_splitLongLinesMaxLength);
-                }
+                    //more sophisticated word wrap at word boundaries
+                    QTextBoundaryFinder finder(QTextBoundaryFinder::Line, t);
+                    lineStartPos = 0;
+                    finder.setPosition(0);
 
-                if (rest.size() > 0)
+                    while (lineStartPos < t.size())
+                    {
+                        finder.setPosition(lineStartPos + m_splitLongLinesMaxLength);
+                        if (finder.isAtBoundary())
+                        {
+                            prevPos = finder.position();
+                        }
+                        else
+                        {
+                            prevPos = finder.toPreviousBoundary();
+                        }
+
+                        if (prevPos <= lineStartPos)
+                        {
+                            substr = t.mid(lineStartPos, m_splitLongLinesMaxLength);
+                            if (lineStartPos == 0)
+                            {
+                                outputs.append(substr);
+                            }
+                            else
+                            {
+                                outputs.append(longLineWrapPrefix + substr);
+                            }
+                            lineStartPos += substr.size();
+                        }
+                        else
+                        {
+                            substr = t.mid(lineStartPos, prevPos - lineStartPos);
+                            if (lineStartPos == 0)
+                            {
+                                outputs.append(substr);
+                            }
+                            else
+                            {
+                                outputs.append(longLineWrapPrefix + substr);
+                            }
+                            lineStartPos = prevPos;
+                        }
+                    }
+                }
+                else
                 {
-                    outputs.append(longLineWrapPrefix + rest);
+                    //simple (and faster) split after m_splitLongLinesMaxLength characters each
+                    outputs.append(t.left(m_splitLongLinesMaxLength));
+                    QString rest = t.mid(m_splitLongLinesMaxLength);
+                    while (rest.size() > m_splitLongLinesMaxLength)
+                    {
+                        outputs.append(longLineWrapPrefix + rest.left(m_splitLongLinesMaxLength));
+                        rest.remove(0, m_splitLongLinesMaxLength);
+                    }
+
+                    if (rest.size() > 0)
+                    {
+                        outputs.append(longLineWrapPrefix + rest);
+                    }
                 }
             }
             else
@@ -1326,6 +1382,7 @@ void ConsoleWidget::processStreamBuffer()
                 outputs.append(t);
             }
         }
+
         m_receiveStreamBuffer.text = outputs.join("\n");
 
     }

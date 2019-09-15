@@ -910,7 +910,6 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                     while (lineStartPos < description.size())
                     {
                         finder.setPosition(lineStartPos + descriptionMaxLength);
-                        int pos = finder.position();
                         if (finder.isAtBoundary())
                         {
                             prevPos = finder.position();
