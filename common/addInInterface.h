@@ -810,6 +810,14 @@ namespace ito
         */
         void setInterrupt();
 
+        //! resets the interrupt flag (thread-safe)
+        /*!
+        call this method (even direct call from different thread is possible) if you want to reset the interrupt flag.
+        This method is called if setOrigin, setPosAbs or setPosRel is called from Python since the interrupt flag can be set if a Python
+        script is interrupted (depending on itom property).
+        */
+        void resetInterrupt();
+
         //! put the latest signalled states (current status, position and target position) to the given arguments.
         /*!
         "last signalled" signifies that whenever the signal targetChanged or actuatorStatusChanged is emitted,

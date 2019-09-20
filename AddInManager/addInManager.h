@@ -92,7 +92,7 @@ namespace ito
             const QList<QObject *> * getAlgList(void)    const;
 
             //!> return list of all filters
-            const QHash<QString, ito::AddInAlgo::FilterDef *>     * getFilterList(void)     const;
+            const QHash<QString, ito::AddInAlgo::FilterDef *> * getFilterList(void) const;
 
             //!> return list of algorithm widgets
             const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> * getAlgoWidgetList(void) const;
@@ -196,6 +196,9 @@ namespace ito
 
             //!> close passed plugin
             ito::RetVal closeAddIn(ito::AddInBase *addIn, ItomSharedSemaphore *aimWait = NULL);
+
+            //!> interrupts all active actuator instances
+            ito::RetVal interruptAllActuatorInstances(ItomSharedSemaphore *aimWait = NULL);
     };
 } //namespace ito   
 #endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 

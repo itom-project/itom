@@ -1654,6 +1654,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
         }
     }
 
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
+
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
     if (length == 1)
@@ -1771,6 +1775,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
             axisVec.append(*cargs[n]);
         }
     }
+
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
@@ -2557,6 +2565,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
         return NULL;
     }
 
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
+
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
 
@@ -2643,6 +2655,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
+
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;

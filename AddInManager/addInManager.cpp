@@ -1416,4 +1416,47 @@ const ito::RetVal AddInManager::setTimeOuts(const int initClose, const int gener
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//!> interrupts all active actuator instances
+ito::RetVal AddInManager::interruptAllActuatorInstances(ItomSharedSemaphore *aimWait /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(aimWait);
+    ito::RetVal retval;
+
+    const QList<QObject*>* actuatorPlugins = getActList();
+
+    if (actuatorPlugins)
+    {
+        const ito::AddInInterfaceBase *aib;
+        ito::AddInActuator *aia;
+
+        for (int i = 0; i < actuatorPlugins->size(); ++i)
+        {
+            aib = qobject_cast<const ito::AddInInterfaceBase*>(actuatorPlugins->at(i));
+            if (aib)
+            {
+                foreach(ito::AddInBase* aib, aib->getInstList())
+                {
+                    aia = qobject_cast<ito::AddInActuator*>(aib);
+                    if (aia)
+                    {
+                        aia->setInterrupt();
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "actuatorPlugins invalid.");
+    }
+
+    if (aimWait)
+    {
+        aimWait->returnValue = retval;
+        aimWait->release();
+    }
+
+    return retval;
+}
+
 } // namespace ito

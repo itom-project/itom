@@ -1047,6 +1047,8 @@ void MotorAxisController::on_btnStart_clicked()
             positions << unitToBaseUnit(d->spinTargetPos[i]->value(), d->axisUnit[i]);
         }
 
+        d->actuator->resetInterrupt();
+
         if (QMetaObject::invokeMethod(d->actuator, "setPosAbs", Q_ARG(const QVector<int>, axes), Q_ARG(QVector<double>, positions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore());
@@ -1074,6 +1076,8 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         double valueBase = unitToBaseUnit(value, d->axisUnit[axis]);
+
+        d->actuator->resetInterrupt();
 
         if (QMetaObject::invokeMethod(d->actuator, func, Q_ARG(const int, axis), Q_ARG(double, valueBase), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {

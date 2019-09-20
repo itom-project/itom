@@ -1361,6 +1361,14 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInActuator::resetInterrupt()
+    {
+        Q_D(AddInActuator);
+        QMutexLocker locker(&(d->m_directAccessMutex));
+        d->m_interruptFlag = false;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInActuator::getStatus(const int axis, QSharedPointer<int> status, ItomSharedSemaphore *waitCond)
     {
         ito::RetVal retval;

@@ -77,7 +77,6 @@ void DialogCloseItom::on_btnInterrupt_clicked()
         
 		m_secondsElapsed = 0.0;
 		m_timerID = startTimer(1000);
-
 	}	
 
 }

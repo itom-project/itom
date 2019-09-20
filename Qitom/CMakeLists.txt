@@ -306,6 +306,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.h
@@ -419,6 +420,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.ui
@@ -550,6 +552,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
