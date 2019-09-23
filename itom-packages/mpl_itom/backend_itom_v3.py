@@ -24,7 +24,7 @@ from itom import uiItem, timer, ui
 import weakref
 #itom specific imports (end)
 
-backend_version = "3.0.0"
+backend_version = "3.0.1"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -205,7 +205,8 @@ class FigureCanvasItom(FigureCanvasBase):
         self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  #this object is deleted in the destroy-method of manager, due to cyclic garbage collection
         self.matplotlibWidgetUiItem["mouseTracking"] = True #by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
 
-        self.matplotlibWidgetUiItem.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
+        self.matplotlibWidgetUiItem.connect("eventEnter(int,int)", self.enterEvent)
+        self.matplotlibWidgetUiItem.connect("eventLeave()", self.leaveEvent)
         self.matplotlibWidgetUiItem.connect("eventMouse(int,int,int,int)", self.mouseEvent)
         self.matplotlibWidgetUiItem.connect("eventWheel(int,int,int,int)", self.wheelEvent)
         self.matplotlibWidgetUiItem.connect("eventKey(int,int,int,bool)", self.keyEvent)
@@ -311,15 +312,20 @@ class FigureCanvasItom(FigureCanvasBase):
         else:
             return 0, 0
     
-    def leaveEnterEvent(self, enter):
+    
+    def enterEvent(self, x, y):
         '''itom specific: 
         replacement of enterEvent and leaveEvent of Qt5 backend
         '''
-        if(enter):
-            FigureCanvasBase.enter_notify_event(self)
-        else:
-            itom.setApplicationCursor(-1)
-            FigureCanvasBase.leave_notify_event(self)
+        x_, y_ = self.mouseEventCoords(x,y)
+        FigureCanvasBase.enter_notify_event(self, guiEvent = None, xy = (x_, y_))
+    
+    def leaveEvent(self):
+        '''itom specific: 
+        replacement of enterEvent and leaveEvent of Qt5 backend
+        '''
+        itom.setApplicationCursor(-1)
+        FigureCanvasBase.leave_notify_event(self, guiEvent = None)
 
     def mouseEventCoords(self, x, y):
         """Calculate mouse coordinates in physical pixels

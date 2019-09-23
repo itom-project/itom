@@ -214,12 +214,12 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
         assignments = []
     result = []
     for assignment in assignments:
-        #print("Assignment::", str(assignment), assignment.module_path, assignment.line, assignment.column, assignment.full_name)
+        #print("Assignment::", str(assignment), assignment.module_path, assignment.line, assignment.column, assignment.full_name, type(assignment.full_name))
         result.append( \
             (assignment.module_path if assignment.module_path is not None else "", \
             assignment.line - 1 if assignment.line else -1, \
             assignment.column if assignment.column else -1, \
-            assignment.full_name, \
+            assignment.full_name if assignment.full_name else "", \
             ) \
             )
     return result

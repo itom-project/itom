@@ -225,7 +225,7 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
             std::cout << "Plugin parameters are:\n";
 
         QVector<ito::Param> parameter = paramList->values().toVector();
-        result = PrntOutParams(&parameter, false, true, -1, output == 0);
+        result = printOutParams(&parameter, false, true, -1, output == 0);
     }
     else
     {
@@ -478,7 +478,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nMandatory parameters:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Mandatory Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
@@ -494,7 +494,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nOptional parameters:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Optional Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
@@ -511,7 +511,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     {
                         std::cout << "\nOutput values:\n";
                     }
-                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
+                    execFuncslist = printOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Output Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
@@ -870,7 +870,7 @@ See Also \n\
 --------- \n\
 getParam");
 
-PyDoc_STRVAR(pyPluginGetExecFuncsList_doc, "getExecFuncList() -> returns a list of the names of the additional Functions of this plugin\n\
+PyDoc_STRVAR(pyPluginGetExecFuncsList_doc, "getExecFuncsList() -> returns a list of the names of the additional Functions of this plugin\n\
 \n\
 Each plugin may define a set of functions, extending the standard interface. These functions are not common to plugins of the same type. \n\
 These functions are executed using instance.exec(\"funcname\",params)\
@@ -1654,6 +1654,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
         }
     }
 
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
+
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
     if (length == 1)
@@ -1771,6 +1775,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
             axisVec.append(*cargs[n]);
         }
     }
+
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
@@ -2557,6 +2565,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
         return NULL;
     }
 
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
+
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;
 
@@ -2643,6 +2655,10 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
+
+    // if a Python script has been interrupted, depending on itom settings, an interrupt is sent to all connected actuators.
+    // If these actuators did not check for this flag in the meantime, reset it now.
+    self->actuatorObj->resetInterrupt();
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     bool invokeOk;

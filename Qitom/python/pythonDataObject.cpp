@@ -8435,7 +8435,7 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
     if (retValue.containsError()) return NULL;
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompability to openCV!");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -8446,7 +8446,9 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
     {
         int *sizes2 = new int[sizes.size()];
         for (unsigned int i = 0; i < sizes.size(); i++)
-            sizes2[i]=sizes[i];
+        {
+            sizes2[i] = sizes[i];
+        }
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
         selfDO->dataObject->ones(sizes.size(), sizes2, typeno, continuous);
         DELETE_AND_SET_NULL_ARRAY(sizes2);
@@ -8551,7 +8553,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
     if (retValue.containsError()) return NULL;
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompability to openCV!");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -8562,7 +8564,9 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
     {
         int *sizes2 = new int[sizes.size()];
         for (unsigned int i = 0; i < sizes.size(); i++)
-            sizes2[i]=sizes[i];
+        {
+            sizes2[i] = sizes[i];
+        }
 
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
         selfDO->dataObject->rand(sizes.size(),sizes2, typeno, false, continuous);
@@ -8610,7 +8614,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
     if (retValue.containsError()) return NULL;
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompability to openCV!");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -8621,7 +8625,9 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
     {
         int *sizes2 = new int[sizes.size()];
         for (unsigned int i = 0; i < sizes.size(); i++)
-            sizes2[i]=sizes[i];
+        {
+            sizes2[i] = sizes[i];
+        }
 
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
         selfDO->dataObject->rand(sizes.size(),sizes2, typeno, true, continuous);
@@ -8670,7 +8676,7 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
 
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompability to openCV!");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 

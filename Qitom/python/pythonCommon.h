@@ -54,7 +54,7 @@ namespace ito
     ito::RetVal checkAndSetParamVal(PyObject *tempObj, ito::Param *param, int *set);
     ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam, ito::ParamBase &outParam, int *set);
     //!< This function is used to print out parameters to a dictionary and the itom-console
-    PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream = true);
+    PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream = true);
     PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta);
     void errOutInitParams(const QVector<ito::Param> *params, const int num, const char *reason);
     ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, const QVector<ito::Param> *defaultParamListOpt, PyObject *args, PyObject *kwds, QVector<ito::ParamBase> &paramListMandOut, QVector<ito::ParamBase> &paramListOptOut);

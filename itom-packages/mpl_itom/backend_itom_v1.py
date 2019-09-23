@@ -29,7 +29,7 @@ from matplotlib.widgets import SubplotTool
 
 figureoptions = None
 
-backend_version = "2.0.0"
+backend_version = "1.0.0"
 
 DEBUG = False
 

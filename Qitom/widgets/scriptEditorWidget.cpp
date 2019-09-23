@@ -762,14 +762,7 @@ void ScriptEditorWidget::menuStopScript()
 
     if (eng != NULL)
     {
-        if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
-        {
-            eng->pythonInterruptExecution();
-        }
-        else
-        {
-            eng->pythonInterruptExecution();
-        }
+        eng->pythonInterruptExecution();
     }
 }
 

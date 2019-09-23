@@ -288,6 +288,13 @@ available on the machine. However, it is sometimes more powerful to reduce this 
 operating system still can use some processors for their work. Especially old computers might run faster if algorithms are limited to less threads than available.
 This maximum number can be controlled by this property page.
 
+Actuators
+------------------------------
+Moving actuators can be interrupted by setting an **interrupt** flag. Depending on the implementation of the specific actuator plugin, it continuously checks
+if this flag is set during a movement. If this is the case, the movement is stopped and the state switches to **interrupted**.
+
+In this property page, it can be selected if the interrupt flag should be set for all actuator instances if the user stops any python script execution.
+
 Section Plots and Figures
 ==============================
 

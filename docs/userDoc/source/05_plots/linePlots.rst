@@ -55,7 +55,7 @@ This spiral plot has been created by the demo :file:`itom/demo/plots/plotXY.py`.
 	fig[-1]['xData'] = xVector
 	
 	# method 3
-	plot(yDataObject, properties = {'xData', xVector}
+	plot(yDataObject, properties = {'xData', xVector})
 	
         
 Itom1dQwtPlot

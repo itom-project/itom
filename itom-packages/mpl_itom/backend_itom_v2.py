@@ -29,7 +29,7 @@ from itom import uiItem, timer, ui
 import weakref
 #itom specific imports (end)
 
-backend_version = "3.0.0"
+backend_version = "2.0.0"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name

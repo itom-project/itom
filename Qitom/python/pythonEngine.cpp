@@ -47,7 +47,6 @@
 #include "pythonAutoInterval.h"
 #include "pythonJedi.h"
 
-#include "../../AddInManager/addInManager.h"
 #include "common/interval.h"
 #include "../helper/sleeper.h"
 
@@ -4039,6 +4038,20 @@ int PythonEngine::queuedInterrupt(void * state)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecution()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("AddInManager");
+    bool interruptActuators = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
+    settings.endGroup();
+
+    if (interruptActuators)
+    {
+        QObject* addInManager = AppManagement::getAddInManager();
+        if (addInManager)
+        {
+            QMetaObject::invokeMethod(addInManager, "interruptAllActuatorInstances");
+        }
+    }
+
 //    PyGILState_STATE gstate;
 //    gstate = PyGILState_Ensure();
 

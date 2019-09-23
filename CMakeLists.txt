@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 if(APPLE)
     SET(CMAKE_OSX_ARCHITECTURES "x86_64") 
 endif(APPLE)
-
+  
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)

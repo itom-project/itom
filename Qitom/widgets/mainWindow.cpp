@@ -2190,23 +2190,15 @@ void MainWindow::mnuToggleExecPyCodeByDebugger(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuScriptStop()
 {
+    PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyeng)
+    {
+        pyeng->pythonInterruptExecution();
+    }
+
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-        if (pyeng)
-        {
-            pyeng->pythonInterruptExecution();
-        }
-//        emit(pythonDebugCommand(ito::pyDbgQuit));
         raise();
-    }
-    else
-    {
-        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-        if (pyeng)
-        {
-            pyeng->pythonInterruptExecution();
-        }
     }
 }
 
