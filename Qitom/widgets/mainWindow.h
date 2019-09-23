@@ -36,6 +36,7 @@
 
 #include <qtableview.h>
 #include <qprocess.h>
+#include <qsplitter.h>
 
 #include <qsignalmapper.h>
 
@@ -61,7 +62,7 @@ public:
     MainWindow();
     ~MainWindow();
 
-
+	ito::RetVal addCentralWidget(QWidget *widget);
     
 protected:
     void closeEvent(QCloseEvent *event);
@@ -86,6 +87,7 @@ private:
     ConsoleWidget *m_console;
 
     QVBoxLayout *m_contentLayout;
+	QSplitter *m_contentSplitter;
     
     BreakPointDockWidget  *m_breakPointDock;
     LastCommandDockWidget *m_lastCommandDock;
@@ -175,6 +177,8 @@ public slots:
     void showInfoMessageLine( QString text, QString winKey = "" );
 
 	void showAssistant(const QString &collectionFile = "");
+
+	void setCentralWidgetsSizes(const QVector<int> &sizes);
 
 private slots:
     void mnuAboutQitom();

@@ -77,7 +77,8 @@ public:
         uiTypeQDialog     = 0x0002,
         uiTypeQMainWindow = 0x0003,
         uiTypeQDockWidget = 0x0004,
-        uiTypeFigure      = 0x0005
+        uiTypeFigure      = 0x0005,
+		uiTypeWidget      = 0x0006
     };
 
     //! creates new UiContainer from instance of dialog-widget UserUiDialog
@@ -336,7 +337,8 @@ public:
     {
         typeDialog     = 0x0000,
         typeMainWindow = 0x0001,
-        typeDockWidget = 0x0002
+        typeDockWidget = 0x0002,
+		typeCentralWidget = 0x0003
     };
 
     enum tObjectInfo

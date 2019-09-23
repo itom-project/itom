@@ -1870,7 +1870,8 @@ type : {int}, optional \n\
     \n\
         * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
         * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
-        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
+        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area, \n\
+        * 3 (ui.TYPECENTRALWIDGET): ui-file must be a widget or mainWindow and is included in the central area of itom, above the command line \n\
 dialogButtonBar :  {int}, optional \n\
     Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
     \n\
@@ -1911,9 +1912,9 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     }
 
     //check values:
-    if(self->winType < 0 || self->winType > 2)
+    if(self->winType < 0 || self->winType > 3)
     {
-        PyErr_SetString(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1) or TYPEDOCKWIDGET (2)");
+        PyErr_SetString(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1), TYPEDOCKWIDGET (2) or TYPECENTRALWIDGET (3)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
@@ -1973,7 +1974,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         }
     }
 
-    int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose, dockWidgetArea);
+    int uiDescription = UiOrganizer::createUiDescription(self->winType, self->buttonBarType, self->childOfMainWindow, self->deleteOnClose, dockWidgetArea);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
@@ -3841,6 +3842,9 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
     Py_DECREF(value);
     value = Py_BuildValue("i", 2);
     PyDict_SetItemString(tp_dict, "TYPEDOCKWIDGET", value);
+    Py_DECREF(value);
+	value = Py_BuildValue("i", 3);
+    PyDict_SetItemString(tp_dict, "TYPECENTRALWIDGET", value);
     Py_DECREF(value);
 
     //add button orientation

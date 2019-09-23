@@ -4199,6 +4199,61 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 }
 
 
+//---------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySetCentralWidgetsSizes_doc, "setCentralWidgetsSizes(sizes) -> set the sizes of the central widgets of itom (including command line) from top to bottom. \n\
+\n\
+This method can be important if at least one widget has been added from itom.ui, type ui.TYPECENTRALWIDGET. \n\
+These user defined widgets are then added on top of the central area of itom and stacked above the command line. \n\
+The list of sizes indicates the desired heights of all widgets in the center in pixel (from top to bottom). \n\
+\n\
+If the list contains too much items, all extra values are ignored. If the list contains too few values, the result \n\
+is undefined, but the program will still be well-behaved. \n\
+\n\
+The overall size of the central area will not be affected. Instead, any additional/missing space is distributed amongst the \n\
+widgets according to the relative weight of the sizes. \n\
+\n\
+If you speciy a size of 0, the widget will be invisible and can be made visible again using this method or by increasing its \n\
+size again with the mouse. \n\
+\n\
+Parameters \n\
+----------- \n\
+sizes : {seq. of int} \n\
+    Sizes in pixel for each central widget from top to bottom (including the command line). \n\
+");
+PyObject* PythonItom::PySetCentralWidgetsSizes(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
+{
+	const char *kwlist[] = { "sizes", NULL };
+	PyObject *sizes = NULL;
+
+	if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O", const_cast<char**>(kwlist), &sizes))
+	{
+		return NULL;
+	}
+
+	bool ok;
+	QVector<int> sizes_ = PythonQtConversion::PyObjGetIntArray(sizes, false, ok);
+
+	if (!ok)
+	{
+		PyErr_Format(PyExc_TypeError, "The argument 'sizes' must be a sequence of integers");
+		return NULL;
+	}
+
+	QObject *mainWindow = AppManagement::getMainWindow();
+	if (mainWindow)
+	{
+		QMetaObject::invokeMethod(mainWindow, "setCentralWidgetsSizes", Q_ARG(QVector<int>, sizes_));
+	}
+	else
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Main window is not available");
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getDefaultScaleableUnits_doc,"getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units. \n\
@@ -5250,6 +5305,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
     {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS | METH_KEYWORDS, pySaveDataObject_doc},
     {"loadDataObject", (PyCFunction)PythonItom::PyLoadDataObject, METH_VARARGS | METH_KEYWORDS, pyLoadDataObject_doc},
+	{"setCentralWidgetsSizes", (PyCFunction)PythonItom::PySetCentralWidgetsSizes, METH_VARARGS | METH_KEYWORDS, pySetCentralWidgetsSizes_doc},
     {"addButton", (PyCFunction)PythonItom::PyAddButton, METH_VARARGS | METH_KEYWORDS, pyAddButton_doc},
     {"removeButton", (PyCFunction)PythonItom::PyRemoveButton, METH_VARARGS, pyRemoveButton_doc},
     {"addMenu", (PyCFunction)PythonItom::PyAddMenu, METH_VARARGS | METH_KEYWORDS, pyAddMenu_doc},
