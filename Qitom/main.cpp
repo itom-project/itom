@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     //      log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
     //              in the itom application directory.
     //      name=anyUsername : tries to start itom with the given username (different setting file)
-    //pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
+    //      pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
 
     QStringList args;
     for (int i = 0; i < argc; ++i)
@@ -395,11 +395,11 @@ int main(int argc, char *argv[])
 
     ito::UserOrganizer::closeInstance();
 
-    #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     qInstallMessageHandler(0);
-    #else
+#else
     qInstallMsgHandler(0);
-    #endif
+#endif
 
     //close possible logfile
     DELETE_AND_SET_NULL(messageStream);

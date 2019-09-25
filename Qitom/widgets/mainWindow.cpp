@@ -50,6 +50,7 @@
 #include <qdesktopwidget.h>
 #include <qmessagebox.h>
 #include <qdir.h>
+
 #include "../organizer/scriptEditorOrganizer.h"
 
 #ifdef ITOM_USEHELPVIEWER
@@ -128,7 +129,10 @@ MainWindow::MainWindow() :
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     //content
-    m_contentLayout = new QVBoxLayout;
+	m_contentLayout = new QVBoxLayout(this);;
+	m_contentSplitter = new QSplitter(this);
+	m_contentSplitter->setOrientation(Qt::Vertical);
+	m_contentLayout->addWidget(m_contentSplitter);
 
     // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
@@ -146,7 +150,7 @@ MainWindow::MainWindow() :
         m_console->setObjectName("console"); //if a drop event onto a scripteditor comes from this object name, the drop event is always executed as copy event such that no text is deleted in the console.
         //setCentralWidget(m_console);
         qDebug(".. console widget loaded");
-        m_contentLayout->addWidget(m_console);
+		m_contentSplitter->addWidget(m_console);
     }
 
     m_contentLayout->setContentsMargins(0, 0, 0, 0);
@@ -2319,6 +2323,32 @@ void MainWindow::pythonAutoReloadChanged(bool enabled, bool checkFile, bool chec
     if (m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setEnabled(enabled);
     if (m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setEnabled(enabled);
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+Appends this widget to the splitter layout of the central area to the top of the list of widgets.
+*/
+ito::RetVal MainWindow::addCentralWidget(QWidget *widget)
+{
+	if (widget)
+	{
+		m_contentSplitter->insertWidget(0, widget);
+		return ito::retOk;
+	}
+	else
+	{
+		return ito::RetVal(ito::retError, 0, "empty widget");
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+This slot is for instance invoked by the Python method itom.setCentralWidgetsSizes(sizes)
+*/
+void MainWindow::setCentralWidgetsSizes(const QVector<int> &sizes)
+{
+	m_contentSplitter->setSizes(sizes.toList());
 }
 
 } //end namespace ito

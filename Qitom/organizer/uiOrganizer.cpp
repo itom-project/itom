@@ -477,7 +477,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 *className = widget->metaObject()->className();
             }
         }
-        else //dock widget
+        else if (type == ito::UiOrganizer::typeDockWidget) //dock widget
         {
             //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
             setApiPointersToWidgetAndChildren(widget);
@@ -526,6 +526,46 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 }
             }
         }
+		else /* typeCentralWidget*/
+		{
+			//check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+			setApiPointersToWidgetAndChildren(widget);
+
+			if (widget->inherits("QDialog"))
+			{
+				retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be inserted into the main window").toLatin1().data());
+				widget->deleteLater();
+				widget = NULL;
+			}
+			else
+			{
+				MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+				if (!mainWin)
+				{
+					retValue += RetVal(retError, 0, tr("Main window not available for inserting the user interface.").toLatin1().data());
+					widget->deleteLater();
+					widget = NULL;
+				}
+				else
+				{
+					retValue += mainWin->addCentralWidget(widget);
+					if (retValue.containsError())
+					{
+						widget->deleteLater();
+						widget = NULL;
+					}
+					else
+					{
+						set = new UiContainer(widget, UiContainer::uiTypeWidget);
+						*dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+						containerItem.container = set;
+						m_dialogList[*dialogHandle] = containerItem;
+						*objectID = addObjectToList(widget);
+						*className = widget->metaObject()->className();
+					}
+				}
+			}
+		}
     }
 
     return retValue;

@@ -1997,7 +1997,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
     
-    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\):\\s*(#?.*)?|\\\\)");
+    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
     methods.setMinimal(true);
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
 	//the regular expression should detect begin of definitions. This is:
@@ -2061,6 +2061,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             ClassNavigatorItem *meth = new ClassNavigatorItem();
             meth->m_name = methods.cap(3) + methods.cap(4);
             meth->m_args = methods.cap(5);
+            meth->m_returnType = methods.cap(7);
             meth->m_lineno = i;
             if (methods.cap(3) == "_" || methods.cap(3) == "__")
             {

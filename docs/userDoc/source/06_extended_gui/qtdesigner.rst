@@ -216,6 +216,24 @@ Possible values for *dockWidgetArea* are:
     ui.TOPDOCKWIDGETAREA = 4
     ui.BOTTOMDOCKWIDGETAREA = 8
 
+Main window or widget as part of the central widget area of itom (TYPECENTRALWIDGET)
+-------------------------------------------------------------------------------------
+
+It is also possible to integrate user-defined main windows or widgets as part of the central widget area of the main window of |itom|. This is done using the type value **ui.TYPECENTRALWIDGET**. 
+The central widget area can contain several widgets which are vertically stacked and whose size can be vertically changed by a splitter layout.
+Per default, this central area only contains the command line. Every new widget that is added to this area is prepended to the top.
+
+The current size of all widgets in the central area (including the command) line, can be changed via `itom.setCentralWidgetsSizes`. This method
+expects a list of integers as argument which correspond to the desired height of every widget in pixels (0: the widget is collapsed and can be
+made visible again with the mouse). If the sum of all sizes does not correspond to the current height of the central area, the sizes are distributed
+based on their relative weights.
+
+.. code-block:: python
+    
+    import itom
+    win = itom.ui("testWindow.ui", ui.TYPECENTRALWIDGET)
+    itom.setCentralWidgetsSizes([400,300]) #desired height of 400px for the new widget 'win' and 300px for the command line of itom.
+
 
 Accessing control elements
 ==========================

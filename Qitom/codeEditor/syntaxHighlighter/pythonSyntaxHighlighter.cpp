@@ -471,7 +471,7 @@ QString any(const QString &name, const QStringList &alternates)
     builtinlist.removeAll("True");
     builtinlist.removeAll("False");
     QString builtin = "([^.'\"\\#]\\b|^)" + any("builtin", builtinlist) + "\\b";
-    QString builtin_fct = any("builtin_fct", QStringList("_{2}[a-zA-Z_]*_{2}"));
+    QString builtin_fct = any("builtin_fct", QStringList("_{2}[a-zA-Z0-9_]*_{2}"));
     QString comment = any("comment", QStringList("#[^\\n]*"));
     QString instance = any("instance", QStringList("\\bself\\b") << "\\bcls\\b");
     QString decorator = any("decorator",  QStringList("@\\w*") << ".setter");
