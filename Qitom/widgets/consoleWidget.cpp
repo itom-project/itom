@@ -97,6 +97,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
         connect(AppManagement::getCerrStream(), SIGNAL(flushStream(QString, ito::tStreamMessageType)), this, SLOT(receiveStream(QString, ito::tStreamMessageType)));
     }
 
+	qDebug() << "Streams connected";
+
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
 
     if (pyEngine)
@@ -891,7 +893,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 {
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
-    if (uOrg->hasFeature(featDeveloper) && modifiers == 0)
+    if (uOrg->currentUserHasFeature(featDeveloper) && modifiers == 0)
     {
         QString selectedText = lineText(line);
 
@@ -1503,7 +1505,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     {
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
-        if (uOrg->hasFeature(featDeveloper))
+        if (uOrg->currentUserHasFeature(featDeveloper))
         {
             foreach (const QUrl &url, md->urls())
             {
@@ -1539,7 +1541,7 @@ void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
     else
     {
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-        if (uOrg->hasFeature(featDeveloper))
+        if (uOrg->currentUserHasFeature(featDeveloper))
         {
             //check if a local python file will be dropped -> allow this
             if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))

@@ -24,7 +24,7 @@
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 
-#include <qcryptographichash.h>
+
 #include <qmessagebox.h>
 
 namespace ito {
@@ -153,17 +153,7 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
 int DialogSelectUser::checkPassword()
 {
     QModelIndex curIdx = ui.userList->currentIndex();
-    QByteArray password;
-    if (curIdx.isValid())
-    {
-        int curRow = curIdx.row();
-        password = m_userModel->index(curRow, UserModel::umiPassword).data().toByteArray();
-    }
-    QByteArray passwdIn = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
-    if (!password.isEmpty() && passwdIn != password)
-        return false;
-    else
-        return true;
+	return m_userModel->checkPassword(curIdx, ui.lineEdit_password->text().toUtf8());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -28,6 +28,7 @@
 #include <qsettings.h>
 #include <qdir.h>
 #include <qdebug.h>
+#include <qinputdialog.h>
 #include <QCryptographicHash>
 
 
@@ -46,16 +47,13 @@ UserOrganizer* UserOrganizer::m_pUserOrganizer = NULL;
 //----------------------------------------------------------------------------------------------------------------------------------
 UserOrganizer::UserOrganizer(void) :
     QObject(),
-    // 09/02/15 ck changed default role to developer
-    m_userRole(userRoleDeveloper),
-    m_features(~UserFeatures(0)),
-    m_settingsFile(""),
+    m_currentUser(QModelIndex()),
     m_userModel(new UserModel())
 {
     AppManagement::setUserOrganizer(this);
 
-    m_strConstStdUser = tr("Standard User");
-    m_userName = m_strConstStdUser;
+    m_strConstStdUserName = tr("Standard User");
+	m_strConstStdUserId = "itom.ini"; //no translation
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -99,10 +97,10 @@ RetVal UserOrganizer::closeInstance(void)
 //! shortdesc
 /*! longdesc
 
-    \param defUserName
+    \param userId
     \return RetVal
 */
-ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
+ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 {
     ito::RetVal retval = scanSettingFilesAndLoadModel();
 
@@ -115,10 +113,54 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
     QString settingsFile;
 
-    int i = m_userModel->rowCount();
-    if (m_userModel->rowCount() > 1 || !m_userModel->index(0, UserModel::umiPassword).data().toByteArray().isEmpty())
+    int numUserFiles = m_userModel->rowCount();
+
+	if (userId != "")
+	{
+		QModelIndex userIndex = m_userModel->getUser(userId);
+
+		if (userIndex.isValid())
+		{
+			bool loadUser = false;
+
+			if (m_userModel->hasPassword(userIndex))
+			{
+				bool ok;
+				QString pw = QInputDialog::getText(NULL, tr("User Password"), tr("Enter the password for the user %1").arg(userId), QLineEdit::Password, "", &ok);
+				if (!ok)
+				{
+					return ito::retError;
+				}
+				else if (!m_userModel->checkPassword(m_userModel->index(userIndex.row(), UserModel::umiPassword), pw))
+				{
+					return ito::RetVal::format(ito::retError, 0, "The password for user '%s' is wrong.", userId.toLatin1().data());
+				}
+				else
+				{
+					loadUser = true;
+				}
+			}
+			else
+			{
+				loadUser = true;
+			}
+
+			if (loadUser)
+			{
+				QModelIndex fIdx = m_userModel->index(userIndex.row(), UserModel::umiIniFile);
+				settingsFile = fIdx.data().toString();
+				m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
+				qDebug() << "settingsFile path: " << settingsFile;
+			}
+		}
+		else
+		{
+			retval += ito::RetVal::format(ito::retError, 0, "No setting file (itom_%s.ini) available for the desired user '%s'.", userId.toLatin1().data(), userId.toLatin1().data());
+		}
+	}
+    else if (numUserFiles > 1 || !m_userModel->index(0, UserModel::umiPassword).data().toByteArray().isEmpty())
     {
-        bool foundDefUser = false;
+        bool foundDefaultUser = false;
 
         DialogSelectUser userDialog(m_userModel);
 
@@ -129,7 +171,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
             curSysUser = qgetenv("USER");
         }
 
-        if (defUserName.isEmpty())
+        if (userId.isEmpty())
         {
             if (!userDialog.selectUser(curSysUser))
             {
@@ -139,10 +181,10 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
         }
         else
         {
-            foundDefUser = userDialog.selectUser(defUserName);
+            foundDefaultUser = userDialog.selectUser(userId);
         }
 
-        if (!foundDefUser)
+        if (!foundDefaultUser)
         {
             if (userDialog.exec() == QDialog::Rejected)
             {
@@ -150,22 +192,18 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
             }
 
             QModelIndex curIdx = userDialog.selectedIndex();
-            QModelIndex fIdx = m_userModel->index(curIdx.row(), 3);
+            QModelIndex fIdx = m_userModel->index(curIdx.row(), UserModel::umiIniFile);
             settingsFile = fIdx.data().toString();
         }
         else
         {
-            settingsFile = QString("itom_").append(defUserName).append(".ini");
+            settingsFile = QString("itom_").append(userId).append(".ini");
         }
 
         qDebug() << "settingsFile path: " << settingsFile;
-        m_settingsFile = settingsFile;
-
-        QString uid;
-        QDateTime modified;
-        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole, m_password, modified);
+		m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
     }
-    else
+    else if (userId == "")
     {
         settingsFile = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
 
@@ -180,20 +218,27 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
                 if (!defaultIni.copy(appDir.absoluteFilePath("itom.ini")))
                 {
                     qDebug() << "error creating itom.ini from itomDefault.ini";
+					retval += ito::RetVal::format(ito::retError, 0, "Error creating the default setting file itom.ini for the standard user The template itomDefault.ini could not be copied to itom.ini.");
                 }
             }
+			else
+			{
+				qDebug() << "error creating itom.ini from itomDefault.ini";
+				retval += ito::RetVal::format(ito::retError, 0, "Error creating the default setting file itom.ini for the standard user. The template itomDefault.ini does not exist.");
+			}
         }
 
-        qDebug() << "settingsFile path: " << settingsFile;
-        m_settingsFile = settingsFile;
-        m_userName = m_strConstStdUser;
-//        m_userRole = userRoleAdministrator;
-        // 09/02/15 ck changed default role to developer
-        m_userRole = userRoleDeveloper;
-        m_features = ~UserFeatures();
+		if (!retval.containsError())
+		{ 
+			qDebug() << "settingsFile path: " << settingsFile;
+		}
     }
+	else
+	{
+		retval += ito::RetVal::format(ito::retError, 0, "No setting file (itom_%s.ini) available for the desired user '%s'.", userId.toLatin1().data(), userId.toLatin1().data());
+	}
 
-    return ito::retOk;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -250,7 +295,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     // 09/02/15 ck changed default role to developer
     QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
     QByteArray tmpArray;
-    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), tmpArray, true);
+    UserInfoStruct uis(m_strConstStdUserName, m_strConstStdUserId, itomIniPath, userRoleDeveloper, ~UserFeatures(), tmpArray, true);
 
     QFileInfo fi(itomIniPath);
     if (fi.exists())
@@ -285,10 +330,10 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
         settings.beginGroup("ITOMIniFile");
 
         //username
-        username = settings.value("name", m_strConstStdUser).toString();
+        username = settings.value("name", m_strConstStdUserName).toString();
 
         //uid
-        uid = getUserID(filename);
+        uid = getUserIdFromSettingsFilename(filename);
 
         //user type
         // 09/02/15 ck changed default role to developer
@@ -344,8 +389,8 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
             {
                 res.append(featureSha1[n] ^ nameHash_[n]);
             }
-            features = UserFeatures(res.toInt());
 
+            features = UserFeatures(res.toInt());
         }
     }
     else
@@ -439,25 +484,65 @@ ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QS
 //! shortdesc
 /*! longdesc
 
-    \return QString
-*/
-QString UserOrganizer::getUserID(void) const
-{
-    QString fname = QFileInfo(m_settingsFile).baseName();
-    return fname.right(fname.length() - 5);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
     \param inifile
     \return QString
 */
-QString UserOrganizer::getUserID(const QString &iniFile) const
+QString UserOrganizer::getUserIdFromSettingsFilename(const QString &iniFile) const
 {
-    QString fname = QFileInfo(iniFile).baseName();
-    return fname.right(fname.length() - 5);
+	QFileInfo fileInfo(iniFile);
+	if (fileInfo.fileName() == "itom.ini")
+	{
+		return m_strConstStdUserId;
+	}
+	else
+	{
+		QString fname = fileInfo.baseName(); //without .ini
+		return fname.right(fname.length() - QString("itom_").size());
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< returns the user name of the current user
+const QString UserOrganizer::getCurrentUserName() const
+{
+	return m_userModel->getUserName(m_currentUser);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< returns the role of the current user (user, developer, administrator).
+/*
+The role is only used by the three python methods itom.userIsUser, itom.userIsDeveloper, itom.userIsAdministrator
+*/
+ito::UserRole UserOrganizer::getCurrentUserRole() const
+{
+	return m_userModel->getUserRole(m_currentUser);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< returns the unique ID of the current user
+QString UserOrganizer::getCurrentUserId(void) const
+{
+	return m_userModel->getUserId(m_currentUser);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< returns the available features for the current user
+UserFeatures UserOrganizer::getCurrentUserFeatures(void) const
+{
+	return m_userModel->getUserFeatures(m_currentUser);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool UserOrganizer::currentUserHasFeature(const UserFeature &feature)
+{
+	UserFeatures features = m_userModel->getUserFeatures(m_currentUser);
+	return features.testFlag(feature);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserOrganizer::getCurrentUserSettingsFile() const
+{
+	return m_userModel->getUserSettingsFile(m_currentUser);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

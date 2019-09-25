@@ -396,7 +396,7 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     if ((source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
     {
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-        if (uOrg->hasFeature(featDeveloper))
+        if (uOrg->currentUserHasFeature(featDeveloper))
         {
             QList<QUrl> list(source->urls());
             for(int i = 0; i<list.length(); ++i)

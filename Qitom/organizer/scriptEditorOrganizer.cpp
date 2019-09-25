@@ -198,59 +198,65 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     }
     settings.endArray();
 
-    // open script windows
-    counter = settings.beginReadArray("scriptWidgets");
+    // open all script windows that where open at the last shutdown (only if the user allows this)
+	ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
-    for (int i = 0; i < counter; ++i)
-    {
-        settings.setArrayIndex(i);
-        docked = settings.value("docked", false).toBool();
-        objectName = settings.value("objectName").toString();
-        area = (Qt::DockWidgetArea)settings.value("dockWidgetArea", Qt::TopDockWidgetArea).toInt();
+	if (userOrg->currentUserHasFeature(featDeveloper))
+	{
 
-        if (!docked)
-        {
-            area = Qt::NoDockWidgetArea;
-        }
+		counter = settings.beginReadArray("scriptWidgets");
 
-        scriptDockState = settings.value("state");
+		for (int i = 0; i < counter; ++i)
+		{
+			settings.setArrayIndex(i);
+			docked = settings.value("docked", false).toBool();
+			objectName = settings.value("objectName").toString();
+			area = (Qt::DockWidgetArea)settings.value("dockWidgetArea", Qt::TopDockWidgetArea).toInt();
 
-        if (scriptDockState.isValid() && scriptDockState.canConvert<QList<ito::ScriptEditorStorage> >())
-        {
-            QList<ito::ScriptEditorStorage> states = scriptDockState.value<QList<ito::ScriptEditorStorage> >();
+			if (!docked)
+			{
+				area = Qt::NoDockWidgetArea;
+			}
 
-            bool valid = false;
+			scriptDockState = settings.value("state");
 
-            foreach(const ito::ScriptEditorStorage &ses, states)
-            {
-                QFileInfo info(ses.filename);
-                if (info.exists())
-                {
-                    valid = true;
-                    break;
-                }
-            }
+			if (scriptDockState.isValid() && scriptDockState.canConvert<QList<ito::ScriptEditorStorage> >())
+			{
+				QList<ito::ScriptEditorStorage> states = scriptDockState.value<QList<ito::ScriptEditorStorage> >();
 
-            if (valid)
-            {
-                sdw = createEmptyScriptDock(docked, area, objectName);
-                RetVal ret = sdw->restoreScriptState(states);
+				bool valid = false;
 
-                if (ret.containsError())
-                {
-                    removeScriptDockWidget(sdw);
-                }
-				else
+				foreach(const ito::ScriptEditorStorage &ses, states)
 				{
-					sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+					QFileInfo info(ses.filename);
+					if (info.exists())
+					{
+						valid = true;
+						break;
+					}
 				}
 
-                retval += ret;
-            }
-        }
-    }
+				if (valid)
+				{
+					sdw = createEmptyScriptDock(docked, area, objectName);
+					RetVal ret = sdw->restoreScriptState(states);
 
-    settings.endArray();
+					if (ret.containsError())
+					{
+						removeScriptDockWidget(sdw);
+					}
+					else
+					{
+						sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+					}
+
+					retval += ret;
+				}
+			}
+		}
+
+		settings.endArray();
+	}
 
     return retval;
 }
@@ -685,7 +691,7 @@ ito::RetVal ScriptEditorOrganizer::openNewScriptWindow(bool docked, ItomSharedSe
 
     ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
-    if (userOrg->hasFeature(featDeveloper))
+    if (userOrg->currentUserHasFeature(featDeveloper))
     {
         createEmptyScriptDock(docked);
     }
@@ -716,7 +722,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
 
     ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
-    if (userOrg->hasFeature(featDeveloper))
+    if (userOrg->currentUserHasFeature(featDeveloper))
     {
         ScriptDockWidget* activeWidget = getActiveDockWidget();
         if (activeWidget != NULL)
@@ -767,7 +773,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 
     ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
-    if (userOrg->hasFeature(featDeveloper))
+    if (userOrg->currentUserHasFeature(featDeveloper))
     {
         bool exist = false;
 

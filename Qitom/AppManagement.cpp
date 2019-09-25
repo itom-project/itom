@@ -54,7 +54,7 @@ QTextCodec* AppManagement::m_scriptTextCodec = NULL;
 /*static*/ QString AppManagement::getSettingsFile(void)
 {
     QMutexLocker locker(&m_mutex);
-    return ((ito::UserOrganizer*)m_userOrganizer)->getSettingsFile();
+    return ((ito::UserOrganizer*)m_userOrganizer)->getCurrentUserSettingsFile();
 }
 
 //-------------------------------------------------------------------------------------------
