@@ -52,6 +52,7 @@ public:
     int m_lineno;
     QString m_name;
     QString m_args;
+    QString m_returnType;
     QIcon m_icon;
     QList<const ClassNavigatorItem*> m_member;
     t_type m_internalType;

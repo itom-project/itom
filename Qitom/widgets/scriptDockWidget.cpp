@@ -267,15 +267,15 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
         if (item->m_internalType == ClassNavigatorItem::typePyDef ||
             item->m_internalType == ClassNavigatorItem::typePyGlobal)
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")"), itemPointer);
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")" + item->m_returnType), itemPointer);
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyStaticDef)                 
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [static]"), itemPointer);
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [static]" + item->m_returnType), itemPointer);
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [classmember]"), itemPointer);
+            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [classmember]" + item->m_returnType), itemPointer);
         }
     }
 
