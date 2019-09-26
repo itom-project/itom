@@ -231,6 +231,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 		if (!retval.containsError())
 		{ 
 			qDebug() << "settingsFile path: " << settingsFile;
+            m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
 		}
     }
 	else
