@@ -1,0 +1,40 @@
+QPropertyEditor
+------------------------
+
+itom as well as some designer plugins use a modified version of the QPropertyEditor project.
+This project is licensed under the LGPLv2 version. 
+
+For more information see https://store.kde.org/p/1132202/.
+
+The comments of the website above mentions, that there was a license discrepancy between 
+the license stated at the website and information, contained in some header files.
+
+A reader 'jacmoe' has written that he proposes the following license information:
+
+// *************************************************************************************************
+//
+// QPropertyEditor v 0.3
+// 
+// --------------------------------------
+// Copyright (C) 2007 Volker Wiendl
+// Acknowledgements to Roman alias banal from qt-apps.org for the Enum enhancement
+//
+//
+// The QPropertyEditor Library is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by the Free Software
+// Foundation; either version 2 of the License, or (at your option) any later
+// version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License along with
+// this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+// Place - Suite 330, Boston, MA 02111-1307, USA, or go to
+// http://www.gnu.org/copyleft/lesser.txt.
+//
+// *************************************************************************************************
+
+The creator of the library ('Volki') responded to this proposal with 'LGPL is fine'.
+Therefore the itom developers assume that the LGPL license, as stated above, is correct for this library.

@@ -1,0 +1,10 @@
+OpenMP
+-------------
+
+itom, its plugins and designerplugins can partially make use of the OpenMP parallelization library.
+
+OpenMP is a trademark of the OpenMP Architecture Review Board. Portions of this 
+product/publication may have been derived from the OpenMP Language Application 
+Program Interface Specification.
+
+For more information see https://www.openmp.org.
