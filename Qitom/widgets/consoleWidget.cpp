@@ -179,6 +179,8 @@ RetVal ConsoleWidget::initEditor()
 
     m_pyAutoIndentMode->setKeyPressedModifiers(Qt::ShiftModifier);
 
+    m_codeCompletionMode->setSelectWithReturn(false);
+
     return RetVal(retOk);
 }
 
