@@ -1165,6 +1165,7 @@ RetVal ScriptEditorWidget::toggleBookmark(int line)
     TextBlockUserData *userData = getTextBlockUserData(line);
     userData->m_bookmark = !userData->m_bookmark;
     panels()->refresh();
+
     return RetVal(retOk);
 }
 
@@ -1175,6 +1176,9 @@ RetVal ScriptEditorWidget::clearAllBookmarks()
     {
         userData->m_bookmark = false;
     }
+
+    panels()->refresh();
+
     return RetVal(retOk);
 }
 
