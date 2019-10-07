@@ -22,6 +22,7 @@
 
 #include "UserModel.h"
 #include <qicon.h>
+#include <qcryptographichash.h>
 
 namespace ito
 {
@@ -225,6 +226,128 @@ void UserModel::removeAllUsers()
     beginResetModel();
     m_userInfo.clear();
     endResetModel();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* Return the model index to the first column of the user with the given userId. 
+Returns an invalid QModelIndex if the user could not be found.
+*/
+QModelIndex UserModel::getUser(const QString &userId) const
+{
+	int row = -1;
+
+	for (int row = 0; row < m_userInfo.size(); ++row)
+	{
+		if (m_userInfo[row].id == userId)
+		{
+			return createIndex(row, 0);
+		}
+	}
+
+	return QModelIndex();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+Returns true if the user with the given index (the column value of this index is ignored) has a password set, else false.
+*/
+bool UserModel::hasPassword(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].password != "";
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool UserModel::checkPassword(const QModelIndex &index, const QString &password) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		QByteArray passwordSha512 = m_userInfo[index.row()].password;
+		if (passwordSha512 == "" && password == "")
+		{
+			return true;
+		}
+		else
+		{
+			QByteArray newPasswordSha512 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha3_512);
+			return passwordSha512 == newPasswordSha512;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserModel::getUserName(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].name;
+	}
+	else
+	{
+		return QString();
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserModel::getUserId(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].id;
+	}
+	else
+	{
+		return QString();
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+UserRole UserModel::getUserRole(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].role;
+	}
+	else
+	{
+		return userRoleBasic;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].features;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserModel::getUserSettingsFile(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+	{
+		return m_userInfo[index.row()].iniFile;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

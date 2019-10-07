@@ -150,7 +150,10 @@ bool DialogUserManagementEdit::saveUser()
         }
 
         QStringList files;
-        QString settingsFile = uio->getSettingsFile(uid);
+		const ito::UserModel* userModel = uio->getUserModel();
+		QModelIndex index = userModel->getUser(uid);
+		QString settingsFile = userModel->getUserSettingsFile(index);
+
         if (settingsFile != "")
         {
             QSettings settings(settingsFile, QSettings::IniFormat);

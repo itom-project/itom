@@ -340,7 +340,7 @@ void FileSystemDockWidget::createActions()
     m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
 
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
         m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
@@ -858,7 +858,7 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
         if (!this->m_pFileSystemModel->fileInfo(index).isDir())
         {
             ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-            if (uOrg->hasFeature(featDeveloper))
+            if (uOrg->currentUserHasFeature(featDeveloper))
             {
                 IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
             }

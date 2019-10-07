@@ -4709,7 +4709,7 @@ PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userRoleAdministrator)
+    if (userOrg->getCurrentUserRole() == ito::userRoleAdministrator)
     {
         return Py_True;
     }
@@ -4736,7 +4736,7 @@ PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userRoleDeveloper)
+    if (userOrg->getCurrentUserRole() == ito::userRoleDeveloper)
     {
         return Py_True;
     }
@@ -4763,7 +4763,7 @@ PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userRoleBasic)
+    if (userOrg->getCurrentUserRole() == ito::userRoleBasic)
     {
         return Py_True;
     }
@@ -4798,13 +4798,13 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     PyObject* returnDict = PyDict_New();
 
     // Name
-    //PyObject *item = PyUnicode_FromString(userOrg->getUserName().toLatin1().data());
-    PyObject *item = PyUnicode_DecodeLatin1(userOrg->getUserName().toLatin1().data(), userOrg->getUserName().length(), NULL);
+    //PyObject *item = PyUnicode_FromString(userOrg->getCurrentUserName().toLatin1().data());
+    PyObject *item = PyUnicode_DecodeLatin1(userOrg->getCurrentUserName().toLatin1().data(), userOrg->getCurrentUserName().length(), NULL);
     PyDict_SetItemString(returnDict, "Name", item);
     Py_DECREF(item);
     
     // Type
-    switch(userOrg->getUserRole())
+    switch(userOrg->getCurrentUserRole())
     {
         case ito::userRoleBasic:
             item = PyUnicode_FromString("user");
@@ -4823,14 +4823,14 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     Py_DECREF(item); 
 
     // ID
-    //item = PyUnicode_FromString(userOrg->getUserID().toLatin1().data());
-    item = PyUnicode_DecodeLatin1(userOrg->getUserID().toLatin1().data(), userOrg->getUserID().length(), NULL);
+    item = PyUnicode_DecodeLatin1(userOrg->getCurrentUserId().toLatin1().data(), userOrg->getCurrentUserId().length(), NULL);
     PyDict_SetItemString(returnDict, "ID", item);
     Py_DECREF(item); 
 
     // FILE
     //item = PyUnicode_FromString(userOrg->getSettingsFile().toLatin1().data());
-    item = PyUnicode_DecodeLatin1(userOrg->getSettingsFile().toLatin1().data(), userOrg->getSettingsFile().length(), NULL);
+	QString settingsFile = userOrg->getCurrentUserSettingsFile();
+    item = PyUnicode_DecodeLatin1(settingsFile.toLatin1().data(), settingsFile.length(), NULL);
     PyDict_SetItemString(returnDict, "File", item);
     Py_DECREF(item); 
 

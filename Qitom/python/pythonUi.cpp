@@ -1463,7 +1463,9 @@ verbose : {int} \n\
 
     if (showAll < 2)
     {
-        std::cout << "For more properties, slots and signals call info(1) or info(2)\n" << std::endl;
+        std::cout << "For more properties, slots and signals call info(1) for properties, slots and signals \n" \
+                       "besides the ones that originate from Qt GUI base classes " \
+                      "or info(2) for all properties, slots and signals\n" << std::endl;
     }
 
     Py_RETURN_NONE;

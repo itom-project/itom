@@ -137,6 +137,9 @@ public:
     Qt::Key triggerKey() const;
     void setTriggerKey(Qt::Key key);
 
+    bool selectWithReturn() const;
+    void setSelectWithReturn(bool select);
+
     int triggerLength() const;
     void setTriggerLength(int length);
 
@@ -206,6 +209,7 @@ private:
     int m_triggerLen;
     FilterMode m_filterMode;
     int m_tooltipsMaxLength;
+    bool m_selectWithReturn;
 };
 
 } //end namespace ito

@@ -224,7 +224,8 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_showTooltips(false),
     m_requestId(0),
     m_lastRequestId(0),
-    m_tooltipsMaxLength(200)
+    m_tooltipsMaxLength(200),
+    m_selectWithReturn(true)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 }
@@ -307,7 +308,7 @@ void CodeCompletionMode::handleCompleterEvents(QKeyEvent *e)
     bool ctrl = int(e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier;
     // complete
     if (e->key() == Qt::Key_Enter || \
-        e->key() == Qt::Key_Return || \
+        (m_selectWithReturn && (e->key() == Qt::Key_Return)) || \
         e->key() == Qt::Key_Tab)
     {
         insertCompletion(m_currentCompletion);
@@ -317,6 +318,7 @@ void CodeCompletionMode::handleCompleterEvents(QKeyEvent *e)
     // hide
     else if (e->key() == Qt::Key_Escape || \
         e->key() == Qt::Key_Backtab || \
+        (!m_selectWithReturn && (e->key() == Qt::Key_Return)) || \
         (nav_key && ctrl))
     {
         resetSyncData();
@@ -717,6 +719,18 @@ bool CodeCompletionMode::isShortcut(QKeyEvent *e) const
     bool valid_modifier = int(e->modifiers() & modifier) == modifier;
     bool valid_key = (e->key() == m_triggerKey);
     return valid_key && valid_modifier;
+}
+
+//--------------------------------------------------------------------
+bool CodeCompletionMode::selectWithReturn() const
+{
+    return m_selectWithReturn;
+}
+
+//--------------------------------------------------------------------
+void CodeCompletionMode::setSelectWithReturn(bool select)
+{
+    m_selectWithReturn = select;
 }
 
 //--------------------------------------------------------------------

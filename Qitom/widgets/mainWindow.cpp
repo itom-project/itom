@@ -136,13 +136,13 @@ MainWindow::MainWindow() :
 
     // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg && (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite)))
+    if (uOrg && (uOrg->currentUserHasFeature(featConsoleRead) || uOrg->currentUserHasFeature(featConsoleReadWrite)))
     {
         qDebug(".. before loading console widget");
         //console (central widget):
         m_console = new ConsoleWidget(this);
 
-        if (uOrg->hasFeature(featConsoleReadWrite) == false)
+        if (uOrg->currentUserHasFeature(featConsoleReadWrite) == false)
         {
             m_console->setReadOnly(true);
         }
@@ -160,7 +160,7 @@ MainWindow::MainWindow() :
     centralWidget->setLayout(m_contentLayout);
     setCentralWidget(centralWidget); 
 
-    if (uOrg && uOrg->hasFeature(featFileSystem))
+    if (uOrg && uOrg->currentUserHasFeature(featFileSystem))
     {
         // FileDir-Dock
         m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
@@ -169,7 +169,7 @@ MainWindow::MainWindow() :
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
-    if (uOrg && uOrg->hasFeature(featDeveloper))
+    if (uOrg && uOrg->currentUserHasFeature(featDeveloper))
     {
         // breakPointDock
         m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
@@ -226,7 +226,7 @@ MainWindow::MainWindow() :
         m_globalWorkspaceDock->raise();
     }
 
-    if (uOrg && uOrg->hasFeature(featPlugins))
+    if (uOrg && uOrg->currentUserHasFeature(featPlugins))
     {
         // AddIn-Manager
         m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
@@ -601,7 +601,7 @@ void MainWindow::createActions()
 
     //app actions
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
         connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
@@ -615,13 +615,13 @@ void MainWindow::createActions()
     m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(m_actions["exit"], SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
-    if (uOrg->hasFeature(featProperties))
+    if (uOrg->currentUserHasFeature(featProperties))
     {
         m_actions["properties"] = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
         connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
     }
 
-    if (uOrg->hasFeature(featUserManag))
+    if (uOrg->currentUserHasFeature(featUserManag))
     {
         m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
         connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
@@ -650,7 +650,7 @@ void MainWindow::createActions()
     a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
     connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
 
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
         connect(a , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
@@ -786,7 +786,7 @@ void MainWindow::createMenus()
         m_pMenuFile->addAction(m_appFileOpen);
     }
 
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         // dynamically created Menu with the last files
         m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
@@ -794,12 +794,12 @@ void MainWindow::createMenus()
         // Add these menus dynamically
     }    
 
-    if (uOrg->hasFeature(featProperties))
+    if (uOrg->currentUserHasFeature(featProperties))
     {
         m_pMenuFile->addAction(m_actions["properties"]);
     }
 
-    if (uOrg->hasFeature(featUserManag))
+    if (uOrg->currentUserHasFeature(featUserManag))
     {
         m_pMenuFile->addAction(m_actions["usermanagement"]);
     }
@@ -831,7 +831,7 @@ void MainWindow::createMenus()
     m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_pMenuPython = menuBar()->addMenu(tr("Script"));
         m_pMenuPython->addAction(m_actions["python_stopAction"]);
@@ -1057,21 +1057,28 @@ void MainWindow::raiseFigureByHandle(int handle)
 {
     ito::RetVal retval = ito::retOk;
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if (uiOrga == NULL)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
 
     }
+
     if (!retval.containsError())
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureShow",Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
+	ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+	QLabel *userLabel = new QLabel(tr("User: %1   ").arg(uOrg->getCurrentUserName()));
+	userLabel->setToolTip(tr("Username: %1, ID: %2").arg(uOrg->getCurrentUserName(), uOrg->getCurrentUserId()));
+	statusBar()->addPermanentWidget(userLabel);
+
 	m_pStatusLblCurrentDir = new QLabel("cd: ", this);
     statusBar()->addPermanentWidget(m_pStatusLblCurrentDir);
 
@@ -1174,7 +1181,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
 void MainWindow::updatePythonActions()
 {
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featDeveloper))
+    if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_actions["python_stopAction"]->setEnabled(pythonBusy());
         m_actions["python_continueAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());

@@ -243,14 +243,14 @@ Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags
 Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
-; Hilfe
+; Help Files
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\build\*.qch"; DestDir: "{app}\docs\pluginDoc\build"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-; Sprachen
+; Languages
 Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
 
 ; EXEs
@@ -264,8 +264,9 @@ Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; Default INI
 Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion
 
-; Lizenz-Datei
+; Licensing files
 Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomSource}\licenses\*.*"; DestDir: "{app}\licenses"; Flags: ignoreversion
 
 ; Plugin-Docs-Template
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: ignoreversion recursesubdirs

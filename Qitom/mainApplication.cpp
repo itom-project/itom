@@ -229,7 +229,7 @@ QString getSplashScreenFileName()
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
-void MainApplication::setupApplication(const QStringList &scriptsToOpen)
+void MainApplication::setupApplication(const QStringList &scriptsToOpen, const QStringList &scriptsToExecute)
 {
     RetVal retValue = retOk;
     RetVal pyRetValue;
@@ -724,6 +724,16 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     settings->endArray();
     settings->endGroup();
     settings->sync();
+
+	//append additional startup scripts from command line
+	foreach(const QString &s, scriptsToExecute)
+	{
+		startupScript = QFileInfo(baseDir, s); //if "file" is absolute, baseDir is disregarded
+		if (startupScript.isFile())
+		{
+			startupScripts.append(startupScript.absoluteFilePath());
+		}
+	}
 
     if (startupScripts.count() > 0)
     {

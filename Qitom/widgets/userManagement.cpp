@@ -123,7 +123,7 @@ DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
     ui.setupUi(this);
 
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    m_currentUser = uOrg->getUserName();
+    m_currentUser = uOrg->getCurrentUserName();
     m_userModel = uOrg->getUserModel();
     ui.userList->setModel(m_userModel);
     setWindowTitle(tr("User Management - Current User: ") + m_currentUser);
@@ -185,7 +185,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
         return;
     }
 
-    if (uid == ((ito::UserOrganizer*)AppManagement::getUserOrganizer())->getUserID())
+    if (uid == ((ito::UserOrganizer*)AppManagement::getUserOrganizer())->getCurrentUserId())
     {
         QMessageBox::warning(this, tr("Warning"), tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
         return;

@@ -44,70 +44,33 @@ class UserOrganizer : public QObject
         static RetVal closeInstance(void);
 
         //!< returns the user name of the current user
-        inline const QString getUserName() const { return m_userName; }
+		const QString getCurrentUserName() const;
 
         //!< returns the role of the current user (user, developer, administrator).
         /*
         The role is only used by the three python methods itom.userIsUser, itom.userIsDeveloper, itom.userIsAdministrator
         */
-        inline ito::UserRole getUserRole() const { return m_userRole; }
+		ito::UserRole getCurrentUserRole() const;
 
         //!< returns the unique ID of the current user
-        QString getUserID(void) const;
+        QString getCurrentUserId() const;
+
+		//!< returns the available features for the current user
+		UserFeatures getCurrentUserFeatures() const;
+
+		QString getCurrentUserSettingsFile() const;
+
+		bool currentUserHasFeature(const UserFeature &feature);
 
         inline UserModel* getUserModel() const { return m_userModel; }
         
-
         ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
             UserRole &role, QByteArray &password, QDateTime &lastModified);
+
         ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
             const UserRole &role, const QByteArray &password, const bool &standardUser = false);
 
-        UserFeatures getUserFeatures(void) const { return m_features; }
-        inline QString getSettingsFile(const QString uid = "") const 
-        {
-            if (uid == "")
-            {
-                return m_settingsFile;
-            }
-            else
-            {
-                QDir appDir(QCoreApplication::applicationDirPath());
-                if (!appDir.cd("itomSettings"))
-                {
-                    return "";
-                }
-                else
-                {
-                    QString filename;
-                    if (uid != "itom")
-                    {
-                        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
-                    }
-                    else
-                    {
-                        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom.ini")));
-                    }
-                    QFileInfo fi(filename);
-
-                    if (fi.exists() == false)
-                    {
-                        QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath("itomDefault.ini")));
-                        if (!stdIniFile.copy(filename))
-                        {
-                            return "";
-                        }
-                    }
-                    return filename;
-                }
-            }
-        }
-        ito::RetVal loadSettings(const QString &defUserName);
-        
-        bool hasFeature(UserFeature feature)
-        {
-            return m_features.testFlag(feature);
-        }
+        ito::RetVal loadSettings(const QString &userId); //use an empty userId to get the selection dialog of select the standard user
 
     private:
         UserOrganizer(void);
@@ -115,19 +78,15 @@ class UserOrganizer : public QObject
         ~UserOrganizer(void);
         static UserOrganizer *m_pUserOrganizer;
 
-        QString getUserID(const QString &iniFile) const;
+        QString getUserIdFromSettingsFilename(const QString &iniFile) const;
         ito::RetVal scanSettingFilesAndLoadModel();
 
-        UserRole m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
-        QString m_userName;  /*< id of current user */
-        UserFeatures m_features; /*< switch for enabeling and disabeling functions of itom */
-        QString m_settingsFile;
-        QByteArray m_password;
-
-        QString m_strConstStdUser;
+        QString m_strConstStdUserName;
+		QString m_strConstStdUserId;
         QString m_lastOpenedUserName;
 
         UserModel *m_userModel;
+		QModelIndex m_currentUser; //mode
         
 };
 

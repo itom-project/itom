@@ -101,9 +101,19 @@ class UserModel : public QAbstractItemModel
         QModelIndex parent(const QModelIndex &index) const;
         int rowCount(const QModelIndex &parent = QModelIndex()) const;
         int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
         int addUser(const UserInfoStruct &newUser);
         void removeAllUsers();
         bool removeUser(const QModelIndex &index);
+
+		QModelIndex getUser(const QString &userId) const;
+		bool hasPassword(const QModelIndex &index) const;
+		bool checkPassword(const QModelIndex &index, const QString &password) const;
+		QString getUserName(const QModelIndex &index) const;
+		QString getUserId(const QModelIndex &index) const;
+		UserRole getUserRole(const QModelIndex &index) const;
+		UserFeatures getUserFeatures(const QModelIndex &index) const;
+		QString getUserSettingsFile(const QModelIndex &index) const;
 
     private:
         QList<QString> m_headers;               //!<  string list of names of column headers
