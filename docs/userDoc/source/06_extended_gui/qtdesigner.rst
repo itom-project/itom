@@ -211,10 +211,10 @@ the optional argument *dockWidgetArea* of the class :py:class:`itom.ui`.
     
 Possible values for *dockWidgetArea* are:
     
-    ui.LEFTDOCKWIDGETAREA = 1
-    ui.RIGHTDOCKWIDGETAREA = 2
-    ui.TOPDOCKWIDGETAREA = 4
-    ui.BOTTOMDOCKWIDGETAREA = 8
+    * ui.LEFTDOCKWIDGETAREA = 1
+    * ui.RIGHTDOCKWIDGETAREA = 2
+    * ui.TOPDOCKWIDGETAREA = 4
+    * ui.BOTTOMDOCKWIDGETAREA = 8
 
 Main window or widget as part of the central widget area of itom (TYPECENTRALWIDGET)
 -------------------------------------------------------------------------------------
@@ -539,6 +539,12 @@ contained in the following table:
 .. py:function:: QListWidget::item(int row) -> str
     
     returns the text of the item from the given row or raises an exception if the item does not exist
+
+.. py:function:: QListWidget::setItemText(int row, str text) -> None
+    
+    sets the text of the item from the given row or raises an exception if the item does not exist
+    
+    *New in **itom** > 3.2.1*
 
 .. py:function:: QListWidget::checkState(int row) -> int (Qt::CheckState)
     
