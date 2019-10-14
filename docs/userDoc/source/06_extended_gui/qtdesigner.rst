@@ -259,6 +259,14 @@ button, which is a child of the group-box, it is both possible to access the gro
 since the class :py:class:`~itom.ui` is derived from :py:class:`~itom.uiItem`, such that the dot-operator not only works for entire dialog references but also for accessing sub-elements 
 of other widgets. However, since each objectName is unique among all elements of the entire dialog, is doesn't matter how to access any element.
 
+An alternative access to child widgets is provided by the method :py:meth:`~itom.uiItem.getChild` which has the desired objectName as argument:
+
+.. code-block:: python
+    
+    elemGroup = dialog.getChild("groupOption")
+
+This method can for instance be used if the widgetName is created from a formatted string.
+
 But why do we need to access these elements? Why do they returns its own instance of class :py:class:`~itom.uiItem`. These questions are answered in the following sections...
 
 .. _qtdesigner-getsetprops:
