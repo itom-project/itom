@@ -118,6 +118,7 @@ void WidgetWrapper::initMethodHash()
 		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,Qt::CheckState)"), "void", 2009, ok);
 		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("flags(int)"), "Qt::ItemFlags", 2010, ok);
 		qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,Qt::ItemFlags)"), "void", 2011, ok);
+        qListWidget << buildMethodDescription(QMetaObject::normalizedSignature("setItemText(int,QString)"), "void", 2012, ok);
         methodHash["QListWidget"] = qListWidget;
 
         //QComboBox
@@ -460,6 +461,23 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     if (_r)
                     {
                         _r->setFlags(flags);
+                    }
+                    else
+                    {
+                        return ito::RetVal(ito::retError, 0, "item in given row does not exist");
+                    }
+                }
+                return ito::retOk;
+                break;
+                
+                case 2012: //setItemText
+                {
+                    QListWidgetItem *_r;
+                    QString text = *reinterpret_cast< const QString(*)>(_a[2]);
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    if (_r)
+                    {
+                        _r->setText(text);
                     }
                     else
                     {

@@ -111,6 +111,7 @@ public:
     static PyObject* PyUiItem_info(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_exists(PyUiItem *self);
     static PyObject* PyUiItem_children(PyUiItem *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyUiItem_getChild(PyUiItem *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // helpers

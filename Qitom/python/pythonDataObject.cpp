@@ -81,7 +81,7 @@ PyDoc_STRVAR(dataObjectInit_doc,"dataObject(dims, dtype='uint8', continuous = 0,
 The itom.dataObject represents a multidimensional array of fixed-size items with corresponding meta information (units, axes descriptions, scalings, tags, protocol...). \n\
 Recently the following data types (dtype) are supported: \n\
 \n\
-* Integer-type (int8, uint8, int16, uint16, int32, uint32),\n\
+* Integer-type (int8, uint8, int16, uint16, int32),\n\
 * Floating-type (float32, float64 (=> double)),\n\
 * Complex-type  (complex64 (2x float32), complex128 (2x float64)).\n\
 * Color-type  (rgba32 (uint32 or uint[4] containing the four 8bit values [R, G, B, Alpha])).\n\
@@ -93,7 +93,7 @@ Parameters \n\
 dims : {sequence of integers}, optional \n\
     'dims' is a list or tuple indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 data : {str}, optional \n\
@@ -117,7 +117,7 @@ The data organization is equal to the one of openCV, hence, two-dimensional matr
 \n\
 In addition to OpenCV, itom.dataObject supports complex valued data types for all operators and methods. \n\
 \n\
-Warning 'uint32' is not fully openCV-compatible and hence causes instability!\n\
+Warning 'uint32' is currently not available, since it is not fully supported by the underlying OpenCV matrices.\n\
 \n\
 **Deep Copy, Shallow Copy and ROI** \n\
 \n\
@@ -939,7 +939,7 @@ PyObject* PythonDataObject::PyDataObj_GetDims(PyDataObject *self, void * /*closu
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectAttrType_doc,"get type string of data in this data object \n\
 \n\
-This type string has one of these values: 'uint8', 'int8', 'uint16', 'int16', 'uint32', 'int32', \n\
+This type string has one of these values: 'uint8', 'int8', 'uint16', 'int16', 'int32', \n\
 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 \n\
 Notes \n\
@@ -8350,7 +8350,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -8406,7 +8406,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -8529,7 +8529,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -8590,7 +8590,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -8649,7 +8649,7 @@ Parameters \n\
 size : {int}, \n\
     the size of the square matrix (single value)\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32' \n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32' \n\
 \n\
 Returns \n\
 ------- \n\

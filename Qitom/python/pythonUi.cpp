@@ -1574,6 +1574,29 @@ recursive : {bool} \n\
     return dict;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetChild_doc, "getChild(widgetName) -> returns the uiItem of the child widget with the given widgetName. \n\
+\n\
+This call is equal to self.__attributes__[widgetName] or self.widgetName \n\
+\n\
+Parameters \n\
+----------- \n\
+widgetName : {str} \n\
+    Object name of the desired child widget.");
+/*static*/ PyObject* PythonUi::PyUiItem_getChild(PyUiItem *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "widgetName", NULL };
+    PyObject *name;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "U", const_cast<char**>(kwlist), &name))
+    {
+        return NULL;
+    }
+
+    return PyUiItem_getattro(self, name);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
@@ -1659,14 +1682,14 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
         {
             Py_XDECREF(exists);
             bool ok;
-            QByteArray name_ba = PythonQtConversion::PyObjGetBytes(name, false, ok);
+            QString name_str = PythonQtConversion::PyObjGetString(name, true, ok);
             if (ok)
             {
-                return PyErr_Format(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the name '%s'.", name_ba.data());
+                return PyErr_Format(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the name '%s'.", name_str.toLatin1().data());
             }
             else
             {
-                PyErr_SetString(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the given name.");
+                PyErr_SetString(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the given name (string).");
                 return NULL;
             }
         }
@@ -1722,6 +1745,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"info", (PyCFunction)PyUiItem_info, METH_VARARGS, PyUiItemInfo_doc},
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {"children", (PyCFunction)PyUiItem_children, METH_KEYWORDS | METH_VARARGS, PyUiItemChildren_doc},
+        {"getChild", (PyCFunction)PyUiItem_getChild, METH_KEYWORDS | METH_VARARGS, PyUiItemGetChild_doc},
         {NULL}  /* Sentinel */
 };
 

@@ -211,10 +211,10 @@ the optional argument *dockWidgetArea* of the class :py:class:`itom.ui`.
     
 Possible values for *dockWidgetArea* are:
     
-    ui.LEFTDOCKWIDGETAREA = 1
-    ui.RIGHTDOCKWIDGETAREA = 2
-    ui.TOPDOCKWIDGETAREA = 4
-    ui.BOTTOMDOCKWIDGETAREA = 8
+    * ui.LEFTDOCKWIDGETAREA = 1
+    * ui.RIGHTDOCKWIDGETAREA = 2
+    * ui.TOPDOCKWIDGETAREA = 4
+    * ui.BOTTOMDOCKWIDGETAREA = 8
 
 Main window or widget as part of the central widget area of itom (TYPECENTRALWIDGET)
 -------------------------------------------------------------------------------------
@@ -258,6 +258,14 @@ Each variable created by the code block above is an instance of :py:class:`itom.
 button, which is a child of the group-box, it is both possible to access the group button by its objectName as child of the entire dialog or as child of the groupbox. This is feasible
 since the class :py:class:`~itom.ui` is derived from :py:class:`~itom.uiItem`, such that the dot-operator not only works for entire dialog references but also for accessing sub-elements 
 of other widgets. However, since each objectName is unique among all elements of the entire dialog, is doesn't matter how to access any element.
+
+An alternative access to child widgets is provided by the method :py:meth:`~itom.uiItem.getChild` which has the desired objectName as argument:
+
+.. code-block:: python
+    
+    elemGroup = dialog.getChild("groupOption")
+
+This method can for instance be used if the widgetName is created from a formatted string.
 
 But why do we need to access these elements? Why do they returns its own instance of class :py:class:`~itom.uiItem`. These questions are answered in the following sections...
 
@@ -539,6 +547,12 @@ contained in the following table:
 .. py:function:: QListWidget::item(int row) -> str
     
     returns the text of the item from the given row or raises an exception if the item does not exist
+
+.. py:function:: QListWidget::setItemText(int row, str text) -> None
+    
+    sets the text of the item from the given row or raises an exception if the item does not exist
+    
+    *New in **itom** > 3.2.1*
 
 .. py:function:: QListWidget::checkState(int row) -> int (Qt::CheckState)
     
