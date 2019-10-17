@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
-    <height>261</height>
+    <width>382</width>
+    <height>475</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,6 +103,72 @@
         </property>
         <property name="options">
          <set>PathLineEdit::ShowDirsOnly</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Python Help System</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>By default (aka fallback) python prints help to stdout. But you can also specify a 3rd Party command to display the help. This requires setting the environment Variable PAGER. Changing Variables requires a RESTART of ITOM on some systems. The command must be in PATH.</string>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QComboBox" name="cbbPyUse3rdPartyPresets"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="lePyUse3rdPartyCommand"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="cbPyUse3rdPartyHelp">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>use 3rd Party Tool to display Help</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="pbApplyPyUse3rdPartyHelpViewer">
+        <property name="text">
+         <string>apply</string>
         </property>
        </widget>
       </item>

@@ -50,6 +50,11 @@ protected:
 private:
     Ui::WidgetPropPythonGeneral ui;
     
+    //holds presets for common 3rd party textviewers...
+    QMap<QString,QString> pyExtHelpers{
+        {"notepad++", "notepad++ -multiInst"}, 
+        {"notepad", "notepad"}
+    };
 
 signals:
 
@@ -59,6 +64,11 @@ private slots:
     void on_rbPyHomeSub_clicked();
     void on_rbPyHomeSys_clicked();
     void on_rbPyHomeUse_clicked();
+    
+    //3rd Party HelpViewer Buttons
+    void on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption);
+    void on_cbPyUse3rdPartyHelp_stateChanged(int checked);
+    void on_pbApplyPyUse3rdPartyHelpViewer_clicked();
 
 };
 

@@ -70,7 +70,9 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
 
     m_pCategories->setMinimumWidth(200);
 
-    connect(m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(
+        m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), 
+        this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
     connect(m_pButtonBox, SIGNAL(accepted()), this, SLOT(accepted()));
@@ -93,7 +95,6 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     m_pVerticalLayoutRight->addWidget(m_pLine);
     m_pVerticalLayoutRight->addWidget(m_pStackedWidget);
     
-
     m_pSplitterRightWidget->setLayout(m_pVerticalLayoutRight);
     m_pSplitterRightWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -182,7 +183,7 @@ void DialogProperties::initPages()
     m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots And Figures - Default Style Settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
     m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots And Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
 
-	PropertyPage page;
+    PropertyPage page;
     QStringList pathes;
 
     foreach(page, m_pages)

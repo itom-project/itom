@@ -81,12 +81,10 @@
 namespace ito
 {
 
-QMutex PythonEngine::instatiated;
+QMutex PythonEngine::instantiated;
 QMutex PythonEngine::instancePtrProtection;
 PythonEngine* PythonEngine::instance = NULL;
 QString PythonEngine::fctHashPrefix = ":::itomfcthash:::";
-
-using namespace ito;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0) 
@@ -326,7 +324,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
     if (!m_started)
     {
-        if (PythonEngine::instatiated.tryLock(5000))
+        if (PythonEngine::instantiated.tryLock(5000))
         {
             //if something is changed in the following initialization process, please upgrade
             //pipManager::initPythonIfStandalone, too
@@ -489,7 +487,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 return;
             }
 
-            //!< start python-type pythonStream, in order to redirect stdout and stderr to std::cout and std::cerr (possibly redirected to qDebugStream)
+            //!< start python-type pythonStream, in order to redirect stdout and stderr 
+            //to std::cout and std::cerr (possibly redirected to qDebugStream)
             if (PyType_Ready(&PyStream::PythonStreamType) >= 0)
             {
                 Py_INCREF(&PyStream::PythonStreamType);
@@ -501,15 +500,41 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing itom in start python engine\n").toLatin1().data());
-            //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, but need to have a valid value for instance when using pip.
+            //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, 
+            //but need to have a valid value for instance when using pip.
             if ((tretVal = runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stdout in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stderr in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stdin = sys.__stdin__ = itom.pythonStream(3)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stdin in start python engine\n").toLatin1().data());
+            //this and the sys.stdout part above initializes the python internal help system.
+            //if pydoc output is not set, help() will Stream to "more "(systemcommand), 
+            //so this should be initialized to something
+            settings.beginGroup("Python");
+            QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "").toString();
+            bool python3rdPartyHelperUse = settings.value("python3rdPartyHelperUse", false).toBool();
+            //since these config files can be copied around, shared to other ppl etc,
+            // PAGER enver might be lost/canged/unexpected from this POV.
+            // If PAGER is not as expected, help is not going to be used...
+            //Hint: in debugger, enver Vars are only loaded on your IDE startup, e.g. msvc.
+            //So if you change PAGER, you might need to restart you IDE
+            QString msg = QString(qgetenv("PAGER"));
+            python3rdPartyHelperUse = QString(msg) == python3rdPartyHelperCommand ? python3rdPartyHelperUse : false;
+            settings.setValue("python3rdPartyHelperUse", python3rdPartyHelperUse);
+            settings.endGroup();
 
-
+            if ((tretVal = runString("import pydoc")) != ito::retOk)
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing pydoc in start python engine\n").toLatin1().data());
+            if(python3rdPartyHelperUse && python3rdPartyHelperCommand.length()>1)
+            {
+                if ((tretVal = runString("pydoc.help = pydoc.Helper()")) != ito::retOk)
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("Error setting up help pipe in start python engine\n").toLatin1().data());
+            }else{
+                if ((tretVal = runString("pydoc.help = pydoc.Helper(sys.stdin, sys.stdout)")) != ito::retOk)
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("Error setting up help pipe in start python engine\n").toLatin1().data());
+            }
+            
             static wchar_t *wargv = L"";
             PySys_SetArgv(1, &wargv);
 
@@ -538,7 +563,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 PyModule_AddObject(itomModule, "actuator", (PyObject *)&PythonPlugins::PyActuatorPluginType);
             }
 
-// pending for deletion
+// pending for deletion, so for how long already!?
 /*
             if (PyType_Ready(&PythonPlugins::PyActuatorAxisType) >= 0)
             {
@@ -795,7 +820,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 }
             }
 
-            //!< import autoReloader (mod only, class will be instatiated if enabled for the first time)
+            //!< import autoReloader (mod only, class will be instantiated if enabled for the first time)
             m_autoReload.modAutoReload = PyImport_ImportModule("autoreload");
             if (m_autoReload.modAutoReload == NULL)
             {
@@ -1050,7 +1075,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         localDictionary = NULL;
         globalDictionary = NULL;
 
-        PythonEngine::instatiated.unlock();
+        PythonEngine::instantiated.unlock();
 
         m_started = false;
     }
@@ -3881,7 +3906,8 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
     }
 #endif
 
-    //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
+    //if localDict is equal to globalDict, the localDict is the current global dict 
+    //(currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
     {
@@ -4056,7 +4082,8 @@ void PythonEngine::pythonInterruptExecution()
 //    gstate = PyGILState_Ensure();
 
     // only queue the interrupt event if not yet done.
-    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
+    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. 
+    //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
     if (m_interruptCounter.testAndSetRelaxed(0, 1)) 
     {
         if (isPythonDebugging() && isPythonDebuggingAndWaiting())
