@@ -2,7 +2,7 @@
 '''This demo shows some features of dataObjects.
 An extended overview about all methods of the dataObject,
 see the itom script reference or download the cheatsheet from
-https://itom.bitbucket.io/media.html'''
+https://itom.bitbucket.io/documents/itom_cheatsheet.pdf'''
 
 #some constants
 yDim = 480
