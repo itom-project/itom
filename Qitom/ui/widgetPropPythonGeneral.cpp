@@ -30,10 +30,10 @@
 #include <qstringlist.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qprocess.h>
 
 namespace ito
 {
-
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -45,6 +45,12 @@ WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
 #else
     ui.rbPyHomeSub->setVisible(false);
 #endif
+    //populate combobox
+    QMap<QString, QString>::const_iterator it;
+    for(it = pyExtHelpers.constBegin(); it != pyExtHelpers.constEnd(); it++)
+    {
+        ui.cbbPyUse3rdPartyPresets->addItem(it.key());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -77,7 +83,22 @@ void WidgetPropPythonGeneral::readSettings()
         ui.pathLineEditPyHome->setCurrentPath(pythonHomeDirectory);
     }
     ui.pathLineEditPyHome->setEnabled(pythonDirState == 2);
-
+    
+    //initialize GUI to show current pythonHelpViewer's parameters
+    bool python3rdPartyHelperUse = settings.value("python3rdPartyHelperUse",0).toBool();
+    QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "notepad").toString();
+    ui.cbPyUse3rdPartyHelp->setChecked(python3rdPartyHelperUse);
+    on_cbPyUse3rdPartyHelp_stateChanged(python3rdPartyHelperUse);
+    ui.lePyUse3rdPartyCommand->setText(python3rdPartyHelperCommand);
+    QMap<QString, QString>::const_iterator it;
+    for (it = pyExtHelpers.constBegin(); it != pyExtHelpers.constEnd(); ++it)
+    {
+        if (it.value() == python3rdPartyHelperCommand)
+        {
+            ui.cbbPyUse3rdPartyPresets->setCurrentText(it.key());
+            on_cbbPyUse3rdPartyPresets_currentIndexChanged(it.key());
+        }
+    }
     settings.endGroup();
 }
 
@@ -106,8 +127,11 @@ void WidgetPropPythonGeneral::writeSettings()
 
     settings.setValue("pyDirState", pythonDirState);
     settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
-
+    
+    settings.setValue("python3rdPartyHelperUse",ui.cbPyUse3rdPartyHelp->isChecked());
+    settings.setValue("python3rdPartyHelperCommand", ui.lePyUse3rdPartyCommand->text());
     settings.endGroup();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -128,4 +152,38 @@ void WidgetPropPythonGeneral::on_rbPyHomeUse_clicked()
     ui.pathLineEditPyHome->setEnabled(true);
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------- 3rdPartyHelp Section ---------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+
+
+void WidgetPropPythonGeneral::on_cbPyUse3rdPartyHelp_stateChanged(int checked)
+{
+    //disable helpViewer by deleting the contents of the LineEdit
+    ui.lePyUse3rdPartyCommand->setEnabled(checked);
+    ui.cbbPyUse3rdPartyPresets->setEnabled(checked);
+}
+
+void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption)
+{
+    ui.lePyUse3rdPartyCommand->setText(pyExtHelpers[caption]);
+}
+
+//this is a workaround for the external cmd to be opened... and i don't want this to happen everytime 
+//the properties dialogue is accepted...
+void WidgetPropPythonGeneral::on_pbApplyPyUse3rdPartyHelpViewer_clicked()
+{
+    if (ui.cbPyUse3rdPartyHelp->isChecked())
+    {
+        QString tt = ui.lePyUse3rdPartyCommand->text();
+        qputenv("PAGER", tt.toLatin1());
+#if WIN32
+        //better change this to something more appropriate. 
+        QString msg = QString("setx PAGER \"%1\"").arg(tt);
+        system(msg.toLatin1());
+#endif
+    }
+
+}
 } //end namespace ito

@@ -87,24 +87,36 @@ PyObject* PyStream::PythonStream_fileno(PythonStream* self)
 {
     return PyLong_FromLong( self->type ); //0: in, 1: out, 2: err
 }
-
+//! setting IOBase params to False since help(bla) will open a terminal if True.idfc.
+PyObject* PyStream::PythonStream_isatty(PythonStream* self, PyObject* args)
+{
+    Py_RETURN_TRUE;
+}
+PyObject* PyStream::PythonStream_seekable(PythonStream* self, PyObject* args)
+{
+    Py_RETURN_FALSE;
+}
+PyObject* PyStream::PythonStream_writable(PythonStream* self, PyObject* args)
+{
+    Py_RETURN_FALSE;
+}
+PyObject* PyStream::PythonStream_readable(PythonStream* self, PyObject* args)
+{
+    Py_RETURN_FALSE;
+}
 //! static table of type PyMethodDef which contains function pointers and descriptions to all methods, belonging to this type
 PyMethodDef PyStream::PythonStream_methods[] = {
     {"name", (PyCFunction)PyStream::PythonStream_name, METH_NOARGS, "name"},
     {"write", (PyCFunction)PyStream::PythonStream_write, METH_VARARGS, "write function"},
     {"flush", (PyCFunction)PyStream::PythonStream_flush, METH_VARARGS, "flush function"},
-    { "readline", (PyCFunction)PyStream::PythonStream_readline, METH_VARARGS, "readline function" },
+    {"readline", (PyCFunction)PyStream::PythonStream_readline, METH_VARARGS, "readline function" },
     {"fileno", (PyCFunction)PyStream::PythonStream_fileno, METH_NOARGS, "returns the virtual file number of this stream (0: in [not supported yet], 1: out, 2: err, 3: in)"},
-    {NULL}  /* Sentinel */
-};
+    {"isatty", (PyCFunction)PyStream::PythonStream_isatty, METH_NOARGS, "returns True."},
+    {"seekable", (PyCFunction)PyStream::PythonStream_writable, METH_NOARGS, "returns False." },
+    {"writable", (PyCFunction)PyStream::PythonStream_writable, METH_NOARGS, "returns False." },
+    {"readable", (PyCFunction)PyStream::PythonStream_seekable, METH_NOARGS, "returns False." },
 
-//! PyModuleDef table, containing description for PyStream type
-PyModuleDef PyStream::pythonStreamModule = {
-    PyModuleDef_HEAD_INIT,
-    "pythonStream",
-    "Example module that creates an extension type.",
-    -1,
-    NULL, NULL, NULL, NULL, NULL
+    {NULL}  /* Sentinel */
 };
 
 //! static PyTypeObject for type PyStream with function pointers to all required static methods.
