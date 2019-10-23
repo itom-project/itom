@@ -214,28 +214,54 @@ namespace ito
         {
             futureType = ito::tFloat64;
         }
-
-        if (externalDataObject == NULL)
+        if (!m_params.contains("sizez"))
         {
-            if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+
+            if (externalDataObject == NULL)
             {
-                m_data = ito::DataObject(futureHeight,futureWidth,futureType);
+                if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+                {
+                    m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+                }
+            }
+            else
+            {
+                int dims = externalDataObject->getDims();
+                if (externalDataObject->getDims() == 0)
+                {
+                    *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+                }
+                else if (externalDataObject->calcNumMats() != 1)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
+                }
+                else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+                }
             }
         }
         else
         {
-            int dims = externalDataObject->getDims();
-            if (externalDataObject->getDims() == 0)
+            int numChannel = m_params["sizez"].getVal<int>();
+            if (externalDataObject == NULL)
             {
-                *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
+                if (m_data.getDims() < 3 || m_data.getSize(0) != (unsigned int)numChannel || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
+                {
+                    m_data = ito::DataObject(numChannel ,futureHeight, futureWidth, futureType);
+                }
             }
-            else if (externalDataObject->calcNumMats () != 1)
+            else
             {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
-            }
-            else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
-            {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+                int dims = externalDataObject->getDims();
+                if (externalDataObject->getDims() == 0)
+                {
+                    *externalDataObject = ito::DataObject(numChannel, futureHeight, futureWidth, futureType);
+                }
+                else if (externalDataObject->getSize(dims - 3) != (unsigned int)numChannel || externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+                }
             }
         }
 
