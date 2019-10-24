@@ -53,7 +53,7 @@ namespace ito
             a certain filter or algoWidget that pretends to implement a certain interface really fits
             to the requirements and conditions of this interface.
 
-        In the current implementation this class is instatiated once by the class AddInManager, hence,
+        In the current implementation this class is instantiated once by the class AddInManager, hence,
         it can be considered as singleton class.
 
         \sa AddInManager, AddInAlgo::tAlgoInterface, AddInAlgo::FilterDef, AddInAlgo::AlgoWidgetDef

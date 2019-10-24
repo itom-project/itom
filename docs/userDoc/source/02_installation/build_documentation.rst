@@ -16,7 +16,7 @@ In order to be able to build the documentation, you need to have some tools inst
     Additionally, it displays the entire class- and file-structure of your project. |itom|'s user documentation sometimes uses results
     from Doxygen in order to show relevant C++-structures for programming plugins.
     
-    Windows users can download the binaries as setup from http://www.stack.nl/~dimitri/doxygen/. Under linux the easiest way is to get the latest
+    Windows users can download the binaries as setup from http://www.doxygen.nl/download.html. Under linux the easiest way is to get the latest
     doxygen package that is available for your distribution.
 
 2. Python-Package Sphinx

@@ -274,7 +274,7 @@ private:
     //static PyObject* checkForTimeoutHelper(ItomSharedSemaphore* semaphore, int timeout, PyObject *retValueOk);
 
     //other static members
-    static QMutex instatiated;
+    static QMutex instantiated;
     static QMutex instancePtrProtection;
     static QString fctHashPrefix;
 

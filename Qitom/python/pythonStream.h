@@ -70,11 +70,14 @@ namespace ito
         static PyObject *PythonStream_write(PythonStream* self, PyObject *args);
         static PyObject *PythonStream_flush(PythonStream* self, PyObject *args);
         static PyObject *PythonStream_readline(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_isatty(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_seekable(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_writable(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_readable(PythonStream* self, PyObject *args);
 
         static PyMemberDef PythonStream_members[];
         static PyMethodDef PythonStream_methods[];
         static PyTypeObject PythonStreamType;
-        static PyModuleDef pythonStreamModule;
     };
 
 } //end namespace ito

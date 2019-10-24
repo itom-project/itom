@@ -5,24 +5,34 @@
 Property Dialog
 ******************
 
-The property dialog of itom provides an overview of many basic itom settings, as well as global settings for many plots etc.
-It can be found by clicking **Properties...** in the **File** menu of itom. It consists of different sections with
-several subsections. Each of these subsections referes to a specific group of settings. In the following list you will
+The property dialog of itom provides an overview of many basic itom settings, 
+as well as global settings for many plots etc.
+It can be found by clicking **Properties...** in the **File** menu of itom. 
+It consists of different sections with
+several subsections. Each of these subsections referes to a specific group of 
+settings. In the following list you will
 get more information about the specific sections and subsections.
 
 itom, its settings and the user management
 ===========================================
 
-In itom, all settings are stored in an **ini** file in the **itomSettings** folder. The default settings file is **itom.ini**.
-If this file does not exist, a copy of **itomDefault.ini** in the same folder is tried to be created and used as initial guess
+In itom, all settings are stored in an **ini** file in the **itomSettings** 
+folder. The default settings file is **itom.ini**.
+If this file does not exist, a copy of **itomDefault.ini** in the same folder 
+is tried to be created and used as initial guess
 for the **itom.ini** file.
 
-Such an **ini**-file does not only contain the settings, that are adjustable via the property dialog, but also the current state
-and / or geometry of windows, toolboxes etc. This state is always stored if itom is closed and restored during a restart of the application.
+Such an **ini**-file does not only contain the settings, that are adjustable 
+via the property dialog, but also the current state
+and / or geometry of windows, toolboxes etc. This state is always stored if 
+itom is closed and restored during a restart of the application.
 
-Using the :ref:`user management system <gui-user-management>` of |itom|, it is possible to create new users. Each user then gets
-its own **ini** settings file in the folder **itomSettings**. If more users than the default users are available, |itom| starts with a user
-selection dialog, where you can choose the appropriate user and |itom| loads the settings from the corresponding settings file.
+Using the :ref:`user management system <gui-user-management>` of |itom|, it is 
+possible to create new users. Each user then gets
+its own **ini** settings file in the folder **itomSettings**. If more users 
+than the default users are available, |itom| starts with a user
+selection dialog, where you can choose the appropriate user and |itom| loads 
+the settings from the corresponding settings file.
 
 Section General
 =================
@@ -30,33 +40,44 @@ Section General
 Application
 ---------------
 
-* If the "show message before closing the application" checkbox is checked, the application will ask you if you really want to close |itom| before it is really closed.
+* If the "show message before closing the application" checkbox is checked, the 
+application will ask you if you really want to close |itom| before it is really closed.
 
-* |itom| is created as multi-threaded application. For instance, every hardware instance runs in its own thread and can therefore run parallely to the main application.
-  Timeout values control the sychronization process between all these threads. Timeout values for different situations can be adjusted using the spin boxes in the group *Timeouts*.
+* |itom| is created as multi-threaded application. For instance, every hardware 
+instance runs in its own thread and can therefore run parallely to the main application.
+Timeout values control the sychronization process between all these threads. 
+Timeout values for different situations can be adjusted using the spin boxes in the group *Timeouts*.
+
+There are two specific timeout values for initializing or closing a plugin as 
+well as loading or saving data from or to files. All other timeouts are handled by the general
+timeout value.
   
-  There are two specific timeout values for initializing or closing a plugin as well as loading or saving data from or to files. All other timeouts are handled by the general
-  timeout value.
-  
-* Library paths: Before itom starts loading all plugin and designer plugin libraries, the local PATH environment variable of |itom| can be extended by further values.
-  This gives the possibility to add further search pathes for 3rd party libraries (e.g. required by plugins) without the need to globally changing the environment variables of
-  the operating system. Hereby, the entry *pathes from global PATH variable* is a placeholder for the global PATH variable such that you can define whether a new path
+* Library paths: Before itom starts loading all plugin and designer plugin 
+  libraries, the local PATH environment variable of |itom| can be extended by further values.
+  This gives the possibility to add further search pathes for 3rd party libraries 
+  (e.g. required by plugins) without the need to globally changing the environment variables of
+  the operating system. Hereby, the entry *pathes from global PATH variable* 
+  is a placeholder for the global PATH variable such that you can define whether a new path
   is prepended or appended to the existing list.
   
 Language
 ----------------
 
-The default language of |itom| including |Python| is English. However, it is possible to add further translations for texts of the graphical user interface and further messages.
+The default language of |itom| including |Python| is English. However, it is 
+possible to add further translations for texts of the graphical user interface 
+and further messages.
 Select the desired language in this section and restart |itom| to load the new languages.
 
 .. note::
     
-    Hint: Strings, which are related to script commands are usually not translated, since the Python script language itself is always in English.
+    Hint: Strings, which are related to script commands are usually not translated, 
+    since the Python script language itself is always in English.
 
 Help Viewer
 ----------------
 
-This property section is responsible for the behaviour of the "Help" dialog. If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
+This property section is responsible for the behaviour of the "Help" dialog. 
+If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
 
 .. figure:: images/propGeneralHelpViewer.png
     :scale: 100%
@@ -64,25 +85,38 @@ This property section is responsible for the behaviour of the "Help" dialog. If 
     
 *Local and remote databases*
 
-Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are saved on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
+Most help files are organized in databases. To display these files, the green 
+underlined checkbox has to be checked. To manage, update and load new databases
+ the green box offers a variety of options. Each database listed underneath 
+ "Local" are saved on the harddrive. The last column shows if there are any 
+ online updates available. To refresh the updatestate of the databases, 
+ just click the "refresh" button above. 
 
-If the the internet connection is very slow a timeout error might appear during updates. In this case increase the timeout time and check you internet connection.
+If the the internet connection is very slow a timeout error might appear during 
+updates. In this case increase the timeout time and check you internet connection.
 
 *Generated help files*
 
-The Algorithms, Widgets, DataIO and Actuator help files are dynamically created during runtime. These help files are displayed when the corresponding checkboxes in the red box are checked.
+The Algorithms, Widgets, DataIO and Actuator help files are dynamically created 
+during runtime. These help files are displayed when the corresponding checkboxes 
+in the red box are checked.
 
 Styles and Themes
 ----------------------
 
-Usually, |itom| is started with a look that depends on the default stylesheet of the operating system. However, this look can be changed by specific style sheets (named qss files of
-Qt). In this property page, it is possible to select between the following style sheet options:
+Usually, |itom| is started with a look that depends on the default stylesheet of 
+the operating system. However, this look can be changed by specific style sheets 
+(named qss files of Qt). In this property page, it is possible to select 
+between the following style sheet options:
 
 * no stylesheet (default look)
-* some pre-defined stylesheets (located in the **styles/stylesheets**-folder of |itom| or its subfolders). For a dark theme, the theme in the **darkStyle** subfolder is recommended.
+* some pre-defined stylesheets (located in the **styles/stylesheets**-folder 
+of |itom| or its subfolders). For a dark theme, the theme in the **darkStyle** 
+subfolder is recommended.
 * use-defined stylesheet (indicate a qss style sheet file and an optional rcc resource file)
 
-Some icons have two different representations, one for bright themes and one for dark themes. It is possible to switch between both themes by the drop-down box. 
+Some icons have two different representations, one for bright themes and 
+one for dark themes. It is possible to switch between both themes by the drop-down box. 
 Changes to style-sheets and icons are only effectuated after a restart of |itom|.
 
 Section Console
@@ -91,16 +125,21 @@ Section Console
 General
 ---------------------
 
-This tab provides options to decide how text is processed before copying it to the clipboard or before pasting it from the clipboard to the command line.
+This tab provides options to decide how text is processed before copying it 
+to the clipboard or before pasting it from the clipboard to the command line.
 
 Line Wrap
 ---------------------
 
-At first, it is possible to define the general line wrap mode. You have the possibility to disable the line wrap, or enable a line wrap at a word or character boundary.
+At first, it is possible to define the general line wrap mode. You have the 
+possibility to disable the line wrap, or enable a line wrap at a word or 
+character boundary.
 
-The performance of the editor decreases for very long lines. Additionally, the readability can be increased, if the text is additionally wrapped after a certain
-number of characters. Enable the **long line** wrap by the checkbox **Split long lines** and define the number of characters, after which the wrap occurs. Wrapped
-lines will start with three leading dots (...).
+The performance of the editor decreases for very long lines. Additionally, 
+the readability can be increased, if the text is additionally wrapped after a certain
+number of characters. Enable the **long line** wrap by the 
+checkbox **Split long lines** and define the number of characters, 
+after which the wrap occurs. Wrapped lines will start with three leading dots (...).
 
 Command History
 ---------------------
@@ -113,12 +152,26 @@ Section Python
 General
 ----------------
 
-* Use the drop-down menu to define if changes in scripts should automatically be saved before executing the script.
-* Every version of |itom| is compiled against a certain version of Python. At runtime, Python can be loaded from different directories, which can be given in the 2nd part of this
-  property page. Per default, Python is located in the **python3** subdirectory of your |itom| installation. However, if Python is installed as stand-alone application, it also might
-  publish its root dir in the registry (Windows) or in the environment variable PYTHONHOME. Choose the second option to force itom to look for one of these directories. Via the third
-  option is it also possible to indicate a user-defined directory, where the Python installation is located.
-  You have to restart |itom| such that these changes are applied.
+* Use the drop-down menu to define if changes in scripts should automatically 
+be saved before executing the script.
+
+* Every version of |itom| is compiled against a certain version of Python. 
+At runtime, Python can be loaded from different directories, which 
+can be given in the 2nd part of this
+property page. Per default, Python is located in the **python3** subdirectory 
+of your |itom| installation. However, if Python is installed as stand-alone 
+application, it also might publish its root dir in the registry (Windows) or 
+in the environment variable PYTHONHOME. Choose the second option to force itom 
+to look for one of these directories. Via the third option is it also possible 
+to indicate a user-defined directory, where the Python installation is located.
+You have to restart |itom| such that these changes are applied.
+
+* Python does have a very huge help system which can also launch 3rd party 
+programs to view the output of help() internal command. You can specify the 
+command which is passed a file to containing the output of help() via PAGER enver.
+The help system is very OS specific, and the commandpresets are only tested on win10.
+It uses the SystemEnvironment's variables. You can test the command using the
+cmd shell. win10: use setx instead of set for setting environment variables.
 
 Startup
 --------------------
