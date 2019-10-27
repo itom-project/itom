@@ -3545,6 +3545,10 @@ The meaning for XY:name corresponds to PyWorkspaceItem::m_key.
 
 This method returns a new reference to the found PyObject* or NULL. This function can only be
 called if the Python GIL is already locked.
+
+\TODO: up to now, validVariableName is the name of the item at the deepest level (for nested variables) only.
+We should think about if the validVariableName should be a underscore-joined string of all variable names along
+the tree, beginning from the root level.
 */
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName /*= NULL*/)
 {
@@ -3722,6 +3726,11 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     else
                     {
                         obj = tempObj;
+                        if (validVariableName)
+                        {
+                            *validVariableName = itemKey;
+                        }
+
                         if (objIsNewRef)
                         {
                             Py_DECREF(current_obj); 

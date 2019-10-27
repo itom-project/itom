@@ -281,6 +281,8 @@ void WorkspaceDockWidget::mnuDeleteItem()
          }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::mnuClearAll()
 {
     RetVal retVal;
@@ -295,6 +297,7 @@ void WorkspaceDockWidget::mnuClearAll()
     }
     QMetaObject::invokeMethod(eng, "pythonClearAll");
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if the import button has been clicked
 /*!
