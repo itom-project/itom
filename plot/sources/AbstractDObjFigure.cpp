@@ -247,6 +247,27 @@ ito::RetVal AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
             }
         }
     }
+    else if (!camera && m_cameraConnected)
+    {
+        retval += removeLiveSource(); //removes existing live source
+
+        if (retval.containsError())
+        {
+            std::cerr << "Error while disconnecting the live image.\n" << std::endl;
+            if (retval.hasErrorMessage())
+            {
+                std::cerr << retval.errorMessage() << "\n" << std::endl;
+            }
+        }
+        else if (retval.containsWarning())
+        {
+            std::cout << "Warning while disconnecting the live image.\n" << std::endl;
+            if (retval.hasErrorMessage())
+            {
+                std::cerr << retval.errorMessage() << "\n" << std::endl;
+            }
+        }
+    }
 
     updatePropertyDock();
     return retval;
@@ -267,14 +288,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
             if (m_dataPointer["source"].data() != source.data())
             {
                 QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
-                if (oldSource.data())
-                {
-                    m_dataPointer["source"] = source;
-                }
-                else
-                {
-                    m_dataPointer["source"] = source;
-                }
+                m_dataPointer["source"] = source;
             }
         }
         else
@@ -308,7 +322,9 @@ RetVal AbstractDObjFigure::removeLiveSource()
             retval += apiStopLiveData(source, this);
             retval += apiDisconnectLiveData(source, this);
         }
+
         param->setVal<void*>(NULL);
+        m_cameraConnected = false;
     }
     else
     {
