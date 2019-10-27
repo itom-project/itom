@@ -34,4 +34,4 @@ class DataObjectMapping(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(module='dataobject_mapping', exit=False)

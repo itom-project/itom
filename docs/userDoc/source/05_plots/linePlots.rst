@@ -116,8 +116,8 @@ This shows the curve Properties widget.
 
 If you want to set a propertie global for all curves you can also use the properties widget (View >> properties or via right click on the toolbar)
     
-Legendtitle of line plots
---------------------------
+Legend title of line plots
+---------------------------
 
 Legendtitles of a line plot can be activated and modified by the **curve properties** or by the **plot properties**. Per default the legendtitles are defined as *curve 0, curve 1,...* 
 If the dataObject which is plotted has defined tags named **legendTitle0, legendTitle1, ...**, then the tag entries are used as legendTitles. 

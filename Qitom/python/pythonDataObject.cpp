@@ -93,11 +93,12 @@ Parameters \n\
 dims : {sequence of integers}, optional \n\
     'dims' is a list or tuple indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'.\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
-data : {str}, optional \n\
-    'data' is a single value or a sequence with the same amount of values than the data object. The values from data will be assigned to the new data object (filled row by row).\n\
+data : {int, float, complex, sequence of numbers, array-like object}, optional \n\
+    If 'data' is a single number, all values in the dataObject are set to this value. Else, the sequence or array-like object must have the same number of values than \n\
+    the data object. These values will then be assigned to the new data object (filled row by row).\n\
 \n\
 Notes \n\
 ------ \n\
@@ -155,8 +156,9 @@ The function dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueO
 creates a new itom-dataObject filled with undefined data.\n\
 If no parameters are given, an uninitilized DataObject (dims = 0, no sizes) is created.\n\
 \n\
-As second possibility you can also use the copy-constructor 'dataObject(AnyArray)', \n\
-where AnyArray must be any array-like structure which is parsable by the numpy-interface.\n\
+As second possibility you can also use the copy-constructor 'dataObject(anyArray : Union[dataObject, np.ndarray], dtype : str = '', continuous : int = 0)', \n\
+where 'anyArray' must be any array-like structure which is parsable by the numpy-interface. If a dtype is given or if continuous is 1, \n\
+the new data object will be a type-casted (and / or continuous) copy of 'anyArray'.\n\
 \n\
 See Also \n\
 ---------- \n\
@@ -167,38 +169,34 @@ rand() : Static method to construct a randomly filled data object (uniform distr
 randN() : Static method to construct a randomly filled data object (gaussian distribution).");
 int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
-    Py_ssize_t length = 0;
-    Py_ssize_t lengthKwds = 0;
-    PyObject *tmp = NULL;
+    Py_ssize_t lengthArgs = args ? PyTuple_Size(args) : 0;
+    Py_ssize_t lengthKwds = kwds ? PyDict_Size(kwds) : 0;
+
     PyObject* copyObject = NULL;
-    PyObject* data = NULL;
-    const char *kwlist[] = {"dims", "dtype", "continuous", "data", NULL};
-    PyObject *dimList = NULL;
-    const char *type = "uint8\0";
-    unsigned char continuous = 0;
-    unsigned char dimensions = 0;
-    Py_ssize_t dims = 0;
-    int intDims = 0;
+    const char *cpykwlist[] = { "object", "dtype", "continuous", NULL };
+    const char *typeName = ""; //do not place the default value here: this will be done individually by the different sub-cases
     int typeno = 0;
-    int *sizes = NULL;
-    int tempSizes = 0;
+    unsigned char continuous = 0;
 
     RetVal retValue(retOk);
     bool done = false;
 
-    if (args != NULL) length = PyTuple_Size(args);
-    if (kwds != NULL) lengthKwds = PyDict_Size(kwds);
-
     //clear base (if available)
-    tmp = self->base;
-    self->base = NULL;
-    Py_XDECREF(tmp);
+    PyDataObject_SetBase(self, NULL);
 
     //clear existing dataObject (if exists)
     DELETE_AND_SET_NULL(self->dataObject);
 
+    //The order of argument check is:
+    /*
+    1. no arguments --> create empty dataObject
+    2. basic copy constructor --> first argument is another dataObject, followed by optional type and/or continuous flag
+    3. general copy constructor --> first argument is a compatible np.array, followed by optional type and/or continuous flag
+    4. generation from given shape, optional dtype, continuous flag and data
+    */
+
     //1. check for call without arguments
-    if ((length + lengthKwds) == 0 && !done)
+    if ((lengthArgs + lengthKwds) == 0 && !done)
     {
         DELETE_AND_SET_NULL(self->dataObject);
         self->dataObject = new ito::DataObject();
@@ -209,536 +207,145 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
     //2.  check for copy constructor of type PyDataObject (same type)
     if (!retValue.containsError()) PyErr_Clear();
-    if (!done && PyArg_ParseTuple(args, "O!", &PyDataObjectType, &copyObject))
+    //todo: default of type and continuous must be the same than of rhs object! not uint8 and 0!
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(cpykwlist), &PyDataObjectType, &copyObject, &typeName, &continuous))
     {
-        PyDataObject* tempObject = (PyDataObject*)(copyObject);
-        DELETE_AND_SET_NULL(self->dataObject);
-        self->dataObject = new ito::DataObject(*tempObject->dataObject);
-        Py_XINCREF(tempObject->base);
-        self->base = tempObject->base;
-        retValue += RetVal(retOk);
-        done = true;
+        PyDataObject* rhsDataObj = (PyDataObject*)(copyObject);
+
+        if (strlen(typeName) > 0)
+        {
+            typeno = typeNameToNumber(typeName);
+        }
+        else
+        {
+            //same type than given copyObject
+            typeno = rhsDataObj->dataObject->getType();
+        }
+
+        if (typeno >= 0)
+        {
+            bool differentType = (typeno != rhsDataObj->dataObject->getType());
+            DELETE_AND_SET_NULL(self->dataObject);
+
+            if (differentType)
+            {
+                self->dataObject = new ito::DataObject();
+                retValue += rhsDataObj->dataObject->convertTo(*self->dataObject, typeno);
+                if (retValue.containsError())
+                {
+                    PyErr_SetString(PyExc_RuntimeError, retValue.errorMessage());
+                }
+                else
+                {
+                    if (continuous > 0 && self->dataObject->getContinuous() == 0)
+                    {
+                        //try to make this object continuous
+                        ito::DataObject tempObj = ito::makeContinuous(*(self->dataObject));
+                        *(self->dataObject) = tempObj;
+                    }
+
+                    done = true;
+                }
+            }
+            else
+            {
+                self->dataObject = new ito::DataObject(*rhsDataObj->dataObject);
+
+                if (continuous > 0 && self->dataObject->getContinuous() == 0)
+                {
+                    //try to make this object continuous. The continous object cannot share any memory with any base objects, since it has to be reallocated as independent object
+                    ito::DataObject tempObj = ito::makeContinuous(*(self->dataObject));
+                    *(self->dataObject) = tempObj;
+                }
+                else
+                {
+                    PyDataObject_SetBase(self, rhsDataObj->base);
+                }
+
+                done = true;
+            }
+        }
+        else
+        {
+            retValue += ito::retError;
+            PyErr_Format(PyExc_ValueError, "Invalid dtype '%s'.", typeName);
+        }
     }
 
-    if (!retValue.containsError()) PyErr_Clear();
-
-    if (!done && PyArg_ParseTuple(args, "O!", &PyArray_Type, &copyObject)) // copyObject is a borrowed reference
+    if (!retValue.containsError())
     {
-        PyArrayObject *ndArray = (PyArrayObject*)copyObject; //reference (from now on, copyObject is only used once when the tags are copied, don't use it for further tasks)
-        PyArray_Descr *descr = PyArray_DESCR(ndArray);
-        unsigned char dimensions = -1;
-        int typeno = -1;
-        uchar* data = NULL;
+        //the previous PyArg_ParseTupleAndKeywords returned false ans et an error. Delete this error and try to go on.
+        PyErr_Clear();
+    }
 
-        //at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is compatible but has to be converted, 3. it is incompatible
-        if (! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
+    //2. check for argument object : np.ndarray, dtype : str = "", continuous : int = 1 (continuous has no impact)
+    if (!done)
+    {
+        int result = PyDataObj_CreateFromNpNdArrayAndType(self, args, kwds);
+
+        if (result == 0)
         {
-            retValue += RetVal(retError);
-            PyErr_SetString(PyExc_TypeError,"Given numpy array has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+            done = true;
+        }
+        else if (result == -1)
+        {
+            //general error: Python error is set and should be used
+            retValue = ito::retError;
             done = true;
         }
         else
         {
-            //check whether type of ndarray exists for data object
-            typeno = parseTypeNumberInverse(descr->kind , PyArray_ITEMSIZE(ndArray));
-
-            if (typeno > -1)
-            {
-                //verify that ndArray is c-contiguous
-                ndArray = PyArray_GETCONTIGUOUS(ndArray); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
-                if (ndArray == NULL)
-                {
-                    retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given numpy array to a c-contiguous array.");
-                    done = true;
-                }
-                else
-                {
-                    descr = PyArray_DESCR(ndArray);
-                    dimensions = PyArray_NDIM(ndArray); //->nd;
-                }
-            }
-            else
-            {
-                //check whether type is compatible
-                int newNumpyTypeNum = getTypenumOfCompatibleType(descr->kind, PyArray_ITEMSIZE(ndArray));
-                if (newNumpyTypeNum == -1)
-                {
-                    retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"The data type of the given np.array is not compatible to any data type provided by dataObject");
-                    done = true;
-                }
-                else
-                {
-#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
-                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
-#else
-                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_ARRAY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
-#endif
-                    if (ndArray == NULL)
-                    {
-                        retValue += RetVal(retError);
-                        PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given np.array to a c-contiguous array with a compatible type.");
-                        done = true;
-                    }
-                    else
-                    {
-                        descr = PyArray_DESCR(ndArray);
-                        dimensions = PyArray_NDIM(ndArray); //->nd;
-
-                        typeno = parseTypeNumberInverse(descr->kind , PyArray_ITEMSIZE(ndArray));
-                        if (typeno == -1)
-                        {
-                            retValue += RetVal(retError);
-                            PyErr_SetString(PyExc_TypeError,"While converting the given np.array to a compatible data type with respect to data object, an error occurred.");
-                            done = true;
-                        }
-                    }
-                }
-            }
-
-            if (!retValue.containsError())
-            {
-                if (dimensions <= 0 || PyArray_SIZE(ndArray) <= 0)
-                {
-                    DELETE_AND_SET_NULL(self->dataObject);
-                    self->dataObject = new ito::DataObject();
-                    Py_XDECREF((PyObject*)ndArray);
-                    done = true;
-                }
-                else
-                {
-                    data = (uchar*)PyArray_DATA(ndArray);
-                    npy_intp* npsizes = PyArray_DIMS(ndArray);
-                    npy_intp *npsteps = (npy_intp *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
-
-                    int *sizes = new int[dimensions];
-                    int *steps = new int[dimensions];
-                    for (int n = 0; n < dimensions; n++)
-                    {
-                        sizes[n] = npsizes[n];
-                        steps[n] = npsteps[n];
-                    }
-
-                    //here size of steps is equal to size of sizes, DataObject only requires the first dimensions-1 elements of steps
-
-                    //verify that last dimension has steps size equal to itemsize
-                    if(steps[dimensions-1] == PyArray_ITEMSIZE(ndArray))
-                    {
-                        DELETE_AND_SET_NULL(self->dataObject);
-
-                        try
-                        {
-                            self->dataObject = new ito::DataObject(dimensions, sizes, typeno, data, steps);
-                        }
-                        catch (cv::Exception &exc)
-                        {
-                            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                            self->dataObject = NULL;
-                            retValue += RetVal::format(retError, 0, "failed to create data object: %s", (exc.err).c_str());
-                        }
-                    }
-                    else
-                    {
-                        //increase dimension by one and add last dimension with size 1 in order to realize a last step size equal to itemsize
-                        dimensions = dimensions + 1;
-                        int *sizes_inc = new int[dimensions];
-                        int *steps_inc = new int[dimensions];
-
-                        for(uchar i = 0 ; i < dimensions - 1 ; i++)
-                        {
-                            sizes_inc[i] = sizes[i];
-                            steps_inc[i] = steps[i];
-                        }
-                        sizes_inc[dimensions - 1] = 1;
-                        steps_inc[dimensions - 1] = PyArray_ITEMSIZE(ndArray);
-                        DELETE_AND_SET_NULL(self->dataObject);
-
-                        try
-                        {
-                            self->dataObject = new ito::DataObject(dimensions, sizes_inc, typeno, data, steps_inc);
-                        }
-						catch (cv::Exception &exc)
-						{
-                            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                            self->dataObject = NULL;
-                            retValue += RetVal::format(retError, 0, "failed to create data object: %s", (exc.err).c_str());
-                        }
-
-                        DELETE_AND_SET_NULL_ARRAY(sizes_inc);
-                        DELETE_AND_SET_NULL_ARRAY(steps_inc);
-
-                    }
-
-                    DELETE_AND_SET_NULL_ARRAY(sizes);
-                    DELETE_AND_SET_NULL_ARRAY(steps);
-
-                    //Py_XINCREF(copyObject); (we don't have to increment reference of ndArray here, since this is already done in the steps above, where the flags c_contiguous and the type is checked)
-                    self->base = (PyObject*)ndArray;
-                    done = true;
-                }
-            }
+            //argument parse error: jump into the general error message block
+            done = false;
+            retValue = ito::retOk;
+            PyErr_Clear();
         }
     }
 
-    //3. check for argument: list/tuple/seq.(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
-    if (!retValue.containsError()) PyErr_Clear();
-    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O|sbO", const_cast<char**>(kwlist), &dimList, &type, &continuous, &data))
+    if (!retValue.containsError())
     {
-        done = true;
+        //the previous PyArg_ParseTupleAndKeywords returned false ans et an error. Delete this error and try to go on.
+        PyErr_Clear();
+    }
 
-        //check if dimList supports sequence protocol
-        if (PySequence_Check(dimList))
+    //3. check for argument: list/tuple/seq.(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    if (!done)
+    {
+        int result = PyDataObj_CreateFromShapeTypeData(self, args, kwds);
+
+        if (result == 0)
         {
-            typeno = typeNameToNumber(type);
-            if (typeno >= 0)
-            {
-                dims = PySequence_Size(dimList);
-
-                if (dims < 0)
-                {
-                    retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"Number of dimensions must be bigger than zero.");
-                }
-                else if (dims > 255)
-                {
-                    retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"Number of dimensions must be lower than 256.");
-                }
-
-                intDims = Py_SAFE_DOWNCAST(dims, Py_ssize_t, int);
-
-                if (!retValue.containsError())
-                {
-                    dimensions = static_cast<unsigned char>(intDims);
-                    sizes = new int[intDims];
-                    for (int i = 0; i<intDims; i++) sizes[i]=0;
-
-                    int totalElems = 1;
-                    PyObject *dimListItem = NULL;
-                    bool ok;
-
-                    //try to parse list to values of unsigned int
-                    for (Py_ssize_t i = 0; i < dims; i++)
-                    {
-                        dimListItem = PySequence_GetItem(dimList,i); //new reference
-                        tempSizes = PythonQtConversion::PyObjGetInt(dimListItem, true, ok); 
-                        if (!ok)
-                        {
-                            PyErr_PrintEx(0);
-                            PyErr_Clear();
-                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number or exceeds the valid value range.", i+1);
-                            retValue += RetVal(retError);
-                            break;
-                        }
-                        else if (tempSizes <= 0)
-                        {
-                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension must be a positive number.", i+1);
-                            retValue += RetVal(retError);
-                            break;
-                        }
-
-                        Py_XDECREF(dimListItem);
-                        sizes[i] = tempSizes;
-                        totalElems *= tempSizes;
-                    }
-
-                    //pre-check data
-                    if (!retValue.containsError() && data)
-                    {
-                        if (PySequence_Check(data) && PySequence_Length(data) != totalElems)
-                        {
-                            PyErr_SetString(PyExc_TypeError,"The sequence provided by data must have the same length than the total number of elements of the data object.");
-                            retValue += RetVal(retError);
-                        }
-                        else if (!PySequence_Check(data) && PyFloat_Check(data) == false && PyLong_Check(data) == false && PyComplex_Check(data) == false)
-                        {
-                            PyErr_SetString(PyExc_TypeError,"The single value provided by data must be a numeric type.");
-                            retValue += RetVal(retError);
-                        }
-                    }
-
-                    if (!retValue.containsError())
-                    {
-                        DELETE_AND_SET_NULL(self->dataObject);
-                        try
-                        {
-                            self->dataObject = new ito::DataObject(dimensions, sizes, typeno, continuous);
-                        }
-                        catch(cv::Exception &exc)
-                        {
-                            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                            self->dataObject = NULL;
-                            data = NULL; //this has been a borrowed reference or NULL before, we set it to NULL such that the next if-case is not entered
-                            retValue += RetVal(retError);
-                        }
-                        done = true;
-
-                        if (data)
-                        {
-                            try
-                            {
-                                if (PyLong_Check(data))
-                                {
-                                    int overflow;
-                                    *(self->dataObject) = (int32)PyLong_AsLongAndOverflow(data, &overflow);
-                                    if (overflow)
-                                    {
-                                        throw cv::Exception(0, "overflow: given data exceeds the integer boundaries.","PyDataObject_init",__FILE__,__LINE__);
-                                    }
-                                }
-                                else if (PyFloat_Check(data))
-                                {
-                                    *(self->dataObject) = (float64)PyFloat_AsDouble(data);
-                                }
-                                else if (PyComplex_Check(data))
-                                {
-                                    *(self->dataObject) = complex128(PyComplex_RealAsDouble(data), PyComplex_ImagAsDouble(data));
-                                }
-                                else if (PySequence_Check(data))
-                                {
-                                    int npTypenum;
-                                    switch(typeno)
-                                    {
-                                    case ito::tInt8:        npTypenum = NPY_BYTE; break;
-                                    case ito::tUInt8:       npTypenum = NPY_UBYTE; break;
-                                    case ito::tInt16:       npTypenum = NPY_SHORT; break;
-                                    case ito::tUInt16:      npTypenum = NPY_USHORT; break;
-                                    case ito::tInt32:       npTypenum = NPY_INT; break;
-                                    case ito::tUInt32:      npTypenum = NPY_UINT; break;
-                                    case ito::tRGBA32:      npTypenum = NPY_UINT; break;
-                                    case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
-                                    case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
-                                    case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
-                                    case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
-                                    default: npTypenum = -1;
-                                    }
-
-                                    PyObject *npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
-
-                                    if (npArray == NULL)
-                                    {
-                                        throw cv::Exception(0, "given data could not entirely be transformed to the required data type.","PyDataObject_init",__FILE__,__LINE__);
-                                    }
-                                    else
-                                    {
-                                        void *data = PyArray_DATA((PyArrayObject*)npArray);
-
-                                        int numMats = self->dataObject->calcNumMats();
-                                        int matIndex = 0;
-                                        int c=0;
-                                        //PyObject *temp = NULL;
-                                        cv::Mat *mat = NULL;
-                                        int m,n;
-
-                                        for (int i=0;i<numMats;i++)
-                                        {
-                                            matIndex = self->dataObject->seekMat(i, numMats);
-                                            mat = (cv::Mat*)(self->dataObject->get_mdata())[matIndex];
-
-                                            switch(typeno)
-                                            {
-                                            case ito::tInt8:
-                                                {
-                                                    int8 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<int8>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<int8*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tUInt8:
-                                                {
-                                                    uint8 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<uint8>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<uint8*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tInt16:
-                                                {
-                                                    int16 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<int16>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<int16*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tUInt16:
-                                                {
-                                                    uint16 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<uint16>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<uint16*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tInt32:
-                                                {
-                                                    int32 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<int32>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<int32*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tUInt32:
-                                                {
-                                                    uint32 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<uint32>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tRGBA32:
-                                                {
-                                                    ito::Rgba32 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<ito::Rgba32>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n].rgba = (reinterpret_cast<uint32*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tFloat32:
-                                                {
-                                                    float32 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<float32>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<float32*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tFloat64:
-                                                {
-                                                    float64 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<float64>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<float64*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tComplex64:
-                                                {
-                                                    complex64 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<complex64>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<complex64*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case ito::tComplex128:
-                                                {
-                                                    complex128 *rowPtr;
-                                                    for (m = 0; m < mat->rows; m++)
-                                                    {
-                                                        rowPtr = mat->ptr<complex128>(m);
-                                                        for (n = 0; n < mat->cols; n++)
-                                                        {
-                                                            rowPtr[n] = (reinterpret_cast<complex128*>(data))[c++];
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    Py_XDECREF(npArray);
-                                }
-                                else
-                                {
-                                    throw cv::Exception(0, "invalid data value","PyDataObject_init",__FILE__,__LINE__);
-                                }
-                            }
-                            catch(cv::Exception &exc)
-                            {
-                                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-                                
-                                delete self->dataObject;
-                                self->dataObject = NULL;
-                                retValue += RetVal(retError);
-                            }
-                        }
-                    }
-
-                    DELETE_AND_SET_NULL_ARRAY(sizes);
-                }
-            }
-            else
-            {
-                PyErr_SetString(PyExc_TypeError,"dtype name is unknown.");
-                retValue += RetVal(retError);
-            }
+            done = true;
+        }
+        else if (result == -1)
+        {
+            //general error: Python error is set and should be used
+            retValue = ito::retError;
+            done = true;
         }
         else
         {
-            PyErr_SetString(PyExc_TypeError, "dimensions must be of type list(int size1, int size2, ...) or type tuple(int size1, int size2, ...)");
-            retValue += RetVal(retError);
+            //argument parse error: jump into the general error message block
+            done = false;
+            retValue = ito::retOk;
+            PyErr_Clear();
         }
     }
 
     if (!done && retValue.containsError())
     {
-        PyErr_SetString(PyExc_TypeError,"required arguments: list/tuple(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
-        retValue += RetVal(retError);
+        PyErr_SetString(PyExc_TypeError,"Required arguments are: No arguments OR obj : Union[dataObject, np.ndarray], dtype : str = 'uint8', continuous : int = 0 OR shape : Sequence[int], dtype : str = 'uint8', continuous : int = 0, data : Union[None,int,float,complex,list,tuple] = None");
     }
     else if (!done && !retValue.containsError())
     {
-        PyErr_Clear();
         PyErr_SetString(PyExc_TypeError,"number or arguments are invalid.");
-        retValue += RetVal(retError);
+    }
+    else if (done)
+    {
+        return retValue.containsError() ? -1 : 0;
     }
 
-    if (retValue.containsError())
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
+    return -1;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -784,6 +391,402 @@ char * PythonDataObject::typeNumberToName(int typeno)
     else
     {
         return PyDataObject_types[typeno].name;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+return 0 if dataObject could be created. self->dataObject is allocated then.
+return -1 in case of a general error, Python error message is set
+return -2 if args / kwds cannot be parsed, Python error message is set, too
+*/
+int PythonDataObject::PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    PyObject* data = NULL;
+    const char *kwlist[] = { "dims", "dtype", "continuous", "data", NULL };
+    PyObject *dimList = NULL;
+    const char *typeName = "uint8\0";
+    unsigned char continuous = 0;
+    Py_ssize_t dims = 0;
+    int intDims = 0;
+    ito::RetVal retVal;
+    int *sizes = NULL;
+    int tempSizes = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|sbO", const_cast<char**>(kwlist), &dimList, &typeName, &continuous, &data))
+    {
+        return -2; //Python error is set, too
+    }
+
+    int typeno = typeNameToNumber(typeName);
+
+    if (typeno < 0)
+    {
+        PyErr_Format(PyExc_TypeError, "dtype name '%s' is unknown.", typeName);
+        return -1;
+    }
+    else if (!PySequence_Check(dimList))
+    {
+        PyErr_SetString(PyExc_TypeError, "a non-empty list or tuple of integer is expected for the parameter 'shape'.");
+        return -1;
+    }
+    else
+    {
+        dims = PySequence_Size(dimList);
+
+        if (dims < 0 || dims > 255)
+        {
+            PyErr_SetString(PyExc_TypeError, "Number of dimensions must be in range [1,255].");
+            return -1;
+        }
+
+        intDims = Py_SAFE_DOWNCAST(dims, Py_ssize_t, int);
+
+        unsigned char dimensions = static_cast<unsigned char>(intDims);
+        sizes = new int[intDims];
+        for (int i = 0; i < intDims; i++)
+        {
+            sizes[i] = 0;
+        }
+            
+        int totalElems = 1;
+        PyObject *dimListItem = NULL;
+        bool ok;
+
+        //try to parse list to values of unsigned int
+        for (Py_ssize_t i = 0; i < dims; i++)
+        {
+            dimListItem = PySequence_GetItem(dimList, i); //new reference
+            tempSizes = PythonQtConversion::PyObjGetInt(dimListItem, true, ok);
+            if (!ok)
+            {
+                PyErr_Format(PyExc_TypeError, "Size of %d. dimension is no integer number or exceeds the valid value range.", i + 1);
+                retVal += ito::retError;
+                break;
+            }
+            else if (tempSizes <= 0)
+            {
+                PyErr_Format(PyExc_TypeError, "Size of %d. dimension must be a positive number.", i + 1);
+                retVal += ito::retError;
+                break;
+            }
+
+            Py_XDECREF(dimListItem);
+            sizes[i] = tempSizes;
+            totalElems *= tempSizes;
+        }
+
+        //pre-check data
+        if (!retVal.containsError() && data)
+        {
+            if (PySequence_Check(data) && PySequence_Length(data) != totalElems)
+            {
+                PyErr_SetString(PyExc_TypeError, "The sequence provided by data must have the same length than the total number of elements of the data object.");
+                retVal += RetVal(retError);
+            }
+            else if (!PySequence_Check(data) && PyFloat_Check(data) == false && PyLong_Check(data) == false && PyComplex_Check(data) == false)
+            {
+                PyErr_SetString(PyExc_TypeError, "The single value provided by data must be a numeric type (int, float, complex).");
+                retVal += RetVal(retError);
+            }
+        }
+
+        if (!retVal.containsError())
+        {
+            DELETE_AND_SET_NULL(self->dataObject);
+            try
+            {
+                self->dataObject = new ito::DataObject(dimensions, sizes, typeno, continuous);
+            }
+            catch (cv::Exception &exc)
+            {
+                PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                self->dataObject = NULL;
+                retVal += RetVal(retError);
+            }
+            
+            if (!retVal.containsError() && data)
+            {
+                try
+                {
+                    if (PyLong_Check(data))
+                    {
+                        int overflow;
+                        *(self->dataObject) = (int32)PyLong_AsLongAndOverflow(data, &overflow);
+                        if (overflow)
+                        {
+                            throw cv::Exception(0, "overflow: given data exceeds the integer boundaries.", "PyDataObject_init", __FILE__, __LINE__);
+                        }
+                    }
+                    else if (PyFloat_Check(data))
+                    {
+                        *(self->dataObject) = (float64)PyFloat_AsDouble(data);
+                    }
+                    else if (PyComplex_Check(data))
+                    {
+                        *(self->dataObject) = complex128(PyComplex_RealAsDouble(data), PyComplex_ImagAsDouble(data));
+                    }
+                    else if (PySequence_Check(data))
+                    {
+                        int npTypenum = getNpTypeFromDataObjectType(typeno);
+
+                        if (npTypenum == -1)
+                        {
+                            throw cv::Exception(0, "No compatible np datatype found for desired dtype", "PyDataObject_init", __FILE__, __LINE__);
+                        }
+
+                        PyObject *npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
+
+                        if (npArray == NULL)
+                        {
+                            //Python error is set... Therefore just throw an exception without message
+                            throw cv::Exception(0, "", "PyDataObject_init", __FILE__, __LINE__);
+                        }
+                        else
+                        {
+                            retVal += copyNpArrayValuesToDataObject((PyArrayObject*)npArray, self->dataObject, (ito::tDataType)typeno);
+
+                            if (retVal.containsError())
+                            {
+                                throw cv::Exception(0, retVal.errorMessage(), "PyDataObject_init", __FILE__, __LINE__);
+                            }
+                        }
+
+                        Py_XDECREF(npArray);
+                    }
+                    else
+                    {
+                        throw cv::Exception(0, "invalid data value", "PyDataObject_init", __FILE__, __LINE__);
+                    }
+                }
+                catch (cv::Exception &exc)
+                {
+                    if (!PyErr_Occurred())
+                    {
+                        //no python error set, yet: set it from the exception message
+                        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                    }
+
+                    delete self->dataObject;
+                    self->dataObject = NULL;
+                    retVal += RetVal(retError);
+                }
+            }
+        }
+
+        DELETE_AND_SET_NULL_ARRAY(sizes);
+    }
+
+    return retVal.containsError() ? -1 : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+return 0 if dataObject could be created. self->dataObject is allocated then.
+return -1 in case of a general error, Python error message is set
+return -2 if args / kwds cannot be parsed, Python error message is set, too
+*/
+int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds) //helper method for PyDataObject_init
+{
+    const char *kwlist[] = { "object", "dtype", "continuous", NULL };
+    PyObject* rhsNpArray = NULL;
+    PyObject *dimList = NULL;
+    const char *typeName = "\0";
+    unsigned char continuous = 0;
+
+#if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
+    int C_CONTIGUOUS = NPY_C_CONTIGUOUS; //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
+#else
+    int C_CONTIGUOUS = NPY_ARRAY_C_CONTIGUOUS; //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
+#endif
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(kwlist), &PyArray_Type, &rhsNpArray, &typeName, &continuous))
+    {
+        return -2;
+    }
+
+    PyArrayObject *ndArrayRef = (PyArrayObject*)rhsNpArray; //reference (from now on, copyObject is only used once when the tags are copied, don't use it for further tasks)
+    PyArrayObject *ndArrayOut = NULL;
+    PyArray_Descr *descr = PyArray_DESCR(ndArrayRef);
+    unsigned char dimensions = -1;
+    int destNpArrayTypeNo = -1;
+    int destDObjTypeNo = -1;
+    int inputNpArrayTypeNo = -1; //-1, if type of np.array has no equivalent in dataObject type
+    uchar* data = NULL;
+    
+
+    //at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is compatible but has to be converted, 3. it is incompatible
+    if (!(descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
+    {
+        PyErr_SetString(PyExc_TypeError, "Given numpy array has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+        return -1;
+    }
+
+    //now get the desired output type
+    if (strlen(typeName) != 0)
+    {
+        destDObjTypeNo = typeNameToNumber(typeName);
+
+        if (destDObjTypeNo == -1 || destDObjTypeNo == ito::tUInt32)
+        {
+            PyErr_SetString(PyExc_ValueError, "Invalid type name. Allowed type names are 'uint8', 'int8', 'uint16', 'int16', 'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32'");
+            return -1;
+        }
+
+        inputNpArrayTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+
+        if (destDObjTypeNo == inputNpArrayTypeNo)
+        {
+            ndArrayOut = PyArray_GETCONTIGUOUS(ndArrayRef); //new ref
+        }
+        else
+        {
+            int newNumpyTypeNum = getNpTypeFromDataObjectType(destDObjTypeNo);
+
+            if (newNumpyTypeNum != -1)
+            {
+                ndArrayOut = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArrayRef, newNumpyTypeNum, C_CONTIGUOUS | NPY_ARRAY_FORCECAST); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
+            }
+            else
+            {
+                PyErr_Format(PyExc_TypeError, "Could not find a Numpy.dtype, compatible to the desired type '%s'", typeName);
+                return -1;
+            }
+        }
+    }
+    else //guess the type from the type of the given numpy.ndarray
+    {
+        //check whether type of ndarray exists for data object
+        destDObjTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+
+        if (destDObjTypeNo == -1)
+        {
+            //check whether type is compatible
+            destNpArrayTypeNo = getTypenumOfCompatibleType(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+
+            if (destNpArrayTypeNo == -1) //no compatible type found
+            {
+                PyErr_SetString(PyExc_ValueError, "Could not find a compatible Numpy.dtype. Allowed types are 'uint8', 'int8', 'uint16', 'int16', 'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32'");
+                return -1;
+            }
+            else
+            {
+                ndArrayOut = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArrayRef, destNpArrayTypeNo, C_CONTIGUOUS | NPY_ARRAY_FORCECAST); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
+            }
+        }
+        else if (destDObjTypeNo == ito::tUInt32)
+        {
+            PyErr_SetString(PyExc_ValueError, "DataObject of type uint32 cannot be created. Unsupported type.");
+            return -1;
+        }
+        else
+        {
+            ndArrayOut = PyArray_GETCONTIGUOUS(ndArrayRef); //new ref
+        }
+    }
+
+    if (ndArrayOut == NULL)
+    {
+        if (!PyErr_Occurred())
+        {
+            //error message is usually set by PyArray_FROM_OTF or PyArray_GETCONTIGUOUS itself. If not...
+            PyErr_SetString(PyExc_TypeError, "An error occurred while transforming the given np.array to a c-contiguous array with a compatible type.");
+        }
+        return -1;
+    }
+    else
+    {
+        descr = PyArray_DESCR(ndArrayOut);
+        dimensions = PyArray_NDIM(ndArrayOut); //->nd;
+
+        destDObjTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayOut));
+        if (destDObjTypeNo == -1)
+        {
+            PyErr_SetString(PyExc_TypeError, "While converting the given np.array to a compatible data type with respect to data object, an error occurred.");
+            Py_DECREF(ndArrayOut);
+            return -1;
+        }
+    }
+
+    if (dimensions <= 0 || PyArray_SIZE(ndArrayOut) <= 0)
+    {
+        DELETE_AND_SET_NULL(self->dataObject);
+        self->dataObject = new ito::DataObject();
+        Py_XDECREF((PyObject*)ndArrayOut);
+        return -1;
+    }
+    else
+    {
+        data = (uchar*)PyArray_DATA(ndArrayOut);
+        npy_intp* npsizes = PyArray_DIMS(ndArrayOut);
+        npy_intp *npsteps = (npy_intp *)PyArray_STRIDES(ndArrayOut); //number of bytes to jump from one element in one dimension to the next one
+
+        int *sizes = new int[dimensions];
+        int *steps = new int[dimensions];
+        for (int n = 0; n < dimensions; n++)
+        {
+            sizes[n] = npsizes[n];
+            steps[n] = npsteps[n];
+        }
+
+        bool error = false;
+
+        //here size of steps is equal to size of sizes, DataObject only requires the first dimensions-1 elements of steps
+
+        //verify that last dimension has steps size equal to itemsize
+        if (steps[dimensions - 1] == PyArray_ITEMSIZE(ndArrayOut))
+        {
+            DELETE_AND_SET_NULL(self->dataObject);
+
+            try
+            {
+                self->dataObject = new ito::DataObject(dimensions, sizes, destDObjTypeNo, data, steps);
+            }
+            catch (cv::Exception &exc)
+            {
+                PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                self->dataObject = NULL;
+                error = true;
+            }
+        }
+        else
+        {
+            //increase dimension by one and add last dimension with size 1 in order to realize a last step size equal to itemsize
+            dimensions = dimensions + 1;
+            int *sizes_inc = new int[dimensions];
+            int *steps_inc = new int[dimensions];
+
+            for (uchar i = 0; i < dimensions - 1; i++)
+            {
+                sizes_inc[i] = sizes[i];
+                steps_inc[i] = steps[i];
+            }
+
+            sizes_inc[dimensions - 1] = 1;
+            steps_inc[dimensions - 1] = PyArray_ITEMSIZE(ndArrayOut);
+            DELETE_AND_SET_NULL(self->dataObject);
+
+            try
+            {
+                self->dataObject = new ito::DataObject(dimensions, sizes_inc, destDObjTypeNo, data, steps_inc);
+            }
+            catch (cv::Exception &exc)
+            {
+                PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                self->dataObject = NULL;
+                error = true;
+            }
+
+            DELETE_AND_SET_NULL_ARRAY(sizes_inc);
+            DELETE_AND_SET_NULL_ARRAY(steps_inc);
+        }
+
+        DELETE_AND_SET_NULL_ARRAY(sizes);
+        DELETE_AND_SET_NULL_ARRAY(steps);
+
+        PyDataObject_SetBase(self, (PyObject*)ndArrayOut);
+        
+        return error ? -1 : 0;
     }
 }
 
@@ -4240,6 +4243,50 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ int PythonDataObject::PyDataObj_nbBool(PyDataObject *self)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
+        return -1;
+    }
+
+    //TODO: Remove this warning (entire if/else-case), added after the release of itom 3.2.1, if the new behaviour (similar to numpy) should be set.
+    if (PyErr_WarnEx(PyExc_DeprecationWarning, "bool(dataObject) will change in the future. It will not return True in all cases, but return the truth value of a dataObject (only valid if len of dataObject is equal to 1).", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
+    {
+        return -1;
+    }
+    else
+    {
+        return 1;
+    }
+
+    switch (self->dataObject->getTotal())
+    {
+    case 0:
+        return 0;
+        break;
+    case 1:
+    {
+        const uchar zeros[] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+        uchar* data = self->dataObject->getCvPlaneMat(0)->data;
+        if (memcmp(zeros, data, self->dataObject->elemSize()) == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    break;
+    default:
+        PyErr_SetString(PyExc_ValueError, "The truth value of a dataObject with more than one element is ambiguous.");
+        return -1;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_getiter(PyDataObject* self)
 {
     PyObject *args = PyTuple_Pack(1, self); //new ref
@@ -5901,17 +5948,12 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self, void * /*closur
 //----------------------------------------------------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 {
-    if (self->dataObject == NULL) return 0;
-
-    int dims = self->dataObject->getDims();
-    int count = dims > 0 ? 1 : 0;
-
-    for (int i = 0; i < dims; i++)
+    if (self->dataObject == NULL)
     {
-        count *= self->dataObject->getSize(i); //independent on transpose flag
+        return 0;
     }
 
-    return count;
+    return self->dataObject->getTotal();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -5934,7 +5976,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
     if (dims <= 0)
     {
-        Py_RETURN_NONE;
+        PyErr_SetString(PyExc_IndexError, "too many indices for array");
     }
     else if (dims == 1)
     {
@@ -6316,22 +6358,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             else
             {
                 //try to convert the assigned value to a numpy array and then read the values
-                int npTypenum;
-                switch(dataObj.getType())
-                {
-                case ito::tInt8:        npTypenum = NPY_BYTE; break;
-                case ito::tUInt8:       npTypenum = NPY_UBYTE; break;
-                case ito::tInt16:       npTypenum = NPY_SHORT; break;
-                case ito::tUInt16:      npTypenum = NPY_USHORT; break;
-                case ito::tInt32:       npTypenum = NPY_INT; break;
-                case ito::tUInt32:      npTypenum = NPY_UINT; break;
-                case ito::tRGBA32:      npTypenum = NPY_UINT; break;
-                case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
-                case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
-                case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
-                case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
-                default: npTypenum = -1;
-                }
+                int npTypenum = getNpTypeFromDataObjectType(dataObj.getType());
 
                 if (dataObj.getDims() < 2)
                 {
@@ -6768,6 +6795,201 @@ int PythonDataObject::getTypenumOfCompatibleType(char typekind, int itemsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+int PythonDataObject::getNpTypeFromDataObjectType(int type)
+{
+    int npTypenum;
+
+    switch (type)
+    {
+    case ito::tInt8:        npTypenum = NPY_BYTE; break;
+    case ito::tUInt8:       npTypenum = NPY_UBYTE; break;
+    case ito::tInt16:       npTypenum = NPY_SHORT; break;
+    case ito::tUInt16:      npTypenum = NPY_USHORT; break;
+    case ito::tInt32:       npTypenum = NPY_INT; break;
+    case ito::tUInt32:      npTypenum = NPY_UINT; break;
+    case ito::tRGBA32:      npTypenum = NPY_UINT; break;
+    case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
+    case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
+    case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
+    case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
+    default: npTypenum = -1;
+    }
+
+    return npTypenum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* npNdArray and dataObject must be allocated with the same type and shape.*/
+ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type)
+{
+    ito::RetVal retVal;
+    void *data = PyArray_DATA(npNdArray);
+
+    int numMats = dataObject->calcNumMats();
+    int matIndex = 0;
+    int c = 0;
+    cv::Mat *mat = NULL;
+    int m, n;
+
+    for (int i = 0; i < numMats; i++)
+    {
+        matIndex = dataObject->seekMat(i, numMats);
+        mat = (cv::Mat*)(dataObject->get_mdata())[matIndex];
+
+        switch (type)
+        {
+        case ito::tInt8:
+        {
+            int8 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<int8>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<int8*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tUInt8:
+        {
+            uint8 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<uint8>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<uint8*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tInt16:
+        {
+            int16 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<int16>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<int16*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tUInt16:
+        {
+            uint16 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<uint16>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<uint16*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tInt32:
+        {
+            int32 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<int32>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<int32*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tUInt32:
+        {
+            uint32 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<uint32>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<uint32*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tRGBA32:
+        {
+            ito::Rgba32 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<ito::Rgba32>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n].rgba = (reinterpret_cast<uint32*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tFloat32:
+        {
+            float32 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<float32>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<float32*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tFloat64:
+        {
+            float64 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<float64>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<float64*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tComplex64:
+        {
+            complex64 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<complex64>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<complex64*>(data))[c++];
+                }
+            }
+        }
+        break;
+        case ito::tComplex128:
+        {
+            complex128 *rowPtr;
+            for (m = 0; m < mat->rows; m++)
+            {
+                rowPtr = mat->ptr<complex128>(m);
+                for (n = 0; n < mat->cols; n++)
+                {
+                    rowPtr[n] = (reinterpret_cast<complex128*>(data))[c++];
+                }
+            }
+        }
+        break;
+        default:
+            retVal += ito::RetVal(ito::retError, 0, "unknown dtype");
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectAttrTagDict_doc,"return dictionary with all meta information of this dataObject \n\
 \n\
 Returns a new dictionary with the following meta information: \n\
@@ -7143,15 +7365,6 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
     PyObject *item = NULL;
 
     ito::DataObject* selfDO = self->dataObject;
-
-    /*if (selfDO->isT())
-    {
-        selfDO->unlock();
-        selfDO->lockWrite();
-        selfDO->evaluateTransposeFlag();
-        selfDO->unlock();
-        selfDO->lockRead();
-    }*/
 
     if (selfDO->getContinuous()/* == true*/)
     {
@@ -8883,6 +9096,8 @@ PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject 
     Py_RETURN_NONE;
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"name", (PyCFunction)PythonDataObject::PyDataObject_name, METH_NOARGS, pyDataObjectName_doc},
@@ -9037,7 +9252,7 @@ PyNumberMethods PythonDataObject::PyDataObject_numberProtocol = {
     (unaryfunc)PyDataObj_nbNegative,               /* nb_negative */
     (unaryfunc)PyDataObj_nbPositive,               /* nb_positive */
     (unaryfunc)PyDataObj_nbAbsolute,               /* nb_absolute */
-    (inquiry)0,                                    /* nb_bool */
+    (inquiry)PyDataObj_nbBool,                     /* nb_bool */
     (unaryfunc)PyDataObj_nbInvert,                 /* nb_invert */
     (binaryfunc)PyDataObj_nbLshift,                /* nb_lshift */
     (binaryfunc)PyDataObj_nbRshift,                /* nb_rshift */

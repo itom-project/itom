@@ -1,6 +1,8 @@
 import unittest
 import dataobject_squeeze_reshape
 import dataobject_static_constructors
+import dataobject_constructors
+import dataobject_comparison
 import dataobject_mapping
 import dataobject_np_conversion
 import dataobject_makecontinuous
@@ -12,6 +14,8 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest (unittest.makeSuite(dataobject_squeeze_reshape.DataObjectResize))
     suite.addTest (unittest.makeSuite(dataobject_static_constructors.DataObjectStaticConstructors))
+    suite.addTest (unittest.makeSuite(dataobject_constructors.DataObjectConstructors))
+    suite.addTest (unittest.makeSuite(dataobject_comparison.DataObjectComparison))
     suite.addTest (unittest.makeSuite(dataobject_mapping.DataObjectMapping))
     suite.addTest (unittest.makeSuite(dataobject_np_conversion.DataObjectNpConversion))
     suite.addTest (unittest.makeSuite(dataobject_makecontinuous.DataObjectMakeContinuous))
