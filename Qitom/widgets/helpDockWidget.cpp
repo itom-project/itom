@@ -25,6 +25,7 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include "../organizer/scriptEditorOrganizer.h"
 
@@ -47,13 +48,16 @@ HelpDockWidget::HelpDockWidget(const QString &title, const QString &objName, QWi
     m_pActCollapse(NULL),
     m_pActReload(NULL)
 {
-    //ito::AbstractDockWidget *dockParent = this;
     m_pHelpWidget = new HelpTreeDockWidget(this, this);
 
     m_pFilterEdit = new QLineEdit(this);
     m_pFilterEdit->sizePolicy().setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 
     AbstractDockWidget::init();
+
+    float dpiFactor = GuiHelper::screenDpiFactor();
+
+    setMinimumSize(QSize(dpiFactor * 300, dpiFactor * 200));
 
     setContentWidget(m_pHelpWidget);
 }

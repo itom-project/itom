@@ -156,6 +156,7 @@ namespace ito
             void resize(const QSize &);
             void setGeometry(int x, int y, int w, int h);
             void setGeometry(const QRect &);
+            void setMinimumSize(const QSize &size);
 
             QString windowTitle();
             void setWindowTitle(const QString &title);
