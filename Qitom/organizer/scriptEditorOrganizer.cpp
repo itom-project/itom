@@ -348,7 +348,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
     if (pyEngine)
     {
         connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-        connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+        connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecutionThreadSafe()));
     }
 
     if (docked)

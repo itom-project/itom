@@ -3948,6 +3948,8 @@ See Also \n\
 filterHelp");
 PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *kwds)
 {
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+
     int length = PyTuple_Size(pArgs);
     PyObject *params = NULL;
     ito::RetVal ret = ito::retOk;
@@ -3980,6 +3982,8 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
 
     ito::AddInAlgo::FilterDef* fFunc = cfit.value();
+    ito::AddInAlgo::FilterDefExt* fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
+    
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase, paramsOutBase;
 
     const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);
@@ -4006,9 +4010,27 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     Py_BEGIN_ALLOW_THREADS //from here, python can do something else... (we assume that the filter might be a longer operation)
 
+    QSharedPointer<ito::FunctionCancellationAndObserver> observer;
+
+    if (fFuncExt)
+    {
+        observer = QSharedPointer<ito::FunctionCancellationAndObserver>(new ito::FunctionCancellationAndObserver());
+        if (pyEngine)
+        {
+            pyEngine->addFunctionCancellationAndObserver(observer.toWeakRef());
+        }
+    }
+
     try
     {
-        ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
+        if (fFuncExt)
+        {
+            ret = (*(fFuncExt->m_filterFuncExt))(&paramsMandBase, &paramsOptBase, &paramsOutBase, observer);
+        }
+        else
+        {
+            ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
+        }
     }
     catch (cv::Exception &exc)
     {
@@ -4047,6 +4069,18 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
         *p = 0;
 #endif
+    }
+
+    if (fFuncExt && pyEngine)
+    {
+        pyEngine->removeFunctionCancellationAndObserver(observer.data());
+    }
+
+    if (observer && \
+        observer->isCancelled() && \
+        observer->cancellationReason() == ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt)
+    {
+        ret = ito::retOk; //ignore the error message, since Python will raise a keyboardInterrupt though
     }
     
     Py_END_ALLOW_THREADS //now we want to get back the GIL from Python

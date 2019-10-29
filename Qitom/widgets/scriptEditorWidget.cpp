@@ -762,7 +762,7 @@ void ScriptEditorWidget::menuStopScript()
 
     if (eng != NULL)
     {
-        eng->pythonInterruptExecution();
+        eng->pythonInterruptExecutionThreadSafe();
     }
 }
 

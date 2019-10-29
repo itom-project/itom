@@ -4030,7 +4030,31 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PythonEngine::queuedInterrupt(void * state) 
+void PythonEngine::addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer)
+{
+    m_activeFunctionCancellations.append(observer);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer /*= NULL*/)
+{
+    QList<QWeakPointer<ito::FunctionCancellationAndObserver> >::iterator it = m_activeFunctionCancellations.begin();
+
+    while (it != m_activeFunctionCancellations.end())
+    {
+        if (it->isNull() || it->data() == observer)
+        {
+            it = m_activeFunctionCancellations.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int PythonEngine::queuedInterrupt(void* /*arg*/) 
 { 
     // ok this is REALLY ugly, BUT if we want to break python constructs like:
     // while 1:
@@ -4043,16 +4067,16 @@ int PythonEngine::queuedInterrupt(void * state)
     // we accumulate some keyboards interrupts and force their
     // excecution afterwards with setInterrupt ...
     // Anyway deeper nested try - except constructs we cannot terminate this way
-//    while ((*(ito::tPythonState *)state) == pyStateRunning)
+
     {
-        PyErr_SetNone(PyExc_KeyboardInterrupt);
-        PyErr_SetNone(PyExc_KeyboardInterrupt);
+        PyErr_SetString(PyExc_KeyboardInterrupt, "Keyboard interrupt (I)");
+        PyErr_SetString(PyExc_KeyboardInterrupt, "Keyboard interrupt (II)");
         PyErr_SetInterrupt();
     }
     PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
-    PyErr_Clear();
+    //PyErr_Clear(); 4
 
-    return -1; 
+    return 0; 
 } 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4071,29 +4095,12 @@ int PythonEngine::queuedInterrupt(void * state)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonInterruptExecution()
-{
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("AddInManager");
-    bool interruptActuators = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
-    settings.endGroup();
-
-    if (interruptActuators)
-    {
-        QObject* addInManager = AppManagement::getAddInManager();
-        if (addInManager)
-        {
-            QMetaObject::invokeMethod(addInManager, "interruptAllActuatorInstances");
-        }
-    }
-
-//    PyGILState_STATE gstate;
-//    gstate = PyGILState_Ensure();
-
+void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
+{ 
     // only queue the interrupt event if not yet done.
     // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. 
     //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
-    if (m_interruptCounter.testAndSetRelaxed(0, 1)) 
+    if (m_interruptCounter.testAndSetRelaxed(0, 1))
     {
         if (isPythonDebugging() && isPythonDebuggingAndWaiting())
         {
@@ -4103,12 +4110,37 @@ void PythonEngine::pythonInterruptExecution()
         }
         else
         {
-            Py_AddPendingCall(&PythonEngine::queuedInterrupt, &pythonState);
+            int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, NULL);
         }
     }
 
-    // Release the thread. No Python API allowed beyond this point.
-//    PyGILState_Release(gstate);
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("AddInManager");
+    bool interruptActuatorsSettings = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
+    settings.endGroup();
+
+    if (interruptActuatorsAndTimers)
+    {
+        //overwrite the settings
+        interruptActuatorsSettings = *interruptActuatorsAndTimers;
+    }
+
+    if (interruptActuatorsSettings)
+    {
+        QObject* addInManager = AppManagement::getAddInManager();
+        if (addInManager)
+        {
+            QMetaObject::invokeMethod(addInManager, "interruptAllActuatorInstances");
+        }
+    }
+
+    foreach(QWeakPointer<ito::FunctionCancellationAndObserver> observer, m_activeFunctionCancellations)
+    {
+        if (observer.isNull() == false)
+        {
+            observer.data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
+        }
+    }
 
     qDebug("PyErr_SetInterrupt() in pythonThread");
 };

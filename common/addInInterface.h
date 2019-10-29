@@ -35,6 +35,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sharedStructuresQt.h"
 #include "sharedStructures.h"
+#include "functionCancellationAndObserver.h"
 
 #include <qlist.h>
 #include <qmap.h>
@@ -909,9 +910,10 @@ namespace ito
         Q_DECLARE_PRIVATE(AddInAlgo);
 
     public:
-        typedef ito::RetVal(*t_filter)(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
-        typedef QWidget*    (*t_algoWidget)(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
-        typedef ito::RetVal(*t_filterParam)(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        typedef ito::RetVal (*t_filter)     (QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        typedef ito::RetVal (*t_filterExt)  (QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, QSharedPointer<ito::FunctionCancellationAndObserver> observer);
+        typedef QWidget*    (*t_algoWidget) (QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
+        typedef ito::RetVal (*t_filterParam)(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
         //!< possible categories for filter or widget-methods
         enum tAlgoCategory
@@ -968,16 +970,40 @@ namespace ito
 
             virtual ~FilterDef() {}
 
-            t_filter m_filterFunc;    //!< function pointer (unbounded, static) for filter-method
-            t_filterParam m_paramFunc;    //!< function pointer (unbounded, static) for filter's default parameter method
-            ito::AddInInterfaceBase *m_pBasePlugin;        //!< interface (factory) instance of this plugin (will be automatically filled)
-            QString m_name;                //!< name of filter
-            QString m_description;        //!< description of filter
-            ito::AddInAlgo::tAlgoCategory m_category;    //!< category, filter belongs to (default: catNone)
+            t_filter m_filterFunc;                      //!< function pointer (unbounded, static) for filter-method
+            t_filterParam m_paramFunc;                  //!< function pointer (unbounded, static) for filter's default parameter method
+            ito::AddInInterfaceBase *m_pBasePlugin;     //!< interface (factory) instance of this plugin (will be automatically filled)
+            QString m_name;                             //!< name of filter
+            QString m_description;                      //!< description of filter
+            ito::AddInAlgo::tAlgoCategory m_category;   //!< category, filter belongs to (default: catNone)
             ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, filter fits to (default: iNotSpecified)
-            QString m_interfaceMeta;    //!< meta information if required by algorithm interface 
+            QString m_interfaceMeta;                    //!< meta information if required by algorithm interface 
         private:
             FilterDef(const FilterDef & /*p*/); //disable copy constructor
+        };
+
+        //! extended FilterDef (derived from FilterDef) with a filterFunc of type f_filterExt instead of t_filter. This method has an additional argument of type FunctionCancellationAndObserver
+        class FilterDefExt : public FilterDef
+        {
+        public:
+            //!< empty, default constructor
+            FilterDefExt() :
+                FilterDef(),
+                m_filterFuncExt(NULL)
+            {}
+
+            //!< constructor with all necessary arguments.
+            FilterDefExt(AddInAlgo::t_filterExt filterFuncExt, AddInAlgo::t_filterParam filterParamFunc, QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, QString interfaceMeta = QString()) :
+                FilterDef(NULL, filterParamFunc, description, category, interf, interfaceMeta),
+                m_filterFuncExt(filterFuncExt)
+            {}
+
+            virtual ~FilterDefExt() {}
+
+            t_filterExt m_filterFuncExt;                      //!< extended function pointer (unbounded, static) for filter-method
+
+        private:
+            FilterDefExt(const FilterDefExt & /*p*/); //disable copy constructor
         };
 
         //! container for publishing widgets provided by any plugin

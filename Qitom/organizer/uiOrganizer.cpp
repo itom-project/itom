@@ -2450,9 +2450,15 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
 //----------------------------------------------------------------------------------------------------------------------------------
 void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
 {
-    PyErr_SetInterrupt();
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEngine)
+    {
+        bool interruptActuatorsAndTimers = false;
+        pyEngine->pythonInterruptExecutionThreadSafe(&interruptActuatorsAndTimers);
+    }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< the following map translates Qt/C++ datatypes into their Python representations. This is for instance used in the info()-method in Python to show the user the Python syntax.
 struct PyCMap {
     const char *ctype;

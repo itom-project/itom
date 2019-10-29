@@ -2204,7 +2204,7 @@ void MainWindow::mnuScriptStop()
     PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyeng)
     {
-        pyeng->pythonInterruptExecution();
+        pyeng->pythonInterruptExecutionThreadSafe();
     }
 
     if (pythonDebugMode() && pythonInWaitingMode())
