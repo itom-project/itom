@@ -99,13 +99,11 @@ p, li { white-space: pre-wrap; }
    <class>Itom1DQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom1DQwtPlot.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>Itom2dQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom2dqwtplot.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
