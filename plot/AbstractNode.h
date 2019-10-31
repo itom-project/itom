@@ -62,11 +62,13 @@ typedef enum
 class ITOMCOMMONPLOT_EXPORT Channel
 {    
     public: 
-       enum ChanDirection {
+       enum ChanDirection 
+       {
             undefined,
             parentToChild,
             childToParent
-        };
+       };
+
     private:
         static unsigned int UID; /*!> Running counter for nodes created in the UiOrganizer */
         unsigned int m_uniqueID; /*!> Unique indentifier used in the UiOrganizer */
@@ -134,9 +136,9 @@ class ITOMCOMMONPLOT_EXPORT Channel
         inline signed char getDeleteBehaviour(AbstractNode* query) const 
         { 
             if(query == m_pParent)
-                return m_deleteParentOnDisconnect;
+                return m_deleteParentOnDisconnect ? 1 : 0;
             else if(query == m_pChild)
-                return m_deleteChildOnDisconnect;
+                return m_deleteChildOnDisconnect ? 1 : 0;
             else 
                 return -1;
         }
@@ -146,7 +148,7 @@ class ITOMCOMMONPLOT_EXPORT Channel
 
         inline bool getChannelBuffering() const { return m_channelBuffering; }
 
-        inline void setChannelBuffering(bool buffering) { m_channelBuffering = buffering; return; }
+        inline void setChannelBuffering(bool buffering) { m_channelBuffering = buffering; }
 
         /*!> The hash identifying this channel in the connection list of the participating nodes*/
         inline uint getHash() const { return m_hashVal; }
