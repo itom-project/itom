@@ -94,6 +94,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
             tPointCloudLib = 0x02
         };
 
+        //!< This enumeration is deprecated. It will be removed with an upcoming version of itom > 3.2.1.
         enum tChildPlotStates
         {
             tNoChildPlot            = 0x00,
@@ -174,7 +175,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
         void setWindowTitleExtension(const QString& title); /*< call this method if the window title should be changed. This emits the signal windowTitleChanged which is connected to the plot window.*/
   
-
     protected:
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
@@ -207,7 +207,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
 
-        QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots*/
+        QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots. This method is deprecated. It will be removed with an upcoming version of itom > 3.2.1.*/
 
     private:
         AbstractFigurePrivate *d;

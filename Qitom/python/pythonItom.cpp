@@ -3923,7 +3923,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name, *parameters) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name, *args, **kwds) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
 This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
 The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
@@ -3933,8 +3933,10 @@ Parameters \n\
 ----------- \n\
 name : {str} \n\
     The name of the filter\n\
-furtherParameters : {variant} \n\
-    Further parameters depend on the filter-methods itself (give the mandatory and then optional parameters in their defined order).\n\
+args : {variant} \n\
+    positional arguments for the specific filter-method \n\
+kwds : {variant} \n\
+    keyword-based arguments for the specific filter-method \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3969,14 +3971,15 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
 
     ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    const QHash<QString, ito::AddInAlgo::FilterDef *>* flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->constFind(key);
     if (cfit == flist->constEnd())
     {
         PyErr_SetString(PyExc_ValueError, "Unknown filter, please check typing!");
         return NULL;
     }
-    ito::AddInAlgo::FilterDef * fFunc = cfit.value();
+
+    ito::AddInAlgo::FilterDef* fFunc = cfit.value();
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase, paramsOutBase;
 
     const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);

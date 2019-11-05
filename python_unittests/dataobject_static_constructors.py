@@ -39,4 +39,4 @@ class DataObjectStaticConstructors(unittest.TestCase):
         self.assertRaises(TypeError,dataObject.dstack,(obj1,obj2))
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(module='dataobject_static_constructors', exit=False)

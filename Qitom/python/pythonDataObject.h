@@ -178,6 +178,7 @@ class PythonDataObject
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
         static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
+        
 
         static PyObject* PyDataObject_real(PyDataObject *self);
         static PyObject* PyDataObject_imag(PyDataObject *self);
@@ -222,7 +223,7 @@ class PythonDataObject
         static PyObject* PyDataObj_nbAnd(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbXor(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbOr(PyObject* o1, PyObject* o2);
-
+        static int PyDataObj_nbBool(PyDataObject *self);
         static PyObject* PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* o2);
@@ -275,6 +276,11 @@ class PythonDataObject
         static RetVal parseTypeNumber(int typeno, char &typekind, int &itemsize);
         static int parseTypeNumberInverse(char typekind, int itemsize);
         static int getTypenumOfCompatibleType(char typekind, int itemsize);
+        static int getNpTypeFromDataObjectType(int type);
+
+        static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
+        static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
+        static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
 
         //-------------------------------------------------------------------------------------------------
         // static type methods

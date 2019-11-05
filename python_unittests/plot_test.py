@@ -22,3 +22,6 @@ class PlotTest(unittest.TestCase):
         if False in compare:
             res =False
         self.assertTrue(res)
+        
+if __name__ == '__main__':
+    unittest.main(module='plot_test', exit=False)

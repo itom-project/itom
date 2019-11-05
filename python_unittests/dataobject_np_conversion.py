@@ -20,7 +20,36 @@ class DataObjectNpConversion(unittest.TestCase):
         for i in a[:,1:3,:]:
             sum += i
         self.assertEqual(result, sum)
-
+    
+    def test_npArrayBool2DataObject(self):
+        boolArray = np.array([[True,False],[False,True]], dtype='bool')
+        dobj = dataObject(boolArray)
+        self.assertEqual(dobj.dtype, 'uint8')
+        self.assertEqual(dobj.shape, (2,2))
+        self.assertEqual(dobj[0,0], 1)
+        self.assertEqual(dobj[1,0], 0)
+        self.assertEqual(dobj[0, 1], 0)
+        self.assertEqual(dobj[1,1], 1)
+        
+    def test_npArray2dataObjectSameType(self):
+        dtypes = ['uint8','int8','uint16','int16','int32','float32','float64','complex64','complex128']
+        for dt in dtypes:
+            nparray = np.ndarray([2,5,6],dtype=dt)
+            dobj = dataObject(nparray)
+            self.assertEqual(nparray.shape, dobj.shape)
+            self.assertEqual(dobj.dtype, dt)
+            diff = nparray - dobj
+            self.assertEqual((np.abs(diff) < 0.00001).all(), True)
+    
+    def test_npArray2dataObjectDiffType(self):
+        srcdtypes = ['uint8','int8','uint16','int16','int32','float32','float64']
+        for dt in srcdtypes:
+            for desttype in ['float32','complex128','int16']:
+                nparray = np.ndarray([2,5,6],dtype=dt)
+                dobj = dataObject(nparray, dtype=desttype)
+                self.assertEqual(nparray.shape, dobj.shape)
+                diff = nparray.astype(desttype) - dobj
+                self.assertEqual((np.abs(diff) < 0.00001).all(), True)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(module='dataobject_np_conversion', exit=False)

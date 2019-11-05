@@ -66,4 +66,4 @@ class DataObjectResize(unittest.TestCase):
             self.assertEqual(obj[1,i], obj2[i,1])
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(module='dataobject_squeeze_reshape', exit=False)

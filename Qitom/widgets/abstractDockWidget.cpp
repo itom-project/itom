@@ -383,6 +383,16 @@ void AbstractDockWidget::setEnabled(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setMinimumSize(const QSize &size)
+{
+    QDockWidget::setMinimumSize(size);
+    if (m_pWindow)
+    {
+        m_pWindow->setMinimumSize(size);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractDockWidget::setVisible(bool visible)
 {
     if (visible)
