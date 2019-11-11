@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -77,7 +77,7 @@ QMutex msgOutputProtection;
 //!  This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
 //!  The redirection is enabled via args passed to the main function.
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void myMessageOutput(QtMsgType type, const char *msg)
 {
     msgOutputProtection.lock();
@@ -106,7 +106,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 //    myMessageOutput(type, msg.toLatin1().data());
     msgOutputProtection.lock();
 
-    switch (type) 
+    switch (type)
     {
         case QtDebugMsg:
             (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
@@ -158,16 +158,9 @@ int itomCvError( int status, const char* func_name,
 int main(int argc, char *argv[])
 {
     int ret = 0;
-#if linux
-#if (((QT_VERSION & 0xFF0000) >= 0x40000) && ((QT_VERSION & 0X00FF0) >= 0x800))
-    // http://labs.qt.nokia.com/2011/06/03/threaded-opengl-in-4-8/
-    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
-    bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
-#endif
-#endif
 
     //startBenchmarks();
-    
+
     //parse arguments passed to the executable
 
     //  possible arguments are:
@@ -199,11 +192,11 @@ int main(int argc, char *argv[])
 #else
         qInstallMessageHandler(myMessageOutput);
 #endif
-		//first lines in log file
-		logfile.write("------------------------------------------------------------------------------------------\n");
-		logfile.write(QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n").toLatin1().constData());
-		logfile.write("------------------------------------------------------------------------------------------\n");
-    }    
+        //first lines in log file
+        logfile.write("------------------------------------------------------------------------------------------\n");
+        logfile.write(QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n").toLatin1().constData());
+        logfile.write("------------------------------------------------------------------------------------------\n");
+    }
 
 //#if defined _DEBUG
 #if 1
@@ -283,7 +276,7 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     newpath += "path=";
 
-#if WINVER > 0x0502 
+#if WINVER > 0x0502
     if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
     {
         SetDllDirectoryA(libDir.toLatin1().data());
@@ -310,9 +303,20 @@ int main(int argc, char *argv[])
 #endif
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
+<<<<<<< HEAD
 	//a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
 	//to explicitely load the default setting file itom.ini. If no username is given and more than
 	//one settings ini file is available, a selection dialog is shown.
+=======
+    //another setting file than the default file itom.ini will be loaded for this session of itom.
+    //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for
+    //a group
+    //
+    //[ITOMIniFile]
+    //name = anyUsername
+    //
+    //and if found, the setting file is used.
+>>>>>>> some minor fixes. one unhandles retVal
     QString defUserName;
     foreach (const QString &arg, args)
     {
@@ -344,6 +348,7 @@ int main(int argc, char *argv[])
 
     if (userRetVal.containsError())
     {
+<<<<<<< HEAD
 		if (userRetVal.hasErrorMessage())
 		{
 			QMessageBox::critical(NULL, QObject::tr("User Management"), userRetVal.errorMessage());
@@ -351,6 +356,9 @@ int main(int argc, char *argv[])
 		}
 
         ret = QDialog::Rejected; 
+=======
+        ret = QDialog::Rejected;
+>>>>>>> some minor fixes. one unhandles retVal
         qDebug("load program aborted, possibly unknown username (check argument name=...)");
     }
     else if (args.contains("pipManager"))
@@ -361,7 +369,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            ret = QDialog::Rejected; 
+            ret = QDialog::Rejected;
             qDebug("chosen user has no rights to start the Python Pip Manager");
         }
 
@@ -374,7 +382,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    
+
     if (ret == QDialog::Accepted)
     {
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
