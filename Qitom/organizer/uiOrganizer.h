@@ -29,6 +29,8 @@
 #include <qwidget.h>
 
 #include "../common/sharedStructuresQt.h"
+#include "../common/functionCancellationAndObserver.h"
+
 #include "../DataObject/dataobj.h"
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include "../../PointCloud/pclStructures.h"
@@ -470,6 +472,7 @@ public slots:
 
     RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore = NULL);
     RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList* objectInfo, ItomSharedSemaphore *semaphore = NULL);
+
     inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore = NULL)
     {
         return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, objectInfo, semaphore);
@@ -500,6 +503,8 @@ public slots:
     RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
     RetVal getAllAvailableHandles(QSharedPointer<QList<unsigned int> > list, ItomSharedSemaphore *semaphore = NULL);
     RetVal getPlotWindowTitlebyHandle(const unsigned int& objectID, QSharedPointer<QString> title, ItomSharedSemaphore * semaphore = NULL);
+
+    RetVal connectWidgetsToProgressObserver(bool hasProgressBar, unsigned int progressBarObjectID, bool hasLabel, unsigned int labelObjectID, QSharedPointer<ito::FunctionCancellationAndObserver> progressObserver, ItomSharedSemaphore *semaphore);
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 

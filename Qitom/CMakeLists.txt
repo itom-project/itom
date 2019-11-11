@@ -247,6 +247,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.h
@@ -494,6 +495,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.cpp

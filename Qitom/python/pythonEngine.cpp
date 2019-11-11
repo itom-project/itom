@@ -46,6 +46,7 @@
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
 #include "pythonJedi.h"
+#include "pythonProgressObserver.h"
 
 #include "common/interval.h"
 #include "../helper/sleeper.h"
@@ -258,6 +259,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::JediCompletionRequest>("ito::JediCompletionRequest");
     qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
     qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
+    qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -614,6 +616,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 Py_INCREF(&PythonPlotItem::PyPlotItemType);
                 PythonPlotItem::PyPlotItem_addTpDict(PythonPlotItem::PyPlotItemType.tp_dict);
                 PyModule_AddObject(itomModule, "plotItem", (PyObject *)&PythonPlotItem::PyPlotItemType);
+            }
+
+            if (PyType_Ready(&PythonProgressObserver::PyProgressObserverType) >= 0)
+            {
+                Py_INCREF(&PythonProgressObserver::PyProgressObserverType);
+                PythonProgressObserver::PyProgressObserver_addTpDict(PythonProgressObserver::PyProgressObserverType.tp_dict);
+                PyModule_AddObject(itomModule, "progressObserver", (PyObject *)&PythonProgressObserver::PyProgressObserverType);
             }
 
             if (PyType_Ready(&PythonProxy::PyProxyType) >= 0)

@@ -3873,6 +3873,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
            retval += RetVal::format(retError, 0, tr("could not get figure with handle %i.").toLatin1().data(), handle);
        }
     }
+
     if (semaphore)
     {
         semaphore->returnValue = retval;
@@ -3881,6 +3882,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureMinimizeAll(ItomSharedSemaphore *semaphore /*=NULL*/)
 {
@@ -3911,6 +3913,7 @@ RetVal UiOrganizer::figureMinimizeAll(ItomSharedSemaphore *semaphore /*=NULL*/)
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
@@ -3948,6 +3951,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVect
     }
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
@@ -3985,6 +3989,7 @@ RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPoin
     }
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
 {
@@ -4062,6 +4067,63 @@ RetVal UiOrganizer::getAvailableWidgetNames(QSharedPointer<QStringList> widgetNa
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::connectWidgetsToProgressObserver(bool hasProgressBar, unsigned int progressBarObjectID, bool hasLabel, unsigned int labelObjectID, QSharedPointer<ito::FunctionCancellationAndObserver> progressObserver, ItomSharedSemaphore *semaphore)
+{
+    ito::RetVal retval;
+
+    if (progressObserver.isNull())
+    {
+        retval += ito::RetVal(ito::retError, 0, "progressObserver is invalid");
+    }
+    else
+    {
+        if (hasProgressBar)
+        {
+            QObject *progressBar = getWeakObjectReference(progressBarObjectID);
+            
+            if (!progressBar)
+            {
+                retval += ito::RetVal(ito::retError, 0, "progressBar widget does not exist.");
+            }
+            else
+            {
+                bool conn = QObject::connect(progressObserver.data(), SIGNAL(progressValueChanged(int)), progressBar, SLOT(setValue(int)));
+                if (!conn)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "Could not connect with 'setValue(int)' slot of progressBar. Probably the progressBar does not have such a slot.");
+                }
+            }
+        }
+
+        if (hasLabel)
+        {
+            QObject *label = getWeakObjectReference(labelObjectID);
+
+            if (!label)
+            {
+                retval += ito::RetVal(ito::retError, 0, "label widget does not exist.");
+            }
+            else
+            {
+                bool conn = QObject::connect(progressObserver.data(), SIGNAL(progressTextChanged(QString)), label, SLOT(setText(QString)));
+                if (!conn)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "Could not connect with 'setText(QString)' slot of label. Probably the label does not have such a slot.");
+                }
+            }
+        }
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ //void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)
