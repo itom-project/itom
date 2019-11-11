@@ -276,7 +276,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
         }
         else
         {
-            actItem = new QTreeWidgetItem(parent,0);
+            actItem = new WorkspaceTreeItem(parent, 0);
             m_itemHash[hashName] = actItem;
             if (parent == NULL)
             {
