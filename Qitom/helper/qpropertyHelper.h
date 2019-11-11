@@ -30,9 +30,10 @@
 #include "../common/shape.h"
 #include "../DataObject/dataobj.h"
 #include "../common/qtMetaTypeDeclarations.h"
+#include "common/itomPlotHandle.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-#include "PointCloud/pclStructures.h"
+    #include "PointCloud/pclStructures.h"
 #endif
 
 #include <qvariant.h>
@@ -41,11 +42,11 @@
 #include <qsharedpointer.h>
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-Q_DECLARE_METATYPE(ito::PCLPointCloud)
-Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
-Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
-Q_DECLARE_METATYPE(ito::PCLPoint)
-Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
+    Q_DECLARE_METATYPE(ito::PCLPointCloud)
+    Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
+    Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
+    Q_DECLARE_METATYPE(ito::PCLPoint)
+    Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 #endif
 
 Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
@@ -54,7 +55,7 @@ Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
 Q_DECLARE_METATYPE(ito::Shape)
 Q_DECLARE_METATYPE(QVector<ito::Shape>)
-
+Q_DECLARE_METATYPE(ito::ItomPlotHandle)
 
 namespace ito
 {

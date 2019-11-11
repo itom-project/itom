@@ -73,7 +73,7 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
-    QMap<QString, ito::uint8> m_subplotStates;
+    QMap<QString, ito::uint8> m_subplotStates; //!< deprecated. This map will be removed with an upcoming version of itom > 3.2.1.
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -223,8 +223,10 @@ void AbstractFigure::updatePropertyDock()
 RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect)
 {
     ito::RetVal retVal;
-    uint channelHash1 = ito::calculateChannelHash(this, parentParam, child, childParam);
-    uint channelHash2 = ito::calculateChannelHash(child, childParam, this, parentParam);
+    AbstractNode *thisNode = (AbstractNode*)this;
+
+    uint channelHash1 = ito::calculateChannelHash(thisNode, parentParam, child, childParam);
+    uint channelHash2 = ito::calculateChannelHash(child, childParam, thisNode, parentParam);
 
     Channel *tempChannel;
     foreach(tempChannel, m_pChannels)
@@ -254,7 +256,7 @@ RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, 
         return ito::RetVal(ito::retError, 0, QObject::tr("undefined channel direction, while adding channel").toLatin1().data());
     }
 
-    Channel *newChannel = new Channel(this, parentParam, deleteOnParentDisconnect, child, childParam, deleteOnChildDisconnect, direction);
+    Channel *newChannel = new Channel(thisNode, parentParam, deleteOnParentDisconnect, child, childParam, deleteOnChildDisconnect, direction);
     m_pChannels.insert(newChannel->getUniqueID(), newChannel);
     newChannel->getChild()->addChannel(newChannel);
 
@@ -264,13 +266,15 @@ RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::addChannel(Channel *newChannel)
 {
-    if (newChannel->getChild() != this)
+    AbstractNode *thisNode = (AbstractNode*)this;
+
+    if (newChannel->getChild() != thisNode)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("invalid child pointer, in addChannel").toLatin1().data());
     }
 
-    uint channelHash1 = ito::calculateChannelHash(this, newChannel->getChildParam(), newChannel->getParent(), newChannel->getParentParam());
-    uint channelHash2 = ito::calculateChannelHash(newChannel->getParent(), newChannel->getParentParam(), this, newChannel->getChildParam());
+    uint channelHash1 = ito::calculateChannelHash(thisNode, newChannel->getChildParam(), newChannel->getParent(), newChannel->getParentParam());
+    uint channelHash2 = ito::calculateChannelHash(newChannel->getParent(), newChannel->getParentParam(), thisNode, newChannel->getChildParam());
 
     Channel *tempChannel;
     foreach(tempChannel, m_pChannels)
@@ -289,7 +293,7 @@ RetVal AbstractFigure::addChannel(Channel *newChannel)
 RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
 {
     ito::RetVal retval = ito::retOk;
-    int delBehaviour = m_pChannels[uniqueID]->getDeleteBehaviour((AbstractNode*)this);
+    signed char delBehaviour = m_pChannels[uniqueID]->getDeleteBehaviour((AbstractNode*)this);
 
     if (!m_pChannels.contains(uniqueID))
     {
@@ -298,7 +302,7 @@ RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
 
     m_pChannels.remove(uniqueID);
 
-    if (delBehaviour)
+    if (delBehaviour > 0)
     {
         Channel *iterChannel;
         foreach(iterChannel, m_pChannels)
@@ -306,8 +310,6 @@ RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
             // connection is removed in the destructor of Connection so the following line is not necessary
             removeChannel(iterChannel);
         }
-//        delete this;
-        deleteLater();
     }
 
     return retval;
@@ -322,7 +324,7 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
     }
 
     unsigned int uniqueID = delChannel->getUniqueID();
-    int delBehaviour = delChannel->getDeleteBehaviour((AbstractNode*)this);
+    signed char delBehaviour = delChannel->getDeleteBehaviour((AbstractNode*)this);
 
     if (delChannel->getParent() == (AbstractNode*)this)
     {
@@ -335,7 +337,7 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
         delChannel->getParent()->removeChannel(delChannel); // maybe we do not need this function call if we check for existance here
     }
 
-    if (delBehaviour)
+    if (delBehaviour > 0)
     {
         Channel *iterChannel;
         foreach(iterChannel, m_pChannels)
@@ -343,7 +345,6 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
             // connection is removed in the destructor of Connection so the following line is not necessary
             removeChannel(iterChannel);
         }
-        deleteLater();
     }
     
     return ito::retOk;

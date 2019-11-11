@@ -45,22 +45,6 @@
 
 #include "../helper/qpropertyHelper.h"
 
-//#if ITOM_POINTCLOUDLIBRARY > 0
-//Q_DECLARE_METATYPE(ito::PCLPointCloud)
-//Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
-//Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
-//Q_DECLARE_METATYPE(ito::PCLPoint)
-//Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
-//#endif
-//
-//Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
-//Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
-//Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
-//Q_DECLARE_METATYPE(ito::Shape)
-//Q_DECLARE_METATYPE(QVector<ito::Shape>)
-
-
-Q_DECLARE_METATYPE(ito::ItomPlotHandle)
 Q_DECLARE_METATYPE(ito::PythonNone)
 
 namespace ito

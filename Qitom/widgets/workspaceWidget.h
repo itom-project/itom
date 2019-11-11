@@ -50,6 +50,53 @@
 namespace ito
 {
 
+//! tiny derivative of QTreeWidgetItem, that overwrites the comparison operator
+/*
+The variable names of a WorkspaceWidget are usually strings, however these strings can
+also be numbers (e.g. children of a list or tuple). In this case, it is desired that numbers
+are compared to numbers based on their number value and not the text, such that 1 < 2 < 10 instead of "1" < "10" < "2".
+*/
+class WorkspaceTreeItem : public QTreeWidgetItem
+{
+public:
+    explicit WorkspaceTreeItem(int type = Type) : QTreeWidgetItem(type) {}
+    explicit WorkspaceTreeItem(const QStringList &strings, int type = Type) : QTreeWidgetItem(strings, type) {}
+    explicit WorkspaceTreeItem(QTreeWidget *view, int type = Type) : QTreeWidgetItem(view, type) {}
+    WorkspaceTreeItem(QTreeWidget *view, const QStringList &strings, int type = Type) : QTreeWidgetItem(strings, type) {}
+    WorkspaceTreeItem(QTreeWidget *view, QTreeWidgetItem *after, int type = Type) : QTreeWidgetItem(view, after, type) {}
+    explicit WorkspaceTreeItem(QTreeWidgetItem *parent, int type = Type) : QTreeWidgetItem(parent, type) {}
+    WorkspaceTreeItem(QTreeWidgetItem *parent, const QStringList &strings, int type = Type) : QTreeWidgetItem(parent, strings, type) {}
+    WorkspaceTreeItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, int type = Type) : QTreeWidgetItem(parent, after, type) {}
+    WorkspaceTreeItem(const QTreeWidgetItem &other) : QTreeWidgetItem(other) {}
+
+    virtual ~WorkspaceTreeItem() {}
+
+    //!overwritten operator for better number comparison
+    virtual bool operator<(const QTreeWidgetItem &other) const
+    {
+        int column = treeWidget()->sortColumn();
+        QString thisText = text(column);
+        QString otherText = other.text(column);
+
+        bool ok;
+        float a = thisText.toFloat(&ok);
+        
+        if (ok)
+        {
+            float b = otherText.toFloat(&ok);
+            if (ok)
+            {
+                return a < b;
+            }
+            
+        }
+        
+        return thisText.localeAwareCompare(otherText) < 0;
+    }
+
+};
+
+//! major class WorkspaceWidget to show a tree widget for the global and local workspace toolbox
 class WorkspaceWidget : public QTreeWidget
 {
     Q_OBJECT

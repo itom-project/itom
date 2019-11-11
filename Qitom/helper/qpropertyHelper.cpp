@@ -29,6 +29,7 @@
 
 Q_DECLARE_METATYPE(QVector<int>)
 
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -358,6 +359,11 @@ namespace ito {
         {
             ok = true;
             result = QVariant::fromValue<QVector<ito::Shape> >(QVector<ito::Shape>());
+        }
+        else if (userDestType == QMetaType::type("ito::ItomPlotHandle"))
+        {
+            ok = true;
+            result = QVariant::fromValue<ito::ItomPlotHandle>(ito::ItomPlotHandle());
         }
 #if ITOM_POINTCLOUDLIBRARY > 0   
         else if (userDestType == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))

@@ -159,6 +159,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito:
 //}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+//! tries to get an existing figure of a given UID (if UID > 0) or tries to open a new figure from the given figCategoryName and / or figClassName
 ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent /*= NULL*/)
 {
     ito::RetVal retval;
@@ -462,6 +463,12 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+//! return the figure UID for the given figure
+/*
+\param figure is the pointer to the figure, whose figure UID should be determined and returned
+\param figureUID is the resulting figure UID of figure
+\return ito::retOk if figureUID could be found, else ito::retError
+*/
 ito::RetVal apiFunctionsGraph::mgetFigureUIDByHandle(QObject *figure, ito::uint32 &figureUID)
 {
     ito::RetVal retval;
