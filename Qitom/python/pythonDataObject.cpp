@@ -785,6 +785,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
         DELETE_AND_SET_NULL_ARRAY(steps);
 
         PyDataObject_SetBase(self, (PyObject*)ndArrayOut);
+		Py_XDECREF((PyObject*)ndArrayOut);
         
         return error ? -1 : 0;
     }
