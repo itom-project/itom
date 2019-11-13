@@ -42,6 +42,9 @@ Recommended (optional):
 * Any git client (e.g. SmartGit (requires java) or git-cola or Guitar)
 * glew (libglew*-dev or something similar, required by some plugins)
 * fftw (libfftw3-dev or something similar, required by some plugins)
+* python-opencv python bindings for opencv. Make sure to install them with the 
+  same version/from the same source as opencv itself. use sudo apt install opencv-python 
+  instead of pip3 if you installed opencv using apt.
 
 
 
@@ -100,7 +103,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt update && sudo apt-get install build-essential
-    sudo apt install libopencv-dev
+    sudo apt install libopencv-dev python-opencv #make sure opencv and pythonbindings are consistent. 
     sudo apt install libv4l-dev #this is optional to get the video for linux drivers
     sudo apt install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
     
