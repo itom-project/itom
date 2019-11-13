@@ -255,7 +255,7 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 PyObject * getParamInfo(ito::AddInBase *aib, PyObject *args)
 {
     PyObject *result = NULL;
-    char *name = "";
+    char *name = nullptr;// = "";
 
     if (!PyArg_ParseTuple(args, "s", &name))
     {

@@ -53,6 +53,14 @@
 #include <qpluginloader.h>
 #include <QtUiTools/quiloader.h>
 
+//make NULLs comply to c++11 if applicable
+#if __cplusplus >= 201103L
+    #ifdef NULL
+        #undef NULL
+    #endif
+    #define NULL nullptr
+#endif
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 #else

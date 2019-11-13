@@ -303,11 +303,9 @@ int main(int argc, char *argv[])
 #endif
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
-<<<<<<< HEAD
 	//a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
 	//to explicitely load the default setting file itom.ini. If no username is given and more than
 	//one settings ini file is available, a selection dialog is shown.
-=======
     //another setting file than the default file itom.ini will be loaded for this session of itom.
     //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for
     //a group
@@ -316,7 +314,6 @@ int main(int argc, char *argv[])
     //name = anyUsername
     //
     //and if found, the setting file is used.
->>>>>>> some minor fixes. one unhandles retVal
     QString defUserName;
     foreach (const QString &arg, args)
     {
@@ -348,7 +345,6 @@ int main(int argc, char *argv[])
 
     if (userRetVal.containsError())
     {
-<<<<<<< HEAD
 		if (userRetVal.hasErrorMessage())
 		{
 			QMessageBox::critical(NULL, QObject::tr("User Management"), userRetVal.errorMessage());
@@ -356,9 +352,6 @@ int main(int argc, char *argv[])
 		}
 
         ret = QDialog::Rejected; 
-=======
-        ret = QDialog::Rejected;
->>>>>>> some minor fixes. one unhandles retVal
         qDebug("load program aborted, possibly unknown username (check argument name=...)");
     }
     else if (args.contains("pipManager"))
