@@ -1,5 +1,5 @@
 .. include:: ../include/global.inc
-
+.. _build_cmake_vars_list:
 List of common **cmake** Variables used in the |itom| project
 ==============================================================
 

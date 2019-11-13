@@ -6,7 +6,7 @@ Build on CentOS
 ======================
 
 This section describes how |itom| and its plugins are built on CentOS (tested with CentOS 7).
-For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-linux>`.
+For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-Debian>`.
 
 In the following, all required steps are indicated to get the dependencies, get the sources and compile itom by the command line.
 The folder structure is chosen to be equal than the one from the linux instructions, however itom will only be build in a release version.
@@ -34,26 +34,16 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 
 .. code-block:: bash
     
-    mkdir itom
-    cd itom
-    mkdir sources
-    cd sources
-    git clone https://bitbucket.org/itom/itom.git
-    git clone https://bitbucket.org/itom/plugins.git
-    git clone https://bitbucket.org/itom/designerplugins.git
-    cd ..
-    mkdir build
-    cd build
-    mkdir itom
-    cd itom
+    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
+    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
+    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
+    mkdir -p build/itom build/designerPlugins build/plugins
+    cd ./itom/build/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom
     make
-    cd ..
-    mkdir designerPlugins
-    cd designerPlugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins
     make
-    cd ..
-    mkdir plugins
-    cd plugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
+    make
+    
+Errors in cmake configuration process can be fixed using ccmake or cmake-gui

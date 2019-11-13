@@ -298,4 +298,4 @@ Known problems during CMake configuration
 Further used CMAKE-Variables
 ---------------------------------------------
 
-.. include:: build_cmake_vars.rst
+<build_cmake_vars_list>

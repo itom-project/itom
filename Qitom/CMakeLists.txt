@@ -51,7 +51,9 @@ ELSE()
     #uses the old QtAssistant as help viewer.
     FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 ENDIF()
-find_package(PythonLibs 3.0 REQUIRED)   
+find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )   
+# can be used from 3.12 onwards
+# find_package (Python3 COMPONENTS Interpreter Development)
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)

@@ -34,7 +34,7 @@ Detailed information
 ----------------------
 
 **Compiler, IDE** (mandatory)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''
 
 You can use any compiler and integrated development environment (IDE) which is 
 supported by **CMake** (https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
@@ -51,7 +51,7 @@ It is also possible to use the free express edition of Visual Studio.
     
 
 **CMake** (mandatory)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''
 
 Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it. 
 Or just download it and use that. no need to install.
@@ -60,7 +60,7 @@ project files of |itom| (CMakeList.txt) and generates the corresponding project
 files for your compiler, IDE and platform.
 
 **Qt-framework** (mandatory)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''
 
 Download the **Qt-framework** ( >= 5.6 recommended) 
 from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler, 
@@ -130,7 +130,7 @@ from your computer in order to activate changes to environment variables):
     
 
 **Qt-Visual Studio-AddIn** (optional, only for Visual Studio, not necessary for QtCreator)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 If you want to have a better integration of **Qt** into **Visual Studio** 
 (e.g. better debugging information for Qt-types like lists or vectors), 
@@ -164,7 +164,7 @@ requires that you have the **.NET framework 2.0 SP 1** installed on your PC.
 .. _install-depend-opencv:
 
 **OpenCV** (mandatory, 2.3 or higher, 2.4.x recommended, 3.x working as well)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 You have different possibilities in order to get the binaries from OpenCV:
 
@@ -193,7 +193,7 @@ Changes to the environment variable only become active after a re-login to windo
 
 
 **PointCloudLibrary** (optional, 1.6 or higher)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 The PointCloud-Library is a sister-project of OpenCV and is able to work with 
 large point clouds. You can compile |itom| with support for the point cloud library. 
@@ -221,18 +221,18 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 
 **VTK** (optional, better know what you're doing...)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 :ref:`build_dependencies_vtk`
 
 **Python** (mandatory, 3.2 or higher)
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in 
 version 3.2 or higher. You can simultaneously run different versions of python.
 
 **NumPy** (mandatory)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<
+´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 
 Get a version of NumPy that fits to your python version and install it. 
 On Windows, binaries for many python packages can be found under 
@@ -240,7 +240,7 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/. But you can also find them more easi
 on pypi and you can then install them using pip directly.
 
 **pip** (optional)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<
+´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 
 **Pip** is the new package installation tool for |python| packages. If you don't 
 have **pip** already installed (already included in Python >= 3.4) use the following 
@@ -256,7 +256,7 @@ Assuming that Python is located under **C:\\Python32**, execute the following co
 **pip** is installed and you can use the **pip** tool (see **Sphinx** installation above).
 
 **Sphinx** (optional)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 
 The Python package **Sphinx** is used for generating the user documentation of |itom|. 
 You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However,
@@ -273,7 +273,7 @@ For upgrading **sphinx**, type::
     pip install sphinx --upgrade
     
 **frosted** (optional)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 
 The Python package **frosted** can be installed in order to enable a code syntax 
 checker in |itom|. If installed, your scripts are automatically checked for syntax 
@@ -285,7 +285,7 @@ of the bug symbol. Use pip to install this package::
 
 
 **Other python packages** (optional)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 
 You can always check the website http://www.lfd.uci.edu/~gohlke/pythonlibs/ for 
 appropriate binaries of your desired python package.
