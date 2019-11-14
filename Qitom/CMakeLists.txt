@@ -57,7 +57,7 @@ IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
     # actually we need this only to configure the itom.bat including vtk, otherwise 
     # eventually pcl-tools plugin will not be loaded
-    FIND_PACKAGE(VTK 8.90 QUIET)    
+    FIND_PACKAGE(VTK QUIET)    
 ENDIF (BUILD_WITH_PCL)
 find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
