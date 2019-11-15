@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -52,6 +52,7 @@ namespace ito
 //!< constants
 const QString ConsoleWidget::lineBreak = QString("\n");
 const QString ConsoleWidget::longLineWrapPrefix = QString("... ");
+const QString ConsoleWidget::newCommandPrefix = QString(">>");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
@@ -316,7 +317,7 @@ RetVal ConsoleWidget::clearEditor()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!< new command is a new line starting with ">>"
+//!< new command is a new line starting with ">>" (newCommandPrefix)
 RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
 {
     if (clearEditorFirst)
@@ -329,7 +330,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     if (toPlainText() == "")
     {
         //!< empty editor, just start new command
-        append(">>");
+        append(ConsoleWidget::newCommandPrefix);
         //qDebug() << (">> (startNewCommand)");
         moveCursorToEnd();
         m_startLineBeginCmd = lineCount() - 1;
@@ -341,7 +342,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
         {
             append(ConsoleWidget::lineBreak);
         }
-        append(">>");
+        append(ConsoleWidget::newCommandPrefix);
         //qDebug() << (">> (startNewCommand 2)");
         moveCursorToEnd();
         m_startLineBeginCmd = lineCount() - 1;
@@ -385,7 +386,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
             //delete possible commands after m_startLineBeginCmd:
             lineFrom = m_startLineBeginCmd;
             lineTo = lineCount() - 1;
-            indexFrom = 2;
+            indexFrom = ConsoleWidget::newCommandPrefix.size();
             indexTo = lineLength(lineTo);
             setSelection(lineFrom, indexFrom, lineTo, indexTo);
             removeSelectedText();
@@ -522,7 +523,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     lineTo = lineCount() - 1;
                     indexTo = lineLength(lineTo);
 
-                    setSelection(m_startLineBeginCmd, 2, lineTo, indexTo);
+                    setSelection(m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size(), lineTo, indexTo);
                     removeSelectedText();
                 }
                 else
@@ -567,15 +568,15 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     setCursorPosition(m_inputStartLine, m_inputStartCol);
                 }
             }
-            else if (lineFrom == m_startLineBeginCmd && indexFrom >= 2)
+            else if (lineFrom == m_startLineBeginCmd && indexFrom >= ConsoleWidget::newCommandPrefix.size())
             {
                 if (modifiers & Qt::ShiftModifier)
                 {
-                    setSelection(m_startLineBeginCmd,2,lineFrom,indexFrom);
+                    setSelection(m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size(), lineFrom, indexFrom);
                 }
                 else
                 {
-                    setCursorPosition(m_startLineBeginCmd, 2);
+                    setCursorPosition(m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size());
                 }
             }
             else
@@ -606,7 +607,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     //!< new line for possible error or message
                     append(ConsoleWidget::lineBreak);
 
-                    execCommand(m_startLineBeginCmd, lineCount() - 2);
+                    execCommand(m_startLineBeginCmd, lineCount() - ConsoleWidget::newCommandPrefix.size());
                     acceptEvent = true;
                     forwardEvent = false;
 
@@ -669,7 +670,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             {
                 getCursorPosition(&lineFrom, &indexFrom);
 
-                if (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom <= 2))
+                if (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom <= ConsoleWidget::newCommandPrefix.size()))
                 {
                     acceptEvent = false;
                     forwardEvent = false;
@@ -708,14 +709,14 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                 }
                 else
                 {
-                    if (lineFrom > m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom >= 2))
+                    if (lineFrom > m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom >= ConsoleWidget::newCommandPrefix.size()))
                     {
                         acceptEvent = true;
                         forwardEvent = true;
                     }
-                    else if ((lineTo == m_startLineBeginCmd && indexTo > 2) || (lineTo > m_startLineBeginCmd))
+                    else if ((lineTo == m_startLineBeginCmd && indexTo > ConsoleWidget::newCommandPrefix.size()) || (lineTo > m_startLineBeginCmd))
                     {
-                        setSelection(m_startLineBeginCmd, 2, lineTo, indexTo);
+                        setSelection(m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size(), lineTo, indexTo);
                         acceptEvent = true;
                         forwardEvent = true;
                     }
@@ -735,7 +736,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             {
                 getCursorPosition(&lineFrom, &indexFrom);
 
-                if (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < 2))
+                if (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size()))
                 {
                     acceptEvent = false;
                     forwardEvent = false;
@@ -774,14 +775,14 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                 }
                 else
                 {
-                    if (lineFrom > m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom >= 2))
+                    if (lineFrom > m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom >= ConsoleWidget::newCommandPrefix.size()))
                     {
                         acceptEvent = true;
                         forwardEvent = true;
                     }
-                    else if ((lineTo == m_startLineBeginCmd && indexTo > 2) || (lineTo > m_startLineBeginCmd))
+                    else if ((lineTo == m_startLineBeginCmd && indexTo > ConsoleWidget::newCommandPrefix.size()) || (lineTo > m_startLineBeginCmd))
                     {
-                        setSelection(m_startLineBeginCmd, 2, lineTo, indexTo);
+                        setSelection(m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size(), lineTo, indexTo);
                         acceptEvent = true;
                         forwardEvent = true;
                     }
@@ -899,9 +900,9 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
     {
         QString selectedText = lineText(line);
 
-        if (selectedText.startsWith(">>"))
+        if (selectedText.startsWith(ConsoleWidget::newCommandPrefix))
         {
-            selectedText = selectedText.mid(2); //remove trailing >>
+            selectedText = selectedText.mid(ConsoleWidget::newCommandPrefix.size()); //remove trailing >>
         }
 
         //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
@@ -1133,9 +1134,9 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         {
             singleLine.chop(1);
         }
-        if (singleLine.startsWith(">>"))
+        if (singleLine.startsWith(ConsoleWidget::newCommandPrefix))
         {
-            singleLine.remove(0, 2);
+            singleLine.remove(0, ConsoleWidget::newCommandPrefix.size());
         }
         m_cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 1));
     }
@@ -1148,9 +1149,9 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             {
                 singleLine.chop(1);
             }
-            if (singleLine.startsWith(">>"))
+            if (singleLine.startsWith(ConsoleWidget::newCommandPrefix))
             {
-                singleLine.remove(0, 2);
+                singleLine.remove(0, ConsoleWidget::newCommandPrefix.size());
             }
 
             buffer.append(singleLine);
@@ -1245,12 +1246,12 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         {
             temp = lineText(lineIdx);
 
-            if (temp.startsWith(">>"))
+            if (temp.startsWith(ConsoleWidget::newCommandPrefix))
             {
-                temp = temp.mid(2);
+                temp = temp.mid(ConsoleWidget::newCommandPrefix.size());
                 if (line == lineIdx)
                 {
-                    column -= 2;
+                    column -= ConsoleWidget::newCommandPrefix.size();
                     line = textLines.size();
                 }
             }
@@ -1525,6 +1526,23 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     }
     else
     {
+        bool dragFromConsole = (event->source() == this) || (event->source() && event->source()->parent() == this);
+
+        if (dragFromConsole)
+        {
+            //!< if text selected in this widget, starting point before valid region and move action -> ignore
+            int lineFrom, lineTo, indexFrom, indexTo;
+
+            //!< check, that selections are only in valid area
+            getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+            if ((lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
+            {
+                event->setDropAction(Qt::CopyAction);
+                event->accept();
+            }
+        }
+
         CodeEditor::dropEvent(event);
     }
     
@@ -1576,39 +1594,38 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
     //check if a local python file will be dropped -> allow this
     if ((md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     {
-        event->accept();
+        event->acceptProposedAction();
     }
     else
     {
-        CodeEditor::dragMoveEvent(event);
+        int validDropRegionResult = checkValidDropRegion(event->pos());
 
-        //!< if text selected in this widget, starting point before valid region and move action -> ignore
-        int lineFrom, lineTo, indexFrom, indexTo;
-
-        //!< check, that selections are only in valid area
-        getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-        bool dragFromConsole = (event->source() == this);
-
-        if (dragFromConsole && (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < 2)))
+        if (validDropRegionResult == 0)
         {
-            if (event->dropAction() & Qt::MoveAction)
-            {
-                event->ignore();
-            }
+            event->ignore();
         }
         else
         {
-            int res = checkValidDropRegion(event->pos());
+            //!< if text selected in this widget, starting point before valid region and move action -> ignore
+            int lineFrom, lineTo, indexFrom, indexTo;
 
-            if (res==0)
+            //!< check, that selections are only in valid area
+            getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+            bool dragFromConsole = (event->source() == this) || (event->source() && event->source()->parent() == this);
+
+            if (dragFromConsole && (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
             {
-                event->ignore();
+                //turn a move action into a copy action if parts of the read-only section should be dragged.
+                event->setDropAction(Qt::CopyAction);
+                event->accept();
             }
             else
             {
-                event->accept();
+                event->acceptProposedAction();
             }
+
+            CodeEditor::dragMoveEvent(event);
         }
     }
 }
@@ -1674,7 +1691,7 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
                 {
                     lineIndexFromPosition(position, &line, &index);
 
-                    if (index<2)
+                    if (index < 2)
                     {
                         return 0;
                     }
@@ -1717,7 +1734,7 @@ void ConsoleWidget::selChanged()
             m_canCut = false;
             m_canCopy = true;
         }
-        else if (lineFrom == m_startLineBeginCmd && indexFrom < 2)
+        else if (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())
         {
             m_canCut = false;
             m_canCopy = true;
@@ -1816,7 +1833,7 @@ void ConsoleWidget::moveCursorToValidRegion()
     {
         moveCursorToEnd();
     }
-    else if (lineFrom == m_startLineBeginCmd && indexFrom < 2)
+    else if (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())
     {
         moveCursorToEnd();
     }
@@ -1833,11 +1850,11 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
 
         if (selectionText.endsWith("\n"))
         {
-            insertAt(selectionText, m_startLineBeginCmd, 2);
+            insertAt(selectionText, m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size());
         }
         else
         {
-            insertAt(selectionText + "\n", m_startLineBeginCmd, 2);
+            insertAt(selectionText + "\n", m_startLineBeginCmd, ConsoleWidget::newCommandPrefix.size());
         }
 
         execCommand(m_startLineBeginCmd, m_startLineBeginCmd + lineCount - 1);

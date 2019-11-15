@@ -63,6 +63,7 @@ public:
     ~ConsoleWidget();
 
     static const QString lineBreak;
+    static const QString newCommandPrefix;
 
     virtual QString codeText(int &line, int &column) const;
 
