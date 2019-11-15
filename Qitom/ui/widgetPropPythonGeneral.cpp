@@ -39,6 +39,8 @@ WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
+    pyExtHelpers["notepad++"] = "notepad";
+    pyExtHelpers["notepad++ -multiInst"]="notepad";
 
 #ifdef WIN32
     ui.rbPyHomeSub->setVisible(true);
