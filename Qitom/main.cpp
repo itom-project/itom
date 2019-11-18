@@ -76,7 +76,12 @@ QMutex msgOutputProtection;
 //!
 //!  This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
 //!  The redirection is enabled via args passed to the main function.
-
+//Zumindest früher hat der MOC-Prozess QT_VERSION_CHECK nicht
+//richtig lesen können, daher mussten wir überall die HEX-Zahlen
+//reinschreiben. Daher lieber mal bei 0x050000 bleiben. Ich weiß,
+//dass uns dieses Problem mit QT_VERSION_CHECK und dem moc’cer schon
+//viel Zeit gekostet hat. Vielleicht kann ein neuer moc’cer das mittlerweile
+//richtig, aber die älteren leider nicht.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void myMessageOutput(QtMsgType type, const char *msg)
 {

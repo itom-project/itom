@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,16 +22,9 @@
 #include <vector>
 #include "pythonPCL.h"
 #include "../global.h"
+#include "common/typeDefs.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-
-//make NULLs comply to c++11 if applicable
-#if __cplusplus >= 201103L
-    #ifdef NULL
-        #undef NULL
-    #endif
-    #define NULL nullptr
-#endif
 
 #ifndef CMAKE
     #if (defined _DEBUG) && (defined WIN32)
@@ -65,7 +58,7 @@
 #include <qstring.h>
 
 //for generating a temporary file name (for pickling point clouds)
-#include <stdio.h> 
+#include <stdio.h>
 #include <qdir.h>
 #include <QTemporaryFile>
 #include <QDir>
@@ -186,31 +179,31 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         case ito::pclInvalid:
             self->data = new ito::PCLPointCloud(ito::pclInvalid);
         break;
-            
+
         case ito::pclXYZ:
             self->data = new ito::PCLPointCloud(ito::pclXYZ);
         break;
-        
+
         case ito::pclXYZI:
             self->data = new ito::PCLPointCloud(ito::pclXYZI);
         break;
-        
+
         case ito::pclXYZRGBA:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBA);
         break;
-        
+
         case ito::pclXYZNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZNormal);
         break;
-        
+
         case ito::pclXYZINormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZINormal);
         break;
-        
+
         case ito::pclXYZRGBNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBNormal);
         break;
-        
+
         default:
             PyErr_SetString(PyExc_TypeError, "The point cloud type is unknown");
             return -1;
@@ -253,19 +246,21 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                     if (PyIter_Check(pySeq))
                     {
                         PyObject *iterator = PyObject_GetIter(pySeq);
-                    
+
                         if (PySequence_Check(pySeq) && PySequence_Length(pySeq)>0)
                         {
                             indices.reserve(PySequence_Length(pySeq));
                         }
 
-                        if (iterator == NULL) 
+                        if (iterator == NULL)
                         {
                             PyErr_SetString(PyExc_TypeError, "error creating iterator");
                         }
                         else
                         {
                             //TODO: gcc wants paraentheses around assignment in while condition
+                            //item gets loaded with the iterator and the result is implicitly compared to zero anyways,
+                            //so i just made this explicit to suppress the compilerwarning
                             while ((item = PyIter_Next(iterator)) != NULL)
                             {
                                 if (PyLong_Check(item))
@@ -306,7 +301,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                         }
                     }
 
-                    if (!PyErr_Occurred()) 
+                    if (!PyErr_Occurred())
                     {
                         try
                         {
@@ -398,7 +393,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
 
         done = true;
-        
+
         try
         {
             self->data = new ito::PCLPointCloud(1, 1, point.getType(), point);
@@ -756,7 +751,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
         //PyList_SetItem(result,i, PyUnicode_FromStringAndSize(ba.data(), ba.size()));
         PyList_SetItem(result,i, PyUnicode_DecodeLatin1(ba.data(), ba.size(), NULL));
     }
-    
+
     return result;
 }
 
@@ -780,12 +775,13 @@ PyObject* PythonPCL::PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, P
     }
 
     //check if args contains only one point cloud
-    static char *kwlist[] = { "x", "y", "z", NULL };
+    //g++ doesn't like char* to be cast from strings...
+    static const char *kwlist[] = { "x", "y", "z", NULL };
     ito::float32 x = 1.0;
     ito::float32 y = 1.0;
     ito::float32 z = 1.0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", kwlist, &x, &y, &z))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", const_cast<char **>(kwlist), &x, &y, &z))
     {
         return NULL;
     }
@@ -815,12 +811,12 @@ PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, Py
     }
 
     //check if args contains only one point cloud
-    static char *kwlist[] = { "x", "y", "z", NULL };
+    static const char *kwlist[] = { "x", "y", "z", NULL };
     ito::float32 x = 0.0;
     ito::float32 y = 0.0;
     ito::float32 z = 0.0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", kwlist, &x, &y, &z))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", const_cast<char**>(kwlist), &x, &y, &z))
     {
         return NULL;
     }
@@ -851,10 +847,11 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
     }
 
         //check if args contains only one point cloud
-    static char *kwlist0[] = {"pointCloud", NULL};
-    static char *kwlist1[] = {"point", NULL};
+    static const char *kwlist0[] = {"pointCloud", NULL};
+    static const char *kwlist1[] = {"point", NULL};
     PyObject *pclObj = NULL;
-    if (PyArg_ParseTupleAndKeywords(args,kwds,"O!",kwlist0, &PyPointCloudType, &pclObj))
+    if (PyArg_ParseTupleAndKeywords(args,kwds,"O!",const_cast<char**>(kwlist0),
+                 &PyPointCloudType, &pclObj))
     {
         PyPointCloud *pcl = (PyPointCloud*)pclObj;
         if (pcl == NULL || pcl->data == NULL)
@@ -864,9 +861,10 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         }
 
         *(self->data) += *(pcl->data);
-        
+
     }
-    else if (PyErr_Clear(), PyArg_ParseTupleAndKeywords(args,kwds,"O!",kwlist1, &PyPointType, &pclObj))
+    else if (PyErr_Clear(), PyArg_ParseTupleAndKeywords(args,kwds,"O!",const_cast<char**>(kwlist1),
+                 &PyPointType, &pclObj))
     {
         PyPoint *point = (PyPoint*)pclObj;
         if (point == NULL || point->point == NULL)
@@ -889,46 +887,47 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         {
         case ito::pclXYZ:
         {
-            static char *kwlist[] = {"xyz", NULL};
+            static const char *kwlist[] = {"xyz", NULL};
             PyObject *xyz = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",kwlist,&xyz)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",const_cast<char**>(kwlist),
+                             &xyz)) return NULL;
             return PyPointCloud_XYZ_append(self, xyz);
         }
         case ito::pclXYZI:
         {
-            static char *kwlist[] = {"xyzi", NULL};
+            static const char *kwlist[] = {"xyzi", NULL};
             PyObject *xyzi = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",kwlist,&xyzi)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",const_cast<char**>(kwlist),&xyzi)) return NULL;
             return PyPointCloud_XYZI_append(self, xyzi);
         }
         case ito::pclXYZRGBA:
         {
-            static char *kwlist[] = {"xyz", "rgba", NULL};
+            static const char *kwlist[] = {"xyz", "rgba", NULL};
             PyObject *xyz = NULL;
             PyObject *rgba = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"OO",kwlist,&xyz, &rgba)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"OO",const_cast<char**>(kwlist),&xyz, &rgba)) return NULL;
             return PyPointCloud_XYZRGBA_append(self, xyz, rgba);
         }
         case ito::pclXYZNormal:
         {
-            static char *kwlist[] = {"xyz_normal_curvature", NULL};
+            static const char *kwlist[] = {"xyz_normal_curvature", NULL};
             PyObject *xyz_normal_curvature = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",kwlist,&xyz_normal_curvature)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",const_cast<char**>(kwlist),&xyz_normal_curvature)) return NULL;
             return PyPointCloud_XYZNormal_append(self, xyz_normal_curvature);
         }
         case ito::pclXYZINormal:
         {
-            static char *kwlist[] = {"xyz_i_normal_curvature", NULL};
+            static const char *kwlist[] = {"xyz_i_normal_curvature", NULL};
             PyObject *xyz_i_normal_curvature = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",kwlist,&xyz_i_normal_curvature)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"O",const_cast<char**>(kwlist),&xyz_i_normal_curvature)) return NULL;
             return PyPointCloud_XYZINormal_append(self, xyz_i_normal_curvature);
         }
         case ito::pclXYZRGBNormal:
         {
-            static char *kwlist[] = {"xyz_normal_curvature", "rgba", NULL};
+            static const char *kwlist[] = {"xyz_normal_curvature", "rgba", NULL};
             PyObject *xyz_normal_curvature = NULL;
             PyObject *rgba = NULL;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"OO",kwlist,&xyz_normal_curvature, &rgba)) return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"OO",const_cast<char**>(kwlist),&xyz_normal_curvature, &rgba)) return NULL;
             return PyPointCloud_XYZRGBNormal_append(self, xyz_normal_curvature, rgba);
         }
         default:
@@ -953,7 +952,7 @@ PyObject* PythonPCL::PyPointCloud_XYZ_append(PyPointCloud *self, PyObject *xyzOb
     npy_intp n = 0;
     float32** xyz = new float32*[3];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyzObj, 3, n, xyz);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyz; xyz = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -986,7 +985,7 @@ PyObject* PythonPCL::PyPointCloud_XYZI_append(PyPointCloud *self, PyObject *xyzi
     npy_intp n = 0;
     float32** xyzi = new float32*[4];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyziObj, 4, n, xyzi);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyzi; xyzi = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -1021,7 +1020,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *x
     npy_intp n1 = 0;
     float32** xyz = new float32*[3];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyzObj, 3, n1, xyz);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyz; xyz = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -1031,7 +1030,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *x
     npy_intp n2 = 0;
     uint8_t** rgba = new uint8_t*[4];
     arrayObj2 = PythonPCL::parseObjAsUInt8Array(rgbaObj, 4, n2, rgba);
-    if (arrayObj2 == NULL) 
+    if (arrayObj2 == NULL)
     {
         delete[] rgba; rgba = NULL;
         delete[] xyz; xyz = NULL;
@@ -1080,7 +1079,7 @@ PyObject* PythonPCL::PyPointCloud_XYZNormal_append(PyPointCloud *self, PyObject 
     npy_intp n = 0;
     float32** xyznxnynzc = new float32*[7];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyz_nxnynz_curvObj, 7, n, xyznxnynzc);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyznxnynzc; xyznxnynzc = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -1117,7 +1116,7 @@ PyObject* PythonPCL::PyPointCloud_XYZINormal_append(PyPointCloud *self, PyObject
     npy_intp n = 0;
     float32** xyzinxnynzc = new float32*[7];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyz_i_nxnynz_curvObj, 7, n, xyzinxnynzc);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyzinxnynzc; xyzinxnynzc = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -1154,7 +1153,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObje
     npy_intp n1 = 0;
     float32** xyznxnynzc = new float32*[7];
     arrayObj = PythonPCL::parseObjAsFloat32Array(xyz_i_nxnynz_curvObj, 7, n1, xyznxnynzc);
-    if (arrayObj == NULL) 
+    if (arrayObj == NULL)
     {
         delete[] xyznxnynzc; xyznxnynzc = NULL;
         return NULL; //error already set by parseObjAsFloat32Array
@@ -1164,7 +1163,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObje
     npy_intp n2 = 0;
     uint8_t** rgba = new uint8_t*[4];
     arrayObj2 = PythonPCL::parseObjAsUInt8Array(rgbaObj, 4, n2, rgba);
-    if (arrayObj2 == NULL) 
+    if (arrayObj2 == NULL)
     {
         delete[] rgba; rgba = NULL;
         delete[] xyznxnynzc; xyznxnynzc = NULL;
@@ -1345,7 +1344,7 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
             }
-            
+
             return reinterpret_cast<PyObject*>(result);
         }
         else
@@ -1456,7 +1455,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
         }
-        
+
         Py_INCREF(self);
         return reinterpret_cast<PyObject*>(self);
     }
@@ -1790,7 +1789,7 @@ dObj : {dataObject}\n\
     {
         PyErr_SetString(PyExc_RuntimeError, "point cloud is empty");
         return NULL;
-    }  
+    }
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -1801,7 +1800,7 @@ Returns \n\
 cloud : {pointCloud}\n\
     An exact copy if this point cloud.");
 /*static*/ PyObject* PythonPCL::PyPointCloud_copy(PyPointCloud *self)
-{  
+{
     PyPointCloud* result = (PyPointCloud*)PyObject_Call((PyObject*)&PyPointCloudType, NULL, NULL);
 
     if (result && self->data)
@@ -1832,8 +1831,13 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         //char *buf = tmpnam(NULL);
         //optionally appended some template name.xxxxxx will be replaced by qt and coiuld be omitted.
         QTemporaryFile pclTempSaveFile(QDir::tempPath()+QString("pclTemp_XXXXXX"));
-        pclTempSaveFile.open();//creates Name here
+        bool success = pclTempSaveFile.open();//creates Name here
         pclTempSaveFile.close();//hmmm better let others use it solely
+        if(!success)
+         {
+             PyErr_SetString(PyExc_RuntimeError, QObject::tr("Temporary file for writing point cloud binary data could not be created").toLatin1().data());
+             return NULL;
+         }
 
         QVector<ito::ParamBase> paramsMand;
         QVector<ito::ParamBase> paramsOpt;
@@ -1866,16 +1870,19 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         {
             if (exc.what())
             {
-                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The exception '%s' has been thrown when saving a point cloud.").toLatin1().data(), exc.what());
+                retval += ito::RetVal::format(ito::retError, 0,
+                             QObject::tr("The exception '%s' has been thrown when saving a point cloud.").toLatin1().data(), exc.what());
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0,
+                             QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
             }
         }
         catch (...)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0,
+                         QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
         }
 
         if (PythonCommon::transformRetValToPyException(retval) == false)
@@ -1887,18 +1894,18 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
             PyErr_SetString(PyExc_RuntimeError, QObject::tr("Temporary file for writing point cloud binary data could not be opened").toLatin1().data());
             return NULL;
         }
-        QScopedPointer<char, QScopedPointerPodDeleter> data(
-                     static_cast<char*>(malloc(static_cast<uint32_t>(pclTempSaveFile.size()))));
-        uint64_t bytesRead = pclTempSaveFile.peek(data.data(), pclTempSaveFile.size());
+        //allocate memory
+        char* data = reinterpret_cast<char*>(PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size()));
+        uint64_t bytesRead = pclTempSaveFile.peek(data, pclTempSaveFile.size());
         Q_ASSERT(bytesRead == pclTempSaveFile.size());//check if file was fully read...
-        stateTuple = PyBytes_FromStringAndSize(data.data(), pclTempSaveFile.size());
+        stateTuple = PyBytes_FromStringAndSize(data, pclTempSaveFile.size());
     }
     else
     {
         Py_INCREF(Py_None);
         stateTuple = Py_None;
     }
-    
+
     //the stateTuple is simply a byte array with the binary content
     //of the temporarily written pcd file or None, if the point cloud is invalid or empty
     //the type-number is passed as argument to the constructor of the point cloud class, if it is reconstructed.
@@ -1925,15 +1932,15 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
     {
         QTemporaryFile pclTempSaveFile(QDir::tempPath()+QString("pclTemp_XXXXXX"));
         bool success = pclTempSaveFile.open();//creates the file
-        if (success == false)
+        if (!success)
         {
             PyErr_SetString(PyExc_RuntimeError, QObject::tr("Temporary file for writing point cloud binary data could not be created").toLatin1().data());
             return NULL;
         }
 
-        pclTempSaveFile.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
+        qint64 bytesWritten = pclTempSaveFile.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
         pclTempSaveFile.close();
-
+        Q_ASSERT(bytesWritten == PyBytes_GET_SIZE(data));
         QVector<ito::ParamBase> paramsMand;
         QVector<ito::ParamBase> paramsOpt;
         QVector<ito::ParamBase> paramsOut;
@@ -2036,12 +2043,12 @@ pointCloud.");
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
-            
+
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
             if (tmpRetval.containsWarningOrError() && XYZ.data()->getDims() == 2)
             {
                 retval += ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
-                
+
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
                     return NULL;
@@ -2166,7 +2173,7 @@ pointCloud.");
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
-            
+
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
             if (tmpRetval.containsWarningOrError())
             {
@@ -2297,7 +2304,7 @@ pointCloud.");
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
-            
+
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
             if (tmpRetval.containsWarningOrError())
             {
@@ -2445,7 +2452,7 @@ PointCloud.");
             return NULL;
         }
     }
-    
+
     dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok, &retval));
     if (!ok)
     {
@@ -2546,7 +2553,7 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"toDataObject",  (PyCFunction)PyPointCloud_toDataObject, METH_NOARGS, pyPointCloudToDataObject_doc},
     {"__reduce__",    (PyCFunction)PyPointCloud_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__",  (PyCFunction)PyPointCloud_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-    
+
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
@@ -2554,7 +2561,7 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"fromTopography",  (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromTopography_doc },
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
-    
+
     {NULL}  /* Sentinel */
 };
 
@@ -2642,7 +2649,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #endif
-    
+
     if (arr == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "argument cannot be interpreted as float32, c-contiguous numpy.ndarray");
@@ -2670,7 +2677,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
     {
         elemRows[i] = reinterpret_cast<float32*>(PyArray_BYTES((PyArrayObject*)arr) + i*strideDim0);
     }
-    
+
     return arr;
 }
 
@@ -2688,7 +2695,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
 #else
     PyObject *arr = PyArray_FROM_OTF(obj, NPY_UBYTE, NPY_ARRAY_IN_ARRAY); //maybe NPY_IN_ARRAY must be changed to NPY_ARRAY_IN_ARRAY
 #endif
-    
+
     if (arr == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "argument cannot be interpreted as uint8, c-contiguous numpy.ndarray");
@@ -2787,7 +2794,7 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
                 PyErr_SetString(PyExc_TypeError, "The argument must contain the type of the point, e.g. point.PointXYZ");
                 return -1;
             }
-            pclType = PyLong_AsLong(temp);  
+            pclType = PyLong_AsLong(temp);
         }
     }
 
@@ -2800,17 +2807,17 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         }
         case ito::pclXYZ:
         {
-            static char *kwlist[] = {"type","xyz", NULL};
+            static const char *kwlist[] = {"type","xyz", NULL};
             float x,y,z;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)",kwlist,&pclType,&x,&y,&z)) return -1;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)",const_cast<char**>(kwlist),&pclType,&x,&y,&z)) return -1;
             self->point = new ito::PCLPoint(pcl::PointXYZ(x,y,z));
             break;
         }
         case ito::pclXYZI:
         {
-            static char *kwlist[] = {"type","xyz","intensity", NULL};
+            static const char *kwlist[] = {"type","xyz","intensity", NULL};
             float x,y,z,intensity;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)f",kwlist,&pclType,&x,&y,&z,&intensity)) return -1;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)f",const_cast<char**>(kwlist),&pclType,&x,&y,&z,&intensity)) return -1;
             pcl::PointXYZI pt(intensity);
             pt.x=x;pt.y=y;pt.z=z;
             self->point = new ito::PCLPoint(pt);
@@ -2818,14 +2825,16 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         }
         case ito::pclXYZRGBA:
         {
-            static char *kwlist[] = {"type","xyz","rgba", NULL};
+            static const char *kwlist[] = {"type","xyz","rgba", NULL};
             float x,y,z;
             uint8_t r,g,b,a;
             a=255;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhhh)",kwlist,&pclType,&x,&y,&z,&r,&g,&b,&a))
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhhh)",
+                         const_cast<char**>(kwlist),&pclType,&x,&y,&z,&r,&g,&b,&a))
             {
                 PyErr_Clear();
-                if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhh)",kwlist,&pclType,&x,&y,&z,&r,&g,&b)) return -1;
+                if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhh)",
+                             const_cast<char**>(kwlist),&pclType,&x,&y,&z,&r,&g,&b)) return -1;
                 a=255;
             }
             pcl::PointXYZRGBA pt;
@@ -2836,10 +2845,10 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         }
         case ito::pclXYZNormal:
         {
-            static char *kwlist[] = {"type","xyz","normal","curvature", NULL};
+            static const char *kwlist[] = {"type","xyz","normal","curvature", NULL};
             float x,y,z;
             float nx,ny,nz, curvature;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(fff)f",kwlist,&pclType,&x,&y,&z,&nx,&ny,&nz,&curvature)) return -1;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(fff)f",const_cast<char**>(kwlist),&pclType,&x,&y,&z,&nx,&ny,&nz,&curvature)) return -1;
             pcl::PointNormal pt;
             pt.x = x; pt.y = y; pt.z = z;
             pt.normal_x = nx; pt.normal_y = ny; pt.normal_z = nz;
@@ -2849,10 +2858,10 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         }
         case ito::pclXYZINormal:
         {
-            static char *kwlist[] = {"type","xyz","intensity","normal","curvature", NULL};
+            static char const *kwlist[] = {"type","xyz","intensity","normal","curvature", NULL};
             float x,y,z, intensity;
             float nx,ny,nz, curvature;
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)f(fff)f",kwlist,&pclType,&x,&y,&z,&intensity,&nx,&ny,&nz,&curvature)) return -1;
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)f(fff)f",const_cast<char**>(kwlist),&pclType,&x,&y,&z,&intensity,&nx,&ny,&nz,&curvature)) return -1;
             pcl::PointXYZINormal pt;
             pt.x = x; pt.y = y; pt.z = z;
             pt.normal_x = nx; pt.normal_y = ny; pt.normal_z = nz;
@@ -2863,19 +2872,21 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
         }
         case ito::pclXYZRGBNormal:
         {
-            static char *kwlist[] = {"type","xyz","rgba","normal","curvature", NULL};
+            static const char *kwlist[] = {"type","xyz","rgba","normal","curvature", NULL};
             float x,y,z;
             float nx,ny,nz, curvature;
             uint8_t r,g,b,a;
             a=255;
 
-            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhhh)(fff)f",kwlist,&pclType,&x,&y,&z,&r,&g,&b,&a,&nx,&ny,&nz,&curvature))
+            if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhhh)(fff)f",const_cast<char**>(kwlist),
+                         &pclType,&x,&y,&z,&r,&g,&b,&a,&nx,&ny,&nz,&curvature))
             {
                 PyErr_Clear();
-                if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhh)(fff)f",kwlist,&pclType,&x,&y,&z,&r,&g,&b,&nx,&ny,&nz,&curvature)) return -1;
+                if (!PyArg_ParseTupleAndKeywords(args,kwds,"i(fff)(hhh)(fff)f",const_cast<char**>(kwlist),
+                             &pclType,&x,&y,&z,&r,&g,&b,&nx,&ny,&nz,&curvature)) return -1;
                 a=255;
             }
-            
+
             pcl::PointXYZRGBNormal pt;
             pt.x = x; pt.y = y; pt.z = z;
             pt.normal_x = nx; pt.normal_y = ny; pt.normal_z = nz;
@@ -3326,7 +3337,7 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
     if (PythonPCL::PyPointType.tp_dict != NULL)
     {
         dict = PythonPCL::PyPointType.tp_dict;
-        int pType = self->point->getType(); 
+        int pType = self->point->getType();
         switch(pType)
         {
         default:
@@ -3748,7 +3759,7 @@ PyTypeObject PythonPCL::PyPointType = {
 void PythonPCL::PyPoint_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
-    
+
     value = Py_BuildValue("i",ito::pclInvalid);
     PyDict_SetItemString(tp_dict, "PointInvalid", value);
     Py_DECREF(value);
@@ -3818,7 +3829,7 @@ mesh : {polygonMesh}, optional \n\
     another polygon mesh instance (shallow or deep copy depending on polygons-parameter)\n\
 polygons : {sequence or array-like}, optional \n\
     If given, polygons must be a sequence or one-dimensional array-like structure, where all values can be transformed into unsigned integer values. \n\
-    Polygons must contain a list of indices pointing to all polygon from the given mesh that should be copied to this new instance.");    
+    Polygons must contain a list of indices pointing to all polygon from the given mesh that should be copied to this new instance.");
 int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObject * kwds)
 {
     const char *kwlist[] = {"mesh", "polygons", NULL};
@@ -3852,7 +3863,7 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
             #else
                 PyArrayObject *polygonArray = (PyArrayObject*)PyArray_ContiguousFromAny(polygons, NPY_UINT32, 1, 1);
             #endif
-            
+
 
             if (polygonArray)
             {
@@ -3874,7 +3885,7 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
 
                 std::vector<uint32_t> polygonIndices;
                 polygonIndices.resize(len);
-                                
+
                 void *vecStart = (void*)(&polygonIndices[0]);
                 memcpy(vecStart, arrayStart, len * sizeof(uint32_t));
 
@@ -3897,7 +3908,7 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
     {
         self->polygonMesh = new ito::PCLPolygonMesh();
     }
-    
+
     return 0;
 };
 
@@ -3951,12 +3962,14 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
     {
         QTemporaryFile pclTempSaveFile(QDir::tempPath()+QString("pclTemp_XXXXXX"));
         bool success = pclTempSaveFile.open();
-        if (success == false)
+        if (!success)
         {
             PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing polygon mesh binary data could not be created");
             return NULL;
         }
-        pclTempSaveFile.close();//give access to the next one who wants to write to it...
+        //give access to the next one who wants to write to it...
+        pclTempSaveFile.close();
+
         QVector<ito::ParamBase> paramsMand;
         QVector<ito::ParamBase> paramsOpt;
         QVector<ito::ParamBase> paramsOut;
@@ -3980,7 +3993,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         {
             return NULL;
         }
-        
+
         if (pclTempSaveFile.open() == false)
         {
             PyErr_SetString(PyExc_RuntimeError, "Temporary file for reading back polygon mesh binary data could not be opened");
@@ -3988,18 +4001,17 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         }
 
 
-        QScopedPointer<char, QScopedPointerPodDeleter> data(
-                     static_cast<char*>(malloc(static_cast<uint32_t>(pclTempSaveFile.size()))));
-        uint64_t bytesRead = pclTempSaveFile.peek(data.data(), pclTempSaveFile.size());
+        char* data = reinterpret_cast<char*>(PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size()));
+        uint64_t bytesRead = pclTempSaveFile.peek(data, pclTempSaveFile.size());
         Q_ASSERT(bytesRead == pclTempSaveFile.size());//check if file was fully read...
-        stateTuple = PyBytes_FromStringAndSize(data.data(), pclTempSaveFile.size());
+        stateTuple = PyBytes_FromStringAndSize(data, pclTempSaveFile.size());
     }
     else
     {
         Py_INCREF(Py_None);
         stateTuple = Py_None;
     }
-    
+
     //the stateTuple is simply a byte array with the binary content of the temporarily written obj file or None, if the point cloud is invalid or empty
     //the type-number is passed as argument to the constructor of the polygon mesh class, if it is reconstructed.
     PyObject *tempOut = Py_BuildValue("(O()O)", Py_TYPE(self), stateTuple);
@@ -4107,7 +4119,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     {
         key = PyTuple_Pack(1,key);
     }
-    
+
     PyErr_SetString(PyExc_TypeError, "mapping get not implemented yet.");
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
@@ -4127,7 +4139,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 }
 
 //------------------------------------------------------------------------------------------------------
-//PyDoc_STRVAR(pyPolygonMeshGetCloud_doc,"cloud -> ");   
+//PyDoc_STRVAR(pyPolygonMeshGetCloud_doc,"cloud -> ");
 ///*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, void *closure)
 //{
 //    return NULL;
@@ -4147,7 +4159,7 @@ If the pointType is not given or point.PointInvalid, the type of the internal po
 Parameters \n\
 ----------- \n\
 pointType : {int, enum point.PointXXX}, optional \n\
-    the point type value of the desired type, the point cloud should be converted too (default: point.PointInvalid)"); 
+    the point type value of the desired type, the point cloud should be converted too (default: point.PointInvalid)");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args)
 {
     int pointType = ito::pclInvalid;
@@ -4178,7 +4190,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
             pointType = t;
         }
     }
-    
+
     if (pointType == ito::pclXYZ || pointType == pclXYZ || pointType == pclXYZI
         || pointType == pclXYZRGBA || pointType == pclXYZNormal || pointType == pclXYZINormal || pointType == pclXYZRGBNormal)
     {
@@ -4202,7 +4214,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 dataObject with the polygon description. M is the number of polygons and N is the biggest number of vertices."); 
+PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 dataObject with the polygon description. M is the number of polygons and N is the biggest number of vertices.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, ""))
@@ -4240,7 +4252,7 @@ PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 d
     for (size_t i = 0 ; i < psize; i++)
     {
         memcpy(ptr, &(verticePtr->vertices.front()), verticePtr->vertices.size() * sizeof(ito::int32));
-          
+
         for (size_t j = verticePtr->vertices.size(); j < numVertices; j++)
         {
             ptr[j] = -1;
@@ -4261,7 +4273,7 @@ Parameters \n\
 cloud : {pointCloud} \n\
     the input point cloud \n\
 polygons : {array-like, MxN} \n\
-    an array-like matrix with the indices of the polygons. The array contains M polygons and every row gives the indices of the vertices of the cloud belonging to the polygon."); 
+    an array-like matrix with the indices of the polygons. The array contains M polygons and every row gives the indices of the vertices of the cloud belonging to the polygon.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromCloudAndPolygons(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
@@ -4442,7 +4454,7 @@ triangulationType : {int} \n\
             }
         }
     }
-    
+
 
     PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
     mesh->polygonMesh = new ito::PCLPolygonMesh(*(cloud->data), p);
@@ -4471,7 +4483,8 @@ triangulationType : {int} \n\
 //------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
     //{"cloud", (getter)PyPolygonMesh_getCloud, NULL, pyPolygonMeshGetCloud_doc, NULL},
-    {"nrOfPolygons", (getter)PyPolygonMesh_getNrOfPolygons, NULL, "returns the number of polygons in this mesh", NULL},
+    {"nrOfPolygons", (getter)PyPolygonMesh_getNrOfPolygons, NULL,
+    "returns the number of polygons in this mesh", NULL},
     {NULL}  /* Sentinel */
 };
 

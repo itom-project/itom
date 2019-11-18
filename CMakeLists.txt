@@ -1,6 +1,6 @@
 project(itom)
 #trigger update on 2015.12.26@14:09
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 IF(APPLE)
     SET(CMAKE_OSX_ARCHITECTURES "x86_64")
 ENDIF(APPLE)
@@ -12,14 +12,24 @@ SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
-OPTION(BUILD_ISSCONFIG "Set up batch for inno setup compilation." OFF)
+OPTION(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
+SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
+
+
 # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
-#if (BUILD_TARGET64)
-#   set(CMAKE_SIZEOF_VOID_P 8)
-#else (BUILD_TARGET64)
-#   set(CMAKE_SIZEOF_VOID_P 4)
-#endif (BUILD_TARGET64)
+
+#Das mit dem void_p Zeug hatte C.K. mal so reingemacht,
+#da es früher mal Probleme bei älteren Compilern damit gab
+#(manchmal konnte CMake die Variable CMAKE_SIZEOF_VOID_P nicht korrekt setzen
+#    (vor allem wenn man auf einem 64bit OS mit 64 Compiler ein 32bit itom kompilieren wollte.)
+#    Ich kenne leider keine Details mehr, aber da es nicht stört und es mal Gründe
+#    dafür gab, würde ich das erstmal drin lassen.
+if (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 8)
+else (BUILD_TARGET64)
+   set(CMAKE_SIZEOF_VOID_P 4)
+endif (BUILD_TARGET64)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
@@ -66,13 +76,16 @@ MESSAGE(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in gl
 MESSAGE(STATUS "")
 MESSAGE(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 MESSAGE(STATUS "")
-
+################################################################################################################
+#CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
+include("ItomBuildMacros.cmake")
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 ################################################################################################################
 FIND_PACKAGE_QT(ON Core)
@@ -88,10 +101,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in $
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
-IF(BUILD_ISSCONFIG)
+IF(SETUP_ISSCONFIG)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
-ENDIF(BUILD_ISSCONFIG)
+ENDIF(SETUP_ISSCONFIG)
 ################################################################################################################
 
 IF(WIN32)
