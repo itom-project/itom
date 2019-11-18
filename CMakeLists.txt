@@ -1,6 +1,6 @@
 project(itom)
 #trigger update on 2015.12.26@14:09
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 IF(APPLE)
     SET(CMAKE_OSX_ARCHITECTURES "x86_64")
 ENDIF(APPLE)
@@ -65,7 +65,7 @@ IF(BUILD_UNITTEST)
     ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)
 IF(BUILD_ISSCONFIG)
-	SET (InnoSetupPath CACHE PATH "base path to inno setup")
+    SET (InnoSetupPath CACHE PATH "base path to inno setup")
 ENDIF(BUILD_ISSCONFIG)
 
 #find current itom version from qitom/global.h
@@ -102,8 +102,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in $
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
 IF(SETUP_ISSCONFIG)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
 ENDIF(SETUP_ISSCONFIG)
 ################################################################################################################
 

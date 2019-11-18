@@ -163,7 +163,14 @@ int itomCvError( int status, const char* func_name,
 int main(int argc, char *argv[])
 {
     int ret = 0;
-
+    #if linux
+    //qt>4.8 should always be true by now...
+    //#if (((QT_VERSION & 0xFF0000) >= 0x40000) && ((QT_VERSION & 0X00FF0) >= 0x800))
+        // http://labs.qt.nokia.com/2011/06/03/threaded-opengl-in-4-8/
+        QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+        bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
+    //#endif
+    #endif
     //startBenchmarks();
 
     //parse arguments passed to the executable
@@ -174,8 +181,8 @@ int main(int argc, char *argv[])
     //      log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
     //              in the itom application directory.
     //      name=anyUsername : tries to start itom with the given username (different setting file)
-	//      run=pathToPythonFile : runs the given script (if it exists) after possible autostart scripts added to the selected user role, put 
-	//                             'pathToPythonFile' in "..." if it contains spaces or other special characters. You can stack multiple run= items to execute multiple scripts.
+    //      run=pathToPythonFile : runs the given script (if it exists) after possible autostart scripts added to the selected user role, put
+    //                             'pathToPythonFile' in "..." if it contains spaces or other special characters. You can stack multiple run= items to execute multiple scripts.
     //      pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
 
     QStringList args;
@@ -205,7 +212,8 @@ int main(int argc, char *argv[])
 
 //#if defined _DEBUG
 #if 1
-    //in debug mode uncaught exceptions as well as uncaught cv::Exceptions will be parsed and also passed to qWarning and qFatal.
+    //in debug mode uncaught exceptions as well as uncaught
+    //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
     QItomApplication a(argc, argv);
 #else
@@ -308,9 +316,9 @@ int main(int argc, char *argv[])
 #endif
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
-	//a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
-	//to explicitely load the default setting file itom.ini. If no username is given and more than
-	//one settings ini file is available, a selection dialog is shown.
+    //a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
+    //to explicitely load the default setting file itom.ini. If no username is given and more than
+    //one settings ini file is available, a selection dialog is shown.
     //another setting file than the default file itom.ini will be loaded for this session of itom.
     //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for
     //a group
@@ -346,17 +354,17 @@ int main(int argc, char *argv[])
     ret = QDialog::Accepted;
     ito::MainApplication m(ito::MainApplication::standard);
 
-	ito::RetVal userRetVal = ito::UserOrganizer::getInstance()->loadSettings(defUserName);
+    ito::RetVal userRetVal = ito::UserOrganizer::getInstance()->loadSettings(defUserName);
 
     if (userRetVal.containsError())
     {
-		if (userRetVal.hasErrorMessage())
-		{
-			QMessageBox::critical(NULL, QObject::tr("User Management"), userRetVal.errorMessage());
-			qDebug() << userRetVal.errorMessage();
-		}
+        if (userRetVal.hasErrorMessage())
+        {
+            QMessageBox::critical(NULL, QObject::tr("User Management"), userRetVal.errorMessage());
+            qDebug() << userRetVal.errorMessage();
+        }
 
-        ret = QDialog::Rejected; 
+        ret = QDialog::Rejected;
         qDebug("load program aborted, possibly unknown username (check argument name=...)");
     }
     else if (args.contains("pipManager"))
@@ -385,20 +393,20 @@ int main(int argc, char *argv[])
     {
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
         QStringList scriptsToOpen;
-		QStringList scriptsToExecute;
+        QStringList scriptsToExecute;
         foreach(const QString &a, args)
         {
-			if (a.endsWith(".py", Qt::CaseInsensitive))
-			{
-				if (a.startsWith("run="))
-				{
-					scriptsToExecute << a.mid(QString("run=").size());
-				}
-				else
-				{
-					scriptsToOpen << a;
-				}
-			}
+            if (a.endsWith(".py", Qt::CaseInsensitive))
+            {
+                if (a.startsWith("run="))
+                {
+                    scriptsToExecute << a.mid(QString("run=").size());
+                }
+                else
+                {
+                    scriptsToOpen << a;
+                }
+            }
         }
 
         m.setupApplication(scriptsToOpen, scriptsToExecute);
