@@ -40,11 +40,15 @@ WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
 {
     ui.setupUi(this);
 
+    pyExtHelpers["notepad"] = "notepad";
+    pyExtHelpers["notepad++"] = "notepad++ -multiInst";
+
 #ifdef WIN32
     ui.rbPyHomeSub->setVisible(true);
 #else
     ui.rbPyHomeSub->setVisible(false);
 #endif
+
     //populate combobox
     QMap<QString, QString>::const_iterator it;
     for(it = pyExtHelpers.constBegin(); it != pyExtHelpers.constEnd(); it++)

@@ -51,10 +51,7 @@ private:
     Ui::WidgetPropPythonGeneral ui;
     
     //holds presets for common 3rd party textviewers...
-    QMap<QString,QString> pyExtHelpers{
-        {"notepad++", "notepad++ -multiInst"}, 
-        {"notepad", "notepad"}
-    };
+    QMap<QString,QString> pyExtHelpers;
 
 signals:
 

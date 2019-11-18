@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+Copyright (C) 2019, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
@@ -344,7 +344,6 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             }
             else
             {
-                //                message = QObject::tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
                 message = tr("Unable to find translation file.");
                 qDebug() << message;
                 pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
@@ -355,9 +354,11 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         {
             QPluginLoader *loader = new QPluginLoader(filename);
             QObject *plugin = loader->instance();
+            
             if (plugin)
             {
-                ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
+                ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase*>(plugin);
+
                 pls.filename = filename;
 
                 if (ain)
@@ -396,42 +397,38 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         break;
                     }
+
                     m_pluginLoadStatus.append(pls);
                 }
                 else
                 {
                     //check whether this instance is an older or newer version of AddInInterface
-                    QObject *obj = qobject_cast<QObject*>(plugin);
-                    if (obj)
+                    if (plugin->qt_metacast("ito::AddInInterfaceBase") != NULL)
                     {
-                        if (obj->qt_metacast("ito::AddInInterfaceBase") != NULL)
-                        {
-                            int i = 0;
-                            const char* oldName = ito_AddInInterface_OldVersions[0];
+                        int i = 0;
+                        const char* oldName = ito_AddInInterface_OldVersions[0];
 
-                            while (oldName != NULL)
-                            {
-                                if (obj->qt_metacast(oldName) != NULL)
-                                {
-                                    message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
-                                    break;
-                                }
-                                oldName = ito_AddInInterface_OldVersions[++i];
-                            }
-                            if (oldName == NULL)
-                            {
-                                message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
-                            }
-                        }
-                        else
+                        while (oldName != NULL)
                         {
-                            message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
+                            if (plugin->qt_metacast(oldName) != NULL)
+                            {
+                                message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
+                                break;
+                            }
+
+                            oldName = ito_AddInInterface_OldVersions[++i];
+                        }
+
+                        if (oldName == NULL)
+                        {
+                            message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
                         }
                     }
                     else
                     {
-                        message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
+                        message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
                     }
+
                     qDebug() << message;
                     //retValue += RetVal(retError, 1003, message.toLatin1().data());
                     pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));

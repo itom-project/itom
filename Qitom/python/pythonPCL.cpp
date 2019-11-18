@@ -2117,7 +2117,7 @@ pointCloud.");
     }
 
     PyPointCloud *cloud = createEmptyPyPointCloud();
-    if (cloud != nullptr)
+    if (cloud != NULL)
     {
         cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
         retval += ito::pclHelper::pointCloudFromXYZ(X.data(), Y.data(), Z.data(), *(cloud->data), deleteNaN);
@@ -2151,7 +2151,7 @@ I : {MxN data object} \n\
     MxN data object with the same size than the single X,Y or Z planes \n\
 deleteNaN : {bool} \n\
     default = false\n\
-    if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
+    if True all NaN values in X, Y or Z data objects are skipped, hence, the resulting point cloud is not dense any more\n\
 \n\
 Returns \n\
 ------- \n\

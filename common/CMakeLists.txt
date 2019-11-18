@@ -1,7 +1,7 @@
 SET (target_name itomCommonLib)  
 project(${target_name}) 
 cmake_minimum_required(VERSION 2.8)
-     
+
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
@@ -42,8 +42,6 @@ IF (DEFINED CMAKE_BUILD_TYPE)
 ELSE(CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
-
-
 
 set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
