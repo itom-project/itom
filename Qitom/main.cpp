@@ -163,14 +163,14 @@ int itomCvError( int status, const char* func_name,
 int main(int argc, char *argv[])
 {
     int ret = 0;
-    #if linux
+#if linux
     //qt>4.8 should always be true by now...
     //#if (((QT_VERSION & 0xFF0000) >= 0x40000) && ((QT_VERSION & 0X00FF0) >= 0x800))
-        // http://labs.qt.nokia.com/2011/06/03/threaded-opengl-in-4-8/
+        // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
         QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
         bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
     //#endif
-    #endif
+#endif
     //startBenchmarks();
 
     //parse arguments passed to the executable
@@ -199,27 +199,20 @@ int main(int argc, char *argv[])
         logfile.setFileName("itomlog.txt");
         logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
         messageStream = new QTextStream(&logfile);
-#if QT_VERSION < 0x050000
-        qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
-#else
+
+        //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
         qInstallMessageHandler(myMessageOutput);
-#endif
         //first lines in log file
         logfile.write("------------------------------------------------------------------------------------------\n");
         logfile.write(QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n").toLatin1().constData());
         logfile.write("------------------------------------------------------------------------------------------\n");
     }
 
-//#if defined _DEBUG
-#if 1
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
     QItomApplication a(argc, argv);
-#else
-    //in release an uncaught exception will exit the application.
-    QApplication a(argc, argv);
-#endif
+
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
@@ -424,11 +417,7 @@ int main(int argc, char *argv[])
 
     ito::UserOrganizer::closeInstance();
 
-#if QT_VERSION >= 0x050000
     qInstallMessageHandler(0);
-#else
-    qInstallMsgHandler(0);
-#endif
 
     //close possible logfile
     DELETE_AND_SET_NULL(messageStream);

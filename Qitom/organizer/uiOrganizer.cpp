@@ -19,14 +19,13 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-
+#include "common/typeDefs.h" //contains nullptr implementation
 #include "../python/pythonEngineInc.h"
 #include "uiOrganizer.h"
 
 //#include "../../AddInManager/apiFunctions.h"
 #include "../common/apiFunctionsInc.h"
 #include "../api/apiFunctionsGraph.h"
-
 #include "common/helperCommon.h"
 #include "common/addInInterface.h"
 #include "common/abstractApiWidget.h"
@@ -53,13 +52,6 @@
 #include <qpluginloader.h>
 #include <QtUiTools/quiloader.h>
 
-//make NULLs comply to c++11 if applicable
-#if __cplusplus >= 201103L
-    #ifdef NULL
-        #undef NULL
-    #endif
-    #define NULL nullptr
-#endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -137,7 +129,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
-	qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
+    qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
 
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
@@ -548,46 +540,46 @@ RetVal UiOrganizer::addWidgetToOrganizer(
                 }
             }
         }
-		else /* typeCentralWidget*/
-		{
-			//check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-			setApiPointersToWidgetAndChildren(widget);
+        else /* typeCentralWidget*/
+        {
+            //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+            setApiPointersToWidgetAndChildren(widget);
 
-			if (widget->inherits("QDialog"))
-			{
-				retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be inserted into the main window").toLatin1().data());
-				widget->deleteLater();
-				widget = NULL;
-			}
-			else
-			{
-				MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
-				if (!mainWin)
-				{
-					retValue += RetVal(retError, 0, tr("Main window not available for inserting the user interface.").toLatin1().data());
-					widget->deleteLater();
-					widget = NULL;
-				}
-				else
-				{
-					retValue += mainWin->addCentralWidget(widget);
-					if (retValue.containsError())
-					{
-						widget->deleteLater();
-						widget = NULL;
-					}
-					else
-					{
-						set = new UiContainer(widget, UiContainer::uiTypeWidget);
-						*dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-						containerItem.container = set;
-						m_dialogList[*dialogHandle] = containerItem;
-						*objectID = addObjectToList(widget);
-						*className = widget->metaObject()->className();
-					}
-				}
-			}
-		}
+            if (widget->inherits("QDialog"))
+            {
+                retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be inserted into the main window").toLatin1().data());
+                widget->deleteLater();
+                widget = NULL;
+            }
+            else
+            {
+                MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+                if (!mainWin)
+                {
+                    retValue += RetVal(retError, 0, tr("Main window not available for inserting the user interface.").toLatin1().data());
+                    widget->deleteLater();
+                    widget = NULL;
+                }
+                else
+                {
+                    retValue += mainWin->addCentralWidget(widget);
+                    if (retValue.containsError())
+                    {
+                        widget->deleteLater();
+                        widget = NULL;
+                    }
+                    else
+                    {
+                        set = new UiContainer(widget, UiContainer::uiTypeWidget);
+                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                        containerItem.container = set;
+                        m_dialogList[*dialogHandle] = containerItem;
+                        *objectID = addObjectToList(widget);
+                        *className = widget->metaObject()->className();
+                    }
+                }
+            }
+        }
     }
 
     return retValue;
@@ -1283,7 +1275,7 @@ RetVal UiOrganizer::showInputDialogGetDouble(unsigned int objectID, const QStrin
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1316,7 +1308,7 @@ RetVal UiOrganizer::showInputDialogGetInt(unsigned int objectID, const QString &
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1349,7 +1341,7 @@ RetVal UiOrganizer::showInputDialogGetItem(unsigned int objectID, const QString 
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1382,7 +1374,7 @@ RetVal UiOrganizer::showInputDialogGetText(unsigned int objectID, const QString 
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -4196,28 +4188,28 @@ dialog of the main window where it can also be stopped by the user.
 */
 RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QString &name, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
-	ito::RetVal retval;
-	if (timer.data())
-	{
-		TimerContainer timerContainer;
-		timerContainer.timer = timer;
-		timerContainer.name = name;
-		m_timers.append(timerContainer);
-		connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
-	}
-	else
-	{
+    ito::RetVal retval;
+    if (timer.data())
+    {
+        TimerContainer timerContainer;
+        timerContainer.timer = timer;
+        timerContainer.name = name;
+        m_timers.append(timerContainer);
+        connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
+    }
+    else
+    {
         retval += ito::RetVal(ito::retError, 0, tr("timer is invalid").toLatin1().data());
-	}
+    }
 
-	if (semaphore)
-	{
-		semaphore->returnValue = retval;
-		semaphore->release();
-		semaphore->deleteSemaphore();
-	}
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
 
-	return retval;
+    return retval;
 }
 
 
@@ -4230,7 +4222,7 @@ This method is usually called by the Python 'active timer dialog'  and is rquire
 */
 QList<TimerContainer> UiOrganizer::getRegisteredTimers()
 {
-	return m_timers;
+    return m_timers;
 }
 
 //! unregisterActiveTimer scans the m_timers qList for NULL pointers
@@ -4247,23 +4239,23 @@ slot the list is scanned for pointers equal to NULL.
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::unregisterActiveTimer(ItomSharedSemaphore *semaphore  /*= NULL*/)
 {
-	ito::RetVal retval;
-	int i;
-	for (i = m_timers.length() - 1; i >= 0; --i)
-	{
-		if (m_timers.at(i).timer == NULL)
-		{
-			m_timers.removeAt(i);
-		}
-	}
-	if (semaphore)
-	{
-		semaphore->returnValue = retval;
-		semaphore->release();
-		semaphore->deleteSemaphore();
-	}
+    ito::RetVal retval;
+    int i;
+    for (i = m_timers.length() - 1; i >= 0; --i)
+    {
+        if (m_timers.at(i).timer == NULL)
+        {
+            m_timers.removeAt(i);
+        }
+    }
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
 
-	return retval;
+    return retval;
 
 }
 
