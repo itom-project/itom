@@ -251,13 +251,14 @@ this using the **v4l2** or **OpenCVGrabber** plugins. Before doing this, you hav
 to start the v4l2 camera driver process (every time the raspi is started, or 
 place it in the autostart script)::
     
-    sudo modprobe bcm2835-v4l2  
+    sudo modprobe bcm2835-v4l2
+
 This should be checked with your raspi's current's documentation.
 https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
 Could also be::
     
     sudo modprobe v4l2_common
-    
+
 Keyboard issues with remote desktop
 -------------------------------------------------------------------------------
 

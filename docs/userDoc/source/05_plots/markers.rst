@@ -7,7 +7,7 @@ Markers in plots
 
 Sometimes, it is required to place marker symbols in a plot canvas with subpixel precision. This can for instance be the case,
 if detected features or calibration marks should be indicated in the plot. Currently, the Qwt-based plot plugins 
-:ref:`itom1dqwtplot <itom1dqwtplot (1D)>` and :ref:`itom2dqwtplot <itom2dqwtplot (2D)>` support drawing markers.
+:ref:`plot-line <itom1dqwtplot (1D)>` and :ref:`plot-image <itom2dqwtplot (2D)>` support drawing markers.
 
 It is possible to group one or multiple markers in one set that can be assigned a set name. Afterwards it is possible to also
 delete single sets based on their name or to show the name of the set next to each marker. All markers in one set can have a certain color, shape

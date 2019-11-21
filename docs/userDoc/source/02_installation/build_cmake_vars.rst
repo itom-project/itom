@@ -1,7 +1,8 @@
 .. include:: ../include/global.inc
 .. _build_cmake_vars_list:
+
 List of common **cmake** Variables used in the |itom| project
-==============================================================
+===============================================================
 
 This chapter is to hold lots of common CMAKE Variables, used throughout 
 the itom and its plugin's projects, in the hope this will reduce the amount of 

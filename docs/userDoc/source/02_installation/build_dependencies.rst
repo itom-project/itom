@@ -110,12 +110,12 @@ from your computer in order to activate changes to environment variables):
     - If ready type::
         
         nmake install
-        
+    
     - Finally, you can build the documentation (build into the qtbase/doc folder) 
         by typing (see http://qt-project.org/wiki/Building_Qt_Documentation)::
-        
-        nmake docs
-        
+            
+            nmake docs
+    
     If you want to restart the entire compilation you need to completely remove 
     any possible older configuration. Then open the appropriate Visual Studio command line and
     execute::
