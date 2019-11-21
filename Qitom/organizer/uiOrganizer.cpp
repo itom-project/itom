@@ -1010,7 +1010,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1028,14 +1028,15 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(handle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
 
-    if (ptr)
+    if (widget)
     {
-        ptr->getUiWidget()->hide();
+        widget->hide();
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1074,7 +1075,7 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1121,7 +1122,7 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1139,14 +1140,15 @@ RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attrib
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(handle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
 
-    if (ptr)
+    if (widget)
     {
-        ptr->getUiWidget()->setAttribute(attribute,on);
+        widget->setAttribute(attribute,on);
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1164,14 +1166,15 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(handle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
 
-    if (ptr)
+    if (widget)
     {
-        *visible = ptr->getUiWidget()->isVisible();
+        *visible = widget->isVisible();
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1663,15 +1666,22 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
 RetVal UiOrganizer::readProperties(unsigned int handle, const QString &widgetName, QSharedPointer<QVariantMap> properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
-    UiContainer* set = getUiDialogByHandle(handle);
-    if (set)
+    UiContainer* ptr = getUiDialogByHandle(handle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
+
+    if (widget)
     {
-        QWidget* widget = set->getUiWidget()->findChild<QWidget*>(widgetName);
-        if (widget)
+        QWidget* child = widget->findChild<QWidget*>(widgetName);
+
+        if (child)
         {
-            objectHandle = this->addObjectToList(widget);
+            objectHandle = this->addObjectToList(child);
 
         }
+    }
+    else
+    {
+        return RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     return readProperties(objectHandle, properties, semaphore);
@@ -1681,15 +1691,21 @@ RetVal UiOrganizer::readProperties(unsigned int handle, const QString &widgetNam
 RetVal UiOrganizer::writeProperties(unsigned int handle, const QString &widgetName, const QVariantMap &properties, ItomSharedSemaphore *semaphore)
 {
     unsigned int objectHandle = 0;
-    UiContainer* set = getUiDialogByHandle(handle);
-    if (set)
+    UiContainer* ptr = getUiDialogByHandle(handle);
+    QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
+
+    if (widget)
     {
-        QWidget* widget = set->getUiWidget()->findChild<QWidget*>(widgetName);
-        if (widget)
+        QWidget* child = widget->findChild<QWidget*>(widgetName);
+        if (child)
         {
-            objectHandle = this->addObjectToList(widget);
+            objectHandle = this->addObjectToList(child);
 
         }
+    }
+    else
+    {
+        return RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     return writeProperties(objectHandle, properties, semaphore);
@@ -2011,14 +2027,23 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, const QString &objectN
     {
         if (objectName != "")
         {
-            QObject* obj = ptr->getUiWidget()->findChild<QObject*>(objectName);
-            if (obj)
+            QWidget *widget = ptr ? ptr->getUiWidget() : NULL;
+
+            if (widget)
             {
-                *objectID = addObjectToList(obj);
+                QObject* obj = widget->findChild<QObject*>(objectName);
+                if (obj)
+                {
+                    *objectID = addObjectToList(obj);
+                }
+                else
+                {
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
+                }
             }
             else
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
+                retValue += RetVal(retError, 1001, tr("Dialog or plot handle does not (longer) exist. Maybe it has been closed before.").toLatin1().data());
             }
         }
         else //return reference to dialog or windows itself
