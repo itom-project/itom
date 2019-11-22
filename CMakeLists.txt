@@ -1,10 +1,10 @@
 project(itom)
 #trigger update on 2015.12.26@14:09
-cmake_minimum_required(VERSION 2.8)
-if(APPLE)
-    SET(CMAKE_OSX_ARCHITECTURES "x86_64") 
-endif(APPLE)
-  
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+IF(APPLE)
+    SET(CMAKE_OSX_ARCHITECTURES "x86_64")
+ENDIF(APPLE)
+
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
@@ -12,24 +12,35 @@ SET (ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
 SET (ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
-OPTION(BUILD_ISSCONFIG "Set up batch for inno setup compilation." OFF)
+OPTION(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
+SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
+
+
+# Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
+
+#Das mit dem void_p Zeug hatte C.K. mal so reingemacht,
+#da es früher mal Probleme bei älteren Compilern damit gab
+#(manchmal konnte CMake die Variable CMAKE_SIZEOF_VOID_P nicht korrekt setzen
+#    (vor allem wenn man auf einem 64bit OS mit 64 Compiler ein 32bit itom kompilieren wollte.)
+#    Ich kenne leider keine Details mehr, aber da es nicht stört und es mal Gründe
+#    dafür gab, würde ich das erstmal drin lassen.
 if (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 8)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
-endif (BUILD_TARGET64) 
- 
+endif (BUILD_TARGET64)
+
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
- 
+
 if (WIN32)
     # add /LTCG flag to remove MSVC linker warning in release build
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
     set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 endif (WIN32)
-      
-ADD_SUBDIRECTORY(DataObject) 
+
+ADD_SUBDIRECTORY(DataObject)
 
 IF(BUILD_WITH_PCL)
     ADD_SUBDIRECTORY(PointCloud)
@@ -47,36 +58,36 @@ ADD_SUBDIRECTORY(plot)
 ADD_SUBDIRECTORY(itomWidgets)
 ADD_SUBDIRECTORY(Qitom)
 ADD_SUBDIRECTORY(iconThemes)
- 
+
 IF(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
     ADD_SUBDIRECTORY(gtest-1.6.0)
     ADD_SUBDIRECTORY(itom_unittests)
 ENDIF(BUILD_UNITTEST)
 IF(BUILD_ISSCONFIG)
-	SET (InnoSetupPath CACHE PATH "base path to inno setup")
+    SET (InnoSetupPath CACHE PATH "base path to inno setup")
 ENDIF(BUILD_ISSCONFIG)
-    
+
 #find current itom version from qitom/global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
-string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
+FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
+STRING(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
 
-message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
-message(STATUS "")
-message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "")
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+MESSAGE(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
+MESSAGE(STATUS "")
+MESSAGE(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+MESSAGE(STATUS "")
+################################################################################################################
+#CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
+include("ItomBuildMacros.cmake")
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-################################################################################################################ 
-#CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
-include("ItomBuildMacros.cmake")  
+################################################################################################################
 FIND_PACKAGE_QT(ON Core)
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
@@ -90,16 +101,16 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in $
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
-IF(BUILD_ISSCONFIG)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
-ENDIF(BUILD_ISSCONFIG)
-################################################################################################################ 
+IF(SETUP_ISSCONFIG)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
+ENDIF(SETUP_ISSCONFIG)
+################################################################################################################
 
 IF(WIN32)
     SET(CHMSource "${CMAKE_CURRENT_SOURCE_DIR}/docs/itom_doc.chm")
     SET(CHMDest "${CMAKE_CURRENT_BINARY_DIR}/docs")
-    
+
     IF(EXISTS ${CHMSource})
         IF(EXISTS "${CHMDest}/itom_doc.chm")
             IF(${CHMSource} IS_NEWER_THAN "${CHMDest}/itom_doc.chm")
@@ -113,8 +124,8 @@ IF(WIN32)
     ELSE()
         message(STATUS "${CHMSource} does not exist")
     ENDIF()
-    
-    
+
+
     IF(MSVC_VERSION EQUAL 1600)
         IF(CMAKE_CL_64)
             configure_file(${CMAKE_CURRENT_SOURCE_DIR}/compile_debug64.bat ${CMAKE_CURRENT_BINARY_DIR}/compile_debug.bat COPYONLY)
@@ -154,7 +165,7 @@ IF(WIN32)
         ELSE(CMAKE_CL_64)
             configure_file(${CMAKE_CURRENT_SOURCE_DIR}/compile_debug32_v15.bat ${CMAKE_CURRENT_BINARY_DIR}/compile_debug.bat COPYONLY)
             configure_file(${CMAKE_CURRENT_SOURCE_DIR}/compile_release32_v15.bat ${CMAKE_CURRENT_BINARY_DIR}/compile_release.bat COPYONLY)
-        ENDIF(CMAKE_CL_64)    
+        ENDIF(CMAKE_CL_64)
     ENDIF(MSVC_VERSION EQUAL 1600)
 ENDIF(WIN32)
 

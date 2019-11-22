@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -67,7 +67,7 @@ namespace ito
         asm volatile
           ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
            : "a" (i), "c" (0));
-        // ECX is set to zero for CPUID function 4    
+        // ECX is set to zero for CPUID function 4
     #else
         __cpuid((ito::int32 *)regs, (ito::int32)i); //Microsoft specific for x86 and x64
     #endif
@@ -105,13 +105,13 @@ MainApplication* MainApplication::instance()
     \param guiType Type of the desired GUI (normal, console, no)
     \sa tGuiType
 */
-MainApplication::MainApplication(tGuiType guiType) : 
-    m_pyThread(NULL), 
-    m_pyEngine(NULL), 
-    m_scriptEditorOrganizer(NULL), 
-    m_mainWin(NULL), 
+MainApplication::MainApplication(tGuiType guiType) :
+    m_pyThread(NULL),
+    m_pyEngine(NULL),
+    m_scriptEditorOrganizer(NULL),
+    m_mainWin(NULL),
     m_paletteOrganizer(NULL),
-    m_uiOrganizer(NULL), 
+    m_uiOrganizer(NULL),
     m_designerWidgetOrganizer(NULL),
     m_processOrganizer(NULL),
     m_splashScreen(NULL),
@@ -239,15 +239,15 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     registerMetaObjects();
 
 #ifdef USEGIMMICKS
-    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time 
+    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
 #else
     QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
-#endif // USEUSEGIMMICKS  
+#endif // USEUSEGIMMICKS
 
     QPixmap pixmap(spashScreenFileName);
 
     QString text;
-    
+
     if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
     {
         text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
@@ -268,7 +268,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     p.end();
 
     m_splashScreen = new QSplashScreen(pixmap);
-    
+
     m_splashScreen->show();
     QCoreApplication::processEvents();
 
@@ -337,7 +337,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     vendor.append((const char *)&cpuID.EBX(), 4);
     vendor.append((const char *)&cpuID.EDX(), 4);
     vendor.append((const char *)&cpuID.ECX(), 4);
-    
+
     if (strcmp(vendor.data(), "GenuineIntel") != 0)
     {
         _putenv_s("KMP_AFFINITY","none");
@@ -407,7 +407,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     AppManagement::setScriptTextCodec(textCodec);
 
     // None of these two is available in Qt5 and according to
-    // Qt docu it should not have been used anyway. So 
+    // Qt docu it should not have been used anyway. So
     // we need to find another solution here
     // QTextCodec::setCodecForCStrings(textCodec);
     if (setCodecForLocal && textCodec)
@@ -480,7 +480,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             {
                 qDebug() << "resource-file " << rccFile << " does not exist";
             }
-            
+
         }
 
         if (cssFile != "")
@@ -515,7 +515,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     DELETE_AND_SET_NULL(settings);
 
-	/*set new seed for random generator of OpenCV. 
+	/*set new seed for random generator of OpenCV.
 	This is required to have real random values for any randn or randu command.
 	The seed must be set in every thread. This is for the main thread.
 	*/
@@ -586,7 +586,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         if (m_mainWin && infoMessages->size() > 0)
         {
             QMapIterator<QString, QVariant> it(*infoMessages);
-            while (it.hasNext()) 
+            while (it.hasNext())
             {
                 it.next();
                 m_mainWin->showInfoMessageLine(it.value().toString(), it.key());
@@ -673,7 +673,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 //    if (appendPathes.length() > 0 || prependPathes.length() > 0)
 //    {
 //#ifdef WINVER
-//#if WINVER >= 0x0602 
+//#if WINVER >= 0x0602
 //        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatibel to this).
 //        //the 'lib' directory is already added to the default search pathes for LoadLibrary commands in main.cpp.
 //        //However, further pathes have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
@@ -891,54 +891,54 @@ void MainApplication::mainWindowCloseRequest()
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings->beginGroup("MainWindow");
 
-	bool pythonStopped = false;
-	bool closeRequestCanceled = false;
-	int dialogRequest = -1;
+    bool pythonStopped = false;
+    bool closeRequestCanceled = false;
+    int dialogRequest = -1;
 
-	if (m_pyEngine != NULL && m_pyEngine->isPythonBusy())
-	{
-		DialogCloseItom *dialog = new DialogCloseItom(NULL);
+    if (m_pyEngine != NULL && m_pyEngine->isPythonBusy())
+    {
+        DialogCloseItom *dialog = new DialogCloseItom(NULL);
 
-		int dialogRequest = dialog->exec();
+        int dialogRequest = dialog->exec();
 
-		if (dialogRequest == QDialog::Accepted)
-		{
-			pythonStopped = true;
-		}
-		else if (dialogRequest == QDialog::Rejected)
-		{
-			closeRequestCanceled = true;
-		}
+        if (dialogRequest == QDialog::Accepted)
+        {
+            pythonStopped = true;
+        }
+        else if (dialogRequest == QDialog::Rejected)
+        {
+            closeRequestCanceled = true;
+        }
 
-		DELETE_AND_SET_NULL(dialog);
-	}
-	else if (settings->value("askBeforeClose", true).toBool() && !pythonStopped)
-	{
-		QMessageBox msgBox;
-		msgBox.setText(tr("Do you really want to exit the application?"));
-		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-		msgBox.setDefaultButton(QMessageBox::Ok);
-		msgBox.setIcon(QMessageBox::Question);
-		int ret = msgBox.exec();
+        DELETE_AND_SET_NULL(dialog);
+    }
+    else if (settings->value("askBeforeClose", true).toBool() && !pythonStopped)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Do you really want to exit the application?"));
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Question);
+        int ret = msgBox.exec();
 
-		if (ret == QMessageBox::Cancel)
-		{
-			settings->endGroup();
-			delete settings;
-			return;
-		}
-	}
+        if (ret == QMessageBox::Cancel)
+        {
+            settings->endGroup();
+            delete settings;
+            return;
+        }
+    }
 
-	if (!retValue.containsError() && !closeRequestCanceled)
-	{
-		settings->endGroup();
-		delete settings;
-    
-		if (retValue.containsError()) return;
+    if (!retValue.containsError() && !closeRequestCanceled)
+    {
+        settings->endGroup();
+        delete settings;
 
-		//saves the state of all opened scripts to the settings file
-		if (m_scriptEditorOrganizer)
-		{
+        if (retValue.containsError()) return;
+
+        //saves the state of all opened scripts to the settings file
+        if (m_scriptEditorOrganizer)
+        {
             m_scriptEditorOrganizer->saveScriptState();
 
             retValue += m_scriptEditorOrganizer->closeAllScripts(true);
@@ -948,13 +948,13 @@ void MainApplication::mainWindowCloseRequest()
                 //The user was asked how to proceed with unsaved scripts. In this case, the user cancelled this request... do not close itom!
                 return;
             }
-		}
-	
-		if (m_mainWin)
-		{
-			m_mainWin->hide();
-		}
-		QApplication::instance()->quit();
+        }
+
+        if (m_mainWin)
+        {
+            m_mainWin->hide();
+        }
+        QApplication::instance()->quit();
     }
 }
 

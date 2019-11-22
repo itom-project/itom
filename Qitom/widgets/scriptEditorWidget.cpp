@@ -53,6 +53,7 @@
 #include "../codeEditor/textBlockUserData.h"
 #include "scriptEditorPrinter.h"
 #include "../organizer/userOrganizer.h"
+#include "../widgets/consoleWidget.h"
 
 namespace ito 
 {
@@ -465,9 +466,11 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
         {
             AbstractCodeEditorWidget::dropEvent(event);
 
+            QObject *parent = event->source() ? event->source()->parent() : NULL;
+            
             //this snipped is based on a QScintilla mailing list thread:
             //http://www.riverbankcomputing.com/pipermail/qscintilla/2014-September/000996.html
-            if (event->source()->objectName() == "console")
+            if (parent && qobject_cast<ito::ConsoleWidget*>(parent))
             {
                 //we never want to move text out of the console, text should always be copied
                 if (event->dropAction() == Qt::MoveAction)

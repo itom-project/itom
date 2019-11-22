@@ -85,23 +85,26 @@ namespace ito
     {
         Q_D(const AlgoInterfaceValidator);
         QMap<int, AlgoInterfaceValidatorPrivate::AlgoInterface>::const_iterator it = d->m_interfaces.constFind((int)iface);
-        if(it != d->m_interfaces.constEnd())
+        if (it != d->m_interfaces.constEnd())
         {
             mandParams.clear();
             outParams.clear();
             const QVector<ito::Param> &mands = it->mandParams;
             const QVector<ito::Param> &outs = it->outParams;
-            for(int i = 0 ; i < mands.size(); i++)
+
+            for (int i = 0; i < mands.size(); i++)
             {
                 mandParams << ito::ParamBase( mands[i] );
             }
-            for(int i = 0 ; i < outs.size(); i++)
+
+            for (int i = 0; i < outs.size(); i++)
             {
                 outParams << ito::ParamBase( outs[i] );
             }
             
             return ito::retOk;
         }
+
         return ito::RetVal(ito::retError,0,tr("interface not found").toLatin1().data());
     }
 

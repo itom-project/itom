@@ -785,6 +785,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
         DELETE_AND_SET_NULL_ARRAY(steps);
 
         PyDataObject_SetBase(self, (PyObject*)ndArrayOut);
+		Py_XDECREF((PyObject*)ndArrayOut);
         
         return error ? -1 : 0;
     }
@@ -3838,7 +3839,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
             return NULL;
         }
 
-        dobj1->dataObject->addToProtocol("Inplace substraction of two dataObjects.");
+        dobj1->dataObject->addToProtocol("Inplace subtraction of two dataObjects.");
     }
     else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
@@ -3855,7 +3856,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         }
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar substraction of %g.", val);
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
     }
