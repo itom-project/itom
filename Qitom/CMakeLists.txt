@@ -51,9 +51,13 @@ ELSE()
     #uses the old QtAssistant as help viewer.
     FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 ENDIF()
-find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )   
+
+find_package(PythonLibs 3.0 REQUIRED) 
+
 # can be used from 3.12 onwards
+# find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
 # find_package (Python3 COMPONENTS Interpreter Development)
+
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
@@ -165,14 +169,14 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
-	../AddInManager/
+    ../AddInManager/
     ../itomWidgets
 )
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-	${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${OpenCV_DIR}/lib
 )
  
@@ -193,12 +197,12 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/addInManager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/algoInterfaceValidator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/algoInterfaceValidator.h
     
 )
 
 set(qitom_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
