@@ -1898,10 +1898,12 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
             return NULL;
         }
         //allocate memory
-        char* data = reinterpret_cast<char*>(PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size()));
+        stateTuple = PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size());
+        //get pointer to datapart of memory
+        char *data = PyBytes_AsString(stateTuple);
+        //write to memory
         uint64_t bytesRead = pclTempSaveFile.peek(data, pclTempSaveFile.size());
         Q_ASSERT(bytesRead == pclTempSaveFile.size());//check if file was fully read...
-        stateTuple = PyBytes_FromStringAndSize(data, pclTempSaveFile.size());
     }
     else
     {
@@ -4003,11 +4005,13 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
             return NULL;
         }
 
-
-        char* data = reinterpret_cast<char*>(PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size()));
+        //allocate memory
+        stateTuple = PyBytes_FromStringAndSize(NULL, pclTempSaveFile.size());
+        //get pointer to datapart of memory
+        char *data = PyBytes_AsString(stateTuple);
+        //write to memory
         uint64_t bytesRead = pclTempSaveFile.peek(data, pclTempSaveFile.size());
         Q_ASSERT(bytesRead == pclTempSaveFile.size());//check if file was fully read...
-        stateTuple = PyBytes_FromStringAndSize(data, pclTempSaveFile.size());
     }
     else
     {
