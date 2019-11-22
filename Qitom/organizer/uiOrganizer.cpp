@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -19,14 +19,13 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-
+#include "common/typeDefs.h" //contains nullptr implementation
 #include "../python/pythonEngineInc.h"
 #include "uiOrganizer.h"
 
 //#include "../../AddInManager/apiFunctions.h"
 #include "../common/apiFunctionsInc.h"
 #include "../api/apiFunctionsGraph.h"
-
 #include "common/helperCommon.h"
 #include "common/addInInterface.h"
 #include "common/abstractApiWidget.h"
@@ -52,6 +51,7 @@
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
 #include <QtUiTools/quiloader.h>
+
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -129,8 +129,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
-	qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
-	
+    qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
+
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
     {
@@ -180,7 +180,7 @@ UiOrganizer::~UiOrganizer()
 //! executes the garbage collection process
 /*!
     both m_dialogList and m_objectList contain weak references to dialog, main windows or even widgets, which are
-    contained in a dialog or something else. Since these widgets or windows can also be destroyed by the user, the 
+    contained in a dialog or something else. Since these widgets or windows can also be destroyed by the user, the
     UiOrganizer will not directly informed about this. Therefore, the garbage collection process will check both
     m_dialogList and m_objectList for objects, which already have been destroyed and delete these entries. Of course,
     we could also have established a connection to every widgets destroy-signal and delete the corresponding entry, when
@@ -292,7 +292,15 @@ UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::loadPluginWidget(
+        void* algoWidgetFunc,
+        int uiDescription,
+        const StringMap &dialogButtons,
+        QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt,
+        QSharedPointer<unsigned int>dialogHandle,
+        QSharedPointer<unsigned int> objectID,
+        QSharedPointer<QByteArray> className,
+        ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retValue = ito::retOk;
     ito::AddInAlgo::t_algoWidget func = reinterpret_cast<ito::AddInAlgo::t_algoWidget>(algoWidgetFunc);
@@ -355,7 +363,13 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, co
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className)
+RetVal UiOrganizer::addWidgetToOrganizer(
+        QWidget *widget,
+        int uiDescription,
+        const StringMap &dialogButtons,
+        QSharedPointer<unsigned int>dialogHandle,
+        QSharedPointer<unsigned int> objectID,
+        QSharedPointer<QByteArray> className)
 {
     ito::RetVal retValue;
 
@@ -515,7 +529,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                         dockWidget = new QDockWidget(widget->windowTitle(), mainWin);
                         dockWidget->setWidget(widget);
                     }
-                    
+
                     mainWin->addDockWidget(dwa, dockWidget);
                     set = new UiContainer(dockWidget);
                     *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
@@ -526,53 +540,57 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
                 }
             }
         }
-		else /* typeCentralWidget*/
-		{
-			//check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-			setApiPointersToWidgetAndChildren(widget);
+        else /* typeCentralWidget*/
+        {
+            //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+            setApiPointersToWidgetAndChildren(widget);
 
-			if (widget->inherits("QDialog"))
-			{
-				retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be inserted into the main window").toLatin1().data());
-				widget->deleteLater();
-				widget = NULL;
-			}
-			else
-			{
-				MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
-				if (!mainWin)
-				{
-					retValue += RetVal(retError, 0, tr("Main window not available for inserting the user interface.").toLatin1().data());
-					widget->deleteLater();
-					widget = NULL;
-				}
-				else
-				{
-					retValue += mainWin->addCentralWidget(widget);
-					if (retValue.containsError())
-					{
-						widget->deleteLater();
-						widget = NULL;
-					}
-					else
-					{
-						set = new UiContainer(widget, UiContainer::uiTypeWidget);
-						*dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-						containerItem.container = set;
-						m_dialogList[*dialogHandle] = containerItem;
-						*objectID = addObjectToList(widget);
-						*className = widget->metaObject()->className();
-					}
-				}
-			}
-		}
+            if (widget->inherits("QDialog"))
+            {
+                retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be inserted into the main window").toLatin1().data());
+                widget->deleteLater();
+                widget = NULL;
+            }
+            else
+            {
+                MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+                if (!mainWin)
+                {
+                    retValue += RetVal(retError, 0, tr("Main window not available for inserting the user interface.").toLatin1().data());
+                    widget->deleteLater();
+                    widget = NULL;
+                }
+                else
+                {
+                    retValue += mainWin->addCentralWidget(widget);
+                    if (retValue.containsError())
+                    {
+                        widget->deleteLater();
+                        widget = NULL;
+                    }
+                    else
+                    {
+                        set = new UiContainer(widget, UiContainer::uiTypeWidget);
+                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                        containerItem.container = set;
+                        m_dialogList[*dialogHandle] = containerItem;
+                        *objectID = addObjectToList(widget);
+                        *className = widget->metaObject()->className();
+                    }
+                }
+            }
+        }
     }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &objectID, QWidget** newWidget, QWidget *parent /*= NULL*/)
+RetVal UiOrganizer::getNewPluginWindow(
+        const QString &pluginName,
+        unsigned int &objectID,
+        QWidget** newWidget,
+        QWidget *parent /*= NULL*/)
 {
     RetVal retValue = retOk;
     UiContainer *set = NULL;
@@ -602,7 +620,7 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
             }
 //            found = true;
         }
-        
+
     }
     else
     {
@@ -643,10 +661,17 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createNewDialog(
+        const QString &filename,
+        int uiDescription,
+        const StringMap &dialogButtons,
+        QSharedPointer<unsigned int> dialogHandle,
+        QSharedPointer<unsigned int> objectID,
+        QSharedPointer<QByteArray> className,
+        ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
-    
+
     QWidget *wid = NULL;
     QString pluginClassName;
 
@@ -679,7 +704,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                         fig->setAttribute(Qt::WA_DeleteOnClose, true);
 
                         QWidget *destWidget;
-                        
+
                         retValue += fig->loadDesignerWidget(0, 0, pluginClassName, &destWidget);
 
                         if (destWidget)
@@ -769,7 +794,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
         if (!retValue.containsError())
         {
             retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, objectID, className);
-        }   
+        }
     }
 
     if (semaphore)
@@ -795,7 +820,7 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
             ((ito::AbstractFigure*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
 
             //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //transmitted to the plugin. This assignment cannot be done directly, since
             //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
             //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
             //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -809,7 +834,7 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
             ((ito::AbstractApiWidget*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
 
             //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //transmitted to the plugin. This assignment cannot be done directly, since
             //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
             //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
             //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -827,7 +852,11 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent)
+QWidget* UiOrganizer::loadDesignerPluginWidget(
+        const QString &className,
+        RetVal &retValue,
+        AbstractFigure::WindowMode winMode,
+        QWidget *parent)
 {
     QString tempClassName = className;
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
@@ -932,7 +961,11 @@ RetVal UiOrganizer::deleteDialog(unsigned int handle, ItomSharedSemaphore *semap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPointer<int> retCodeIfModal, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showDialog(
+        unsigned int handle,
+        int modalLevel,
+        QSharedPointer<int> retCodeIfModal,
+        ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
@@ -1050,7 +1083,10 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getDockedStatus(
+        unsigned int uiHandle,
+        QSharedPointer<bool> docked,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(uiHandle);
@@ -1089,7 +1125,10 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::setDockedStatus(
+        unsigned int uiHandle,
+        bool docked,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(uiHandle);
@@ -1136,7 +1175,11 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::setAttribute(
+        unsigned int handle,
+        Qt::WidgetAttribute attribute,
+        bool on,
+        ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
     UiContainer *ptr = getUiDialogByHandle(handle);
@@ -1235,7 +1278,7 @@ RetVal UiOrganizer::showInputDialogGetDouble(unsigned int objectID, const QStrin
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1268,7 +1311,7 @@ RetVal UiOrganizer::showInputDialogGetInt(unsigned int objectID, const QString &
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1301,7 +1344,7 @@ RetVal UiOrganizer::showInputDialogGetItem(unsigned int objectID, const QString 
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1334,7 +1377,7 @@ RetVal UiOrganizer::showInputDialogGetText(unsigned int objectID, const QString 
 {
     RetVal retValue = RetVal(retOk);
 
-	QWidget *parent = NULL;
+    QWidget *parent = NULL;
     if (objectID > 0)
     {
         parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
@@ -1603,7 +1646,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int objectID, const QString &cap
     {
         selectedFilter = new QString(filters[selectedFilterIndex]);
     }
-    
+
     QString result = QFileDialog::getSaveFileName(parent, caption, directory, filter, selectedFilter, opt);
     *file = result;
 
@@ -1798,7 +1841,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     //e.g. QVariantList can sometimes be casted to QPointF...
                     RetVal tempRet;
                     QVariant item;
-                    
+
                     if (prop.isEnumType())
                     {
                         item = QPropertyHelper::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
@@ -1845,7 +1888,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                 {
                     errString.append(tr("property '%1' could not be written").arg(i.key()));
             }
-                
+
             }
             ++i;
         }
@@ -2353,7 +2396,7 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
     {
         //TODO: parse parameters and check whether there is a type 'ito::PythonQObjectMarshal':
         // if so, get object from objectID, destroy the arg, replace it by QObject*-type and give the object-pointer, casted to void*.
-        
+
         bool success;
         if (slotNotMethod)
         {
@@ -2367,7 +2410,7 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
         else
         {
             // ck 07.03.17
-            // changed call of widgetWrapper to already return ito::RetVal with more detailed information about the failure reason 
+            // changed call of widgetWrapper to already return ito::RetVal with more detailed information about the failure reason
             retValue += m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
         }
 
@@ -2623,7 +2666,7 @@ QByteArray UiOrganizer::getReadableParameter(const QByteArray &parameter, bool p
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::UiOrganizer::ClassInfoContainerList::Iterator UiOrganizer::parseMetaPropertyForEnumerationTypes(const QMetaProperty &prop, ClassInfoContainerList &currentPropList)
-{ 
+{
     if (prop.isEnumType() || prop.isFlagType())
     {
         QMetaEnum e = prop.enumerator();
@@ -2748,7 +2791,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             {
                 break;
             }
-            
+
             if (className.startsWith('Q') && (type & infoShowItomInheritance))
             {
                 break;
@@ -2803,7 +2846,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 QMetaProperty prop = mo->property(i);
                 signature = getReadableParameter(prop.typeName(), pythonNotCStyle, &valid);
                 readonly = (prop.isWritable() == false);
-                
+
                 if (i >= mo->propertyOffset() && valid)
                 {
                     ClassInfoContainerList::Iterator enumIterator = parseMetaPropertyForEnumerationTypes(prop, tmpObjectInfo);
@@ -2860,7 +2903,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         }
                     }
 
-                    
+
 
                     tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeProperty, QLatin1String(prop.name()), shortDescription, description));
                 }
@@ -2869,7 +2912,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             for (int i = mo->methodCount() - 1; i >= 0; i--)
             {
                 QMetaMethod meth = mo->method(i);
-#if QT_VERSION >= 0x050000                
+#if QT_VERSION >= 0x050000
                 QByteArray methodSignature = meth.methodSignature();
 #else
                 QByteArray methodSignature = meth.signature();
@@ -3007,7 +3050,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     std::cout << "\n" << std::endl;
                 }
 
-                
+
             }
 
             valid = false;
@@ -3052,7 +3095,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         std::cout << "\nSlots\n---------------\n";
                         valid = true;
                     }
-                
+
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
 
@@ -3124,7 +3167,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
 //        {
 //            plotClassName = dwo->getFigureClass("DObjStaticLine", plotClassName, retval);
-//            
+//
 //        }
 //        else
 //        {
@@ -3206,7 +3249,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //
 //    mainWin->setCamera(QPointer<ito::AddInDataIO>(dataIO));
 //    /*mainWin->setProperty("liveSource", v);
-//    
+//
 //    if (dataIO)
 //    {
 //        AddInManager *aim = AddInManager::getInstance();
@@ -3282,7 +3325,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //                            {
 //                                ((ito::AbstractDObjFigure*)window)->setZAxisInterval(QPointF(0.0, maxInt));
 //                                ((ito::AbstractDObjFigure*)window)->setColorPalette("RGB24");
-//                            }                    
+//                            }
 //                        }
 //                    }
 //                }
@@ -3366,7 +3409,15 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, ito::UiDataContainer &xAxisCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal UiOrganizer::figurePlot(
+        ito::UiDataContainer &dataCont,
+        ito::UiDataContainer &xAxisCont,
+        QSharedPointer<unsigned int> figHandle,
+        QSharedPointer<unsigned int> objectID,
+        int areaRow, int areaCol,
+        QString className,
+        QVariantMap properties,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -3420,7 +3471,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, ito::UiDataC
                 }
 
                 if (!retval.containsError())
-                {                                
+                {
                     *objectID = addObjectToList(destWidget);
 
                     if (properties.size() > 0)
@@ -3457,7 +3508,14 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, ito::UiDataC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figureLiveImage(
+        AddInDataIO* dataIO,
+        QSharedPointer<unsigned int> figHandle,
+        QSharedPointer<unsigned int> objectID,
+        int areaRow, int areaCol,
+        QString className,
+        QVariantMap properties,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -3520,7 +3578,13 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::figureDesignerWidget(
+        QSharedPointer<unsigned int> figHandle,
+        QSharedPointer<unsigned int> objectID,
+        int areaRow, int areaCol,
+        QString className,
+        QVariantMap properties,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -3583,7 +3647,12 @@ RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset /*= QPoint()*/, QSize size /*= QSize()*/, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createFigure(
+        QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle,
+        QSharedPointer<unsigned int> objectID,
+        QSharedPointer<int> rows, QSharedPointer<int> cols,
+        QPoint offset /*= QPoint()*/, QSize size /*= QSize()*/,
+        ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
     unsigned int h;
@@ -3652,7 +3721,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     {
         startGarbageCollectorTimer();
 
-		unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
+        unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
         if (forcedHandle == 0)
         {
             *handle = ++UiOrganizer::autoIncUiDialogCounter;
@@ -3666,7 +3735,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
             }
         }
 
-		QString title = tr("Figure %1").arg(*handle);
+        QString title = tr("Figure %1").arg(*handle);
         FigureWidget *fig2 = new FigureWidget(title, false, true, *rows, *cols, NULL);
         fig2->setAttribute(Qt::WA_DeleteOnClose); //always delete figure window, if user closes it
         QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
@@ -3688,14 +3757,14 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         }
 
         set = new UiContainer(fig2);
-        
+
         *guardedFigureHandle = QSharedPointer<unsigned int>(handle); //, threadSafeDeleteUi);
         *objectID = addObjectToList(fig2);
         containerItem.container = set;
         containerItem.guardedHandle = (*guardedFigureHandle).toWeakRef();
         m_dialogList[*handle] = containerItem;
     }
-    
+
     if (semaphore)
     {
         semaphore->returnValue = retValue;
@@ -3710,7 +3779,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
 void UiOrganizer::figureDestroyed(QObject *obj)
 {
     QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
-    while (i != m_dialogList.end()) 
+    while (i != m_dialogList.end())
     {
         if (i.value().container->getUiWidget() == obj)
         {
@@ -3723,7 +3792,13 @@ void UiOrganizer::figureDestroyed(QObject *obj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getSubplot(QSharedPointer<unsigned int> figHandle, unsigned int subplotIndex, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getSubplot(
+        QSharedPointer<unsigned int> figHandle,
+        unsigned int subplotIndex,
+        QSharedPointer<unsigned int> objectID,
+        QSharedPointer<QByteArray> objectName,
+        QSharedPointer<QByteArray> widgetClassName,
+        ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -3830,7 +3905,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
     {
         QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
         FigureWidget *fig;
-        while (i != m_dialogList.end()) 
+        while (i != m_dialogList.end())
         {
             fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
             if (fig)
@@ -3843,7 +3918,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
             {
                 ++i;
             }
-        }   
+        }
     }
 
     if (semaphore)
@@ -3862,7 +3937,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
     FigureWidget *fig = NULL;
     QSharedPointer<unsigned int> empty;
 
-    
+
     if (handle == 0)//all figures
     {
         QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
@@ -3879,7 +3954,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
     }
     else
     {
-       if (m_dialogList.contains(handle))       
+       if (m_dialogList.contains(handle))
        {
            fig = qobject_cast<FigureWidget*>(m_dialogList[handle].container->getUiWidget());
            if (fig)
@@ -3968,7 +4043,11 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVect
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrPoints, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::figureDrawGeometricShapes(
+        unsigned int objectID,
+        QSharedPointer<QVector<ito::Shape> > shapes,
+        int shapeType, int maxNrPoints,
+        ItomSharedSemaphore *semaphore)
 {
     QObject *obj = getWeakObjectReference(objectID);
     QWidget *widget = qobject_cast<QWidget*>(obj);
@@ -4031,7 +4110,10 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::isFigureItem(
+        unsigned int objectID,
+        QSharedPointer<unsigned int> isFigureItem,
+        ItomSharedSemaphore *semaphore)
 {
     QWidget *widget = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
     RetVal retval;
@@ -4065,7 +4147,9 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getAvailableWidgetNames(
+        QSharedPointer<QStringList> widgetNames,
+        ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retval;
 
@@ -4129,28 +4213,28 @@ dialog of the main window where it can also be stopped by the user.
 */
 RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QString &name, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
-	ito::RetVal retval;
-	if (timer.data())
-	{
-		TimerContainer timerContainer;
-		timerContainer.timer = timer;
-		timerContainer.name = name;
-		m_timers.append(timerContainer);
-		connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
-	}
-	else
-	{
+    ito::RetVal retval;
+    if (timer.data())
+    {
+        TimerContainer timerContainer;
+        timerContainer.timer = timer;
+        timerContainer.name = name;
+        m_timers.append(timerContainer);
+        connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
+    }
+    else
+    {
         retval += ito::RetVal(ito::retError, 0, tr("timer is invalid").toLatin1().data());
-	}
+    }
 
-	if (semaphore)
-	{
-		semaphore->returnValue = retval;
-		semaphore->release();
-		semaphore->deleteSemaphore();
-	}
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
 
-	return retval;
+    return retval;
 }
 
 
@@ -4159,16 +4243,16 @@ RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QSt
 /*!
 This method is usually called by the Python 'active timer dialog'  and is rquired for updating the sialog
 
-\return QList<TimerContainer> 
+\return QList<TimerContainer>
 */
 QList<TimerContainer> UiOrganizer::getRegisteredTimers()
 {
-	return m_timers;
+    return m_timers;
 }
 
-//! unregisterActiveTimer scans the m_timers qList for NULL pointers 
+//! unregisterActiveTimer scans the m_timers qList for NULL pointers
 /*!
-This private slot is usually connected to the destroyed signal of a timer registered in m_timers. mTimers provides the 
+This private slot is usually connected to the destroyed signal of a timer registered in m_timers. mTimers provides the
 active timers which are needed for the timer manager. If a timer is deleted the pointer in m_timers will be NULL. In this
 slot the list is scanned for pointers equal to NULL.
 
@@ -4180,23 +4264,23 @@ slot the list is scanned for pointers equal to NULL.
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::unregisterActiveTimer(ItomSharedSemaphore *semaphore  /*= NULL*/)
 {
-	ito::RetVal retval;
-	int i;
-	for (i = m_timers.length() - 1; i >= 0; --i)
-	{
-		if (m_timers.at(i).timer == NULL)
-		{
-			m_timers.removeAt(i);
-		}
-	}
-	if (semaphore)
-	{
-		semaphore->returnValue = retval;
-		semaphore->release();
-		semaphore->deleteSemaphore();
-	}
+    ito::RetVal retval;
+    int i;
+    for (i = m_timers.length() - 1; i >= 0; --i)
+    {
+        if (m_timers.at(i).timer == NULL)
+        {
+            m_timers.removeAt(i);
+        }
+    }
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
 
-	return retval;
+    return retval;
 
 }
 
