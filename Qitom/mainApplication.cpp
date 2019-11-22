@@ -593,17 +593,18 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
+        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
+
+        m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
+        AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
+
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer(retValue);
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
-        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
-        QCoreApplication::processEvents();
-
-        m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
-        AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
         if (AIM)
         {
             AIM->setMainWindow(m_mainWin);
@@ -814,11 +815,11 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_paletteOrganizer);
     AppManagement::setPaletteOrganizer(NULL);
 
-    DELETE_AND_SET_NULL(m_designerWidgetOrganizer);
-    AppManagement::setDesignerWidgetOrganizer(NULL);
-
     DELETE_AND_SET_NULL(m_uiOrganizer);
     AppManagement::setUiOrganizer(NULL);
+
+    DELETE_AND_SET_NULL(m_designerWidgetOrganizer);
+    AppManagement::setDesignerWidgetOrganizer(NULL);
 
     DELETE_AND_SET_NULL(m_mainWin);
     AppManagement::setMainWindow(NULL);

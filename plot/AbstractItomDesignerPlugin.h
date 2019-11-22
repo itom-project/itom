@@ -87,11 +87,12 @@ namespace ito {
             //! returns information about the compiler settings for PCL, OpenCV, ... during build
             int getCompilerFeatures(void) const 
             {
-                int retval = AbstractFigure::tOpenCV;
+                return 0;
+                /*int retval = AbstractFigure::tOpenCV;
                 #if defined USEPCL || ITOM_POINTCLOUDLIBRARY
                 retval |= AbstractFigure::tPointCloudLib;
                 #endif
-                return retval;
+                return retval;*/
             }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }

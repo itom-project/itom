@@ -1,7 +1,7 @@
 SET (target_name itomCommonQtLib)
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
-
+ 
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
@@ -97,6 +97,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
@@ -108,6 +109,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/functionCancellationAndObserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractApiWidget.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/fileUtils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/semVerVersion.h
 )
 
 IF(NOT QT5_FOUND)
@@ -127,6 +129,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/functionCancellationAndObserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractApiWidget.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/fileUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/semVerVersion.cpp
 )
 
 if(MSVC)

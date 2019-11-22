@@ -87,22 +87,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
             ModeStandaloneInUi, 
             ModeStandaloneWindow 
         };
-        
-        enum CompilerFeatures 
-        { 
-            tOpenCV        = 0x01,
-            tPointCloudLib = 0x02
-        };
-
-        //!< This enumeration is deprecated. It will be removed with an upcoming version of itom > 3.2.1.
-        enum tChildPlotStates
-        {
-            tNoChildPlot            = 0x00,
-            tExternChild            = 0x01,
-            tOwnChild               = 0x02,
-            tUninitilizedExtern     = 0x10,
-            tVisibleOnInit          = 0x20
-        };
 
         enum UnitLabelStyle 
         { 
@@ -117,15 +101,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         Q_ENUM(WindowMode)
         Q_ENUM(UnitLabelStyle)
 #endif
-
-        int getCompilerFeatures(void) const 
-        {
-            int retval = tOpenCV;
-#if defined USEPCL || ITOM_POINTCLOUDLIBRARY
-            retval |= tPointCloudLib;
-#endif
-            return retval;
-        }
 
         struct ToolBarItem {
             ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}
@@ -206,8 +181,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
-
-        QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots. This method is deprecated. It will be removed with an upcoming version of itom > 3.2.1.*/
 
     private:
         AbstractFigurePrivate *d;

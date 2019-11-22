@@ -344,7 +344,6 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             }
             else
             {
-                //                message = QObject::tr("Unable to find translation file for plugin '%1'.").arg(fileInfo.baseName());
                 message = tr("Unable to find translation file.");
                 qDebug() << message;
                 pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
@@ -358,6 +357,18 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             if (plugin)
             {
                 ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
+
+                if (ain && (ITOM_ADDININTERFACE_MAJOR >= 4))
+                {
+                    //for major interfaces >= 4, semver holds. Check the minor number of the plugin.
+                    //if it is <= the minor of itom, the plugin can be loaded. Else not.
+                    int minor = MINORVERSION(ain->getAddInInterfaceVersion());
+                    if (minor > ITOM_ADDININTERFACE_MINOR)
+                    {
+                        ain = NULL;
+                    }
+                }
+
                 pls.filename = filename;
 
                 if (ain)
@@ -392,7 +403,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     default:
                         message = tr("Plugin with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         break;
                     }
@@ -413,14 +424,14 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                             {
                                 if (obj->qt_metacast(oldName) != NULL)
                                 {
-                                    message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
+                                    message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ITOM_ADDININTERFACE_VERSION_STR);
                                     break;
                                 }
                                 oldName = ito_AddInInterface_OldVersions[++i];
                             }
                             if (oldName == NULL)
                             {
-                                message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
+                                message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ITOM_ADDININTERFACE_VERSION_STR);
                             }
                         }
                         else
@@ -433,7 +444,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                         message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
                     qDebug() << message;
-                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                    
                     pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
 
@@ -473,7 +484,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        
                         pls.filename = filename;
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         m_pluginLoadStatus.append(pls);

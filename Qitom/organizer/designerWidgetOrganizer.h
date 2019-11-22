@@ -37,24 +37,6 @@ class QPluginLoader; //forward declaration
 namespace ito
 {
 
-class DummyItomDesignerPlugin : public AbstractItomDesignerPlugin
-{
-public:
-    QString name() const { return ""; }
-    QString group() const { return ""; }
-    QString toolTip() const { return ""; }
-    QString whatsThis() const { return ""; }
-    QString includeFile() const { return ""; }
-    QIcon icon() const { return QIcon(); }
-
-    bool isContainer() const { return false; }
-
-    QWidget *createWidget(QWidget *parent) { return NULL; }
-
-    DummyItomDesignerPlugin(QObject *parent) : AbstractItomDesignerPlugin(parent) {}
-    virtual QWidget *createWidgetWithMode(ito::AbstractFigure::WindowMode winMode, QWidget *parent) { return NULL; }
-};
-
 struct FigurePlugin
 {
     FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(NULL) {}

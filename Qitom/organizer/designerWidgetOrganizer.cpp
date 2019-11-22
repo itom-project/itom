@@ -29,6 +29,7 @@
 #include "../common/abstractApiWidget.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
+#include "../common/semVerVersion.h"
 
 #include <qmetaobject.h>
 #include <qpluginloader.h>
@@ -130,35 +131,13 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     PluginLoadStatus status;
     QString message;
     QPluginLoader *loader = NULL;
-    QString requiredInterface = "0.0.0";
+    SemVerVersion requiredItomDesignerPluginInterface = SemVerVersion::fromInt(ITOM_DESIGNERPLUGIN_INTERFACE_VERSION);
+    SemVerVersion requiredAddInInterfaceVersion(ITOM_ADDININTERFACE_MAJOR, ITOM_ADDININTERFACE_MINOR, ITOM_ADDININTERFACE_PATCH);
     const QMetaObject *metaObj = NULL;
-    bool allowedInterface;
 
     //This regular expression is used to check whether the error message during loading a plugin contains the words
     //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
     QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive); 
-
-    //get version of the required AbstractItomDesignerPlugin
-    AbstractItomDesignerPlugin *dummyPlugin = new DummyItomDesignerPlugin(NULL);
-    if (dummyPlugin)
-    {
-        metaObj = dummyPlugin->metaObject();
-        for (int i = 0; i < metaObj->classInfoCount() ; i++)
-        {
-            if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
-            {
-                requiredInterface = metaObj->classInfo(i).value();
-                break;
-            }
-        }
-    }
-
-    DELETE_AND_SET_NULL(dummyPlugin);
-
-    if (requiredInterface == "0.0.0")
-    {
-        return RetVal(retError, 0, tr("could not read interface 'ito.AbstractItomDesignerPlugin'").toLatin1().data());
-    }
 
     foreach(const QString &plugin, candidates)
     {
@@ -215,6 +194,13 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
                 loader = new QPluginLoader(absolutePluginPath);
 
+                QJsonObject metaData = loader->metaData();
+
+                if (metaData.isEmpty() == false)
+                {
+                    int i = 1;
+                }
+
 
                 QDesignerCustomWidgetInterface *iface = NULL;
                 QObject *instance = loader->instance();
@@ -241,44 +227,48 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 {
                     if (instance->inherits("ito::AbstractItomDesignerPlugin"))
                     {
-                        allowedInterface = false;
+                        //1. check if instance also implements the ItomDesignerPluginInterface (new from itom > 3.2.1 on):
+                        ItomDesignerPluginInterface *itomDesignerPluginIface = qobject_cast<ito::ItomDesignerPluginInterface*>(instance);
 
-                        //check interface
-                        metaObj = ((ito::AbstractItomDesignerPlugin*)instance)->metaObject();
-                        for (int i = 0; i < metaObj->classInfoCount() ; i++)
+                        if (itomDesignerPluginIface)
                         {
-                            if (qstrcmp(metaObj->classInfo(i).name(), "ito.AbstractItomDesignerPlugin") == 0)
+                            SemVerVersion dpIfaceVersion = SemVerVersion::fromInt(itomDesignerPluginIface->getAbstractItomDesignerPluginInterfaceVersion());
+                            SemVerVersion addInIfaceVersion = SemVerVersion::fromInt(itomDesignerPluginIface->getAddInInterfaceVersion());
+
+                            if (dpIfaceVersion.isValid() && \
+                                addInIfaceVersion.isValid() && \
+                                requiredAddInInterfaceVersion.isCompatible(addInIfaceVersion) && \
+                                requiredItomDesignerPluginInterface.isCompatible(dpIfaceVersion))
                             {
-                                if (requiredInterface == metaObj->classInfo(i).value())
-                                {
-                                    allowedInterface = true;
-                                }
-                                break;
+                                ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
+                                infoStruct.filename = absolutePluginPath;
+                                infoStruct.classname = iface->name();
+                                infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
+                                infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
+                                infoStruct.plotFeatures = absIDP->getPlotFeatures();
+                                infoStruct.icon = iface->icon();
+                                infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
+                                m_figurePlugins.append(infoStruct);
+
+                                absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
+
+                                message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
+                                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
                             }
-                        }
-
-                        if (allowedInterface)
-                        {
-                            ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
-                            infoStruct.filename = absolutePluginPath;
-                            infoStruct.classname = iface->name();
-                            infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
-                            infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
-                            infoStruct.plotFeatures = absIDP->getPlotFeatures();
-                            infoStruct.icon = iface->icon();
-                            infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
-                            m_figurePlugins.append(infoStruct);
-
-                            absIDP->setItomSettingsFile(AppManagement::getSettingsFile());
-
-                            message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
-                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
+                            else
+                            {
+                                loader->unload();
+                                message = tr("The designer plugin in file '%1' does not fullfill the version requirements."). \
+                                    arg(status.filename);
+                                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
+                                DELETE_AND_SET_NULL(loader);
+                            }
                         }
                         else
                         {
-//                            delete instance;
                             loader->unload();
-                            message = tr("The version 'ito.AbstractItomDesignerPlugin' in file '%1' does not correspond to the requested version (%2)").arg(status.filename).arg(requiredInterface);
+                            message = tr("The designer plugin in file '%1' does not implement the ItomDesignerPluginInterface, required by itom > 3.2.1."). \
+                                arg(status.filename);
                             status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                             DELETE_AND_SET_NULL(loader);
                         }

@@ -73,7 +73,6 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
-    QMap<QString, ito::uint8> m_subplotStates; //!< deprecated. This map will be removed with an upcoming version of itom > 3.2.1.
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -88,10 +87,6 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_windowMode(windowMode)
 {
     d = new AbstractFigurePrivate();
-    d->m_subplotStates["lineCut"] = tNoChildPlot;
-    d->m_subplotStates["zSlice"] = tNoChildPlot;
-    d->m_subplotStates["zoomCut"] = tNoChildPlot;
-    d->m_subplotStates["volumeCut"] = tNoChildPlot;
 
     initialize();
 }
@@ -721,6 +716,7 @@ void AbstractFigure::actionChanged()
         d->shortcutActions[a]->setEnabled(a->isEnabled());
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setWindowTitleExtension(const QString& title)
 {
@@ -738,9 +734,5 @@ void AbstractFigure::setWindowTitleExtension(const QString& title)
 		}
 	}
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-QMap<QString, ito::uint8>& AbstractFigure::subplotStates()
-{
-    return d->m_subplotStates;
-}
+
 } //end namespace ito
