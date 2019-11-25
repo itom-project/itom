@@ -1,7 +1,7 @@
 SET (target_name itomCommonQtLib)
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
- 
+  
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
