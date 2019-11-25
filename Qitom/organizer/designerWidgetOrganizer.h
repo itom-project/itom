@@ -84,6 +84,8 @@ public:
     const QList<PluginLoadStatus> getPluginLoadStatus() const { return m_pluginLoadStatus; }
     const QMap<QString, FigureCategory> getFigureCategories() const { return m_figureCategories; }
 
+    QStringList getListOfIncompatibleDesignerPlugins() const;
+
     bool figureClassExists( const QString &className );
     ito::RetVal figureClassMinimumRequirementCheck( const QString &className, int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask, bool *ok = NULL );
     QList<FigurePlugin> getPossibleFigureClasses( int plotDataTypesMask, int plotDataFormatsMask, int plotFeaturesMask );

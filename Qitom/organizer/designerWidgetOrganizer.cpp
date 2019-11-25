@@ -131,7 +131,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     PluginLoadStatus status;
     QString message;
     QPluginLoader *loader = NULL;
-    SemVerVersion requiredItomDesignerPluginInterface = SemVerVersion::fromInt(ITOM_DESIGNERPLUGIN_INTERFACE_VERSION);
+    SemVerVersion requiredItomDesignerPluginInterface = SemVerVersion::fromInt(ITOM_DESIGNERPLUGININTERFACE_VERSION);
     SemVerVersion requiredAddInInterfaceVersion(ITOM_ADDININTERFACE_MAJOR, ITOM_ADDININTERFACE_MINOR, ITOM_ADDININTERFACE_PATCH);
     const QMetaObject *metaObj = NULL;
 
@@ -146,6 +146,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
             absolutePluginPath = QDir::cleanPath(dir.absoluteFilePath(plugin));
             status.filename = absolutePluginPath;
             status.messages.clear();
+
             if (QLibrary::isLibrary(absolutePluginPath))
             {
                 //load translation file
@@ -192,53 +193,152 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     }
                 }
 
+                bool success = false;
+                ito::PluginLoadStatusFlags pluginStatus = plsfOk;
+
                 loader = new QPluginLoader(absolutePluginPath);
 
                 QJsonObject metaData = loader->metaData();
+                QJsonValue metaDataDebug = metaData["debug"];
+                QJsonValue metaDataIid = metaData["IID"];
+                QJsonValue metaDataUser = metaData["MetaData"];
+                QStringList keys = metaData.keys();
 
-                if (metaData.isEmpty() == false)
+                if (metaData.isEmpty() || 
+                    metaDataDebug.isUndefined() || 
+                    metaDataIid.isUndefined())
                 {
-                    int i = 1;
+                    message = QString("Could not load meta data or mandatory items for the library '%1'. This file is probably no valid plugin.").\
+                        arg(absolutePluginPath);
+                    pluginStatus = plsfIgnored;
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                }
+                else if (metaDataIid.toString() != "org.qt-project.Qt.QDesignerCustomWidgetInterface")
+                {
+                    message = QString("The file '%1' is no valid Qt designer plugin inherited from QDesignerCustomWidgetInterface").arg(absolutePluginPath);
+                    pluginStatus = plsfWarning;
+                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                }
+                else
+                {
+                    bool debug = metaDataDebug.toBool();
+#ifdef _DEBUG
+                    if (!debug)
+                    {
+                        message = QString("The designer plugin '%1' seems to be a release version and cannot be loaded in a debug build of itom.").
+                            arg(absolutePluginPath);
+                        pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                    }
+#else
+                    if (debug)
+                    {
+                        message = QString("The designer plugin '%1' seems to be a debug version and cannot be loaded in a release build of itom.").
+                            arg(absolutePluginPath);
+                        pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                    }
+#endif
                 }
 
-
-                QDesignerCustomWidgetInterface *iface = NULL;
-                QObject *instance = loader->instance();
-
-                if (instance == NULL)
+                if (pluginStatus == plsfOk)
                 {
-                    message = loader->errorString();
-                    loader->unload();
+                    QJsonObject obj = metaDataUser.toObject();
+                    QJsonValue aiiVersion = obj.contains("ito.addInInterface.version") ? obj["ito.addInInterface.version"] : QJsonValue();
+                    QJsonValue idpVersion = obj.contains("ito.itomDesignerPlugin.version") ? obj["ito.itomDesignerPlugin.version"] : QJsonValue();
 
-                    if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
+                    bool a = metaDataUser.isUndefined();
+                    bool b = obj.isEmpty();
+                    bool c = idpVersion.isUndefined();
+
+                    if (metaDataUser.isUndefined() || obj.isEmpty() ||
+                        idpVersion.isUndefined() ||
+                        aiiVersion.isUndefined())
                     {
-                        ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
+                        message = QString("The designer plugin '%1' does not contain valid meta information for an itom designer plugin (itom > 3.2.1). Maybe this plugin is too old.").
+                            arg(absolutePluginPath);
+                        pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
                     }
                     else
                     {
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
-                    }
+                        SemVerVersion dpIfaceVersion = SemVerVersion::fromString(idpVersion.toString());
+                        SemVerVersion addInIfaceVersion = SemVerVersion::fromString(aiiVersion.toString());
 
-                    DELETE_AND_SET_NULL(loader);
-                }
-                // try with a normal plugin, we do not support collections
-                else if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
-                {
-                    if (instance->inherits("ito::AbstractItomDesignerPlugin"))
-                    {
-                        //1. check if instance also implements the ItomDesignerPluginInterface (new from itom > 3.2.1 on):
-                        ItomDesignerPluginInterface *itomDesignerPluginIface = qobject_cast<ito::ItomDesignerPluginInterface*>(instance);
-
-                        if (itomDesignerPluginIface)
+                        if (!dpIfaceVersion.isValid() && !addInIfaceVersion.isValid())
                         {
-                            SemVerVersion dpIfaceVersion = SemVerVersion::fromInt(itomDesignerPluginIface->getAbstractItomDesignerPluginInterfaceVersion());
-                            SemVerVersion addInIfaceVersion = SemVerVersion::fromInt(itomDesignerPluginIface->getAddInInterfaceVersion());
+                            message = tr("The ito.itomDesignerPlugin.version of the meta data of the designer plugin in file '%1' is invalid."). \
+                                arg(absolutePluginPath);
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                        else if (!dpIfaceVersion.isValid())
+                        {
+                            message = tr("The ito.itomDesignerPlugin.version of the meta data of the designer plugin in file '%1' is invalid."). \
+                                arg(absolutePluginPath);
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                        else if (!addInIfaceVersion.isValid())
+                        {
+                            message = tr("The ito.addInInterface.version of the meta data of the designer plugin in file '%1' is invalid."). \
+                                arg(absolutePluginPath);
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                        else if (!requiredAddInInterfaceVersion.isCompatible(addInIfaceVersion))
+                        {
+                            message = tr("The ito.addInInterface.version (%1) of the meta data of the designer plugin in file '%2' is incompatible to the required version %3."). \
+                                arg(aiiVersion.toString()).\
+                                arg(absolutePluginPath). \
+                                arg(requiredAddInInterfaceVersion.toString());
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                        else if (!requiredItomDesignerPluginInterface.isCompatible(dpIfaceVersion))
+                        {
+                            message = tr("The ito.itomDesignerPlugin.version (%1) of the meta data of the designer plugin in file '%2' is incompatible to the required version %3."). \
+                                arg(dpIfaceVersion.toString()).\
+                                arg(absolutePluginPath). \
+                                arg(requiredItomDesignerPluginInterface.toString());
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError | plsfIncompatible);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                    }
+                }
 
-                            if (dpIfaceVersion.isValid() && \
-                                addInIfaceVersion.isValid() && \
-                                requiredAddInInterfaceVersion.isCompatible(addInIfaceVersion) && \
-                                requiredItomDesignerPluginInterface.isCompatible(dpIfaceVersion))
+                if (pluginStatus == plsfOk)
+                {
+                    QDesignerCustomWidgetInterface *iface = NULL;
+                    QObject *instance = loader->instance();
+
+                    if (instance == NULL)
+                    {
+                        message = loader->errorString();
+                        loader->unload();
+
+                        if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
+                        {
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+                        else
+                        {
+                            pluginStatus = ito::PluginLoadStatusFlags(plsfError);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        }
+
+                        DELETE_AND_SET_NULL(loader);
+                    }
+                    // try with a normal plugin, we do not support collections
+                    else if (iface = qobject_cast<QDesignerCustomWidgetInterface *>(instance))
+                    {
+                        if (instance->inherits("ito::AbstractItomDesignerPlugin"))
+                        {
+                            //1. check if instance also implements the ItomDesignerPluginInterface (new from itom > 3.2.1 on):
+                            ito::AbstractItomDesignerPlugin *itomDesignerPlugin = qobject_cast<ito::AbstractItomDesignerPlugin*>(instance);
+
+                            if (itomDesignerPlugin)
                             {
                                 ito::AbstractItomDesignerPlugin *absIDP = (ito::AbstractItomDesignerPlugin *)instance;
                                 infoStruct.filename = absolutePluginPath;
@@ -254,46 +354,33 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
                                 message = tr("DesignerWidget '%1' successfully loaded").arg(iface->name());
                                 status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfOk, message));
+                                success = true;
                             }
                             else
                             {
-                                loader->unload();
-                                message = tr("The designer plugin in file '%1' does not fullfill the version requirements."). \
+                                pluginStatus = ito::PluginLoadStatusFlags(plsfError);
+                                message = tr("The designer plugin in file '%1' does not implement the ItomDesignerPluginInterface, required by itom > 3.2.1."). \
                                     arg(status.filename);
-                                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
-                                DELETE_AND_SET_NULL(loader);
+                                status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
                             }
                         }
                         else
                         {
-                            loader->unload();
-                            message = tr("The designer plugin in file '%1' does not implement the ItomDesignerPluginInterface, required by itom > 3.2.1."). \
-                                arg(status.filename);
-                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
-                            DELETE_AND_SET_NULL(loader);
+                            message = tr("Plugin in file '%1' is a Qt designer plugin but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
                         }
                     }
                     else
                     {
-
-#if QT_VERSION >= 0x040800
-                        /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here,
-                           since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO
-
-                           \todo this bug seems only to be there with Qt 4.7.x
-                        */
-                        loader->unload();
-#endif
-                        message = tr("Plugin in file '%1' is a Qt Designer widget but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
-                        DELETE_AND_SET_NULL(loader);
+                        message = QString("The file '%1' is no valid Qt designer plugin inherited from QDesignerCustomWidgetInterface").arg(absolutePluginPath);
+                        pluginStatus = plsfWarning;
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
                     }
                 }
-                else
+
+                if (!success && loader)
                 {
                     loader->unload();
-                    message = tr("Plugin in file '%1' is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface").arg(status.filename);
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                     DELETE_AND_SET_NULL(loader);
                 }
 
@@ -791,6 +878,26 @@ QStringList DesignerWidgetOrganizer::getPlotType(const int plotType)
         sl.append(tr("invalid type or no type defined"));
 
     return sl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QStringList DesignerWidgetOrganizer::getListOfIncompatibleDesignerPlugins() const
+{
+    QStringList output;
+
+    foreach(const PluginLoadStatus &plugin, m_pluginLoadStatus)
+    {
+        for (int j = 0; j < plugin.messages.size(); ++j)
+        {
+            if (plugin.messages[j].first & tPluginLoadStatusFlag::plsfIncompatible)
+            {
+                output << plugin.messages[j].second;
+                break;
+            }
+        }
+    }
+
+    return output;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

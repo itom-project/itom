@@ -903,33 +903,39 @@ set(COPY_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 POST_BUILD_COPY_FILES(qitom COPY_SOURCES COPY_DESTINATIONS)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MAJOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_MAJOR "?")
 endif (ITOM_VERSION_TMP)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MINOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_MINOR "?")
 endif (ITOM_VERSION_TMP)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_PATCH ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_PATCH "?")
 endif (ITOM_VERSION_TMP)
 
 SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_ADDININTERFACE_VERSION_MAJOR}.${ITOM_ADDININTERFACE_VERSION_MINOR}.${ITOM_ADDININTERFACE_VERSION_PATCH}")
 
+#find designer plugin interface version from plot/designerPluginInterfaceVersion.h
+FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../plot/designerPluginInterfaceVersion.h DesignerPluginInterfaceVersionFull LIMIT_COUNT 1 REGEX "^#define ITOM_DESIGNERPLUGININTERFACE_VERSION_STR.*$")
+STRING(REGEX MATCH "([0-9]+),([0-9]+),([0-9]+)" DESIGNER_PLUGIN_INTERFACE_VERSION ${DesignerPluginInterfaceVersionFull}) #searches for Number.Number.Number[.Number] in DesignerPluginInterfaceVersionFull
+STRING(REPLACE "," "." DESIGNER_PLUGIN_INTERFACE_VERSION ${DESIGNER_PLUGIN_INTERFACE_VERSION})
+
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/pluginMetaData.json )
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../translation           DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. FILES_MATCHING PATTERN "*.qm")

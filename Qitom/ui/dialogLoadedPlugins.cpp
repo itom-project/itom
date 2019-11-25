@@ -273,38 +273,6 @@ void DialogLoadedPlugins::filter()
         m_items[i].second->setHidden(!show);
     }
 
-
-        // check if button is active for this type of message
-/*        if ((first & flag) != 0)
-        {
-            // Is compability checkbox set?
-            if (ui.onlyCompatibelCheck->checkState())
-            {
-                if ((first & ito::plsfRelDbg) != 0) // if reldgb flag is set it´s incompatibel, if 0 it´s compatible
-                {
-                    //show = false; // show stays false: Debug is incompatibel
-                }
-                else
-                {
-                    show = true;
-                }
-            }
-            // It´s not checked, show the item
-            else
-            {
-                show = true;
-            }
-
-            if (show && (m_items[i].second->childCount() > 0) && filterEditNotEmpty && !rx.exactMatch(m_items[i].second->text(5)))
-            {
-                show = false;
-            }
-        }
-        else
-        { 
-            //show = false;// show stays false
-        }*/
-
     // to count the visible items we need a second loop
     for (int i = 0; i < m_items.size(); i++)
     {

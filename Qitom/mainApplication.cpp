@@ -599,6 +599,14 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
 
+        QStringList incompatibleDesignerPlugins = m_designerWidgetOrganizer->getListOfIncompatibleDesignerPlugins();
+
+        if (incompatibleDesignerPlugins.size() > 0)
+        {
+            QMessageBox::critical(m_splashScreen, tr("Incompatible designer plugins"), \
+                tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n")));
+        }
+
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 

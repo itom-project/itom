@@ -1,7 +1,7 @@
 SET (target_name itomCommonPlotLib) 
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
- 	 
+
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
@@ -99,6 +99,7 @@ set(itomCommonPlot_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginInterfaceVersion.h
 )
 
 IF(NOT QT5_FOUND)

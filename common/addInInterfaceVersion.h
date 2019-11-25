@@ -105,9 +105,9 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION_STR(major,minor,patch) "ito.AddIn.InterfaceBase/"#major"."#minor"."#patch
 #define CREATE_ADDININTERFACE_MAJOR_VERSION_STR(major) "ito.AddIn.InterfaceBase/"#major
 
-#define ITOM_ADDININTERFACE_MAJOR 4 //change this number below as well (2x)
-#define ITOM_ADDININTERFACE_MINOR 1 //change this number below as well (1x)
-#define ITOM_ADDININTERFACE_PATCH 0 //change this number below as well (1x)
+#define ITOM_ADDININTERFACE_MAJOR 4
+#define ITOM_ADDININTERFACE_MINOR 1
+#define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATEVERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
 #define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(4,1,0)
 static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(4); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 4 can not be replaced by the macros above. Does not work properly)
