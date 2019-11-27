@@ -2347,7 +2347,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QByteArray &sign
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     int signalIndex = -1;
     RetVal retValue(retOk);
@@ -2368,6 +2368,54 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QB
             if (!QMetaObject::connect(obj, signalIndex, this, this->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("pythonKeyboardInterrupt(bool)"))))
             {
                 retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot throwing a python keyboard interrupt.").toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::connectProgressObserverInterrupt(unsigned int objectID, const QByteArray &signalSignature, QPointer<QObject> progressObserver, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    int signalIndex = -1;
+    RetVal retValue(retOk);
+
+    QObject *obj = getWeakObjectReference(objectID);
+
+    if (progressObserver.isNull())
+    {
+        retValue += ito::RetVal(ito::retError, 0, "The given progress observer is not valid anymore.");
+    }
+    else if (obj)
+    {
+        const QMetaObject *mo = obj->metaObject();
+        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.data()));
+
+        if (signalIndex < 0)
+        {
+            retValue += RetVal(retError, errorSignalDoesNotExist, tr("signal does not exist").toLatin1().data());
+        }
+        else
+        {
+            //it is important to make a direct connection, since the progressObserver can also be created in the Python
+            //thread, however we want the cancellation flag to be set immediately if the signal is emitted, hence, in
+            //the thread of the caller (e.g. a button)
+            if (!QMetaObject::connect(obj, signalIndex, progressObserver, 
+                progressObserver->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("requestCancellation()")), Qt::DirectConnection))
+            {
+                retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot requesting the cancellation of the observed function call.").toLatin1().data());
             }
         }
     }

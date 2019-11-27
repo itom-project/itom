@@ -604,7 +604,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         if (incompatibleDesignerPlugins.size() > 0)
         {
             QMessageBox::critical(m_splashScreen, tr("Incompatible designer plugins"), \
-                tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n")));
+                tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n\n")));
         }
 
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);

@@ -484,6 +484,7 @@ public slots:
     RetVal getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore = NULL);
+    RetVal connectProgressObserverInterrupt(unsigned int objectID, const QByteArray &signalSignature, QPointer<QObject> progressObserver, ItomSharedSemaphore *semaphore = NULL);
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset = QPoint(), QSize size = QSize(), ItomSharedSemaphore *semaphore = NULL);

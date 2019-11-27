@@ -32,6 +32,7 @@
 #include "pythonQtConversion.h"
 #include "pythonFigure.h"
 #include "pythonPlotItem.h"
+#include "pythonProgressObserver.h"
 #include "AppManagement.h"
 
 #include <qsharedpointer.h>
@@ -705,22 +706,20 @@ Parameters \n\
 signalSignature : {str} \n\
     This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
 \n\
-Returns \n\
-------- \n\
-\n\
 Notes \n\
 ----- \n\
 If you use the connect method to link a signal with a python method or function, this method can only be executed if python is in an idle status. \n\
-However, if you want raise the python interrupt signal if a specific signal is emitted, this interruption should be immediately invoked. Therefore \n\
+However, if you want to immediately raise the python interrupt signal, use this method to establish the connection instead of the uiItem.connect command. \n\
 \n\
 See Also \n\
 --------- \n\
-connect");
-PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args)
+connect, invokeProgressObserverCancellation");
+PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
+    const char *kwlist[] = { "signalSignature", NULL };
     const char* signalSignature;
 
-    if(!PyArg_ParseTuple(args, "s", &signalSignature))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &signalSignature))
     {
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature");
         return NULL;
@@ -745,6 +744,77 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
     ito::RetVal retValue = retOk;
 
     QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while analysing signal signature");
+        return NULL;
+    }
+
+    if(!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue)) return NULL;
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature : str, observer : itom.progressObserver) -> connects the given signal with a slot immediately setting the cancellation flag of the given progressObserver. \n\
+\n\
+This method immediately calls the 'requestCancellation' slot of the given observer if the given signal is emitted (independent on \n\
+the current state of the Python script execution). \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
+observer : {itom.progressObserver} \n\
+    This must be an itom.progressObserver object. The given signal is connected to the slot 'requestCancellation' of this progressObserver.\n\
+\n\
+See Also \n\
+--------- \n\
+connect, invokeKeyboardInterrupt");
+PyObject* PythonUi::PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds)
+{
+    const char* signalSignature;
+    PyObject *observer = NULL;
+
+    const char *kwlist[] = { "signalSignature", "observer", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO!", const_cast<char**>(kwlist), &signalSignature, &PythonProgressObserver::PyProgressObserverType, &observer))
+    {
+        return NULL;
+    }
+
+    QSharedPointer<ito::FunctionCancellationAndObserver> obs = *(((PythonProgressObserver::PyProgressObserver*)observer)->progressObserver);
+
+    if (obs.isNull())
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The observer is invalid or does not exist anymore.");
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    QByteArray signature(signalSignature);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+
+    QMetaObject::invokeMethod(uiOrga, "connectProgressObserverInterrupt", 
+        Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), 
+        Q_ARG(QPointer<QObject>, QPointer<QObject>(obs.data())), Q_ARG(ItomSharedSemaphore*, 
+        locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1741,7 +1811,8 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"getAttribute", (PyCFunction)PyUiItem_getAttribute, METH_VARARGS, PyUiItemGetAttribute_doc},
         {"getWindowFlags", (PyCFunction)PyUiItem_getWindowFlags, METH_NOARGS, PyUiItemGetWindowFlags_doc},
         {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
-        {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
+        {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_KEYWORDS | METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
+        {"invokeProgressObserverCancellation", (PyCFunction)PyUiItem_connectProgressObserverInterrupt, METH_KEYWORDS | METH_VARARGS, PyUiItemConnectProgressObserverInterrupt_doc},
         {"info", (PyCFunction)PyUiItem_info, METH_VARARGS, PyUiItemInfo_doc},
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {"children", (PyCFunction)PyUiItem_children, METH_KEYWORDS | METH_VARARGS, PyUiItemChildren_doc},

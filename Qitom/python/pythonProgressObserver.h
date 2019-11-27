@@ -55,7 +55,7 @@ public:
     }
     PyProgressObserver;
 
-    #define PyProgressObserver_Check(op) PyObject_TypeCheck(op, &ito::PythonProgressObserver::PyFontType)
+    #define PyProgressObserver_Check(op) PyObject_TypeCheck(op, &ito::PythonProgressObserver::PyProgressObserverType)
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc

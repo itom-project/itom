@@ -30,6 +30,7 @@
 #include "pythonFigure.h"
 #include "pythonPlotItem.h"
 #include "pythonRgba.h"
+#include "pythonProgressObserver.h"
 
 #include "pythonEngine.h"
 
@@ -1227,11 +1228,10 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 {
                     ito::AddInAlgo::AlgoWidgetDef* wFunc = widglist->find(filteredKey).value();  
                     filterParams = AIM->getHashedFilterParams(wFunc->m_paramFunc);
-                    //(*(wFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
                     if (!retDict)
                     {
-                        std::cout << "DESCRIPTION    " << wFunc->m_description.toLatin1().data() << "\n";
+                        std::cout << "DESCRIPTION:    " << wFunc->m_description.toLatin1().data() << "\n";
                     }
                     else
                     {
@@ -1242,19 +1242,80 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 }
                 else
                 {
-                    ito::AddInAlgo::FilterDef * fFunc = filtlist->find(filteredKey).value();  
+                    ito::AddInAlgo::FilterDef * fFunc = filtlist->find(filteredKey).value(); 
+                    ito::AddInAlgo::FilterDefExt *fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
+
                     filterParams = AIM->getHashedFilterParams(fFunc->m_paramFunc);
-                    //(*(fFunc->m_paramFunc))(&paramsMand, &paramsOpt);
 
                     if (!retDict)
                     {
-                        std::cout << "DESCRIPTION    " << fFunc->m_description.toLatin1().data() << "\n";
+                        std::cout << "DESCRIPTION:    " << fFunc->m_description.toLatin1().data() << "\n";
+
+                        if (fFuncExt)
+                        {
+                            std::cout << "OBSERVATION: \n* An observer can be passed to this filter.\n";
+
+                            if (fFuncExt->m_hasStatusInformation)
+                            {
+                                std::cout << "* This filter can provide status information.\n";
+                            }
+                            else
+                            {
+                                std::cout << "* This filter cannot provide status information.\n";
+                            }
+
+                            if (fFuncExt->m_isCancellable)
+                            {
+                                std::cout << "* This filter can be interrupted.\n";
+                            }
+                            else
+                            {
+                                std::cout << "* This filter cannot be interrupted.\n";
+                            }
+                        }
+                        else
+                        {
+                            std::cout << "OBSERVATION: \n* No observer can be passed to this filter.\n* It does not provide any status information.\n* It cannot be cancelled.\n";
+                        }
                     }
                     else
                     {
                         item = PythonQtConversion::QByteArrayToPyUnicodeSecure(fFunc->m_description.toLatin1());
                         PyDict_SetItemString(resulttemp, "description", item);
                         Py_DECREF(item);
+
+                        if (fFuncExt)
+                        {
+                            QByteArray text = "Observer possible.";
+                            std::cout << "FEATURES: An observer can be passed to this filter.";
+
+                            if (fFuncExt->m_hasStatusInformation)
+                            {
+                                text += " Status information.";
+                            }
+                            else
+                            {
+                                text += " No status information.";
+                            }
+
+                            if (fFuncExt->m_isCancellable)
+                            {
+                                text += " Cancellation possible.";
+                            }
+                            else
+                            {
+                                text += " No cancellation.";
+                            }
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(text);
+                            PyDict_SetItemString(resulttemp, "observation", item);
+                            Py_DECREF(item);
+                        }
+                        else
+                        {
+                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure("No observer. No status information. No cancellation.");
+                            PyDict_SetItemString(resulttemp, "observation", item);
+                            Py_DECREF(item);
+                        }
                     }
                 }
 
@@ -3936,7 +3997,11 @@ name : {str} \n\
 args : {variant} \n\
     positional arguments for the specific filter-method \n\
 kwds : {variant} \n\
-    keyword-based arguments for the specific filter-method \n\
+    keyword-based arguments for the specific filter-method. The argument name 'observer' is reserved for special use. \n\
+observer : {progressObserver, optional} \n\
+    if the called filter implements the extended interface with progress and status information, an optional itom.progressObserver \n\
+    object can be given (only as keyword-based parameter) which is then used as observer for the current progress of the filter \n\
+    execution. It is then also possible to interrupt the execution earlier (depending on the implementation of the filter). \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3946,12 +4011,11 @@ out : {variant} \n\
 See Also \n\
 --------- \n\
 filterHelp");
-PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *kwds)
+PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
 
     int length = PyTuple_Size(pArgs);
-    PyObject *params = NULL;
     ito::RetVal ret = ito::retOk;
 
     if (length == 0)
@@ -3975,6 +4039,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     const QHash<QString, ito::AddInAlgo::FilterDef *>* flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->constFind(key);
+
     if (cfit == flist->constEnd())
     {
         PyErr_SetString(PyExc_ValueError, "Unknown filter, please check typing!");
@@ -3993,14 +4058,63 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         return NULL;
     }
 
-    params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs)); //new reference
+    PyObject *positionalArgs = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs)); //new reference
+    PyObject *kwdsArgs = NULL;
+
+    //check if pKwds contain the special argument name 'statusObserver' and if so obtain its value,
+    //make a copy of pKwds without this argument and use this to parse the remaining parameters
+    PyObject *statusObserverName = PyUnicode_FromString("observer"); //new reference
+    PyObject *statusObserver = pKwds ? PyDict_GetItem(pKwds, statusObserverName) : NULL; //NULL, if it does not contain, else: borrowed reference
+
+    if (statusObserver)
+    {
+        kwdsArgs = PyDict_Copy(pKwds); //new reference
+        PyDict_DelItem(kwdsArgs, statusObserverName);
+    }
+    else
+    {
+        kwdsArgs = pKwds;
+        Py_XINCREF(kwdsArgs);
+    }
+
+    Py_XDECREF(statusObserverName);
+    statusObserverName = NULL;
+
+    if (statusObserver)
+    {
+        if (!PyProgressObserver_Check(statusObserver))
+        {
+            Py_XDECREF(positionalArgs);
+            Py_XDECREF(kwdsArgs);
+            kwdsArgs = NULL;
+            positionalArgs = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "Keyword-based parameter 'observer' must be of type itom.progressObserver");
+            return NULL;
+        }
+        else if (fFuncExt == NULL)
+        {
+            if (PyErr_WarnEx(PyExc_RuntimeWarning,
+                "Parameter 'observer' is given, but the called filter does not implement the extended interface with additional status information", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
+            {
+                Py_XDECREF(positionalArgs);
+                Py_XDECREF(kwdsArgs);
+                kwdsArgs = NULL;
+                positionalArgs = NULL;
+                return NULL;
+            }
+        }
+    }
 
     //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
-    ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase);
+    ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), positionalArgs, kwdsArgs, paramsMandBase, paramsOptBase);
+
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
     ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
 
-    Py_XDECREF(params);
+    Py_XDECREF(positionalArgs);
+    Py_XDECREF(kwdsArgs);
+    kwdsArgs = NULL;
+    positionalArgs = NULL;
 
     if (ret.containsError())
     {
@@ -4014,7 +4128,16 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     if (fFuncExt)
     {
-        observer = QSharedPointer<ito::FunctionCancellationAndObserver>(new ito::FunctionCancellationAndObserver());
+        if (statusObserver)
+        {
+            observer = *(((PythonProgressObserver::PyProgressObserver*)statusObserver)->progressObserver);
+        }
+
+        if (observer.isNull())
+        {
+            observer = QSharedPointer<ito::FunctionCancellationAndObserver>(new ito::FunctionCancellationAndObserver());
+        }
+
         if (pyEngine)
         {
             pyEngine->addFunctionCancellationAndObserver(observer.toWeakRef());
