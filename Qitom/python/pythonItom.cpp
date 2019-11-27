@@ -3984,7 +3984,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name, *args, **kwds) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, **kwds, _observer : progressObserver = None) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
 This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
 The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
@@ -3994,11 +3994,11 @@ Parameters \n\
 ----------- \n\
 name : {str} \n\
     The name of the filter\n\
-args : {variant} \n\
+*args : {variant} \n\
     positional arguments for the specific filter-method \n\
-kwds : {variant} \n\
+**kwds : {variant} \n\
     keyword-based arguments for the specific filter-method. The argument name 'observer' is reserved for special use. \n\
-observer : {progressObserver, optional} \n\
+_observer : {progressObserver, optional} \n\
     if the called filter implements the extended interface with progress and status information, an optional itom.progressObserver \n\
     object can be given (only as keyword-based parameter) which is then used as observer for the current progress of the filter \n\
     execution. It is then also possible to interrupt the execution earlier (depending on the implementation of the filter). \n\
@@ -4063,7 +4063,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     //check if pKwds contain the special argument name 'statusObserver' and if so obtain its value,
     //make a copy of pKwds without this argument and use this to parse the remaining parameters
-    PyObject *statusObserverName = PyUnicode_FromString("observer"); //new reference
+    PyObject *statusObserverName = PyUnicode_FromString("_observer"); //new reference
     PyObject *statusObserver = pKwds ? PyDict_GetItem(pKwds, statusObserverName) : NULL; //NULL, if it does not contain, else: borrowed reference
 
     if (statusObserver)
@@ -4088,13 +4088,13 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
             Py_XDECREF(kwdsArgs);
             kwdsArgs = NULL;
             positionalArgs = NULL;
-            PyErr_SetString(PyExc_RuntimeError, "Keyword-based parameter 'observer' must be of type itom.progressObserver");
+            PyErr_SetString(PyExc_RuntimeError, "Keyword-based parameter '_observer' must be of type itom.progressObserver");
             return NULL;
         }
         else if (fFuncExt == NULL)
         {
             if (PyErr_WarnEx(PyExc_RuntimeWarning,
-                "Parameter 'observer' is given, but the called filter does not implement the extended interface with additional status information", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
+                "Parameter '_observer' is given, but the called filter does not implement the extended interface with additional status information", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
             {
                 Py_XDECREF(positionalArgs);
                 Py_XDECREF(kwdsArgs);

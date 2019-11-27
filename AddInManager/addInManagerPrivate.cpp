@@ -610,11 +610,32 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 
                             if (!validRet.containsError())
                             {
-                                ito::FilterParams *fp = new ito::FilterParams();
-                                fp->paramsMand = paramsMand;
-                                fp->paramsOpt = paramsOpt;
-                                fp->paramsOut = paramsOut;
-                                filterParamHash[(void*)fd->m_paramFunc] = fp;
+                                foreach(const ito::Param &p, paramsMand)
+                                {
+                                    if ((p.getName() != NULL) && (strcmp(p.getName(), "_observer") == 0))
+                                    {
+                                        validRet += ito::RetVal::format(ito::retError, 0, "The parameter name '_observer' is a reserved name and may not be used as real parameter name.");
+                                        break;
+                                    }
+                                }
+
+                                foreach(const ito::Param &p, paramsOpt)
+                                {
+                                    if ((p.getName() != NULL) && (strcmp(p.getName(), "_observer") == 0))
+                                    {
+                                        validRet += ito::RetVal::format(ito::retError, 0, "The parameter name '_observer' is a reserved name and may not be used as real parameter name.");
+                                        break;
+                                    }
+                                }
+
+                                if (!validRet.containsError())
+                                {
+                                    ito::FilterParams *fp = new ito::FilterParams();
+                                    fp->paramsMand = paramsMand;
+                                    fp->paramsOpt = paramsOpt;
+                                    fp->paramsOut = paramsOut;
+                                    filterParamHash[(void*)fd->m_paramFunc] = fp;
+                                }
                             }
                         }
 
