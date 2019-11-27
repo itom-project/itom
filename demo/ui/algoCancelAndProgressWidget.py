@@ -30,7 +30,7 @@ class AlgoCancelAndProgressWidget(ItomUi):
                                      self.gui.lblProgress : True, \
                                      self.gui.progressBar : True}):
             #the following filter must have the ability to provide status information (see information of filter)
-            filter("demoCancellationFunction", observer = self.observer)
+            filter("demoCancellationFunction", _observer = self.observer)
     
     @contextmanager
     def disableGui(self, widgets : Dict[uiItem, bool]):

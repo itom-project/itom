@@ -99,13 +99,16 @@ The raw scheme for your plugin-class is as follows:
     
     //implement your code here
 
-First of all, our algorithm plugin class is derived from the class **AddInAlgo** from within the **ito**-namespace. This base class is defined in the *addInInterface.h* header 
-that has to be included. Again, our plugin is ultimately derived from **QObject** and the *Q_OBJECT* macro must appear in the class definition in order to be able to use 
-any services provided by Qt's meta-object system, such as the signal slot mechanisms. Additionally our plugin class has to be a friend of its interface class (see section :ref:`plugin-interface-class`), such that the factory (interface) class is allowed to access the protected constructor.
+First of all, our algorithm plugin class is derived from the class **AddInAlgo** from within the **ito**-namespace. This base class 
+is defined in the *addInInterface.h* header that has to be included. Again, our plugin is ultimately derived from **QObject** and 
+the *Q_OBJECT* macro must appear in the class definition in order to be able to use any services provided by Qt's meta-object 
+system, such as the signal slot mechanisms. Additionally our plugin class has to be a friend of its interface class (see section 
+:ref:`plugin-interface-class`), such that the factory (interface) class is allowed to access the protected constructor.
 
-Both, the pair of methods for one filter-method and one widget-method consists of the real filter- or widget-method (*here:* named with *filter1* and *widget1*) and
-their corresponding parameter-methods which generates the default vectors for the mandatory, optional and output (filters only) parameters. This method is necessary,
-since the |itom| base application and the python scripts have no way of knowing what parameters the filter methods or widget generation methods expect.
+Every filter method as well as widget method consist of two different methods. One is the real algorithm or function itself 
+(*here:* named with *filter1* and *widget1*). The second method is a small parameter-method which generates the default vectors for the mandatory, optional 
+and output (filters only) parameters. This method is necessary, since the |itom| base application and the python scripts have no 
+way of knowing what parameters the filter methods or widget generation methods expect.
 
 These default-parameter methods have the following implementation:
 
@@ -162,13 +165,17 @@ command line by using the following python-command:
 
 If the argument string does not fit to any specific filter, an enumeration of all filters containing this string will be printed.
 
-Now the filter-method or widget-method itself can be implemented:
+Now the filter-method or widget-method itself can be implemented. While the widget-method only provide one method definition,
+the filter method can have two different possible definitions (since itom 3.3).:
 
-Filter-Methods
---------------
+Filter-Methods (Without status information and / or cancellation feature)
+---------------------------------------------------------------------------
+
+This is the default definition of filters and does not provide the possibility to pass runtime status information (like the current progress)
+or a way to let the user cancel the execution of the algorithm.
 
 After that you implemented the parameter-method in order to generate default parameters for your filter-method (see section above), you can now implement the filter-method
-itsself. The implementation might follow this scheme:
+itsself. This first implementation might follow this scheme:
 
 .. code-block:: c++
     :linenos:
@@ -224,6 +231,87 @@ If you want to use this method, integrate both files in your project and include
     If you want to use methods provided by the |itom|-API, see :ref:`plugin-itomAPI` and consider the additional lines of code in your implementation.
 
 
+Filter-Methods 2 (With status information and / or cancellation feature)
+---------------------------------------------------------------------------
+
+This 2nd definition of a filter method is introduced with itom 3.3 on. Its advantage is, that another argument 
+**QSharedPointer<ito::FunctionCancellationAndObserver> observer** is passed to the filter. The class **ito::FunctionCancellationAndObserver**
+is used to provide mechanisms, such that the filter algorithm can continuously report its current progress. Additionally, this class
+has an interrupt flag, which can be set via itom (e.g. via Python, if a Python script is interrupted or from a calling C++ method). 
+It is the responsibility of the filter developer to regularly check the state of this interrupt flag. Once it is set, try to stop
+the algorithm as soon as possible and return with an error (ito::retError) set.
+
+The filter definition for this 2nd case is as follows:
+
+.. code-block:: c++
+    :linenos:
+    
+    ito::RetVal MyAlgoPlugin::filter2(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, QSharedPointer<ito::FunctionCancellationAndObserver> observer)
+    {
+        ito::RetVal retval = ito::retOk;
+        
+        //indicate the start of the algorithm to the observer (if given)
+        if (observer)
+        {
+            observer->setProgressValue(observer->progressMinimum());
+            observer->setProgressText("Start of algorithm");
+        }
+
+        //1. Section. Getting typed in or in/out parameters from paramsMand and paramsOpt
+        //  Make sure that you access only parameters, that have been defined in the corresponding parameter-method.
+        //  The order and type is important.
+
+        //possibility 1 (index-based access):
+        const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
+        const char *filename = (*paramsMand)[1].getVal<char*>(); //don't delete this pointer (borrowed)
+        double opt1 = (*paramsOpt)[0].getVal<double>();
+
+        //possibility 2 (name-based access):
+        const ito::DataObject *dObj2 =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const char *filename2 = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
+        double opt2 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
+
+        //2. Section. Algorithm.
+        //  The following algorithm needs around 10seconds to finish. It reports its progress every second and
+        //  if the interrupt flag of the observer is set, it quits the execution earlier:
+        QElapsedTimer timer;
+        timer.start();
+        qint64 nextProgressReport = 1000; //every second
+        
+        while (timer.elapsed() < 10000)
+        {
+            if (observer)
+            {
+                if (timer.elapsed() >= nextProgressReport)
+                {
+                    //always pass the value between the given minimum / maximum of the observer
+                    int value = observer->progressMinimum() + timer.elapsed() * (observer->progressMaximum() - observer->progressMinimum()) / 10000;
+                    observer->setProgressValue(value);
+                    observer->setProgressText(QString("This algorithm run %1 from 10.0 seconds").arg(timer.elapsed() / 1000));
+                    nextProgressReport += 1000;
+                }
+
+                if (observer->isCancelled())
+                {
+                    retval += ito::RetVal(ito::retError, 0, "algorithm cancelled");
+                    break;
+                }
+            }
+            
+            QThread::msleep(100);
+
+        }
+        //  that you have defined with the flags In|Out.
+
+        //3. Section. Optionally put results into the paramsOut-vector
+        //  Make sure that you defined the corresponding parameter with right type in the corresponding parameter-method.
+        //  The implementation in the next lines is only one example and has not be defined before. Be aware of that.
+        (*paramsOut)[0].setVal<int>(2);
+        (*paramsOut)[1].setVal<char*>("we are done");
+
+        return retval;
+    }
+
 Widget-Method (GUI-Extensions)
 ------------------------------
 
@@ -263,7 +351,8 @@ Publish Filter- and Widget-Methods at Initialization
 
 The most important step in the developement of an algorithm plugin is to publish all created filter- and widget-methods. By that process,
 the methods will be made available to |itom|, such that they can be used by the python scripting language, the GUI or other plugins. The publishing
-is done in the method **init** of your plugin. A exemplary implemention is as follows:
+is done in the method **init** of your plugin. It is important to say, that the two different signatures of a filter method (with or without observer)
+need to be published in two different ways. A exemplary implemention is as follows:
 
 .. code-block:: c++
     :linenos:
@@ -276,8 +365,24 @@ is done in the method **init** of your plugin. A exemplary implemention is as fo
         FilterDef *filter = NULL;
         AlgoWidgetDef *widget = NULL;
         
-        //publish your filter-methods here, example:
-        filter = new FilterDef(WLIfilter, WLIfilterParams, tr("description").toLatin1().data(), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+        //publish your filter-methods here, an example for a default filter definition (without status and cancellation):
+        filter = new FilterDef(WLIfilter, WLIfilterParams, 
+                               tr("description").toLatin1().data(),  //description
+                               ito::AddInAlgo::catNone,              //category
+                               ito::AddInAlgo::iNotSpecified,        //interface
+                               QString());                           //meta information for interface (e.g. file pattern to be loadable)
+        m_filterList.insert("filterName", filter);
+        
+        //here an example for the 2nd filter definition (with status observer and cancellation):
+        filter = new FilterDefExt(WLIfilterCancellable, 
+                                  WLIfilterParams, 
+                                  tr("description").toLatin1().data(), //description
+                                  ito::AddInAlgo::catNone,             //category
+                                  ito::AddInAlgo::iNotSpecified,       //interface
+                                  QString(),                           //meta information for interface (e.g. file pattern to be loadable)
+                                  true,                                //true if filter provides status information, else false
+                                  true);                               //true if filter listens to the interrupt flag 
+                                                                       //of the observer and allows to be interrupted earlier, else false
         m_filterList.insert("filterName", filter);
         
         
@@ -294,7 +399,7 @@ is done in the method **init** of your plugin. A exemplary implemention is as fo
         return retval;
     }
 
-For registering filter- and widget-methods, you have to create a new instance of the classes **FilterDef** or **AlgoWidgetDef** respectively and insert these
+For registering filter- and widget-methods, you have to create a new instance of the classes **FilterDef** / **FilterDefExt** (with observer) or **AlgoWidgetDef** respectively and insert these
 newly created instances to the maps **m_filterList** or **m_algoWidgetList** respectively. Their name in the map finally is the name of the filter or widget and
 must be unique within |itom|; else the filter-method or widget-method can not be loaded at startup of |itom|.
 
@@ -308,6 +413,19 @@ The constructor of class **FilterDef** has the following arguments:
 * *QString* **interfaceMeta** is depending on the chosen interface an additional meta string (*default:* QString())
 
 For a full reference of class **FilterDef**, see :ref:`plugin-Algo-FilterDef-Ref`.
+
+The constructor of class **FilterDefExt** has the following arguments:
+
+* *AddInAlgo::t_filterExt* **filterFuncExt** is the pointer to the static filter2-method (with observer) (*here:* filter2)
+* *AddInAlgo::t_filterParam* **filterParamFunc** is the pointer to the corresponding parameter method (*here:* filter1Params)
+* *QString* **description** is a description string of the filter
+* *ito::AddInAlgo::tAlgoCategory* **category** is an optional value of the category enumeration, the filter belongs too (*default:* ito::AddInAlgo::catNone)
+* *ito::AddInAlgo::tAlgoInterface* **interf** is an optional value of the interface enumeration, the filter fits to (*default:* ito::AddInAlgo::iNotSpecified)
+* *QString* **interfaceMeta** is depending on the chosen interface an additional meta string (*default:* QString())
+* *bool* **hasStatusInfo** indicates if the filter implements code to regularily report its progress to the passed observer
+* *bool* **isCancellable** indicates if the filter implements code to regularily check the interrupt flag of the observer and stop the algorithm as soon as it has been set (e.g. via Python)
+
+For a full reference of class **FilterDef**, see :ref:`plugin-Algo-FilterDefExt-Ref`.
 
 The constructor of class **AlgoWidgetDef** has the following arguments:
 
