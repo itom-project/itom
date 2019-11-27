@@ -130,7 +130,8 @@ namespace ito
     used to describe the plugin type and subtype (in case of DataIO main type)
     e.g. typeDataIO|typeGrabber for a frame grabber
     */
-    enum tPluginType {
+    enum tPluginType 
+    {
         typeDataIO = 0x1,     /*!< base type for data input and output (cameras, AD-converter, display windows...) */
         typeActuator = 0x2,     /*!< base type for actuators and motors */
         typeAlgo = 0x4,     /*!< base type for algorithm plugin */
@@ -149,7 +150,8 @@ namespace ito
 
     The bitmask is divided into different topical areas (moving flags, switches, general status).
     */
-    enum tActuatorStatus {
+    enum tActuatorStatus 
+    {
         //moving flags
         actuatorUnknown = 0x0001, /*!< moving status of axis is unknown */
         actuatorInterrupted = 0x0002, /*!< movement has been interrupted by the user, axis is immediately stopped */
@@ -187,18 +189,21 @@ namespace ito
         actStatusMask = actuatorAvailable | actuatorEnabled | actuatorError                     /*!< bitmask that marks all status flags */
     };
 
-    enum tAutoLoadPolicy {
+    enum tAutoLoadPolicy 
+    {
         autoLoadAlways = 0x1, /*!< always loads xml file by addInManager */
         autoLoadNever = 0x2, /*!< never automatically loads parameters from xml-file (default) */
         autoLoadKeywordDefined = 0x4  /*!< only loads parameters if keyword autoLoadParams=1 exists in python-constructor */
     };
 
-    enum tAutoSavePolicy {
+    enum tAutoSavePolicy 
+    {
         autoSaveAlways = 0x1, /*!< always saves parameters to xml-file at shutdown */
         autoSaveNever = 0x2  /*!< never saves parameters to xml-file at shutdown (default) */
     };
 
-    struct ExecFuncParams{
+    struct ExecFuncParams
+    {
         ExecFuncParams() : infoString("") {}
         QVector<Param> paramsMand; /*!< mandatory parameters (default set), must have flag In or In|Out */
         QVector<Param> paramsOpt;  /*!< optional parameters (default set), must have flag In or In|Out */
@@ -206,7 +211,8 @@ namespace ito
         QString infoString;
     };
 
-    struct FilterParams {
+    struct FilterParams 
+    {
         QVector<Param> paramsMand;
         QVector<Param> paramsOpt;
         QVector<Param> paramsOut;
@@ -673,14 +679,22 @@ namespace ito
     public Q_SLOTS:
         //! method to start the device - i.e. get ready to record data
         virtual ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
+
         //! method to stop the device, it is no longer possible to acquire data
         virtual ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+
         //! freeze the current data and prepare it for retrieval
         virtual ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+
+        //! stops a continuous acquisition (usually only required by AD/DA converters). This method has not to be implemented in every plugin. New from itom.AddIn.Interface/4.0.0 on
+        virtual ito::RetVal stop(ItomSharedSemaphore *waitCond = NULL);
+
         //! read data from the device into a dataObject (which is passed as void pointer actually). Output is a shallow-copy to the grabber internal buffer-object.
         virtual ito::RetVal getVal(void* data, ItomSharedSemaphore *waitCond = NULL);
+
         //! read data from the device into a "raw data pointer" (in this case a char * is passed, pointing to the start of the preallocated memory)
         virtual ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL);
+
         //! read data from the device into a dataObject (which is passed as void pointer actually). Output is a deep-copy to the grabber internal object.
         virtual ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
 
