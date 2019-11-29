@@ -62,21 +62,41 @@ PyObject* PythonProgressObserver::PyProgressObserver_new(PyTypeObject *type, PyO
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyProgressObserver_doc,"progressObserver(progressBar : uiItem = None, label : uiItem = None, progressMinimum : int = 0, progressMaximum : int = 100) -> creates a progressObserver object. \n\
 \n\
-This class is a wrapper for the class QFont of Qt. It provides possibilities for creating a font type. \n\
+A 'progressObserver' object can be passed to functions, that might need some time to be finished, \n\
+such that these functions can regularily report their current progress (as number as well as text) \n\
+via this progress observer. These reported progress values are then displayed in the passed \n\
+'progressBar' and / or 'label'. \n\
+\n\
+Target functions, that can make use of this 'progressObserver' can be contained in itom algorithm plugins. \n\
+However these functions must implement the **FilterDefExt** interface, which is available from itom 3.3 on. \n\
+Check the method :py:meth:`itom.filterHelp` or the help widget of itom in order to find out whether a filter \n\
+in an algorithm plugin has this ability. \n\
+\n\
+If a filter accepts a progressObserver, pass this object to the keyword argument '_observer' of the method \n\
+:py:meth:`itom.filter`. Algorithms, that accept this kind of observer can also use the same observer to \n\
+interrupt the algorithm once the additional interrupt flag of the observer is set. This flag is either set \n\
+whenever a Python script execution is interrupted or if a signal of a widget has been emitted that was previously \n\
+connected to this interrupt flag using the method :py:meth:`~itom.uiItem.invokeProgressObserverCancellation`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-family : {str} \n\
-    The family name may optionally also include a foundry name, e.g. 'Helvetica [Cronyx]'. If the family is available \
-    from more than one foundry and the foundry isn't specified, an arbitrary foundry is chosen. If the family isn't \
-    available a family will be set using a best-matching algorithm. \n\
-pointSize : {int}, optional \n\
-    If pointSize is zero or negative, the point size of the font is set to a system-dependent default value. \
-    Generally, this is 12 points, except on Symbian where it is 7 points. \n\
-weight : {int}, optional \n\
-    Weighting scale from 0 to 99, e.g. font.Light, font.Normal (default), font.DemiBold, font.Bold, font.Black \n\
-italic : {bool}, optional \n\
-    defines if font is italic or not (default)");
+progressBar : {uiItem, optional} \n\
+    This is an optional handle to a progress bar in any user interface. The minimum requirement is \n\
+    that the given widget has at least a slot 'setValue(int)', which is called once this progress \n\
+    observer reports a new progress value (bound between 'progressMinimum' and 'progressMaximum'. \n\
+    If this argument is not given, None is assumed. \n\
+label : {uiItem, optional} \n\
+    This argument is very similar to 'progressBar', however it requires a handle to a label widget \n\
+    or any other widget that has a slot 'setText(QString)'. This slot is called whenever the \n\
+    target algorithm for this observer reports a new progress text. \n\
+progressMinimum : {int, optional} \n\
+    Minimum progress value that should be used and reported by the target of this observer. \n\
+progressMaximu : {int, optional} \n\
+    Maximum progress value that should be used and reported by the target of this observer. \n\
+\n\
+Notes \n\
+-------- \n\
+This class uses the C++ class ito::FunctionCancellationAndObserver.");
 int PythonProgressObserver::PyProgressObserver_init(PyProgressObserver *self, PyObject *args, PyObject * kwds)
 {
     PyObject *progressBar = NULL;

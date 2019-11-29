@@ -10,6 +10,7 @@ Plugin class - Algo
 An **algorithm plugin** can provide an arbitrary number of filter-methods and widgets, hence external windows, dialogs... which can be displayed by |itom|.
 
 **Filter-Method**
+
 A filter-method is any algorithm, which is parameterized with a set of mandatory and optional parameters and may return a set of output parameters. Similar
 to the flexible initialization of plugins of type **dataIO** or **actuator**, the default-values of these parameters are given by the plugin itself and can also
 be different for each filter-method. Please consider that a filter-method can finally be called from different threads, therefore it is not allowed to directly
@@ -18,9 +19,12 @@ is called form any toolbox or dialog, it is usually called in their context (mai
 worker thread. If a filter-method only consists of ordinary algorithmic components, you should not get any problems with these kind of flexibility.
 
 **Widgets**
+
 The widget-methods of the plugin will be called in the same way than filter-methods with a set of mandatory and optional parameters. Then, the widget-method creates
 a new instance of a widget, window or any other GUI element, derived from **QWidget** is returned and can then be displayed. This method will always be called in the
 context of the main thread (GUI-thread).
+
+For the usage of such filters via Python, see :ref:`getStartFilter`.
 
 Plugin-Structure
 ----------------
@@ -156,8 +160,8 @@ plugins and the real filter- or widget-method is called with the same vectors, h
     consequence for the plugin programmer is, that it is not allowed to have time- or situation-dependent changes in the default-values. This might not be considered.
     Only the implementation at startup is relevant and must not be changed!
 
-The *plugin*-methods give the user additionally the possibility to get a readable output of the set of desired parameters including their descriptions and types in the
-command line by using the following python-command:
+The *plugin*-methods give the user additionally the possibility to get a readable output of the set of desired 
+parameters including their descriptions and types in the command line by using the following python-command:
 
 .. code-block:: python
     
@@ -174,13 +178,15 @@ Filter-Methods (Without status information and / or cancellation feature)
 This is the default definition of filters and does not provide the possibility to pass runtime status information (like the current progress)
 or a way to let the user cancel the execution of the algorithm.
 
-After that you implemented the parameter-method in order to generate default parameters for your filter-method (see section above), you can now implement the filter-method
-itsself. This first implementation might follow this scheme:
+After that you implemented the parameter-method in order to generate default parameters for your filter-method 
+(see section above), you can now implement the filter-method itsself. This first implementation might follow this scheme:
 
 .. code-block:: c++
     :linenos:
     
-    ito::RetVal MyAlgoPlugin::filter1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+    ito::RetVal MyAlgoPlugin::filter1(QVector<ito::ParamBase> *paramsMand, 
+                                      QVector<ito::ParamBase> *paramsOpt, 
+                                      QVector<ito::ParamBase> *paramsOut)
     {
         ito::RetVal retval = ito::retOk;
 
@@ -194,7 +200,8 @@ itsself. This first implementation might follow this scheme:
         double opt1 = (*paramsOpt)[0].getVal<double>();
 
         //possibility 2 (name-based access):
-        const ito::DataObject *dObj2 =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const ito::DataObject *dObj2 = \
+            (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
         const char *filename2 = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
         double opt2 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
 
@@ -230,6 +237,12 @@ If you want to use this method, integrate both files in your project and include
     
     If you want to use methods provided by the |itom|-API, see :ref:`plugin-itomAPI` and consider the additional lines of code in your implementation.
 
+.. note::
+    
+    Never use the reserved name **_observer** for a mandatory or optional parameter name, since this is used to call a filter
+    from the Python method :py:meth:`itom.filter` with a given progress observer (see :py:class:`itom.progressObserver`).
+
+.. _plugin-class-algo-filterDefExt:
 
 Filter-Methods 2 (With status information and / or cancellation feature)
 ---------------------------------------------------------------------------
@@ -246,7 +259,10 @@ The filter definition for this 2nd case is as follows:
 .. code-block:: c++
     :linenos:
     
-    ito::RetVal MyAlgoPlugin::filter2(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, QSharedPointer<ito::FunctionCancellationAndObserver> observer)
+    ito::RetVal MyAlgoPlugin::filter2(QVector<ito::ParamBase> *paramsMand, 
+                                      QVector<ito::ParamBase> *paramsOpt, 
+                                      QVector<ito::ParamBase> *paramsOut, 
+                                      QSharedPointer<ito::FunctionCancellationAndObserver> observer)
     {
         ito::RetVal retval = ito::retOk;
         
@@ -258,8 +274,8 @@ The filter definition for this 2nd case is as follows:
         }
 
         //1. Section. Getting typed in or in/out parameters from paramsMand and paramsOpt
-        //  Make sure that you access only parameters, that have been defined in the corresponding parameter-method.
-        //  The order and type is important.
+        //  Make sure that you access only parameters, that have been defined in 
+        //  the corresponding parameter-method. The order and type is important.
 
         //possibility 1 (index-based access):
         const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
@@ -267,7 +283,8 @@ The filter definition for this 2nd case is as follows:
         double opt1 = (*paramsOpt)[0].getVal<double>();
 
         //possibility 2 (name-based access):
-        const ito::DataObject *dObj2 =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const ito::DataObject *dObj2 = \
+            (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
         const char *filename2 = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
         double opt2 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
 
@@ -285,9 +302,11 @@ The filter definition for this 2nd case is as follows:
                 if (timer.elapsed() >= nextProgressReport)
                 {
                     //always pass the value between the given minimum / maximum of the observer
-                    int value = observer->progressMinimum() + timer.elapsed() * (observer->progressMaximum() - observer->progressMinimum()) / 10000;
+                    int value = observer->progressMinimum() + timer.elapsed() * \
+                        (observer->progressMaximum() - observer->progressMinimum()) / 10000;
                     observer->setProgressValue(value);
-                    observer->setProgressText(QString("This algorithm run %1 from 10.0 seconds").arg(timer.elapsed() / 1000));
+                    observer->setProgressText(QString("This algorithm run %1 from 10.0 seconds"). \
+                        arg(timer.elapsed() / 1000));
                     nextProgressReport += 1000;
                 }
 
@@ -315,22 +334,27 @@ The filter definition for this 2nd case is as follows:
 Widget-Method (GUI-Extensions)
 ------------------------------
 
-If you want to provide a user-defined window, dialog or widget (which is then rendered into a dialog), you have to implement an appropriate
-method which follows this base structure:
+If you want to provide a user-defined window, dialog or widget (which is then rendered into a dialog), you have to 
+implement an appropriate method which follows this base structure:
 
 .. code-block:: c++
     :linenos:
     
-    QWidget* MyAlgoPlugin::widget1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue)
+    QWidget* MyAlgoPlugin::widget1(QVector<ito::ParamBase> *paramsMand, 
+                                   QVector<ito::ParamBase> *paramsOpt, 
+                                   ito::RetVal &retValue)
     {
         //1. Section. Getting typed in or in/out parameters from paramsMand and paramsOpt
-        //  Make sure that you access only parameters, that have been defined in the corresponding parameter-method.
-        //  The order and type is important. Do it like in the method 'filter1' above.    
+        //   Make sure that you access only parameters, that have been defined in 
+        //   the corresponding parameter-method. The order and type is important. Do it 
+        //   like in the method 'filter1' above.    
         
-        //2. Pre-requisite: You have in your plugin project a class, which is derived from QMainWindow, QDialog or QWidget.
-        //  This class can also include an ui-file, which has been designed using the QtDesigner. The class name is Widget1.
+        //2. Pre-requisite: You have in your plugin project a class, which is derived 
+        //   from QMainWindow, QDialog or QWidget. This class can also include an ui-file, 
+        //   which has been designed using the QtDesigner. The class name is Widget1.
         
-        //Create an instance of that class and return it. The instance is deleted by the caller of the method 'widget1'.
+        // Create an instance of that class and return it. 
+        // The instance is deleted by the caller of the method 'widget1'.
         Widget1 *win = new Widget( /* your parameters */ );
         QWidget *widget = qobject_cast<QWidget*>(win); //cast it to QWidget, if it isn't already.
         if(widget == NULL)
@@ -357,7 +381,9 @@ need to be published in two different ways. A exemplary implemention is as follo
 .. code-block:: c++
     :linenos:
     
-    ito::RetVal MyAlgoPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+    ito::RetVal MyAlgoPlugin::init(QVector<ito::ParamBase> *paramsMand, 
+                                   QVector<ito::ParamBase> *paramsOpt, 
+                                   ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
         
@@ -367,27 +393,28 @@ need to be published in two different ways. A exemplary implemention is as follo
         
         //publish your filter-methods here, an example for a default filter definition (without status and cancellation):
         filter = new FilterDef(WLIfilter, WLIfilterParams, 
-                               tr("description").toLatin1().data(),  //description
-                               ito::AddInAlgo::catNone,              //category
-                               ito::AddInAlgo::iNotSpecified,        //interface
-                               QString());                           //meta information for interface (e.g. file pattern to be loadable)
+                    tr("description").toLatin1().data(),  //description
+                    ito::AddInAlgo::catNone,              //category
+                    ito::AddInAlgo::iNotSpecified,        //interface
+                    QString());                           //meta information for interface (e.g. file pattern to be loadable)
         m_filterList.insert("filterName", filter);
         
         //here an example for the 2nd filter definition (with status observer and cancellation):
         filter = new FilterDefExt(WLIfilterCancellable, 
-                                  WLIfilterParams, 
-                                  tr("description").toLatin1().data(), //description
-                                  ito::AddInAlgo::catNone,             //category
-                                  ito::AddInAlgo::iNotSpecified,       //interface
-                                  QString(),                           //meta information for interface (e.g. file pattern to be loadable)
-                                  true,                                //true if filter provides status information, else false
-                                  true);                               //true if filter listens to the interrupt flag 
-                                                                       //of the observer and allows to be interrupted earlier, else false
+                    WLIfilterParams, 
+                    tr("description").toLatin1().data(), //description
+                    ito::AddInAlgo::catNone,             //category
+                    ito::AddInAlgo::iNotSpecified,       //interface
+                    QString(),                           //meta information for interface (e.g. file pattern to be loadable)
+                    true,                                //true if filter provides status information, else false
+                    true);                               //true if filter listens to the interrupt flag 
+                                                       //of the observer and allows to be interrupted earlier, else false
         m_filterList.insert("filterName", filter);
         
         
         //publish your dialogs, main-windows, widgets... here, example:
-        widget = new AlgoWidgetDef(widget1, widget1Params, tr("description").toLatin1().data(), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+        widget = new AlgoWidgetDef(widget1, widget1Params, tr("description").toLatin1().data(), 
+                                    ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
         m_algoWidgetList.insert("widgetName", widget);
         
         if (waitCond) 
@@ -399,9 +426,10 @@ need to be published in two different ways. A exemplary implemention is as follo
         return retval;
     }
 
-For registering filter- and widget-methods, you have to create a new instance of the classes **FilterDef** / **FilterDefExt** (with observer) or **AlgoWidgetDef** respectively and insert these
-newly created instances to the maps **m_filterList** or **m_algoWidgetList** respectively. Their name in the map finally is the name of the filter or widget and
-must be unique within |itom|; else the filter-method or widget-method can not be loaded at startup of |itom|.
+For registering filter- and widget-methods, you have to create a new instance of the classes **FilterDef** / 
+**FilterDefExt** (with observer) or **AlgoWidgetDef** respectively and insert these newly created instances to the 
+maps **m_filterList** or **m_algoWidgetList** respectively. Their name in the map finally is the name of the filter 
+or widget and must be unique within |itom|; else the filter-method or widget-method can not be loaded at startup of |itom|.
 
 The constructor of class **FilterDef** has the following arguments:
 
@@ -475,7 +503,8 @@ Finally, the **close** method can be implemented, those structure is usually unc
         return retval;
     }
 
-The **close**-method does nothing but immediately releasing the parameer *waitCond*. For more information about *ItomSharedSemaphore*, see :ref:`plugin-sharedSemaphore`.
+The **close**-method does nothing but immediately releasing the parameer *waitCond*. For more information about 
+*ItomSharedSemaphore*, see :ref:`plugin-sharedSemaphore`.
 
 .. toctree::
    :hidden:

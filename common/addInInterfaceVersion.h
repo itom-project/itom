@@ -105,6 +105,9 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION_STR(major,minor,patch) "ito.AddIn.InterfaceBase/"#major"."#minor"."#patch
 #define CREATE_ADDININTERFACE_MAJOR_VERSION_STR(major) "ito.AddIn.InterfaceBase/"#major
 
+//please indicate the major, minor and patch version in the following defines.
+//Additionally put all three components of the version in the define ITOM_ADDININTERFACE_VERSION_STR
+//and add the major version number only as argument of the macro in the last line.
 #define ITOM_ADDININTERFACE_MAJOR 4
 #define ITOM_ADDININTERFACE_MINOR 0
 #define ITOM_ADDININTERFACE_PATCH 0

@@ -3620,6 +3620,7 @@ type : {int}, optional \n\
         * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
         * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
         * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
+        * 3 (ui.TYPECENTRALWIDGET): ui-file must be a widget or mainWindow and is included in the central area of itom, above the command line \n\
 dialogButtonBar :  {int}, optional \n\
     Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
     \n\
