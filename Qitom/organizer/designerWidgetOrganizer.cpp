@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -48,7 +48,7 @@
 
 /*!
     \class DesignerWidgetOrganizer
-    \brief 
+    \brief
 */
 
 namespace ito
@@ -118,7 +118,7 @@ DesignerWidgetOrganizer::~DesignerWidgetOrganizer()
 //! short
 /*! long
 
-    \return 
+    \return
 */
 RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 {
@@ -136,7 +136,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
     //This regular expression is used to check whether the error message during loading a plugin contains the words
     //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
-    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive); 
+    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive);
 
     //get version of the required AbstractItomDesignerPlugin
     AbstractItomDesignerPlugin *dummyPlugin = new DummyItomDesignerPlugin(NULL);
@@ -233,7 +233,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     {
                         status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
                     }
-                
+
                     DELETE_AND_SET_NULL(loader);
                 }
                 // try with a normal plugin, we do not support collections
@@ -286,9 +286,9 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                     else
                     {
 
-#if QT_VERSION >= 0x040800 
-                        /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here, 
-                           since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO 
+#if QT_VERSION >= 0x040800
+                        /* it seems that it is not allowed to unload a designer plugin (but no plot plugin) here,
+                           since it is then also unloaded in the member m_uiLoader from uiOrganizer. TODO
 
                            \todo this bug seems only to be there with Qt 4.7.x
                         */
@@ -376,7 +376,7 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
     {
         retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' not found").toLatin1().data(), className.toLatin1().data());
     }
-    
+
     if (ok) *ok = success;
     return retVal;
 }
@@ -446,7 +446,10 @@ QList<FigurePlugin> DesignerWidgetOrganizer::getPossibleFigureClasses(const Figu
     \param retVal
     \return QString
 */
-QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, const QString &defaultClassName, ito::RetVal &retVal)
+QString DesignerWidgetOrganizer::getFigureClass(
+        const QString &figureCategory,
+        const QString &defaultClassName,
+        ito::RetVal &retVal)
 {
     if (!m_figureCategories.contains(figureCategory))
     {
@@ -454,7 +457,7 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
         return "";
     }
 
-    FigureCategory figureCat = m_figureCategories[figureCategory];    
+    FigureCategory figureCat = m_figureCategories[figureCategory];
     QList<FigurePlugin> figurePlugins;
 
     foreach(const FigurePlugin &plugin, m_figurePlugins)
@@ -510,7 +513,7 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
 
         retVal += ito::RetVal::format(ito::retWarning, 0, tr("The figure class '%1' could not be found or does not support displaying the given type of data. The default class for the given data is used instead.").arg(defaultClassName).toLatin1().data());
     }
-
+    // #if no class name present, default is being loaded from settings file...
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlotWidgets");
     QString settingsClassName = settings.value(figureCategory, figureCat.m_defaultClassName).toString();
@@ -518,7 +521,7 @@ QString DesignerWidgetOrganizer::getFigureClass(const QString &figureCategory, c
 
     bool repeat = true;
 
-    while(repeat)
+    while(repeat && !retVal.containsError())
     {
 
         foreach(const FigurePlugin &plugin, figurePlugins)
@@ -813,7 +816,7 @@ void DesignerWidgetOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
             ((ito::AbstractFigure*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
 
             //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //transmitted to the plugin. This assignment cannot be done directly, since
             //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
             //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
             //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -827,7 +830,7 @@ void DesignerWidgetOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
             ((ito::AbstractApiWidget*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
 
             //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //transmitted to the plugin. This assignment cannot be done directly, since
             //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
             //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
             //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which

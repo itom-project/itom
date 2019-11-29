@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,8 +36,14 @@ namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent, Qt::WindowFlags /*flags*/)
-    : AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, "", parent),
+FigureWidget::FigureWidget(
+        const QString &title,
+        bool docked, bool isDockAvailable,
+        int rows, int cols,
+        QWidget *parent, Qt::WindowFlags /*flags*/):
+        AbstractDockWidget(docked, isDockAvailable,
+                            floatingWindow, movingEnabled,
+                            title, "", parent),
     m_pGrid(NULL),
     m_pCenterWidget(NULL),
     m_menuWindow(NULL),
@@ -88,7 +94,7 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
-    
+
 */
 FigureWidget::~FigureWidget()
 {
@@ -155,7 +161,7 @@ void FigureWidget::createMenus()
     {
         m_menuWindow->addAction(m_actStayOnTopOfApp);
     }
-    
+
     QAction *act = getMenuBar()->addMenu(m_menuWindow);
     if (!m_firstSysAction) m_firstSysAction = act;
 }
@@ -177,7 +183,11 @@ void FigureWidget::updateActions()
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 #if ITOM_POINTCLOUDLIBRARY > 0
-RetVal FigureWidget::plot(QSharedPointer<ito::PCLPointCloud> pc, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::plot(
+        QSharedPointer<ito::PCLPointCloud> pc,
+        int areaRow, int areaCol,
+        const QString &className,
+        QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
@@ -226,7 +236,11 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPointCloud> pc, int areaRow, in
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::plot(
+        QSharedPointer<ito::PCLPolygonMesh> pm,
+        int areaRow, int areaCol,
+        const QString &className,
+        QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
@@ -276,7 +290,12 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, i
 #endif // #if ITOM_POINTCLOUDLIBRARY > 0
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<ito::DataObject> xAxisObj,int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::plot(
+        QSharedPointer<ito::DataObject> dataObj,
+        QSharedPointer<ito::DataObject> xAxisObj,
+        int areaRow, int areaCol,
+        const QString &className,
+        QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
@@ -285,57 +304,57 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
 
     *canvasWidget = NULL;
 
-	if (dwo)
-	{
-        /* className can be 
-            
+    if (dwo)
+    {
+        /* className can be
+
             * an empty string, then the right category is guessed from the dimension of the dataObject
             * 1D, 1d, 2D, 2d, 2.5D, or 2.5d -> then the default plot of the corresponding category is used
             * a className, then the className is searched within the category, guessed from the dimension of the dataObject (if not found, a warning is returned and the default of the category is used)
             * 1d:className, 2d:className, 2.5d:className -> the className is searched within the given category, if not found, the default class from the category is used
         */
-		if (className.compare("1d", Qt::CaseInsensitive) == 0)
-		{
-			plotClassName = dwo->getFigureClass("DObjStaticLine", "", retval);
-		}
-		else if (className.compare("2d", Qt::CaseInsensitive) == 0)
-		{
-			plotClassName = dwo->getFigureClass("DObjStaticImage", "", retval);
-		}
-		else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
-		{
-			plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
-		}
+        if (className.compare("1d", Qt::CaseInsensitive) == 0)
+        {
+            plotClassName = dwo->getFigureClass("DObjStaticLine", "", retval);
+        }
+        else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+        {
+            plotClassName = dwo->getFigureClass("DObjStaticImage", "", retval);
+        }
+        else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+        }
         else if (className.startsWith("1d:", Qt::CaseInsensitive))
-		{
-			plotClassName = dwo->getFigureClass("DObjStaticLine", className.mid(3), retval);
-		}
-		else if (className.startsWith("2d:", Qt::CaseInsensitive))
-		{
-			plotClassName = dwo->getFigureClass("DObjStaticImage", className.mid(3), retval);
-		}
-		else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
-		{
-			plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
-		}
-		else
-		{
-			int dims = dataObj->getDims();
-			int sizex = dataObj->getSize(dims - 1);
-			int sizey = dataObj->getSize(dims - 2);
-			if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
-			{
-				plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
+        {
+            plotClassName = dwo->getFigureClass("DObjStaticLine", className.mid(3), retval);
+        }
+        else if (className.startsWith("2d:", Qt::CaseInsensitive))
+        {
+            plotClassName = dwo->getFigureClass("DObjStaticImage", className.mid(3), retval);
+        }
+        else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
+        }
+        else
+        {
+            int dims = dataObj->getDims();
+            int sizex = dataObj->getSize(dims - 1);
+            int sizey = dataObj->getSize(dims - 2);
+            if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
+            {
+                plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
 
-			}
-			else
-			{
-				plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
-			}
-		}
+            }
+            else
+            {
+                plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
+            }
+        }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
-        if (destWidget->inherits("ito::AbstractFigure"))
+        if (!retval.containsError() && destWidget && destWidget->inherits("ito::AbstractFigure"))
         {
             connect((ito::AbstractFigure*)destWidget, SIGNAL(windowTitleModified(QString)), this, SLOT(setAdvancedWindowTitle(QString)));
         }
@@ -385,7 +404,11 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::liveImage(
+        QPointer<AddInDataIO> cam,
+        int areaRow, int areaCol,
+        const QString &className,
+        QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
@@ -410,7 +433,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         bool isLine = false;
         ito::AutoInterval bitRange (0.0, 1.0);
         QSharedPointer<ito::Param> bpp = getParamByInvoke(cam.data(), "bpp", retval);
-        
+
         if (!retval.containsError())
         {
             if (bpp->getVal<int>() == 8)
@@ -418,7 +441,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
                 setDepth = true;
                 bitRange.setMaximum(255.0);
             }
-            else if (bpp->getVal<int>() < 17) 
+            else if (bpp->getVal<int>() < 17)
             {
                 setDepth = true;
                 bitRange.setMaximum((float)((1 << bpp->getVal<int>())-1));
@@ -437,52 +460,52 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         //get size of camera image
         QSharedPointer<ito::Param> sizex = getParamByInvoke(cam.data(), "sizex", retval);
         QSharedPointer<ito::Param> sizey = getParamByInvoke(cam.data(), "sizey", retval);
-        
+
         if (!retval.containsError())
         {
-			/* className can be 
-            
+            /* className can be
+
                 * an empty string, then the right category is guessed from the dimension of the dataObject
                 * 1D, 1d, 2D, 2d, 2.5D, or 2.5d -> then the default plot of the corresponding category is used
                 * a className, then the className is searched within the category, guessed from the dimension of the dataObject (if not found, a warning is returned and the default of the category is used)
                 * 1d:className, 2d:className, 2.5d:className -> the className is searched within the given category, if not found, the default class from the category is used
             */
-			if (className.compare("1d", Qt::CaseInsensitive) == 0)
-			{
-				plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
-			}
-			else if (className.compare("2d", Qt::CaseInsensitive) == 0)
-			{
-				plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
-			}
-			else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
-			{
-				plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
-			}
+            if (className.compare("1d", Qt::CaseInsensitive) == 0)
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
+            }
+            else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
+            }
+            else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+            {
+                plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+            }
             else if (className.startsWith("1d:", Qt::CaseInsensitive))
-		    {
-			    plotClassName = dwo->getFigureClass("DObjLiveLine", className.mid(3), retval);
-		    }
-		    else if (className.startsWith("2d:", Qt::CaseInsensitive))
-		    {
-			    plotClassName = dwo->getFigureClass("DObjLiveImage", className.mid(3), retval);
-		    }
-		    else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
-		    {
-			    plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
-		    }
-			else
-			{
-				if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
-				{
-					plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
-					isLine = true;
-				}
-				else
-				{
-					plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
-				}
-			}
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveLine", className.mid(3), retval);
+            }
+            else if (className.startsWith("2d:", Qt::CaseInsensitive))
+            {
+                plotClassName = dwo->getFigureClass("DObjLiveImage", className.mid(3), retval);
+            }
+            else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+            {
+                plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
+            }
+            else
+            {
+                if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
+                {
+                    plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
+                    isLine = true;
+                }
+                else
+                {
+                    plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
+                }
+            }
         }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
@@ -536,7 +559,7 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
                 retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
-            
+
             if (idx == m_curIdx && !retval.containsError())
             {
                 changeCurrentSubplot(idx);
@@ -552,7 +575,10 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::loadDesignerWidget(int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::loadDesignerWidget(
+        int areaRow, int areaCol,
+        const QString &className,
+        QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
@@ -587,7 +613,10 @@ RetVal FigureWidget::loadDesignerWidget(int areaRow, int areaCol, const QString 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, int areaCol, RetVal &retval)
+QWidget* FigureWidget::prepareWidget(
+        const QString &plotClassName,
+        int areaRow, int areaCol,
+        RetVal &retval)
 {
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     bool exists = false;
@@ -672,8 +701,8 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                     m_pGrid->addWidget(newWidget, areaRow, areaCol, 1, 1);
                     m_widgets[idx] = newWidget;
                     destinationWidget = newWidget;
-                    
-                    if (oldWidget) 
+
+                    if (oldWidget)
                     {
                         menusActions = m_menuStack[oldWidget];
                         foreach(QAction* a, menusActions)
@@ -814,7 +843,7 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
                         }
                     }
                 //}
-                
+
                 if (m_rows > 1 || m_cols > 1)
                 {
                     widget->setStyleSheet(QString("QWidget#%1 { border: 1px solid %2 } ").arg(widget->objectName()).arg(m_currentBorderColor.name()));
@@ -866,7 +895,7 @@ void FigureWidget::mnu_subplotActionsTriggered(QAction *action)
     if (action)
     {
         changeCurrentSubplot(action->data().toInt());
-        
+
     }
 }
 } //end namespace ito

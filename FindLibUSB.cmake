@@ -18,7 +18,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 
 find_package ( PkgConfig QUIET)
 if ( PKG_CONFIG_FOUND )
-  pkg_check_modules ( PKGCONFIG_LIBUSB libusb>=1.0 )
+  pkg_check_modules ( PKGCONFIG_LIBUSB libusb-1.0>=1.0 )
 endif ( PKG_CONFIG_FOUND )
 
 if ( PKGCONFIG_LIBUSB_FOUND )

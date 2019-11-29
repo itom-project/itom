@@ -5,7 +5,7 @@
 Geometric shapes in 1D and 2D plots
 ******************************************
 
-The Qwt-based plot plugins :ref:`itom1dqwtplot <itom1dqwtplot (1D)>` and :ref:`itom2dqwtplot <itom2dqwtplot (2D)>` support drawing
+The Qwt-based plot plugins :ref:`plot-line <itom1dqwtplot (1D)>` and :ref:`plot-image <itom2dqwtplot (2D)>` support drawing
 geometric shapes with sub-pixel precision onto the plot canvas. These shapes can be added either by the mouse clicks on the canvas or
 by script commands. Each shape is represented by the class :py:class:`~itom.shape`. Depending on optionally flags of each shape, it is
 then possible to resize or move it my the mouse, too. The following subset of :py:class:`~itom.shape` is currently supported by both plot types:
@@ -22,7 +22,7 @@ modify such shapes and how to get information about the type, position and form 
 
 .. note::
     
-    The content of this chapter is only applicable to plots created from the figure classes :ref:`itom1dqwtplot <itom1dqwtplot>` or :ref:`itom2dqwtplot <itom2dqwtplot>`
+    The content of this chapter is only applicable to plots created from the figure classes :ref:`plot-line <itom1dqwtplot>` or :ref:`plot-image <itom2dqwtplot>`
 
 
 Add shapes at any time by mouse
@@ -207,7 +207,7 @@ Signals connected to shape manipulations
 =========================================
 
 Whenever a geometric shape is added, modified or removed from the canvas (independent on the method), the plot emits various signals. You can connect methods to
-one or multiple signals in order to react on these events. For more information about available signals, see the references for the :ref:`itom1dqwtplot <1D>` and :ref:`itom2dqwtplot <2D>` plot.
+one or multiple signals in order to react on these events. For more information about available signals, see the references for the :ref:`plot-line <1D>` and :ref:`plot-image <2D>` plot.
 
 Modify or select shapes by mouse
 =================================

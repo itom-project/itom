@@ -15,7 +15,7 @@ Create the plugin documentation of any plugin
 In order to generate the plugin documentation of any plugin, the following requirements need to be fulfilled:
 
 1. In the sources of the plugin there must be a folder **docs** that contains at least on \*.rst with the plugin documentation. This documentation needs to
-be written in the so called reStructured-Text format rst (see http://sphinx-doc.org/rest.html)
+    be written in the so called reStructured-Text format rst (see http://sphinx-doc.org/rest.html)
 
 2. The file **CMakeLists.txt** of the specific plugin must contain the following line in order to register the rst-file as plugin documentation file::
     
@@ -23,8 +23,8 @@ be written in the so called reStructured-Text format rst (see http://sphinx-doc.
 
 3. If the plugin is build, its build folder will get a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
 
-If these requirements are given, start |itom| and execute the script **create_plugin_doc.py** in the **docs/pluginDoc** directory of the build directory of |itom| .
-Then select the *.cfg-file describing the plugin documentation in its specific build folder.
+If these requirements are given, start |itom| and execute the script **create_plugin_doc.py** in the **docs/pluginDoc** directory of the build directory of |itom|.
+Then select the \*.cfg-file describing the plugin documentation in its specific build folder.
 
 In order to simultaneously create the documentations of many plugins, execute **create_all_plugin_docs.py** and indicate the build folder that contains the build-subfolders
 of many plugins. These subfolders are searched for appropriate \*.cfg files and all sub-documentations are created.
