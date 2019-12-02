@@ -25,12 +25,12 @@ The following sub-sections give an overview about some additional itom widgets:
 
 
 dObMetaDataTable
-============================================
+-------------------------------------
 
 The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.g. to realize a measurement protocol . The widget is not inherited from a AbstractDObject and can not be used for a live plot.
 
 Properties
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **data**: *ito::DataObject*, the dataObject to be shown, not accessible in QtDesigner.
 
@@ -48,14 +48,14 @@ Properties
 
 
 EvaluateGeometricsFigure
-============================================
+-------------------------------------
 
 The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elements and a row for each geometric element to display.
 Further more it allows the evaluation of geometric relations between the geometric primitives. It contains a tableView and although is is inherited by AbstractDObject it should not be used for "liveVisualisation of dataObject".
 
 
 Properties
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **title**: *QString, DESIGNABLE*, Title of the plot or '<auto>' if the title of the data object should be used. *Not implemented yet*
 **valueUnit**: *QString, DESIGNABLE*, The value unit for the metrical calculations that is used within the plot.
@@ -68,7 +68,7 @@ Properties
 **considerOnly2D**: *bool, DESIGNABLE*, If true, only the x & y coordinates are considered.
 
 Slots
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **ito::RetVal addRelation(ito::DataObject importedData)** 
  
@@ -119,13 +119,13 @@ Slots
 
 
 Signals
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 None
 
 
 MotorController
-============================================
+-------------------------------------
 
 The "MotorController"-widget gives the user the some basic functions for generic motor positioning and position reporting within a complex GUI. The widget can be used for 1 to 6 axis and can be used readOnly or as a type of software control panel.
 The widget updated in a fixed interval (can be deactivated). During measurements the widget should be disabled to avoid user errors. A support for the 3DConnexion-Mouse is planed but *Not implemented yet*.
@@ -133,7 +133,7 @@ The widget updated in a fixed interval (can be deactivated). During measurements
 The motor should support up *slot: RequestStatusAndPosition* and *signal: actuatorStatusChanged* for semaphore free communication, but this is not necessary.
 
 Properties
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **actuator**: *ito::AddInActuator*, Handle to the actuator to be used, not DESIGNABLE
 
@@ -155,7 +155,7 @@ Properties
 
 
 Slots
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **void triggerActuatorStep(const int axisNo, const bool smallBig, const bool forward)**
 
@@ -182,7 +182,7 @@ Slots
  
 
 Signals
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **void RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)**
 
