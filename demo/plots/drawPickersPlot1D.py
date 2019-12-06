@@ -21,29 +21,34 @@ set 'physicalCoordinates' to False.
 '''
 
 import numpy as np
+from itom import plot, dataObject
 
 def pickerChangedSlot(pickerIdx, posX, posY, curveIdx):
     print("picker %i changed. New pos: (%.2f, %.2f), curve: %i" % (pickerIdx, posX, posY, curveIdx))
 
-#create demo data
-#1d sine
-sine = np.sin(np.arange(0, 10 * np.pi, (1/20) * np.pi))
-sine2 = np.sin(np.arange(0, 5 * np.pi, (1/40) * np.pi))
-twosines = dataObject([2,len(sine)],'float64')
-twosines[0,:] = sine
-twosines[1,:] = sine2
+def userdemo_drawPcikersPlot1D():
+    #create demo data
+    #1d sine
+    sine = np.sin(np.arange(0, 10 * np.pi, (1/20) * np.pi))
+    sine2 = np.sin(np.arange(0, 5 * np.pi, (1/40) * np.pi))
+    twosines = dataObject([2,len(sine)],'float64')
+    twosines[0,:] = sine
+    twosines[1,:] = sine2
 
-twosines.axisScales=(1, np.pi/20)
+    twosines.axisScales=(1, np.pi/20)
 
-[i,h] = plot(twosines, 'itom1dqwtplot')
+    [i,h] = plot(twosines, 'itom1dqwtplot')
 
-h.connect("pickerChanged(int,double,double,int)",pickerChangedSlot)
+    h.connect("pickerChanged(int,double,double,int)",pickerChangedSlot)
 
-#increase the maximum number of pickers to 7
-h["pickerLimit"] = 7
+    #increase the maximum number of pickers to 7
+    h["pickerLimit"] = 7
 
-#set two pickers to the first curve
-h.call("setPicker", (1.5 * np.pi, 2.5*np.pi), 0)
+    #set two pickers to the first curve
+    h.call("setPicker", (1.5 * np.pi, 2.5*np.pi), 0)
 
-#set two pickers to the second curve
-h.call("appendPicker", (40, 80, 120, 160, 200), 1, False)
+    #set two pickers to the second curve
+    h.call("appendPicker", (40, 80, 120, 160, 200), 1, False)
+
+if __name__ == "__main__":
+    userdemo_drawPcikersPlot1D()

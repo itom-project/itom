@@ -3,12 +3,15 @@
 #
 #inputs in this demo will force an input line in the command line (green background). Put some text there and press return to continue.
 
-name = input("Please put your name after the colon:")
-age = input("Please put your age:")
+def userdemo_input():
+    name = input("Please put your name after the colon:")
+    age = input("Please put your age:")
 
-try:
-    age_ = int(age)
-    print("Hello %s. Your age is %i" % (name, age_))
-except Exception:
-    print("Your age could not be interpreted as integer")
+    try:
+        age_ = int(age)
+        print("Hello %s. Your age is %i" % (name, age_))
+    except Exception:
+        print("Your age could not be interpreted as integer")
     
+if __name__ == "__main__":
+    userdemo_input()
