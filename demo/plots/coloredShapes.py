@@ -17,24 +17,27 @@ else an object of type itom.rgba can be assigned.
 '''
 from itom import dataObject, rgba
 
-image = dataObject.zeros([200,400], 'uint8')
-image[0:100,0:200] = 128
-image[100:,200:] = 255
-image.axisScales = (0.25, 0.25) #coordinates of shapes are always given in 'physical' scales (considering scale and offset of the displayed object)
-image.axisOffsets = (100,200)
+def demo_coloredShapes():
+    image = dataObject.zeros([200,400], 'uint8')
+    image[0:100,0:200] = 128
+    image[100:,200:] = 255
+    image.axisScales = (0.25, 0.25) #coordinates of shapes are always given in 'physical' scales (considering scale and offset of the displayed object)
+    image.axisOffsets = (100,200)
 
-rect1 = shape.createRectangle((10,5),(40,20))
-rect1.color = rgba(0, 128, 55) #change the color of the upper right rectangle to a permanent color (dark green)
+    rect1 = shape.createRectangle((10,5),(40,20))
+    rect1.color = rgba(0, 128, 55) #change the color of the upper right rectangle to a permanent color (dark green)
 
-rect2 = shape.createRectangle(center = (0,0), size = (40,20))
-rect2.color = None #automatic, color map dependent coloring (default)
+    rect2 = shape.createRectangle(center = (0,0), size = (40,20))
+    rect2.color = None #automatic, color map dependent coloring (default)
 
-circle = shape.createCircle(center = (-25,-12), radius = 5)
-circle.color = rgba(120,0,90) #change the color of the circle to a permanent color (purple)
+    circle = shape.createCircle(center = (-25,-12), radius = 5)
+    circle.color = rgba(120,0,90) #change the color of the circle to a permanent color (purple)
 
-ellipse = shape.createEllipse(center = (-20,0), size = (40,5))
-ellipse.color = None #automatic, color map dependent coloring (default)
+    ellipse = shape.createEllipse(center = (-20,0), size = (40,5))
+    ellipse.color = None #automatic, color map dependent coloring (default)
 
 
-[idx, handle] = plot(image, properties = {"title":"Color shapes demo"})
-handle["geometricShapes"] = (rect1,rect2, circle, ellipse)
+    [idx, handle] = plot(image, properties = {"title":"Color shapes demo"})
+    handle["geometricShapes"] = (rect1,rect2, circle, ellipse)
+if __name__ == "__main__":
+    demo_coloredShapes()

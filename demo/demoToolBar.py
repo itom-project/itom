@@ -1,3 +1,5 @@
+from itom import *
+
 #Create a new application class
 class myToolBar():
     #Add a ini-function
@@ -25,11 +27,14 @@ class myToolBar():
     def __len__(self):
         return 42
 
-# Create a new instance of myToolBar with the name app
-app = myToolBar()
+def demo_toolbar():
+    # Create a new instance of myToolBar with the name app
+    app = myToolBar()
 
-#Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
-addButton("amipola","Hello","res = app.printHelloWorld(True)", "icons_m/HV_on.png")
+    #Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
+    addButton("amipola","Hello","res = app.printHelloWorld(True)", "icons_m/HV_on.png")
 
-#For Debug test with single step
-app.printHelloWorld(True)
+    #For Debug test with single step
+    app.printHelloWorld(True)
+if __name__ == "__main__":
+    demo_toolbar()

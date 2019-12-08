@@ -60,6 +60,10 @@ class PlotStyleSheets(ItomUi):
         self.gui.plot2d["buttonSet"] = "StyleDark"
         self.gui.plot1d["buttonSet"] = "StyleDark"
 
+def userdemo_plotStyleSheets():
+    instance = PlotStyleSheets()
+    instance.show()
+
 if __name__ == "__main__":
     instance = PlotStyleSheets()
     instance.show()

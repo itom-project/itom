@@ -9,10 +9,8 @@ list myImages
 To stop the timer, call the method cancel. Additionally, the timer
 is automatically interrupted after 10 iterations.
 '''
+from itom import *
 
-cam = dataIO("DummyGrabber")
-myImages = []
-iters = 0
 
 def imageAcquisition():
     global iters
@@ -25,11 +23,19 @@ def imageAcquisition():
     if iters >= 10:
         t.stop()
     
-cam.startDevice()
 
-t = timer(1000, imageAcquisition)
 
 def cancel():
     '''call this method (e.g. by your gui) to stop the timer'''
     t.stop()
     cam.stopDevice()
+    
+def demo_timedAcquisition():
+    cam = dataIO("DummyGrabber")
+    myImages = []
+    iters = 0
+    cam.startDevice()
+    t = timer(1000, imageAcquisition)
+
+if __name__ == "__main__":
+    demo_timedAcquisition()
