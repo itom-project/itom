@@ -1,5 +1,7 @@
 import concurrent.futures
 import urllib.request
+'''asyncio/concurrent heavily changed from python 3.4 to 3.7, better read the docs
+and do some tutorials. Asyncio is preferred over plain concurrent module'''
 
 URLS = ['http://www.foxnews.com/',
         'http://www.cnn.com/',
