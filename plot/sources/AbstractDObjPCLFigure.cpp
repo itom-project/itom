@@ -37,9 +37,9 @@ AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, co
     AbstractFigure(itomSettingsFile, windowMode, parent),
     m_inpType(inpType)
 {
-    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addOutputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -47,9 +47,9 @@ AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, Ab
     AbstractFigure(itomSettingsFile, windowMode, parent),
     m_inpType(0)
 {
-    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addOutputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ ito::RetVal AbstractDObjPclFigure::update(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjPclFigure::getDataObject(void) const 
 {
-    ito::DataObject *dObj = m_pInput["dataObject"]->getVal<ito::DataObject*>();
+    const ito::DataObject *dObj = getInputParam("dataObject")->getVal<const ito::DataObject*>();
     if (dObj)
     {
         return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
@@ -98,7 +98,7 @@ ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject>
             
     ito::ParamBase thisParam("dataObject", ito::ParamBase::DObjPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::DObjPtr;
-    retval += updateParam(&thisParam, 1);
+    retval += inputParamChanged(&thisParam);
 
     updatePropertyDock();
 
@@ -109,7 +109,7 @@ ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject>
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPointCloud> AbstractDObjPclFigure::getPointCloud(void) const 
 {
-    ito::PCLPointCloud *pc = m_pInput["pointCloud"]->getVal<ito::PCLPointCloud*>();
+    const ito::PCLPointCloud *pc = getInputParam("pointCloud")->getVal<const ito::PCLPointCloud*>();
     if (pc)
     {
         return QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*pc)); 
@@ -140,7 +140,7 @@ ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointClo
             
     ito::ParamBase thisParam("pointCloud", ito::ParamBase::PointCloudPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PointCloudPtr;
-    retval += updateParam(&thisParam, 1);
+    retval += inputParamChanged(&thisParam);
 
     updatePropertyDock();
 
@@ -150,7 +150,7 @@ ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointClo
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const 
 {
-    ito::PCLPolygonMesh *pm = m_pInput["polygonMesh"]->getVal<ito::PCLPolygonMesh*>();
+    const ito::PCLPolygonMesh *pm = getInputParam("polygonMesh")->getVal<const ito::PCLPolygonMesh*>();
     if (pm)
     {
         return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm)); 
@@ -182,7 +182,7 @@ ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygon
             
     ito::ParamBase thisParam("polygonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PolygonMeshPtr;
-    retval += updateParam(&thisParam, 1);
+    retval += inputParamChanged(&thisParam);
 
     updatePropertyDock();
 
@@ -196,7 +196,7 @@ ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygon
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjPclFigure::setLinePlot(const double /*x0*/, const double /*y0*/, const double /*x1*/, const double /*y1*/, const int /*destID*/)
 {
-    return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toLatin1().data());
+    return ito::RetVal(ito::retError, 0, tr("Function 'setLinePlot' not supported from this plot widget").toLatin1().data());
 
 }
 

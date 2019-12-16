@@ -39,6 +39,7 @@
 #include <qtoolbar.h>
 #include <qevent.h>
 #include <qdockwidget.h>
+#include <qscopedpointer.h>
 
 class QPropertyEditorWidget; //forward declaration
 
@@ -127,11 +128,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void ** getApiFunctionGraphBasePtr(void) { return m_apiFunctionsGraphBasePtr; }
         void ** getApiFunctionBasePtr(void) { return m_apiFunctionsBasePtr; }
 
-        virtual RetVal addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect);
-        virtual RetVal addChannel(Channel *newChannel);
-        virtual RetVal removeChannelFromList(unsigned int uniqueID);
-        virtual RetVal removeChannel(Channel *delChannel);
-
         virtual RetVal update(void) = 0; /*!> Calls apply () and updates all children*/
 
         //properties
@@ -175,15 +171,16 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 
         RetVal registerShortcutActions(); /*!< call this method once after all actions with shortcuts are created and after that the content widget has been created. The shortcuts of the actions will then be redirected to overall shortcuts that can be handled even if the plot is docked into the main window of itom */
 
-        WindowMode m_windowMode;
-        QString m_itomSettingsFile;
-        QWidget *m_mainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
+        WindowMode getWindowMode() const;
+
+        QString getItomSettingsFile() const;
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
 
     private:
-        AbstractFigurePrivate *d;
+        QScopedPointer<AbstractFigurePrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer to private class of AbstractFigure defined in AbstractFigure.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
+        Q_DECLARE_PRIVATE(AbstractFigure);
 
     private slots:
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); } /*!< shows all registered toolbars*/

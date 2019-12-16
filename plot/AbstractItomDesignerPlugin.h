@@ -48,11 +48,6 @@ namespace ito {
         Q_OBJECT
         
         Q_INTERFACES(QDesignerCustomWidgetInterface)
-        
-        //! the classinfo ito.AbstractItomDesignerPlugin is the interface number of AbstractItomDesignerPlugin.
-        //  increment this number if you changed something in this interface or other abstract classes of the
-        //  plot designerPlugin system.
-        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.5.0")
 
         public:
             AbstractItomDesignerPlugin(QObject *parent) :

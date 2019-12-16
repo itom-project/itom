@@ -50,7 +50,7 @@ namespace ito
 {
 
 //------------------------------------------------------------------------------------------------------------------------
-class AbstractFigurePrivate : QObject
+class AbstractFigurePrivate
 {
 public:
     AbstractFigurePrivate() :
@@ -58,7 +58,8 @@ public:
         propertyEditorWidget(NULL),
         propertyObservedObject(NULL),
         toolbarsVisible(true),
-		windowTitleSuffix("")
+		windowTitleSuffix(""),
+        pMainParent(NULL)
     {
     }
 
@@ -73,20 +74,25 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
+
+    AbstractFigure::WindowMode windowMode;
+    QString itomSettingsFile;
+    QWidget *pMainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
     QMainWindow(parent),
     AbstractNode(),
-    d(NULL),
-    m_itomSettingsFile(itomSettingsFile),
+    d_ptr(new AbstractFigurePrivate()),
     m_apiFunctionsGraphBasePtr(NULL),
-    m_apiFunctionsBasePtr(NULL),
-    m_mainParent(parent),
-    m_windowMode(windowMode)
+    m_apiFunctionsBasePtr(NULL)
 {
-    d = new AbstractFigurePrivate();
+    Q_D(AbstractFigure);
+
+    d->windowMode = windowMode;
+    d->pMainParent = parent;
+    d->itomSettingsFile = itomSettingsFile;
 
     initialize();
 }
@@ -94,6 +100,8 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::~AbstractFigure()
 {
+    Q_D(AbstractFigure);
+
     if (d->propertyEditorWidget)
     {
         //unregister object in order to prevent a possible crash, if 
@@ -103,17 +111,11 @@ AbstractFigure::~AbstractFigure()
         d->propertyEditorWidget->deleteLater();
     }
 
-    foreach(Channel *delChan, m_pChannels)
-    {
-        removeChannel(delChan);
-    }
-    m_pChannels.clear();
-
     //clear toolbars and menus. toolbars and toolboxes are only added
     //to the main window of the plot in the window modes standaloneInUi or
     //standaloneWindow. If so, they are deleted by the destructor of
     //the main window. Else they have to be deleted here.
-	if (m_windowMode == ModeInItomFigure)
+	if (d->windowMode == ModeInItomFigure)
 	{
 		foreach(ToolBarItem t, d->toolbars)
 		{
@@ -124,7 +126,7 @@ AbstractFigure::~AbstractFigure()
 		}
 	}
         
-	if (m_windowMode == ModeInItomFigure)
+	if (d->windowMode == ModeInItomFigure)
 	{
         foreach(ToolboxItem t, d->toolboxes)
         {
@@ -145,16 +147,15 @@ AbstractFigure::~AbstractFigure()
     d->toolboxes.clear();
 
     d->propertyDock = NULL;
-
-    delete d;
-    d = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::initialize()
 {
+    Q_D(AbstractFigure);
+
     //in all modes, plot is either embedded in itom figureWidget or in external ui-file. Therefore, it is always considered to be a widget
-    switch (m_windowMode)
+    switch (d->windowMode)
     {
         case AbstractFigure::ModeInItomFigure:
         case AbstractFigure::ModeStandaloneInUi:
@@ -183,6 +184,8 @@ RetVal AbstractFigure::initialize()
 //----------------------------------------------------------------------------------------------------------------------------------
 int AbstractFigure::getPlotID()
 {
+    Q_D(const AbstractFigure);
+
     if (!ito::ITOM_API_FUNCS_GRAPH)
         return 0;
     ito::uint32 thisID = 0;
@@ -198,6 +201,8 @@ int AbstractFigure::getPlotID()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setPropertyObservedObject(QObject* obj)
 {
+    Q_D(AbstractFigure);
+
     d->propertyObservedObject = obj;
     if (d->propertyEditorWidget)
     {
@@ -208,6 +213,8 @@ void AbstractFigure::setPropertyObservedObject(QObject* obj)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::updatePropertyDock()
 {
+    Q_D(AbstractFigure);
+
     if (d->propertyEditorWidget && d->propertyObservedObject)
     {
         d->propertyEditorWidget->updateObject(d->propertyObservedObject);
@@ -215,139 +222,10 @@ void AbstractFigure::updatePropertyDock()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractFigure::addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect)
-{
-    ito::RetVal retVal;
-    AbstractNode *thisNode = (AbstractNode*)this;
-
-    uint channelHash1 = ito::calculateChannelHash(thisNode, parentParam, child, childParam);
-    uint channelHash2 = ito::calculateChannelHash(child, childParam, thisNode, parentParam);
-
-    Channel *tempChannel;
-    foreach(tempChannel, m_pChannels)
-    {
-        if ((tempChannel->getHash() == channelHash1) || (tempChannel->getHash() == channelHash2))
-        {
-            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toLatin1().data());
-        }
-    }
-
-    if (direction == Channel::parentToChild)
-    {
-        if (apiCompareParam(*childParam, *parentParam, retVal) == ito::tCmpFailed)
-        {
-            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toLatin1().data());
-        }
-    }
-    else if (direction == Channel::childToParent)
-    {
-        if (apiCompareParam(*parentParam, *childParam, retVal) == ito::tCmpFailed)
-        {
-            return ito::RetVal(ito::retError, 0, QObject::tr("parameters incompatible, while adding channel").toLatin1().data());
-        }
-    }
-    else
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("undefined channel direction, while adding channel").toLatin1().data());
-    }
-
-    Channel *newChannel = new Channel(thisNode, parentParam, deleteOnParentDisconnect, child, childParam, deleteOnChildDisconnect, direction);
-    m_pChannels.insert(newChannel->getUniqueID(), newChannel);
-    newChannel->getChild()->addChannel(newChannel);
-
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractFigure::addChannel(Channel *newChannel)
-{
-    AbstractNode *thisNode = (AbstractNode*)this;
-
-    if (newChannel->getChild() != thisNode)
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid child pointer, in addChannel").toLatin1().data());
-    }
-
-    uint channelHash1 = ito::calculateChannelHash(thisNode, newChannel->getChildParam(), newChannel->getParent(), newChannel->getParentParam());
-    uint channelHash2 = ito::calculateChannelHash(newChannel->getParent(), newChannel->getParentParam(), thisNode, newChannel->getChildParam());
-
-    Channel *tempChannel;
-    foreach(tempChannel, m_pChannels)
-    {
-        if ((tempChannel->getHash() == channelHash1) || (tempChannel->getHash() == channelHash2))
-        {
-            return ito::RetVal(ito::retError, 0, QObject::tr("duplicate Channel, in addChannel").toLatin1().data());
-        }
-    }
-
-    m_pChannels.insert(newChannel->getUniqueID(), newChannel);
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
-{
-    ito::RetVal retval = ito::retOk;
-    signed char delBehaviour = m_pChannels[uniqueID]->getDeleteBehaviour((AbstractNode*)this);
-
-    if (!m_pChannels.contains(uniqueID))
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toLatin1().data());
-    }
-
-    m_pChannels.remove(uniqueID);
-
-    if (delBehaviour > 0)
-    {
-        Channel *iterChannel;
-        foreach(iterChannel, m_pChannels)
-        {
-            // connection is removed in the destructor of Connection so the following line is not necessary
-            removeChannel(iterChannel);
-        }
-    }
-
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractFigure::removeChannel(Channel *delChannel)
-{
-    if (!m_pChannels.contains(delChannel->getUniqueID()))
-    {
-        return ito::RetVal(ito::retError, 0, QObject::tr("channel does not exist").toLatin1().data());
-    }
-
-    unsigned int uniqueID = delChannel->getUniqueID();
-    signed char delBehaviour = delChannel->getDeleteBehaviour((AbstractNode*)this);
-
-    if (delChannel->getParent() == (AbstractNode*)this)
-    {
-        m_pChannels.remove(uniqueID);
-        delChannel->getChild()->removeChannelFromList(uniqueID);
-        delete delChannel;
-    }
-    else
-    {
-        delChannel->getParent()->removeChannel(delChannel); // maybe we do not need this function call if we check for existance here
-    }
-
-    if (delBehaviour > 0)
-    {
-        Channel *iterChannel;
-        foreach(iterChannel, m_pChannels)
-        {
-            // connection is removed in the destructor of Connection so the following line is not necessary
-            removeChannel(iterChannel);
-        }
-    }
-    
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addMenu(QMenu *menu)
 {
+    Q_D(AbstractFigure);
+
     //never adds to menuBar()
     d->menus.append(menu);
 }
@@ -355,7 +233,9 @@ void AbstractFigure::addMenu(QMenu *menu)
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<QMenu*> AbstractFigure::getMenus() const
 {
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    Q_D(const AbstractFigure);
+
+    if (d->windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         //in standalone mode, this plugin handles its own menus and toolbars
         return QList<QMenu*>();
@@ -369,7 +249,9 @@ QList<QMenu*> AbstractFigure::getMenus() const
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
 {
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    Q_D(const AbstractFigure);
+
+    if (d->windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         //in standalone mode, this plugin handles its own menus and toolbars
         return QList<AbstractFigure::ToolBarItem>();
@@ -383,6 +265,8 @@ QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
 {
+    Q_D(AbstractFigure);
+
     ToolBarItem item;
     item.key = key;
     item.area = area;
@@ -405,7 +289,7 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
 
     d->toolbars.append(item);
 
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
+    if (d->windowMode == AbstractFigure::ModeStandaloneInUi || d->windowMode == AbstractFigure::ModeStandaloneWindow)
     {
         if (maxSection < section)
         {
@@ -419,6 +303,8 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/)
 {
+    Q_D(AbstractFigure);
+
     ToolBarItem item;
     item.key = key;
     item.area = area;
@@ -437,7 +323,7 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
 
     d->toolbars.append(item);
 
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
+    if (d->windowMode == AbstractFigure::ModeStandaloneInUi || d->windowMode == AbstractFigure::ModeStandaloneWindow)
     {
         QMainWindow::addToolBarBreak(area);
     }
@@ -446,6 +332,8 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::showToolBar(const QString &key)
 {
+    Q_D(AbstractFigure);
+
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
     for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
@@ -461,6 +349,8 @@ void AbstractFigure::showToolBar(const QString &key)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::hideToolBar(const QString &key)
 {
+    Q_D(AbstractFigure);
+
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
     for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
@@ -511,6 +401,7 @@ bool AbstractFigure::event(QEvent *e)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setToolbarVisible(bool visible)
 {
+    Q_D(AbstractFigure);
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
@@ -529,19 +420,25 @@ void AbstractFigure::setToolbarVisible(bool visible)
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 
+    Q_D(const AbstractFigure);
+
     return d->toolbarsVisible;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QDockWidget* AbstractFigure::getPropertyDockWidget() const 
 { 
+    Q_D(const AbstractFigure);
+
     return d->propertyDock; 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
 {
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    Q_D(const AbstractFigure);
+
+    if (d->windowMode == AbstractFigure::ModeStandaloneInUi)
     {
         //in standalone mode, this plugin handles its own menus and toolbars
         return QList<AbstractFigure::ToolboxItem>();
@@ -555,6 +452,8 @@ QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area /*= Qt::RightDockWidgetArea*/)
 {
+    Q_D(AbstractFigure);
+
     ToolboxItem item;
     item.key = key;
     item.area = area;
@@ -563,7 +462,7 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
 	//this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
 	bool test = connect(toolbox, SIGNAL(destroyed(QObject*)), this, SLOT(toolBoxDestroyed(QObject*))); 
 
-    switch (m_windowMode)
+    switch (d->windowMode)
     {
     case AbstractFigure::ModeInItomFigure:
         /*default if figure is used for plotting data in itom, may also be part of a subfigure area.
@@ -585,6 +484,8 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::removeToolbox(const QString &key)
 {
+    Q_D(AbstractFigure);
+
 	bool state = false;
 	bool found = true;
 	while (found == true)
@@ -603,7 +504,7 @@ bool AbstractFigure::removeToolbox(const QString &key)
 				{
 					item.toolbox->hide();
 				}
-				if (m_windowMode != AbstractFigure::ModeInItomFigure)
+				if (d->windowMode != AbstractFigure::ModeInItomFigure)
 				{
 					QMainWindow::removeDockWidget(item.toolbox);
 				}
@@ -622,6 +523,8 @@ bool AbstractFigure::removeToolbox(const QString &key)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::mnuShowProperties(bool checked) 
 { 
+    Q_D(AbstractFigure);
+
     if (d->propertyDock) 
     { 
         d->propertyDock->setVisible(checked);
@@ -631,6 +534,8 @@ void AbstractFigure::mnuShowProperties(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::toolBoxDestroyed(QObject *object)
 {
+    Q_D(AbstractFigure);
+
 	if (object == NULL)
 	{
 		return;
@@ -650,6 +555,8 @@ void AbstractFigure::toolBoxDestroyed(QObject *object)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::toolBarDestroyed(QObject *object)
 {
+    Q_D(AbstractFigure);
+
 	if (object == NULL)
 	{
 		return;
@@ -669,6 +576,8 @@ void AbstractFigure::toolBarDestroyed(QObject *object)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractFigure::registerShortcutActions()
 {
+    Q_D(AbstractFigure);
+
     QShortcut *shortcut;
     QAction *a;
     QWidget *p = centralWidget();
@@ -708,6 +617,8 @@ RetVal AbstractFigure::registerShortcutActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::actionChanged()
 {
+    Q_D(AbstractFigure);
+
     QObject *s = sender(); //action where any property like enabled changed...
     QAction *a = qobject_cast<QAction*>(s);
 
@@ -720,6 +631,8 @@ void AbstractFigure::actionChanged()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setWindowTitleExtension(const QString& title)
 {
+    Q_D(AbstractFigure);
+
 	if (d->windowTitleSuffix != title)
 	{
 		d->windowTitleSuffix = title;
@@ -733,6 +646,22 @@ void AbstractFigure::setWindowTitleExtension(const QString& title)
 			emit windowTitleModified("");
 		}
 	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractFigure::WindowMode AbstractFigure::getWindowMode() const
+{
+    Q_D(const AbstractFigure);
+
+    return d->windowMode;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractFigure::getItomSettingsFile() const
+{
+    Q_D(const AbstractFigure);
+
+    return d->itomSettingsFile;
 }
 
 } //end namespace ito

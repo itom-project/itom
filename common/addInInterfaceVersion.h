@@ -44,7 +44,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 // 1. change ITOM_ADDININTERFACE_MAJOR, ITOM_ADDININTERFACE_Minor and/or ITOM_ADDININTERFACE_Patch
 // 2. append the string behind the variable ito_AddInInterface_CurrentVersion (e.g. ito.AddIn.InterfaceBase/1.1) to the array ito_AddInInterface_OldVersions
 // 3. change the version number in the string ito_AddInInterface_CurrentVersion
-// 4. if the AddInInterface version number is incremented, the ito.AbstractItomDesignerPlugin number in AbstractItomDesignerPlugin.h must be incremented as well.
 //
 //
 // This helps, that deprecated or "future" plugins, which fit not to the current implementation of the interface will not be loaded
