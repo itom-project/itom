@@ -12,6 +12,7 @@ myifft2.
 import numpy as np
 import math
 
+
 myfft2 = np.fft.fft2 #default: fft2 from numpy
 myifft2 = np.fft.ifft2 #default: ifft2 from numpy
 
@@ -30,8 +31,10 @@ try:
         
 except:
     print("pyfftw could not be found. Numpy fft is used instead")
-
-image = np.random.randn(1024,512)
-I = getAlignNdArray(image)
-I1 = myfft2(I)
-I2 = myifft2(I)
+def demo_fftw():
+    image = np.random.randn(1024,512)
+    I = getAlignNdArray(image)
+    I1 = myfft2(I)
+    I2 = myifft2(I)
+if __name__ == "__main__":
+    demo_fftw()

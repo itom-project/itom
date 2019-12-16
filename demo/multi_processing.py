@@ -1,7 +1,9 @@
 '''this is a modified example from the python documentation.
 The only difference is the set_executable section at the start.
 Please notice that you cannot use methods from the itom module
-in any worker thread'''
+in any worker thread
+Alternative approaches for multiprocessing are 
+python threading module and asyncio. Or use subprocess...'''
 from multiprocessing import Pool, TimeoutError
 import multiprocessing
 import time

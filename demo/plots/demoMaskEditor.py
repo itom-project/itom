@@ -61,28 +61,32 @@ def listModificationChanged():
         sel2.append("Resize")
     gui.plot["geometryModificationModes"] = ";".join(sel2)
 
-#create demo data with axis scales and offsets to show that the mask will also work in this special case.
-image = dataObject.randN([1024,1024])
-image.axisScales = (1e-3, 1e-3)
-image.axisOffsets = (512, 512)
-image.axisUnits = ('mm','mm')
-image.axisDescriptions = ('y', 'x')
-image.valueUnit = ('a.u.')
-image.valueDescription = ('intensity')
-filter("lowPassFilter", image, image, 7, 7)
+def userdemo_MaskEditor():
+    #create demo data with axis scales and offsets to show that the mask will also work in this special case.
+    image = dataObject.randN([1024,1024])
+    image.axisScales = (1e-3, 1e-3)
+    image.axisOffsets = (512, 512)
+    image.axisUnits = ('mm','mm')
+    image.axisDescriptions = ('y', 'x')
+    image.valueUnit = ('a.u.')
+    image.valueDescription = ('intensity')
+    filter("lowPassFilter", image, image, 7, 7)
 
-gui = ui("demoMaskEditor.ui", ui.TYPEWINDOW)
-#connect signal-slots
-gui.checkEnableDrawing.connect("toggled(bool)", checkEnableDrawingClicked)
-gui.btnExportMask.connect("clicked()", exportMask)
-gui.btnExportShape.connect("clicked()", exportShapes)
-gui.btnShowMaskOverlay.connect("clicked()", showMaskAsOverlay)
-gui.btnSetColorUnderMask.connect("clicked()", setColorUnderMask)
-gui.btnClearShapes.connect("clicked()", clearShapes)
-gui.plot.connect("geometricShapeChanged(int,ito::Shape)", shapeModified) 
-gui.listModificationTypes.connect("itemSelectionChanged()", listModificationChanged)
+    gui = ui("demoMaskEditor.ui", ui.TYPEWINDOW)
+    #connect signal-slots
+    gui.checkEnableDrawing.connect("toggled(bool)", checkEnableDrawingClicked)
+    gui.btnExportMask.connect("clicked()", exportMask)
+    gui.btnExportShape.connect("clicked()", exportShapes)
+    gui.btnShowMaskOverlay.connect("clicked()", showMaskAsOverlay)
+    gui.btnSetColorUnderMask.connect("clicked()", setColorUnderMask)
+    gui.btnClearShapes.connect("clicked()", clearShapes)
+    gui.plot.connect("geometricShapeChanged(int,ito::Shape)", shapeModified) 
+    gui.listModificationTypes.connect("itemSelectionChanged()", listModificationChanged)
 
-gui.plot["source"] = image
-gui.plot["colorMap"] = "hotIron"
-gui.listModificationTypes.call("selectRows", (0,1))
-gui.show()
+    gui.plot["source"] = image
+    gui.plot["colorMap"] = "hotIron"
+    gui.listModificationTypes.call("selectRows", (0,1))
+    gui.show()
+    
+if __name__ == "__main__":
+    userdemo_MaskEditor()
