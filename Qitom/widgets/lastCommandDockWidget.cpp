@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -75,7 +75,9 @@ QMimeData * LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem *> items
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString &objName, 
+        QWidget *parent, bool docked, bool isDockAvailable, 
+        tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_lastCommandTreeWidget(NULL),
     m_pActClearList(NULL),
@@ -96,7 +98,7 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
     settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
-    m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
+    m_hideDuplicatedCommands = settings.value("lastCommandHideDoubleCommand", "false").toBool();
 
     QTreeWidgetItem *childItem = NULL;
     if (m_enabled)
@@ -136,7 +138,8 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
     m_lastCommandTreeWidget->setExpandsOnDoubleClick(false);
     m_lastCommandTreeWidget->expandAll();
     m_lastCommandTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(m_lastCommandTreeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
+    connect(m_lastCommandTreeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), 
+        this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
 
     if (childItem)
     {
@@ -210,6 +213,11 @@ void LastCommandDockWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! adds a command string 'cmd' to the list of recently executed commands
+/*
+The new command is added as child item of the current date. If duplicated items
+should be hidden (see itom properties), the command is only added if it has not been added before.
+*/
 void LastCommandDockWidget::addLastCommand(QString cmd)
 {
     cmd = cmd.trimmed();
@@ -217,20 +225,22 @@ void LastCommandDockWidget::addLastCommand(QString cmd)
     {
         QTreeWidgetItem *lastDateItem = NULL;
         QString lastSavedCommand;
+
         if (m_lastCommandTreeWidget->topLevelItemCount() > 0)
         {
             lastDateItem = m_lastCommandTreeWidget->topLevelItem(m_lastCommandTreeWidget->topLevelItemCount() - 1);
-//            QTreeWidgetItem *lastCommand = NULL;
+            
             if (lastDateItem->childCount() > 0)
             {
                 lastSavedCommand = lastDateItem->child(lastDateItem->childCount() - 1)->text(0);
             }
         }
 
-        if (!m_doubleCommand || QString::compare(lastSavedCommand, cmd, Qt::CaseInsensitive) != 0)
+        if (!m_hideDuplicatedCommands || QString::compare(lastSavedCommand, cmd, Qt::CaseSensitive) != 0)
         {
             QDate date(QDate::currentDate());
             QString strDate = date.toString(Qt::ISODate);
+
             if (!m_lastTreeWidgetParent || m_lastTreeWidgetParent->text(0) != strDate)
             {
                 QTreeWidgetItem *parentItem;
@@ -264,7 +274,7 @@ void LastCommandDockWidget::propertiesChanged()
     settings.beginGroup("itomLastCommandDockWidget");
     m_enabled = settings.value("lastCommandEnabled", "true").toBool();
     m_dateColor = settings.value("lastCommandDateColor", "green").toString();
-    m_doubleCommand = settings.value("lastCommandHideDoubleCommand", "false").toBool();
+    m_hideDuplicatedCommands = settings.value("lastCommandHideDoubleCommand", "false").toBool();
     settings.endGroup();
 
     if (m_enabled)
