@@ -593,7 +593,9 @@ void FoldingPanel::addScopeDeco(int start, int end, int parentStart, int parentE
     }
 
     // lower part
-    if (end <= editor()->document()->blockCount())
+    int blockCount = editor()->document()->blockCount();
+
+    if (end < blockCount)
     {
         TextDecoration::Ptr d(new TextDecoration(editor()->document(), -1, -1,
                             end, parentEnd + 1));
