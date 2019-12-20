@@ -71,6 +71,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 {
     m_inputTextMode.inputModeEnabled = false;
 
+    setSelectLineOnCopyEmpty(false);
+
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
     //m_receiveStreamBufferTimer.setSingleShot(true);

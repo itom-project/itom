@@ -74,7 +74,8 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     canCopy(false),
     m_syntaxTimer(NULL),
     m_classNavigatorTimer(NULL),
-    m_contextMenu(NULL)
+    m_contextMenu(NULL),
+    m_keepIndentationOnPaste(true)
 {
     bookmarkMenuActions.clear();
 
@@ -287,6 +288,9 @@ void ScriptEditorWidget::loadSettings()
 
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
+    setSelectLineOnCopyEmpty(settings.value("selectLineOnCopyEmpty", true).toBool());
+    setKeepIndentationOnPaste(settings.value("keepIndentationOnPaste", true).toBool());
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -371,6 +375,17 @@ RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
     return retVal;
 }
 
+//-----------------------------------------------------------
+bool ScriptEditorWidget::keepIndentationOnPaste() const
+{
+    return m_keepIndentationOnPaste;
+}
+
+void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
+{
+    m_keepIndentationOnPaste = value;
+}
+
 //------------------------------------------------------------
 void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 {
@@ -379,9 +394,9 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-    m_editorMenuActions["cut"]->setEnabled(lineFrom != -1);
-    m_editorMenuActions["copy"]->setEnabled(lineFrom != -1);
-    m_editorMenuActions["paste"]->setEnabled(contextMenuLine >= 0 && canPaste());
+    m_editorMenuActions["cut"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
+    m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
+    m_editorMenuActions["paste"]->setEnabled(!pythonBusy && contextMenuLine >= 0 && canPaste());
     m_editorMenuActions["runScript"]->setEnabled(!pythonBusy);
     m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
@@ -419,6 +434,54 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 
     return false;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
+{
+    if (keepIndentationOnPaste() &&
+        source->hasText())
+    {
+        int lineCount;
+        QString formattedText = formatPythonCodePart(source->text(), lineCount);
+
+        QStringList textlines = formattedText.split("\n");
+
+        if (textlines.size() > 0)
+        {
+            int currentLine;
+            int currentColumn;
+            getCursorPosition(&currentLine, &currentColumn);
+
+            QString currentIdent = lineText(currentLine).left(currentColumn);
+
+            if (currentIdent.trimmed().size() != 0)
+            {
+                //the text in the current line from the beginning to the cursor does not
+                //only contain spaces or tabs. Therefore this line is not considered.
+                currentIdent = "";
+            }
+
+            for (int i = 1; i < textlines.size(); ++i)
+            {
+                textlines[i] = currentIdent + textlines[i];
+            }
+
+            QMimeData mimeData;
+            mimeData.setText(textlines.join("\n"));
+
+            AbstractCodeEditorWidget::insertFromMimeData(&mimeData);
+        }
+        else
+        {
+            AbstractCodeEditorWidget::insertFromMimeData(source);
+        }
+    }
+    else
+    {
+        AbstractCodeEditorWidget::insertFromMimeData(source);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::dropEvent(QDropEvent *event)
 {
@@ -2149,6 +2212,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     }
 }
 
+//----------------------------------------------------------------------------------
 void ScriptEditorWidget::dumpFoldsToConsole(bool)
 {
     int lvl;
@@ -2184,9 +2248,7 @@ void ScriptEditorWidget::dumpFoldsToConsole(bool)
         }
         
         block = block.next();
-    }
-
-    
+    }  
 }
 
 } // end namespace ito
