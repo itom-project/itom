@@ -58,6 +58,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->setAlternatingRowColors(true);
     m_table->setCornerButtonEnabled(false);
+    m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     m_headers << tr("File") << tr("Method") << tr("Line");
     m_table->setHorizontalHeaderLabels(m_headers);
