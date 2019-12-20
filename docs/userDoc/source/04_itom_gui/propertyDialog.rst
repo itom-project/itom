@@ -198,6 +198,11 @@ In this tab, you can mainly set all settings that are related to indentation:
 * **Show Whitespaces** displays small dots in each indentation. The color of these dots can be adjusted by the style **whitespace color**
 * The **Indentation Width** spinbox sets the standard width for the indentation. This is the number of spaces which are inserted if a tab is inserted (only if the **Use tabs for indentation** checkbox is unchecked.
 * **Show indentation guides** defines if small, dotted vertical lines should be displayed in front of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
+* In the group **Cut, Copy, Paste Behaviour** you can select how the script editor should behave if code is copied / cut or if code
+   should be pasted from the clipboard. In the first case, you can select if the cut or copy operation is available if no text is
+   currently selected, since it is possible to entirely copy or cut the current line instead. Another option controls a smart
+   paste behaviour if indented code, that has possibly been removed from a block with another initial indentation level, should
+   be adapted to the current identation level of the current cursor position.
 
 
 Script Editors

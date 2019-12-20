@@ -337,20 +337,22 @@ void AbstractCodeEditorWidget::loadSettings()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QPixmap AbstractCodeEditorWidget::loadMarker(const QString &name, int sizeAt96dpi)
+QPixmap AbstractCodeEditorWidget::loadMarker(const QString &name, int sizeAt96dpi) const
 {
     int dpi = GuiHelper::getScreenLogicalDpi();
     QPixmap px(name);
+
     if (dpi != 96 || px.height() != sizeAt96dpi)
     {
         int newSize = sizeAt96dpi * dpi / 96;
         px = px.scaled(newSize, newSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+
     return px;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &index)
+QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &index) const
 {
     return wordAtPosition(line, index, true);
 }
@@ -360,16 +362,16 @@ QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &
 /*!
     \return number of leading tabs or spaces
 */
-int AbstractCodeEditorWidget::getSpaceTabCount(const QString &s)
+int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
 {
     int res = 0;
-    if (s.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || s.mid(res, 1) == " ")
+    if (text.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || text.mid(res, 1) == " ")
     {
         do
         {
             ++res;
         }
-        while (s.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || s.mid(res, 1) == " ");
+        while (text.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || text.mid(res, 1) == " ");
     }
 
     return res;
@@ -383,9 +385,9 @@ int AbstractCodeEditorWidget::getSpaceTabCount(const QString &s)
 
     \return true if colon is last valid sign, else false
 */
-bool AbstractCodeEditorWidget::haveToIndention(QString s)
+bool AbstractCodeEditorWidget::haveToIndention(const QString &text) const
 {
-    s = s.trimmed();
+    QString s = text.trimmed();
     s.replace("'''", "\a");
     s.replace("\"\"\"", "\a");
     int count1 = s.count("\a");
@@ -453,7 +455,7 @@ bool AbstractCodeEditorWidget::haveToIndention(QString s)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int &lineCount)
+QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int &lineCount) const
 {
     QString res = "";
     lineCount = 0;
@@ -482,6 +484,7 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
                 int spaceTabCount2 = 0;
                 int tmp = 0;
                 i = 2;
+
                 while (i < lineCount && spaceTabCount2 == 0)
                 {
                     tmp = getSpaceTabCount(commandList[i]);
@@ -534,11 +537,11 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
                     delCount = spaceTabCount1;
                 }
 
-                res = commandList[0].trimmed() + endline;
+                res = commandList[0].trimmed();
+
                 for (i = 1; i < lineCount; ++i)
                 {
-                    commandList[i].remove(0, delCount);
-                    res += commandList[i] + endline;
+                    res += endline + commandList[i].mid(delCount);
                 }
             }
             else
@@ -552,7 +555,7 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractCodeEditorWidget::formatConsoleCodePart(const QString &text)
+QString AbstractCodeEditorWidget::formatConsoleCodePart(const QString &text) const
 {
     QString res = "";
     QString temp = "";

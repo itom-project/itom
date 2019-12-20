@@ -44,6 +44,7 @@
 #include <qdebug.h>
 #include <qpainter.h>
 #include <qmenu.h>
+#include <qmimedata.h>
 
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
@@ -53,6 +54,7 @@
 #include "utils/utils.h"
 
 #include <iostream>
+
 
 namespace ito {
 
@@ -1245,13 +1247,16 @@ int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
 
 //-------------------------------------------------------------
 /*
-Cuts the selected text or the whole line if no text was selected.
+Cuts the selected text or the whole line if no text was selected
+(the latter feature can be turned off by
+setting :attr:`select_line_on_copy_empty` to False).
 */
 void CodeEditor::cut()
 {
     QTextCursor tc = textCursor();
     tc.beginEditBlock();
     bool no_selection = false;
+
     if (currentLineText() == "")
     {
         tc.deleteChar();
@@ -1260,24 +1265,32 @@ void CodeEditor::cut()
     {
         if (!textCursor().hasSelection())
         {
-            no_selection = true;
-            selectWholeLine();
+            if (selectLineOnCopyEmpty())
+            {
+                no_selection = true;
+                selectWholeLine();
+            }
         }
+
         QPlainTextEdit::cut();
+
         if (no_selection)
         {
             tc.deleteChar();
         }
     }
+
     tc.endEditBlock();
     setTextCursor(tc);
 }
+
+
 
 //-------------------------------------------------------------
 /*
 Copy the selected text to the clipboard. If no text was selected, the
 entire line is copied (this feature can be turned off by
-setting :attr:`select_line_on_copy_empty` to False.
+setting :attr:`select_line_on_copy_empty` to False).
 */
 void CodeEditor::copy()
 {
@@ -1285,6 +1298,7 @@ void CodeEditor::copy()
     {
             selectWholeLine();
     }
+
     QPlainTextEdit::copy();
 }
 
@@ -2407,6 +2421,7 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *e)
         e->accept();
         int line, index;
         lineIndexFromPosition(e->pos(), &line, &index);
+        setCursorPosition(line, index);
         contextMenuAboutToShow(line);
         m_pContextMenu->exec(e->globalPos());
     }

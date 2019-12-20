@@ -49,7 +49,8 @@
 #include "textDecoration.h"
 #include "syntaxHighlighter/syntaxHighlighterBase.h"
 
-class QMenu;
+class QMenu; //forward declaration
+class QMimeData; //forward declaration
 
 namespace ito {
 
@@ -66,6 +67,7 @@ class DelayJobRunnerBase; //forward declaration
 class ModesManager; //forward declaration
 class SyntaxHighlighterBase; //forward declaration
 class TextBlockUserData;
+
 
 
 /*

@@ -85,6 +85,9 @@ public:
 
     RetVal openFile(QString file, bool ignorePresentDocument = false);
 
+    bool keepIndentationOnPaste() const;
+    void setKeepIndentationOnPaste(bool value);
+
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
@@ -108,6 +111,7 @@ public:
 
 protected:
     bool canInsertFromMimeData(const QMimeData *source) const;
+    void insertFromMimeData(const QMimeData *source);
 
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
@@ -151,6 +155,7 @@ private:
     bool m_pythonExecutable;
 
     bool canCopy;
+    bool m_keepIndentationOnPaste;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;

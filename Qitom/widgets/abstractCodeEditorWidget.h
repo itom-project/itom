@@ -50,7 +50,7 @@ public:
     AbstractCodeEditorWidget(QWidget* parent = NULL);
     ~AbstractCodeEditorWidget();
 
-    QString getWordAtPosition(const int &line, const int &index);
+    QString getWordAtPosition(const int &line, const int &index) const;
 
 protected:
 
@@ -60,10 +60,10 @@ protected:
 
     virtual void loadSettings(); //overwrite this method if you want to load further settings
 
-    QString formatPythonCodePart(const QString &text, int &lineCount);
-    QString formatConsoleCodePart(const QString &text);
+    QString formatPythonCodePart(const QString &text, int &lineCount) const;
+    QString formatConsoleCodePart(const QString &text) const;
 
-    QPixmap loadMarker(const QString &name, int sizeAt96dpi);
+    QPixmap loadMarker(const QString &name, int sizeAt96dpi) const;
 
     tUserSelectionState m_userSelectionState;
 
@@ -76,8 +76,8 @@ protected:
     QSharedPointer<PyAutoIndentMode> m_pyAutoIndentMode;
 
 private:
-    int getSpaceTabCount(const QString &s);
-    bool haveToIndention(QString s);
+    int getSpaceTabCount(const QString &text) const;
+    bool haveToIndention(const QString &text) const;
 
 public slots:
     void reloadSettings() { loadSettings(); };

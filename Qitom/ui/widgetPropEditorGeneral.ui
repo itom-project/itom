@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
-    <height>429</height>
+    <width>487</width>
+    <height>365</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,6 +84,37 @@
            </spacer>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Cut, Copy, Paste Behaviour</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QCheckBox" name="checkSelectLineOnCopyEmpty">
+          <property name="text">
+           <string>Cut or copy the full current line if nothing is currently selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkKeepIndentationOnPaste">
+          <property name="text">
+           <string>If code is pasted to a script, remove the identation level of the first line 
+from all lines and add all spaces and tabs from the beginning of the 
+current line until the current cursor position.</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
