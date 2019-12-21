@@ -765,9 +765,11 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
     \param filename Filename of the python macro
     \param semaphore ItomSharedSemaphore which will be woken up if opening process is finished. Use NULL if nothing should happen
     \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
+    \param errorMessageClick if true, the entire line will be marked with the "error line" background indicator
+    \param showSelectedCallstackLine: if true, the callstackIcon (green arrow) will be added to the breakpoint panel of the script editor
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr, bool errorMessageClick /*= false*/)
+RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
     RetVal retValue(retOk);
 
@@ -788,9 +790,10 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
                 exist = true;
                 fileOpenedOrSaved(filename);
                 (*it)->raiseAndActivate();
+
                 if (visibleLineNr >= 0)
                 {
-                    (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                    (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick, showSelectedCallstackLine);
                 }
             }
         }
@@ -799,6 +802,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
         if (!exist)
         {
             ScriptDockWidget* activeWidget = getActiveDockWidget();
+
             if (activeWidget == NULL)
             {
                 activeWidget = createEmptyScriptDock(m_dockedNewWidget);
@@ -817,7 +821,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 
                 if (visibleLineNr >= 0)
                 {
-                    activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                    activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick, showSelectedCallstackLine);
                 }
 
                 activeWidget->raiseAndActivate();

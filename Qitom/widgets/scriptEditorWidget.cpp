@@ -553,7 +553,7 @@ void ScriptEditorWidget::copyAvailable(const bool yes)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool errorMessageClick /*= false*/)
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
     ensureLineVisible(line);
     setCursorPosition(line, 0);
@@ -563,9 +563,21 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool err
         m_errorLineHighlighterMode->setErrorLine(line);
     }
 
+    if (showSelectedCallstackLine)
+    {
+        m_breakpointPanel->setSelectedCallstackLine(line);
+    }
+
     this->setFocus();
 
     return retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!< removes the current-line and current-callstack-line arrows from the breakpoint panel, if currently displayed
+void ScriptEditorWidget::removeCurrentCallstackLine()
+{
+    m_breakpointPanel->setSelectedCallstackLine(-1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1943,20 +1955,18 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
         if (!hasNoFilename())
         {
             setReadOnly(true);
-            //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
         }
         pythonBusy = true;
         m_pythonExecutable = false;
         break;
     case pyTransDebugContinue:
-        m_breakpointPanel->setCurrentLine(-1);
+        m_breakpointPanel->removeAllLineSelectors();
         m_pythonExecutable = false;
         break;
     case pyTransEndRun:
     case pyTransEndDebug:
         setReadOnly(false);
-        //setTextInteractionFlags(textInteractionFlags() | Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
-        m_breakpointPanel->setCurrentLine(-1);
+        m_breakpointPanel->removeAllLineSelectors();
         pythonBusy = false;
         m_pythonExecutable = true;
         break;

@@ -31,6 +31,7 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qcombobox.h>
+#include <qpointer.h>
 
 #include "../models/classNavigatorItem.h"
 
@@ -43,6 +44,8 @@ class QSignalMapper; //forward declaration
 namespace ito {
 
 class DialogReplace; //forward declaration
+
+
 
 class ScriptDockWidget : public AbstractDockWidget
 {
@@ -71,7 +74,7 @@ public:
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(const QString &filename, int line = -1);
-    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false);
+    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -175,6 +178,8 @@ private:
     void fillMethodBox(const ClassNavigatorItem *parent);
     void showClassNavigator(bool show);
     QMap<int, ClassNavigatorItem*> m_rootElements;
+
+    static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */

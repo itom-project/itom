@@ -47,6 +47,8 @@
 
 namespace ito {
 
+/*static*/ QPointer<ScriptEditorWidget> ScriptDockWidget::currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>();
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class ScriptDockWidget
@@ -1637,14 +1639,27 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/)
+bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
     if (m_actTabIndex >= 0)
     {
         ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
         if (sew)
         {
-            sew->setCursorPosAndEnsureVisible(lineNr, errorMessageClick);
+            if (showSelectedCallstackLine &&
+                currentSelectedCallstackLineEditor.data() != sew &&
+                currentSelectedCallstackLineEditor.data())
+            {
+                currentSelectedCallstackLineEditor->removeCurrentCallstackLine();
+            }
+
+            sew->setCursorPosAndEnsureVisible(lineNr, errorMessageClick, showSelectedCallstackLine);
+
+            if (showSelectedCallstackLine)
+            {
+                currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>(sew);
+            }
+            
             return true;
         }
     }
@@ -1677,13 +1692,15 @@ void ScriptDockWidget::mnuTabMoveRight()
 //! Open the icon browser
 void ScriptDockWidget::mnuOpenIconBrowser()
 {
-    DialogIconBrowser *m_iconBrowser = new DialogIconBrowser(getCanvas());
-    connect(m_iconBrowser, SIGNAL(sendIconBrowserText(QString)), this, SLOT(insertIconBrowserText(QString)));
-    if (m_iconBrowser->exec())
+    DialogIconBrowser *iconBrowser = new DialogIconBrowser(getCanvas());
+    connect(iconBrowser, SIGNAL(sendIconBrowserText(QString)), this, SLOT(insertIconBrowserText(QString)));
+
+    if (iconBrowser->exec())
     {
         
     }
-    delete m_iconBrowser;
+
+    DELETE_AND_SET_NULL(iconBrowser);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

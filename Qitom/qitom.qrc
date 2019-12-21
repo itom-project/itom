@@ -162,6 +162,7 @@
         <file>icons/syntaxError.png</file>
         <file>icons/bookmarkSyntaxError.png</file>
         <file>icons/currentLine.png</file>
+        <file>icons/callstackLine.png</file>
     </qresource>
     <qresource prefix="/workspace">
         <file>icons/document-close-4.png</file>

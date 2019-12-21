@@ -82,7 +82,7 @@ public slots:
 
     RetVal openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
-    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false);
+    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
 
     ScriptDockWidget* openScriptRequested(const QString &filename, ScriptDockWidget* widget);
 

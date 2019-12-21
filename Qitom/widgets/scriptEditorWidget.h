@@ -96,8 +96,10 @@ public:
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
-    RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false);
+    RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
     RetVal setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod);
+
+    void removeCurrentCallstackLine(); //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
