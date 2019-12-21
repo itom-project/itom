@@ -173,7 +173,7 @@ private:
     QWidget *m_classMenuBar;
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
-    bool m_ClassNavigatorEnabled;
+    bool m_classNavigatorEnabled;
     void fillClassBox(const ClassNavigatorItem *parent, QString prefix);
     void fillMethodBox(const ClassNavigatorItem *parent);
     void showClassNavigator(bool show);

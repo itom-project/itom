@@ -90,9 +90,9 @@ public:
 
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
-    inline bool getCanCopy() const { return canCopy; }
+    inline bool getCanCopy() const { return m_canCopy; }
     bool isBookmarked() const;
-    inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
+    inline QString getUntitledName() const { return tr("Untitled%1").arg(m_unnamedNumber); }
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
@@ -138,7 +138,7 @@ private:
     RetVal changeFilename(const QString &newFilename);
 
     QFileSystemWatcher *m_pFileSysWatcher;
-    QMutex fileSystemWatcherMutex;
+    QMutex m_fileSystemWatcherMutex;
 
     bool m_syntaxCheckerEnabled;
     int m_syntaxCheckerInterval;
@@ -147,16 +147,15 @@ private:
     //!< menus
     QMenu *m_contextMenu;
 
-    std::map<QString,QAction*> bookmarkMenuActions;
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
-    int unnamedNumber;
+    int m_unnamedNumber;
 
-    bool pythonBusy; //!< true: python is executing or debugging a script, a command...
+    bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
-    bool canCopy;
+    bool m_canCopy;
     bool m_keepIndentationOnPaste;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
@@ -170,7 +169,7 @@ private:
     static int unnamedAutoIncrement;
 
     // Class Navigator
-    bool m_ClassNavigatorEnabled;               // Enable Class-Navigator
+    bool m_classNavigatorEnabled;               // Enable Class-Navigator
     QTimer *m_classNavigatorTimer;              // Class Navigator Timer
     bool m_classNavigatorTimerEnabled;          // Class Navigator Timer Enable
     int m_classNavigatorInterval;               // Class Navigator Timer Interval

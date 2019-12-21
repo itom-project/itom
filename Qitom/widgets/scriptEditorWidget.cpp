@@ -68,17 +68,15 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractCodeEditorWidget(parent),
     m_pFileSysWatcher(NULL), 
     m_filename(QString()),
-    unnamedNumber(ScriptEditorWidget::unnamedAutoIncrement++),
-    pythonBusy(false), 
+    m_unnamedNumber(ScriptEditorWidget::unnamedAutoIncrement++),
+    m_pythonBusy(false), 
     m_pythonExecutable(true),
-    canCopy(false),
+    m_canCopy(false),
     m_syntaxTimer(NULL),
     m_classNavigatorTimer(NULL),
     m_contextMenu(NULL),
     m_keepIndentationOnPaste(true)
 {
-    bookmarkMenuActions.clear();
-
     m_syntaxTimer = new QTimer(this);
     connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
     m_syntaxTimer->setInterval(1000);
@@ -98,7 +96,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     if (pyEngine) 
     {
-        pythonBusy = pyEngine->isPythonBusy();
+        m_pythonBusy = pyEngine->isPythonBusy();
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
     
@@ -246,7 +244,7 @@ void ScriptEditorWidget::loadSettings()
     }
 
     // Class Navigator
-    m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
+    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
 
     m_classNavigatorTimerEnabled = settings.value("classNavigatorTimerActive", true).toBool();
     m_classNavigatorInterval = (int)(settings.value("classNavigatorInterval", 2.00).toDouble()*1000);
@@ -396,12 +394,12 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 
     m_editorMenuActions["cut"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
-    m_editorMenuActions["paste"]->setEnabled(!pythonBusy && contextMenuLine >= 0 && canPaste());
-    m_editorMenuActions["runScript"]->setEnabled(!pythonBusy);
-    m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
-    m_editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
-    m_editorMenuActions["stopScript"]->setEnabled(pythonBusy);
-    m_editorMenuActions["insertCodec"]->setEnabled(!pythonBusy);   
+    m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
+    m_editorMenuActions["runScript"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
+    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy);   
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
 }
@@ -549,7 +547,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::copyAvailable(const bool yes)
 {
-    canCopy = yes;
+    m_canCopy = yes;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1203,7 +1201,7 @@ bool ScriptEditorWidget::event(QEvent *event)
                 m_syntaxTimer->start(); //starts or restarts the timer
             }
         }
-        if (m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
+        if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)
         {   // Class Navigator if Timer is active
             m_classNavigatorTimer->start();
         }
@@ -1919,7 +1917,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
             m_syntaxTimer->start(); //starts or restarts the timer
         }
     }
-    if (m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
+    if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)
     {
         m_classNavigatorTimer->start(); //starts or restarts the timer
     }
@@ -1956,7 +1954,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
         {
             setReadOnly(true);
         }
-        pythonBusy = true;
+        m_pythonBusy = true;
         m_pythonExecutable = false;
         break;
     case pyTransDebugContinue:
@@ -1967,7 +1965,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     case pyTransEndDebug:
         setReadOnly(false);
         m_breakpointPanel->removeAllLineSelectors();
-        pythonBusy = false;
+        m_pythonBusy = false;
         m_pythonExecutable = true;
         break;
     case pyTransDebugWaiting:
@@ -1985,7 +1983,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 {
-    if (fileSystemWatcherMutex.tryLock(1))
+    if (m_fileSystemWatcherMutex.tryLock(1))
     {
         QMessageBox msgBox(this);
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -2049,7 +2047,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
             }
         }
 
-        fileSystemWatcherMutex.unlock();
+        m_fileSystemWatcherMutex.unlock();
     }
 }
 
@@ -2202,7 +2200,7 @@ void ScriptEditorWidget::classNavTimerElapsed()
 // This method is used to start the build process of the class tree and the linear model or update the Comboboxes after a Tab change
 ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
 {
-    if (m_ClassNavigatorEnabled)
+    if (m_classNavigatorEnabled)
     {
         // create new Root-Element
         ClassNavigatorItem *rootElement = new ClassNavigatorItem();

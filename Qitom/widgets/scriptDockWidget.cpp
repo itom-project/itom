@@ -215,8 +215,8 @@ void ScriptDockWidget::loadSettings()
     settings.beginGroup("CodeEditor");
 
     // Class Navigator
-    m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
-    showClassNavigator(m_ClassNavigatorEnabled);
+    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
+    showClassNavigator(m_classNavigatorEnabled);
 
     settings.endGroup();
 }
@@ -288,7 +288,7 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 { 
-    if (m_ClassNavigatorEnabled && editor)
+    if (m_classNavigatorEnabled && editor)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
