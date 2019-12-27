@@ -138,7 +138,7 @@ private slots:
     void requestGotoAssignmentEx();
     void onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments);
     void onWordClicked(const QTextCursor &cursor) { performGoto(m_assignments); }
-    void onKeyReleased(QKeyEvent *e);
+    void onKeyReleasedGoto(QKeyEvent *e);
 
 
 signals:

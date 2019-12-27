@@ -2379,7 +2379,7 @@ void ScriptEditorWidget::reportGoBackNavigationCursorMovement(const CursorPositi
             return;
         }
 
-        if (item.filename != "")
+        /*if (item.filename != "")
         {
             std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::" << 
                 item.filename.toLatin1().data() << "(" << lineIndex + 1 << ":" << item.column << ")\n" << std::endl;
@@ -2388,7 +2388,7 @@ void ScriptEditorWidget::reportGoBackNavigationCursorMovement(const CursorPositi
         {
             std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::Untitled" <<
                 item.UID << "(" << lineIndex + 1 << ":" << item.column << ")\n" << std::endl;
-        }
+        }*/
 
         emit const_cast<ScriptEditorWidget*>(this)->addGoBackNavigationItem(item);
     }

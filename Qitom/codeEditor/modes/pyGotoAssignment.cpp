@@ -120,14 +120,14 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
             m_pActionGotoDefinition->setVisible(true);
             m_pActionGotoAssignment->setVisible(true);
             m_pActionGotoAssignmentExtended->setVisible(true);
-            connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleasedGoto(QKeyEvent*)));
         }
         else
         {
             m_pActionGotoDefinition->setVisible(false);
             m_pActionGotoAssignment->setVisible(false);
             m_pActionGotoAssignmentExtended->setVisible(false);
-            disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleasedGoto(QKeyEvent*)));
         }
     }
 }
@@ -183,10 +183,6 @@ void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAss
         QApplication::restoreOverrideCursor();
         killTimer(m_gotoRequestedTimerId);
         m_gotoRequestedTimerId = 0;
-    }
-    else
-    {
-        int i = 1;
     }
 
     foreach (const ito::JediAssignment &d, assignments)
@@ -255,7 +251,7 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &assignment)
 //--------------------------------------------------------------
 /*
 */
-void PyGotoAssignmentMode::onKeyReleased(QKeyEvent *e)
+void PyGotoAssignmentMode::onKeyReleasedGoto(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_F12)
     {

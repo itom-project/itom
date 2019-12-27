@@ -594,7 +594,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     {
         if (!silent)
         {
-            QMessageBox msg(QMessageBox::Warning, tr("File not found"), tr("The file %1 could not be found").arg(filename));
+            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' could not be found.").arg(filename));
             msg.exec();
         }
         return RetVal(retError);
@@ -606,7 +606,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
         {
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("Invalid file format"), tr("The file %1 is no python macro").arg(filename));
+                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is not a python script.").arg(filename));
                 msg.exec();
             }
             return RetVal(retError);
