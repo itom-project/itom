@@ -148,6 +148,8 @@
         <file>icons/editUnindent.png</file>
         <file>icons/find.png</file>
         <file>icons/iconList.png</file>
+        <file>icons/navigateBackward.png</file>
+        <file>icons/navigateForward.png</file>
     </qresource>
     <qresource prefix="/script">
         <file>icons/continue.png</file>

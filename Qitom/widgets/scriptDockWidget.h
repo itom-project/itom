@@ -45,13 +45,20 @@ namespace ito {
 
 class DialogReplace; //forward declaration
 
+//! this struct can hold common actions for all script editor and script dock widgets
+struct ScriptEditorActions
+{
+    QAction *actNavigationForward;
+    QAction *actNavigationBackward;
+};
 
 
 class ScriptDockWidget : public AbstractDockWidget
 {
     Q_OBJECT
 public:
-    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, 
+        const ScriptEditorActions &commonActions, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
@@ -73,7 +80,7 @@ public:
 
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
-    bool activateTabByFilename(const QString &filename, int line = -1);
+    bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
@@ -153,6 +160,8 @@ private:
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
 
+    ScriptEditorActions m_commonActions;
+
     QMenu *m_tabContextMenu;
     QMenu *m_fileMenu;
     QMenu *m_lastFilesMenu;
@@ -195,7 +204,7 @@ signals:
     void pythonDebugCommand(tPythonDbgCmd cmd);                                                 /*!<  will be received by PythonThread, directly */
     void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
 
-    //void lastFileClicked(const QString &path);
+    void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);

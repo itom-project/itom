@@ -58,24 +58,26 @@
 namespace ito 
 {
 
-//!< constants
+//!< static variable initialization
 const QString ScriptEditorWidget::lineBreak = QString("\n");
-
-int ScriptEditorWidget::unnamedAutoIncrement = 1;
+ScriptEditorWidget::CursorPosition ScriptEditorWidget::currentGlobalEditorCursorPos;
+QHash<int, ScriptEditorWidget*> ScriptEditorWidget::editorByUID;
+int ScriptEditorWidget::currentMaximumUID = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractCodeEditorWidget(parent),
     m_pFileSysWatcher(NULL), 
     m_filename(QString()),
-    m_unnamedNumber(ScriptEditorWidget::unnamedAutoIncrement++),
+    m_uid(ScriptEditorWidget::currentMaximumUID++),
     m_pythonBusy(false), 
     m_pythonExecutable(true),
     m_canCopy(false),
     m_syntaxTimer(NULL),
     m_classNavigatorTimer(NULL),
     m_contextMenu(NULL),
-    m_keepIndentationOnPaste(true)
+    m_keepIndentationOnPaste(true),
+    m_cursorJumpLastAction(false)
 {
     m_syntaxTimer = new QTimer(this);
     connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
@@ -84,6 +86,8 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_classNavigatorTimer = new QTimer(this);
     connect(m_classNavigatorTimer, SIGNAL(timeout()), this, SLOT(classNavTimerElapsed()));
     m_classNavigatorTimer->setInterval(2000);
+
+    m_cursorBeforeMouseClick.invalidate();
     
     initEditor();
     initMenus();
@@ -126,7 +130,11 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+
     setAcceptDrops(true);
+
+    editorByUID[m_uid] = this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -158,6 +166,8 @@ ScriptEditorWidget::~ScriptEditorWidget()
     DELETE_AND_SET_NULL(m_pFileSysWatcher);
 
     setContextMenuPolicy(Qt::DefaultContextMenu); //contextMenuEvent is called
+
+    editorByUID.remove(m_uid);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -551,10 +561,34 @@ void ScriptEditorWidget::copyAvailable(const bool yes)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::getCanCopy() const
+{ 
+    return m_canCopy || selectLineOnCopyEmpty();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
+    CursorPosition temp = currentGlobalEditorCursorPos;
+
     ensureLineVisible(line);
-    setCursorPosition(line, 0);
+
+    QTextCursor c = textCursor();
+    int currentLine = c.isNull() ? -1 : c.blockNumber();
+
+    if (!temp.cursor.isNull() && \
+        currentLine != -1)
+    {
+        int bn = temp.cursor.blockNumber();
+
+        if (temp.editorUID != m_uid || \
+            std::abs(currentLine - temp.cursor.blockNumber()) > 11)
+        {
+            reportGoBackNavigationCursorMovement(CursorPosition(c, m_uid), "setCursorPosAndEnsureVisible");
+        }
+    }
+
+    
 
     if (errorMessageClick)
     {
@@ -566,7 +600,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool err
         m_breakpointPanel->setSelectedCallstackLine(line);
     }
 
-    this->setFocus();
+    setFocus();
 
     return retOk;
 }
@@ -1205,6 +1239,21 @@ bool ScriptEditorWidget::event(QEvent *event)
         {   // Class Navigator if Timer is active
             m_classNavigatorTimer->start();
         }
+
+        QKeyEvent *keyEvent = (QKeyEvent*)event;
+
+        //check if a go back navigation item should be signalled
+        //here: the cursor was moved by a mouse click, followed by a destructive action (backspace, delete...)
+        if (m_cursorJumpLastAction && 
+            !textCursor().isNull() && 
+            ((keyEvent->key() == Qt::Key_Backspace) ||
+                (keyEvent->key() == Qt::Key_Delete))
+            )
+        {
+            reportGoBackNavigationCursorMovement(CursorPosition(textCursor(), m_uid), "DestructiveAfterJump");
+        }
+
+        m_cursorJumpLastAction = false;
     }
     else if (m_errorLineHighlighterMode && m_errorLineHighlighterMode->errorLineAvailable())
     {
@@ -1226,6 +1275,37 @@ void ScriptEditorWidget::mouseReleaseEvent(QMouseEvent *event)
     }
 
     AbstractCodeEditorWidget::mouseReleaseEvent(event);
+
+    QTextCursor cursor = textCursor();
+
+    if (!cursor.isNull())
+    {
+        m_cursorJumpLastAction = true;
+
+        QTextCursor c = textCursor();
+
+        int currentLine = c.isNull() ? -1 : c.blockNumber();
+
+        if (currentLine != -1)
+        {
+            if (m_cursorBeforeMouseClick.cursor.isNull() || \
+                m_cursorBeforeMouseClick.editorUID != m_uid || \
+                std::abs(currentLine - m_cursorBeforeMouseClick.cursor.blockNumber()) > 11)
+            {
+                reportGoBackNavigationCursorMovement(CursorPosition(c, m_uid), "onMouseRelease");
+            }
+        }
+    }
+
+    m_cursorBeforeMouseClick.invalidate();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::mousePressEvent(QMouseEvent *event)
+{
+    m_cursorBeforeMouseClick = currentGlobalEditorCursorPos; //make a local copy, since the global editor cursor pos is already changed before the release event
+
+    AbstractCodeEditorWidget::mousePressEvent(event);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2257,6 +2337,103 @@ void ScriptEditorWidget::dumpFoldsToConsole(bool)
         
         block = block.next();
     }  
+}
+
+//-----------------------------------------------------------
+void ScriptEditorWidget::reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const
+{
+    int lineIndex = cursor.cursor.blockNumber();
+
+    if (lineIndex >= 0)
+    {
+        GoBackNavigationItem item;
+
+        item.column = cursor.cursor.columnNumber();
+        item.line = lineIndex;
+        item.UID = cursor.editorUID;
+
+        if (item.UID == -1)
+        {
+            item.UID = m_uid;
+        }
+
+        item.origin = origin;
+
+        ScriptEditorWidget* editor = editorByUID.value(item.UID, NULL);
+
+        if (editor)
+        {
+            item.filename = editor->getFilename();
+            
+            QString shortText = editor->lineText(lineIndex).trimmed();
+
+            if (shortText.size() > 40)
+            {
+                shortText = shortText.left(37) + "...";
+            }
+
+            item.shortText = shortText;
+        }
+        else
+        {
+            return;
+        }
+
+        if (item.filename != "")
+        {
+            std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::" << 
+                item.filename.toLatin1().data() << "(" << lineIndex + 1 << ":" << item.column << ")\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::Untitled" <<
+                item.UID << "(" << lineIndex + 1 << ":" << item.column << ")\n" << std::endl;
+        }
+
+        emit const_cast<ScriptEditorWidget*>(this)->addGoBackNavigationItem(item);
+    }
+}
+
+//-----------------------------------------------------------
+void ScriptEditorWidget::reportCurrentCursorAsGoBackNavigationItem(const QString &reason, int UIDFilter /*= -1*/)
+{
+    if (!currentGlobalEditorCursorPos.cursor.isNull() && \
+        (UIDFilter == -1 || currentGlobalEditorCursorPos.editorUID == UIDFilter))
+    {
+        reportGoBackNavigationCursorMovement(currentGlobalEditorCursorPos, reason);
+        currentGlobalEditorCursorPos.invalidate();
+    }
+}
+
+//-----------------------------------------------------------
+void ScriptEditorWidget::onCursorPositionChanged()
+{
+    QTextCursor c = textCursor();
+    int currentLine = c.isNull() ? -1 : c.blockNumber();
+
+    // set the current cursor position to the global cursor position variable
+    //if (hasFocus())
+    {
+        currentGlobalEditorCursorPos.cursor = c;
+        currentGlobalEditorCursorPos.editorUID = m_uid;
+    }
+}
+
+//-----------------------------------------------------------
+/*static*/ QString ScriptEditorWidget::filenameFromUID(int UID, bool &found)
+{
+    ScriptEditorWidget *sew = editorByUID.value(UID, NULL);
+
+    if (sew)
+    {
+        found = true;
+        return sew->getFilename();
+    }
+    else
+    {
+        found = false;
+        return QString();
+    }
 }
 
 } // end namespace ito

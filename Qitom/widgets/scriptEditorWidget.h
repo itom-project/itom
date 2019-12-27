@@ -63,10 +63,23 @@ struct ScriptEditorStorage
     QList<int>  bookmarkLines;
 };
 
+
+struct GoBackNavigationItem
+{
+    QString filename;
+    int UID;
+    QString shortText;
+    int line;
+    int column;
+    QString origin;
+};
+
 }
 
 Q_DECLARE_METATYPE(ito::ScriptEditorStorage) //must be outside of namespace
 Q_DECLARE_METATYPE(QList<ito::ScriptEditorStorage>) //must be outside of namespace
+Q_DECLARE_METATYPE(ito::GoBackNavigationItem) //must be outside of namespace
+Q_DECLARE_METATYPE(QList<ito::GoBackNavigationItem>) //must be outside of namespace
 
 namespace ito
 {
@@ -90,9 +103,10 @@ public:
 
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
-    inline bool getCanCopy() const { return m_canCopy; }
+    inline int getUID() const { return m_uid; }
+    bool getCanCopy() const;
     bool isBookmarked() const;
-    inline QString getUntitledName() const { return tr("Untitled%1").arg(m_unnamedNumber); }
+    inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
@@ -111,7 +125,13 @@ public:
 
     virtual bool removeTextBlockUserData(TextBlockUserData* userData);
 
+    //!< if UidFilter is -1, the current cursor position is always reported, else only if its editorUID is equal to UIDFilter
+    void reportCurrentCursorAsGoBackNavigationItem(const QString &reason, int UIDFilter = -1);
+
+    static QString filenameFromUID(int UID, bool &found);
+
 protected:
+
     bool canInsertFromMimeData(const QMimeData *source) const;
     void insertFromMimeData(const QMimeData *source);
 
@@ -119,8 +139,11 @@ protected:
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
+
+    void reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const;
 
 private:
     enum markerType
@@ -146,11 +169,14 @@ private:
 
     //!< menus
     QMenu *m_contextMenu;
-
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
-    int m_unnamedNumber;
+    int m_uid;
+
+    //go back navigation features
+    bool m_cursorJumpLastAction; //!< true if the last cursor movement was a jump by a mouse click
+    CursorPosition m_cursorBeforeMouseClick;
 
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
@@ -166,7 +192,9 @@ private:
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
 
     static const QString lineBreak;
-    static int unnamedAutoIncrement;
+    static int currentMaximumUID;
+    static CursorPosition currentGlobalEditorCursorPos; //! the current cursor position within all opened editor widgets
+    static QHash<int, ScriptEditorWidget*> editorByUID; //! hash table that maps the UID to its instance of ScriptEditorWidget*
 
     // Class Navigator
     bool m_classNavigatorEnabled;               // Enable Class-Navigator
@@ -186,9 +214,9 @@ signals:
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
     void requestModelRebuild(ScriptEditorWidget *editor);
+    void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
 public slots:
-    
     void checkSyntax();
     void syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors); //if frosted is used, syntaxErrors are contained in flakes
     void errorListChange(const QStringList &errorList);
@@ -251,6 +279,7 @@ private slots:
     void printPreviewRequested(QPrinter *printer);
 
     void dumpFoldsToConsole(bool);
+    void onCursorPositionChanged();
 };
 
 } //end namespace ito

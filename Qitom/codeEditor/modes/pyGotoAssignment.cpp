@@ -62,7 +62,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pActionGotoDefinition(NULL),
     m_pActionGotoAssignment(NULL),
     m_pActionGotoAssignmentExtended(NULL),
-    m_defaultMode(1),
+    m_defaultMode(0),
     m_mouseClickEnabled(true),
     m_gotoRequestedTimerId(0)
 {
@@ -77,6 +77,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     }
 
     m_pActionGotoDefinition = new QAction(tr("Go To Definition"), this);
+    m_pActionGotoDefinition->setShortcut(QKeySequence(Qt::Key_F12));
     connect(m_pActionGotoDefinition, SIGNAL(triggered()), this, SLOT(requestGotoDefinition()));
 
     m_pActionGotoAssignment = new QAction(tr("Go To Assignment"), this);
@@ -113,17 +114,20 @@ PyGotoAssignmentMode::~PyGotoAssignmentMode()
     if (m_pPythonEngine)
     {
         WordClickMode::onStateChanged(state && m_mouseClickEnabled);
+
         if (state)
         {
             m_pActionGotoDefinition->setVisible(true);
             m_pActionGotoAssignment->setVisible(true);
             m_pActionGotoAssignmentExtended->setVisible(true);
+            connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
         }
         else
         {
             m_pActionGotoDefinition->setVisible(false);
             m_pActionGotoAssignment->setVisible(false);
             m_pActionGotoAssignmentExtended->setVisible(false);
+            disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
         }
     }
 }
@@ -245,6 +249,23 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &assignment)
     {
         //_logger().debug("Out of doc: %s" % assignment)
         emit outOfDoc(assignment);
+    }
+}
+
+//--------------------------------------------------------------
+/*
+*/
+void PyGotoAssignmentMode::onKeyReleased(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_F12)
+    {
+        QTextCursor cursor = editor()->textCursor();
+
+        if (!cursor.isNull())
+        {
+            m_gotoRequested = true;
+            checkWordCursorWithMode(cursor, 0);
+        }
     }
 }
 
