@@ -31,6 +31,12 @@
 #include <QApplication>
 #include <QDirIterator>
 
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent/qtconcurrentrun.h>
+#else
+#include <qtconcurrentrun.h>
+#endif
+
 namespace ito
 {
 
@@ -40,6 +46,42 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
 {
     ui.setupUi(this);
 
+    ui.treeWidget->setItemsExpandable(true);
+    ui.treeWidget->setExpandsOnDoubleClick(true);
+    ui.treeWidget->expandAll();
+    int size = 20 * GuiHelper::screenDpiFactor();
+    ui.treeWidget->setIconSize(QSize(size, size));
+    ui.treeWidget->sortItems(0, Qt::AscendingOrder);
+
+    ui.txtCurrentName->setText(tr("loading..."));
+
+    setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
+    setWindowTitle(tr("Icon Browser"));
+
+    ui.cancelButton->setEnabled(false);
+    ui.pushButtonClipboard->setEnabled(false);
+    ui.pushButtonInsert->setEnabled(false);
+    ui.treeWidget->setEnabled(false);
+    ui.txtFilter->setEnabled(false);
+
+    connect(&m_loadWatcher, SIGNAL(finished()), this, SLOT(loadFinished()));
+    QFuture<QList<QTreeWidgetItem*> > f1 = QtConcurrent::run(this, &DialogIconBrowser::loadIcons);
+    m_loadWatcher.setFuture(f1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogIconBrowser::~DialogIconBrowser()
+{
+    if (m_loadWatcher.isRunning())
+    {
+        //a previous load of icons QtConcurrent::run is still running, wait for it to be finished
+        m_loadWatcher.waitForFinished();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QList<QTreeWidgetItem*> DialogIconBrowser::loadIcons()
+{
     QStringList list;
     QStringList sublist;
     QList<QTreeWidgetItem *> items;
@@ -56,7 +98,7 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
         while (subIT.hasNext())
         {
             QIcon thisIcon(subIT.next());
-            if (subIT.fileName().contains(".png"))
+            if (subIT.fileName().endsWith(".png") || subIT.fileName().endsWith(".svg"))
             {
                 QTreeWidgetItem *icon = new QTreeWidgetItem(QTreeWidgetItem::DontShowIndicatorWhenChildless);
                 icon->setIcon(0, thisIcon);
@@ -66,21 +108,25 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
         }
     }
 
-    ui.treeWidget->addTopLevelItems(items);
-    ui.treeWidget->setItemsExpandable(true);
-    ui.treeWidget->setExpandsOnDoubleClick(true);
-    ui.treeWidget->expandAll();
-    int size = 16 * GuiHelper::screenDpiFactor();
-    ui.treeWidget->setIconSize(QSize(size, size));
-    ui.treeWidget->sortItems(0, Qt::AscendingOrder);
-
-    setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
-    setWindowTitle(tr("Icon Browser"));
+    return items;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogIconBrowser::~DialogIconBrowser()
+//! this method is called if the async load mechanism of the icons has been finished
+void DialogIconBrowser::loadFinished()
 {
+    ui.treeWidget->setEnabled(true);
+    ui.txtFilter->setEnabled(true);
+    ui.cancelButton->setEnabled(true);
+    ui.txtCurrentName->setText("");
+
+    //adding the elements has to be done in the main GUI thread
+    ui.treeWidget->addTopLevelItems(m_loadWatcher.future().result());
+
+    ui.treeWidget->expandAll();
+    ui.treeWidget->sortItems(0, Qt::AscendingOrder);
+
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -89,6 +135,7 @@ void DialogIconBrowser::on_treeWidget_currentItemChanged(QTreeWidgetItem *curren
     bool enable = current->parent() != NULL;
     ui.pushButtonClipboard->setEnabled(enable);
     ui.pushButtonInsert->setEnabled(enable);
+    ui.txtCurrentName->setText(current ? current->text(0) : "");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -102,6 +149,42 @@ void DialogIconBrowser::on_pushButtonClipboard_clicked(bool value)
 void DialogIconBrowser::on_pushButtonInsert_clicked(bool value)
 {
     emit sendIconBrowserText(ui.treeWidget->currentItem()->text(0));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogIconBrowser::on_txtFilter_textChanged(const QString &text)
+{
+    int numTopLevels = ui.treeWidget->topLevelItemCount();
+    bool showAtLeastOne;
+    QTreeWidgetItem *toplevel;
+    QString childText;
+    QTreeWidgetItem *child;
+
+    for (int top = 0; top < numTopLevels; ++top)
+    {
+        toplevel = ui.treeWidget->topLevelItem(top);
+        showAtLeastOne = false;
+
+        if (toplevel)
+        {
+            for (int i = 0; i < toplevel->childCount(); ++i)
+            {
+                child = toplevel->child(i);
+                childText = child->text(0);
+                if (childText.contains(text, Qt::CaseInsensitive))
+                {
+                    child->setHidden(false);
+                    showAtLeastOne = true;
+                }
+                else
+                {
+                    child->setHidden(true);
+                }
+            }
+
+            toplevel->setHidden(!showAtLeastOne);
+        }
+    }
 }
 
 } //end namespace ito

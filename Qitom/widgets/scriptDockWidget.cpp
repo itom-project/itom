@@ -47,6 +47,8 @@
 
 namespace ito {
 
+/*static*/ QPointer<ScriptEditorWidget> ScriptDockWidget::currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>();
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class ScriptDockWidget
@@ -65,17 +67,22 @@ namespace ito {
     \param title Title of the DockWidget
     \param docked true: this widget should be docked at creating time, else: false
     \param isDockAvailable indicates whether docking functionality is available, if not, docked is always set to false
-    \return description
+    \param commonActions is a collection of common actions, managed and created by the ScriptEditorOrganizer. These actions can be used in the dock widget or its child editors.
+
     \sa AbstractDockWidget::AbstractDockWidget
 */
-ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent, Qt::WindowFlags /*flags*/) :
+ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, 
+        bool docked, bool isDockAvailable, 
+        const ScriptEditorActions &commonActions, 
+        QWidget *parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(NULL),
     m_pWidgetFindWord(NULL),
     m_pDialogReplace(NULL),
     m_actTabIndex(-1),
     m_tabContextMenu(NULL),
-    m_winMenu(NULL)
+    m_winMenu(NULL),
+    m_commonActions(commonActions)
 {
     m_tab = new QTabWidgetItom(this);
 
@@ -213,8 +220,8 @@ void ScriptDockWidget::loadSettings()
     settings.beginGroup("CodeEditor");
 
     // Class Navigator
-    m_ClassNavigatorEnabled = settings.value("classNavigator", true).toBool();
-    showClassNavigator(m_ClassNavigatorEnabled);
+    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
+    showClassNavigator(m_classNavigatorEnabled);
 
     settings.endGroup();
 }
@@ -286,7 +293,7 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 { 
-    if (m_ClassNavigatorEnabled && editor)
+    if (m_classNavigatorEnabled && editor)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
@@ -587,7 +594,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     {
         if (!silent)
         {
-            QMessageBox msg(QMessageBox::Warning, tr("File not found"), tr("The file %1 could not be found").arg(filename));
+            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' could not be found.").arg(filename));
             msg.exec();
         }
         return RetVal(retError);
@@ -599,7 +606,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
         {
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("Invalid file format"), tr("The file %1 is no python macro").arg(filename));
+                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is not a python script.").arg(filename));
                 msg.exec();
             }
             return RetVal(retError);
@@ -618,6 +625,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     {
         appendEditor(sew);
         sew->setFocus();
+        sew->reportCurrentCursorAsGoBackNavigationItem("open", sew->getUID());
     }
 
     return retValue;
@@ -748,6 +756,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     connect(editorWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
+    connect(editorWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
     
     // Load the right Class->Method model for this Editor
     connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -777,12 +786,16 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     if (index < 0 || index >= m_tab->count()) return NULL;
 
     ScriptEditorWidget* removedWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
+
+    //removedWidget->reportCurrentCursorAsGoBackNavigationItem("close script", removedWidget->getUID());
+
     m_tab->removeTab(index);
     disconnect(removedWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
     disconnect(removedWidget, SIGNAL(copyAvailable(bool)), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(closeRequest(ScriptEditorWidget*, bool)), this, SLOT(tabCloseRequested(ScriptEditorWidget*, bool)));
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
-    connect(removedWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
+    disconnect(removedWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
+    disconnect(removedWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
 
     // Class Navigator
     disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -1487,6 +1500,9 @@ void ScriptDockWidget::createMenus()
     m_bookmark->addAction(m_bookmarkPrevious->action());
     m_bookmark->addAction(m_bookmarkNext->action());
     m_bookmark->addAction(m_bookmarkClearAll->action());
+    m_bookmark->addSeparator();
+    m_bookmark->addAction(m_commonActions.actNavigationBackward);
+    m_bookmark->addAction(m_commonActions.actNavigationForward);
 
     m_scriptMenu = getMenuBar()->addMenu(tr("&Script"));
     m_scriptMenu->addAction(m_scriptRunAction->action());
@@ -1564,12 +1580,16 @@ void ScriptDockWidget::createToolBars()
     m_scriptToolBar->addAction(m_scriptStepOutAction->action());
     m_scriptToolBar->setFloatable(false);
 
-    m_bookmarkToolBar = new QToolBar(tr("Bookmark Toolbar"), this);
+    m_bookmarkToolBar = new QToolBar(tr("Bookmark and Navigation Toolbar"), this);
     addToolBar(m_bookmarkToolBar, "bookmarkToolBar");
+    m_bookmarkToolBar->addAction(m_commonActions.actNavigationBackward);
+    m_bookmarkToolBar->addAction(m_commonActions.actNavigationForward);
+    m_bookmarkToolBar->addSeparator();
     m_bookmarkToolBar->addAction(m_bookmarkToggle->action());
     m_bookmarkToolBar->addAction(m_bookmarkPrevious->action());
     m_bookmarkToolBar->addAction(m_bookmarkNext->action());
     m_bookmarkToolBar->addAction(m_bookmarkClearAll->action());
+    
     m_bookmarkToolBar->setFloatable(false);
 }
 
@@ -1580,40 +1600,45 @@ void ScriptDockWidget::createStatusBar()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! activates tab with script whose filename corresponds to the filename parameter.
+//! activates tab with script whose filename corresponds to the filename parameter (or the UID, if >= 0 for scripts without current filename).
 /*!
     \param filename Filename of the script which should be activated
     \param line is the marked debugging line (default: -1, no arrow)
+    \param UID if >= 0 and if a script has no filename, its UID is compared to the given one
     \return true if filename has been found and activated, else false.
 */
-bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /* = -1*/)
+bool ScriptDockWidget::activateTabByFilename(const QString &filename, int currentDebugLine /* = -1*/, int UID /* = -1*/)
 {
     ScriptEditorWidget *sew = NULL;
-    QString temp, temp2;
+    QString temp2;
     QFileInfo finfo1(filename);
     QString filename2 = finfo1.canonicalFilePath().toLower();
     QFileInfo finfo2;
+    bool found = false;
 
     for (int i = 0; i < m_tab->count(); i++)
     {
         sew = static_cast<ScriptEditorWidget *>(m_tab->widget(i));
 
-        if (!sew->hasNoFilename())
+        if (filename2 != "" && !sew->hasNoFilename())
         {
             finfo2.setFile(sew->getFilename());
-            temp = finfo1.canonicalFilePath().toLower();
-                temp2 = finfo2.canonicalFilePath().toLower();
-            if (filename2 == finfo2.canonicalFilePath().toLower())
+            temp2 = finfo2.canonicalFilePath().toLower();
+
+            if (filename2 == temp2)
             {
                 m_tab->setCurrentIndex(i);
-                raiseAndActivate();
-
-                if (line >= 0)
-                {
-                    sew->pythonDebugPositionChanged(filename2, line);
-                }
-
-                return true;
+                found = true;
+                break;
+            }
+        }
+        else if (UID >= 0)
+        {
+            if (sew->getUID() == UID)
+            {
+                m_tab->setCurrentIndex(i);
+                found = true;
+                break;
             }
         }
         else
@@ -1621,30 +1646,49 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /
             if (filename == sew->getUntitledName())
             {
                 m_tab->setCurrentIndex(i);
-                raiseAndActivate();
-
-                if (line >= 0)
-                {
-                    sew->pythonDebugPositionChanged(filename2, line);
-                }
-
-                return true;
+                found = true;
+                break;
             }
         }
+    }
+
+    if (found && sew)
+    {
+        raiseAndActivate();
+
+        if (currentDebugLine >= 0)
+        {
+            sew->pythonDebugPositionChanged(filename2, currentDebugLine);
+        }
+
+        return true;
     }
 
     return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/)
+bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
     if (m_actTabIndex >= 0)
     {
         ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
         if (sew)
         {
-            sew->setCursorPosAndEnsureVisible(lineNr, errorMessageClick);
+            if (showSelectedCallstackLine &&
+                currentSelectedCallstackLineEditor.data() != sew &&
+                currentSelectedCallstackLineEditor.data())
+            {
+                currentSelectedCallstackLineEditor->removeCurrentCallstackLine();
+            }
+
+            sew->setCursorPosAndEnsureVisible(lineNr, errorMessageClick, showSelectedCallstackLine);
+
+            if (showSelectedCallstackLine)
+            {
+                currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>(sew);
+            }
+            
             return true;
         }
     }
@@ -1677,13 +1721,15 @@ void ScriptDockWidget::mnuTabMoveRight()
 //! Open the icon browser
 void ScriptDockWidget::mnuOpenIconBrowser()
 {
-    DialogIconBrowser *m_iconBrowser = new DialogIconBrowser(getCanvas());
-    connect(m_iconBrowser, SIGNAL(sendIconBrowserText(QString)), this, SLOT(insertIconBrowserText(QString)));
-    if (m_iconBrowser->exec())
+    DialogIconBrowser *iconBrowser = new DialogIconBrowser(getCanvas());
+    connect(iconBrowser, SIGNAL(sendIconBrowserText(QString)), this, SLOT(insertIconBrowserText(QString)));
+
+    if (iconBrowser->exec())
     {
         
     }
-    delete m_iconBrowser;
+
+    DELETE_AND_SET_NULL(iconBrowser);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2095,9 +2141,11 @@ void ScriptDockWidget::mnuGoto()
     if (d->exec())
     {
         d->getData(lineNotChar,curValue);
+
         if (lineNotChar)
         {
-            sew->setCursorPosAndEnsureVisible(curValue - 1);
+            curLine = curValue - 1;
+            sew->setCursorPosAndEnsureVisible(curLine);
         }
         else
         {
@@ -2105,6 +2153,8 @@ void ScriptDockWidget::mnuGoto()
             sew->setCursorPosAndEnsureVisible(curLine);
             sew->setCursorPosition(curLine, curIndex);
         }
+
+        sew->reportCurrentCursorAsGoBackNavigationItem("goto");
     }
 
     DELETE_AND_SET_NULL(d);

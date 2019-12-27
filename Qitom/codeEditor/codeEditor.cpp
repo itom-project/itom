@@ -86,7 +86,8 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_indentationGuidesColor(Qt::darkGray),
     m_redoAvailable(false),
     m_undoAvailable(false),
-    m_pContextMenu(NULL)
+    m_pContextMenu(NULL),
+    m_minLineJumpsForGoBackNavigationReport(11)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -1056,11 +1057,20 @@ void CodeEditor::doHomeKey(QEvent *event /*= NULL*/, bool select /* = false*/)
     {
         cursor.movePosition(QTextCursor::StartOfBlock, move);
     }
+
     setTextCursor(cursor);
+    reportGoBackNavigationCursorMovement(CursorPosition(cursor, -1), "homeKey");
+
     if (event)
     {
         event->accept();
     }
+}
+
+//-----------------------------------------------------------
+void CodeEditor::reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const
+{
+    //do nothing
 }
 
 
@@ -1148,34 +1158,6 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
     }
     if (move)
     {
-        //QTextBlock block = text_cursor.block();
-        //// unfold parent fold trigger if the block is collapsed
-
-        //Panel::Ptr panel = panels()->get("FoldingPanel");
-        //if (panel)
-        //{
-        //    QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
-        //    if (fp)
-        //    {
-        //        if (!block.isVisible())
-        //        {
-        //            block = FoldScope::findParentScope(block);
-
-        //            while (block.isValid())
-        //            {
-        //                qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
-        //                if (Utils::TextBlockHelper::isCollapsed(block))
-        //                {
-        //                    fp->toggleFoldTrigger(block);
-        //                }
-
-        //                block = block.previous();
-        //                block = FoldScope::findParentScope(block);
-        //            }
-        //        }
-        //    }
-        //}
-
         setTextCursor(text_cursor);
         unfoldCursorPosition();
         ensureCursorVisible();
@@ -1549,6 +1531,8 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
         {
             unfoldCursorPosition();
             ensureCursorVisible();
+
+            reportGoBackNavigationCursorMovement(CursorPosition(cursor), "findFirst");
         }
         
         return true;
@@ -1563,10 +1547,12 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
 bool CodeEditor::findNext()
 {
     const FindOptions &f = m_lastFindOptions;
+
     if (f.valid)
     {
         return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show);
     }
+
     return false;
 }
 
@@ -1892,10 +1878,12 @@ int CodeEditor::lineNbrFromPosition(int yPos) const
 void CodeEditor::lineIndexFromPosition(const QPoint &pos, int *line, int *column) const
 {
     QTextCursor cursor = cursorForPosition(pos);
+
     if (line)
     {
         *line = cursor.blockNumber();
     }
+
     if (column)
     {
         *column = cursor.columnNumber();
@@ -2168,7 +2156,9 @@ QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool ap
     {
         start = 0;
     }
-    QTextCursor text_cursor = moveCursorTo(start);
+
+    QTextCursor text_cursor = moveCursorTo(start); //reports goback navigation if necessary
+
     if (end > start)  //Going down
     {
         text_cursor.movePosition(QTextCursor::Down,
@@ -2191,10 +2181,12 @@ QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool ap
         text_cursor.movePosition(QTextCursor::EndOfLine,
                                     QTextCursor::KeepAnchor);
     }
+
     if (applySelection)
     {
         setTextCursor(text_cursor);
     }
+
     return text_cursor;
 }
 
@@ -2275,6 +2267,8 @@ void CodeEditor::getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *i
 void CodeEditor::setSelection(int lineFrom, int indexFrom, int lineTo, int indexTo)
 {
     QTextCursor cursor = textCursor();
+    int currentLine = cursor.blockNumber();
+
     QTextBlock firstBlock = document()->findBlockByNumber(lineFrom);
     QTextBlock lastBlock = document()->findBlockByNumber(lineTo);
 
@@ -2283,6 +2277,12 @@ void CodeEditor::setSelection(int lineFrom, int indexFrom, int lineTo, int index
         cursor.setPosition(firstBlock.position() + indexFrom, QTextCursor::MoveAnchor);
         cursor.setPosition(lastBlock.position() + indexTo, QTextCursor::KeepAnchor);
         setTextCursor(cursor);
+
+        if ((firstBlock.blockNumber() - currentLine >= m_minLineJumpsForGoBackNavigationReport) ||
+            (currentLine - lastBlock.blockNumber() >= m_minLineJumpsForGoBackNavigationReport))
+        {
+            reportGoBackNavigationCursorMovement(CursorPosition(cursor), "setSelection");
+        }
     }
 }
 
@@ -2324,8 +2324,10 @@ int CodeEditor::linePosFromNumber(int lineNumber) const
 QTextCursor CodeEditor::moveCursorTo(int line) const
 {
     QTextCursor cursor = textCursor();
+    int currentLine = cursor.blockNumber();
     QTextBlock block = document()->findBlockByNumber(line);
     cursor.setPosition(block.position());
+
     return cursor;
 }
 

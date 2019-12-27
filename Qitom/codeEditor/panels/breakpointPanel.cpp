@@ -57,7 +57,8 @@ namespace ito {
 */
 BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
     Panel("BreakpointPanel", false, description, parent),
-    m_currentLine(-1)
+    m_currentLine(-1),
+    m_selectedCallstackLine(-1)
 {
     setScrollable(true);
     setMouseTracking(true);
@@ -69,7 +70,8 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
     m_icons[TextBlockUserData::TypeBpEdit] = QIcon(":/breakpoints/icons/itomcBreak.png");
     m_icons[TextBlockUserData::TypeBpEditDisabled] = QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
 
-    m_currentLineIcon = QIcon(":/script/icons/currentLine.png");
+    m_currentLineIcon = QIcon(":/script/icons/currentLine.png"); //yellow arrow
+    m_selectedCallstackLineIcon = QIcon(":/script/icons/callstackLine.png"); //green arrow
 
     m_pContextMenu = new QMenu(this);
 
@@ -98,6 +100,34 @@ void BreakpointPanel::setCurrentLine(int line)
     if (m_currentLine != line)
     {
         m_currentLine = line;
+        update();
+    }
+}
+
+//------------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::setSelectedCallstackLine(int line)
+{
+    if (m_selectedCallstackLine != line)
+    {
+        m_selectedCallstackLine = line;
+        update();
+    }
+}
+
+//------------------------------------------------------------
+/*
+
+*/
+void BreakpointPanel::removeAllLineSelectors()
+{
+    if (m_selectedCallstackLine != -1 ||
+        m_currentLine != -1)
+    {
+        m_selectedCallstackLine = -1;
+        m_currentLine = -1;
         update();
     }
 }
@@ -155,6 +185,16 @@ void BreakpointPanel::paintEvent(QPaintEvent *e)
             rect.setWidth(sizeHint().width());
             rect.setHeight(sizeHint().height());
             m_currentLineIcon.paint(&painter, rect);
+        }
+
+        if (m_selectedCallstackLine >= 0 && m_selectedCallstackLine == b.lineNumber)
+        {
+            rect = QRect();
+            rect.setX(0);
+            rect.setY(b.topPosition);
+            rect.setWidth(sizeHint().width());
+            rect.setHeight(sizeHint().height());
+            m_selectedCallstackLineIcon.paint(&painter, rect);
         }
     }
 }

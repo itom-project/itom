@@ -44,8 +44,13 @@ namespace ito {
 
 CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-    m_table(NULL)
+    m_table(NULL),
+    m_currentRow(-1)
 {
+    m_emptyIcon = QIcon(":/application/icons/empty.png");
+    m_currentIcon = QIcon(":/script/icons/currentLine.png");
+    m_selectedIcon = QIcon(":/script/icons/callstackLine.png");
+
     m_table = new QTableWidget(this);
 
     AbstractDockWidget::init();
@@ -58,6 +63,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->setAlternatingRowColors(true);
     m_table->setCornerButtonEnabled(false);
+    m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     m_headers << tr("File") << tr("Method") << tr("Line");
     m_table->setHorizontalHeaderLabels(m_headers);
@@ -160,10 +166,11 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
     if (lines.count() < filenames.count()) return;
     if (methods.count() < filenames.count()) return;
 
-    for (int i = 0 ; i < filenames.count() ; i++)
+    for (int i = 0; i < filenames.count(); i++)
     {
         info = QFileInfo(filenames[i]);
         filename = info.fileName();
+
         if (filename.contains("<"))
         {
             flags = flagsDisabled;
@@ -174,6 +181,17 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
         }
 
         item = new QTableWidgetItem(filename);
+
+        if (i == 0)
+        {
+            //the top element always corresponds to the current line (yellow arrow)
+            item->setIcon(m_currentIcon);
+        }
+        else
+        {
+            item->setIcon(m_emptyIcon);
+        }
+        
         item->setFlags(flags);
         item->setData(Qt::ToolTipRole, info.canonicalFilePath());
         m_table->setItem(i, ColFilename, item);
@@ -194,6 +212,7 @@ void CallStackDockWidget::deleteCallStack()
     m_table->clear();
     m_table->setRowCount(0);
     m_table->setHorizontalHeaderLabels(m_headers);
+    m_currentRow = -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -202,14 +221,37 @@ void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
     QString canonicalPath;
     int lineNr = -1;
 
-    if (item)
+    if (item && item->row() != m_currentRow)
     {
-        QTableWidgetItem *item2 = m_table->item(item->row(),0);
+        QTableWidgetItem *item2;
+
+        //remove the callstack icon from the previous item. Never change the
+        //icon in the top row, since this is the currently executed line (special icon)
+        if (m_currentRow > 0)
+        {
+            item2 = m_table->item(m_currentRow, 0);
+
+            if (item2)
+            {
+                item2->setIcon(m_emptyIcon);
+            }
+        }
+
+        item2 = m_table->item(item->row(), 0);
+
         if (item2)
         {
+            m_currentRow = item->row();
+            
+            if (m_currentRow > 0)
+            {
+                item2->setIcon(m_selectedIcon);
+            }
+
             canonicalPath = item2->data(Qt::ToolTipRole).toString();
 
             item2 = m_table->item(item->row(), ColLine);
+
             if (item2)
             {
                 lineNr = item2->text().toInt() - 1;
@@ -220,7 +262,7 @@ void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
                 ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
                 if (seo)
                 {
-                    seo->openScript(canonicalPath, NULL, lineNr);
+                    seo->openScript(canonicalPath, NULL, lineNr, false, m_currentRow > 0);
                 }
             }
         }

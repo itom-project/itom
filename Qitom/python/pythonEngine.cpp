@@ -4170,6 +4170,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject *self = NULL;
     PyObject *frame = NULL;
     PyObject *frame2 = NULL;
+    PyObject *frame_next = NULL;
     PyObject* temp;
     PyObject* temp2;
     PyObject* globalDict = NULL;
@@ -4183,21 +4184,22 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     long lineno;
     bool ok;
     QString filename;
+    QString innerFilename;
     Py_INCREF(pArgs);
 
     if (!PyArg_ParseTuple(pArgs, "OO", &self, &frame))
     {
-        Py_XDECREF(pArgs);
+        Py_CLEAR(pArgs);
         return Py_None;
     }
 
     temp = PyObject_GetAttrString(frame, "f_lineno");
     lineno = PyLong_AsLong(temp);
-    Py_XDECREF(temp);
+    Py_CLEAR(temp);
     temp = PyObject_GetAttrString(frame, "f_code");
     temp2 = PyObject_GetAttrString(temp, "co_filename");
     filename = PythonQtConversion::PyObjGetString(temp2,false,ok);
-    Py_XDECREF(temp2);    
+    Py_CLEAR(temp2);
 
     QStringList stack_files;
     IntList     stack_lines;
@@ -4208,32 +4210,43 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     temp2 = PyObject_GetAttrString(temp, "co_name");
     stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-    Py_XDECREF(temp2);
+    Py_CLEAR(temp2);
 
-    Py_XDECREF(temp);
+    Py_CLEAR(temp);
 
     frame2 = PyObject_GetAttrString(frame, "f_back");
 
     while(frame2 != NULL && frame2 != Py_None)
     {
-        temp = PyObject_GetAttrString(frame2, "f_lineno");
-        stack_lines.append(PyLong_AsLong(temp));
-        Py_XDECREF(temp);
-        
         temp = PyObject_GetAttrString(frame2, "f_code");
         temp2 = PyObject_GetAttrString(temp, "co_filename");
-        stack_files.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-        Py_XDECREF(temp2);
+        innerFilename = PythonQtConversion::PyObjGetString(temp2, false, ok);
+        Py_CLEAR(temp2);
+
+        if (innerFilename == "<string>")
+        {
+            //skip the <string> level and below (itoDebugger.py, bdb.py)
+            Py_CLEAR(temp);
+            break;
+        }
+
+        stack_files.append(innerFilename);
+
         temp2 = PyObject_GetAttrString(temp, "co_name");
         stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-        Py_XDECREF(temp);
-        Py_XDECREF(temp2);
+        Py_CLEAR(temp2);
+        Py_CLEAR(temp);
 
-        Py_XDECREF(frame2);
-        frame2 = PyObject_GetAttrString(frame2, "f_back");
+        temp = PyObject_GetAttrString(frame2, "f_lineno");
+        stack_lines.append(PyLong_AsLong(temp));
+        Py_CLEAR(temp);
+
+        frame_next = PyObject_GetAttrString(frame2, "f_back");
+        Py_CLEAR(frame2);
+        frame2 = frame_next;
     }
 
-    Py_XDECREF(frame2);
+    Py_CLEAR(frame2);
 
     emit pyEngine->updateCallStack(stack_files, stack_lines, stack_methods);
 
@@ -4266,8 +4279,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         {
             PyErr_PrintEx(0);
         }
-        Py_XDECREF(callRet);
-        callRet = NULL;
+        Py_CLEAR(callRet);
     }
     else //proceed the normal debug turnus
     {
@@ -4304,13 +4316,11 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 pyEngine->clearDbgCmdLoop();
                 pyEngine->pythonStateTransition(pyTransDebugContinue);
-                Py_XDECREF(pArgs);
+                Py_CLEAR(pArgs);
 
-                Py_XDECREF(globalDict);
-                globalDict = NULL;
+                Py_CLEAR(globalDict);
                 pyEngine->setLocalDictionary(NULL);
-                Py_XDECREF(localDict);
-                localDict = NULL;
+                Py_CLEAR(localDict);
                 return PyErr_Occurred();
             }
 
@@ -4326,8 +4336,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgContinue:
             callRet = PyObject_CallMethod(self, "set_continue", "");
@@ -4335,8 +4344,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgStepOver:
             callRet = PyObject_CallMethod(self, "set_next", "O", frame);
@@ -4344,8 +4352,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgStepOut:
             callRet = PyObject_CallMethod(self, "set_return", "O", frame);
@@ -4353,8 +4360,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgQuit:
             callRet = PyObject_CallMethod(self, "do_quit", "O", frame);
@@ -4362,16 +4368,14 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
     }
 
     pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
-    Py_XDECREF(globalDict);
-    globalDict = NULL;
+    Py_CLEAR(globalDict);
 
     pyEngine->setLocalDictionary(NULL);
     Py_XDECREF(localDict);

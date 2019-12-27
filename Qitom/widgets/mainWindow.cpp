@@ -841,7 +841,6 @@ void MainWindow::createMenus()
         m_pMenuPython->addAction(m_actions["python_stepOutAction"]);
         m_pMenuPython->addSeparator();
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
-        
 
         m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);

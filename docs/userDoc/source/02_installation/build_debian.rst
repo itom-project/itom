@@ -101,6 +101,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt install python3 python3-dev python3-numpy python3-pip
     sudo apt install python3-numpy-db python3-apt-dbg
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
+    sudo apt install libqt5webenginewidgets5 libqt5webengine5 qtwebengine5-dev
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt update && sudo apt-get install build-essential
     sudo apt install libopencv-dev python-opencv #make sure opencv and pythonbindings are consistent. 
@@ -112,8 +113,11 @@ In almost one line, the packages above are equal to:
 .. code-block:: bash
     
     sudo apt update
-    sudo apt install build-essential cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
-    sudo apt install libopencv-dev libv4l-dev xsdcxx libxerces-c3.1 libxerces-c-dev
+    sudo apt install build-essential cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
+    sudo apt install libopencv-dev libv4l-dev xsdcxx libxerces-c-dev
+
+The packages *xsdcxx* and *libxerces-c-dev* are only required for building the optional plugin *x3p*. Usually, *libxerces-c-dev*
+should install its runtime package *libxerces-c3.2* (or similar).
 
 If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
 
@@ -134,7 +138,7 @@ Obtain the sources
     git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
     git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
     mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
-    cd itom/build
+    cd itom/build/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../../sources/itom #If PCL-support should be enabled, replace OFF by ON
     make
     cd ../designerPlugins

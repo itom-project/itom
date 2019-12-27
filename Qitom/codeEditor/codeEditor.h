@@ -288,6 +288,17 @@ public:
     void callWheelEvent(QWheelEvent *e);
 
 protected:
+    struct CursorPosition
+    {
+        CursorPosition() : editorUID(-1) {};
+        CursorPosition(const QTextCursor &textCursor, int UID = -1) : cursor(textCursor), editorUID(UID) {};
+
+        void invalidate() { cursor = QTextCursor(); editorUID = -1; }
+
+        QTextCursor cursor;
+        int editorUID; //! the UID of the editor where the cursor click comes from
+    };
+
     CodeEditor &operator =(const CodeEditor &) { return *this; };
 
     QMenu *contextMenu() const { return m_pContextMenu; }
@@ -308,6 +319,8 @@ protected:
     void doHomeKey(QEvent *event = NULL, bool select = false);
 
     QTextCursor moveCursorTo(int line) const;
+
+    virtual void reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const;
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
     
@@ -365,6 +378,7 @@ private:
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;
     int m_indentationBarWidth;
+    int m_minLineJumpsForGoBackNavigationReport;
 
     EdgeMode m_edgeMode;
     int m_edgeColumn;

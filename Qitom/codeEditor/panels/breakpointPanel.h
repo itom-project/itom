@@ -70,6 +70,8 @@ public:
     virtual QSize sizeHint() const;
 
     void setCurrentLine(int line); //!< line = -1 removes the current line icon
+    void setSelectedCallstackLine(int line); //! adds a green arrow if another than the top line of the callstack (during debug) is selected, line = -1 removes the icon again.
+    void removeAllLineSelectors(); //! this is equal than setCurrentLine(-1); setSelectedCallstackLine(-1);
 
 protected:
     virtual void paintEvent(QPaintEvent *e);
@@ -82,6 +84,8 @@ private:
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
     QIcon m_currentLineIcon;
     int m_currentLine;
+    QIcon m_selectedCallstackLineIcon;
+    int m_selectedCallstackLine;
 
     QMenu *m_pContextMenu;
     QMap<QString, QAction*> m_contextMenuActions;
