@@ -38,7 +38,6 @@ namespace ito {
 //! item of BreakPointModel
 /*! 
     this struct corresponds to one item in the BreakPointModel 
-    Only BreakPoints will be stored here, Bookmark and SyntaxError are only registered by QScintilla-instance
 */
 struct BreakPointItem
 {

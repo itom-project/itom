@@ -29,6 +29,7 @@
 #include "AIManagerWidget.h"
 #include "fileSystemDockWidget.h"
 #include "breakPointDockWidget.h"
+#include "bookmarkDockWidget.h"
 #include "helpDockWidget.h"
 #include "lastCommandDockWidget.h"
 //#include "pythonMessageDockWidget.h"
@@ -63,6 +64,8 @@ public:
     ~MainWindow();
 
 	ito::RetVal addCentralWidget(QWidget *widget);
+
+    void scriptEditorOrganizerAvailable();
     
 protected:
     void closeEvent(QCloseEvent *event);
@@ -90,6 +93,7 @@ private:
 	QSplitter *m_contentSplitter;
     
     BreakPointDockWidget  *m_breakPointDock;
+    BookmarkDockWidget    *m_bookmarkDock;
     LastCommandDockWidget *m_lastCommandDock;
 //    PythonMessageDockWidget *m_pythonMessageDock;
     HelpDockWidget        *m_helpDock;

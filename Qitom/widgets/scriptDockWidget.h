@@ -34,6 +34,7 @@
 #include <qpointer.h>
 
 #include "../models/classNavigatorItem.h"
+#include "../models/bookmarkModel.h"
 
 #include <qevent.h>
 
@@ -58,7 +59,8 @@ class ScriptDockWidget : public AbstractDockWidget
     Q_OBJECT
 public:
     ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, 
-        const ScriptEditorActions &commonActions, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+        const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel, 
+        QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
@@ -98,9 +100,6 @@ protected:
     void createMenus();
     void createToolBars();
     void createStatusBar();
-
-    //void windowStateChanged( bool windowNotToolbox );
-
     void closeEvent(QCloseEvent *event);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
@@ -112,6 +111,7 @@ private:
     QTabWidgetItom* m_tab;              /*!<  reference to QTabWidgetItom instance */
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
+    BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
@@ -154,9 +154,7 @@ private:
     ShortcutAction *m_gotoAction;
     ShortcutAction *m_openIconBrowser;
     ShortcutAction *m_bookmarkToggle;
-    ShortcutAction *m_bookmarkNext;
-    ShortcutAction *m_bookmarkPrevious;
-    ShortcutAction *m_bookmarkClearAll;
+    
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
 
@@ -261,9 +259,6 @@ private slots:
     void mnuReplaceTextExpr();
     void mnuGoto();
     void mnuToggleBookmark();
-    void mnuClearAllBookmarks();
-    void mnuGotoNextBookmark();
-    void mnuGotoPreviousBookmark();
     void mnuInsertCodec();
     void mnuCopyFilename();
 

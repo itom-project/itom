@@ -650,6 +650,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         }
     }
 
+    if (m_mainWin)
+    {
+        m_mainWin->scriptEditorOrganizerAvailable();
+    }
+
     qDebug("..starting load settings");
     settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat); //reload settings, since all organizers can load their own instances, that might lead to an unwanted read/write mixture.
 

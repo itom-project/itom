@@ -46,7 +46,6 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 
     AbstractDockWidget::init();
 
-    
     m_breakPointView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));

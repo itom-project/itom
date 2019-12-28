@@ -96,6 +96,10 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
 
     m_pGoBackNavigationMapper = new QSignalMapper(this);
     connect(m_pGoBackNavigationMapper, SIGNAL(mapped(int)), this, SLOT(mnuNavigateBackwardItem(int)));
+
+    m_pBookmarkModel = new ito::BookmarkModel();
+    m_pBookmarkModel->restoreState(); //get bookmarks from last session
+    connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -119,6 +123,9 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 
     m_scriptDockElements.clear();
     m_scriptStackMutex.unlock();
+
+    m_pBookmarkModel->saveState(); //save current set of bookmarks to settings file
+    DELETE_AND_SET_NULL(m_pBookmarkModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -321,7 +328,10 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
         docked = false;
     }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), "", docked, m_dockAvailable, m_commonScriptEditorActions, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+    newWidget = new ScriptDockWidget(tr("Script Editor"), "", 
+                                    docked, m_dockAvailable, 
+                                    m_commonScriptEditorActions, m_pBookmarkModel, 
+                                    NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
 
     connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
 
@@ -1029,6 +1039,15 @@ QStringList ScriptEditorOrganizer::openedScripts() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::onGotoBookmark(const BookmarkItem &item)
+{
+    if (item.filename != "")
+    {
+        openScript(item.filename, NULL, item.lineIdx);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //!
 /*
 The basic rules behind the go back navigation items come from Visual Studio:
@@ -1114,7 +1133,7 @@ void ScriptEditorOrganizer::updateGoBackNavigationActions()
 {
     if (m_goBackNavigationHistory.size() > 0)
     {
-        m_commonScriptEditorActions.actNavigationBackward->setEnabled(m_goBackNavigationIndex >= 0);
+        m_commonScriptEditorActions.actNavigationBackward->setEnabled(m_goBackNavigationIndex > 0);
         m_commonScriptEditorActions.actNavigationForward->setEnabled(
             m_goBackNavigationIndex >= 0 &&
             m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1

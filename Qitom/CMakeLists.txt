@@ -184,8 +184,6 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
@@ -220,6 +218,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
@@ -320,7 +319,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/bookmarkDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
@@ -471,6 +471,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
@@ -566,6 +567,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/bookmarkDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
