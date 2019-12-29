@@ -36,43 +36,86 @@
 
 namespace ito
 {
+    /*!
+        \class BookmarkDockWidget
+        \brief Provides the bookmark toolbox which is mainly a view of the BookmarkModel.
+    */
     class BookmarkDockWidget : public AbstractDockWidget
     {
         Q_OBJECT
 
         public:
+
+            //! Constructor for the toolbox
+            /*!
+                \param title is the title of the toolbox
+                \param objName is an internal object name for this toolbox, used to store its geometry and state at shutdown
+                \param parent is an optional parent widget
+                \param docked indicate if the toolbox should be docked per default
+                \param isDockAvailable indicates if this toolbox can be docked in any case
+                \param floatingStyle indicates the window floating style behaviour of this toolbox
+                \param movingStyle indicates if this toolbox might be moved from one dockable area of itom's main window to another one or not.
+            */
             BookmarkDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, 
                 bool docked = true, bool isDockAvailable = true, 
                 tFloatingStyle floatingStyle = floatingNone, 
                 tMovingStyle movingStyle = movingEnabled);
+
+            //! Destructor for the toolbox
             ~BookmarkDockWidget();
 
+            //! Set the BookmarkModel for this toolbox
+            /*!
+                Usually, the BookmarkModel is not available during construction of this toolbox, since the main window
+                of itom is loaded earlier than the ScriptEditorOrganizer, which is the owner of the BookmarkModel.
+
+                Therefore the model is set via this method at a later time. However the model can only be set once.
+                Further calls of this method will do nothing.
+
+                \param model is a reference to the inialized BookmarkModel
+            */
             void setBookmarkModel(BookmarkModel *model);
 
         protected:
 
+            //! this method creates all actions of this toolbox and is overloaded from AbstractDockWidget.
             void createActions();
+
+            //! this method creates all menus of this toolbox and is overloaded from AbstractDockWidget.
             void createMenus();
+
+            //! this method creates all menus of this toolbox and is overloaded from AbstractDockWidget.
             void createToolBars();
+
+            //! this method is overloaded from AbstractDockWidget to initialize any status bars. Here it does nothing.
             void createStatusBar(){}
+
+            //! this method is overloaded from AbstractDockWidget and is called if any actions should be updated.
             void updateActions();
-            void updatePythonActions(){ updateActions(); }
+
+            //! this method is overloaded from AbstractDockWidget and is called whenever any Python relevant actions are changed. It does nothing.
+            void updatePythonActions(){}
 
         private:
             QTreeViewItom   *m_bookmarkView;        /*!< QTreeViewItom derived from QTreeView with some special selection behaviour (see QItomWidgets)*/
             QToolBar    *m_pMainToolbar;            /*!< Toolbar with QActions */
             QMenu *m_pContextMenu;                  /*!< Context menu with the same actions as the toolbar */
-            BookmarkModel *m_pModel;
-            QAction *m_pSpacerAction;
+            BookmarkModel *m_pModel;                /*!< reference to the BookmarkModel. This widget is not the owner of the model. */
+            QAction *m_pSpacerAction;               /*!< since the model is usually provided after having constructed this toolbox, some actions will be added to the toolbar in front of this action. */
 
-        signals:
+        private Q_SLOTS:
 
-        private slots:
+            //! This slot is executed when a bookmark has been double clicked.
+            /*
+                \param index is the QModelIndex of the clicked entry.
+            */
             void doubleClicked(const QModelIndex &index);
-            void treeViewContextMenuRequested(const QPoint &pos);
-            void treeViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-            void dataChanged();
+            //! This slot is executed when a context has been requested on the tree view of this toolbox
+            /*
+                \param pos is the position of the mouse click
+            */
+            void treeViewContextMenuRequested(const QPoint &pos);
     };
 
 } //end namespace ito

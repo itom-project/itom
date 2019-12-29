@@ -42,6 +42,14 @@
 
 namespace ito
 {
+    /*!
+        \class AbstractDockWidget
+        \brief Base class for all widgets that should be docked into the main window of itom.
+               Widgets, deriving from this base class, can have different appearances. Depending
+               on their configuration, they can behave like a dock widget and be docked into the main window
+               or undocked (floated) as indpendent toolbox or they can be a dock widget if docked or a real
+               window if they are undocked.
+    */
     class AbstractDockWidget : public QDockWidget
     {
         Q_OBJECT
@@ -67,9 +75,42 @@ namespace ito
 
         public:
 
-            enum tFloatingStyle { floatingNone, floatingStandard, floatingWindow }; /*!< if floatingNone, this widget can not be undocked, if floatingStandard or floatingWindow it can be undocked. If floatingWindow appearance in undocked mode changes to real window style */
-            enum tMovingStyle { movingDisabled, movingEnabled };    /*!<  if movingDisabled dockWidget must not be moved from one docking area to another one, else: movingEnabled */
-            enum tTopLevelStyle { topLevelOverall, topLevelParentOnly, topLevelNothing };
+            //! The floating style of a widget, derived from AbstractDockWidget
+            /*!
+                An AbstractDockWidget can have different window representations, which
+                can also be allowed or disallowed for different widgets:
+
+                1. An AbstractDockWidget can behave like a dock widget and be docked into different docking areas of itom's main window
+                2. An AbstractDockWidget can behave like a dock widget and can be undocked and be a floating toolbox
+                3. An AbstractDockWidget can behave like a default window and can then be maximized, minimized and moved at any location
+            */
+            enum tFloatingStyle 
+            { 
+                floatingNone,      /*!< the widget can not be undocked. It can only behave like a dock widget */
+                floatingStandard,  /*!< the widget behaves always like a dock widget and can both be docked and undocked */
+                floatingWindow     /*!< the widget can both behave like a dock widget if it is docked or like a window if it is undocked */
+            };
+            
+            //! The configuration if a docked AbstractDockWidget can be moved from one docking area to another one.
+            enum tMovingStyle 
+            { 
+                movingDisabled, /*!<  The dock widget must not be moved from one docking area to another one */
+                movingEnabled   /*!<  The dock widget can be moved from one docking area to another one */
+            };    
+            
+            //! The top level style of a widget, derived from AbstractDockWidget
+            /*! 
+                The top level style is only relevant if the widget is currently
+                undocked and has a window representation. Then the window can behave
+                like a normal window, or it can always stay on top of its parent window
+                or it can stay on top of all itom windows, dialogs...
+            */
+            enum tTopLevelStyle 
+            { 
+                topLevelOverall,    /*!< Window stays on top of everything */ 
+                topLevelParentOnly, /*!< Window stays on top of its parent window only */ 
+                topLevelNothing     /*!< Window has no specific top level behaviour (default) */ 
+            };
 
             struct Toolbar
             {

@@ -63,8 +63,6 @@ BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objN
     setContentWidget(m_bookmarkView);
 
     updateActions();
-
-    dataChanged(); //initially adjust colspan of filename-rows
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -92,10 +90,6 @@ void BookmarkDockWidget::setBookmarkModel(BookmarkModel *model)
             m_bookmarkView->setColumnWidth(i, dpiFactor * width_);
         }
     }
-
-    //to adjust colspan of filename-rows
-    connect(m_pModel, SIGNAL(rowsInserted(QModelIndex, int, int)), this, SLOT(dataChanged()));
-    connect(m_pModel, SIGNAL(rowsRemoved(QModelIndex, int, int)), this, SLOT(dataChanged()));
 
     if (m_pMainToolbar)
     {
@@ -156,12 +150,6 @@ void BookmarkDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BookmarkDockWidget::treeViewSelectionChanged(const QItemSelection &/*selected*/, const QItemSelection &/*deselected*/)
-{
-    updateActions();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void BookmarkDockWidget::updateActions()
 {
 
@@ -177,21 +165,6 @@ void BookmarkDockWidget::doubleClicked(const QModelIndex &index)
         QModelIndex idx = m->index(index.row(), 0, index.parent());
         m_pModel->gotoBookmark(idx);
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void BookmarkDockWidget::dataChanged()
-{
-	//this slot is only necessary until the span-method of AbstractItemModel will be automatically considered and changes the column span.
-	// added if due to crash on itom startup ck 26/01/2018
-	if (m_bookmarkView && m_bookmarkView->model())
-	{
-		for (int row = 0; row < m_bookmarkView->model()->rowCount(); row++)
-		{
-			QSize span = m_bookmarkView->model()->span(m_bookmarkView->model()->index(row, 0));
-			m_bookmarkView->setFirstColumnSpanned(row, QModelIndex(), span.width() > 1);
-		}
-	}
 }
 
 } //end namespace ito
