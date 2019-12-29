@@ -151,6 +151,7 @@ void MainApplication::registerMetaObjects()
     qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+    qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
 
     qRegisterMetaType<ito::tStreamMessageType>("ito::tStreamMessageType");
 }
@@ -657,6 +658,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
                 }
             }
         }
+    }
+
+    if (m_mainWin)
+    {
+        m_mainWin->scriptEditorOrganizerAvailable();
     }
 
     qDebug("..starting load settings");

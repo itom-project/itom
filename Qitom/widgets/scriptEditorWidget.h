@@ -44,6 +44,7 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include "../models/classNavigatorItem.h"
+#include "../models/bookmarkModel.h"
 
 #include <QtPrintSupport/qprinter.h>
 
@@ -60,7 +61,7 @@ struct ScriptEditorStorage
 {
     QByteArray  filename;
     int         firstVisibleLine;
-    QList<int>  bookmarkLines;
+    QList<int>  bookmarkLines; //! this is deprecated, since bookmarks are now managed by the global bookmarkModel
 };
 
 
@@ -90,7 +91,7 @@ class ScriptEditorWidget : public AbstractCodeEditorWidget
     Q_OBJECT
 
 public:
-    ScriptEditorWidget(QWidget* parent = NULL);
+    ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent = NULL);
     ~ScriptEditorWidget();
 
     RetVal saveFile(bool askFirst = true);
@@ -105,7 +106,6 @@ public:
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline int getUID() const { return m_uid; }
     bool getCanCopy() const;
-    bool isBookmarked() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
@@ -119,9 +119,6 @@ public:
     RetVal restoreState(const ScriptEditorStorage &data);
 
     RetVal toggleBookmark(int line);
-    RetVal clearAllBookmarks();
-    RetVal gotoNextBookmark();
-    RetVal gotoPreviousBookmark();
 
     virtual bool removeTextBlockUserData(TextBlockUserData* userData);
 
@@ -167,6 +164,8 @@ private:
     int m_syntaxCheckerInterval;
     QTimer *m_syntaxTimer;
 
+    Qt::CaseSensitivity m_filenameCaseSensitivity;
+
     //!< menus
     QMenu *m_contextMenu;
     std::map<QString,QAction*> m_editorMenuActions;
@@ -183,6 +182,8 @@ private:
 
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
+
+    BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
@@ -257,8 +258,9 @@ public slots:
 
 private slots:
     void toggleBookmarkRequested(int line);
-    void gotoBookmarkRequested(bool next);
-    void clearAllBookmarksRequested();
+    void onBookmarkAdded(const BookmarkItem &item);  
+    void onBookmarkDeleted(const BookmarkItem &item);
+    
 
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);

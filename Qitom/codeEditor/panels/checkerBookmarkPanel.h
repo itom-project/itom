@@ -49,6 +49,7 @@ Checker panels:
 #include "../panel.h"
 #include "../utils/utils.h"
 #include "../textBlockUserData.h"
+#include "../../models/bookmarkModel.h"
 
 #include <qevent.h>
 #include <qsize.h>
@@ -69,7 +70,7 @@ class CheckerBookmarkPanel : public Panel
 {
     Q_OBJECT
 public:
-    CheckerBookmarkPanel(const QString &description = "", QWidget *parent = NULL);
+    CheckerBookmarkPanel(BookmarkModel *bookmarkModel, const QString &description = "", QWidget *parent = NULL);
     virtual ~CheckerBookmarkPanel();
 
     virtual QSize sizeHint() const;
@@ -96,6 +97,7 @@ private:
     QMenu *m_pContextMenu;
     QMap<QString, QAction*> m_contextMenuActions;
     int m_contextMenuLine;
+    BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
 
 signals:
     void toggleBookmarkRequested(int line);
@@ -104,9 +106,6 @@ signals:
 
 private slots:
     void menuToggleBookmark();
-    void menuClearAllBookmarks();
-    void menuGotoNextBookmark();
-    void menuGotoPreviousBookmark();
 };
 
 } //end namespace ito

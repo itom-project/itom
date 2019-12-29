@@ -54,11 +54,12 @@ namespace ito {
 //----------------------------------------------------------
 /*
 */
-CheckerBookmarkPanel::CheckerBookmarkPanel(const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
+CheckerBookmarkPanel::CheckerBookmarkPanel(BookmarkModel *bookmarkModel, const QString &description /*= ""*/, QWidget *parent /*= NULL*/) :
     Panel("CheckerBookmarkPanel", false, description, parent),
     m_previousLine(-1),
     m_pJobRunner(NULL),
-    m_contextMenuLine(-1)
+    m_contextMenuLine(-1),
+    m_pBookmarkModel(bookmarkModel)
 {
     setScrollable(true);
     setMouseTracking(true);
@@ -68,9 +69,9 @@ CheckerBookmarkPanel::CheckerBookmarkPanel(const QString &description /*= ""*/, 
 
     m_pContextMenu = new QMenu(this);
     m_contextMenuActions["toggleBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this, SLOT(menuToggleBookmark()));
-    m_contextMenuActions["nextBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("Next Bookmark"), this, SLOT(menuGotoNextBookmark()));
-    m_contextMenuActions["prevBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("Previous Bookmark"), this, SLOT(menuGotoPreviousBookmark()));
-    m_contextMenuActions["clearAllBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("Clear All Bookmarks"), this, SLOT(menuClearAllBookmarks()));
+    m_contextMenuActions["nextBM"] = m_pBookmarkModel->bookmarkNextAction();
+    m_contextMenuActions["prevBM"] = m_pBookmarkModel->bookmarkPreviousAction();
+    m_contextMenuActions["clearAllBM"] = m_pBookmarkModel->bookmarkClearAllAction();
 }
 
 //----------------------------------------------------------
@@ -295,13 +296,6 @@ void CheckerBookmarkPanel::mouseReleaseEvent(QMouseEvent *e)
 {
     e->accept();
 
-    bool bookmarksAvailable = editor()->bookmarksAvailable();
-
-    m_contextMenuActions["nextBM"]->setEnabled(bookmarksAvailable);
-    m_contextMenuActions["prevBM"]->setEnabled(bookmarksAvailable);
-    m_contextMenuActions["clearAllBM"]->setEnabled(bookmarksAvailable);
-
-
     int line = editor()->lineNbrFromPosition(e->pos().y());
 
     if (line != -1)
@@ -333,24 +327,6 @@ void CheckerBookmarkPanel::menuToggleBookmark()
     {
         emit toggleBookmarkRequested(m_contextMenuLine);
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void CheckerBookmarkPanel::menuClearAllBookmarks()
-{
-    emit clearAllBookmarksRequested();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void CheckerBookmarkPanel::menuGotoNextBookmark()
-{
-    emit gotoBookmarkRequested(true);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void CheckerBookmarkPanel::menuGotoPreviousBookmark()
-{
-    emit gotoBookmarkRequested(false);
 }
 
 

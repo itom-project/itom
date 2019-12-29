@@ -25,6 +25,7 @@
 
 #include "../widgets/scriptDockWidget.h"
 #include "../common/sharedStructuresQt.h"
+#include "../models/bookmarkModel.h"
 
 #include <qsignalmapper.h>
 
@@ -57,6 +58,8 @@ public:
     QStringList openedScripts() const;
     bool m_dockedNewWidget;
 
+    inline BookmarkModel* getBookmarkModel() const { return m_pBookmarkModel; }
+
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
 
@@ -67,6 +70,8 @@ private:
     ScriptDockWidget* getFirstDockedElement();
     ScriptDockWidget* getFirstUndockedElement();
     ScriptDockWidget* getActiveDockWidget();
+
+    BookmarkModel *m_pBookmarkModel;
 
     QList<ScriptDockWidget*> m_scriptDockElements;    //! list with references to all ScriptDockWidgets (docked or windows-style)
     QSet<QString> m_usedObjectNames;               //! currently used objectNames for script windows
@@ -113,6 +118,7 @@ private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
     void onAddGoBackNavigationItem(const GoBackNavigationItem &item);
+    void onGotoBookmark(const BookmarkItem &item);
 
     //Action slots
     void mnuNavigateForward();

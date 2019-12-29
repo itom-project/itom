@@ -74,6 +74,7 @@ namespace ito {
 ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, 
         bool docked, bool isDockAvailable, 
         const ScriptEditorActions &commonActions, 
+        BookmarkModel *bookmarkModel,
         QWidget *parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(NULL),
@@ -82,7 +83,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_actTabIndex(-1),
     m_tabContextMenu(NULL),
     m_winMenu(NULL),
-    m_commonActions(commonActions)
+    m_commonActions(commonActions),
+    m_pBookmarkModel(bookmarkModel)
 {
     m_tab = new QTabWidgetItom(this);
 
@@ -458,7 +460,7 @@ RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage
 
             if (ses.filename.isNull() == false && fi.exists())
             {
-                ScriptEditorWidget* sew = new ScriptEditorWidget(m_tab);
+                ScriptEditorWidget* sew = new ScriptEditorWidget(m_pBookmarkModel, m_tab);
                 if (sew->restoreState(ses).containsError())
                 {
                     sew->deleteLater();
@@ -547,7 +549,7 @@ QStringList ScriptDockWidget::getAllFilenames() const
 */
 RetVal ScriptDockWidget::newScript()
 {
-    ScriptEditorWidget* sew = new ScriptEditorWidget(m_tab);
+    ScriptEditorWidget* sew = new ScriptEditorWidget(m_pBookmarkModel, m_tab);
     ito::RetVal retval = appendEditor(sew);
     sew->setFocus();
     return retval;
@@ -613,7 +615,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
         }
     }
 
-    ScriptEditorWidget* sew = new ScriptEditorWidget(m_tab);
+    ScriptEditorWidget* sew = new ScriptEditorWidget(m_pBookmarkModel, m_tab);
 
     RetVal retValue = sew->openFile(filename, false);
 
@@ -1147,9 +1149,6 @@ void ScriptDockWidget::updateEditorActions()
     m_gotoAction->setEnabled(m_actTabIndex > -1);
     m_openIconBrowser->setEnabled(m_actTabIndex > -1);
     m_bookmarkToggle->setEnabled(sew != NULL);
-    m_bookmarkNext->setEnabled(sew != NULL && sew->isBookmarked());
-    m_bookmarkPrevious->setEnabled(sew != NULL && sew->isBookmarked());
-    m_bookmarkClearAll->setEnabled(sew != NULL && sew->isBookmarked());
 
     m_scriptRunSelectionAction->setEnabled(pyEngine && sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
 
@@ -1339,15 +1338,6 @@ void ScriptDockWidget::createActions()
     m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this);
     m_bookmarkToggle->connectTrigger(this, SLOT(mnuToggleBookmark()));
 
-    m_bookmarkNext = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("&Next Bookmark"), this);
-    m_bookmarkNext->connectTrigger(this, SLOT(mnuGotoNextBookmark()));
-
-    m_bookmarkPrevious = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("&Previous Bookmark"), this);
-    m_bookmarkPrevious->connectTrigger(this, SLOT(mnuGotoPreviousBookmark()));
-
-    m_bookmarkClearAll = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("&Clear All Bookmarks"), this);
-    m_bookmarkClearAll->connectTrigger(this, SLOT(mnuClearAllBookmarks()));
-
     m_insertCodecAct = new ShortcutAction(tr("&Insert Codec..."), this);
     m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
 
@@ -1497,9 +1487,9 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addSeparator();
     m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("Bookmark"));
     m_bookmark->addAction(m_bookmarkToggle->action());
-    m_bookmark->addAction(m_bookmarkPrevious->action());
-    m_bookmark->addAction(m_bookmarkNext->action());
-    m_bookmark->addAction(m_bookmarkClearAll->action());
+    m_bookmark->addAction(m_pBookmarkModel->bookmarkPreviousAction());
+    m_bookmark->addAction(m_pBookmarkModel->bookmarkNextAction());
+    m_bookmark->addAction(m_pBookmarkModel->bookmarkClearAllAction());
     m_bookmark->addSeparator();
     m_bookmark->addAction(m_commonActions.actNavigationBackward);
     m_bookmark->addAction(m_commonActions.actNavigationForward);
@@ -1586,10 +1576,9 @@ void ScriptDockWidget::createToolBars()
     m_bookmarkToolBar->addAction(m_commonActions.actNavigationForward);
     m_bookmarkToolBar->addSeparator();
     m_bookmarkToolBar->addAction(m_bookmarkToggle->action());
-    m_bookmarkToolBar->addAction(m_bookmarkPrevious->action());
-    m_bookmarkToolBar->addAction(m_bookmarkNext->action());
-    m_bookmarkToolBar->addAction(m_bookmarkClearAll->action());
-    
+    m_bookmarkToolBar->addAction(m_pBookmarkModel->bookmarkPreviousAction());
+    m_bookmarkToolBar->addAction(m_pBookmarkModel->bookmarkNextAction());
+    m_bookmarkToolBar->addAction(m_pBookmarkModel->bookmarkClearAllAction());
     m_bookmarkToolBar->setFloatable(false);
 }
 
@@ -2167,39 +2156,6 @@ void ScriptDockWidget::mnuToggleBookmark()
     if (sew != NULL)
     {
         sew->toggleBookmark(-1);
-        updateEditorActions();
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::mnuClearAllBookmarks()
-{
-    ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew != NULL)
-    {
-        sew->clearAllBookmarks();
-        updateEditorActions();
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::mnuGotoNextBookmark()
-{
-    ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew != NULL)
-    {
-        sew->gotoNextBookmark();
-        updateEditorActions();
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::mnuGotoPreviousBookmark()
-{
-    ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew != NULL)
-    {
-        sew->gotoPreviousBookmark();
         updateEditorActions();
     }
 }
