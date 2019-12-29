@@ -1043,7 +1043,15 @@ void ScriptEditorOrganizer::onGotoBookmark(const BookmarkItem &item)
 {
     if (item.filename != "")
     {
-        openScript(item.filename, NULL, item.lineIdx);
+        if (QFileInfo(item.filename).exists())
+        {
+            openScript(item.filename, NULL, item.lineIdx);
+        }
+        else
+        {
+            QMessageBox::information(NULL, tr("goto bookmark"), tr("The script '%1' does not exist. The bookmark will be removed.").arg(item.filename));
+            m_pBookmarkModel->deleteBookmark(item);
+        }
     }
 }
 
@@ -1093,7 +1101,7 @@ void ScriptEditorOrganizer::mnuNavigateBackward()
 {
     if (m_goBackNavigationIndex > 0)
     {
-        mnuNavigateBackwardItem(m_goBackNavigationIndex - 1);
+        mnuNavigateBackwardItem(qBound(0, m_goBackNavigationIndex - 1, m_goBackNavigationHistory.size() - 1));
     }
 }
 
@@ -1102,7 +1110,7 @@ void ScriptEditorOrganizer::mnuNavigateForward()
 {
     if (m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1)
     {
-        mnuNavigateBackwardItem(m_goBackNavigationIndex + 1);
+        mnuNavigateBackwardItem(qBound(0, m_goBackNavigationIndex + 1, m_goBackNavigationHistory.size() - 1));
     }
 }
 
@@ -1121,9 +1129,31 @@ void ScriptEditorOrganizer::mnuNavigateBackwardItem(int index)
 
         if (retValue.containsError())
         {
-            m_goBackNavigationIndex = curIndex;
-        }
+            if (retValue.hasErrorMessage())
+            {
+                QMessageBox::warning(NULL, tr("Navigation marker"), retValue.errorMessage());
+            }
+            else
+            {
+                QMessageBox::warning(NULL, tr("Navigation marker"), tr("General error jumping to the desired navigation marker"));
+            }
 
+            //it is likely that some scripts do not exist any more. Clear up
+            QString filename;
+
+            for (int i = m_goBackNavigationHistory.size() - 1; i >= 0; --i)
+            {
+                filename = m_goBackNavigationHistory[i].filename;
+
+                if (filename != "" && !QFileInfo(filename).exists())
+                {
+                    m_goBackNavigationHistory.removeAt(i);
+                }
+            }
+
+            m_goBackNavigationIndex = qBound(0, m_goBackNavigationIndex, m_goBackNavigationHistory.size() - 1);
+        }
+        
         updateGoBackNavigationActions();
     }
 }
@@ -1251,13 +1281,13 @@ RetVal ScriptEditorOrganizer::applyGoBackNavigationItem(const GoBackNavigationIt
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, "filename of go back navigation marker does not exist.");
+                retValue += ito::RetVal(ito::retError, 0, tr("File '%1' of go back navigation marker does not exist.").arg(item.filename).toLatin1().data());
             }
         }
     }
     else
     {
-        retValue = ito::RetVal(ito::retError, 0, "Permission denied to open a script");
+        retValue = ito::RetVal(ito::retError, 0, tr("Not enough rights to open scripts.").toLatin1().data());
     }
 
     return retValue;

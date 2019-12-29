@@ -102,6 +102,42 @@ The breakpoints of this and other scripts are all listed in the :ref:`breakpoint
     
     In order to stop the script execution in a debug-mode in any method that is for instance called by clicking a button in an user-defined interface or via a timer event, you need to set a breakpoint in the corresponding line in the script and toggle the button |vardebugpython| **Run Python in debug mode** in the main window of |itom| (toolbar or menu **script**). The same holds for a method that you call from the command line. Toggle this button and set a breakpoint in the method in order to run this method in debug-mode and let the debugger stop in the line marked with the breakpoint.
 
+.. _gui-editor-bookmarks:
+
+Bookmarks
+============
+
+It is possible to mark certain lines in a or multiple scripts with bookmarks, displayed as star icon in the most-left column (left to the column numbers).
+The list of all bookmarks is then visible in the :ref:`bookmarks <gui-bookmarks>` toolbox of |itom|. To add a bookmark
+to a line, which is not decorated with a bookmark yet, either click in the most-left column in the desired line or
+click at any character in the desired line to move the cursor there and click the **toggle bookmark** button in the toolbar.
+
+To remove a bookmark, click on an existing bookmark icon in the editor again or click the **toggle bookmark** button again,
+if the cursor is currently in the line of a bookmark. It is additionally possible to clear all existing bookmarks.
+
+Using the **previous bookmark** and **next bookmark** buttons (in the toolbar of the editor, in the context menu of the most-left column
+or via the bookmark toolbox) it is possible to jump to the previous or next bookmark in the global list of bookmarks.
+
+Bookmarks are persisted at shutdown of |itom| and reloaded at the next startup. Bookmarks, that belong to non-existing
+Python scripts will not be persisted or reloaded.
+
+Navigate forward and backward
+===============================
+
+|itom| stores a list of last cursor positions in any scripts. This list is limited to 20 entries and can be accessed
+via the **Navigate Backward** or **Navigate Forward** buttons in the toolbar of any script editor. This allows jumping
+from the current cursor position to a previous or a following position. The full stack is contained in the submenu
+of the **Navigate Backward** button:
+
+.. figure:: images/scripteditor_navigation.png
+    :scale: 100%
+    :align: center
+
+Select one entry to directly jump to this file and line number. New items are added to this list in the following cases (among others):
+
+* the cursor has been moved into another script or more than 10 lines in the current script
+* the cursor was moved to a new location using the **Go to...** dialog or the search functionality
+* A destructive action (like hitting Backspace) was executed after having moved the cursor to a new location
 
 Syntax highlighting and indentation
 =====================================
@@ -240,4 +276,8 @@ These icons can directly be used inside of any script by their *virtual icon pat
 * **Copy to clipboard**: The path is copied to the clipboard. The browser stays open.
 * **Cancel**: Hides the dialog without further action.
 
-.. |vardebugpython| image:: images/pythonDebug.png  
+.. |vardebugpython| image:: images/pythonDebug.png
+
+Since there are a lot of icons, it is possible to filter the list by typing parts of an icon filename into the search
+box on top of the icon list. Instead of using the **Copy to clipboard** button, it is also possible to copy the 
+path of the selected icon from the textbox below the icon list.

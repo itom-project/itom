@@ -175,17 +175,7 @@ void BookmarkDockWidget::doubleClicked(const QModelIndex &index)
     if (index.isValid() && m)
     {
         QModelIndex idx = m->index(index.row(), 0, index.parent());
-        QString canonicalPath = m->data(idx, BookmarkModel::RoleFilename).toString();
-        int lineIdx = m->data(idx, BookmarkModel::RoleLineIdx).toInt();
-
-        if (!canonicalPath.isEmpty())
-        {
-            ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-            if (seo)
-            {
-                seo->openScript(canonicalPath, NULL, lineIdx);
-            }
-        }
+        m_pModel->gotoBookmark(idx);
     }
 }
 

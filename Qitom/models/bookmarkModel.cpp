@@ -312,7 +312,7 @@ QVariant BookmarkModel::data(const QModelIndex &index, int role) const
     }
     else if (role == Qt::TextAlignmentRole)
     {
-        return Qt::AlignLeft | Qt::AlignVCenter;
+        return QVariant(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
     }
     else if (role == RoleLineIdx)
     {
@@ -494,7 +494,7 @@ void BookmarkModel::gotoNextBookmark()
             m_currentIndex = 0;
         }
         
-        emit gotoBookmark(m_bookmarks[m_currentIndex]);
+        gotoBookmark(createIndex(m_currentIndex, 0));
     }
 }
 
@@ -510,7 +510,17 @@ void BookmarkModel::gotoPreviousBookmark()
             m_currentIndex = m_bookmarks.size() - 1;
         }
 
-        emit gotoBookmark(m_bookmarks[m_currentIndex]);
+        gotoBookmark(createIndex(m_currentIndex, 0));
+    }
+}
+
+//--------------------------------------------------------------------------------------------------------
+void BookmarkModel::gotoBookmark(const QModelIndex &index)
+{
+    BookmarkItem item = itemFromModelIndex(index);
+    if (item.isValid())
+    {
+        emit gotoBookmark(item);
     }
 }
 

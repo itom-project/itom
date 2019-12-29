@@ -132,6 +132,7 @@ Content:
    plugins
    filesystem
    breakpoints
+   bookmarks
    commandHistory
    callStack
 
@@ -149,7 +150,8 @@ the loaded toolboxes. The items after the separator correspond to the toolbars, 
     :scale: 100%
     :align: center
 
-| It is possible to (un)dock the Toolboxes to the main frame at different positions. This is done by simple drag and drop of the titel bar of the toolboxes. Another way of (un)docking can be realized by double-clicking on the title bar.
+| It is possible to (un)dock the Toolboxes to the main frame at different positions. This is done by simple drag 
+| and drop of the titel bar of the toolboxes. Another way of (un)docking can be realized by double-clicking on the title bar.
 | At the startup of the iTOM software all 5 Toolboxes are activated, which are:
 
 The following main toolbars are available:
@@ -158,14 +160,5 @@ The following main toolbars are available:
 - :doc:`plugins` shows all loaded plugins including opened instances.
 - :doc:`filesystem` gives you access to the file system of your harddrive.
 - :doc:`breakpoints` shows all breakpoints added to Python scripts.
-- **callstack** shows the callstack when the Python script execution stops at a breakpoint.
-
-
-
-
-
-
-
-
-
-
+- :doc:`callStack` shows the callstack when the Python script execution stops at a breakpoint.
+- :doc:`bookmarks` shows all bookmarks added to any Python scripts.

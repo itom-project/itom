@@ -101,6 +101,8 @@ public:
     bool bookmarkExists(const BookmarkItem &item) const;
     bool bookmarkExists(const QString &filename, int lineno) const;
 
+    void gotoBookmark(const QModelIndex &index);
+
 protected:
     const BookmarkItem& itemFromModelIndex(const QModelIndex &index) const;
     QModelIndex modelIndexFromItem(const BookmarkItem &item) const;
