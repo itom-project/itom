@@ -74,9 +74,9 @@ public:
 private slots:
     void onKeyPressed(QKeyEvent *e);
 
-
-
 protected:
+    QChar indentChar() const;
+    QString singleIndent() const;
     virtual QPair<QString, QString> getIndent(const QTextCursor &cursor) const;
 
 private:

@@ -461,7 +461,7 @@ void CodeEditor::setTabLength(int value)
 {
     if (m_tabLength != value)
     {
-        m_tabLength = value;
+        m_tabLength = qBound(2, value, 2000);
         updateTabStopAndIndentationWidth();
     }
 }
@@ -572,9 +572,17 @@ void CodeEditor::updateTabStopAndIndentationWidth()
         fm = QFontMetrics(f);
     }
 
-    QString tab_text = useSpacesInsteadOfTabs() ? QString(tabLength(), ' ') : "\t";
-    m_indentationBarWidth = fm.width(tab_text);
     setTabStopWidth(tabLength() * fm.width(" "));
+
+    if (useSpacesInsteadOfTabs())
+    {
+        QString tab_text = QString(tabLength(), ' ');
+        m_indentationBarWidth = fm.width(tab_text);
+    }
+    else
+    {
+        m_indentationBarWidth = tabStopWidth();
+    } 
 }
 
 //-----------------------------------------------------------
