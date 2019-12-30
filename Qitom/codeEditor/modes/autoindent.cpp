@@ -83,8 +83,34 @@ Return the indentation text (a series of spaces or tabs)
 */
 QPair<QString, QString> AutoIndentMode::getIndent(const QTextCursor &cursor) const
 {
-    QString indent = QString(editor()->lineIndent(-1), QChar(' '));
+    QString indent = QString(editor()->lineIndent(-1), indentChar());
     return QPair<QString,QString>("", indent);
+}
+
+//---------------------------------------------------------
+QChar AutoIndentMode::indentChar() const
+{
+    if (editor()->useSpacesInsteadOfTabs())
+    {
+        return ' ';
+    }
+    else
+    {
+        return '\t';
+    }
+}
+
+//---------------------------------------------------------
+QString AutoIndentMode::singleIndent() const
+{
+    if (editor()->useSpacesInsteadOfTabs())
+    {
+        return QString(editor()->tabLength(), ' ');
+    }
+    else
+    {
+        return '\t';
+    }
 }
 
 //---------------------------------------------------------
