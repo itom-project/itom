@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "versionHelper.h"
+
 #include "../global.h"
 #include "version.h"
 #include "opencv2/core/version.hpp"
@@ -36,6 +37,7 @@
 #include "shape/shapeVersion.h"
 #include "AddInManager/addInManagerVersion.h"
 #include "QPropertyEditor/propertyEditorVersion.h"
+#include "common/sharedStructures.h"
 
 #include <QSysInfo>
 
@@ -58,6 +60,10 @@
 #endif
 
 
+
+namespace ito
+{
+
 //! This function is called to get all version numbers that itom contains
 /*!
     Use this function to get a map of all parts of itom that are used with 
@@ -65,7 +71,7 @@
 
     \return returns a QMap<QString,QString> containing the module and the version of a module.
 */
-QMap<QString, QString> ito::getItomVersionMap()
+QMap<QString, QString> getItomVersionMap()
 {
     QMap<QString, QString> items;
 
@@ -211,8 +217,10 @@ QMap<QString, QString> ito::getItomVersionMap()
     //newPair.second = QWT_VERSION_STR;
 
     //addInInterface
-    items["itom_pluginInterface_Version"] = ito_AddInInterface_CurrentVersion;
+    items["itom_pluginInterface_Version"] = ITOM_ADDININTERFACE_VERSION_STR;
 
     return items;
 }
+
+} //end namespace ito
 

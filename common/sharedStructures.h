@@ -39,10 +39,10 @@
 
 namespace ito
 {
-    #define CREATEVERSION(major,minor,patch)    (major << 16) + (minor << 8) + patch
-    #define MAJORVERSION(version)               version >> 16
-    #define MINORVERSION(version)               (version >> 8) - (MAJORVERSION(version) << 8)
-    #define PATCHVERSION(version)               version - ((version >> 8) << 8)
+    #define CREATEVERSION(major,minor,patch)    (major << 16) + ((minor & 0xff) << 8) + (patch & 0xff)
+    #define MAJORVERSION(version)               (version >> 16)
+    #define MINORVERSION(version)               ((version & 0x00ff00) >> 8)
+    #define PATCHVERSION(version)               (version & 0x0000ff)
     #define MAXVERSION                          CREATEVERSION(255,0,0)    //maximum possible version (that means no maximum version is indicated); ck 17.01.2017 changed maxversion major to 255, avoiding warning about too many bits in bitshift CREATEVERSION macro / Linux
     #define MINVERSION                          CREATEVERSION(0,0,0)         //minimum possible version
 

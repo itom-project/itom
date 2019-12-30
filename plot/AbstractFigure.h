@@ -39,6 +39,7 @@
 #include <qtoolbar.h>
 #include <qevent.h>
 #include <qdockwidget.h>
+#include <qscopedpointer.h>
 
 class QPropertyEditorWidget; //forward declaration
 
@@ -87,22 +88,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
             ModeStandaloneInUi, 
             ModeStandaloneWindow 
         };
-        
-        enum CompilerFeatures 
-        { 
-            tOpenCV        = 0x01,
-            tPointCloudLib = 0x02
-        };
-
-        //!< This enumeration is deprecated. It will be removed with an upcoming version of itom > 3.2.1.
-        enum tChildPlotStates
-        {
-            tNoChildPlot            = 0x00,
-            tExternChild            = 0x01,
-            tOwnChild               = 0x02,
-            tUninitilizedExtern     = 0x10,
-            tVisibleOnInit          = 0x20
-        };
 
         enum UnitLabelStyle 
         { 
@@ -117,15 +102,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         Q_ENUM(WindowMode)
         Q_ENUM(UnitLabelStyle)
 #endif
-
-        int getCompilerFeatures(void) const 
-        {
-            int retval = tOpenCV;
-#if defined USEPCL || ITOM_POINTCLOUDLIBRARY
-            retval |= tPointCloudLib;
-#endif
-            return retval;
-        }
 
         struct ToolBarItem {
             ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}
@@ -151,11 +127,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void setApiFunctionBasePtr(void **apiFunctionBasePtr);
         void ** getApiFunctionGraphBasePtr(void) { return m_apiFunctionsGraphBasePtr; }
         void ** getApiFunctionBasePtr(void) { return m_apiFunctionsBasePtr; }
-
-        virtual RetVal addChannel(AbstractNode *child, ito::Param* parentParam, ito::Param* childParam, Channel::ChanDirection direction, bool deleteOnParentDisconnect, bool deleteOnChildDisconnect);
-        virtual RetVal addChannel(Channel *newChannel);
-        virtual RetVal removeChannelFromList(unsigned int uniqueID);
-        virtual RetVal removeChannel(Channel *delChannel);
 
         virtual RetVal update(void) = 0; /*!> Calls apply () and updates all children*/
 
@@ -200,17 +171,16 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 
         RetVal registerShortcutActions(); /*!< call this method once after all actions with shortcuts are created and after that the content widget has been created. The shortcuts of the actions will then be redirected to overall shortcuts that can be handled even if the plot is docked into the main window of itom */
 
-        WindowMode m_windowMode;
-        QString m_itomSettingsFile;
-        QWidget *m_mainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
+        WindowMode getWindowMode() const;
+
+        QString getItomSettingsFile() const;
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
 
-        QMap<QString, ito::uint8>& subplotStates(); /*!<returns types of subplots. This method is deprecated. It will be removed with an upcoming version of itom > 3.2.1.*/
-
     private:
-        AbstractFigurePrivate *d;
+        QScopedPointer<AbstractFigurePrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer to private class of AbstractFigure defined in AbstractFigure.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
+        Q_DECLARE_PRIVATE(AbstractFigure);
 
     private slots:
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); } /*!< shows all registered toolbars*/

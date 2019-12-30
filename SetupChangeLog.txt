@@ -19,7 +19,7 @@ ITOM_VERSION_STR anpassen.
 ----------------------------------------------
 
 Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface vorkam. Dies führt
-zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterface.h
+zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterfaceVersion.h
 vergeben werden.
 
 Windows: OpenSSL Bibliotheken in das Hauptverzeichnis der qitom.exe durch das Setup kopieren:

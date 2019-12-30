@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+Copyright (C) 2018, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
@@ -354,10 +354,20 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         {
             QPluginLoader *loader = new QPluginLoader(filename);
             QObject *plugin = loader->instance();
-            
             if (plugin)
             {
-                ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase*>(plugin);
+                ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
+
+                if (ain && (ITOM_ADDININTERFACE_MAJOR >= 4))
+                {
+                    //for major interfaces >= 4, semver holds. Check the minor number of the plugin.
+                    //if it is <= the minor of itom, the plugin can be loaded. Else not.
+                    int minor = MINORVERSION(ain->getAddInInterfaceVersion());
+                    if (minor > ITOM_ADDININTERFACE_MINOR)
+                    {
+                        ain = NULL;
+                    }
+                }
 
                 pls.filename = filename;
 
@@ -393,44 +403,48 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     default:
                         message = tr("Plugin with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         break;
                     }
-
                     m_pluginLoadStatus.append(pls);
                 }
                 else
                 {
                     //check whether this instance is an older or newer version of AddInInterface
-                    if (plugin->qt_metacast("ito::AddInInterfaceBase") != NULL)
+                    QObject *obj = qobject_cast<QObject*>(plugin);
+                    if (obj)
                     {
-                        int i = 0;
-                        const char* oldName = ito_AddInInterface_OldVersions[0];
-
-                        while (oldName != NULL)
+                        if (obj->qt_metacast("ito::AddInInterfaceBase") != NULL)
                         {
-                            if (plugin->qt_metacast(oldName) != NULL)
+                            int i = 0;
+                            const char* oldName = ito_AddInInterface_OldVersions[0];
+
+                            while (oldName != NULL)
                             {
-                                message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
-                                break;
+                                if (obj->qt_metacast(oldName) != NULL)
+                                {
+                                    message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ITOM_ADDININTERFACE_VERSION_STR);
+                                    break;
+                                }
+                                oldName = ito_AddInInterface_OldVersions[++i];
                             }
-
-                            oldName = ito_AddInInterface_OldVersions[++i];
+                            if (oldName == NULL)
+                            {
+                                message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ITOM_ADDININTERFACE_VERSION_STR);
+                            }
                         }
-
-                        if (oldName == NULL)
+                        else
                         {
-                            message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
+                            message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
                         }
                     }
                     else
                     {
-                        message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
+                        message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
-
                     qDebug() << message;
-                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                    
                     pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
 
@@ -470,7 +484,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
-                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        
                         pls.filename = filename;
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         m_pluginLoadStatus.append(pls);
@@ -596,11 +610,32 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 
                             if (!validRet.containsError())
                             {
-                                ito::FilterParams *fp = new ito::FilterParams();
-                                fp->paramsMand = paramsMand;
-                                fp->paramsOpt = paramsOpt;
-                                fp->paramsOut = paramsOut;
-                                filterParamHash[(void*)fd->m_paramFunc] = fp;
+                                foreach(const ito::Param &p, paramsMand)
+                                {
+                                    if ((p.getName() != NULL) && (strcmp(p.getName(), "_observer") == 0))
+                                    {
+                                        validRet += ito::RetVal::format(ito::retError, 0, "The parameter name '_observer' is a reserved name and may not be used as real parameter name.");
+                                        break;
+                                    }
+                                }
+
+                                foreach(const ito::Param &p, paramsOpt)
+                                {
+                                    if ((p.getName() != NULL) && (strcmp(p.getName(), "_observer") == 0))
+                                    {
+                                        validRet += ito::RetVal::format(ito::retError, 0, "The parameter name '_observer' is a reserved name and may not be used as real parameter name.");
+                                        break;
+                                    }
+                                }
+
+                                if (!validRet.containsError())
+                                {
+                                    ito::FilterParams *fp = new ito::FilterParams();
+                                    fp->paramsMand = paramsMand;
+                                    fp->paramsOpt = paramsOpt;
+                                    fp->paramsOut = paramsOut;
+                                    filterParamHash[(void*)fd->m_paramFunc] = fp;
+                                }
                             }
                         }
 

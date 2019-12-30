@@ -1072,6 +1072,24 @@ namespace ito
             return ito::retError;
         }
     }
+    
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::stop(ItomSharedSemaphore *waitCond)
+    {
+        Q_ASSERT_X(1, "AddInDataIO::stop", tr("not implemented").toLatin1().data());
+
+        if (waitCond)
+        {
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method stop() is not implemented in this plugin").toLatin1().data());
+            waitCond->release();
+            
+            return waitCond->returnValue;
+        }
+        else
+        {
+            return ito::retError;
+        }
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(void * /*data*/, ItomSharedSemaphore *waitCond)

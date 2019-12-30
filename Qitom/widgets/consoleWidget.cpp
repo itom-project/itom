@@ -431,7 +431,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
             if (pyeng)
             {
-                pyeng->pythonInterruptExecution();
+                pyeng->pythonInterruptExecutionThreadSafe();
             }
         }
 

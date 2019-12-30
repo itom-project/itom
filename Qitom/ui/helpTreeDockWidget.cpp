@@ -354,7 +354,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
     if (type != typeCategory)
     {
-        // Standard html-Template laden
+        // Load standard html template
         // -------------------------------------
         QFile templ(":/helpTreeDockWidget/filter_tmpl");
         templ.open(QIODevice::ReadOnly);
@@ -431,6 +431,32 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             returnsSection.replace("<!--%RETURNS_CAPTION%-->", tr("Returns")); 
             docString.remove(start, end + QString("<!--%RETURNS_END%-->").size() - start);
         }
+        
+        // extract ObserverSection 
+        // -------------------------------------
+        //search for <!--%RETURNS_START%--> and <!--%RETURNS_END%-->
+        QString observerSection;
+        start = docString.indexOf("<!--%OBSERVER_START%-->");
+        end = docString.indexOf("<!--%OBSERVER_END%-->");
+
+        if (start == -1 && end == -1) //no returns section
+        {
+            observerSection = "";
+        }
+        else if (start == -1 || end == -1) //one part is missing
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Observer section is only defined by either the start or end tag.").toLatin1().data());
+        }
+        else if (start > end) //one part is missing
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of observer section comes before start tag.").toLatin1().data());
+        }
+        else
+        {
+            observerSection = docString.mid(start, end + QString("<!--%OBSERVER_END%-->").size() - start);
+            observerSection.replace("<!--%OBSERVER_CAPTION%-->", tr("Status observation and cancellation"));
+            docString.remove(start, end + QString("<!--%OBSERVER_END%-->").size() - start);
+        }
 
         // extract ExampleSection 
         // -------------------------------------
@@ -441,7 +467,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
         if (start == -1 && end == -1) //no returns section
         {
-            returnsSection = "";
+            exampleSection = "";
         }
         else if (start == -1 || end == -1) //one part is missing
         {
@@ -474,10 +500,45 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                         docString.replace("%NAME%", fd->m_name);
                         docString.replace("%INFO%", parseFilterWidgetContent(fd->m_description));
+
+                        // Observer-Section
+                        const ito::AddInAlgo::FilterDefExt *fdext = dynamic_cast<const ito::AddInAlgo::FilterDefExt*>(fd);
+
+                        QString description;
+
+                        if (fdext)
+                        {
+                            if (fdext->m_hasStatusInformation)
+                            {
+                                description += "<li>" + tr("Filter provides status information") + "</li>\n";
+                            }
+                            else
+                            {
+                                description += "<li>" + tr("Filter does not provide status information") + "</li>\n";
+                            }
+
+                            if (fdext->m_isCancellable)
+                            {
+                                description += "<li>" + tr("Filter can be cancelled") + "</li>";
+                            }
+                            else
+                            {
+                                description += "<li>" + tr("Filter cannot be cancelled") + "</li>";
+                            }
+                        }
+                        else
+                        {
+                            description += "<li>" + tr("No observer can be passed to this filter") + "</li>\n";
+                            description += "<li>" + tr("Filter does not provide status information") + "</li>\n";
+                            description += "<li>" + tr("Filter cannot be cancelled") + "</li>";
+                        }
+
+                        observerSection.replace("%OBSERVERTEXT%", description);
                 
                         // Parameter-Section
                         if ((params->paramsMand.size() + params->paramsOpt.size() == 0) && parameterSection.isNull() == false)
-                        {   //remove parameters section
+                        {   
+                            //remove parameters section
                             parameterSection = "";
                         }
                         else if (parameterSection.isNull() == false)
@@ -574,6 +635,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                         exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
                         exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
+
+                        observerSection = "";
                     }
 
                     break;
@@ -649,6 +712,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         parameterSection = "";
                         returnsSection = "";
                         exampleSection = "";
+                        observerSection = "";
                     }
                     else
                     {
@@ -720,8 +784,9 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                                 parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                             }
 
-                            //remove returns section (Widgets can�t return something)
+                            //remove returns and observer section (Widgets cannot return something)
                             returnsSection = "";
+                            observerSection = "";
 
                             // Example-Section
                             QStringList paramList;
@@ -766,6 +831,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             docString.replace("<!--%PARAMETERS_INSERT%-->", parameterSection);
             docString.replace("<!--%RETURNS_INSERT%-->", returnsSection);
             docString.replace("<!--%EXAMPLE_INSERT%-->", exampleSection);
+            docString.replace("<!--%OBSERVER_INSERT%-->", observerSection);
         }
     }
     else

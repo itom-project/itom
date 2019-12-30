@@ -25,6 +25,8 @@
 #include <qfileinfo.h>
 #include <qmimedata.h>
 
+#include "../common/semVerVersion.h"
+
 namespace ito
 {
     class PlugInModelPrivate
@@ -810,8 +812,8 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
                 }
             case 2: //version
             {
-                int version = aib->getVersion();
-                return QString("%1.%2.%3").arg( MAJORVERSION(version) ).arg( MINORVERSION(version) ).arg( PATCHVERSION(version) );
+                SemVerVersion version = SemVerVersion::fromInt(aib->getVersion());
+                return version.toString();
             }
             case 3: //filename
             {
@@ -825,19 +827,19 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
             }
             case 5: //minversion
             {
-                int version = aib->getMinItomVer();
-                if (version != MINVERSION)
+                SemVerVersion version = SemVerVersion::fromInt(aib->getMinItomVer());
+                if (version.toInt() != MINVERSION)
                 {
-                    return QString("%1.%2.%3").arg( MAJORVERSION(version) ).arg( MINORVERSION(version) ).arg( PATCHVERSION(version) );
+                    return version.toString();
                 }
                 return QString("-");
             }
             case 6: //maxversion
             {
-                int version = aib->getMaxItomVer();
-                if (version != MAXVERSION)
+                SemVerVersion version = SemVerVersion::fromInt(aib->getMaxItomVer());
+                if (version.toInt() != MAXVERSION)
                 {
-                    return QString("%1.%2.%3").arg( MAJORVERSION(version) ).arg( MINORVERSION(version) ).arg( PATCHVERSION(version) );
+                    return version.toString();
                 }
                 return QString("-");
             }

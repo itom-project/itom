@@ -474,6 +474,7 @@ void DialogSnapshot::acquisitionEnd()
             if (index > -1)
             {
                 ito::AddInAlgo::FilterDef *filter = m_filterPlugins[index];
+                ito::AddInAlgo::FilterDefExt *filterExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(filter);
 
                 for (int i = 0; i < m_acquiredImages.size(); ++i)
                 {
@@ -487,7 +488,17 @@ void DialogSnapshot::acquisitionEnd()
                     QString fileName = m_path + "/" + imageName + fileNo + fileExt;
                     m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
                     m_paramsMand[0].setVal<ito::DataObject*>(&(m_acquiredImages[i]));
-                    retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
+
+                    if (filterExt == NULL)
+                    {
+                        retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
+                    }
+                    else
+                    {
+                        QSharedPointer<ito::FunctionCancellationAndObserver> emptyObserver; //no observer initialized
+                        retval = filterExt->m_filterFuncExt(&m_paramsMand, &m_paramsOpt, &m_autoOut, emptyObserver);
+                    }
+
                     checkRetval(retval);
 
                     if (retval.containsError())

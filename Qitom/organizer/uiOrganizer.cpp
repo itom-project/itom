@@ -2347,7 +2347,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QByteArray &sign
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     int signalIndex = -1;
     RetVal retValue(retOk);
@@ -2368,6 +2368,54 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QB
             if (!QMetaObject::connect(obj, signalIndex, this, this->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("pythonKeyboardInterrupt(bool)"))))
             {
                 retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot throwing a python keyboard interrupt.").toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::connectProgressObserverInterrupt(unsigned int objectID, const QByteArray &signalSignature, QPointer<QObject> progressObserver, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    int signalIndex = -1;
+    RetVal retValue(retOk);
+
+    QObject *obj = getWeakObjectReference(objectID);
+
+    if (progressObserver.isNull())
+    {
+        retValue += ito::RetVal(ito::retError, 0, "The given progress observer is not valid anymore.");
+    }
+    else if (obj)
+    {
+        const QMetaObject *mo = obj->metaObject();
+        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.data()));
+
+        if (signalIndex < 0)
+        {
+            retValue += RetVal(retError, errorSignalDoesNotExist, tr("signal does not exist").toLatin1().data());
+        }
+        else
+        {
+            //it is important to make a direct connection, since the progressObserver can also be created in the Python
+            //thread, however we want the cancellation flag to be set immediately if the signal is emitted, hence, in
+            //the thread of the caller (e.g. a button)
+            if (!QMetaObject::connect(obj, signalIndex, progressObserver, 
+                progressObserver->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("requestCancellation()")), Qt::DirectConnection))
+            {
+                retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot requesting the cancellation of the observed function call.").toLatin1().data());
             }
         }
     }
@@ -2518,9 +2566,15 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
 //----------------------------------------------------------------------------------------------------------------------------------
 void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
 {
-    PyErr_SetInterrupt();
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEngine)
+    {
+        bool interruptActuatorsAndTimers = false;
+        pyEngine->pythonInterruptExecutionThreadSafe(&interruptActuatorsAndTimers);
+    }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< the following map translates Qt/C++ datatypes into their Python representations. This is for instance used in the info()-method in Python to show the user the Python syntax.
 struct PyCMap {
     const char *ctype;
@@ -3967,6 +4021,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
            retval += RetVal::format(retError, 0, tr("could not get figure with handle %i.").toLatin1().data(), handle);
        }
     }
+
     if (semaphore)
     {
         semaphore->returnValue = retval;
@@ -3975,6 +4030,7 @@ RetVal UiOrganizer::figureShow(const unsigned int& handle/*=0*/,ItomSharedSemaph
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureMinimizeAll(ItomSharedSemaphore *semaphore /*=NULL*/)
 {
@@ -4005,6 +4061,7 @@ RetVal UiOrganizer::figureMinimizeAll(ItomSharedSemaphore *semaphore /*=NULL*/)
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
@@ -4042,6 +4099,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVect
     }
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figureDrawGeometricShapes(
         unsigned int objectID,
@@ -4083,6 +4141,7 @@ RetVal UiOrganizer::figureDrawGeometricShapes(
     }
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
 {
@@ -4165,6 +4224,63 @@ RetVal UiOrganizer::getAvailableWidgetNames(
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::connectWidgetsToProgressObserver(bool hasProgressBar, unsigned int progressBarObjectID, bool hasLabel, unsigned int labelObjectID, QSharedPointer<ito::FunctionCancellationAndObserver> progressObserver, ItomSharedSemaphore *semaphore)
+{
+    ito::RetVal retval;
+
+    if (progressObserver.isNull())
+    {
+        retval += ito::RetVal(ito::retError, 0, "progressObserver is invalid");
+    }
+    else
+    {
+        if (hasProgressBar)
+        {
+            QObject *progressBar = getWeakObjectReference(progressBarObjectID);
+            
+            if (!progressBar)
+            {
+                retval += ito::RetVal(ito::retError, 0, "progressBar widget does not exist.");
+            }
+            else
+            {
+                bool conn = QObject::connect(progressObserver.data(), SIGNAL(progressValueChanged(int)), progressBar, SLOT(setValue(int)));
+                if (!conn)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "Could not connect with 'setValue(int)' slot of progressBar. Probably the progressBar does not have such a slot.");
+                }
+            }
+        }
+
+        if (hasLabel)
+        {
+            QObject *label = getWeakObjectReference(labelObjectID);
+
+            if (!label)
+            {
+                retval += ito::RetVal(ito::retError, 0, "label widget does not exist.");
+            }
+            else
+            {
+                bool conn = QObject::connect(progressObserver.data(), SIGNAL(progressTextChanged(QString)), label, SLOT(setText(QString)));
+                if (!conn)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "Could not connect with 'setText(QString)' slot of label. Probably the label does not have such a slot.");
+                }
+            }
+        }
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ //void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)

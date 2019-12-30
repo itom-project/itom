@@ -78,6 +78,7 @@ public:
     
     virtual ~AbstractDObjPclFigure();
 
+    //! overload of AbstractNode::update
     ito::RetVal update(void);
 
     virtual ito::RetVal setDataObject(QSharedPointer<ito::DataObject>);

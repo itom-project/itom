@@ -26,24 +26,7 @@ Each plugin is a different project in your programming environment and is finall
 Plugin load mechanism of |itom|
 -------------------------------
 
-The |itom|-base directory contains a folder **plugins**. This folder itself usually consists of different subfolders each having the name of a specific plugin. The folder can then
-contain a release and/or debug-version of the specific plugin DLL as well as further files which are necessary for running the plugin. If your plugin is dependent on other files,
-please consider to read the specific information about how to publish dependencies of each plugin.
-
-At the startup of |itom|, the application recursively scans the **plugins** folder and looks for any *DLL*-file on Windows machines or *a*-file on a Linux operating system. Then each
-DLL is tried to be loaded using the plugin system provided by the |Qt|-framework. The *DLL* can successfully be loaded if the following prerequisites are fulfilled:
-
-* The plugin is a release version if |itom| is started in release mode OR
-* The plugin is a debug version (this can for example be seen if the DLL-name ends with *...d.dll*) if |itom| is started in debug mode
-* The plugin is compiled using the same major and minor version of |Qt| than |itom| (it is possible to load a plugin compiled with |Qt| 4.8.3 with |itom| compiled with 4.8.2)
-* The plugin is compiled with the same compiler than |itom|
-* If the plugin is dependent on other shared libraries which are not linked using a delay-load mechanism, the plugin can only be loaded if every necessary shared library can be found and successfully be loaded. If the dependency could not be loaded, the plugin-load fails with an error message *module could not be loaded*.
-* The remarks contained in the plugin with respect to a minimum and maximum version number of |itom| must correspond to the version number of your |itom|
-* The plugin must be compiled with the same version string of the class **ito::AddInInterface** than the version contained in |itom| (this is not the general version of |itom|). The version string of **AddInInterface** can be seen at the end of the file **addInInterface.h** in the **common**-folder.
-
-An overview about the load status of all detected library files can be seen by calling the dialog **loaded plugins**, accessible by |itom|'s menu **help >> loaded plugins...**.
-
-Finally, every successfully loaded plugin is included in the dock-widget **Plugin** of |itom|.
+For information about loading plugins in |itom|, see the section :ref:plugins-loading.
 
 Basic plugin structure
 ----------------------

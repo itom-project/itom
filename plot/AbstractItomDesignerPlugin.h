@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -31,6 +31,7 @@
 #include "plotCommon.h"
 #include "../common/sharedStructuresGraphics.h"
 #include "AbstractFigure.h"
+#include "designerPluginInterfaceVersion.h"
 
 #if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -44,14 +45,9 @@ namespace ito {
 
     class ITOMCOMMONPLOT_EXPORT AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
     {
-    Q_OBJECT
-//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
-    Q_INTERFACES(QDesignerCustomWidgetInterface)
+        Q_OBJECT
         
-        //! the classinfo ito.AbstractItomDesignerPlugin is the interface number of AbstractItomDesignerPlugin.
-        //  increment this number if you changed something in this interface or other abstract classes of the
-        //  plot designerPlugin system.
-        Q_CLASSINFO("ito.AbstractItomDesignerPlugin", "1.5.0")
+        Q_INTERFACES(QDesignerCustomWidgetInterface)
 
         public:
             AbstractItomDesignerPlugin(QObject *parent) :
@@ -83,16 +79,6 @@ namespace ito {
             const QString getLicenseInfo(void) const { return m_license; }
             //! returns a detailed description of the plugin compile informations
             const QString getAboutInfo(void) const { return m_aboutThis; }
-
-            //! returns information about the compiler settings for PCL, OpenCV, ... during build
-            int getCompilerFeatures(void) const 
-            {
-                int retval = AbstractFigure::tOpenCV;
-                #if defined USEPCL || ITOM_POINTCLOUDLIBRARY
-                retval |= AbstractFigure::tPointCloudLib;
-                #endif
-                return retval;
-            }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
 

@@ -2,7 +2,7 @@
 
 .. _qtdesigner:
 
-Creating advanced dialogs and windows  
+Creating advanced dialogs and windows
 **************************************
 
 With |itom| it is not only possible to add menus and toolbar elements to the main GUI of |itom| or to use the default set of input and message boxes, but

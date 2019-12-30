@@ -1079,6 +1079,9 @@ end:
                     userOpt = fp->paramsOpt;
                     userMand = fp->paramsMand.mid(autoMand.size());
 
+                    ito::AddInAlgo::FilterDefExt *filterExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(filter);
+                    QSharedPointer<ito::FunctionCancellationAndObserver> emptyObserver; //no observer initialized
+
                     if (userMand.size() > 0 || userOpt.size() > 0)
                     {
                         DialogSaveFileWithFilter *dialog = new DialogSaveFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, true, parent);
@@ -1091,7 +1094,16 @@ end:
 
                             dialog->getParameters(paramsMand, paramsOpt);
                             paramsMand = autoMand + paramsMand;
-                            retval += filter->m_filterFunc(&paramsMand, &paramsOpt, &autoOut);
+
+                            if (filterExt)
+                            {
+                                retval += filterExt->m_filterFuncExt(&paramsMand, &paramsOpt, &autoOut, emptyObserver);
+                            }
+                            else
+                            {
+                                retval += filter->m_filterFunc(&paramsMand, &paramsOpt, &autoOut);
+                            }
+
                             QApplication::restoreOverrideCursor();
                         }
 
@@ -1104,7 +1116,15 @@ end:
                                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
-                        retval += filter->m_filterFunc(&autoMand, &paramsOpt, &autoOut);
+                        if (filterExt)
+                        {
+                            retval += filterExt->m_filterFuncExt(&paramsMand, &paramsOpt, &autoOut, emptyObserver);
+                        }
+                        else
+                        {
+                            retval += filter->m_filterFunc(&paramsMand, &paramsOpt, &autoOut);
+                        }
+
                         QApplication::restoreOverrideCursor();
                     }
                 }

@@ -8,7 +8,7 @@
 .. toctree::
     :numbered:
     :caption: Table of Contents
-    :maxdepth: 3
+    :maxdepth: 2
 
     00_releaseNotes/whats-new.rst
     01_introduction/introduction.rst

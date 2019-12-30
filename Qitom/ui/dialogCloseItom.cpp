@@ -67,7 +67,7 @@ void DialogCloseItom::on_btnInterrupt_clicked()
 
         ui.lbl2->setText(tr("Try to interrupt Python..."));
 		
-		pyEngine->pythonInterruptExecution(); // close python
+		pyEngine->pythonInterruptExecutionThreadSafe(); // close python
 		
         ui.btnInterrupt->setEnabled(false);
         ui.btnCancel->setEnabled(false);
