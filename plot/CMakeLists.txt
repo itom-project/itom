@@ -94,7 +94,7 @@ LINK_DIRECTORIES(
 
 set(itomCommonPlot_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/plotCommon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDObjFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDObjPCLFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AbstractFigure.h
@@ -103,16 +103,12 @@ set(itomCommonPlot_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginInterfaceVersion.h
 )
 
-IF(NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(itomCommonPlot_HEADERS_MOC ${itomCommonPlot_HEADERS})
-ENDIF(NOT QT5_FOUND)
-
 set(itomCommonPlot_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractNode.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/Channel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/Channel.cpp
 )
 
 if(MSVC)

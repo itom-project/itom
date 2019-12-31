@@ -253,31 +253,7 @@ if (QT5_FOUND)
       LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
     ENDFOREACH()
 else (QT5_FOUND)
-
-    QT4_WRAP_CPP_ITOM(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
-    QT4_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
-    QT4_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
-    
-    #these header files need to be moc'ed, but the moc file should not be added to the project
-    #since it is included in another source file that actually compiles the moc'ed file.
-    QT4_GENERATE_MOCS(
-        pathLineEdit.h
-    )
-    
-    SET(paramPropertyBrowser_MOC_CPP)
-    FOREACH(file ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
-      get_filename_component(filename_we ${file} NAME_WE)
-      SET(output_file moc_${filename_we}.cpp)
-      QT4_GENERATE_MOC(${file} ${output_file})
-      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
-    ENDFOREACH()
-    
-    FOREACH(file ${paramPropertyBrowser_CPP_MOC_SOURCES})
-      get_filename_component(filename_we ${file} NAME_WE)
-      SET(output_file ${filename_we}.moc)
-      QT4_GENERATE_MOC(${file} ${output_file})
-      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
-    ENDFOREACH()
+    MESSAGE(SEND_ERROR "Only Qt5 is currently supported")
 endif (QT5_FOUND)
 
 #append the separately moc'ed header to the list of headers

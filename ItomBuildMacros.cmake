@@ -3,7 +3,7 @@
 #########################################################################
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
-SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
+SET (BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
 OPTION(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
 
 IF(BUILD_OPENCV_SHARED)
@@ -164,15 +164,16 @@ ENDMACRO (BUILD_PARALLEL_LINUX)
 
 
 MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
-    #call this macro to find the qt4 package (either version qt4 or qt5).
+    # call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
+    # of Qt4 has been removed.
     #
     # call example FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
     #
-    # this will detect Qt with all given packages (packages given as Qt5 package names, Qt4 is automatically
-    # back-translated) and automoc for Qt5 is set to ON (ignored for Qt4)
+    # this will detect Qt with all given packages (packages given as Qt5 package names) 
+    # and automoc for Qt5 is set to ON
     #
-    # If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected and if not found Qt4 is detected
-    # Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt4' or 'Qt5'
+    # If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected (support for Qt4 has been removed).
+    # Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt5'
     #
     # For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0
     #
@@ -181,7 +182,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     SET(QT5_LIBRARIES "")
 
     IF(${BUILD_QTVERSION} STREQUAL "Qt4")
-        SET(DETECT_QT5 FALSE)
+        MESSAGE(SEND_ERROR "The support for Qt4 has been removed for itom > 3.2.1")
     ELSEIF(${BUILD_QTVERSION} STREQUAL "Qt5")
         if (CMAKE_VERSION VERSION_GREATER 2.8.7)
             if (POLICY CMP0020)
@@ -198,11 +199,11 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
             ENDIF (POLICY CMP0020)
             SET(DETECT_QT5 TRUE)
         ELSE ()
-            MESSAGE(STATUS "with cmake <= 2.8.7 no Qt4 auto-detection is possible. Search for Qt4")
-            SET(DETECT_QT5 FALSE)
+            MESSAGE(STATUS "with cmake <= 2.8.7 no Qt auto-detection is possible. Search for Qt5")
+            SET(DETECT_QT5 TRUE)
         ENDIF ()
     ELSE()
-        MESSAGE(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt4 or Qt5 allowed")
+        MESSAGE(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt5 allowed")
     ENDIF()
     set (QT5_FOUND FALSE)
         
@@ -287,44 +288,6 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
         ENDIF (Qt5Core_FOUND)
         
     ENDIF (DETECT_QT5)
-
-    IF (NOT DETECT_QT5)
-        #TRY TO FIND QT4
-        SET(QT5_FOUND FALSE)
-        find_package(Qt4 REQUIRED)
-        SET (QT_USE_CORE TRUE)
-        
-        FOREACH (comp ${Components})
-            IF (${comp} STREQUAL "OpenGL")
-                SET (QT_USE_QTOPENGL TRUE)
-            ELSEIF (${comp} STREQUAL "Core")
-                SET (QT_USE_QTCORE TRUE)
-            ELSEIF (${comp} STREQUAL "Designer")
-                SET (QT_USE_QTDESIGNER TRUE)
-            ELSEIF (${comp} STREQUAL "Xml")
-                SET (QT_USE_QTXML TRUE)
-            ELSEIF (${comp} STREQUAL "Svg")
-                SET (QT_USE_QTSVG TRUE)
-            ELSEIF (${comp} STREQUAL "Sql")
-                SET (QT_USE_QTSQL TRUE)
-            ELSEIF (${comp} STREQUAL "Network")
-                SET (QT_USE_QTNETWORK TRUE)
-            ELSEIF (${comp} STREQUAL "UiTools")
-                SET (QT_USE_QTUITOOLS TRUE)
-            ELSEIF (${comp} STREQUAL "Widgets")
-                SET (QT_USE_QTGUI TRUE)
-            ELSEIF (${comp} STREQUAL "PrintSupport")
-            ELSEIF (${comp} STREQUAL "LinguistTools")
-            ELSEIF (${comp} STREQUAL "WebEngine")
-            ELSEIF (${comp} STREQUAL "WebEngineWidgets")
-            ELSEIF (${comp} STREQUAL "Concurrent")
-            ELSE ()
-                message (SEND_ERROR "Qt component ${comp} unknown")
-            ENDIF ()
-        ENDFOREACH (comp)
-        
-        INCLUDE(${QT_USE_FILE})
-    ENDIF (NOT DETECT_QT5)
     
     ADD_DEFINITIONS(${QT_DEFINITIONS})
 ENDMACRO (FIND_PACKAGE_QT)
@@ -352,7 +315,7 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
         IF (QT5_FOUND)
             QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         ELSE (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+            MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
         ENDIF (QT5_FOUND)
         
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
@@ -361,13 +324,13 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
         IF (QT5_FOUND)
             QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         ELSE (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+            MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
         ENDIF (QT5_FOUND)
     ELSE (${force_translation_update})
         IF (QT5_FOUND)
             QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         ELSE (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+            MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
         ENDIF (QT5_FOUND)
     ENDIF (${force_translation_update})
     
@@ -379,136 +342,6 @@ ENDMACRO (PLUGIN_TRANSLATION)
 ###########################################################################
 # useful macros
 ###########################################################################
-
-# using custom macro for qtCreator compatibility, i.e. put ui files into GeneratedFiles/ folder
-# This macro is copied and adapted from Qt4Macros.cmake (Copyright Kitware, Inc.).
-MACRO (QT4_WRAP_UI_ITOM outfiles)
-    
-    IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-        QT4_EXTRACT_OPTIONS(ui_files ui_options ui_target ${ARGN})
-    ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-        QT4_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
-    ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
-
-    FOREACH (it ${ui_files})
-        GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
-        GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
-        SET(outfile ${CMAKE_CURRENT_BINARY_DIR}/ui_${outfile}.h) # Here we set output
-        ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
-            COMMAND ${QT_UIC_EXECUTABLE}
-            ARGS ${ui_options} -o ${outfile} ${infile}
-            MAIN_DEPENDENCY ${infile})
-        SET(${outfiles} ${${outfiles}} ${outfile})
-    ENDFOREACH (it)
-    SOURCE_GROUP("GeneratedFiles" FILES ${${outfiles}})
-ENDMACRO (QT4_WRAP_UI_ITOM)
-
-
-# This macro is copied and adapted from Qt4Macros.cmake (Copyright Kitware, Inc.).
-MACRO (QT4_WRAP_CPP_ITOM outfiles )
-    # get include dirs
-    QT4_GET_MOC_FLAGS(moc_flags)
-    
-    IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-        QT4_EXTRACT_OPTIONS(moc_files moc_options moc_target ${ARGN})
-    ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-        QT4_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
-    ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-
-    foreach (it ${moc_files})
-        GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
-        QT4_MAKE_OUTPUT_FILE(${it} moc_ cxx outfile)
-        
-        IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-            QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}" "${moc_target}")
-        ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-            QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}")
-        ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-
-        set(${outfiles} ${${outfiles}} ${outfile})
-    endforeach()
-
-    SOURCE_GROUP("GeneratedFiles" FILES ${${outfiles}})
-ENDMACRO ()
-
-
-# This macro is copied and adapted from Qt4Macros.cmake (Copyright Kitware, Inc.).
-MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
-    IF(${CMAKE_VERSION_GT_020811})
-        QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options _lupdate_target ${ARGN})
-    ELSE(${CMAKE_VERSION_GT_020811})
-        QT4_EXTRACT_OPTIONS(_lupdate_files _lupdate_options ${ARGN})
-    ENDIF(${CMAKE_VERSION_GT_020811})
-    
-    set(_my_sources)
-    set(_my_dirs)
-    set(_my_tsfiles)
-    set(_ts_pro)
-
-    #reset tsFiles
-    set(${tsFiles} "")
-
-    foreach (_file ${_lupdate_files})
-        get_filename_component(_ext ${_file} EXT)
-        get_filename_component(_abs_FILE ${_file} ABSOLUTE)
-        IF(_ext MATCHES "ts")
-            list(APPEND _my_tsfiles ${_abs_FILE})
-        ELSE()
-            IF(NOT _ext)
-                list(APPEND _my_dirs ${_abs_FILE})
-            ELSE()
-                list(APPEND _my_sources ${_abs_FILE})
-            ENDIF()
-        ENDIF()
-    endforeach()
-
-    foreach( _lang ${${languages}})
-        set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
-        get_filename_component(_ext ${_tsFile} EXT)
-        get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
-        IF(EXISTS ${_abs_FILE})
-            list(APPEND _my_tsfiles ${_abs_FILE})
-        ELSE()
-            #create new ts file
-            add_custom_command(OUTPUT ${_abs_FILE}_new
-                COMMAND ${QT_LUPDATE_EXECUTABLE}
-                ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
-                DEPENDS ${_my_sources} VERBATIM)
-            list(APPEND _my_tsfiles ${_abs_FILE})
-            set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
-        ENDIF()
-    endforeach()
-
-    set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
-
-    foreach(_ts_file ${_my_tsfiles})
-        IF(_my_sources)
-            # make a .pro file to call lupdate on, so we don't make our commands too
-            # long for some systems
-            get_filename_component(_ts_name ${_ts_file} NAME_WE)
-            set(_ts_pro ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_ts_name}_lupdate.pro)
-            set(_pro_srcs)
-            foreach(_pro_src ${_my_sources})
-                set(_pro_srcs "${_pro_srcs} \"${_pro_src}\"")
-            endforeach()
-            set(_pro_includes)
-            get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
-            foreach(_pro_include ${_inc_DIRS})
-                get_filename_component(_abs_include "${_pro_include}" ABSOLUTE)
-                set(_pro_includes "${_pro_includes} \"${_abs_include}\"")
-            endforeach()
-            file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
-        ENDIF()
-        add_custom_command(OUTPUT ${_ts_file}_update
-            COMMAND ${QT_LUPDATE_EXECUTABLE}
-            ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
-            DEPENDS ${_my_sources} ${_ts_pro} VERBATIM)
-        set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
-    endforeach()
-ENDMACRO()
-
 
 MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     message(STATUS "--------------------------------------------------------------------\nQT5_CREATE_TRANSLATION_ITOM: Create ts files for target ${target}\n--------------------------------------------------------------------")
@@ -598,26 +431,6 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 ENDMACRO()
 
 
-MACRO(QT4_ADD_TRANSLATION_ITOM _qm_files output_location target)
-    foreach (_current_FILE ${ARGN})
-        get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
-        get_filename_component(qm ${_abs_FILE} NAME_WE)
-
-        file(MAKE_DIRECTORY "${output_location}")
-        set(qm "${output_location}/${qm}.qm")
-
-        add_custom_command(TARGET ${target}
-            PRE_BUILD
-            COMMAND ${QT_LRELEASE_EXECUTABLE}
-            ARGS ${_abs_FILE} -qm ${qm}
-            VERBATIM
-            )
-
-        set(${_qm_files} ${${_qm_files}} ${qm})
-    endforeach ()
-ENDMACRO()
-
-
 MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
     foreach (_current_FILE ${ARGN})
         get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
@@ -635,29 +448,6 @@ MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
         set(${_qm_files} ${${_qm_files}} ${qm})
     endforeach ()
 ENDMACRO()
-
-
-#this macro only generates the moc-file but does not compile it, since it is included in another source file.
-#this comes from the ctkCommon project
-#Creates a rule to run moc on infile and create outfile. Use this IF for some reason QT5_WRAP_CPP() 
-#isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
-macro(QT4_GENERATE_MOCS)
-    foreach(file ${ARGN})
-        set(moc_file moc_${file})
-        QT4_GENERATE_MOC(${file} ${moc_file})
-
-        get_filename_component(source_name ${file} NAME_WE)
-        get_filename_component(source_ext ${file} EXT)
-        IF(${source_ext} MATCHES "\\.[hH]")
-            IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
-                set(source_ext .cpp)
-            ELSEIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
-                set(source_ext .cxx)
-            ENDIF()
-        ENDIF()
-        set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
-    endforeach()
-endmacro()
 
 
 #this macro only generates the moc-file but does not compile it, since it is included in another source file.
