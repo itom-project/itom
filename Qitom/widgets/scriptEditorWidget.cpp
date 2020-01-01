@@ -34,11 +34,7 @@
 #include "../ui/dialogEditBreakpoint.h"
 
 #include <qmessagebox.h>
-#if QT_VERSION >= 0x050000
-    #include <QtPrintSupport/qprintpreviewdialog.h>
-#else
-    #include <qprintpreviewdialog.h>
-#endif
+#include <QtPrintSupport/qprintpreviewdialog.h>
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qpainter.h>

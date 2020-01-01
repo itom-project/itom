@@ -27,11 +27,7 @@
 
 #include "plotInfoPicker.h"
 
-#if QT_VERSION < 0x050000
-#include <qpainter.h>
-#else
 #include <QtGui/qpainter.h>
-#endif
 
 //---------------------------------------------------------------------------------------------------------
 PlotInfoPicker::PlotInfoPicker(QWidget* parent /*= NULL*/) : QTreeWidget(parent)

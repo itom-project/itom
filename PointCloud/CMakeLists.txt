@@ -64,7 +64,7 @@ INCLUDE_DIRECTORIES(
 )
 
 set(libSrcs 
-	${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pclFunctions.h
@@ -73,7 +73,7 @@ set(libSrcs
 )
 
 if(MSVC)
-	list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
 
 add_library(pointcloud ${LIBRARY_TYPE} ${libSrcs}) # ../dataobject)

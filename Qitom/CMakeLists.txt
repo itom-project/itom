@@ -433,8 +433,6 @@ set(qitom_ui
 
 IF (QT5_FOUND)
     QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
-ELSE (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(qitom_ui_MOC ${qitom_ui})
 ENDIF (QT5_FOUND)
 
 
@@ -444,10 +442,9 @@ set(qitom_rcc
 
 IF (QT5_FOUND)
     QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ELSE ()
-    set(qitom_rcc ${qitom_rcc} ${CMAKE_CURRENT_SOURCE_DIR}/iconThemeBright.qrc)
-    QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ENDIF ()
+else (QT5_FOUND)
+    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
+ENDIF (QT5_FOUND)
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
@@ -466,7 +463,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
@@ -706,7 +703,7 @@ if (UPDATE_TRANSLATIONS)
 #        QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
         QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE})
     else (QT5_FOUND)
-        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
     endif (QT5_FOUND)
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
@@ -717,13 +714,13 @@ if (UPDATE_TRANSLATIONS)
     if (QT5_FOUND)
         QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
     else (QT5_FOUND)
-        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
     endif (QT5_FOUND)
 else (UPDATE_TRANSLATIONS)
     if (QT5_FOUND)
-        QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})    
+        QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
     else (QT5_FOUND)
-        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+        MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
     endif (QT5_FOUND)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END

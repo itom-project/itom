@@ -241,16 +241,19 @@ void CodeCompletionMode::createCompleter()
     if (m_filterMode != FilterFuzzy)
     {
         m_pCompleter = new QCompleter(QStringList() << "", editor());
-#if QT_VERSION >= 0x050000
+        
         if (m_filterMode == FilterContains)
+        {
             m_pCompleter->setFilterMode(Qt::MatchContains);
-#endif
+        }
     }
     else
     {
         m_pCompleter = new SubsequenceCompleter(editor());
     }
+
     m_pCompleter->setCompletionMode(QCompleter::PopupCompletion);
+
     if (m_caseSensitive)
     {
         m_pCompleter->setCaseSensitivity(Qt::CaseSensitive);

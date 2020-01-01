@@ -35,14 +35,8 @@ extern "C++" {
 #include "../common/commonGlobal.h"
 #include "../common/typeDefs.h"
 
-#if QT_VERSION < 0x050000
-#include <qplaintextedit.h>
-#include <qpixmap.h>
-#else
 #include <QtWidgets/qplaintextedit.h>
 #include <QtGui/qpixmap.h>
-//
-#endif
 
 class ITOMCOMMONQT_EXPORT DObjectInfoWidget : public QPlainTextEdit
 {

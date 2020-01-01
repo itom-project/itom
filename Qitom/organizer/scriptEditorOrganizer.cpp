@@ -1029,11 +1029,7 @@ QStringList ScriptEditorOrganizer::openedScripts() const
         openedScripts << sdw->getAllFilenames();
     }
 
-#if QT_VERSION < 0x050000
-    openedScripts.sort();
-#else
     openedScripts.sort(Qt::CaseInsensitive);
-#endif
     openedScripts.removeDuplicates();
     return openedScripts; //return list with all filenames of all opened scripts
 }

@@ -26,7 +26,7 @@ ENDIF(WIN32 AND NOT ${gtest_force_shared_crt})
 
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common
     ${OpenCV_DIR}/include
 )

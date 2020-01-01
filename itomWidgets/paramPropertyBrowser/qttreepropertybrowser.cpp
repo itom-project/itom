@@ -482,11 +482,8 @@ void QtTreePropertyBrowserPrivate::init(QWidget *parent)
     m_delegate = new QtPropertyEditorDelegate(parent);
     m_delegate->setEditorPrivate(this);
     m_treeWidget->setItemDelegate(m_delegate);
-#if QT_VERSION >= 0x050000
     m_treeWidget->header()->setSectionsMovable(false);
     m_treeWidget->header()->setSectionResizeMode(QHeaderView::Stretch);
-#endif
-
     m_expandIcon = drawIndicatorIcon(q_ptr->palette(), q_ptr->style());
 
     QObject::connect(m_treeWidget, SIGNAL(collapsed(const QModelIndex &)), q_ptr, SLOT(slotCollapsed(const QModelIndex &)));
@@ -897,9 +894,8 @@ void QtTreePropertyBrowser::setResizeMode(QtTreePropertyBrowser::ResizeMode mode
         case QtTreePropertyBrowser::Stretch:
         default:                                      m = QHeaderView::Stretch;          break;
     }
-#if QT_VERSION >= 0x050000
+    
     d_ptr->m_treeWidget->header()->setSectionResizeMode(m);
-#endif
 }
 
 /*!

@@ -132,9 +132,7 @@ private:
     ito::PyWorkspaceContainer *m_workspaceContainer;
 
     QPixmap m_dragPixmap;
-#if QT_VERSION >= 0x050000
     Qt::DropActions supportedDragActions() const;
-#endif
 
 signals:
 

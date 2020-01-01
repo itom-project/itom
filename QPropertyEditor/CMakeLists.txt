@@ -63,19 +63,19 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.h
-	${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Property.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.h
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.h
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.h
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.h
-	${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.h
-	${CMAKE_CURRENT_SOURCE_DIR}/propertyEditorVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/propertyEditorVersion.h
 )
 
 set(qpropertyeditor_SOURCES 
@@ -83,16 +83,16 @@ set(qpropertyeditor_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Property.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.cpp
 )

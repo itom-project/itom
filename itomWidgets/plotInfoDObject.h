@@ -37,14 +37,8 @@ extern "C++" {
 
 #include "commonWidgets.h"
 
-#if QT_VERSION < 0x050000
-#include <qplaintextedit.h>
-#include <qpixmap.h>
-#else
 #include <QtWidgets/qplaintextedit.h>
 #include <QtGui/qpixmap.h>
-//
-#endif
 
 class ITOMWIDGETS_EXPORT PlotInfoDObject : public QPlainTextEdit
 {

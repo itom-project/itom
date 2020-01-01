@@ -145,7 +145,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -194,7 +194,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.h
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.h
-	${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
 )
 
 # List of header that should go though moc
@@ -349,16 +349,12 @@ set(itomWidgets_UI
 
 IF (QT5_FOUND)
     QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
-ELSE (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(itomWidgets_UI_MOC ${itomWidgets_UI})
 ENDIF (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 if (QT5_FOUND)
     QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
-else (QT5_FOUND)
-    QT4_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
 endif (QT5_FOUND)
 
 #add filters to visual studio

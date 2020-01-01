@@ -505,11 +505,7 @@ void FoldingPanel::drawFoldIndicator(int top, bool mouseOver, bool collapsed, QP
     QRect rect(0, top, sizeHint().width(), sizeHint().height());
     if (m_native)
     {
-#if QT_VERSION < 0x050000
-        QStyleOptionViewItemV2 opt;
-#else
         QStyleOptionViewItem opt;
-#endif
         opt.rect = rect;
         opt.state = (QStyle::State_Active | \
                         QStyle::State_Item | \

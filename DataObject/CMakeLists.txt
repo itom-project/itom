@@ -59,14 +59,14 @@ LINK_DIRECTORIES(
 
 set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobjVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
 )
 
 if(MSVC)
-	list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${libSrcs})
@@ -84,7 +84,7 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATIO
 
 #readWriteLock.h is not part of the SDK anymore
 IF(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
-	FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
 ENDIF()
 
 # COPY SECTION

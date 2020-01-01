@@ -31,11 +31,7 @@ extern "C++" {
 
 #include "defines.h"
 
-#if QT_VERSION < 0x050000
-#include <qtreeview.h>
-#else
 #include <QtWidgets/qtreeview.h>
-#endif
 
 class QPropertyModel;
 class Property;

@@ -36,15 +36,8 @@ extern "C++" {
 #include "../common/typeDefs.h"
 #include "../common/shape.h"
 
-#if QT_VERSION < 0x050000
-#include <qtreewidget.h>
-#include <qhash.h>
-#include <qpixmap.h>
-#else
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpixmap.h>
-//
-#endif
 
 class ITOMCOMMONQT_EXPORT MarkerInfoWidget : public QTreeWidget
 {

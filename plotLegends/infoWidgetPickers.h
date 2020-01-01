@@ -39,15 +39,8 @@ extern "C++" {
 #include <qpoint.h>
 #include <qvector3d.h>
 #include <qvector4d.h>
-#if QT_VERSION < 0x050000
-#include <qtreewidget.h>
-#include <qhash.h>
-#include <qpixmap.h>
-#else
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpixmap.h>
-//
-#endif
 
 class ITOMCOMMONQT_EXPORT PickerInfoWidget : public QTreeWidget
 {

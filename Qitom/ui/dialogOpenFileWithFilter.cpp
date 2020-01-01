@@ -25,11 +25,7 @@
 #include "../AppManagement.h"
 #include "../helper/guiHelper.h"
 
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
-#else
-#include <qtconcurrentrun.h>
-#endif
 #include <qfileinfo.h>
 #include <qfileiconprovider.h>
 #include <qmessagebox.h>

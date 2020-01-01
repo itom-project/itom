@@ -160,11 +160,7 @@ protected:
 
     PyObject* setPyErrFromException(const std::exception &exc);
 
-#if QT_VERSION >= 0x050000
     void connectNotify(const QMetaMethod &signal);
-#else
-    void connectNotify(const char* signal);
-#endif
 
 private:
     static PythonEngine *getInstanceInternal();

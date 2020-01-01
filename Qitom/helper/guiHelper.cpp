@@ -22,12 +22,7 @@
 
 #include "guiHelper.h"
 
-#if QT_VERSION < 0x050000
-    #include <qdesktopwidget.h>
-#else
-    #include <qscreen.h>
-#endif
-
+#include <qscreen.h>
 #include <qapplication.h>
 #include <qglobal.h>
 
@@ -51,22 +46,6 @@ namespace ito
             return dpi;
         }
 
-#if QT_VERSION < 0x050000
-        QDesktopWidget *dw = qApp->desktop();
-        if (dw)
-        {
-            dpi = dw->logicalDpiX();
-        }
-        
-        if (!dw || dpi <= 0)
-        {
-            if (ok)
-            {
-                *ok = false;
-            }
-            return 96;
-        }
-#else
         QList<QScreen*> screens = QApplication::screens();
         if (screens.size() > 0)
         {
@@ -81,7 +60,6 @@ namespace ito
             }
             return 96;
         }
-#endif
 
         if (ok)
         {

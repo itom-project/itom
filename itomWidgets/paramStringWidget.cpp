@@ -174,19 +174,7 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
 
                 if (valChanged)
                 {
-#if QT_VERSION < 0x050000
-					QString text = QLatin1String(param.getVal<const char*>());
-					for (int i = 0; i < d->m_pComboBox->count(); ++i)
-					{
-						if (d->m_pComboBox->itemText(i) == text)
-						{
-							d->m_pComboBox->setCurrentIndex(i);
-							break;
-						}
-					}
-#else
-                    d->m_pComboBox->setCurrentText(param.getVal<const char*>());
-#endif
+					d->m_pComboBox->setCurrentText(param.getVal<const char*>());
                 }
             }
 
@@ -225,19 +213,7 @@ void ParamStringWidget::setValue(const QByteArray &value)
         }
         else
         {
-#if QT_VERSION < 0x050000
-			QString text = value;
-			for (int i = 0; i < d->m_pComboBox->count(); ++i)
-			{
-				if (d->m_pComboBox->itemText(i) == text)
-				{
-					d->m_pComboBox->setCurrentIndex(i);
-					break;
-				}
-			}
-#else
-            d->m_pComboBox->setCurrentText(value);
-#endif
+			d->m_pComboBox->setCurrentText(value);
         }
 
         d->m_param.setVal<const char*>(value.data());

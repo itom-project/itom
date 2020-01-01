@@ -30,11 +30,7 @@
 #include <iostream>
 
 #include <qdir.h>
-#if QT_VERSION < 0x050000
-#include <qapplication.h>
-#else
 #include <QtWidgets/qapplication.h>
-#endif
 #include <qtextstream.h>
 #include <qvariant.h>
 #include <QDebug>

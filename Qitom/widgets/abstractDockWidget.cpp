@@ -938,12 +938,6 @@ void AbstractDockWidget::dockWidget()
     
     m_docked = true;
 
-#if QT_VERSION < 0x050000
-    //under Qt5 (probably), this line causes mouse event and position errors especially under Ubuntu.
-    //TODO: check if the docking behaviour works well under all systems.
-    setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
-#endif
-
     Qt::WindowFlags flags = m_pWindow->windowFlags();
     flags &= (~Qt::WindowStaysOnTopHint); //delete WindowStaysOnTopHint
     //the following two commented lines cause layout errors with Qt5 especially
@@ -1039,11 +1033,6 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 
         setTopLevel(m_recentTopLevelStyle, show_it);
 
-#if QT_VERSION < 0x050000
-        //under Qt5 (probably), this line causes mouse event and position errors especially under Ubuntu.
-        //TODO: check if the docking behaviour works well under all systems.
-        setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
-#endif
         setFloating(true);
         QDockWidget::hide();
 
@@ -1073,11 +1062,6 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     {
         setParent(m_overallParent);
         m_pWindow->setParent(this);
-#if QT_VERSION < 0x050000
-        //under Qt5 (probably), this line causes mouse event and position errors especially under Ubuntu.
-        //TODO: check if the docking behaviour works well under all systems.
-        setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
-#endif
         setFloating(true);
 
         if (m_dockToolbar)

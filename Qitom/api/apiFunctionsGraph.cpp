@@ -580,11 +580,8 @@ ito::RetVal apiFunctionsGraph::mConnectToOutputAndErrorStream(const QObject *rec
     }
     else
     {
-#if QT_VERSION >= 0x050000
         QMetaObject::Connection conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
-#else
-        int conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
-#endif
+        
         if (!conn)
         {
             retval += ito::RetVal(ito::retError, 0, "connection cannot be established");
