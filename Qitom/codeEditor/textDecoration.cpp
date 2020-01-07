@@ -170,18 +170,23 @@ TextDecoration::TextDecoration(QTextDocument *document, int startPos /*=-1*/, in
 
     if (startLine >= 0)
     {
-        //this->cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine);
-
         QTextBlock b = document->findBlockByNumber(startLine);
-        cursor.setPosition(b.position(), QTextCursor::MoveAnchor);
+
+        if (b.isValid())
+        {
+            cursor.setPosition(b.position(), QTextCursor::MoveAnchor);
+        }
+        else
+        {
+            cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+        }
+        
     }
 
     if (endLine >= 0)
     {
-        //this->cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
-
         QTextBlock b = document->findBlockByNumber(endLine);
+
         if (b.isValid())
         {
             cursor.setPosition(b.position(), QTextCursor::KeepAnchor);
@@ -283,10 +288,12 @@ void TextDecoration::selectLine()
     cursor.movePosition(QTextCursor::StartOfBlock);
     QString text = cursor.block().text();
     int lindent = 0;
+
     while (lindent < text.size() && text[lindent].isSpace())
     {
         lindent++;
     }
+
     cursor.setPosition(cursor.block().position() + lindent);
     cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
 }
@@ -307,6 +314,7 @@ void TextDecoration::setFullWidth(bool flag /*= true*/, bool clear /*= true*/)
     {
         cursor.clearSelection();
     }
+
     format.setProperty(QTextFormat::FullWidthSelection, flag);
 }
 

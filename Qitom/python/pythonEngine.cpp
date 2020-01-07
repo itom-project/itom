@@ -46,6 +46,7 @@
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
 #include "pythonJedi.h"
+#include "pythonProgressObserver.h"
 
 #include "common/interval.h"
 #include "../helper/sleeper.h"
@@ -258,6 +259,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::JediCompletionRequest>("ito::JediCompletionRequest");
     qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
     qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
+    qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -614,6 +616,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 Py_INCREF(&PythonPlotItem::PyPlotItemType);
                 PythonPlotItem::PyPlotItem_addTpDict(PythonPlotItem::PyPlotItemType.tp_dict);
                 PyModule_AddObject(itomModule, "plotItem", (PyObject *)&PythonPlotItem::PyPlotItemType);
+            }
+
+            if (PyType_Ready(&PythonProgressObserver::PyProgressObserverType) >= 0)
+            {
+                Py_INCREF(&PythonProgressObserver::PyProgressObserverType);
+                PythonProgressObserver::PyProgressObserver_addTpDict(PythonProgressObserver::PyProgressObserverType.tp_dict);
+                PyModule_AddObject(itomModule, "progressObserver", (PyObject *)&PythonProgressObserver::PyProgressObserverType);
             }
 
             if (PyType_Ready(&PythonProxy::PyProxyType) >= 0)
@@ -4030,7 +4039,31 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PythonEngine::queuedInterrupt(void * state) 
+void PythonEngine::addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer)
+{
+    m_activeFunctionCancellations.append(observer);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer /*= NULL*/)
+{
+    QList<QWeakPointer<ito::FunctionCancellationAndObserver> >::iterator it = m_activeFunctionCancellations.begin();
+
+    while (it != m_activeFunctionCancellations.end())
+    {
+        if (it->isNull() || it->data() == observer)
+        {
+            it = m_activeFunctionCancellations.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int PythonEngine::queuedInterrupt(void* /*arg*/) 
 { 
     // ok this is REALLY ugly, BUT if we want to break python constructs like:
     // while 1:
@@ -4043,16 +4076,16 @@ int PythonEngine::queuedInterrupt(void * state)
     // we accumulate some keyboards interrupts and force their
     // excecution afterwards with setInterrupt ...
     // Anyway deeper nested try - except constructs we cannot terminate this way
-//    while ((*(ito::tPythonState *)state) == pyStateRunning)
+
     {
-        PyErr_SetNone(PyExc_KeyboardInterrupt);
-        PyErr_SetNone(PyExc_KeyboardInterrupt);
+        PyErr_SetString(PyExc_KeyboardInterrupt, "Keyboard interrupt (I)");
+        PyErr_SetString(PyExc_KeyboardInterrupt, "Keyboard interrupt (II)");
         PyErr_SetInterrupt();
     }
     PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
-    PyErr_Clear();
+    //PyErr_Clear(); 4
 
-    return -1; 
+    return 0; 
 } 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4071,29 +4104,12 @@ int PythonEngine::queuedInterrupt(void * state)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonInterruptExecution()
-{
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("AddInManager");
-    bool interruptActuators = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
-    settings.endGroup();
-
-    if (interruptActuators)
-    {
-        QObject* addInManager = AppManagement::getAddInManager();
-        if (addInManager)
-        {
-            QMetaObject::invokeMethod(addInManager, "interruptAllActuatorInstances");
-        }
-    }
-
-//    PyGILState_STATE gstate;
-//    gstate = PyGILState_Ensure();
-
+void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
+{ 
     // only queue the interrupt event if not yet done.
     // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. 
     //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
-    if (m_interruptCounter.testAndSetRelaxed(0, 1)) 
+    if (m_interruptCounter.testAndSetRelaxed(0, 1))
     {
         if (isPythonDebugging() && isPythonDebuggingAndWaiting())
         {
@@ -4103,12 +4119,37 @@ void PythonEngine::pythonInterruptExecution()
         }
         else
         {
-            Py_AddPendingCall(&PythonEngine::queuedInterrupt, &pythonState);
+            int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, NULL);
         }
     }
 
-    // Release the thread. No Python API allowed beyond this point.
-//    PyGILState_Release(gstate);
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("AddInManager");
+    bool interruptActuatorsSettings = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
+    settings.endGroup();
+
+    if (interruptActuatorsAndTimers)
+    {
+        //overwrite the settings
+        interruptActuatorsSettings = *interruptActuatorsAndTimers;
+    }
+
+    if (interruptActuatorsSettings)
+    {
+        QObject* addInManager = AppManagement::getAddInManager();
+        if (addInManager)
+        {
+            QMetaObject::invokeMethod(addInManager, "interruptAllActuatorInstances");
+        }
+    }
+
+    foreach(QWeakPointer<ito::FunctionCancellationAndObserver> observer, m_activeFunctionCancellations)
+    {
+        if (observer.isNull() == false)
+        {
+            observer.data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
+        }
+    }
 
     qDebug("PyErr_SetInterrupt() in pythonThread");
 };
@@ -4129,6 +4170,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject *self = NULL;
     PyObject *frame = NULL;
     PyObject *frame2 = NULL;
+    PyObject *frame_next = NULL;
     PyObject* temp;
     PyObject* temp2;
     PyObject* globalDict = NULL;
@@ -4142,21 +4184,22 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     long lineno;
     bool ok;
     QString filename;
+    QString innerFilename;
     Py_INCREF(pArgs);
 
     if (!PyArg_ParseTuple(pArgs, "OO", &self, &frame))
     {
-        Py_XDECREF(pArgs);
+        Py_CLEAR(pArgs);
         return Py_None;
     }
 
     temp = PyObject_GetAttrString(frame, "f_lineno");
     lineno = PyLong_AsLong(temp);
-    Py_XDECREF(temp);
+    Py_CLEAR(temp);
     temp = PyObject_GetAttrString(frame, "f_code");
     temp2 = PyObject_GetAttrString(temp, "co_filename");
     filename = PythonQtConversion::PyObjGetString(temp2,false,ok);
-    Py_XDECREF(temp2);    
+    Py_CLEAR(temp2);
 
     QStringList stack_files;
     IntList     stack_lines;
@@ -4167,32 +4210,43 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     temp2 = PyObject_GetAttrString(temp, "co_name");
     stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-    Py_XDECREF(temp2);
+    Py_CLEAR(temp2);
 
-    Py_XDECREF(temp);
+    Py_CLEAR(temp);
 
     frame2 = PyObject_GetAttrString(frame, "f_back");
 
     while(frame2 != NULL && frame2 != Py_None)
     {
-        temp = PyObject_GetAttrString(frame2, "f_lineno");
-        stack_lines.append(PyLong_AsLong(temp));
-        Py_XDECREF(temp);
-        
         temp = PyObject_GetAttrString(frame2, "f_code");
         temp2 = PyObject_GetAttrString(temp, "co_filename");
-        stack_files.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-        Py_XDECREF(temp2);
+        innerFilename = PythonQtConversion::PyObjGetString(temp2, false, ok);
+        Py_CLEAR(temp2);
+
+        if (innerFilename == "<string>")
+        {
+            //skip the <string> level and below (itoDebugger.py, bdb.py)
+            Py_CLEAR(temp);
+            break;
+        }
+
+        stack_files.append(innerFilename);
+
         temp2 = PyObject_GetAttrString(temp, "co_name");
         stack_methods.append(PythonQtConversion::PyObjGetString(temp2,false,ok));
-        Py_XDECREF(temp);
-        Py_XDECREF(temp2);
+        Py_CLEAR(temp2);
+        Py_CLEAR(temp);
 
-        Py_XDECREF(frame2);
-        frame2 = PyObject_GetAttrString(frame2, "f_back");
+        temp = PyObject_GetAttrString(frame2, "f_lineno");
+        stack_lines.append(PyLong_AsLong(temp));
+        Py_CLEAR(temp);
+
+        frame_next = PyObject_GetAttrString(frame2, "f_back");
+        Py_CLEAR(frame2);
+        frame2 = frame_next;
     }
 
-    Py_XDECREF(frame2);
+    Py_CLEAR(frame2);
 
     emit pyEngine->updateCallStack(stack_files, stack_lines, stack_methods);
 
@@ -4225,8 +4279,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         {
             PyErr_PrintEx(0);
         }
-        Py_XDECREF(callRet);
-        callRet = NULL;
+        Py_CLEAR(callRet);
     }
     else //proceed the normal debug turnus
     {
@@ -4263,13 +4316,11 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 pyEngine->clearDbgCmdLoop();
                 pyEngine->pythonStateTransition(pyTransDebugContinue);
-                Py_XDECREF(pArgs);
+                Py_CLEAR(pArgs);
 
-                Py_XDECREF(globalDict);
-                globalDict = NULL;
+                Py_CLEAR(globalDict);
                 pyEngine->setLocalDictionary(NULL);
-                Py_XDECREF(localDict);
-                localDict = NULL;
+                Py_CLEAR(localDict);
                 return PyErr_Occurred();
             }
 
@@ -4285,8 +4336,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgContinue:
             callRet = PyObject_CallMethod(self, "set_continue", "");
@@ -4294,8 +4344,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgStepOver:
             callRet = PyObject_CallMethod(self, "set_next", "O", frame);
@@ -4303,8 +4352,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgStepOut:
             callRet = PyObject_CallMethod(self, "set_return", "O", frame);
@@ -4312,8 +4360,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             break;
         case ito::pyDbgQuit:
             callRet = PyObject_CallMethod(self, "do_quit", "O", frame);
@@ -4321,16 +4368,14 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_PrintEx(0);
             }
-            Py_XDECREF(callRet);
-            callRet = NULL;
+            Py_CLEAR(callRet);
             PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
     }
 
     pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
-    Py_XDECREF(globalDict);
-    globalDict = NULL;
+    Py_CLEAR(globalDict);
 
     pyEngine->setLocalDictionary(NULL);
     Py_XDECREF(localDict);

@@ -31,8 +31,10 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qcombobox.h>
+#include <qpointer.h>
 
 #include "../models/classNavigatorItem.h"
+#include "../models/bookmarkModel.h"
 
 #include <qevent.h>
 
@@ -44,11 +46,21 @@ namespace ito {
 
 class DialogReplace; //forward declaration
 
+//! this struct can hold common actions for all script editor and script dock widgets
+struct ScriptEditorActions
+{
+    QAction *actNavigationForward;
+    QAction *actNavigationBackward;
+};
+
+
 class ScriptDockWidget : public AbstractDockWidget
 {
     Q_OBJECT
 public:
-    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, 
+        const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel, 
+        QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
@@ -70,8 +82,8 @@ public:
 
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
-    bool activateTabByFilename(const QString &filename, int line = -1);
-    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false);
+    bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
+    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -88,9 +100,6 @@ protected:
     void createMenus();
     void createToolBars();
     void createStatusBar();
-
-    //void windowStateChanged( bool windowNotToolbox );
-
     void closeEvent(QCloseEvent *event);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
@@ -102,6 +111,7 @@ private:
     QTabWidgetItom* m_tab;              /*!<  reference to QTabWidgetItom instance */
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
+    BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
@@ -144,11 +154,11 @@ private:
     ShortcutAction *m_gotoAction;
     ShortcutAction *m_openIconBrowser;
     ShortcutAction *m_bookmarkToggle;
-    ShortcutAction *m_bookmarkNext;
-    ShortcutAction *m_bookmarkPrevious;
-    ShortcutAction *m_bookmarkClearAll;
+    
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
+
+    ScriptEditorActions m_commonActions;
 
     QMenu *m_tabContextMenu;
     QMenu *m_fileMenu;
@@ -170,11 +180,13 @@ private:
     QWidget *m_classMenuBar;
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
-    bool m_ClassNavigatorEnabled;
+    bool m_classNavigatorEnabled;
     void fillClassBox(const ClassNavigatorItem *parent, QString prefix);
     void fillMethodBox(const ClassNavigatorItem *parent);
     void showClassNavigator(bool show);
     QMap<int, ClassNavigatorItem*> m_rootElements;
+
+    static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */
@@ -190,7 +202,7 @@ signals:
     void pythonDebugCommand(tPythonDbgCmd cmd);                                                 /*!<  will be received by PythonThread, directly */
     void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
 
-    //void lastFileClicked(const QString &path);
+    void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);
@@ -247,9 +259,6 @@ private slots:
     void mnuReplaceTextExpr();
     void mnuGoto();
     void mnuToggleBookmark();
-    void mnuClearAllBookmarks();
-    void mnuGotoNextBookmark();
-    void mnuGotoPreviousBookmark();
     void mnuInsertCodec();
     void mnuCopyFilename();
 

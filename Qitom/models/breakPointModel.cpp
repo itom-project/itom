@@ -38,10 +38,6 @@
 
 namespace ito
 {
-
-    int ROWHEIGHT = 20;
-    int COLWIDTH = 100;
-
     QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj)
     {
         out << obj.filename << obj.lineno << obj.condition << obj.conditioned << obj.enabled << obj.ignoreCount << obj.temporary;
@@ -362,7 +358,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             }
             else if(role == Qt::TextAlignmentRole)
             {
-                return Qt::AlignLeft;
+                return QVariant(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
             }
             else if(role == Qt::DecorationRole)
             {
@@ -440,11 +436,11 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             switch(index.column())
             {
             case 0: //line
-                return Qt::AlignLeft;
+                return QVariant(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
             case 1: //condition
                 return Qt::AlignCenter;
             case 2: //temporary
-                return Qt::AlignLeft;
+                return QVariant(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
             case 3: //enabled
                 return Qt::AlignCenter;
             case 4: //ignore count

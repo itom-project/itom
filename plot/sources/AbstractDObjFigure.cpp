@@ -39,8 +39,9 @@ AbstractDObjFigure::AbstractDObjFigure(const QString &itomSettingsFile, Abstract
     AbstractFigure(itomSettingsFile, windowMode, parent),
     m_cameraConnected(false)
 {
-    m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
+    addInputParam(new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toLatin1().data()));
+    addOutputParam(new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -58,13 +59,13 @@ ito::RetVal AbstractDObjFigure::update(void)
     retval += applyUpdate();
 
     //!> input data object is different from output data object so must cache it
-    ito::DataObject *newDisplayed = (ito::DataObject*)(m_pOutput["displayed"]->getVal<void*>());
+    const ito::DataObject *newDisplayed = getOutputParam("displayed")->getVal<const ito::DataObject*>();
 
     if (m_dataPointer.contains("displayed") && newDisplayed == m_dataPointer["displayed"].data())
     {
         //contents remains the same
     }
-    else if (newDisplayed == (ito::DataObject*)m_pInput["source"]->getVal<void*>())
+    else if (newDisplayed == getInputParam("source")->getVal<const ito::DataObject*>())
     {
         //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
         m_dataPointer["displayed"].clear();
@@ -82,7 +83,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisData(Qt::Axis axis) c
 {
     if (axis == Qt::XAxis)
     {
-        const ito::DataObject *dobj = m_pInput["xData"]->getVal<const ito::DataObject*>();
+        const ito::DataObject *dobj = getInputParam("xData")->getVal<const ito::DataObject*>();
         if (dobj)
         {
             return QSharedPointer<ito::DataObject>(new ito::DataObject(*dobj));
@@ -95,7 +96,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisData(Qt::Axis axis) c
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
 {
-    ito::DataObject *dObj = m_pInput["source"]->getVal<ito::DataObject*>();
+    const ito::DataObject *dObj = getInputParam("source")->getVal<const ito::DataObject*>();
     if (dObj)
     {
         return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
@@ -122,7 +123,7 @@ ito::RetVal AbstractDObjFigure::setAxisData(QSharedPointer<ito::DataObject> data
             m_dataPointer["xData"] = data;
         }
         ito::ParamBase thisParam("xData", ito::ParamBase::DObjPtr, (const char*)data.data());
-        retval += updateParam(&thisParam, 1);
+        retval += inputParamChanged(&thisParam);
 
         updatePropertyDock();
     }
@@ -163,7 +164,7 @@ ito::RetVal AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source
     }
             
     ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-    retval += updateParam(&thisParam, 1);
+    retval += inputParamChanged(&thisParam);
 
     updatePropertyDock();
     return retval;
@@ -179,20 +180,24 @@ ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {
-    ito::DataObject *dObj = m_pOutput["displayed"]->getVal<ito::DataObject*>();
+    const ito::DataObject *dObj =getOutputParam("displayed")->getVal<const ito::DataObject*>();
+
     if (dObj)
     {
-        return QSharedPointer<ito::DataObject>(); 
+        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
     }
+
     return QSharedPointer<ito::DataObject>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 {
-    if (m_pInput.contains("liveSource") && m_cameraConnected)
+    ito::Param *liveSource = getInputParam("liveSource");
+
+    if (liveSource && m_cameraConnected)
     {
-        return QPointer<ito::AddInDataIO>((ito::AddInDataIO*)(m_pInput["liveSource"]->getVal<void*>()));
+        return QPointer<ito::AddInDataIO>((liveSource->getVal<ito::AddInDataIO*>()));
     }
     else
     {
@@ -204,10 +209,10 @@ QPointer<ito::AddInDataIO> AbstractDObjFigure::getCamera(void) const
 ito::RetVal AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 {
     ito::RetVal retval;
-    if (camera && m_pInput.contains("liveSource"))
-    {
-        ito::Param *param = m_pInput["liveSource"];
+    ito::Param *liveSource = getInputParam("liveSource");
 
+    if (camera && liveSource)
+    {
         if (m_cameraConnected)
         {
             retval += removeLiveSource(); //removes existing live source
@@ -218,14 +223,14 @@ ito::RetVal AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
             if (m_dataPointer.contains("source"))
             {
                 ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)NULL);
-                retval += updateParam(&thisParam, 1);
+                retval += inputParamChanged(&thisParam);
 
                 m_dataPointer["source"] = QSharedPointer<ito::DataObject>();
             }
         }
 
         m_cameraConnected = true;
-        param->setVal<void*>((void*)camera);
+        liveSource->setVal<ito::AddInDataIO*>(camera.data());
 
         retval += apiConnectLiveData(camera, this); //increments reference of AddInDataIO
         retval += apiStartLiveData(camera, this);
@@ -297,7 +302,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
         }
             
         ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-        retval += updateParam(&thisParam, 1);
+        retval += inputParamChanged(&thisParam);
     }
 
     if (waitCond)
@@ -313,17 +318,19 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
 RetVal AbstractDObjFigure::removeLiveSource()
 {
     RetVal retval;
-    if (m_pInput.contains("liveSource"))
+    ito::Param *liveSource = getInputParam("liveSource");
+
+    if (liveSource)
     {
-        ito::Param *param = m_pInput["liveSource"];
-        ito::AddInDataIO* source = (ito::AddInDataIO*)(param->getVal<void*>());
+        ito::AddInDataIO* source = (liveSource->getVal<ito::AddInDataIO*>());
+
         if (source)
         {
             retval += apiStopLiveData(source, this);
             retval += apiDisconnectLiveData(source, this);
         }
 
-        param->setVal<void*>(NULL);
+        liveSource->setVal<ito::AddInDataIO*>(NULL);
         m_cameraConnected = false;
     }
     else

@@ -268,8 +268,20 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
-            //starts loading the file in another thread. If this is done, filterCallFinished is executed
-            filterCall = QtConcurrent::run(m_filter->m_filterFunc, &m_paramsMand, &m_paramsOpt, &m_autoOut);
+            const ito::AddInAlgo::FilterDefExt *filterExt = dynamic_cast<const ito::AddInAlgo::FilterDefExt*>(m_filter);
+
+            if (filterExt)
+            {
+                QSharedPointer<ito::FunctionCancellationAndObserver> emptyObserver; //no observer initialized
+                //starts loading the file in another thread. If this is done, filterCallFinished is executed
+                filterCall = QtConcurrent::run(filterExt->m_filterFuncExt, &m_paramsMand, &m_paramsOpt, &m_autoOut, emptyObserver);
+            }
+            else
+            {
+                //starts loading the file in another thread. If this is done, filterCallFinished is executed
+                filterCall = QtConcurrent::run(m_filter->m_filterFunc, &m_paramsMand, &m_paramsOpt, &m_autoOut);
+            }
+            
             filterCallWatcher.setFuture(filterCall);
         }
     }

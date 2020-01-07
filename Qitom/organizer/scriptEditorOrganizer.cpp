@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -54,6 +54,8 @@ namespace ito
     \brief organizes script editors, independent on their appearance (docked or window-style)
 */
 
+const int ScriptEditorOrganizer::MaxGoBackNavigationEntries = 20;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
@@ -61,14 +63,14 @@ namespace ito
 
     \param dockAvailable true if dock functionality is available
 */
-ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
+ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
+    m_dockAvailable(dockAvailable),
+    m_goBackNavigationIndex(-1)
 {
-    m_dockAvailable = dockAvailable;
-
     widgetFocusChanged(NULL, NULL); //sets active ScriptDockWidget to NULL
 
     m_scriptStackMutex.lock();
-    scriptDockElements.clear();
+    m_scriptDockElements.clear();
     m_scriptStackMutex.unlock();
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -80,6 +82,24 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
         connect(qApp, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(widgetFocusChanged(QWidget*, QWidget*)));
     }
+
+    QAction *a = m_commonScriptEditorActions.actNavigationForward = new QAction(QIcon(":/editor/icons/navigateForward.png"), tr("Navigate Forward"), this);
+    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateForward()));
+    a->setEnabled(false);
+
+    m_pGoBackNavigationMenu = new QMenu();
+
+    a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
+    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
+    a->setMenu(m_pGoBackNavigationMenu);
+    a->setEnabled(false);
+
+    m_pGoBackNavigationMapper = new QSignalMapper(this);
+    connect(m_pGoBackNavigationMapper, SIGNAL(mapped(int)), this, SLOT(mnuNavigateBackwardItem(int)));
+
+    m_pBookmarkModel = new ito::BookmarkModel();
+    m_pBookmarkModel->restoreState(); //get bookmarks from last session
+    connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -94,15 +114,18 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
     ScriptDockWidget* sew;
 
     m_scriptStackMutex.lock();
-    while(scriptDockElements.size()>0)
+    while(m_scriptDockElements.size()>0)
     {
-        sew = scriptDockElements.last();
+        sew = m_scriptDockElements.last();
         delete sew;
-        scriptDockElements.pop_back();
+        m_scriptDockElements.pop_back();
     }
 
-    scriptDockElements.clear();
+    m_scriptDockElements.clear();
     m_scriptStackMutex.unlock();
+
+    m_pBookmarkModel->saveState(); //save current set of bookmarks to settings file
+    DELETE_AND_SET_NULL(m_pBookmarkModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +145,7 @@ void ScriptEditorOrganizer::saveScriptState()
     int counter = 0;
     QVariant states;
 
-    foreach(ito::ScriptDockWidget *sdw, scriptDockElements)
+    foreach(ito::ScriptDockWidget *sdw, m_scriptDockElements)
     {
         settings.setArrayIndex(counter++);
         
@@ -274,7 +297,7 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 {
     m_recentlyUsedFiles.prepend(QDir::toNativeSeparators(filename));
     m_recentlyUsedFiles.removeDuplicates();
-    int maxNumberLastFiles = 10;
+    const int maxNumberLastFiles = 10;
     if (m_recentlyUsedFiles.size() > maxNumberLastFiles) 
     {
         while (m_recentlyUsedFiles.size() > maxNumberLastFiles)
@@ -305,7 +328,12 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
         docked = false;
     }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), "", docked, m_dockAvailable, NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+    newWidget = new ScriptDockWidget(tr("Script Editor"), "", 
+                                    docked, m_dockAvailable, 
+                                    m_commonScriptEditorActions, m_pBookmarkModel, 
+                                    NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+
+    connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
 
     if (objectName.isNull() || m_usedObjectNames.contains(objectName))
     {
@@ -330,7 +358,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
     }
     
     m_scriptStackMutex.lock();
-    scriptDockElements.push_front(newWidget);
+    m_scriptDockElements.push_front(newWidget);
     m_scriptStackMutex.unlock();
 
     connect(newWidget, SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)), this, SLOT(removeScriptDockWidget(ScriptDockWidget*)));
@@ -348,7 +376,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
     if (pyEngine)
     {
         connect(newWidget, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
-        connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecution()));
+        connect(newWidget, SIGNAL(pythonInterruptExecution()), pyEngine, SLOT(pythonInterruptExecutionThreadSafe()));
     }
 
     if (docked)
@@ -365,7 +393,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by ScriptDockWidget close event method. The given widget should be closed and removed from the scriptDockElements-list
+//! slot invoked by ScriptDockWidget close event method. The given widget should be closed and removed from the m_scriptDockElements-list
 /*!
     Disconnects many connections between the ScriptDockWidget and the ScriptEditorOrganizer or the PythonEngine. Emits signal to equally
     remove the widget from the docking area in main window.
@@ -383,7 +411,7 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
     m_usedObjectNames.remove(widget->objectName());
 
     m_scriptStackMutex.lock();
-    scriptDockElements.removeAll(widget);
+    m_scriptDockElements.removeAll(widget);
     m_scriptStackMutex.unlock();
 
     widget->deleteLater(); //do not directly delete widget instead of using deleteLater. This is important e.g. for closing the windows if number of remaining tabs is zero.
@@ -408,7 +436,7 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
         QMessageBox msgBox;
 
         m_scriptStackMutex.lock();
-        for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
         {
             unsavedFileNames.append((*it)->getModifiedFileNames(ignoreNewScripts));
         }
@@ -466,7 +494,7 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
     if (saveScriptState == NULL || *saveScriptState != 2)
     {
         m_scriptStackMutex.lock();
-        for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
         {
             retValue += (*it)->saveAllScripts(false, ignoreNewScripts);
         }
@@ -498,7 +526,7 @@ RetVal ScriptEditorOrganizer::closeAllScripts(bool saveFirst)
     if (!retValue.containsError())
     {
         m_scriptStackMutex.lock();
-        QList<ScriptDockWidget*> tempList(scriptDockElements); //!< copy since scriptDockElements will change its size during closing
+        QList<ScriptDockWidget*> tempList(m_scriptDockElements); //!< copy since m_scriptDockElements will change its size during closing
         m_scriptStackMutex.unlock();
 
         for (it = tempList.begin(); it != tempList.end(); ++it)
@@ -521,7 +549,7 @@ ScriptDockWidget* ScriptEditorOrganizer::getFirstDockedElement()
 
     QMutexLocker locker(&m_scriptStackMutex);
 
-    for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+    for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
     {
         if ((*it)->docked())
         {
@@ -541,13 +569,13 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
 {
     QMutexLocker locker(&m_scriptStackMutex);
 
-    if (scriptDockElements.isEmpty())
+    if (m_scriptDockElements.isEmpty())
     {
         return NULL;
     }
     else
     {
-        return scriptDockElements.first();
+        return m_scriptDockElements.first();
     }
 }
 
@@ -559,7 +587,7 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
 ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement()
 {
     QMutexLocker locker(&m_scriptStackMutex);
-    foreach(ito::ScriptDockWidget *sdw, scriptDockElements)
+    foreach(ito::ScriptDockWidget *sdw, m_scriptDockElements)
     {
         if (sdw->docked() == false)
         {
@@ -573,8 +601,8 @@ ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement()
 //! slot is connected to signal "focusChanged" of QApplication and indicates every change in the active widget.
 /*!
     This slot is evaluated in order to check, whether a ScriptDockWidget has been activated (has got the focus). If so,
-    this ScriptDockWidget will be moved on top of the scriptDockElements-list, since the first element should always be the
-    active one. Write action to scriptDockElements is protected by scriptStackMutex.
+    this ScriptDockWidget will be moved on top of the m_scriptDockElements-list, since the first element should always be the
+    active one. Write action to m_scriptDockElements is protected by scriptStackMutex.
 
     \param now widget which just got the focus
 */
@@ -596,12 +624,12 @@ void ScriptEditorOrganizer::widgetFocusChanged(QWidget* /*old*/, QWidget* now)
                 temp = NULL;
                 //m_scriptStackMutex.lock(); //commented due to crashes in debug mode
 
-                index = scriptDockElements.indexOf(sdwNew);
+                index = m_scriptDockElements.indexOf(sdwNew);
 
                 if (index >= 0)
                 {
-                    scriptDockElements.removeAt(index);
-                    scriptDockElements.push_front(sdwNew);
+                    m_scriptDockElements.removeAt(index);
+                    m_scriptDockElements.push_front(sdwNew);
                 }
 
                 //m_scriptStackMutex.unlock();
@@ -765,9 +793,11 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
     \param filename Filename of the python macro
     \param semaphore ItomSharedSemaphore which will be woken up if opening process is finished. Use NULL if nothing should happen
     \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
+    \param errorMessageClick if true, the entire line will be marked with the "error line" background indicator
+    \param showSelectedCallstackLine: if true, the callstackIcon (green arrow) will be added to the breakpoint panel of the script editor
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr, bool errorMessageClick /*= false*/)
+RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
 {
     RetVal retValue(retOk);
 
@@ -781,16 +811,17 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 
         m_scriptStackMutex.lock();
 
-        for (it = scriptDockElements.begin(); it != scriptDockElements.end() && !exist; ++it)
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end() && !exist; ++it)
         {
             if ((*it)->activateTabByFilename(filename))
             {
                 exist = true;
                 fileOpenedOrSaved(filename);
                 (*it)->raiseAndActivate();
+
                 if (visibleLineNr >= 0)
                 {
-                    (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
+                    (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick, showSelectedCallstackLine);
                 }
             }
         }
@@ -799,6 +830,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
         if (!exist)
         {
             ScriptDockWidget* activeWidget = getActiveDockWidget();
+
             if (activeWidget == NULL)
             {
                 activeWidget = createEmptyScriptDock(m_dockedNewWidget);
@@ -815,12 +847,15 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
                     retValue += activeWidget->openScript(filename, false);
                 }
 
-                if (visibleLineNr >= 0)
+                if (!retValue.containsError())
                 {
-                    activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
-                }
+                    if (visibleLineNr >= 0)
+                    {
+                        activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick, showSelectedCallstackLine);
+                    }
 
-                activeWidget->raiseAndActivate();
+                    activeWidget->raiseAndActivate();
+                }
             }
         }
     }
@@ -858,7 +893,7 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(const QString &file
 
     m_scriptStackMutex.lock();
 
-    for (it = scriptDockElements.begin(); it != scriptDockElements.end() && !exist; ++it)
+    for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end() && !exist; ++it)
     {
         if ((*it)->activateTabByFilename(filename))
         {
@@ -969,7 +1004,7 @@ void ScriptEditorOrganizer::pythonDebugPositionChanged(QString filename, int lin
 
     m_scriptStackMutex.lock();
 
-    for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+    for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
     {
         found = found || (*it)->activateTabByFilename(filename);
     }
@@ -989,7 +1024,7 @@ QStringList ScriptEditorOrganizer::openedScripts() const
 {
     QStringList openedScripts;
 
-    foreach(const ito::ScriptDockWidget *sdw, scriptDockElements)
+    foreach(const ito::ScriptDockWidget *sdw, m_scriptDockElements)
     {
         openedScripts << sdw->getAllFilenames();
     }
@@ -1001,6 +1036,261 @@ QStringList ScriptEditorOrganizer::openedScripts() const
 #endif
     openedScripts.removeDuplicates();
     return openedScripts; //return list with all filenames of all opened scripts
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::onGotoBookmark(const BookmarkItem &item)
+{
+    if (item.filename != "")
+    {
+        if (QFileInfo(item.filename).exists())
+        {
+            openScript(item.filename, NULL, item.lineIdx);
+        }
+        else
+        {
+            QMessageBox::information(NULL, tr("goto bookmark"), tr("The script '%1' does not exist. The bookmark will be removed.").arg(item.filename));
+            m_pBookmarkModel->deleteBookmark(item);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!
+/*
+The basic rules behind the go back navigation items come from Visual Studio:
+https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
+*/
+void ScriptEditorOrganizer::onAddGoBackNavigationItem(const GoBackNavigationItem &item)
+{
+    int size = m_goBackNavigationHistory.size();
+
+    if (size > 0 && m_goBackNavigationIndex >= 0)
+    {
+        const GoBackNavigationItem &curItem = m_goBackNavigationHistory[m_goBackNavigationIndex];
+
+        if ((curItem.filename == item.filename || curItem.UID == item.UID) && \
+            curItem.line == item.line)
+        {
+            //duplicate item
+            return;
+        }
+    }
+
+    if (m_goBackNavigationIndex >= 0 && m_goBackNavigationIndex < size - 1)
+    {
+        //the current position in the history is not at the most recent point.
+        //If a new item is added now, delete all the forward items from the current position
+        m_goBackNavigationHistory = m_goBackNavigationHistory.mid(0, m_goBackNavigationIndex + 1);
+        size = m_goBackNavigationHistory.size();
+    }
+
+    if (size >= MaxGoBackNavigationEntries)
+    {
+        m_goBackNavigationHistory = m_goBackNavigationHistory.mid(1 + size - MaxGoBackNavigationEntries, -1);
+    }
+
+    m_goBackNavigationHistory.append(item); 
+    m_goBackNavigationIndex = m_goBackNavigationHistory.size() - 1;
+
+    updateGoBackNavigationActions();    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::mnuNavigateBackward()
+{
+    if (m_goBackNavigationIndex > 0)
+    {
+        mnuNavigateBackwardItem(qBound(0, m_goBackNavigationIndex - 1, m_goBackNavigationHistory.size() - 1));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::mnuNavigateForward()
+{
+    if (m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1)
+    {
+        mnuNavigateBackwardItem(qBound(0, m_goBackNavigationIndex + 1, m_goBackNavigationHistory.size() - 1));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::mnuNavigateBackwardItem(int index)
+{
+    int size = m_goBackNavigationHistory.size();
+
+    if (index >= 0 && index < size)
+    {
+        int curIndex = m_goBackNavigationIndex;
+
+        m_goBackNavigationIndex = index;
+
+        RetVal retValue = applyGoBackNavigationItem(m_goBackNavigationHistory[index]);
+
+        if (retValue.containsError())
+        {
+            if (retValue.hasErrorMessage())
+            {
+                QMessageBox::warning(NULL, tr("Navigation marker"), retValue.errorMessage());
+            }
+            else
+            {
+                QMessageBox::warning(NULL, tr("Navigation marker"), tr("General error jumping to the desired navigation marker"));
+            }
+
+            //it is likely that some scripts do not exist any more. Clear up
+            QString filename;
+
+            for (int i = m_goBackNavigationHistory.size() - 1; i >= 0; --i)
+            {
+                filename = m_goBackNavigationHistory[i].filename;
+
+                if (filename != "" && !QFileInfo(filename).exists())
+                {
+                    m_goBackNavigationHistory.removeAt(i);
+                }
+            }
+
+            m_goBackNavigationIndex = qBound(0, m_goBackNavigationIndex, m_goBackNavigationHistory.size() - 1);
+        }
+        
+        updateGoBackNavigationActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::updateGoBackNavigationActions()
+{
+    if (m_goBackNavigationHistory.size() > 0)
+    {
+        m_commonScriptEditorActions.actNavigationBackward->setEnabled(m_goBackNavigationIndex > 0);
+        m_commonScriptEditorActions.actNavigationForward->setEnabled(
+            m_goBackNavigationIndex >= 0 &&
+            m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1
+        );
+
+        m_pGoBackNavigationMenu->clear();
+
+        QAction *act;
+        QString filename;
+        QString text;
+        bool found;
+
+        for (int idx = m_goBackNavigationHistory.size() - 1; idx >= 0; --idx)
+        {
+            const GoBackNavigationItem &item = m_goBackNavigationHistory[idx];
+
+            filename = ScriptEditorWidget::filenameFromUID(item.UID, found);
+
+            if (!found)
+            {
+                filename = item.filename;
+            }
+
+            if (filename != m_goBackNavigationHistory[idx].filename)
+            {
+                m_goBackNavigationHistory[idx].filename = filename;
+            }
+
+            if (filename != "")
+            {
+                filename = QFileInfo(filename).fileName();
+            }
+            else
+            {
+                filename = tr("Untitled%1").arg(item.UID);
+            }
+
+            text = QString("%1 (%2): %3").arg(filename).arg(item.line + 1).arg(item.shortText == "" ? tr("<empty line>") : item.shortText);
+
+            act = new QAction(text, m_pGoBackNavigationMenu);
+            act->setCheckable(true);
+            act->setChecked(idx == m_goBackNavigationIndex);
+            act->setToolTip(item.filename);
+            connect(act, SIGNAL(triggered()), m_pGoBackNavigationMapper, SLOT(map()));
+            m_pGoBackNavigationMapper->setMapping(act, idx);
+            m_pGoBackNavigationMenu->addAction(act);
+        }
+    }
+    else
+    {
+        m_commonScriptEditorActions.actNavigationBackward->setEnabled(false);
+        m_commonScriptEditorActions.actNavigationForward->setEnabled(false);
+
+        m_pGoBackNavigationMenu->clear();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptEditorOrganizer::applyGoBackNavigationItem(const GoBackNavigationItem &item)
+{
+    RetVal retValue(retOk);
+
+    ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
+
+    if (userOrg->currentUserHasFeature(featDeveloper))
+    {
+        bool exist = false;
+
+        QList<ScriptDockWidget*>::iterator it;
+
+        m_scriptStackMutex.lock();
+
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end() && !exist; ++it)
+        {
+            if ((*it)->activateTabByFilename(item.filename, -1, item.UID))
+            {
+                exist = true;
+                fileOpenedOrSaved(item.filename);
+                (*it)->raiseAndActivate();
+
+                if (item.line >= 0)
+                {
+                    (*it)->activeTabEnsureLineVisible(item.line);
+                }
+            }
+        }
+
+        m_scriptStackMutex.unlock();
+
+        if (!exist && item.filename != "")
+        {
+            if (QFileInfo(item.filename).exists())
+            {
+                ScriptDockWidget* activeWidget = getActiveDockWidget();
+
+                if (activeWidget == NULL)
+                {
+                    activeWidget = createEmptyScriptDock(m_dockedNewWidget);
+                }
+
+                if (activeWidget != NULL)
+                {
+                    retValue += activeWidget->openScript(item.filename, false);
+
+                    if (!retValue.containsError())
+                    {
+                        if (item.line >= 0)
+                        {
+                            activeWidget->activeTabEnsureLineVisible(item.line);
+                        }
+
+                        activeWidget->raiseAndActivate();
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("File '%1' of go back navigation marker does not exist.").arg(item.filename).toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retValue = ito::RetVal(ito::retError, 0, tr("Not enough rights to open scripts.").toLatin1().data());
+    }
+
+    return retValue;
 }
 
 } //end namespace ito

@@ -184,8 +184,6 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
@@ -220,6 +218,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
@@ -253,6 +252,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.h
@@ -320,7 +320,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/bookmarkDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
@@ -471,6 +472,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
@@ -500,6 +502,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.cpp
@@ -566,6 +569,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractCodeEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/bookmarkDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
@@ -901,33 +905,39 @@ set(COPY_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 POST_BUILD_COPY_FILES(qitom COPY_SOURCES COPY_DESTINATIONS)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MAJOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_MAJOR "?")
 endif (ITOM_VERSION_TMP)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MINOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_MINOR "?")
 endif (ITOM_VERSION_TMP)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
 if (ITOM_VERSION_TMP)
     string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_PATCH ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
-    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterface.h missing. Can not detect version of itom SDK")
+    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterfaceVersion.h missing. Can not detect version of itom SDK")
     set(ITOM_ADDININTERFACE_VERSION_PATCH "?")
 endif (ITOM_VERSION_TMP)
 
 SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_ADDININTERFACE_VERSION_MAJOR}.${ITOM_ADDININTERFACE_VERSION_MINOR}.${ITOM_ADDININTERFACE_VERSION_PATCH}")
 
+#find designer plugin interface version from plot/designerPluginInterfaceVersion.h
+FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../plot/designerPluginInterfaceVersion.h DesignerPluginInterfaceVersionFull LIMIT_COUNT 1 REGEX "^#define ITOM_DESIGNERPLUGININTERFACE_VERSION_STR.*$")
+STRING(REGEX MATCH "([0-9]+),([0-9]+),([0-9]+)" DESIGNER_PLUGIN_INTERFACE_VERSION ${DesignerPluginInterfaceVersionFull}) #searches for Number.Number.Number[.Number] in DesignerPluginInterfaceVersionFull
+STRING(REPLACE "," "." DESIGNER_PLUGIN_INTERFACE_VERSION ${DESIGNER_PLUGIN_INTERFACE_VERSION})
+
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/pluginMetaData.json )
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../translation           DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. FILES_MATCHING PATTERN "*.qm")

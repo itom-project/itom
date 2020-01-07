@@ -63,6 +63,7 @@
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
 #include "../../common/addInInterface.h"
+#include "../../common/functionCancellationAndObserver.h"
 #include "../global.h"
 
 #include "pythonWorkspace.h"
@@ -142,6 +143,10 @@ public:
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
+
+    void addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer); //add a new function cancellation / observer. Each valid observer on the list will be requested to be cancelled if a script executed is interrupted
+    void removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer = NULL); //will remove the given observer from the list of function cancellations and observers. Even if observer is NULL, the list of current observers will be cleanup from deleted instances
+
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
@@ -193,7 +198,7 @@ private:
 
     ito::RetVal autoReloaderCheck();
 
-    static int queuedInterrupt(void *state); 
+    static int queuedInterrupt(void *arg); 
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
     
@@ -252,6 +257,8 @@ private:
 
     wchar_t *m_pUserDefinedPythonHome;
 
+    QList<QWeakPointer<ito::FunctionCancellationAndObserver> > m_activeFunctionCancellations;
+
     struct AutoReload
     {
         PyObject *modAutoReload;
@@ -309,7 +316,7 @@ public slots:
     void pythonDebugFile(QString filename);
     void pythonRunStringOrFunction(QString cmdOrFctHash);
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
-    void pythonInterruptExecution();
+    void pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers = NULL); //if interruptActuatorsAndTimers is NULL, the itom settings will be read, else this boolean variable decides
     void pythonDebugCommand(tPythonDbgCmd cmd);
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);

@@ -68,6 +68,7 @@ MainWindow::MainWindow() :
 	m_console(NULL),
 	m_contentLayout(NULL),
 	m_breakPointDock(NULL),
+    m_bookmarkDock(NULL),
 	m_lastCommandDock(NULL),
 	//    m_pythonMessageDock(NULL),
 	m_helpDock(NULL),
@@ -176,6 +177,11 @@ MainWindow::MainWindow() :
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
+        // breakPointDock
+        m_bookmarkDock = new BookmarkDockWidget(tr("Bookmarks"), "itomBookmarkDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+        m_bookmarkDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_bookmarkDock);
+
         // lastCommandDock
         m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), "itomLastCommandDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
         m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
@@ -206,6 +212,11 @@ MainWindow::MainWindow() :
         else
         {
             tabifyDockWidget(m_callStackDock, m_breakPointDock);
+        }
+
+        if (m_breakPointDock && m_bookmarkDock)
+        {
+            tabifyDockWidget(m_breakPointDock, m_bookmarkDock);
         }
 
         // global workspace widget (Python)
@@ -376,18 +387,22 @@ MainWindow::~MainWindow()
     {
         m_fileSystemDock->saveState("itomFileSystemDockWidget");
     }
+
     if (m_helpDock)
     {
         m_helpDock->saveState("itomHelpDockWidget");
     }
+
     if (m_globalWorkspaceDock)
     {
         m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
     }
+
     if (m_localWorkspaceDock)
     {
         m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
     }
+
     if (m_pAIManagerWidget)
     {
         m_pAIManagerWidget->saveState("itomPluginsDockWidget");
@@ -430,6 +445,7 @@ MainWindow::~MainWindow()
     {
         disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
     }
+
     if (m_localWorkspaceDock)
     {
         disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
@@ -492,6 +508,24 @@ MainWindow::~MainWindow()
         if (i.value().isNull() == false)
         {
             i.value().data()->deleteLater();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! slot called by startupApplication if script editor organizer is loaded.
+/*! This method is used to tell the bookmark dock widget about the existence of the bookmark model
+    and its bookmark model.
+*/
+void MainWindow::scriptEditorOrganizerAvailable()
+{
+    if (m_bookmarkDock)
+    {
+        ScriptEditorOrganizer *sed = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+        if (sed)
+        {
+            m_bookmarkDock->setBookmarkModel(sed->getBookmarkModel());
         }
     }
 }
@@ -841,7 +875,6 @@ void MainWindow::createMenus()
         m_pMenuPython->addAction(m_actions["python_stepOutAction"]);
         m_pMenuPython->addSeparator();
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
-        
 
         m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);
@@ -2204,7 +2237,7 @@ void MainWindow::mnuScriptStop()
     PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyeng)
     {
-        pyeng->pythonInterruptExecution();
+        pyeng->pythonInterruptExecutionThreadSafe();
     }
 
     if (pythonDebugMode() && pythonInWaitingMode())

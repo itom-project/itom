@@ -10,7 +10,16 @@ FilterDef
 .. doxygenclass:: ito::AddInAlgo::FilterDef
     :project: itom
     :members:
-    
+
+.. _plugin-Algo-FilterDefExt-Ref:
+
+FilterDefExt
+==========
+
+.. doxygenclass:: ito::AddInAlgo::FilterDefExt
+    :project: itom
+    :members:
+
 .. _plugin-Algo-AlgoWidgetDef-Ref:
 
 AlgoWidgetDef

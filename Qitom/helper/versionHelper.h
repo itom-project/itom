@@ -23,7 +23,7 @@
 #ifndef VERSIONHELPER
 #define VERSIONHELPER
 
-#include <QtCore/qpair.h>
+#include <qstring.h>
 #include <qmap.h>
 
 namespace ito

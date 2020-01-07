@@ -87,10 +87,10 @@ Indent selected text
 */
 void IndenterMode::indentSelection(QTextCursor cursor) const
 {
-        int tab_len = editor()->tabLength();
         cursor.beginEditBlock();
         int nb_lines = Utils::numlines(cursor.selection().toPlainText());
         QTextCursor c = editor()->textCursor();
+
         if (c.atBlockStart() && c.position() == c.selectionEnd())
         {
             nb_lines += 1;
@@ -100,7 +100,8 @@ void IndenterMode::indentSelection(QTextCursor cursor) const
         int i = 0;
         QTextCursor cursor2;
 
-        QString tab_text = editor()->useSpacesInsteadOfTabs() ? QString(tab_len, ' ') : "\t";
+        QString tab_text = editor()->useSpacesInsteadOfTabs() ? QString(editor()->tabLength(), ' ') : "\t";
+
         // indent every lines
         while (i < nb_lines)
         {
@@ -124,19 +125,20 @@ Un-indents selected text
 */
 QTextCursor IndenterMode::unindentSelection(QTextCursor cursor) const
 {
-    int tab_len = editor()->tabLength();
+    int tab_len = editor()->useSpacesInsteadOfTabs() ? editor()->tabLength() : 1;
     QString txt;
     int indentation;
     QTextCursor c;
     int nb_lines = Utils::numlines(cursor.selection().toPlainText());
+
     if (nb_lines == 0)
     {
         nb_lines = 1;
     }
     QTextBlock block = editor()->document()->findBlock(cursor.selectionStart());
     int i = 0;
-    int tab_len2;
     //debug('unindent selection: %d lines', nb_lines)
+
     while (i < nb_lines)
     {
         txt = block.text();
@@ -154,24 +156,39 @@ QTextCursor IndenterMode::unindentSelection(QTextCursor cursor) const
             c = QTextCursor(block);
             c.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
 
-            tab_len2 = tab_len;
-            if (indentation % tab_len != 0)
+            if (editor()->useSpacesInsteadOfTabs())
             {
-                tab_len2 = (indentation % tab_len);
-            }
+                if (indentation % tab_len != 0)
+                {
+                    tab_len = (indentation % tab_len);
+                }
 
-            for (int j = 0; j < tab_len2; ++j)
+                for (int j = 0; j < tab_len; ++j)
+                {
+                    txt = block.text();
+
+                    if (txt.size() && txt[0] == ' ')
+                    {
+                        c.deleteChar();
+                    }
+                }
+            }
+            else
             {
+                //tab_len = 1 !!!
                 txt = block.text();
-                if (txt.size() && txt[0] == ' ')
+
+                if (txt.size() > 0 && txt[0] == '\t')
                 {
                     c.deleteChar();
                 }
             }
         }
+
         block = block.next();
         i += 1;
     }
+
     return cursor;
 }
 
@@ -183,6 +200,7 @@ void IndenterMode::indent() const
 {
     QTextCursor cursor = editor()->textCursor();
     //assert isinstance(cursor, QTextCursor)
+
     if (cursor.hasSelection())
     {
         indentSelection(cursor);
@@ -190,10 +208,11 @@ void IndenterMode::indent() const
     else
     {
         // simply insert indentation at the cursor position
-        int tab_len = editor()->tabLength();
         cursor.beginEditBlock();
+
         if (editor()->useSpacesInsteadOfTabs())
         {
+            int tab_len = editor()->tabLength();
             int nb_space_to_add = tab_len - cursor.positionInBlock() % tab_len;
             cursor.insertText(QString(nb_space_to_add, ' '));
         }
@@ -201,6 +220,7 @@ void IndenterMode::indent() const
         {
             cursor.insertText("\t");
         }
+
         cursor.endEditBlock();
     }
 }
@@ -222,7 +242,7 @@ void IndenterMode::unindent() const
         }
         else
         {
-            int tab_len = editor()->tabLength();
+            int tab_len = editor()->useSpacesInsteadOfTabs() ? editor()->tabLength() : 1;
             int indentation = cursor.positionInBlock();
             int max_new_indentation;
             if (indentation % tab_len == 0)
@@ -265,16 +285,27 @@ int IndenterMode::countDeletableSpaces(const QTextCursor &cursor, int maxSpaces)
 {
     // count the number of spaces deletable, stop at tab len
     int max_spaces = std::abs(maxSpaces);
-    max_spaces = std::min(max_spaces, editor()->tabLength());
+
+    if (editor()->useSpacesInsteadOfTabs())
+    {
+        max_spaces = std::min(max_spaces, editor()->tabLength());
+    }
+    else
+    {
+        max_spaces = std::min(max_spaces, 1);
+    }
+    
     int spaces = 0;
     QTextCursor trav_cursor = QTextCursor(cursor);
     int pos;
     QString c;
+
     while ((spaces < max_spaces) || trav_cursor.atBlockStart())
     {
         pos = trav_cursor.position();
         trav_cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
         c = trav_cursor.selectedText();
+
         if (c == " ")
         {
             spaces += 1;
@@ -283,8 +314,10 @@ int IndenterMode::countDeletableSpaces(const QTextCursor &cursor, int maxSpaces)
         {
             break;
         }
+
         trav_cursor.setPosition(pos - 1);
     }
+
     return spaces;
 }
 

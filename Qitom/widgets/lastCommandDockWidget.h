@@ -70,7 +70,7 @@ namespace ito
             QTreeWidgetItem *m_lastTreeWidgetParent;
             bool m_enabled;
             QString m_dateColor;
-            bool m_doubleCommand;
+            bool m_hideDuplicatedCommands;
 
         signals:
             void runPythonCommand(const QString cmd);

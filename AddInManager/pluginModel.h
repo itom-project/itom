@@ -47,7 +47,8 @@ namespace ito
         plsfWarning  = 0x002,  /*!< warning */ 
         plsfError    = 0x004,  /*!< error */ 
         plsfIgnored  = 0x008,  /*!< ignored */
-        plsfRelDbg   = 0x100   /*!< is Dbg version */
+        plsfRelDbg   = 0x100,   /*!< is Dbg version */
+        plsfIncompatible = 0x200, /*!< incompatible to this itom version */
     };
     Q_DECLARE_FLAGS(PluginLoadStatusFlags, tPluginLoadStatusFlag)
     

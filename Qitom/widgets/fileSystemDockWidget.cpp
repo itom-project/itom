@@ -96,10 +96,13 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("itomFileSystemDockWidget");
     size = settings.beginReadArray("lastUsedDirs");
+    int count = 0;
+
     for (int i = 0; i < size; ++i) 
     {
         settings.setArrayIndex(i);
         QString dir = settings.value("dir", QString()).toString();
+
         if (dir.mid(0, 1) == "@")
         {
             actIcon= QIcon(":/application/icons/pinChecked.png");
@@ -112,14 +115,20 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
             actCheckedStr = "";
             actDir = dir;
         }
-        act = m_pShowDirListMenu->addAction(QString::number(i+1) + " " + actDir);
-        act->setIcon(actIcon);
-        act->setData(actDir);
-        act->setCheckable(false);
-        act->setWhatsThis(actCheckedStr);
-        connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
-        m_newDirSelectedMapper->setMapping(act, actDir);
+
+        if (QDir(actDir).exists())
+        {
+            act = m_pShowDirListMenu->addAction(QString::number(count + 1) + " " + actDir);
+            act->setIcon(actIcon);
+            act->setData(actDir);
+            act->setCheckable(false);
+            act->setWhatsThis(actCheckedStr);
+            connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
+            m_newDirSelectedMapper->setMapping(act, actDir);
+            count++;
+        }
     }
+
     settings.endArray();
 
     m_pPathEdit = new QTextBrowser(this); //QTextEdit(this);
@@ -149,7 +158,6 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
 
     m_pFileSystemModel = new ItomFileSystemModel(m_pTreeView);
-    //m_pFileSystemModel->setFilter(QDir::AllEntries | QDir::AllDirs);
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
 
@@ -157,6 +165,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     connect(m_pTreeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(openFile(const QModelIndex&)));
     connect(m_pTreeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
     m_pTreeView->setModel(m_pFileSystemModel);
+
     // Demonstrating look and feel features
     m_pTreeView->setAnimated(true);
     m_pTreeView->setIndentation(15);
@@ -184,6 +193,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(itemDoubleClicked(const QModelIndex&)));
 
     size = settings.beginReadArray("ColWidth");
+
     for (int i = 0; i < size; ++i) 
     {
         settings.setArrayIndex(i);
@@ -194,6 +204,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     m_pColumnWidth = new int[m_pFileSystemModel->columnCount()];
     size = settings.beginReadArray("StandardColWidth");
+
     if (size != m_pFileSystemModel->columnCount())
     {
         for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i) 
@@ -201,6 +212,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
             m_pColumnWidth[i] = 120;
         }
     }
+
     for (int i = 0; i < size; ++i) 
     {
         settings.setArrayIndex(i);
@@ -210,6 +222,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
             m_pColumnWidth[i] = 120;
         }
     }
+
     settings.endArray();
     settings.endGroup();
 
@@ -217,10 +230,12 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     QDir baseDir(baseDirectory);
     QString baseDirectoryTemp = baseDirectory;
+
     if (!baseDir.exists())
     {
         baseDirectoryTemp = QDir::currentPath();
     }
+
     changeBaseDirectory(baseDirectoryTemp);
 
     m_pFileSystemModel->setNameFilterDisables(false);

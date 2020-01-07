@@ -17,13 +17,17 @@ The plugin toolbox shows all loaded plugins included any opened instances. The p
 * DataIO >> RawIO -> further input/output plugins.
 * Algorithm -> all algorithm and extended-widget plugins.
 
-The plugins of type **actuator** or **dataIO** behave in the way, that it is possible to open one or multiple instances of every plugin, while all algorithm plugins
-always provide a set of multiple algorithms (filters) or user interfaces.
+The plugins of type **actuator** or **dataIO** behave in the way, that it is possible to open one or multiple instances 
+of every plugin, while all :ref:`algorithm plugins <getStartFilter>` always provide a set of multiple algorithms 
+(filters) or user interfaces.
 
-At startup of |itom| all plugin libraries, located somewhere in the subfolder **plugins** of |itom| are loaded. If the load fails (for instance due to missing 3rd party libraries), their load
-is aborted and the reason can be seen in the dialog **loaded plugins...** (menu **file >> loaded plugins**). A right click to any hardware plugin opens the second context menu, depicted in the
-figure above. There you have the possibility to open a **new instance** of this plugin. After having created this instance, the plugin instance is unfolded an you see the instance by its identifier or
-ID like in it is the case for the plugin **DummyMotor** in the figure above. The context menu of an instance is also depicted in the figure.
+At startup of |itom| all plugin libraries, located somewhere in the subfolder **plugins** of |itom| are loaded. If the 
+load fails (for instance due to missing 3rd party libraries), their load is aborted and the reason can be seen in the 
+dialog **loaded plugins...** (menu **file >> loaded plugins**). A right click to any hardware plugin opens the second 
+context menu, depicted in the figure above. There you have the possibility to open a **new instance** of this plugin. 
+After having created this instance, the plugin instance is unfolded an you see the instance by its identifier or ID like 
+in it is the case for the plugin **DummyMotor** in the figure above. The context menu of an instance is also depicted in 
+the figure.
 
 Depending on the implementation of the plugin you have the following possibilities:
 

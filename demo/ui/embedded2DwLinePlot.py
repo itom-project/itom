@@ -33,8 +33,10 @@ class EmbeddedPlots(ItomUi):
     @ItomUi.autoslot("bool")
     def on_radioLineCut_toggled(self, checked):
         if checked:
-            self.gui.plot2D["lineCutPlotItem"] = self.gui.plot1D
-            self.gui.plot2D["zSlicePlotItem"] = None
+            #if the same plot is used for different sub-plots, invalidate one type at first
+            #before you assign the new one
+            self.gui.plot2D["zSlicePlotItem"] = None #invalidating
+            self.gui.plot2D["lineCutPlotItem"] = self.gui.plot1D #assigning new one
             self.gui.group1D["enabled"] = True
     
 

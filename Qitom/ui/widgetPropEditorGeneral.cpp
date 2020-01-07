@@ -79,6 +79,10 @@ void WidgetPropEditorGeneral::readSettings()
     ui.spinExtraAscent->setValue(settings.value("extraAscent", 0).toInt());
     ui.spinExtraDescent->setValue(settings.value("extraDescent", 0).toInt());
 
+    //cut, copy, paste behaviour
+    ui.checkSelectLineOnCopyEmpty->setChecked(settings.value("selectLineOnCopyEmpty", true).toBool());
+    ui.checkKeepIndentationOnPaste->setChecked(settings.value("keepIndentationOnPaste", true).toBool());
+
     settings.endGroup();
 }
 
@@ -113,6 +117,10 @@ void WidgetPropEditorGeneral::writeSettings()
     //Extends
     settings.setValue("extraAscent", ui.spinExtraAscent->value());
     settings.setValue("extraDescent", ui.spinExtraDescent->value());
+
+    //cut, copy, paste behaviour
+    settings.setValue("selectLineOnCopyEmpty", ui.checkSelectLineOnCopyEmpty->isChecked());
+    settings.setValue("keepIndentationOnPaste", ui.checkKeepIndentationOnPaste->isChecked());
 
     settings.endGroup();
 }

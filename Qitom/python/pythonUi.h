@@ -94,7 +94,8 @@ public:
     static PyObject* PyUiItem_repr(PyUiItem *self);
     static PyObject* PyUiItem_call(PyUiItem *self, PyObject* args);
     static PyObject* PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *kwds);
-    static PyObject* PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args);
+    static PyObject* PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds);
+    static PyObject* PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds);
     static PyObject* PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject *kwds);
     static PyObject* PyUiItem_getProperties(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_setProperties(PyUiItem *self, PyObject *args);

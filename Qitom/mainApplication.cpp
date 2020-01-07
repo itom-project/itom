@@ -151,6 +151,7 @@ void MainApplication::registerMetaObjects()
     qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+    qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
 
     qRegisterMetaType<ito::tStreamMessageType>("ito::tStreamMessageType");
 }
@@ -593,17 +594,26 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
+        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
+        QCoreApplication::processEvents();
+
+        m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
+        AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
+
+        QStringList incompatibleDesignerPlugins = m_designerWidgetOrganizer->getListOfIncompatibleDesignerPlugins();
+
+        if (incompatibleDesignerPlugins.size() > 0)
+        {
+            QMessageBox::critical(m_splashScreen, tr("Incompatible designer plugins"), \
+                tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n\n")));
+        }
+
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer(retValue);
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
-        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
-        QCoreApplication::processEvents();
-
-        m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
-        AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
         if (AIM)
         {
             AIM->setMainWindow(m_mainWin);
@@ -648,6 +658,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
                 }
             }
         }
+    }
+
+    if (m_mainWin)
+    {
+        m_mainWin->scriptEditorOrganizerAvailable();
     }
 
     qDebug("..starting load settings");
@@ -814,11 +829,11 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_paletteOrganizer);
     AppManagement::setPaletteOrganizer(NULL);
 
-    DELETE_AND_SET_NULL(m_designerWidgetOrganizer);
-    AppManagement::setDesignerWidgetOrganizer(NULL);
-
     DELETE_AND_SET_NULL(m_uiOrganizer);
     AppManagement::setUiOrganizer(NULL);
+
+    DELETE_AND_SET_NULL(m_designerWidgetOrganizer);
+    AppManagement::setDesignerWidgetOrganizer(NULL);
 
     DELETE_AND_SET_NULL(m_mainWin);
     AppManagement::setMainWindow(NULL);

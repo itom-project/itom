@@ -43,9 +43,6 @@ public:
     ~CallStackDockWidget();
 
 protected:
-
-    //void closeEvent(QCloseEvent *event);
-
     void createActions();
     void createMenus();
     void createToolBars();
@@ -56,6 +53,10 @@ protected:
 private:
     QTableWidget *m_table;
     QStringList m_headers;
+    int m_currentRow;
+    QIcon m_emptyIcon;
+    QIcon m_currentIcon;
+    QIcon m_selectedIcon;
 
     enum CallStackColumns
     {

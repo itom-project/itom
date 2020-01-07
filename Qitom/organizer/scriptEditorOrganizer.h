@@ -25,10 +25,14 @@
 
 #include "../widgets/scriptDockWidget.h"
 #include "../common/sharedStructuresQt.h"
+#include "../models/bookmarkModel.h"
+
+#include <qsignalmapper.h>
 
 
 namespace ito
 {
+
 QDataStream &operator<<(QDataStream &out, const ito::ScriptEditorStorage &obj); 
 
 QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj); 
@@ -36,6 +40,7 @@ QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj);
 class ScriptEditorOrganizer : public QObject
 {
     Q_OBJECT
+
 public:
     ScriptEditorOrganizer( bool dockAvailable);
     ~ScriptEditorOrganizer();
@@ -48,24 +53,40 @@ public:
 
     const QStringList &getRecentlyUsedFiles() const { return m_recentlyUsedFiles; }
 
+    inline const ScriptEditorActions& getScriptEditorActions() const { return m_commonScriptEditorActions; }
+
     QStringList openedScripts() const;
     bool m_dockedNewWidget;
 
+    inline BookmarkModel* getBookmarkModel() const { return m_pBookmarkModel; }
+
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
+
+    RetVal applyGoBackNavigationItem(const GoBackNavigationItem &item);
+    void updateGoBackNavigationActions();
 
 private:
     ScriptDockWidget* getFirstDockedElement();
     ScriptDockWidget* getFirstUndockedElement();
     ScriptDockWidget* getActiveDockWidget();
 
-    QList<ScriptDockWidget*> scriptDockElements;    //! list with references to all ScriptDockWidgets (docked or windows-style)
+    BookmarkModel *m_pBookmarkModel;
+
+    QList<ScriptDockWidget*> m_scriptDockElements;    //! list with references to all ScriptDockWidgets (docked or windows-style)
     QSet<QString> m_usedObjectNames;               //! currently used objectNames for script windows
     bool m_dockAvailable;                             //! true if docking mode is available, else: false
 
-    QMutex m_scriptStackMutex;                        //! mutex locking any changes to scriptDockElements
+    QMutex m_scriptStackMutex;                        //! mutex locking any changes to m_scriptDockElements
 
     QStringList m_recentlyUsedFiles;
+
+    ScriptEditorActions m_commonScriptEditorActions;
+    QMenu *m_pGoBackNavigationMenu; //! menu for the backward items
+    QSignalMapper *m_pGoBackNavigationMapper;
+    QList<GoBackNavigationItem> m_goBackNavigationHistory; //! history of go back navigation items. Newer items are at the end of the list. The list is limited to a number of maximum items.
+    int m_goBackNavigationIndex;                           //! current position of script editors in goBackNavigationHistory. If equal to m_goBackNavigationHistory.size(), the current position is at the end.
+    static const int MaxGoBackNavigationEntries;               //! maximum number of entries in the go back navigation history.
 
 signals:
     void addScriptDockWidgetToMainWindow(AbstractDockWidget *dockWidget, Qt::DockWidgetArea area); //! signal emitted if dockWidget should be added to docking area in main window
@@ -82,7 +103,7 @@ public slots:
 
     RetVal openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
-    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false);
+    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
 
     ScriptDockWidget* openScriptRequested(const QString &filename, ScriptDockWidget* widget);
 
@@ -95,6 +116,14 @@ public slots:
 
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
+
+    void onAddGoBackNavigationItem(const GoBackNavigationItem &item);
+    void onGotoBookmark(const BookmarkItem &item);
+
+    //Action slots
+    void mnuNavigateForward();
+    void mnuNavigateBackward();
+    void mnuNavigateBackwardItem(int index);
 };
 
 } //end namespace ito

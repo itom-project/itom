@@ -148,6 +148,8 @@
         <file>icons/editUnindent.png</file>
         <file>icons/find.png</file>
         <file>icons/iconList.png</file>
+        <file>icons/navigateBackward.png</file>
+        <file>icons/navigateForward.png</file>
     </qresource>
     <qresource prefix="/script">
         <file>icons/continue.png</file>
@@ -162,6 +164,7 @@
         <file>icons/syntaxError.png</file>
         <file>icons/bookmarkSyntaxError.png</file>
         <file>icons/currentLine.png</file>
+        <file>icons/callstackLine.png</file>
     </qresource>
     <qresource prefix="/workspace">
         <file>icons/document-close-4.png</file>

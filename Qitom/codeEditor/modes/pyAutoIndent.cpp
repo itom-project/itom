@@ -147,7 +147,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
         {
             // if (user typed \ && press enter -> indent is always
             // one level higher
-            post += QString(editor()->tabLength(), ' ');
+            post += singleIndent();
         }
         else if ((fullline.endsWith(')') || fullline.endsWith('}') || fullline.endsWith(']')) &&
                 (lastword.endsWith(')') || lastword.endsWith('}') || lastword.endsWith(']')))
@@ -163,7 +163,15 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
                 Utils::strip(fullline).startsWith("return")) ||
                 lastword == "pass")
         {
-            post.chop(editor()->tabLength());
+            if (editor()->useSpacesInsteadOfTabs())
+            {
+                post.chop(editor()->tabLength());
+            }
+            else
+            {
+                post.chop(1); //remove one tab character to go one indent level higher
+            }
+            
         }
     }
     return QPair<QString, QString>(pre, post);
@@ -397,15 +405,25 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
     int open_line_indent = open_line_txt.size() - Utils::lstrip(open_line_txt).size();
     if (prev_open)
     {
-        post = QString((open_line_indent + editor()->tabLength()), ' ');
+        post = QString(open_line_indent, indentChar()) + singleIndent();
     }
     else if (next_close && (prev_char != ','))
     {
-        post = QString(open_line_indent, ' ');
+        post = QString(open_line_indent, indentChar());
     }
     else if (cursor.block().blockNumber() == open_line)
     {
-        post = QString(open_symbol_col, ' ');
+        if (editor()->useSpacesInsteadOfTabs())
+        {
+            // When using space indents, we indent to the opening paren
+            post = QString(open_symbol_col, indentChar());
+        }
+        else
+        {
+            // When using tab indents, we indent by one level
+            post = QString(open_line_indent + 1, indentChar());
+        }
+        
     }
 
     // adapt indent if cursor on closing line and next line have same
@@ -415,13 +433,13 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
         QString txt = editor()->lineText(close_line);
         int bn = cursor.block().blockNumber();
         bool flg = (bn == close_line);
-        QString next_indent = QString(editor()->lineIndent(bn + 1), ' ');
+        QString next_indent = QString(editor()->lineIndent(bn + 1), indentChar());
         if (flg && Utils::strip(txt).endsWith(':') && (next_indent == post))
         {
             // | look at how the previous line ( ``':'):`` ) was
             // over-indented, this is actually what we are trying to
             // achieve here
-            post += QString(editor()->tabLength(), ' ');
+            post += singleIndent();
         }
     }
 
@@ -464,12 +482,12 @@ void PyAutoIndentMode::handleIndentInsideString(const QString &c, const QTextCur
     // break string with a '\' at the end of the original line, always
     // breaking strings enclosed by parens is done in the
     // _handle_between_paren method
-    int n = editor()->tabLength();
     pre = QString("%1 \\").arg(c);
-    post += QString(n, ' ');
+    post += singleIndent();
+
     if (fullline.endsWith(':'))
     {
-        post += QString(n, ' ');
+        post += singleIndent();
     }
     post += c;
 }
@@ -494,10 +512,10 @@ QString PyAutoIndentMode::handleNewScopeIndentation(const QTextCursor &cursor, c
     QString post;
 
     int indent = getIndentOfOpeningParen(cursor);
+
     if (indent >= 0)
     {
-        indent += editor()->tabLength();
-        post = QString(indent, ' ');
+        post = QString(indent, indentChar()) + singleIndent();
     }
     else
     {
@@ -512,8 +530,8 @@ QString PyAutoIndentMode::handleNewScopeIndentation(const QTextCursor &cursor, c
             l = editor()->lineText(ln);
         }
 
-        QString indentStr = QString((l.size() - Utils::lstrip(l).size()), ' ');
-        indentStr += QString(editor()->tabLength(), ' ');
+        QString indentStr = QString((l.size() - Utils::lstrip(l).size()), indentChar());
+        indentStr += singleIndent();
         post = indentStr;
     }
     return post;
@@ -532,11 +550,13 @@ void PyAutoIndentMode::handleIndentInStatement(const QString &fullline, const QS
         {
             pre += '\\';
         }
-        post += QString(editor()->tabLength(), ' ');
-        if (fullline.endsWith(':'))
-        {
-            post += QString(editor()->tabLength(), ' ');
-        }
+    }
+    
+    post += singleIndent();
+
+    if (fullline.endsWith(':'))
+    {
+        post += singleIndent();
     }
 }
 
@@ -546,7 +566,7 @@ void PyAutoIndentMode::handleIndentAfterParen(const QTextCursor &cursor, QString
     int indent = getIndentOfOpeningParen(cursor);
     if (indent >= 0)
     {
-        post = QString(indent, ' ');
+        post = QString(indent, indentChar());
     }
 }
 

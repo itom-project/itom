@@ -71,6 +71,7 @@ public:
 
     virtual ~AbstractDObjFigure();
 
+    //! overload of AbstractNode::update
     ito::RetVal update(void);
 
     virtual QSharedPointer<ito::DataObject> getSource(void) const;

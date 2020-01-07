@@ -71,7 +71,7 @@ public:
     static PyObject* PyPlot2d(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
     static PyObject* PyPlot25d(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
 
-    static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
+    static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyWidgetHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyPluginHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);

@@ -24,6 +24,7 @@ Content:
    point.rst
    pointCloud.rst
    polygonMesh.rst
+   progressObserver.rst
    region.rst
    rgba.rst
    shape.rst

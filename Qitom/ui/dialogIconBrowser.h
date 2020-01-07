@@ -25,8 +25,12 @@
 
 #include <qdialog.h>
 #include <qtreewidget.h>
+#include <qfuturewatcher.h>
+#include <qlist.h>
 
 #include "ui_dialogIconBrowser.h"
+
+class QTreeWidgetItem; //forward declaration
 
 namespace ito
 {
@@ -42,8 +46,10 @@ public:
 protected:
     Ui::DialogIconBrowser ui;
 
+    QList<QTreeWidgetItem*> loadIcons();
+
 private:
-//    IconRescourcesTreeView* m_pTreeWidget;
+    QFutureWatcher<QList<QTreeWidgetItem*> > m_loadWatcher;
 
 signals:
     void sendIconBrowserText(QString iconLink);
@@ -53,6 +59,9 @@ private slots:
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_pushButtonClipboard_clicked(bool value);
     void on_pushButtonInsert_clicked(bool value);
+    void on_txtFilter_textChanged(const QString &text);
+
+    void loadFinished();
 };
 
 } //end namespace ito
