@@ -46,6 +46,10 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     include(${ITOM_SDK_CONFIG_FILE})
     
+    if(ITOM_SDK_SHARED_LIBS)
+        add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    endif()
+    
     if(ITOM_SDK_PCL_SUPPORT)
         add_definitions(-DUSEPCL -D_USEPCL)
     endif(ITOM_SDK_PCL_SUPPORT)
