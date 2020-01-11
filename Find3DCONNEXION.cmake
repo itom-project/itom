@@ -11,7 +11,7 @@
 # 3DCONNEXION_SIAPPMT
 # 3DCONNEXION_SPWMATHMT
 #
-FIND_PATH( 3DCONNEXION_DIR include/inc/si.h  )
+find_path( 3DCONNEXION_DIR include/inc/si.h  )
 
 #set(GLEW_LIBRARIES "")
 #set(GLEW_RUNTIME_LIBRARIES "")
@@ -25,9 +25,9 @@ else(CMAKE_CL_64)
 endif(CMAKE_CL_64)
 
 
-IF(WIN32)
+if(WIN32)
 
-    FIND_PATH( 3DCONNEXION_INCLUDE_PATH inc/si.h PATHS ${3DCONNEXION_DIR} PATH_SUFFIXES include DOC "The directory where inc/si.h resides")
+    find_path( 3DCONNEXION_INCLUDE_PATH inc/si.h PATHS ${3DCONNEXION_DIR} PATH_SUFFIXES include DOC "The directory where inc/si.h resides")
     
     set(3DCONNEXION_SIAPP ${3DCONNEXION_LIBRARIES}/siapp.lib)
     set(3DCONNEXION_SPWMATH ${3DCONNEXION_LIBRARIES}/spwmath.lib)
@@ -47,13 +47,13 @@ IF(WIN32)
     #set(3DCONNEXION_SPWMATH optimized ${3DCONNEXION_LIBRARIES}/spwmath.lib debug ${3DCONNEXION_LIBRARIES}/spwmathD.lib)
     #set(3DCONNEXION_SIAPPMT optimized ${3DCONNEXION_LIBRARIES}/siappMT.lib debug ${3DCONNEXION_LIBRARIES}/siappMTD.lib)
     #set(3DCONNEXION_SPWMATHMT optimized ${3DCONNEXION_LIBRARIES}/spwmathMT.lib debug ${3DCONNEXION_LIBRARIES}/spwmathMTD.lib)
-    #FIND_FILE( 3DCONNEXION_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin )
+    #find_file( 3DCONNEXION_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin )
     
-ELSE (WIN32)
-    #FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h /usr/include /usr/local/include /sw/include /opt/local/include DOC "The directory where GL/glew.h resides")
-    #FIND_LIBRARY( GLEW_LIBRARY NAMES GLEW glew PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib /sw/lib /opt/local/lib DOC "The GLEW library")
-    #SET(3DCONNEXION_RUNTIME_LIBRARIES "")
-ENDIF (WIN32)
+else (WIN32)
+    #find_path( GLEW_INCLUDE_PATH GL/glew.h /usr/include /usr/local/include /sw/include /opt/local/include DOC "The directory where GL/glew.h resides")
+    #find_library( GLEW_LIBRARY NAMES GLEW glew PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib /sw/lib /opt/local/lib DOC "The GLEW library")
+    #set(3DCONNEXION_RUNTIME_LIBRARIES "")
+endif(WIN32)
 
 if(EXISTS "${3DCONNEXION_INCLUDE_PATH}")
     set(3DCONNEXION_FOUND true)
@@ -72,4 +72,4 @@ if(NOT 3DCONNEXION_FOUND)
 endif(NOT 3DCONNEXION_FOUND)
 ##====================================================
 
-MARK_AS_ADVANCED(3DCONNEXION_FOUND 3DCONNEXION_SIAPP 3DCONNEXION_SPWMATH 3DCONNEXION_SIAPPMT 3DCONNEXION_SPWMATHMT)
+mark_as_advanced(3DCONNEXION_FOUND 3DCONNEXION_SIAPP 3DCONNEXION_SPWMATH 3DCONNEXION_SIAPPMT 3DCONNEXION_SPWMATHMT)

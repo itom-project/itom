@@ -1,42 +1,32 @@
-SET (target_name qpropertyeditor)
+set(target_name qpropertyeditor)
 
 project(${target_name})
  
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.0.2)
 
-#CMAKE Policies
-IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if(POLICY CMP0042)
-        cmake_policy(SET CMP0042 OLD)
-    ENDIF(POLICY CMP0042)
-ENDIF()
-
-if (POLICY CMP0028)
-    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
-ENDIF (POLICY CMP0028)
-
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
-OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-  
-IF(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE SHARED)
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)
-ELSE(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE STATIC)
-    
-    #if itomCommon is static, add -fPIC as compiler flag for linux
-    IF(UNIX)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    ENDIF(UNIX)
-ENDIF(BUILD_ITOMLIBS_SHARED)
-  
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
+option(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 include("../ItomBuildMacros.cmake")
+INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
+  
+if(BUILD_ITOMLIBS_SHARED)
+    set(LIBRARY_TYPE SHARED)
+    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    add_definitions(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)
+else(BUILD_ITOMLIBS_SHARED)
+    set(LIBRARY_TYPE STATIC)
+    
+    #if itomCommon is static, add -fPIC as compiler flag for linux
+    if(UNIX)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    endif(UNIX)
+endif(BUILD_ITOMLIBS_SHARED)
+  
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 FIND_PACKAGE_QT(ON Core PrintSupport Widgets Designer Xml Svg UiTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
@@ -44,13 +34,13 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 add_definitions(-DUNICODE -D_UNICODE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+if(DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+else()
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+endif()
 
-INCLUDE_DIRECTORIES(
+include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ITOM_SDK_INCLUDE_DIRS}
@@ -105,35 +95,33 @@ set(qpropertyeditor_RCC
     #add absolute pathes to any *.qrc resource files here
 )
 
-if (QT5_FOUND)
+if(QT5_FOUND)
     QT5_WRAP_UI(qpropertyeditor_UI_MOC ${qpropertyeditor_UI})
     QT5_ADD_RESOURCES(qpropertyeditor_RCC_MOC ${qpropertyeditor_RCC})
-else (QT5_FOUND)
-    MESSAGE(SEND_ERROR "Currently only Qt5 is supported")
-endif (QT5_FOUND)
+else()
+    message(SEND_ERROR "Currently only Qt5 is supported")
+endif()
 
 if(MSVC)
     list(APPEND qpropertyeditor_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
-endif(MSVC)
+endif()
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
-IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+target_link_libraries(${target_name} ${QT_LIBRARIES} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
+
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
-SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)
-#FILE(COPY ${SOURCEFILE}/ColorCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-#FILE(COPY ${SOURCEFILE}/BooleanCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-#FILE(COPY ${SOURCEFILE}/FontEditor.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-#FILE(COPY ${SOURCEFILE}/EnumProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-#FILE(COPY ${SOURCEFILE}/FlagsProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-FILE(COPY ${SOURCEFILE}/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-FILE(COPY ${SOURCEFILE}/Property.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-FILE(COPY ${SOURCEFILE}/QPropertyEditorWidget.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
-FILE(COPY ${SOURCEFILE}/QVariantDelegate.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+set(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)
+#file(COPY ${SOURCEFILE}/ColorCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+#file(COPY ${SOURCEFILE}/BooleanCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+#file(COPY ${SOURCEFILE}/FontEditor.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+#file(COPY ${SOURCEFILE}/EnumProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+#file(COPY ${SOURCEFILE}/FlagsProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+file(COPY ${SOURCEFILE}/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+file(COPY ${SOURCEFILE}/Property.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+file(COPY ${SOURCEFILE}/QPropertyEditorWidget.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+file(COPY ${SOURCEFILE}/QVariantDelegate.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 
 # COPY SECTION
 set(COPY_SOURCES "")

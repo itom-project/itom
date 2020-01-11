@@ -17,14 +17,14 @@
 # This must be a macro(), as inside a function string() can only
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
-  if (MSVC)
+  if(MSVC)
     # For MSVC, CMake sets certain flags to defaults we want to override.
     # This replacement code is taken from sample in the CMake Wiki at
     # http://www.cmake.org/Wiki/CMake_FAQ#Dynamic_Replace.
     foreach (flag_var
              CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
              CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-      if (NOT BUILD_SHARED_LIBS AND NOT gtest_force_shared_crt)
+      if(NOT BUILD_SHARED_LIBS AND NOT gtest_force_shared_crt)
         # When Google Test is built as a shared library, it should also use
         # shared runtime libraries.  Otherwise, it may end up with multiple
         # copies of runtime library data in different modules, resulting in
@@ -46,13 +46,13 @@ endmacro()
 # Google Mock.  You can tweak these definitions to suit your need.  A
 # variable's value is empty before it's explicitly assigned to.
 macro(config_compiler_and_linker)
-  if (NOT gtest_disable_pthreads)
+  if(NOT gtest_disable_pthreads)
     # Defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT.
     find_package(Threads)
   endif()
 
   fix_default_compiler_settings_()
-  if (MSVC)
+  if(MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
     set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -J -Zi")
@@ -61,7 +61,7 @@ macro(config_compiler_and_linker)
     set(cxx_exception_flags "-EHsc -D_HAS_EXCEPTIONS=1")
     set(cxx_no_exception_flags "-D_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-GR-")
-  elseif (CMAKE_COMPILER_IS_GNUCXX)
+  elseif(CMAKE_COMPILER_IS_GNUCXX)
     set(cxx_base_flags "-Wall -Wshadow")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
@@ -70,13 +70,13 @@ macro(config_compiler_and_linker)
     # explicitly.
     set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")
     set(cxx_strict_flags "-Wextra")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
     set(cxx_exception_flags "-features=except")
     # Sun Pro doesn't provide macros to indicate whether exceptions and
     # RTTI are enabled, so we define GTEST_HAS_* explicitly.
     set(cxx_no_exception_flags "-features=no%except -DGTEST_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-features=no%rtti -DGTEST_HAS_RTTI=0")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "VisualAge" OR
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "VisualAge" OR
       CMAKE_CXX_COMPILER_ID STREQUAL "XL")
     # CMake 2.8 changes Visual Age's compiler ID to "XL".
     set(cxx_exception_flags "-qeh")
@@ -85,7 +85,7 @@ macro(config_compiler_and_linker)
     # whether RTTI is enabled.  Therefore we define GTEST_HAS_RTTI
     # explicitly.
     set(cxx_no_rtti_flags "-qnortti -DGTEST_HAS_RTTI=0")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "HP")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "HP")
     set(cxx_base_flags "-AA -mt")
     set(cxx_exception_flags "-DGTEST_HAS_EXCEPTIONS=1")
     set(cxx_no_exception_flags "+noeh -DGTEST_HAS_EXCEPTIONS=0")
@@ -93,7 +93,7 @@ macro(config_compiler_and_linker)
     set(cxx_no_rtti_flags "")
   endif()
 
-  if (CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available and allowed.
+  if(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available and allowed.
     set(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
   else()
     set(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=0")
@@ -120,12 +120,12 @@ function(cxx_library_with_type name type cxx_flags)
   set_target_properties(${name}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}")
-  if (BUILD_SHARED_LIBS OR type STREQUAL "SHARED")
+  if(BUILD_SHARED_LIBS OR type STREQUAL "SHARED")
     set_target_properties(${name}
       PROPERTIES
       COMPILE_DEFINITIONS "GTEST_CREATE_SHARED_LIBRARY=1")
   endif()
-  if (CMAKE_USE_PTHREADS_INIT)
+  if(CMAKE_USE_PTHREADS_INIT)
     target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
   endif()
 endfunction()
@@ -148,12 +148,12 @@ endfunction()
 # is built from the given source files with the given compiler flags.
 function(cxx_executable_with_flags name cxx_flags libs)
   add_executable(${name} ${ARGN})
-  if (cxx_flags)
+  if(cxx_flags)
     set_target_properties(${name}
       PROPERTIES
       COMPILE_FLAGS "${cxx_flags}")
   endif()
-  if (BUILD_SHARED_LIBS)
+  if(BUILD_SHARED_LIBS)
     set_target_properties(${name}
       PROPERTIES
       COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
@@ -204,7 +204,7 @@ endfunction()
 function(py_test name)
   # We are not supporting Python tests on Linux yet as they consider
   # all Linux environments to be google3 and try to use google3 features.
-  if (PYTHONINTERP_FOUND)
+  if(PYTHONINTERP_FOUND)
     # ${CMAKE_BINARY_DIR} is known at configuration time, so we can
     # directly bind it from cmake. ${CTEST_CONFIGURATION_TYPE} is known
     # only at ctest runtime (by calling ctest -c <Configuration>), so

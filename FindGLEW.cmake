@@ -7,12 +7,12 @@
 # GLEW_LIBRARIES
 # GLEW_RUNTIME_LIBRARIES
 #
-FIND_PATH( GLEW_DIR include/GL/glew.h  )
+find_path( GLEW_DIR include/GL/glew.h  )
 
 #set(GLEW_LIBRARIES "")
 #set(GLEW_RUNTIME_LIBRARIES "")
 
-IF(WIN32)
+if(WIN32)
 
     if(MSVC)
 	if(CMAKE_CL_64)
@@ -22,24 +22,24 @@ IF(WIN32)
 	endif(CMAKE_CL_64)
     endif(MSVC)
 
-    FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h PATHS ${GLEW_DIR} PATH_SUFFIXES include DOC "The directory where GL/glew.h resides")
+    find_path( GLEW_INCLUDE_PATH GL/glew.h PATHS ${GLEW_DIR} PATH_SUFFIXES include DOC "The directory where GL/glew.h resides")
                     
-    FIND_LIBRARY( GLEW_LIBRARY glew32 PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES lib lib${GLEWLIB_SUFFIX} DOC "The GLEW shared library" )
-    FIND_FILE( GLEW_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin bin${GLEWLIB_SUFFIX} )
+    find_library( GLEW_LIBRARY glew32 PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES lib lib${GLEWLIB_SUFFIX} DOC "The GLEW shared library" )
+    find_file( GLEW_RUNTIME_LIBRARIES glew32.dll PATHS ${GLEW_DIR} ${GLEW_INCLUDE_PATH} PATH_SUFFIXES bin bin${GLEWLIB_SUFFIX} )
     
-ELSE (WIN32)
-    FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h /usr/include /usr/local/include /sw/include /opt/local/include DOC "The directory where GL/glew.h resides")
-    FIND_LIBRARY( GLEW_LIBRARY NAMES GLEW glew PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib /sw/lib /opt/local/lib DOC "The GLEW library")
-    SET(GLEW_RUNTIME_LIBRARIES "")
-ENDIF (WIN32)
+else (WIN32)
+    find_path( GLEW_INCLUDE_PATH GL/glew.h /usr/include /usr/local/include /sw/include /opt/local/include DOC "The directory where GL/glew.h resides")
+    find_library( GLEW_LIBRARY NAMES GLEW glew PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib /sw/lib /opt/local/lib DOC "The GLEW library")
+    set(GLEW_RUNTIME_LIBRARIES "")
+endif(WIN32)
     
 
-IF (EXISTS "${GLEW_INCLUDE_PATH}")
-    SET(GLEW_LIBRARIES ${GLEW_LIBRARY})
-    SET( GLEW_FOUND true CACHE BOOL "" FORCE)
-ELSE ()
-    SET(GLEW_LIBRARIES "")
-    SET( GLEW_FOUND false CACHE BOOL "" FORCE)
-ENDIF ()
+if(EXISTS "${GLEW_INCLUDE_PATH}")
+    set(GLEW_LIBRARIES ${GLEW_LIBRARY})
+    set( GLEW_FOUND true CACHE BOOL "" FORCE)
+else ()
+    set(GLEW_LIBRARIES "")
+    set( GLEW_FOUND false CACHE BOOL "" FORCE)
+endif()
 
-MARK_AS_ADVANCED( GLEW_FOUND GLEW_RUNTIME_LIBRARIES GLEW_LIBRARIES )
+mark_as_advanced( GLEW_FOUND GLEW_RUNTIME_LIBRARIES GLEW_LIBRARIES )

@@ -214,7 +214,7 @@ function(_winsdk_check_win10_kits _winkit_build)
 	if(("${_sdkdir}" MATCHES "registry") OR (NOT EXISTS "${_sdkdir}"))
 		return() # not found
 	endif()
-	if(EXISTS "${_sdkdir}/Include/${_winkit_build}/um")
+	if(EXISTS "${_sdkdir}/include/${_winkit_build}/um")
 		_winsdk_conditional_append("Windows Kits 10 (Build ${_winkit_build})" "${_winkit_build}" "${_sdkdir}")
 	endif()
 endfunction()
@@ -568,15 +568,15 @@ if(WINDOWSSDK_FOUND)
 		set(_dirs)
 
 		set(_subdirs shared um winrt km wdf mmos ucrt)
-		set(_suffixes Include)
+		set(_suffixes include)
 
 		foreach(_dir ${_subdirs})
-			list(APPEND _suffixes "Include/${_dir}")
+			list(APPEND _suffixes "include/${_dir}")
 		endforeach()
 
 		foreach(_ver ${_winsdk_win10vers})
 			foreach(_dir ${_subdirs})
-				list(APPEND _suffixes "Include/${_ver}/${_dir}")
+				list(APPEND _suffixes "include/${_ver}/${_dir}")
 			endforeach()
 		endforeach()
 

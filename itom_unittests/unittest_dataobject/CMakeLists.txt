@@ -1,20 +1,20 @@
-SET (target_name unittest_dataobject)
+set(target_name unittest_dataobject)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+option(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
 
 include("../../ItomBuildMacros.cmake")
 
-IF (BUILD_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-ENDIF (BUILD_ITOMLIBS_SHARED)
+if(BUILD_ITOMLIBS_SHARED)
+    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+endif(BUILD_ITOMLIBS_SHARED)
 
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.6.0/cmake/internal_utils.cmake")
@@ -24,24 +24,24 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
 
-IF(WIN32 AND NOT ${gtest_force_shared_crt})
+if(WIN32 AND NOT ${gtest_force_shared_crt})
     message("Please set gtest_force_shared_crt to ON.")
-ENDIF(WIN32 AND NOT ${gtest_force_shared_crt})
+endif(WIN32 AND NOT ${gtest_force_shared_crt})
 
-# IF (BUILD_UNICODE)
-    # ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-# ENDIF (BUILD_UNICODE)
+# if(BUILD_UNICODE)
+    # add_definitions(-DUNICODE -D_UNICODE)
+# endif(BUILD_UNICODE)
 
-# ADD_DEFINITIONS(-DCMAKE)
+# add_definitions(-DCMAKE)
 
 # # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-# IF (DEFINED CMAKE_BUILD_TYPE)
-    # SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-# ELSE(CMAKE_BUILD_TYPE)
-    # SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-# ENDIF (DEFINED CMAKE_BUILD_TYPE)
+# if(DEFINED CMAKE_BUILD_TYPE)
+    # set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+# else()
+    # set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+# endif()
 
-INCLUDE_DIRECTORIES(
+include_directories(
     # ${CMAKE_CURRENT_BINARY_DIR}
     # ${CMAKE_CURRENT_SOURCE_DIR}
     # ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -49,7 +49,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
 )
 
-# LINK_DIRECTORIES(
+# link_directories(
     # ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     # ${OpenCV_DIR}/lib
 # )

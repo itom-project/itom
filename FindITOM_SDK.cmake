@@ -20,88 +20,92 @@
 #
 #----------------------------------------------------------
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 
-if (BUILD_TARGET64)
-   set(CMAKE_SIZEOF_VOID_P 8)
-else (BUILD_TARGET64)
-   set(CMAKE_SIZEOF_VOID_P 4)
-endif (BUILD_TARGET64)
+if(BUILD_TARGET64)
+    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
+    endif()
+else()
+    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+        message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
+    endif()
+endif(BUILD_TARGET64)
 
-IF(EXISTS ${ITOM_SDK_DIR})
+if(EXISTS ${ITOM_SDK_DIR})
     #find itom_sdk.cmake configuration file
-    FIND_FILE(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR} DOC "")
-ELSE(EXISTS ${ITOM_SDK_DIR})
-    SET(ITOM_SDK_CONFIG_FILE "")
-    SET(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
-ENDIF(EXISTS ${ITOM_SDK_DIR})
+    find_file(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR} DOC "")
+else(EXISTS ${ITOM_SDK_DIR})
+    set(ITOM_SDK_CONFIG_FILE "")
+    set(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
+endif(EXISTS ${ITOM_SDK_DIR})
 
 message(STATUS ${ITOM_SDK_FIND_QUIETLY})
 
-IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
+if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
-    INCLUDE(${ITOM_SDK_CONFIG_FILE})
+    include(${ITOM_SDK_CONFIG_FILE})
     
-    IF (ITOM_SDK_PCL_SUPPORT)
-        ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
-    ENDIF (ITOM_SDK_PCL_SUPPORT)
+    if(ITOM_SDK_PCL_SUPPORT)
+        add_definitions(-DUSEPCL -D_USEPCL)
+    endif(ITOM_SDK_PCL_SUPPORT)
 
     string( TOLOWER "${ITOM_SDK_BUILD_TARGET64}" ITOM_SDK_BUILD_TARGET64_LOWER )
-    IF (BUILD_TARGET64)
-        IF (NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "true") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "on")))
-            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
-        ENDIF()
-    ELSE (BUILD_TARGET64)
-        IF (NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "false") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "off")))
-            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
-        ENDIF()
-    ENDIF (BUILD_TARGET64)
+    if(BUILD_TARGET64)
+        if(NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "true") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "on")))
+            message(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
+        endif()
+    else (BUILD_TARGET64)
+        if(NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "false") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "off")))
+            message(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
+        endif()
+    endif(BUILD_TARGET64)
 
     #find include directory
-    FIND_PATH(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
+    find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
     
-    FIND_PATH(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
+    find_path(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
     get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
     
     
-    if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-      SET(SDK_PLATFORM "x86")
-    else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-      SET(SDK_PLATFORM "x64")
-    endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+      set(SDK_PLATFORM "x86")
+    else()
+      set(SDK_PLATFORM "x64")
+    endif()
     
     # The following list has to be consistent with ItomBuildMacro.cmake, 
     # macros ADD_OUTPUTLIBRARY_TO_SDK_LIB and ADD_OUTPUTLIBRARY_TO_SDK_LIB! 
     # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    IF(MSVC_VERSION EQUAL 1900)
-        SET(SDK_COMPILER "vc14")
-    ELSEIF(MSVC_VERSION EQUAL 1800)
-        SET(SDK_COMPILER "vc12")
-    ELSEIF(MSVC_VERSION EQUAL 1700)
-        SET(SDK_COMPILER "vc11")
-    ELSEIF(MSVC_VERSION EQUAL 1600)
-        SET(SDK_COMPILER "vc10")
-    ELSEIF(MSVC_VERSION EQUAL 1500)
-        SET(SDK_COMPILER "vc9")
-    ELSEIF(MSVC_VERSION EQUAL 1400)
-        SET(SDK_COMPILER "vc8")
-    ELSEIF(MSVC)
-        SET(SDK_COMPILER "vc${MSVC_VERSION}")
-    ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-        SET(SDK_COMPILER "gnucxx")
-    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        SET(SDK_COMPILER "clang")
-    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        SET(SDK_COMPILER "gnucxx")
-    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        SET(SDK_COMPILER "intel")
-    ELSEIF(APPLE)
-        SET(SDK_COMPILER "osx_default")
-    ELSE(MSVC_VERSION EQUAL 1900)
-        SET(SDK_COMPILER "unknown")
-    ENDIF(MSVC_VERSION EQUAL 1900)
+    if(MSVC_VERSION EQUAL 1900)
+        set(SDK_COMPILER "vc14")
+    elseif(MSVC_VERSION EQUAL 1800)
+        set(SDK_COMPILER "vc12")
+    elseif(MSVC_VERSION EQUAL 1700)
+        set(SDK_COMPILER "vc11")
+    elseif(MSVC_VERSION EQUAL 1600)
+        set(SDK_COMPILER "vc10")
+    elseif(MSVC_VERSION EQUAL 1500)
+        set(SDK_COMPILER "vc9")
+    elseif(MSVC_VERSION EQUAL 1400)
+        set(SDK_COMPILER "vc8")
+    elseif(MSVC)
+        set(SDK_COMPILER "vc${MSVC_VERSION}")
+    elseif(CMAKE_COMPILER_IS_GNUCXX)
+        set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(SDK_COMPILER "clang")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        set(SDK_COMPILER "intel")
+    elseif(APPLE)
+        set(SDK_COMPILER "osx_default")
+    else(MSVC_VERSION EQUAL 1900)
+        set(SDK_COMPILER "unknown")
+    endif(MSVC_VERSION EQUAL 1900)
     
-    SET(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
+    set(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
     message(STATUS "ITOM SUF: ${ITOM_SDK_LIBSUFFIX}")
     
     #Initiate the variable before the loop
@@ -109,7 +113,7 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     set(ITOM_SDK_FOUND_TMP true)
     
     if(NOT ITOM_SDK_FIND_COMPONENTS)
-        SET(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS}) #ITOM_SDK_LIB_COMPONENTS is described in itom_sdk.cmake
+        set(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS}) #ITOM_SDK_LIB_COMPONENTS is described in itom_sdk.cmake
     else()
         foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
             set(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_FIND_COMPONENTS} "${__ITOMLIB}")
@@ -144,12 +148,12 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     endforeach(__ITOMLIB)
     
     
-    SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIR})
+    set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIR})
     
-    SET (ITOM_SDK_LIBRARIES)
+    set(ITOM_SDK_LIBRARIES)
     foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
         
-        if (ITOM_SDK_${__ITOMLIB}_LIBRARY)
+        if(ITOM_SDK_${__ITOMLIB}_LIBRARY)
             set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
         else()
             message(SEND_ERROR "Required component ${__ITOMLIB} could not be found in itom SDK")
@@ -157,14 +161,14 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
         
         #dataobject has a dependency to OpenCV, therefore adapt ITOM_SDK_INCLUDE_DIRS
         #and add the core library of OpenCV to the ITOM_SDK_LIBRARIES
-        if (${__ITOMLIB} STREQUAL "dataobject")
+        if(${__ITOMLIB} STREQUAL "dataobject")
             
-            if (OpenCV_FOUND) 
+            if(OpenCV_FOUND) 
                 #store the current value of OpenCV_LIBS and reset it afterwards
-                SET(__OpenCV_LIBS "${OpenCV_LIBS}")
+                set(__OpenCV_LIBS "${OpenCV_LIBS}")
             else(OpenCV_FOUND)
-                SET(__OpenCV_LIBS "")
-            endif (OpenCV_FOUND)
+                set(__OpenCV_LIBS "")
+            endif(OpenCV_FOUND)
             
             if(ITOM_SDK_FIND_QUIETLY)
                 find_package(OpenCV QUIET COMPONENTS core)
@@ -173,31 +177,31 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
             endif(ITOM_SDK_FIND_QUIETLY)
             
             if(OpenCV_FOUND)
-                SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
+                set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
                 set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS})
             else(OpenCV_FOUND)
                 set(ITOM_SDK_FOUND_TMP false)
-                SET(ERR_MSG "OpenCV not found. Use OpenCV_DIR to indicate the (build-)folder of OpenCV.")
+                set(ERR_MSG "OpenCV not found. Use OpenCV_DIR to indicate the (build-)folder of OpenCV.")
             endif(OpenCV_FOUND)
             
-            IF(__OpenCV_LIBS)
+            if(__OpenCV_LIBS)
                 #reset OpenCV_LIBS
-                SET(OpenCV_LIBS "${__OpenCV_LIBS}")
-            ENDIF()
+                set(OpenCV_LIBS "${__OpenCV_LIBS}")
+            endif()
         endif()
         
         #pointcloud has a dependency to the core component of the point cloud library, 
         #therefore adapt ITOM_SDK_INCLUDE_DIRS and add the core library of PCL to the ITOM_SDK_LIBRARIES
-        if (${__ITOMLIB} STREQUAL "pointcloud")
+        if(${__ITOMLIB} STREQUAL "pointcloud")
         
-            if (PCL_FOUND)
+            if(PCL_FOUND)
                 #store the current value of PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS and reset it afterwards
-                SET(__PCL_INCLUDE_DIRS "${PCL_INCLUDE_DIRS}")
-                SET(__PCL_LIBRARY_DIRS "${PCL_LIBRARY_DIRS}")
+                set(__PCL_INCLUDE_DIRS "${PCL_INCLUDE_DIRS}")
+                set(__PCL_LIBRARY_DIRS "${PCL_LIBRARY_DIRS}")
             else(PCL_FOUND)
-                SET(__PCL_INCLUDE_DIRS "")
-                SET(__PCL_LIBRARY_DIRS "")
-            endif (PCL_FOUND)
+                set(__PCL_INCLUDE_DIRS "")
+                set(__PCL_LIBRARY_DIRS "")
+            endif(PCL_FOUND)
             
             if(ITOM_SDK_FIND_QUIETLY)
                 find_package(PCL 1.5.1 QUIET COMPONENTS common)
@@ -206,24 +210,24 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
             endif(ITOM_SDK_FIND_QUIETLY)
                 
             if(PCL_FOUND)
-                SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+                set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
                 set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
             else(PCL_FOUND)
                 set(ITOM_SDK_FOUND_TMP false)
-                SET(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
+                set(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
             endif(PCL_FOUND)
             
-            IF(__PCL_INCLUDE_DIRS)
+            if(__PCL_INCLUDE_DIRS)
                 #reset PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS
-                SET(PCL_INCLUDE_DIRS "${__PCL_INCLUDE_DIRS}")
-                SET(PCL_LIBRARY_DIRS "${__PCL_LIBRARY_DIRS}")
-            ENDIF(__PCL_INCLUDE_DIRS)
+                set(PCL_INCLUDE_DIRS "${__PCL_INCLUDE_DIRS}")
+                set(PCL_LIBRARY_DIRS "${__PCL_LIBRARY_DIRS}")
+            endif(__PCL_INCLUDE_DIRS)
             
         endif()
         
         #itomWidgets often requires the SDK_INCLUDE_DIR/itomWidgets directory as further include directory
-        if (${__ITOMLIB} STREQUAL "itomWidgets")
-            SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
+        if(${__ITOMLIB} STREQUAL "itomWidgets")
+            set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
         endif()
         
     endforeach(__ITOMLIB)
@@ -232,25 +236,25 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     set(ITOM_SDK_FOUND ${ITOM_SDK_FOUND_TMP} CACHE BOOL "" FORCE)
     
     
-ELSE(EXISTS ${ITOM_SDK_CONFIG_FILE})
-    SET(ERR_MSG "File itom_sdk.cmake could not be found in ITOM_SDK_DIR")
-ENDIF(EXISTS ${ITOM_SDK_CONFIG_FILE})
+else(EXISTS ${ITOM_SDK_CONFIG_FILE})
+    set(ERR_MSG "File itom_sdk.cmake could not be found in ITOM_SDK_DIR")
+endif(EXISTS ${ITOM_SDK_CONFIG_FILE})
 #====================================================
 
 
 #====================================================
 # Print message
 #----------------------------------------------------
- if(NOT ITOM_SDK_FOUND)
+if(NOT ITOM_SDK_FOUND)
         #make FIND_PACKAGE friendly
          if(NOT ITOM_SDK_FIND_QUIETLY)
                  if(ITOM_SDK_FIND_REQUIRED)
                          message(SEND_ERROR "itom SDK required but some headers or libs not found. ${ERR_MSG}")
-                 else(ITOM_SDK_FIND_REQUIRED)
+                 else()
                          message(STATUS "WARNING: itom SDK was not found. ${ERR_MSG}")
-                 endif(ITOM_SDK_FIND_REQUIRED)
-         endif(NOT ITOM_SDK_FIND_QUIETLY)
- endif(NOT ITOM_SDK_FOUND)
+                 endif()
+         endif()
+ endif()
 
 
 

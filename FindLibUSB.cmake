@@ -14,28 +14,28 @@
 include ( CheckLibraryExists )
 include ( CheckIncludeFile )
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 
 find_package ( PkgConfig QUIET)
-if ( PKG_CONFIG_FOUND )
+if( PKG_CONFIG_FOUND )
   pkg_check_modules ( PKGCONFIG_LIBUSB libusb-1.0>=1.0 )
-endif ( PKG_CONFIG_FOUND )
+endif( PKG_CONFIG_FOUND )
 
-if ( PKGCONFIG_LIBUSB_FOUND )
-    set ( LibUSB_FOUND ${PKGCONFIG_LIBUSB_FOUND} )
-    set ( LibUSB_INCLUDE_DIRS ${PKGCONFIG_LIBUSB_INCLUDEDIR}/libusb-1.0 )
+if( PKGCONFIG_LIBUSB_FOUND )
+    set( LibUSB_FOUND ${PKGCONFIG_LIBUSB_FOUND} )
+    set( LibUSB_INCLUDE_DIRS ${PKGCONFIG_LIBUSB_INCLUDEDIR}/libusb-1.0 )
     foreach ( i ${PKGCONFIG_LIBUSB_LIBRARIES} )
     find_library ( ${i}_LIBRARY
       NAMES ${i}
       PATHS ${PKGCONFIG_LIBUSB_LIBDIR}
     )
-    if ( ${i}_LIBRARY )
+    if( ${i}_LIBRARY )
         list ( APPEND LibUSB_LIBRARIES ${${i}_LIBRARY} )
-    endif ( ${i}_LIBRARY )
+    endif( ${i}_LIBRARY )
     mark_as_advanced ( ${i}_LIBRARY )
     endforeach ( i )
 
-else ( PKGCONFIG_LIBUSB_FOUND )
+else()
     
     find_path ( LibUSB_DIR
     NAMES
@@ -67,14 +67,14 @@ else ( PKGCONFIG_LIBUSB_FOUND )
     )
 
     mark_as_advanced ( LibUSB_INCLUDE_DIRS )
-    #  message ( STATUS "LibUSB include dir: ${LibUSB_ROOT_DIR}" )
+    #  message( STATUS "LibUSB include dir: ${LibUSB_ROOT_DIR}" )
 
-    if ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
+    if( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
         # LibUSB-Win32 binary distribution contains several libs.
         # Use the lib that got compiled with the same compiler.
-        if ( MSVC )
-            if (BUILD_TARGET64)
-                set ( LibUSB_LIBRARY_PATH_SUFFIX 
+        if( MSVC )
+            if(BUILD_TARGET64)
+                set( LibUSB_LIBRARY_PATH_SUFFIX 
                     MS64/static 
                     x64
                     x64/Release
@@ -84,7 +84,7 @@ else ( PKGCONFIG_LIBUSB_FOUND )
                     x64/Release/dll
                     x64/Debug/dll)
             else (BUILD_TARGET64)
-                set ( LibUSB_LIBRARY_PATH_SUFFIX 
+                set( LibUSB_LIBRARY_PATH_SUFFIX 
                     MS32/static 
                     Win32
                     Win32/Release
@@ -93,13 +93,13 @@ else ( PKGCONFIG_LIBUSB_FOUND )
                     Win32/Debug/lib
                     Win32/Release/dll
                     Win32/Debug/dll)
-            endif (BUILD_TARGET64)
-        elseif ( BORLAND )
-            set ( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
-        elseif ( CMAKE_COMPILER_IS_GNUCC )
-            set ( LibUSB_LIBRARY_PATH_SUFFIX lib/gcc )
-        endif ( MSVC )
-    endif ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
+            endif(BUILD_TARGET64)
+        elseif( BORLAND )
+            set( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
+        elseif( CMAKE_COMPILER_IS_GNUCC )
+            set( LibUSB_LIBRARY_PATH_SUFFIX lib/gcc )
+        endif( MSVC )
+    endif( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 
     find_library ( LibUSB_LIBRARY
     NAMES
@@ -112,8 +112,8 @@ else ( PKGCONFIG_LIBUSB_FOUND )
         ${LibUSB_LIBRARY_PATH_SUFFIX}
     )
     mark_as_advanced ( LibUSB_LIBRARY )
-    if ( LibUSB_LIBRARY )
-        set ( LibUSB_LIBRARIES ${LibUSB_LIBRARY} )
+    if( LibUSB_LIBRARY )
+        set( LibUSB_LIBRARIES ${LibUSB_LIBRARY} )
         get_filename_component(LibUSB_LIBRARY_DIR ${LibUSB_LIBRARY} DIRECTORY  CACHE)
         get_filename_component(DLLNAME ${LibUSB_LIBRARY} NAME_WE)
         find_file ( LibUSB_LIBRARY_DLL
@@ -124,30 +124,30 @@ else ( PKGCONFIG_LIBUSB_FOUND )
         PATH_SUFFIXES
             ${LibUSB_LIBRARY_PATH_SUFFIX}
         )
-    endif ( LibUSB_LIBRARY )
+    endif( LibUSB_LIBRARY )
 
-    if ( LibUSB_INCLUDE_DIRS AND LibUSB_LIBRARIES )
-        set ( LibUSB_FOUND true )
-    endif ( LibUSB_INCLUDE_DIRS AND LibUSB_LIBRARIES )
-endif ( PKGCONFIG_LIBUSB_FOUND )
+    if( LibUSB_INCLUDE_DIRS AND LibUSB_LIBRARIES )
+        set( LibUSB_FOUND true )
+    endif( LibUSB_INCLUDE_DIRS AND LibUSB_LIBRARIES )
+endif( PKGCONFIG_LIBUSB_FOUND )
 
-if ( LibUSB_FOUND )
-    set ( CMAKE_REQUIRED_INCLUDES "${LibUSB_INCLUDE_DIRS}" )
+if( LibUSB_FOUND )
+    set( CMAKE_REQUIRED_INCLUDES "${LibUSB_INCLUDE_DIRS}" )
     check_include_file ( usb.h LibUSB_FOUND )
-#    message ( STATUS "LibUSB: usb.h is usable: ${LibUSB_FOUND}" )
-endif ( LibUSB_FOUND )
-if ( LibUSB_FOUND )
+#    message( STATUS "LibUSB: usb.h is usable: ${LibUSB_FOUND}" )
+endif( LibUSB_FOUND )
+if( LibUSB_FOUND )
     check_library_exists ( "${LibUSB_LIBRARIES}" usb_open "" LibUSB_FOUND )
-#    message ( STATUS "LibUSB: library is usable: ${LibUSB_FOUND}" )
-endif ( LibUSB_FOUND )
+#    message( STATUS "LibUSB: library is usable: ${LibUSB_FOUND}" )
+endif( LibUSB_FOUND )
 
-if ( NOT LibUSB_FOUND )
-    if ( NOT LibUSB_FIND_QUIETLY )
-      message ( STATUS "LibUSB not found, try setting LibUSB_ROOT_DIR environment variable." )
-    endif ( NOT LibUSB_FIND_QUIETLY )
-    if ( LibUSB_FIND_REQUIRED )
-      message ( FATAL_ERROR "" )
-    endif ( LibUSB_FIND_REQUIRED )
-endif ( NOT LibUSB_FOUND )
-#  message ( STATUS "LibUSB: ${LibUSB_FOUND}" )
+if( NOT LibUSB_FOUND )
+    if( NOT LibUSB_FIND_QUIETLY )
+      message( STATUS "LibUSB not found, try setting LibUSB_ROOT_DIR environment variable." )
+    endif( NOT LibUSB_FIND_QUIETLY )
+    if( LibUSB_FIND_REQUIRED )
+      message( FATAL_ERROR "" )
+    endif( LibUSB_FIND_REQUIRED )
+endif( NOT LibUSB_FOUND )
+#  message( STATUS "LibUSB: ${LibUSB_FOUND}" )
 
