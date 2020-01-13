@@ -66,7 +66,6 @@ endif()
 add_library(${target_name} ${LIBRARY_TYPE} ${libSrcs})
 
 if(BUILD_ITOMLIBS_SHARED)
-
     target_link_libraries(${target_name} ${OpenCV_LIBS} itomCommonLib)
 endif(BUILD_ITOMLIBS_SHARED)
 

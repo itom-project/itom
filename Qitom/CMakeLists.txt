@@ -118,6 +118,16 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\8.1;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2015a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2015b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2019a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2019b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020b;MATLABROOT]"
         )
         
         if(BUILD_TARGET64)
@@ -201,12 +211,10 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
@@ -218,11 +226,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.h
@@ -325,7 +330,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
@@ -431,7 +435,6 @@ if(QT5_FOUND)
     QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
 endif()
 
-
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
@@ -447,13 +450,10 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
@@ -464,10 +464,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.cpp
@@ -505,7 +502,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/ui/AbstractPropertyPageWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.cpp
@@ -564,7 +560,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
@@ -847,8 +842,13 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATI
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
-    message(Fatal "itom-packages/enum.py exists. This file will be deleted.")
+    message(WARNING "itom-packages/enum.py exists. This file will be deleted.")
     file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages/enum.py")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
+    message(WARNING "SDK/include/plotLegends exists. This folder will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
 endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
@@ -859,10 +859,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATI
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK FILES_MATCHING PATTERN "*.h")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGlut.cmake               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindFFTW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindOpenCV.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindVisualLeakDetector.cmake  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)

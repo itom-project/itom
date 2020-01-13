@@ -662,11 +662,11 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
 
         list(APPEND ${sources} "$<TARGET_FILE:${target}>")
         list(APPEND ${destinations} ${ITOM_APP_DIR})
-    else(BUILD_ITOMLIBS_SHARED)
+    else()
         #copy linker library (lib) to sdk_destination
         list(APPEND ${sources} "$<TARGET_FILE:${target}>")
         list(APPEND ${destinations} ${sdk_destination})
-    endif(BUILD_ITOMLIBS_SHARED)
+    endif()
 ENDMACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
 
 
