@@ -109,7 +109,7 @@ QString AutoIndentMode::singleIndent() const
     }
     else
     {
-        return '\t';
+        return "\t";
     }
 }
 

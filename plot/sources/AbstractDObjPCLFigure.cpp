@@ -67,11 +67,14 @@ ito::RetVal AbstractDObjPclFigure::update(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjPclFigure::getDataObject(void) const 
 {
-    const ito::DataObject *dObj = getInputParam("dataObject")->getVal<const ito::DataObject*>();
+    const ito::Param *p = getInputParam("dataObject");
+    const ito::DataObject *dObj = p ? p->getVal<const ito::DataObject*>() : NULL;
+
     if (dObj)
     {
         return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
     }
+
     return QSharedPointer<ito::DataObject>();
 }
 
@@ -109,11 +112,14 @@ ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject>
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPointCloud> AbstractDObjPclFigure::getPointCloud(void) const 
 {
-    const ito::PCLPointCloud *pc = getInputParam("pointCloud")->getVal<const ito::PCLPointCloud*>();
+    const ito::Param *p = getInputParam("pointCloud");
+    const ito::PCLPointCloud *pc = p ? p->getVal<const ito::PCLPointCloud*>() : NULL;
+
     if (pc)
     {
         return QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*pc)); 
     }
+
     return QSharedPointer<ito::PCLPointCloud>();
 }
 
@@ -150,11 +156,14 @@ ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointClo
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const 
 {
-    const ito::PCLPolygonMesh *pm = getInputParam("polygonMesh")->getVal<const ito::PCLPolygonMesh*>();
+    const ito::Param *p = getInputParam("polygonMesh");
+    const ito::PCLPolygonMesh *pm = p ? p->getVal<const ito::PCLPolygonMesh*>() : NULL;
+
     if (pm)
     {
         return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm)); 
     }
+
     return QSharedPointer<ito::PCLPolygonMesh>();
 }
 
