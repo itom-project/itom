@@ -423,7 +423,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
         }
     }
 
-    dumpChannels(d->m_channels, this, "Update input param. After reset.");
+    //dumpChannels(d->m_channels, this, "Update input param. After reset.");
 
     if (retval.containsError())
     {
@@ -515,7 +515,7 @@ RetVal AbstractNode::updateChannelData(QSharedPointer<Channel> updatedChannel)
         }
     }
 
-    dumpChannels(d->m_channels, this, "Update input param. After reset.");
+    //dumpChannels(d->m_channels, this, "Update input param. After reset.");
 
     if (retval.containsError())
     {
