@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
-set(BUILD_QTVERSION "auto" CACHE string "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
+set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
 option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
 
 #These are the overall pre-compiler directives for itom and its plugins:
@@ -45,7 +45,7 @@ if(CMAKE_HOST_WIN32)
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN64")
             endif()
         endif()        
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE string "common C++ build flags" FORCE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "common C++ build flags" FORCE)
     endif()    
 elseif(CMAKE_HOST_APPLE)
     add_definitions(-D__APPLE__)
