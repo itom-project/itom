@@ -5,7 +5,7 @@
 //opencv
 #pragma warning( disable : 4996 )
 #pragma once
-#include "opencv/cv.h"
+#include "opencv2\opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"

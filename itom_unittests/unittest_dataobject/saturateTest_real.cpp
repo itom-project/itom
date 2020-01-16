@@ -4,7 +4,7 @@
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
 #pragma once
-#include "opencv/cv.h"
+#include "opencv2\opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
