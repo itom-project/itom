@@ -3659,6 +3659,61 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyDataIOPlugin_stop_doc, "stop() -> stops a started, continuous acquisition \n\
+\n\
+This method stops a previously started, continuous data acquisition. This method is not always \n\
+implemented in plugins. A common example for its implementation is to stop an infinite, continuous \n\
+acquisition job of a AD-converter plugin. \n\
+\n\
+See also\n\
+---------\n\
+acquire()");
+
+/** stop continuous acquisiiton with a dataIO device
+*   @param [in] self    the dataIO object (python)
+*   @return             an error if no data could be acquired
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
+{
+    ito::RetVal ret = ito::retOk;
+
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    bool timeout = false;
+    
+    if (QMetaObject::invokeMethod(self->dataIOObj, "stop", Q_ARG(ItomSharedSemaphore*, waitCond)))
+    {
+        while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+        {
+            if (!self->dataIOObj->isAlive())
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'stop'").toLatin1().data());
+                timeout = true;
+                break;
+            }
+        }
+
+        if (!timeout)
+        {
+            ret += waitCond->returnValue;
+        }
+    }
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'stop' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+    }
+
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
+
+    if (!PythonCommon::setReturnValueMessage(ret, "stop", PythonCommon::invokeFunc))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=`dataObject`|`bytearray`|`bytes` , length = maxlength) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
 \n\
 Returns a reference (shallow copy) of the recently acquired image (located in the internal memory if the plugin) if the plugin is a grabber or camera and the buffer is a `dataObject`. \n\
@@ -4818,6 +4873,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"startDevice", (PyCFunction)PythonPlugins::PyDataIOPlugin_startDevice, METH_VARARGS, PyDataIOPlugin_startDevice_doc},
    {"stopDevice", (PyCFunction)PythonPlugins::PyDataIOPlugin_stopDevice, METH_VARARGS, PyDataIOPlugin_stopDevice_doc},
    {"acquire", (PyCFunction)PythonPlugins::PyDataIOPlugin_acquire, METH_VARARGS, PyDataIOPlugin_acquire_doc},
+   {"stop", (PyCFunction)PythonPlugins::PyDataIOPlugin_stop, METH_NOARGS, PyDataIOPlugin_stop_doc},
    {"getVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_getVal, METH_VARARGS, PyDataIOPlugin_getVal_doc},
    {"copyVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_copyVal, METH_VARARGS, PyDataIOPlugin_copyVal_doc},
    {"setVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_setVal, METH_VARARGS, PyDataIOPlugin_setVal_doc},
