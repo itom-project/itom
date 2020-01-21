@@ -180,7 +180,8 @@ ito::RetVal AbstractDObjFigure::setLinePlot(const double /*x0*/, const double /*
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 {
-    const ito::DataObject *dObj =getOutputParam("displayed")->getVal<const ito::DataObject*>();
+    const ito::Param *p = getOutputParam("displayed");
+    const ito::DataObject *dObj = p ? p->getVal<const ito::DataObject*>() : NULL;
 
     if (dObj)
     {

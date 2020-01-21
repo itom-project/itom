@@ -112,10 +112,6 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/semVerVersion.h
 )
 
-IF(NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
-ENDIF(NOT QT5_FOUND)
-
 set(itomCommonQt_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp

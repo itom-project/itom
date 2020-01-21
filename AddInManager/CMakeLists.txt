@@ -38,11 +38,11 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_WITH_PCL)
-	#find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
-	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
-	ADD_DEFINITIONS(-DUSEPCL)
+    #find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
+    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    ADD_DEFINITIONS(-DUSEPCL)
 ELSE(BUILD_WITH_PCL)
-	#find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+    #find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 ENDIF(BUILD_WITH_PCL)
 
 #at first, get the available Qt version
@@ -73,53 +73,35 @@ INCLUDE_DIRECTORIES(
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	../common
-	../DataObject
-	../PointCloud
-)
-
-LINK_DIRECTORIES(
-#    ${OpenCV_DIR}/lib
+    ../common
+    ../DataObject
+    ../PointCloud
 )
 
 set(lib_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/addInMgrDefines.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addInMgrDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h
-	${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h
-	${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h
-	${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.h
-	${CMAKE_CURRENT_SOURCE_DIR}/addInManager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.h
 )
 
 set(lib_SOURCES
 
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.cpp
 )
 
 if(MSVC)
-	list(APPEND lib_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND lib_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
-
-#################################################################
-# Qt related pre-processing of the files above
-# (These methods create the moc, rcc and uic process.)
-#################################################################
-if (QT5_FOUND)
-    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
-    #QT5_WRAP_UI(plugin_UI_MOC ${lib_UI})
-    #QT5_ADD_RESOURCES(plugin_RCC_MOC ${lib_RCC})
-else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(lib_HEADERS_MOC ${lib_HEADERS})
-    #QT4_WRAP_UI_ITOM(lib_UI_MOC ${lib_UI})
-    #QT4_ADD_RESOURCES(plugin_RCC_MOC ${lib_RCC})
-endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
@@ -136,13 +118,6 @@ ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 set (FILES_TO_TRANSLATE ${lib_SOURCES} ${lib_HEADERS} ${lib_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
-
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInMgrDefines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 
 # COPY SECTION
 set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/${target_name}_de.qm")

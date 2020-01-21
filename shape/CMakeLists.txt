@@ -45,11 +45,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 FIND_PACKAGE_QT(ON Core Designer LinguistTools)
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 
-#IF(BUILD_WITH_PCL)
-#    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
-#    ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
-#ENDIF(BUILD_WITH_PCL)
-
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
@@ -81,10 +76,6 @@ set(itomShape_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/shape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/shapeDObject.h
 )
-
-IF(NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(itomShape_HEADERS_MOC ${itomShape_HEADERS})
-ENDIF(NOT QT5_FOUND)
 
 set(itomShape_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shape.cpp

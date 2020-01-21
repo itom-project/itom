@@ -379,12 +379,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
 )
 
-IF (QT5_FOUND)
-#    QT5_WRAP_CPP(qitom_HEADERS_MOC ${qitom_HEADERS})
-ELSE (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(qitom_HEADERS_MOC ${qitom_HEADERS})
-ENDIF (QT5_FOUND)
-
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.ui
