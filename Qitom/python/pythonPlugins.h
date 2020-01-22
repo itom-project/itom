@@ -149,6 +149,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PyDataIOPlugin_stop(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *args);
