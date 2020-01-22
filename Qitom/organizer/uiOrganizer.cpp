@@ -967,7 +967,7 @@ RetVal UiOrganizer::showDialog(
         QSharedPointer<int> retCodeIfModal,
         ItomSharedSemaphore *semaphore)
 {
-    RetVal retValue = RetVal(retOk);
+    RetVal retValue;
 
     UiContainer *ptr = getUiDialogByHandle(handle);
     if (ptr)
@@ -1030,6 +1030,7 @@ RetVal UiOrganizer::showDialog(
             }
             break;
             case UiContainer::uiTypeQDockWidget:
+            case UiContainer::uiTypeWidget:
             {
                 QWidget *dockWidget = ptr->getUiWidget();
                 if (dockWidget)
@@ -1038,6 +1039,9 @@ RetVal UiOrganizer::showDialog(
                 }
             }
             break;
+            default:
+                retValue += RetVal(retError, 0, tr("Invalid widget type.").toLatin1().data());
+                break;
 
         }
     }
