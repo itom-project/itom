@@ -29,6 +29,7 @@ if(CMAKE_HOST_WIN32)
         if(NOT ${_index} GREATER -1)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32")
         endif()
+        
         string(FIND ${CMAKE_CXX_FLAGS} "/D_WIN32" _index)
         if(NOT ${_index} GREATER -1)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN32")
@@ -44,7 +45,8 @@ if(CMAKE_HOST_WIN32)
             if(NOT ${_index} GREATER -1)
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN64")
             endif()
-        endif()        
+        endif()       
+        
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "common C++ build flags" FORCE)
     endif()    
 elseif(CMAKE_HOST_APPLE)
@@ -124,14 +126,14 @@ if(BUILD_ITOMLIBS_SHARED OR ITOM_SDK_SHARED_LIBS)
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 endif()
 
-MACRO (BUILD_PARALLEL_LINUX targetName)
+macro (BUILD_PARALLEL_LINUX targetName)
   if(CMAKE_COMPILER_IS_GNUCXX)
         message(STATUS "GNUCXX pipe flag enabled")
         set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
   endif(CMAKE_COMPILER_IS_GNUCXX)
-ENDMACRO (BUILD_PARALLEL_LINUX)
+endmacro (BUILD_PARALLEL_LINUX)
 
-MACRO (INIT_ITOM_LIBRARY)
+macro (INIT_ITOM_LIBRARY)
     # put any configurations here, that should hold for all libraries, plugins, designer plugins etc. of itom
     
     # step 1: set global CMake policies
@@ -157,9 +159,9 @@ MACRO (INIT_ITOM_LIBRARY)
     if(POLICY CMP0074)
         cmake_policy(SET CMP0074 NEW) #find_package() uses <PackageName>_ROOT variables.. (CMake >= 3.12)
     endif()
-ENDMACRO (INIT_ITOM_LIBRARY)
+endmacro (INIT_ITOM_LIBRARY)
 
-MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
+macro (FIND_PACKAGE_QT SET_AUTOMOC)
     # call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
     # of Qt4 has been removed.
     #
@@ -277,7 +279,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})
-ENDMACRO (FIND_PACKAGE_QT)
+endmacro (FIND_PACKAGE_QT)
 
 
 #use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
@@ -293,7 +295,7 @@ ENDMACRO (FIND_PACKAGE_QT)
 # Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
 # ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST
 #
-MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
+macro (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
     set(TRANSLATIONS_FILES)
     set(TRANSLATION_OUTPUT_FILES)
     set(QMFILES)
@@ -323,14 +325,14 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
     
     set(${qm_files} ${${qm_files}} ${QMFILES})
     
-ENDMACRO (PLUGIN_TRANSLATION)
+endmacro (PLUGIN_TRANSLATION)
 
 
 ###########################################################################
 # useful macros
 ###########################################################################
 
-MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
+macro(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     message(STATUS "--------------------------------------------------------------------\nQT5_CREATE_TRANSLATION_ITOM: Create ts files for target ${target}\n--------------------------------------------------------------------")
     
     set(options)
@@ -415,10 +417,10 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 #    QT5_ADD_TRANSLATION_ITOM(${_qm_files} ${_my_tsfiles})
 #    set(${_qm_files} ${${_qm_files}} PARENT_SCOPE)
     message(STATUS "--------------------------------------------------------------------")
-ENDMACRO()
+endmacro()
 
 
-MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
+macro(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
     foreach (_current_FILE ${ARGN})
         get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
         get_filename_component(qm ${_abs_FILE} NAME_WE)
@@ -434,7 +436,7 @@ MACRO(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
 
         set(${_qm_files} ${${_qm_files}} ${qm})
     endforeach ()
-ENDMACRO()
+endmacro()
 
 
 #this macro only generates the moc-file but does not compile it, since it is included in another source file.
@@ -472,7 +474,7 @@ endmacro()
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
 # and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
 #
-MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
+macro (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -481,7 +483,7 @@ MACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
     
     list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
     list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)    
-ENDMACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
+endmacro (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
 
 
 #use this macro in order to append to the sources and destinations
@@ -496,7 +498,7 @@ ENDMACRO (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
 # and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
 #
-MACRO (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
+macro (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -505,7 +507,7 @@ MACRO (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
         list(APPEND ${sources} ${_hfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/designer/${target})
     endforeach()
-ENDMACRO (ADD_DESIGNERHEADER_TO_COPY_LIST)
+endmacro (ADD_DESIGNERHEADER_TO_COPY_LIST)
 
 
 #use this macro in order to append to the sources and destinations
@@ -520,7 +522,7 @@ ENDMACRO (ADD_DESIGNERHEADER_TO_COPY_LIST)
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
 # and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
 #
-MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
+macro (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -531,10 +533,10 @@ MACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
     
     list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
-ENDMACRO (ADD_PLUGINLIBRARY_TO_COPY_LIST)
+endmacro (ADD_PLUGINLIBRARY_TO_COPY_LIST)
 
 
-MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
+macro (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -543,10 +545,10 @@ MACRO (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
         list(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
     endforeach()
-ENDMACRO (ADD_QM_FILES_TO_COPY_LIST)
+endmacro (ADD_QM_FILES_TO_COPY_LIST)
 
 
-MACRO (ADD_DESIGNER_QM_FILES_TO_COPY_LIST qm_files sources destinations)
+macro (ADD_DESIGNER_QM_FILES_TO_COPY_LIST qm_files sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -555,10 +557,10 @@ MACRO (ADD_DESIGNER_QM_FILES_TO_COPY_LIST qm_files sources destinations)
         list(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/designer/translation)
     endforeach()
-ENDMACRO (ADD_DESIGNER_QM_FILES_TO_COPY_LIST)
+endmacro (ADD_DESIGNER_QM_FILES_TO_COPY_LIST)
 
 
-MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
+macro (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
     
     if(${ITOM_SDK_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
@@ -604,10 +606,10 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
     
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
     list(APPEND ${destinations} ${destination}) 
-ENDMACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
+endmacro (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
 
 
-MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
+macro (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
 
     if(${ITOM_SDK_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
@@ -667,10 +669,10 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
         list(APPEND ${sources} "$<TARGET_FILE:${target}>")
         list(APPEND ${destinations} ${sdk_destination})
     endif()
-ENDMACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
+endmacro (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
 
 
-MACRO (POST_BUILD_COPY_FILES target sources destinations)
+macro (POST_BUILD_COPY_FILES target sources destinations)
     list(LENGTH ${sources} temp)
     math(EXPR len1 "${temp} - 1")
     list(LENGTH ${destinations} temp)
@@ -713,10 +715,10 @@ MACRO (POST_BUILD_COPY_FILES target sources destinations)
                 "${val2}"                                                # <--this is out-file path
         )
     endforeach()
-ENDMACRO (POST_BUILD_COPY_FILES target sources destinations)
+endmacro (POST_BUILD_COPY_FILES target sources destinations)
 
 
-MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
+macro (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_DIR is not indicated")
     endif()
@@ -748,10 +750,10 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     else(${len1} GREATER "-1")
         message(STATUS "No files to copy to lib folder for target ${target}")
     endif(${len1} GREATER "-1")
-ENDMACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
+endmacro (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 
 
-MACRO (ADD_SOURCE_GROUP subfolder)
+macro (ADD_SOURCE_GROUP subfolder)
     #pass a subfolder. Its directory is scanned an all header, ui and sources files
     #are distributed into filters or subfilters (MSVC only)
     #if you want to pass a nested subfolder, use the 'slash' (not the 'backslash')
@@ -766,12 +768,12 @@ MACRO (ADD_SOURCE_GROUP subfolder)
         ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.cpp
     )
     source_group("Source Files\\${subfolder_backslash}" FILES ${GROUP_FILES_S})
-ENDMACRO (ADD_SOURCE_GROUP subfolder)
+endmacro (ADD_SOURCE_GROUP subfolder)
 
 
 #some unused macros
 
-MACRO(COPY_FILE_IF_CHANGED in_file out_file target)
+macro(COPY_FILE_IF_CHANGED in_file out_file target)
 #  message(STATUS "copy command: " ${in_file} " " ${out_file} " " ${target})
     if(${in_file} IS_NEWER_THAN ${out_file})    
   #    message("COpying file: ${in_file} to: ${out_file}")
@@ -786,27 +788,27 @@ MACRO(COPY_FILE_IF_CHANGED in_file out_file target)
     #    MAIN_DEPENDENCY ${in_file}
         )
     endif(${in_file} IS_NEWER_THAN ${out_file})
-ENDMACRO(COPY_FILE_IF_CHANGED)
+endmacro(COPY_FILE_IF_CHANGED)
 
 
-MACRO(COPY_FILE_INTO_DIRECTORY_IF_CHANGED in_file out_dir target)
+macro(COPY_FILE_INTO_DIRECTORY_IF_CHANGED in_file out_dir target)
     get_filename_component(file_name ${in_file} NAME) 
     COPY_FILE_IF_CHANGED(${in_file} ${out_dir}/${file_name} ${target})
-ENDMACRO(COPY_FILE_INTO_DIRECTORY_IF_CHANGED)
+endmacro(COPY_FILE_INTO_DIRECTORY_IF_CHANGED)
 
 
 #Copies all the files from in_file_list into the out_dir. 
 # sub-trees are ignored (files are stored in same out_dir)
-MACRO(COPY_FILES_INTO_DIRECTORY_IF_CHANGED in_file_list out_dir target)
+macro(COPY_FILES_INTO_DIRECTORY_IF_CHANGED in_file_list out_dir target)
     foreach(in_file ${in_file_list})
         COPY_FILE_INTO_DIRECTORY_IF_CHANGED(${in_file} ${out_dir} ${target})
     endforeach(in_file)     
-ENDMACRO(COPY_FILES_INTO_DIRECTORY_IF_CHANGED)
+endmacro(COPY_FILES_INTO_DIRECTORY_IF_CHANGED)
 
 
 #Copy all files and directories in in_dir to out_dir. 
 # Subtrees remain intact.
-MACRO(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
+macro(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
     #message("Copying directory ${in_dir}")
     file(${recurse} in_file_list ${in_dir}/${pattern})
     foreach(in_file ${in_file_list})
@@ -815,23 +817,23 @@ MACRO(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
             COPY_FILE_IF_CHANGED(${in_file} ${out_file} ${target})
         endif(NOT ${in_file} MATCHES ".*svn.*")
     endforeach(in_file)     
-ENDMACRO(COPY_DIRECTORY_IF_CHANGED)
+endmacro(COPY_DIRECTORY_IF_CHANGED)
 
 
-MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
+macro(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
     set(PLUGIN_NAME ${target})
     set(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     set(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
     set(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     set(PLUGIN_DOC_MAIN ${main_document})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
-ENDMACRO(PLUGIN_DOCUMENTATION)
+endmacro(PLUGIN_DOCUMENTATION)
 
 
 # OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
 # variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
 if(APPLE)
-    MACRO(COPY_TO_BUNDLE target srcDir destDir)
+    macro(COPY_TO_BUNDLE target srcDir destDir)
         file(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*)
         foreach(templateFile ${templateFiles})
             set(srcTemplatePath ${srcDir}/${templateFile})
@@ -839,14 +841,14 @@ if(APPLE)
                 add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
             endif(NOT IS_DIRECTORY ${srcTemplatePath})
         endforeach(templateFile)
-    ENDMACRO(COPY_TO_BUNDLE)
+    endmacro(COPY_TO_BUNDLE)
 endif(APPLE)
 
 
 # OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
 # variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
 if(APPLE)
-    MACRO(COPY_TO_BUNDLE_NONREC target srcDir destDir)
+    macro(COPY_TO_BUNDLE_NONREC target srcDir destDir)
         file(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*)
         foreach(templateFile ${templateFiles})
             set(srcTemplatePath ${srcDir}/${templateFile})
@@ -854,14 +856,14 @@ if(APPLE)
                 add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
             endif(NOT IS_DIRECTORY ${srcTemplatePath})
         endforeach(templateFile)
-    ENDMACRO(COPY_TO_BUNDLE_NONREC)
+    endmacro(COPY_TO_BUNDLE_NONREC)
 endif(APPLE)
 
 
 # OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
 # variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
 if(APPLE)
-    MACRO(COPY_TYPE_TO_BUNDLE target srcDir destDir type)
+    macro(COPY_TYPE_TO_BUNDLE target srcDir destDir type)
         file(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
         foreach(templateFile ${templateFiles})
             set(srcTemplatePath ${srcDir}/${templateFile})
@@ -869,14 +871,14 @@ if(APPLE)
                 add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
             endif(NOT IS_DIRECTORY ${srcTemplatePath})
         endforeach(templateFile)
-    ENDMACRO(COPY_TYPE_TO_BUNDLE)
+    endmacro(COPY_TYPE_TO_BUNDLE)
 endif(APPLE)
 
 
 # OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
 # variables (NON-RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
 if(APPLE)
-    MACRO(COPY_TYPE_TO_BUNDLE_NONREC target srcDir destDir type)
+    macro(COPY_TYPE_TO_BUNDLE_NONREC target srcDir destDir type)
         file(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
         foreach(templateFile ${templateFiles})
             set(srcTemplatePath ${srcDir}/${templateFile})
@@ -884,5 +886,5 @@ if(APPLE)
                 add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
             endif(NOT IS_DIRECTORY ${srcTemplatePath})
         endforeach(templateFile)
-    ENDMACRO(COPY_TYPE_TO_BUNDLE_NONREC)
+    endmacro(COPY_TYPE_TO_BUNDLE_NONREC)
 endif(APPLE)

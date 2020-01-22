@@ -1,5 +1,5 @@
 set(target_name qitom) 
-
+ 
 project(${target_name})
 
 cmake_minimum_required(VERSION 3.0.2)
@@ -91,7 +91,7 @@ if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
 endif()
 
-add_definitions(-DCMAKE -DITOM_CORE -DITOMSHAREDDESIGNER)
+add_definitions(-DITOM_CORE -DITOMSHAREDDESIGNER)
  
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)

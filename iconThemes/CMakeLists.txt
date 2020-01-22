@@ -62,7 +62,7 @@ function(ITOM_QT5_ADD_BINARY_RESOURCES target )
         set(rc_depends ${rc_depends} ${_rc_depends})
     endforeach()
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${rcc_destination}
+    add_custom_command(OUTPUT ${rcc_destination}
                        COMMAND ${Qt5Core_RCC_EXECUTABLE}
                        ARGS ${rcc_options} --binary --name ${target} --output ${rcc_destination} ${infiles}
                        DEPENDS ${rc_depends} ${out_depends} VERBATIM)

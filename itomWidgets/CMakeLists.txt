@@ -42,7 +42,7 @@ add_definitions(${QT_DEFINITIONS})
 if(BUILD_UNICODE)
     add_definitions(-DUNICODE -D_UNICODE)
 endif(BUILD_UNICODE)
-add_definitions(-DCMAKE -DITOMSHAREDDESIGNER)
+add_definitions(-DITOMSHAREDDESIGNER)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -400,7 +400,7 @@ else(WIN32)
    #Under linux, copying the library (like under Windows) will result in a strange double-linked-list error, since two libraries with the
    #same content will then be loaded by itom. Therefore, a symbolic link to the original library is created in the designer-folder.
     file(MAKE_DIRECTORY "${ITOM_APP_DIR}/designer")
-    ADD_CUSTOM_COMMAND(TARGET ${target_name} POST_BUILD                                                # Adds a post-build event to this target
+    add_custom_command(TARGET ${target_name} POST_BUILD                                                # Adds a post-build event to this target
             COMMAND ${CMAKE_COMMAND} -E create_symlink                                                                    # which executes "cmake - E create_symlink..."
                 "$<TARGET_LINKER_FILE:${target_name}>"                                                                                      # <--this is the old file
                 "${ITOM_APP_DIR}/designer/$<TARGET_LINKER_FILE_NAME:${target_name}>"     # <--this is the new file

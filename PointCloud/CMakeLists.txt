@@ -35,10 +35,6 @@ if(BUILD_UNICODE)
     add_definitions(-DUNICODE -D_UNICODE)
 endif(BUILD_UNICODE)
 
-if(BUILD_ITOMLIBS_SHARED)
-    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-endif(BUILD_ITOMLIBS_SHARED)
-
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 if(DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
