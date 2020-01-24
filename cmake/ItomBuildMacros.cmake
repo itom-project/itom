@@ -1,3 +1,28 @@
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# In addition, as a special exception, the Institut fuer Technische
+# Optik (ITO) gives you certain additional rights.
+# These rights are described in the ITO LGPL Exception version 1.0,
+# which can be found in the file LGPL_EXCEPTION.txt in this package.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 #########################################################################
 #set general things
 #########################################################################
@@ -121,61 +146,88 @@ list(REMOVE_DUPLICATES CMAKE_C_FLAGS_RELEASE)
 string(REPLACE ";" " " CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 # End: Remove duplicates compilation flags
 
+add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 
-if(BUILD_ITOMLIBS_SHARED OR ITOM_SDK_SHARED_LIBS)
-    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-endif()
-
-macro (BUILD_PARALLEL_LINUX targetName)
+# - enables a linux compiler to start the build with multiple cores.
+macro(itom_build_parallel_linux target)
   if(CMAKE_COMPILER_IS_GNUCXX)
         message(STATUS "GNUCXX pipe flag enabled")
-        set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-pipe")
   endif(CMAKE_COMPILER_IS_GNUCXX)
-endmacro (BUILD_PARALLEL_LINUX)
+endmacro()
 
-macro (INIT_ITOM_LIBRARY)
-    # put any configurations here, that should hold for all libraries, plugins, designer plugins etc. of itom
+# - initializes the default CMake policy to 3.12. Call this at the start of a plugin'safe
+# or designer plugin's CMakeLists.txt to have a common CMake policy behaviour.
+# 
+# If you have a CMake version <= 3.12, all existing policies will be considered to be NEW.
+# For CMake versions > 3.12, all policies, that have been introduced after this CMake version will
+# be handled as OLD, all other policies as NEW.
+#
+# example:
+# 
+# set(target_name yourTargetName)
+# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+# 
+# include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+# 
+# itom_init_cmake_policy()
+# itom_init_plugin_library(${target_name})
+# .
+macro(itom_init_cmake_policy)
+    cmake_policy(3.12)
+endmacro()
+
+# - This macro set common initializing things for an itom plugin. Call this macro after having
+# included this file at the beginning of the CMakeLists.txt of the plugin.
+#
+# example:
+# 
+# set(target_name yourTargetName)
+# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+# 
+# include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+# 
+# itom_init_cmake_policy()
+# itom_init_plugin_library(${target_name})
+# .
+macro(itom_init_plugin_library target)
+    #current not used yet.
+endmacro()
+
+# - This macro set common initializing things for an itom designer plugin. Call this macro after having
+# included this file at the beginning of the CMakeLists.txt of the designer plugin.
+#
+# example:
+# 
+# set(target_name yourTargetName)
+# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+# 
+# include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+# 
+# itom_init_cmake_policy()
+# itom_init_designerplugin_library(${target_name})
+# .
+macro(itom_init_designerplugin_library target)
+    #current not used yet.
+endmacro()
+
+# - call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
+# of Qt4 has been removed.
+# 
+# example:
+# 
+# itom_find_package_qt(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
+#
+# this will detect Qt with all given packages (packages given as Qt5 package names) 
+# and automoc for Qt5 is set to ON.
+#
+# If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected (support for Qt4 has been removed).
+# Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt5'
+#
+# For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0.
+macro(itom_find_package_qt SET_AUTOMOC)
     
-    # step 1: set global CMake policies
-
-    if(POLICY CMP0028)
-        cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found (CMake >= 3.0)
-    endif()
-
-    if(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-        if(POLICY CMP0042)
-            cmake_policy(SET CMP0042 OLD) # (CMake >= 3.0)
-        endif(POLICY CMP0042)
-    endif()
-
-    if(POLICY CMP0053)
-        cmake_policy(SET CMP0053 NEW) #Simplify variable reference and escape sequence evaluation. (CMake >= 3.1)
-    endif()
-    
-    if(POLICY CMP0071)
-        cmake_policy(SET CMP0071 NEW) #Let AUTOMOC and AUTOUIC process GENERATED files.
-    endif()
-
-    if(POLICY CMP0074)
-        cmake_policy(SET CMP0074 NEW) #find_package() uses <PackageName>_ROOT variables.. (CMake >= 3.12)
-    endif()
-endmacro (INIT_ITOM_LIBRARY)
-
-macro (FIND_PACKAGE_QT SET_AUTOMOC)
-    # call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
-    # of Qt4 has been removed.
-    #
-    # call example FIND_PACKAGE_QT(ON Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Designer)
-    #
-    # this will detect Qt with all given packages (packages given as Qt5 package names) 
-    # and automoc for Qt5 is set to ON
-    #
-    # If the CMAKE Config variable BUILD_QTVERSION is 'auto', Qt5 is detected (support for Qt4 has been removed).
-    # Force to find a specific Qt-branch by setting BUILD_QTVERSION to either 'Qt5'
-    #
-    # For Qt5.0 a specific load mechanism is used, since find_package(Qt5 COMPONENTS...) is only available for Qt5 > 5.0
-    #
-    set(Components ${ARGN}) #all arguments after SetAutomoc are components for Qt
+    set(Components ${ARGN}) #all arguments after SET_AUTOMOC are components for Qt
     set(QT_COMPONENTS ${ARGN})
     set(QT5_LIBRARIES "")
 
@@ -279,30 +331,41 @@ macro (FIND_PACKAGE_QT SET_AUTOMOC)
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})
-endmacro (FIND_PACKAGE_QT)
+endmacro()
 
 
 #use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
 #
 # example:
+#
+# #1. scan for existing translation files (*.ts)
+# file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+# #2. give all source files that should be checked for strings to be translated
 # set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
-# PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+# itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 #
-# Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
-# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or IF the ts-file
+# Hereby, ITOM_LANGUAGES is a semicolon-separated string with different languages, e.g. "de;fr"
+# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
 # is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
-#
+# 
 # Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
-# ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST
+# ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST (for plugins or designer plugins)
 #
-macro (PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
+# example:
+# set(COPY_SOURCES "")
+# set(COPY_DESTINATIONS "")
+# # e.g. add further entries to COPY_SOURCES and COPY_DESTINATIONS
+# itom_add_designer_qm_files_to_copy_list(QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+# itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+# .
+macro(itom_library_translation qm_files target force_translation_update existing_translation_files languages files_to_translate)
     set(TRANSLATIONS_FILES)
     set(TRANSLATION_OUTPUT_FILES)
     set(QMFILES)
 
     if(${force_translation_update})
         if(QT5_FOUND)
-            QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+            itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         else(QT5_FOUND)
             message(SEND_ERROR "Currently only Qt5 is supported")
         endif(QT5_FOUND)
@@ -311,13 +374,13 @@ macro (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
         add_dependencies(${target} _${target}_translation)
         
         if(QT5_FOUND)
-            QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+            itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
         else(QT5_FOUND)
             message(SEND_ERROR "Currently only Qt5 is supported")
         endif(QT5_FOUND)
     else(${force_translation_update})
         if(QT5_FOUND)
-            QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
+            itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
         else(QT5_FOUND)
             message(SEND_ERROR "Currently only Qt5 is supported")
         endif(QT5_FOUND)
@@ -325,21 +388,26 @@ macro (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
     
     set(${qm_files} ${${qm_files}} ${QMFILES})
     
-endmacro (PLUGIN_TRANSLATION)
+endmacro()
 
-
-###########################################################################
-# useful macros
-###########################################################################
-
-macro(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
-    message(STATUS "--------------------------------------------------------------------\nQT5_CREATE_TRANSLATION_ITOM: Create ts files for target ${target}\n--------------------------------------------------------------------")
+# Parses all given source file for Qt translation strings and create one ts file per
+# desired language using Qt's tool lupdate.
+# 
+# The call is
+# itom_qt5_create_translation(outputFiles tsFiles target languages srcfile1 srcfile2...)
+# 
+# .
+macro(itom_qt5_create_translation outputFiles tsFiles target languages)
+    message(STATUS "--------------------------------------------------------------------")
+    message(STATUS "itom_qt5_create_translation: Create ts files for target ${target}")
+    message(STATUS "--------------------------------------------------------------------")
     
     set(options)
     set(oneValueArgs)
     set(multiValueArgs OPTIONS)
 
     cmake_parse_arguments(_LUPDATE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    
     set(_lupdate_files ${_LUPDATE_UNPARSED_ARGUMENTS})
     set(_lupdate_options ${_LUPDATE_OPTIONS})
 
@@ -414,13 +482,27 @@ macro(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
         set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
         message(STATUS "- Update (existing) ts-file (lupdate process): ${_ts_file}")
     endforeach()
-#    QT5_ADD_TRANSLATION_ITOM(${_qm_files} ${_my_tsfiles})
-#    set(${_qm_files} ${${_qm_files}} PARENT_SCOPE)
+    
     message(STATUS "--------------------------------------------------------------------")
 endmacro()
 
-
-macro(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
+# - compiles all source translation files (*.ts), given after the target argument,
+# using Qt's lrelease tool and outputs their binary representation (*.qm), that is stored
+# in the output_location. The list of _qm_files, that might already contain values before
+# calling this macro is extended by the newly compiled qm files.
+# 
+# This step is added as custom command to the given target. Usually a new target is used
+# for this and the target, that originally contains the source files should have a dependency
+# to this target.
+#
+# The call is
+# itom_qt5_compile_translation(qm_files output_location target tsfile1 tsfile2...)
+#
+# example:
+# set(QM_FILES "")
+# itom_qt5_add_transation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" "build_translation_target" "file1.ts file2.ts file3.ts")
+# .
+macro(itom_qt5_compile_translation _qm_files output_location target)
     foreach (_current_FILE ${ARGN})
         get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
         get_filename_component(qm ${_abs_FILE} NAME_WE)
@@ -439,17 +521,32 @@ macro(QT5_ADD_TRANSLATION_ITOM _qm_files output_location target)
 endmacro()
 
 
-#this macro only generates the moc-file but does not compile it, since it is included in another source file.
-#this comes from the ctkCommon project
-#Creates a rule to run moc on infile and create outfile. Use this IF for some reason QT5_WRAP_CPP() 
-#isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
-macro(QT5_GENERATE_MOCS)
+# this macro only generates the moc-file but does not compile it, since it is included in another source file.
+# this comes from the ctkCommon project
+# Creates a rule to run moc on infile and create outfile. Use this IF for some reason QT5_WRAP_CPP() 
+# isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
+# 
+# Pass a list of files, that should be processed by Qt's moc tool. The moc files will then be located
+# in the binary directory.
+#
+# example:
+# itom_qt_generate_mocs(
+#     pathLineEdit.h
+#     checkBoxSpecial.h
+# )
+macro(itom_qt_generate_mocs)
     foreach(file ${ARGN})
         set(moc_file moc_${file})
-        QT5_GENERATE_MOC(${file} ${moc_file})
+        
+        if(${QT5_FOUND})
+            QT5_GENERATE_MOC(${file} ${moc_file})
+        else()
+            message(SEND_ERROR "Qt5 must be present to generate mocs")
+        endif()
 
         get_filename_component(source_name ${file} NAME_WE)
         get_filename_component(source_ext ${file} EXT)
+        
         if(${source_ext} MATCHES "\\.[hH]")
             if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
                 set(source_ext .cpp)
@@ -457,243 +554,138 @@ macro(QT5_GENERATE_MOCS)
                 set(source_ext .cxx)
             endif()
         endif()
+        
         set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
     endforeach()
 endmacro()
 
 
-#use this macro in order to append to the sources and destinations
-#list the library file for your designer plugin, that is finally
-#copied to the designer folder of itom.
+# - use this macro in order to append to the sources and destinations
+# list the library file for your designer plugin, that is finally
+# copied to the designer folder of itom.
 #
 # example:
 # set(COPY_SOURCES "")
 # set(COPY_DESTINATIONS "")
-# ADD_DESIGNERLIBRARY_TO_COPY_LIST(targetNameOfYourDesignerPlugin COPY_SOURCES COPY_DESTINATIONS)
+# itom_add_designerlibrary_to_copy_list(targetNameOfYourDesignerPlugin COPY_SOURCES COPY_DESTINATIONS)
 #
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
-# and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
+# and finally call itom_post_build_copy_files-macro, to initialize the copying.
 #
-macro (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
+macro(itom_add_designerlibrary_to_copy_list target sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
     list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
     
     list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
-    list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)    
-endmacro (ADD_DESIGNERLIBRARY_TO_COPY_LIST target sources destinations)
+    list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
+endmacro()
 
 
-#use this macro in order to append to the sources and destinations
-#list the header files for your designer plugin, that is finally
-#copied to the designer/{$target} folder of itom.
+# use this macro in order to append to the sources and destinations
+# list the header files for your designer plugin, that is finally
+# copied to the designer/{$target} folder of itom.
 #
 # example:
 # set(COPY_SOURCES "")
 # set(COPY_DESTINATIONS "")
-# ADD_DESIGNERLIBRARY_TO_COPY_LIST(targetNameOfYourDesignerPlugin COPY_SOURCES COPY_DESTINATIONS)
+# itom_add_designerplugin_headers_to_copy_list(targetNameOfYourDesignerPlugin list_of_header_files COPY_SOURCES COPY_DESTINATIONS)
 #
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
-# and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
+# and finally call itom_post_build_copy_files-macro, to initialize the copying.
 #
-macro (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
+macro(itom_add_designerplugin_headers_to_copy_list target headerfiles sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
     foreach(_hfile ${${headerfiles}})
         list(APPEND ${sources} ${_hfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/designer/${target})
     endforeach()
-endmacro (ADD_DESIGNERHEADER_TO_COPY_LIST)
+endmacro()
 
 
-#use this macro in order to append to the sources and destinations
-#list the library file for your itom plugin, that is finally
-#copied to the plugin/target folder of itom.
+# use this macro in order to append to the sources and destinations
+# list the library file for your itom plugin, that is finally
+# copied to the plugin/target folder of itom.
 #
 # example:
 # set(COPY_SOURCES "")
 # set(COPY_DESTINATIONS "")
-# ADD_PLUGINLIBRARY_TO_COPY_LIST(targetNameOfYourPlugin COPY_SOURCES COPY_DESTINATIONS)
+# itom_add_pluginlibrary_to_copy_list(targetNameOfYourPlugin COPY_SOURCES COPY_DESTINATIONS)
 #
 # Now the length of COPY_SOURCES and COPY_DESTINATIONS is 1. You can append further entries
-# and finally call POST_BUILD_COPY_FILES-macro, to initialize the copying.
+# and finally call itom_post_build_copy_files-macro, to initialize the copying.
 #
-macro (ADD_PLUGINLIBRARY_TO_COPY_LIST target sources destinations)
+macro(itom_add_pluginlibrary_to_copy_list target sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
-    #GET_TARGET_PROPERTY(VAR_LOCATION ${target} LOCATION)
-    #string(REGEX REPLACE "\\(Configuration\\)" "<CONFIGURATION>" VAR_LOCATION ${VAR_LOCATION})
-    #set(VAR_LOCATION "$<TARGET_FILE:${target}>")
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
     
     list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
-endmacro (ADD_PLUGINLIBRARY_TO_COPY_LIST)
+endmacro()
 
-
-macro (ADD_QM_FILES_TO_COPY_LIST target qm_files sources destinations)
+# - appends the list of binary translation files (qm_files) to be copied from their source
+# directory to the 'plugins/${target}/translation' subfolder of the qitom root directory. This is
+# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# 'destinations'. The copy operation from every entry in sources to destinations
+# can then be triggered by calling 'itom_post_build_copy_files'.
+#
+# qm_files are usually obtained by calling 'itom_library_translation'.
+macro(itom_add_plugin_qm_files_to_copy_list target qm_files sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
     foreach(_qmfile ${${qm_files}})
         list(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
     endforeach()
-endmacro (ADD_QM_FILES_TO_COPY_LIST)
+endmacro()
 
-
-macro (ADD_DESIGNER_QM_FILES_TO_COPY_LIST qm_files sources destinations)
+# - appends the list of binary translation files (qm_files) to be copied from their source
+# directory to the 'designer/translation' subfolder of the qitom root directory. This is
+# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# 'destinations'. The copy operation from every entry in sources to destinations
+# can then be triggered by calling 'itom_post_build_copy_files'.
+#
+# qm_files are usually obtained by calling 'itom_library_translation'.
+macro(itom_add_designer_qm_files_to_copy_list qm_files sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
     foreach(_qmfile ${${qm_files}})
         list(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         list(APPEND ${destinations} ${ITOM_APP_DIR}/designer/translation)
     endforeach()
-endmacro (ADD_DESIGNER_QM_FILES_TO_COPY_LIST)
+endmacro()
 
-
-macro (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
-    
-    if(${ITOM_SDK_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
-    endif()
-    
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-      set(SDK_PLATFORM "x86")
-    else()
-      set(SDK_PLATFORM "x64")
-    endif()
-    
-    # The following list has to be consistent with FindITOM_SDK.cmake! 
-    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "vc14")
-    elseif(MSVC_VERSION EQUAL 1800)
-        set(SDK_COMPILER "vc12")
-    elseif(MSVC_VERSION EQUAL 1700)
-        set(SDK_COMPILER "vc11")
-    elseif(MSVC_VERSION EQUAL 1600)
-        set(SDK_COMPILER "vc10")
-    elseif(MSVC_VERSION EQUAL 1500)
-        set(SDK_COMPILER "vc9")
-    elseif(MSVC_VERSION EQUAL 1400)
-        set(SDK_COMPILER "vc8")
-    elseif(MSVC)
-        set(SDK_COMPILER "vc${MSVC_VERSION}")
-    elseif(CMAKE_COMPILER_IS_GNUCXX)
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(SDK_COMPILER "clang")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        set(SDK_COMPILER "intel")
-    elseif(APPLE)
-        set(SDK_COMPILER "osx_default")
-    else(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "unknown")
-    endif(MSVC_VERSION EQUAL 1900)
-    
-    set( destination "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
-    
-    list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-    list(APPEND ${destinations} ${destination}) 
-endmacro (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
-
-
-macro (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
-
-    if(${ITOM_SDK_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
-    endif()
-
-    if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
-    endif()
-    
-    if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-        set(SDK_PLATFORM "x86")
-    else( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-        set(SDK_PLATFORM "x64")
-    endif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    
-    # The following list has to be consistent with FindITOM_SDK.cmake! 
-    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "vc14")
-    elseif(MSVC_VERSION EQUAL 1800)
-        set(SDK_COMPILER "vc12")
-    elseif(MSVC_VERSION EQUAL 1700)
-        set(SDK_COMPILER "vc11")
-    elseif(MSVC_VERSION EQUAL 1600)
-        set(SDK_COMPILER "vc10")
-    elseif(MSVC_VERSION EQUAL 1500)
-        set(SDK_COMPILER "vc9")
-    elseif(MSVC_VERSION EQUAL 1400)
-        set(SDK_COMPILER "vc8")
-    elseif(MSVC)
-        set(SDK_COMPILER "vc${MSVC_VERSION}")
-    elseif(CMAKE_COMPILER_IS_GNUCXX)
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(SDK_COMPILER "clang")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        set(SDK_COMPILER "intel")
-    elseif(APPLE)
-        set(SDK_COMPILER "osx_default")
-    else(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "unknown")
-    endif(MSVC_VERSION EQUAL 1900)
-
-    set( sdk_destination "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
-
-    if(BUILD_ITOMLIBS_SHARED)
-        #copy library (dll) to app-directory and linker library (lib) to sdk_destination
-        list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
-        list(APPEND ${destinations} ${sdk_destination})
-
-        list(APPEND ${sources} "$<TARGET_FILE:${target}>")
-        list(APPEND ${destinations} ${ITOM_APP_DIR})
-    else()
-        #copy linker library (lib) to sdk_destination
-        list(APPEND ${sources} "$<TARGET_FILE:${target}>")
-        list(APPEND ${destinations} ${sdk_destination})
-    endif()
-endmacro (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
-
-
-macro (POST_BUILD_COPY_FILES target sources destinations)
+# - adds a post build step to the given target that iteratively
+# adds a copy operation from every filepath in 'sources' to the directory in 'destinations'.
+# The arguments 'sources' and 'destinations' must therefore contain the same number of elements.
+macro(itom_post_build_copy_files target sources destinations)
     list(LENGTH ${sources} temp)
     math(EXPR len1 "${temp} - 1")
     list(LENGTH ${destinations} temp)
     math(EXPR len2 "${temp} - 1")
-    #message(STATUS "sources LEN: ${len1}")
-    #message(STATUS "destinations LEN: ${len2}")
 
     if( NOT len1 EQUAL len2 )
-        message(SEND_ERROR "POST_BUILD_COPY_FILES len(sources) must be equal to len(destinations)")
+        message(SEND_ERROR "itom_post_build_copy_files: len(sources) must be equal to len(destinations)")
     endif( NOT len1 EQUAL len2 )
     
     set(destPathes "")
-    foreach(dest ${${destinations}})
-        #IF dest is a full name to a file:
-        #get_filename_component(destPath ${dest} PATH)
-        #list(APPEND destPathes ${destPath})
-        list(APPEND destPathes ${dest})
-    endforeach(dest ${${destinations}})
-    list(REMOVE_DUPLICATES destPathes)
     
-#    message(STATUS "destPathes: ${destPathes}")
+    foreach(dest ${${destinations}})
+        list(APPEND destPathes ${dest})
+    endforeach()
+    
+    list(REMOVE_DUPLICATES destPathes)
     
     #try to create all pathes
     foreach(destPath ${destPathes})
@@ -702,7 +694,7 @@ macro (POST_BUILD_COPY_FILES target sources destinations)
             COMMAND ${CMAKE_COMMAND} -E make_directory
                 "${destPath}"
         )
-    endforeach(destPath ${destPathes})
+    endforeach()
     
     foreach(val RANGE ${len1})
         list(GET ${sources} ${val} val1)
@@ -715,12 +707,17 @@ macro (POST_BUILD_COPY_FILES target sources destinations)
                 "${val2}"                                                # <--this is out-file path
         )
     endforeach()
-endmacro (POST_BUILD_COPY_FILES target sources destinations)
+endmacro()
 
-
-macro (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
+# - adds a post_build step to the given target, that copies all given source files (sources)
+# to the 'lib' subfolder of the itom root directory. This subfolder is added to the local PATH environment
+# variable of the itom application before plugins or designer plugins are loaded.
+#
+# Therefore it is possible to copy further 3rd party libraries, that an itom plugin depends on,
+# into this lib directory.
+macro (itom_post_build_copy_files_to_lib_folder target sources)
     if(${ITOM_APP_DIR} STREQUAL "")
-        message(SEND_ERROR "ITOM_DIR is not indicated")
+        message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
     list(LENGTH ${sources} temp)
@@ -750,141 +747,115 @@ macro (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     else(${len1} GREATER "-1")
         message(STATUS "No files to copy to lib folder for target ${target}")
     endif(${len1} GREATER "-1")
-endmacro (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
+endmacro()
 
-
-macro (ADD_SOURCE_GROUP subfolder)
-    #pass a subfolder. Its directory is scanned an all header, ui and sources files
-    #are distributed into filters or subfilters (MSVC only)
-    #if you want to pass a nested subfolder, use the 'slash' (not the 'backslash')
+# - groups all .h and .ui files in a "Header Files" group and .cpp files in a "Source Files" group in Visual Studio.
+# Pass the name of a subfolder. All files within this subfolder will then be scanned and
+# all header, ui and source files are distributed into filters or subfilters (MSVC only).
+# If you want to pass a nested subfolder, use a slash, not a backslash.
+# 
+# Example: 
+# 
+# itom_add_source_group(codeEditor/syntaxHighlighter)
+# .
+macro(itom_add_source_group subfolder)
     string(REPLACE "/" "\\" subfolder_backslash "${subfolder}")
-    file(GLOB GROUP_FILES_H
-        ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.ui
-    )
-    source_group("Header Files\\${subfolder_backslash}" FILES ${GROUP_FILES_H})
     
-    file(GLOB GROUP_FILES_S
-        ${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/*.cpp
-    )
-    source_group("Source Files\\${subfolder_backslash}" FILES ${GROUP_FILES_S})
-endmacro (ADD_SOURCE_GROUP subfolder)
+    set(REG_EXT_HEADERS "[^/]*([.]ui|[.]h|[.]hpp)$")
+    set(REG_EXT_SOURCES "[^/]*([.]cpp|[.]c)$")
+
+    source_group("Header Files\\${subfolder_backslash}" REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_HEADERS}")
+    source_group("Source Files\\${subfolder_backslash}" REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_SOURCES}")
+endmacro()
 
 
-#some unused macros
 
-macro(COPY_FILE_IF_CHANGED in_file out_file target)
-#  message(STATUS "copy command: " ${in_file} " " ${out_file} " " ${target})
-    if(${in_file} IS_NEWER_THAN ${out_file})    
-  #    message("COpying file: ${in_file} to: ${out_file}")
-        add_custom_command(
-    #    OUTPUT     ${out_file}
-            TARGET ${target}
-            POST_BUILD
-            COMMAND    ${CMAKE_COMMAND}
-            ARGS       -E copy ${in_file} ${out_file}
-    #    DEPENDS     qitom
-    #    DEPENDS    ${in_file}
-    #    MAIN_DEPENDENCY ${in_file}
-        )
-    endif(${in_file} IS_NEWER_THAN ${out_file})
-endmacro(COPY_FILE_IF_CHANGED)
-
-
-macro(COPY_FILE_INTO_DIRECTORY_IF_CHANGED in_file out_dir target)
-    get_filename_component(file_name ${in_file} NAME) 
-    COPY_FILE_IF_CHANGED(${in_file} ${out_dir}/${file_name} ${target})
-endmacro(COPY_FILE_INTO_DIRECTORY_IF_CHANGED)
-
-
-#Copies all the files from in_file_list into the out_dir. 
-# sub-trees are ignored (files are stored in same out_dir)
-macro(COPY_FILES_INTO_DIRECTORY_IF_CHANGED in_file_list out_dir target)
-    foreach(in_file ${in_file_list})
-        COPY_FILE_INTO_DIRECTORY_IF_CHANGED(${in_file} ${out_dir} ${target})
-    endforeach(in_file)     
-endmacro(COPY_FILES_INTO_DIRECTORY_IF_CHANGED)
-
-
-#Copy all files and directories in in_dir to out_dir. 
-# Subtrees remain intact.
-macro(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
-    #message("Copying directory ${in_dir}")
-    file(${recurse} in_file_list ${in_dir}/${pattern})
-    foreach(in_file ${in_file_list})
-        if(NOT ${in_file} MATCHES ".*svn.*")
-            string(REGEX REPLACE ${in_dir} ${out_dir} out_file ${in_file}) 
-            COPY_FILE_IF_CHANGED(${in_file} ${out_file} ${target})
-        endif(NOT ${in_file} MATCHES ".*svn.*")
-    endforeach(in_file)     
-endmacro(COPY_DIRECTORY_IF_CHANGED)
-
-
-macro(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at the end
+# - Create the configuration file for parsing and integrating the rst documentation of a plugin
+# into the overall itom documentation.
+#
+# Call this macro by the end of the CMakeLists.txt of a plugin, such that the 
+# plugin_doc_config.cfg file is generated in the 'docs' subfolder of the output folder of the plugin.
+# This config file can then be parsed by the script 'create_plugin_doc.py' in the docs subfolder of the itom
+# root directory.
+#
+# example if the rst main document of the plugin is called myPluginDoc.rst (and located in the docs subfolder
+# of the plugin sources):
+# itom_configure_plugin_documentation(${target_name} myPluginDoc)
+# .
+macro(itom_configure_plugin_documentation target main_document) #main_document without .rst at the end
     set(PLUGIN_NAME ${target})
     set(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     set(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
     set(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     set(PLUGIN_DOC_MAIN ${main_document})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
-endmacro(PLUGIN_DOCUMENTATION)
+endmacro()
 
 
-# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
-# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
-if(APPLE)
-    macro(COPY_TO_BUNDLE target srcDir destDir)
-        file(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*)
-        foreach(templateFile ${templateFiles})
-            set(srcTemplatePath ${srcDir}/${templateFile})
-            if(NOT IS_DIRECTORY ${srcTemplatePath})
-                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
-            endif(NOT IS_DIRECTORY ${srcTemplatePath})
-        endforeach(templateFile)
-    endmacro(COPY_TO_BUNDLE)
-endif(APPLE)
 
+# Deprecated macros added with itom 4.0 (January 2020). They will be removed in the future.
+# These macros are only redirects to renamed macros.
+macro(ADD_SOURCE_GROUP)
+    message(WARNING "Deprecated call to 'ADD_SOURCE_GROUP'. Call 'itom_add_source_group' instead.")
+    itom_add_source_group(${ARGV})
+endmacro()
 
-# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
-# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
-if(APPLE)
-    macro(COPY_TO_BUNDLE_NONREC target srcDir destDir)
-        file(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*)
-        foreach(templateFile ${templateFiles})
-            set(srcTemplatePath ${srcDir}/${templateFile})
-            if(NOT IS_DIRECTORY ${srcTemplatePath})
-                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
-            endif(NOT IS_DIRECTORY ${srcTemplatePath})
-        endforeach(templateFile)
-    endmacro(COPY_TO_BUNDLE_NONREC)
-endif(APPLE)
+macro(QT5_GENERATE_MOCS)
+    message(WARNING "Deprecated call to 'QT5_GENERATE_MOCS'. Call 'itom_qt_generate_mocs' instead.")
+    itom_qt_generate_mocs(${ARGV})
+endmacro()
 
+macro(FIND_PACKAGE_QT)
+    message(WARNING "Deprecated call to 'FIND_PACKAGE_QT'. Call 'itom_find_package_qt' instead.")
+    itom_find_package_qt(${ARGV})
+endmacro()
 
-# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
-# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
-if(APPLE)
-    macro(COPY_TYPE_TO_BUNDLE target srcDir destDir type)
-        file(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
-        foreach(templateFile ${templateFiles})
-            set(srcTemplatePath ${srcDir}/${templateFile})
-            if(NOT IS_DIRECTORY ${srcTemplatePath})
-                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
-            endif(NOT IS_DIRECTORY ${srcTemplatePath})
-        endforeach(templateFile)
-    endmacro(COPY_TYPE_TO_BUNDLE)
-endif(APPLE)
+macro(POST_BUILD_COPY_FILES)
+    message(WARNING "Deprecated call to 'POST_BUILD_COPY_FILES'. Call 'itom_post_build_copy_files' instead.")
+    itom_post_build_copy_files(${ARGV})
+endmacro()
 
+macro(ADD_DESIGNERLIBRARY_TO_COPY_LIST)
+    message(WARNING "Deprecated call to 'ADD_DESIGNERLIBRARY_TO_COPY_LIST'. Call 'itom_add_designerlibrary_to_copy_list' instead.")
+    itom_add_designerlibrary_to_copy_list(${ARGV})
+endmacro()
 
-# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
-# variables (NON-RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
-if(APPLE)
-    macro(COPY_TYPE_TO_BUNDLE_NONREC target srcDir destDir type)
-        file(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
-        foreach(templateFile ${templateFiles})
-            set(srcTemplatePath ${srcDir}/${templateFile})
-            if(NOT IS_DIRECTORY ${srcTemplatePath})
-                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
-            endif(NOT IS_DIRECTORY ${srcTemplatePath})
-        endforeach(templateFile)
-    endmacro(COPY_TYPE_TO_BUNDLE_NONREC)
-endif(APPLE)
+macro(ADD_DESIGNER_QM_FILES_TO_COPY_LIST)
+    message(WARNING "Deprecated call to 'ADD_DESIGNER_QM_FILES_TO_COPY_LIST'. Call 'itom_add_designer_qm_files_to_copy_list' instead.")
+    itom_add_designer_qm_files_to_copy_list(${ARGV})
+endmacro()
+
+macro(ADD_QM_FILES_TO_COPY_LIST)
+    message(WARNING "Deprecated call to 'ADD_QM_FILES_TO_COPY_LIST'. Call 'itom_add_plugin_qm_files_to_copy_list' instead.")
+    itom_add_plugin_qm_files_to_copy_list(${ARGV})
+endmacro()
+
+macro(PLUGIN_TRANSLATION)
+    message(WARNING "Deprecated call to 'PLUGIN_TRANSLATION'. Call 'itom_library_translation' instead.")
+    itom_library_translation(${ARGV})
+endmacro()
+
+macro(BUILD_PARALLEL_LINUX targetName)
+    message(WARNING "Deprecated call to 'BUILD_PARALLEL_LINUX'. Call 'itom_build_parallel_linux' instead.")
+    itom_build_parallel_linux(${ARGV})
+endmacro()
+
+macro(PLUGIN_DOCUMENTATION)
+    message(WARNING "Deprecated call to 'PLUGIN_DOCUMENTATION'. Call 'itom_configure_plugin_documentation' instead.")
+    itom_configure_plugin_documentation(${ARGV})
+endmacro()
+
+macro(POST_BUILD_COPY_FILE_TO_LIB_FOLDER)
+    message(WARNING "Deprecated call to 'POST_BUILD_COPY_FILE_TO_LIB_FOLDER'. Call 'itom_post_build_copy_files_to_lib_folder' instead.")
+    itom_post_build_copy_files_to_lib_folder(${ARGV})
+endmacro()
+
+macro(ADD_PLUGINLIBRARY_TO_COPY_LIST)
+    message(WARNING "Deprecated call to 'ADD_PLUGINLIBRARY_TO_COPY_LIST'. Call 'itom_add_pluginlibrary_to_copy_list' instead.")
+    itom_add_pluginlibrary_to_copy_list(${ARGV})
+endmacro()
+
+macro(ADD_DESIGNERHEADER_TO_COPY_LIST)
+    message(WARNING "Deprecated call to 'ADD_DESIGNERHEADER_TO_COPY_LIST'. Call 'itom_add_designerplugin_headers_to_copy_list' instead.")
+    itom_add_designerplugin_headers_to_copy_list(${ARGV})
+endmacro()

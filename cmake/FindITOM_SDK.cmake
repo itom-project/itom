@@ -34,7 +34,7 @@ endif(BUILD_TARGET64)
 
 if(EXISTS ${ITOM_SDK_DIR})
     #find itom_sdk.cmake configuration file
-    find_file(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR} DOC "")
+    find_file(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR}/cmake DOC "")
 else(EXISTS ${ITOM_SDK_DIR})
     set(ITOM_SDK_CONFIG_FILE "")
     set(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
@@ -78,8 +78,8 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
       set(SDK_PLATFORM "x64")
     endif()
     
-    # The following list has to be consistent with ItomBuildMacro.cmake, 
-    # macros ADD_OUTPUTLIBRARY_TO_SDK_LIB and ADD_OUTPUTLIBRARY_TO_SDK_LIB! 
+    # The following list has to be consistent with the
+    # macro itom_add_library_to_appdir_and_sdk of ItomBuildMacroInternal.cmake.
     # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
     if(MSVC_VERSION EQUAL 1900)
         set(SDK_COMPILER "vc14")
@@ -105,12 +105,12 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         set(SDK_COMPILER "intel")
     elseif(APPLE)
         set(SDK_COMPILER "osx_default")
-    else(MSVC_VERSION EQUAL 1900)
+    else()
         set(SDK_COMPILER "unknown")
-    endif(MSVC_VERSION EQUAL 1900)
+    endif()
     
     set(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
-    message(STATUS "ITOM SUF: ${ITOM_SDK_LIBSUFFIX}")
+    message(STATUS "ITOM SUFFIX: ${ITOM_SDK_LIBSUFFIX}")
     
     #Initiate the variable before the loop
     set(GLOBAL ITOM_SDK_LIBS "")

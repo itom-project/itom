@@ -203,11 +203,11 @@ endif()
 # If you have some header and source files in a specific
 # subfolder, you can even have this subfolder in your
 # IDE (mainly Visual Studio supports this). Then call 
-# ADD_SOURCE_GROUP(directoryName) for each subdirectory.
+# itom_add_source_group(directoryName) for each subdirectory.
 #
 # HINT: This command does nothing for IDE different than MSVC.
 #################################################################
-#ADD_SOURCE_GROUP(subdirectory)
+#itom_add_source_group(subdirectory)
 
 
 #################################################################
@@ -225,13 +225,13 @@ add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 #append all libraries this plugin should be linked to at the end of the target_link_libraries command
 # Important variables are:
 # ${ITOM_SDK_LIBRARIES} -> all necessary libraries from find_package(ITOM_SDK)
-# ${QT_LIBRARIES} -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
+# -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
 # ${OpenCV_LIBS} -> all necessary libraries opencv libraries from find_package(OpenCV)
 #
 # if you want to link against one library whose directory is already added to link_directories above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 #################################################################
 # Plugin Translation
@@ -245,7 +245,7 @@ target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5
 # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 #################################################################
 set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 #################################################################
 # Plugin Documentation
@@ -269,7 +269,7 @@ PLUGIN_DOCUMENTATION(${target_name} myGrabber)
 # At first pairs of sources and destinations are added
 # to the lists COPY_SOURCES and COPY_DESTINATIONS.
 # Afterwards, the post-build process is generated using
-# POST_BUILD_COPY_FILES.
+# itom_post_build_copy_files.
 #
 # The following macros can be used to fill up the source
 # and destination list:
@@ -290,7 +290,7 @@ set(COPY_DESTINATIONS "")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 #if you want to copy one or more files to the lib-folder of
 # the itom build directory, use the following macro:
