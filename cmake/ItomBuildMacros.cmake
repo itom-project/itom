@@ -26,7 +26,11 @@
 #########################################################################
 #set general things
 #########################################################################
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
@@ -148,6 +152,8 @@ string(REPLACE ";" " " CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
 add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 
+include(CMakeParseArguments)
+
 # - enables a linux compiler to start the build with multiple cores.
 macro(itom_build_parallel_linux target)
   if(CMAKE_COMPILER_IS_GNUCXX)
@@ -174,7 +180,11 @@ endmacro()
 # itom_init_plugin_library(${target_name})
 # .
 macro(itom_init_cmake_policy)
-    cmake_policy(3.12)
+    cmake_minimum_required(VERSION 3.1...3.15)
+
+    if(${CMAKE_VERSION} VERSION_LESS 3.12)
+        cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+    endif()
 endmacro()
 
 # - This macro set common initializing things for an itom plugin. Call this macro after having
@@ -191,7 +201,7 @@ endmacro()
 # itom_init_plugin_library(${target_name})
 # .
 macro(itom_init_plugin_library target)
-    #current not used yet.
+    message(STATUS "\n<--- PLUGIN ${target} --->")
 endmacro()
 
 # - This macro set common initializing things for an itom designer plugin. Call this macro after having
@@ -208,7 +218,7 @@ endmacro()
 # itom_init_designerplugin_library(${target_name})
 # .
 macro(itom_init_designerplugin_library target)
-    #current not used yet.
+    message(STATUS "\n<--- DESIGNERPLUGIN ${target} --->")
 endmacro()
 
 # - call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
@@ -341,15 +351,15 @@ endmacro()
 # #1. scan for existing translation files (*.ts)
 # file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 # #2. give all source files that should be checked for strings to be translated
-# set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui}) #adds all files to the list of files that are searched for strings to translate
+# set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UIC}) #adds all files to the list of files that are searched for strings to translate
 # itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 #
 # Hereby, ITOM_LANGUAGES is a semicolon-separated string with different languages, e.g. "de;fr"
-# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
+# UPDATE_TRANSLATIONS is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
 # is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
 # 
 # Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
-# ADD_QM_FILES_TO_COPY_LIST or ADD_DESIGNER_QM_FILES_TO_COPY_LIST (for plugins or designer plugins)
+# itom_add_plugin_qm_files_to_copy_list or itom_add_designer_qm_files_to_copy_list (for plugins or designer plugins)
 #
 # example:
 # set(COPY_SOURCES "")
@@ -357,37 +367,34 @@ endmacro()
 # # e.g. add further entries to COPY_SOURCES and COPY_DESTINATIONS
 # itom_add_designer_qm_files_to_copy_list(QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 # itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#
+# This macro automatically adds all translation files (*.ts) as source files to the given target.
 # .
 macro(itom_library_translation qm_files target force_translation_update existing_translation_files languages files_to_translate)
-    set(TRANSLATIONS_FILES)
-    set(TRANSLATION_OUTPUT_FILES)
-    set(QMFILES)
 
+    if(NOT QT5_FOUND)
+        message(SEND_ERROR "Currently only Qt5 is supported")
+    endif()
+    
     if(${force_translation_update})
-        if(QT5_FOUND)
-            itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
-        else(QT5_FOUND)
-            message(SEND_ERROR "Currently only Qt5 is supported")
-        endif(QT5_FOUND)
-        
+        set(TRANSLATIONS_FILES) #list with all ts files
+        set(TRANSLATION_OUTPUT_FILES)
+        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${target} _${target}_translation)
-        
-        if(QT5_FOUND)
-            itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
-        else(QT5_FOUND)
-            message(SEND_ERROR "Currently only Qt5 is supported")
-        endif(QT5_FOUND)
-    else(${force_translation_update})
-        if(QT5_FOUND)
-            itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
-        else(QT5_FOUND)
-            message(SEND_ERROR "Currently only Qt5 is supported")
-        endif(QT5_FOUND)
-    endif(${force_translation_update})
+    else()
+        set(TRANSLATIONS_FILES ${existing_translation_files})
+    endif()
     
+    set(QMFILES)
+    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
     set(${qm_files} ${${qm_files}} ${QMFILES})
     
+    #add the translation files to the solution
+    target_sources(${target}
+        PRIVATE
+        ${TRANSLATIONS_FILES}
+    )
 endmacro()
 
 # Parses all given source file for Qt translation strings and create one ts file per
@@ -558,6 +565,33 @@ macro(itom_qt_generate_mocs)
         set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
     endforeach()
 endmacro()
+
+
+# - itom_qt_wrap_ui(outfiles target ui_file1 ui_file2 ... )
+#
+# This is a wrapper for qt5_wrap_ui (if Qt5 is available) that processes the given ui files
+# by Qt's uic process, automatically adds the processed files (ui_...h) to the target's sources
+# and returns the processed files as outfiles.
+#
+# Usually Qt's AUTOUIC would do the same, however it might also be required
+# to translate these processed files. Then, the access to the list of parsed filenames
+# must be available, such that it can be passed to the translation macro.
+# Therefore it is recommended to use this method.
+#
+# Hint: it is no problem to enable AUTOUIC though, since qt5_wrap_ui will skip the autouic
+# for every single file that is passed to this function.
+function(itom_qt_wrap_ui outfiles target)
+    if(QT5_FOUND)
+        #parse all *.ui files by Qt's uic process and get the parsed source files
+        qt5_wrap_ui(temp_output ${ARGN})
+        #add the output files to the target
+        target_sources(${target} PRIVATE ${temp_output})
+        list(APPEND ${outfiles} ${temp_output})
+        set(${outfiles} ${${outfiles}} PARENT_SCOPE)
+    else()
+        message(SEND_ERROR "Currently only Qt5 is supported")
+    endif()
+endfunction()
 
 
 # - use this macro in order to append to the sources and destinations
@@ -791,6 +825,34 @@ macro(itom_configure_plugin_documentation target main_document) #main_document w
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
 endmacro()
 
+macro(itom_copy_file_if_changed in_file out_file target)
+    IF(${in_file} IS_NEWER_THAN ${out_file})    
+  #    message("COpying file: ${in_file} to: ${out_file}")
+        add_custom_command (
+    #    OUTPUT     ${out_file}
+            TARGET ${target}
+            POST_BUILD
+            COMMAND    ${CMAKE_COMMAND}
+            ARGS       -E copy ${in_file} ${out_file}
+    #    DEPENDS     qitom
+    #    DEPENDS    ${in_file}
+    #    MAIN_DEPENDENCY ${in_file}
+        )
+    endif()
+endmacro()
+
+# Copy all files and directories in in_dir to out_dir. 
+# Subtrees remain intact.
+macro(itom_copy_directory_if_changed in_dir out_dir target pattern recurse)
+    file(${recurse} in_file_list ${in_dir}/${pattern})
+    foreach(in_file ${in_file_list})
+        if(NOT ${in_file} MATCHES ".*svn.*")
+            string(REGEX REPLACE ${in_dir} ${out_dir} out_file ${in_file}) 
+            itom_copy_file_if_changed(${in_file} ${out_file} ${target})
+        endif()
+    endforeach()
+endmacro()
+
 
 
 # Deprecated macros added with itom 4.0 (January 2020). They will be removed in the future.
@@ -858,4 +920,9 @@ endmacro()
 macro(ADD_DESIGNERHEADER_TO_COPY_LIST)
     message(WARNING "Deprecated call to 'ADD_DESIGNERHEADER_TO_COPY_LIST'. Call 'itom_add_designerplugin_headers_to_copy_list' instead.")
     itom_add_designerplugin_headers_to_copy_list(${ARGV})
+endmacro()
+
+MACRO(COPY_DIRECTORY_IF_CHANGED)
+    message(WARNING "Deprecated call to 'COPY_DIRECTORY_IF_CHANGED'. Call 'itom_copy_directory_if_changed' instead.")
+    itom_copy_directory_if_changed(${ARGV})
 endmacro()

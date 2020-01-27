@@ -20,8 +20,6 @@ message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
 #################################################################
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -67,16 +65,8 @@ FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
 #################################################################
 # General settings and preprocessor settings
 #################################################################
-if(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED_LIBS)
 
-if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
-add_definitions(-DCMAKE)
+add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMWIDGETS_SHARED)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
@@ -121,7 +111,6 @@ endif()
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-    ${OpenCV_DIR}/include       #include directory of OpenCV
     ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
     ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
     #add further include directories here
@@ -220,7 +209,7 @@ endif()
 file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
 #add all (generated) header and source files to the library (these files are compiled then)
-add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} SHARED ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
 #link the compiled library
 #append all libraries this plugin should be linked to at the end of the target_link_libraries command

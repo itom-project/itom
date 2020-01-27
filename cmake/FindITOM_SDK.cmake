@@ -32,15 +32,17 @@ else()
     endif()
 endif(BUILD_TARGET64)
 
+if (NOT EXISTS ${ITOM_SDK_CONFIG_FILE})
+    unset(ITOM_SDK_CONFIG_FILE CACHE)
+endif()
+
 if(EXISTS ${ITOM_SDK_DIR})
     #find itom_sdk.cmake configuration file
-    find_file(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" ${ITOM_SDK_DIR}/cmake DOC "")
-else(EXISTS ${ITOM_SDK_DIR})
+    find_file(ITOM_SDK_CONFIG_FILE "itom_sdk.cmake" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES cmake DOC "")
+else()
     set(ITOM_SDK_CONFIG_FILE "")
     set(ERR_MSG "The directory indicated by ITOM_SDK_DIR could not be found.")
-endif(EXISTS ${ITOM_SDK_DIR})
-
-message(STATUS ${ITOM_SDK_FIND_QUIETLY})
+endif()
 
 if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
@@ -110,7 +112,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     endif()
     
     set(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
-    message(STATUS "ITOM SUFFIX: ${ITOM_SDK_LIBSUFFIX}")
+    message(STATUS "ITOM LIB SUFFIX: ${ITOM_SDK_LIBSUFFIX}")
     
     #Initiate the variable before the loop
     set(GLOBAL ITOM_SDK_LIBS "")
@@ -241,7 +243,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     
 else(EXISTS ${ITOM_SDK_CONFIG_FILE})
-    set(ERR_MSG "File itom_sdk.cmake could not be found in ITOM_SDK_DIR")
+    set(ERR_MSG "File itom_sdk.cmake could not be found in subdirectory 'cmake' of ITOM_SDK_DIR")
 endif(EXISTS ${ITOM_SDK_CONFIG_FILE})
 #====================================================
 

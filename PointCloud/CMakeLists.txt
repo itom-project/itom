@@ -42,7 +42,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
@@ -64,10 +63,9 @@ endif()
 
 include_directories( 
     ${PCL_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIRS}
-    ${FLANN_INCLUDE_DIRS}
-    ${OpenCV_DIR}/include
+    #${Boost_INCLUDE_DIR}
+    #${EIGEN_INCLUDE_DIRS}
+    #${FLANN_INCLUDE_DIRS}
 )
 
 set(libSrcs 

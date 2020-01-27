@@ -33,7 +33,6 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
@@ -41,7 +40,6 @@ set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
@@ -56,7 +54,6 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
 
-add_definitions(${QT_DEFINITIONS})
 add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMSHAREDDESIGNER)
 
@@ -76,15 +73,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${QT_QTCORE_INCLUDE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
     ${Qt5Designer_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-    ${OpenCV_DIR}/include
 )
 
 link_directories(
-    ${OpenCV_DIR}/lib
+    
 )
 
 set(paramPropertyBrowser_SOURCES

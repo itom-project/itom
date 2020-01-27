@@ -42,7 +42,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURC
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # add 3rd party packages
 itom_find_package_qt(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
@@ -70,7 +69,6 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../common

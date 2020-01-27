@@ -44,7 +44,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
@@ -187,7 +186,6 @@ include_directories(
     ${Qt5Network_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -201,7 +199,7 @@ link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    ${OpenCV_DIR}/lib
+    
 )
  
 set(qitom_HEADERS_NOMOC

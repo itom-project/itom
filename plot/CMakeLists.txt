@@ -44,7 +44,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # add 3rd party packages
 itom_find_package_qt(ON Core PrintSupport Designer Xml Svg Widgets UiTools LinguistTools)
@@ -78,14 +77,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
 )
 
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${OpenCV_DIR}/lib
+    
 )
 
 set(itomCommonPlot_HEADERS

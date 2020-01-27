@@ -71,14 +71,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
 )
 
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${OpenCV_DIR}/lib
+    
 )
 
 set(ITOMCOMMONQT_HEADERS
