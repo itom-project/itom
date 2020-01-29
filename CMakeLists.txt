@@ -37,7 +37,6 @@ set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_s
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
 
 # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
 if(BUILD_TARGET64)
@@ -51,6 +50,12 @@ else()
 endif(BUILD_TARGET64)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
+
+include("cmake/ItomBuildMacros.cmake")
+include("cmake/ItomBuildMacrosInternal.cmake")
+
+# Set a default build type if none was specified
+itom_set_default_build_type()
 
 if(WIN32)
     # add /LTCG flag to remove MSVC linker warning in release build
@@ -99,7 +104,7 @@ message(STATUS "")
 
 ################################################################################################################
 #CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
-include("cmake/ItomBuildMacros.cmake")
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )

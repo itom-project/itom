@@ -853,7 +853,74 @@ macro(itom_copy_directory_if_changed in_dir out_dir target pattern recurse)
     endforeach()
 endmacro()
 
+# checks if value is contained in given list.
+# The output variable contains is set to TRUE if value
+# is contained in the list.
+#
+# example:
+# set(MYLIST hello world foo bar)
+#
+# itom_list_contains(contains foo ${MYLIST})
+# if(contains)
+#    message("MYLIST contains foo")
+# endif(contains)
+ 
+macro(itom_list_contains contains value)
+  set(${contains})
+  foreach (value2 ${ARGN})
+    if(${value} STREQUAL ${value2})
+      set(${contains} TRUE)
+    endif(${value} STREQUAL ${value2})
+  endforeach (value2)
+endmacro(itom_list_contains)
 
+
+# - checks and possibly corrects the CMAKE variables CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE.
+# 
+# If CMAKE_CONFIGURATION_TYPES is missing or an emtpy list, it is set to the default values 
+# Debug, Release, MinSizeRel and RelWithDebInfo.
+#
+# If CMAKE_BUILD_TYPE is not set yet, it is set to the default value 'Release'. However, if this
+# default value is not among CMAKE_CONFIGURATION_TYPES, CMAKE_BUILD_TYPE is the first value of CMAKE_CONFIGURATION_TYPES.
+macro(itom_set_default_build_type)
+    # Set a default build type if none was specified
+    set(DEFAULT_BUILD_TYPE "Release")
+    
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo" CACHE STRING 
+            "Semicolon separated list of supported configuration types, only supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything will be ignored." FORCE)
+    else()
+        list(LENGTH CMAKE_CONFIGURATION_TYPES len)
+        if(len LESS 1)
+            message(WARNING "CMAKE_CONFIGURATION_TYPES does not contain values. It is reset to the default values Debug, Release, MinSizeRel, RelWithDebInfo.")
+            set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo" CACHE STRING 
+                "Semicolon separated list of supported configuration types, only supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything will be ignored." FORCE)
+        else()
+            itom_list_contains(contains ${DEFAULT_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
+            if(NOT contains)
+                list(GET CMAKE_CONFIGURATION_TYPES 0 DEFAULT_BUILD_TYPE)
+                message(WARNING "The default build type ${DEFAULT_BUILD_TYPE} is not among CMAKE_CONFIGURATION_TYPES. The default is set to ${DEFAULT_BUILD_TYPE}")
+            endif()
+        endif()
+    endif()
+    
+    if(CMAKE_BUILD_TYPE)
+        itom_list_contains(contains ${CMAKE_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
+        if(NOT contains)
+            message(WARNING "CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} is not among the allowed values in CMAKE_CONFIGURATION_TYPES. It will be set to the default ${DEFAULT_BUILD_TYPE}")
+            unset(CMAKE_BUILD_TYPE)
+        endif()
+    endif()
+    
+    if(NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
+        set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE
+            STRING "Choose the type of build." FORCE)
+    endif()
+    
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${CMAKE_CONFIGURATION_TYPES})
+endmacro()
 
 # Deprecated macros added with itom 4.0 (January 2020). They will be removed in the future.
 # These macros are only redirects to renamed macros.

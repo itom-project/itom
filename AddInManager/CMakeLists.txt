@@ -58,13 +58,6 @@ if(BUILD_WITH_PCL)
     add_definitions(-DUSEPCL)
 endif()
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif()
-
 include_directories( 
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}

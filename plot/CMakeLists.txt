@@ -60,13 +60,6 @@ if(BUILD_WITH_PCL)
     add_definitions(-DUSEPCL -D_USEPCL)
 endif(BUILD_WITH_PCL)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif()
-
 if(BUILD_WITH_PCL)
     set(POINTCLOUD_LIBRARIES pointcloud)
 else()

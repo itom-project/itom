@@ -94,13 +94,6 @@ else(BUILD_GIT_TAG AND GIT_FOUND)
     endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 endif(BUILD_GIT_TAG AND GIT_FOUND)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif()
-
 
 #################################################################
 # List of include directories
