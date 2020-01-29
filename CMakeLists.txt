@@ -14,7 +14,6 @@ SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librari
 OPTION(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 OPTION(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
 
 
 # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
