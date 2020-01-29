@@ -20,17 +20,13 @@
 #
 #----------------------------------------------------------
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+cmake_minimum_required(VERSION 3.1...3.15)
 
-if(BUILD_TARGET64)
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
-    endif()
-else()
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
-        message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
-    endif()
-endif(BUILD_TARGET64)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
+
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 
 if (NOT EXISTS ${ITOM_SDK_CONFIG_FILE})
     unset(ITOM_SDK_CONFIG_FILE CACHE)
@@ -48,9 +44,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     include(${ITOM_SDK_CONFIG_FILE})
     
-    if(ITOM_SDK_SHARED_LIBS)
-        add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    endif()
+    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     
     if(ITOM_SDK_PCL_SUPPORT)
         add_definitions(-DUSEPCL -D_USEPCL)
@@ -59,13 +53,25 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     string( TOLOWER "${ITOM_SDK_BUILD_TARGET64}" ITOM_SDK_BUILD_TARGET64_LOWER )
     if(BUILD_TARGET64)
         if(NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "true") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "on")))
-            message(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
+            message(WARNING "BUILD_TARGET64 does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}. BUILD_TARGET64 is set to OFF.")
+            set(BUILD_TARGET64 OFF CACHE BOOL "Build for 64 bit target if set to ON or 32 bit if set to OFF." FORCE)
         endif()
     else (BUILD_TARGET64)
         if(NOT ((${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "false") OR (${ITOM_SDK_BUILD_TARGET64_LOWER} STREQUAL "off")))
-            message(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}")
+            message(WARNING "BUILD_TARGET64 does not correspond to configuration of itom SDK. SDK was build with option ${ITOM_SDK_BUILD_TARGET64}. BUILD_TARGET64 is set to ON.")
+            set(BUILD_TARGET64 ON CACHE BOOL "Build for 64 bit target if set to ON or 32 bit if set to OFF." FORCE)
         endif()
     endif(BUILD_TARGET64)
+    
+    if(BUILD_TARGET64)
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+            message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
+        endif()
+    else()
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+            message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
+        endif()
+    endif()
 
     #find include directory
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
@@ -73,11 +79,46 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     find_path(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
     get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
     
+    if(EXISTS "${ITOM_APP_DIR}")
+        #try to load the CMakeCache file from itom and extract some useful variables. 
+        #The variables must be filepathes or pathes. They are only copied to this project
+        #... if they exist in itom's CMakeCache, 
+        #... if they are valid, 
+        #... if they exist in the file system and 
+        #... if they do not exist or are not valid in this project, yet.
+        set(CACHE_VARIABLES VTK_DIR VISUALLEAKDETECTOR_DIR Qt5_DIR PCL_DIR OpenCV_DIR EIGEN_INCLUDE_DIRS Boost_LIBRARY_DIR Boost_INCLUDE_DIR BLUBBER GIT_EXECUTABLE)
+        
+        if(EXISTS "${ITOM_APP_DIR}/CMakeCache.txt")
+            load_cache("${ITOM_APP_DIR}" READ_WITH_PREFIX "ITOMCACHE_" ${CACHE_VARIABLES})
+            
+            message(STATUS "Try to load selected CMake variables from CMakeCache of itom project and copy them to this set of variables.")
+            
+            foreach(CACHE_VAR ${CACHE_VARIABLES})
+                
+                if(DEFINED "ITOMCACHE_${CACHE_VAR}")
+                    message(STATUS "  - Variable ${CACHE_VAR} exists in itom cache: ${ITOMCACHE_${CACHE_VAR}}")
+                    
+                    if(DEFINED ${CACHE_VAR} AND ${CACHE_VAR})
+                        message(STATUS "    -> This variable is not copied since it already is defined and valid in this project: ${${CACHE_VAR}}")
+                    else()
+                        if(EXISTS "${ITOMCACHE_${CACHE_VAR}}")
+                            message(STATUS "    -> This variable is copied to this project.")
+                            set(${CACHE_VAR} "${ITOMCACHE_${CACHE_VAR}}" CACHE PATH "Variable obtained from CMakeCache of itom project." FORCE)
+                        else()
+                            message(STATUS "    -> This variable is not copied to this project since it is invalid.")
+                        endif()
+                    endif()
+                else()
+                    message(STATUS "  - Variable ${CACHE_VAR} did not exist in itom cache. Ignore it.")
+                endif()
+            endforeach()
+        endif()
+    endif()
     
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-      set(SDK_PLATFORM "x86")
-    else()
+    if(BUILD_TARGET64)
       set(SDK_PLATFORM "x64")
+    else()
+      set(SDK_PLATFORM "x86")
     endif()
     
     # The following list has to be consistent with the
