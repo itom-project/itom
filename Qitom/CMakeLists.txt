@@ -1,11 +1,34 @@
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 set(target_name qitom) 
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1...3.15)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
@@ -13,19 +36,19 @@ option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-option(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 
-include("../ItomBuildMacros.cmake")
-INIT_ITOM_LIBRARY() #apply general project settings, CMake configurations, policies... for itom and its libraries
-       
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
 if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
     #at first, get the available Qt version
-    FIND_PACKAGE_QT(ON Core)
+    itom_find_package_qt(ON Core)
 
     if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
@@ -35,9 +58,9 @@ endif()
 
 if(${BUILD_WITH_HELPVIEWER})
     #at first, get the available Qt version
-    FIND_PACKAGE_QT(ON Core)
+    itom_find_package_qt(ON Core)
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
+    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
     
     if(Qt5WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
@@ -46,7 +69,7 @@ if(${BUILD_WITH_HELPVIEWER})
     endif()
 else()
     #uses the old QtAssistant as help viewer.
-    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
+    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
 find_package(PythonLibs 3.0 REQUIRED) 
@@ -71,13 +94,11 @@ find_package(LATEX QUIET)
 message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
 message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
 message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
-        
-add_definitions(${QT_DEFINITIONS})  
-add_definitions(${Qt5Widgets_DEFINITIONS})
 
-if(BUILD_UNICODE) 
-    add_definitions(-DUNICODE -D_UNICODE)
-endif()
+# set some preprocessor directives
+add_definitions(${Qt5Widgets_DEFINITIONS})
+add_definitions(-DUNICODE -D_UNICODE)
+add_definitions(-DITOM_CORE -DITOMSHAREDDESIGNER)
 
 if(BUILD_WITH_PCL)
     add_definitions(-DUSEPCL -D_USEPCL)
@@ -91,20 +112,9 @@ if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
 endif()
 
-add_definitions(-DCMAKE -DITOM_CORE -DITOMSHAREDDESIGNER)
- 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
 endif()
-
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif()
-
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
 if(BUILD_WITH_PYMATLAB)
@@ -169,7 +179,6 @@ include_directories(
     ${Qt5Network_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -183,7 +192,7 @@ link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    ${OpenCV_DIR}/lib
+    
 )
  
 set(qitom_HEADERS_NOMOC
@@ -615,21 +624,21 @@ endif()
 #)
 
 #add filters to visual studio
-ADD_SOURCE_GROUP(api)
-ADD_SOURCE_GROUP(helper)
-ADD_SOURCE_GROUP(models)
-ADD_SOURCE_GROUP(organizer)
-ADD_SOURCE_GROUP(python)
-ADD_SOURCE_GROUP(ui)
-ADD_SOURCE_GROUP(widgets)
-ADD_SOURCE_GROUP(helpViewer)
-ADD_SOURCE_GROUP(codeEditor)
-ADD_SOURCE_GROUP(codeEditor/foldDetector)
-ADD_SOURCE_GROUP(codeEditor/managers)
-ADD_SOURCE_GROUP(codeEditor/modes)
-ADD_SOURCE_GROUP(codeEditor/panels)
-ADD_SOURCE_GROUP(codeEditor/syntaxHighlighter)
-ADD_SOURCE_GROUP(codeEditor/utils)
+itom_add_source_group(api)
+itom_add_source_group(helper)
+itom_add_source_group(models)
+itom_add_source_group(organizer)
+itom_add_source_group(python)
+itom_add_source_group(ui)
+itom_add_source_group(widgets)
+itom_add_source_group(helpViewer)
+itom_add_source_group(codeEditor)
+itom_add_source_group(codeEditor/foldDetector)
+itom_add_source_group(codeEditor/managers)
+itom_add_source_group(codeEditor/modes)
+itom_add_source_group(codeEditor/panels)
+itom_add_source_group(codeEditor/syntaxHighlighter)
+itom_add_source_group(codeEditor/utils)
 #end add filters to visual studio
 
 if(MSVC)
@@ -637,8 +646,6 @@ if(MSVC)
     # well that changed in qt5 so go back to built-in type
     if(QT5_FOUND)
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t" )
-    else()
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-" )
     endif()
 endif()
 
@@ -650,6 +657,7 @@ set(ITOMOUTPUTDIR "../")
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
+
 # Second, for multi-config builds (e.g. msvc)
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
@@ -692,8 +700,7 @@ file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 if(UPDATE_TRANSLATIONS)
     if(QT5_FOUND)
-#        QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE})
+        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE})
     else()
         message(SEND_ERROR "Currently only Qt5 is supported")
     endif()
@@ -701,16 +708,14 @@ if(UPDATE_TRANSLATIONS)
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
-#    message(FATAL ${TRANSLATIONS_FILES} "---" ${EXISTING_TRANSLATION_FILES})
-    
     if(QT5_FOUND)
-        QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
+        itom_qt5_compile_translation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
     else()
         message(SEND_ERROR "Currently only Qt5 is supported")
     endif()
 else()
     if(QT5_FOUND)
-        QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
+        itom_qt5_compile_translation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
     else()
         message(SEND_ERROR "Currently only Qt5 is supported")
     endif()
@@ -747,30 +752,18 @@ if(APPLE)
     # Add executable for OS X
     add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
 
-    # set_source_files_properties(
-    #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
-    #     ${CMAKE_BINARY_DIR}/../itoFunctions.py
-    #     PROPERTIES MACOSX_PACKAGE_LOCATION MacOSX
-    # )
-
-    # set_source_files_properties(
-    #   apple1_res1
-    #   apple1_res2
-    #   PROPERTIES MACOSX_PACKAGE_LOCATION Resources
-    #   )
-
     # Set binary file names for OS X
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "itom")
 
     # Copy files into app bundle after build
-    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
-    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
-    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
-    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
-    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
-    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
-    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
+    itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
+    itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 else(APPLE)
     # Executable for WINDOWS and LINUX
     add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} )
@@ -795,7 +788,6 @@ if(MSVC)
 endif()
 
 if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-    #set(PYTHON_LIBRARY_ITOM debug ${PYTHON_LIBRARY_DEBUG} optimized ${PYTHON_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
     set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
 #only debug
 elseif(PYTHON_LIBRARY_DEBUG)
@@ -811,11 +803,7 @@ else()
 endif()
 
 if(BUILD_WITH_PCL)
-    if(BUILD_ITOMLIBS_SHARED)
-        set(POINTCLOUD_LIBRARIES pointcloud)
-    else()
-        set(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
-    endif()
+    set(POINTCLOUD_LIBRARIES pointcloud)
 else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
@@ -827,14 +815,9 @@ if(QT5_FOUND)
     else()
         target_link_libraries(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
     endif()
-else()
-    target_link_libraries(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
 endif()
  
-BUILD_PARALLEL_LINUX(${target_name})
-
-# copy some folders and files during generate
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
+itom_build_parallel_linux(${target_name})
 
 # for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to 
 # also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
@@ -851,42 +834,17 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
 endif()
 
+# copy some folders and files during generate
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itomSettings/itomDefault.ini  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../itomSettings)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..) # FILES_MATCHING PATTERN "*.py")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindFFTW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindOpenCV.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindVisualLeakDetector.cmake  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindLAPACKE.cmake             DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindXsd.cmake                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindXerces.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindLibUSB.cmake              DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindITOM_SDK.cmake            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../Find3DCONNEXION.cmake         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindWindowsSDK.cmake          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
 
-if(MSVC)
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
-endif()
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/docsTmpl/_themes         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/docs)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/docsTmpl/pluginDoc       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/docs)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/docsTmpl/sphinxext       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/docs)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/userDoc/source/ext       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/docs)
-
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
-# COPY SECTION
+# - copy files to itom SDK folder in binary directory as post build step (after every build)
 set(COPY_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
-POST_BUILD_COPY_FILES(qitom COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(qitom COPY_SOURCES COPY_DESTINATIONS)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
 if(ITOM_VERSION_TMP)
@@ -923,8 +881,6 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/pluginMetaData.json )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../translation           DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. FILES_MATCHING PATTERN "*.qm")
-
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
  
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)

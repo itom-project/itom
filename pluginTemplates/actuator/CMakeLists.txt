@@ -20,8 +20,6 @@ message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
 #################################################################
-option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-option(BUILD_SHARED_LIBS "Build shared library." ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -67,16 +65,8 @@ FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
 #################################################################
 # General settings and preprocessor settings
 #################################################################
-if(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE SHARED)
-else(BUILD_SHARED_LIBS)
-    set(LIBRARY_TYPE STATIC)
-endif(BUILD_SHARED_LIBS)
 
-if(BUILD_UNICODE)
-    add_definitions(-DUNICODE -D_UNICODE)
-endif(BUILD_UNICODE)
-add_definitions(-DCMAKE)
+add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMWIDGETS_SHARED)
 
 if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
@@ -104,13 +94,6 @@ else(BUILD_GIT_TAG AND GIT_FOUND)
     endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 endif(BUILD_GIT_TAG AND GIT_FOUND)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-if(DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-else()
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-endif()
-
 
 #################################################################
 # List of include directories
@@ -121,7 +104,6 @@ endif()
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-    ${OpenCV_DIR}/include       #include directory of OpenCV
     ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
     ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
     #add further include directories here
@@ -204,11 +186,11 @@ endif()
 # If you have some header and source files in a specific
 # subfolder, you can even have this subfolder in your
 # IDE (mainly Visual Studio supports this). Then call 
-# ADD_SOURCE_GROUP(directoryName) for each subdirectory.
+# itom_add_source_group(directoryName) for each subdirectory.
 #
 # HINT: This command does nothing for IDE different than MSVC.
 #################################################################
-#ADD_SOURCE_GROUP(subdirectory)
+#itom_add_source_group(subdirectory)
 
 
 #################################################################
@@ -220,19 +202,19 @@ endif()
 file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts") 
 
 #add all (generated) header and source files to the library (these files are compiled then)
-add_library(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} SHARED ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
 #link the compiled library
 #append all libraries this plugin should be linked to at the end of the target_link_libraries command
 # Important variables are:
 # ${ITOM_SDK_LIBRARIES} -> all necessary libraries from find_package(ITOM_SDK)
-# ${QT_LIBRARIES} -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
+# -> all necessary libraries from FIND_PACKAGE_QT (Qt4 or Qt5)
 # ${OpenCV_LIBS} -> all necessary libraries opencv libraries from find_package(OpenCV)
 #
 # if you want to link against one library whose directory is already added to link_directories above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 
 #################################################################
 # Plugin Translation
@@ -246,7 +228,7 @@ target_link_libraries(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5
 # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
 #################################################################
 set(FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 #################################################################
 # Plugin Documentation
@@ -270,7 +252,7 @@ PLUGIN_DOCUMENTATION(${target_name} myGrabber)
 # At first pairs of sources and destinations are added
 # to the lists COPY_SOURCES and COPY_DESTINATIONS.
 # Afterwards, the post-build process is generated using
-# POST_BUILD_COPY_FILES.
+# itom_post_build_copy_files.
 #
 # The following macros can be used to fill up the source
 # and destination list:
@@ -291,7 +273,7 @@ set(COPY_DESTINATIONS "")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 #if you want to copy one or more files to the lib-folder of
 # the itom build directory, use the following macro:
