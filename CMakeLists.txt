@@ -57,7 +57,7 @@ include("cmake/ItomBuildMacrosInternal.cmake")
 # Set a default build type if none was specified
 itom_set_default_build_type()
 
-if(WIN32)
+if(MSVC)
     # add /LTCG flag to remove MSVC linker warning in release build
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
     set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
@@ -193,4 +193,24 @@ endif()
 
 #ADD a batch file for itom-release
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt )
+
+# - copy files to itom SDK folder in binary directory (during CMake generate)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/include FILES_MATCHING PATTERN "*.h")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/include FILES_MATCHING PATTERN "*.h")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK FILES_MATCHING PATTERN "Find*.cmake")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+
+if(MSVC)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginLibraryVersion.rc   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)
+endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/docsTmpl/_themes         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/docs)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/docsTmpl/pluginDoc       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/docs)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/docsTmpl/sphinxext       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/docs)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/ext       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/docs)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gitVersion.h.in               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/itom_sdk.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake/itom_sdk.cmake )

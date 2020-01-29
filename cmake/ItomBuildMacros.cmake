@@ -152,8 +152,6 @@ string(REPLACE ";" " " CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
 add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 
-include(CMakeParseArguments)
-
 # - enables a linux compiler to start the build with multiple cores.
 macro(itom_build_parallel_linux target)
   if(CMAKE_COMPILER_IS_GNUCXX)
@@ -184,6 +182,122 @@ macro(itom_init_cmake_policy)
 
     if(${CMAKE_VERSION} VERSION_LESS 3.12)
         cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+    endif()
+endmacro()
+
+# - gets the current commit hash of the optional Git repository of the sources of this project.
+# The full call is
+#     itom_fetch_git_commit_hash([DESTINATION destinationHeaderFile.h] [QUIET | REQUIRED])
+# 
+# This macro configures the template file "gitVersion.h.in" in the itom-SDK/cmake folder
+# and puts it to the given DESTINATION header file. If DESTINATION is not given, the default
+# output file is ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h.
+#
+# This destination header file is filled with basic information about the optional Git repository
+# of the sources of the current project. If no Git repository could be found (checks for .git/index file
+# in the current source directory or up to three parent directories), or if the Git package could not 
+# be found or if the option BUILD_GIT_TAG is OFF, the destination header file contains default values:
+#
+# #define GITVERSIONAVAILABLE 0
+# #define GITVERSION ""
+# #define GITCOMMIT ""
+# #define GITCOMMITDATE ""
+#
+# If Git could be found and the sources seems to be a Git repository, the current commit hashes including
+# its commit date are read out and stored in the values, e.g.:
+#
+# #define GITVERSIONAVAILABLE 1
+# #define GITVERSION "e6d03ec/2020-01-27T19:13:48+01:00"
+# #define GITCOMMIT "e6d03ec"
+# #define GITCOMMITDATE "2020-01-27T19:13:48+01:00"
+#
+# If REQUIRED is passed to this macro, the Git package has to be found, else a strong CMake error is emitted.
+# If QUIET or nothing is passed, the empty header file is created if the Git package could not be found.
+#
+# Note: If the Git version could be fetched, the project will always be marked as "outdated" once the .git/index
+# file is changed (e.g. if another commit is added). Local changes will not be considered.
+macro(itom_fetch_git_commit_hash)
+    set(options QUIET REQUIRED) #default QUIET
+    set(oneValueArgs DESTINATION)
+    set(multiValueArgs )
+    cmake_parse_arguments(OPT "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+                          
+    set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+    option(BUILD_GIT_TAG "Fetch the current Git commit hash and add it to the gitVersion.h file in the binary directory of each plugin." ON)
+    
+    set(GITVERSIONAVAILABLE 0)
+    set(GITVERSION "")
+    set(GITCOMMIT "")
+    set(GITCOMMITDATE "")
+    
+    if(BUILD_GIT_TAG)
+        #try to get working directory of git
+        set(WORKINGDIR_FOUND )
+        set(WORKINGDIR ${CMAKE_SOURCE_DIR})
+        
+        foreach(ITER "1" "2" "3")
+            if(NOT EXISTS ${WORKINGDIR})
+                break()
+            endif()
+            
+            if(EXISTS "${WORKINGDIR}/.git/index")
+                set(WORKINGDIR_FOUND TRUE)
+                break()
+            else()
+                #goto parent directory
+                get_filename_component(WORKINGDIR ${WORKINGDIR} DIRECTORY)
+            endif()
+        endforeach()
+        
+        if(WORKINGDIR_FOUND)
+            if(NOT OPT_QUIET)
+                find_package(Git REQUIRED) #raises a fatal error
+            else()
+                find_package(Git QUIET)
+            endif()
+            
+            if(Git_FOUND)
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" describe --always HEAD
+                    WORKING_DIRECTORY "${WORKINGDIR}"
+                    RESULT_VARIABLE res
+                    OUTPUT_VARIABLE GITCOMMIT
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%cI HEAD
+                    WORKING_DIRECTORY "${WORKINGDIR}"
+                    RESULT_VARIABLE res
+                    OUTPUT_VARIABLE GITCOMMITDATE
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                
+                set(GITVERSION "${GITCOMMIT}/${GITCOMMITDATE}")
+                set(GITVERSIONAVAILABLE 1)
+                
+                #always mark this project as outdated if the .git/index file changed.
+                #see also: https://cmake.org/pipermail/cmake/2018-October/068389.html
+                set_property(GLOBAL APPEND
+                    PROPERTY CMAKE_CONFIGURE_DEPENDS
+                    "${WORKINGDIR}/.git/index")
+                
+                message(STATUS "Git commit hash: ${GITCOMMIT} from ${GITCOMMITDATE}")
+            else()
+                message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
+            endif()
+        elseif(OPT_OPTIONAL)
+            message(STATUS "Sources seem not to contain any Git repository. Git commit information is ignored.")
+        else()
+            message(WARNING "Sources seem not to contain any Git repository. Git commit information cannot be found. Avoid this warning by disabling BUILD_GIT_TAG.")
+        endif()
+    endif()
+    
+    if(OPT_DESTINATION)
+        configure_file(${ITOM_SDK_DIR}/cmake/gitVersion.h.in ${OPT_DESTINATION})
+    else()
+        configure_file(${ITOM_SDK_DIR}/cmake/gitVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
     endif()
 endmacro()
 
@@ -826,7 +940,7 @@ macro(itom_configure_plugin_documentation target main_document) #main_document w
 endmacro()
 
 macro(itom_copy_file_if_changed in_file out_file target)
-    IF(${in_file} IS_NEWER_THAN ${out_file})    
+    if(${in_file} IS_NEWER_THAN ${out_file})    
   #    message("COpying file: ${in_file} to: ${out_file}")
         add_custom_command (
     #    OUTPUT     ${out_file}
