@@ -32,7 +32,10 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+# Okay, warum wird das hier hart ausgeschaltet? Die Werte hier werden beim include gleich befüllt...
+# rein prinzipiell kann man das so schon machen, dann helfen aber die eventuell gesetzten default WErte im plugin/itom CMAkeLists nix mehr,
+# Weil's das ja dann schon gubt und so...
+#option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
 option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
 
@@ -160,12 +163,16 @@ macro(itom_build_parallel_linux target)
   endif(CMAKE_COMPILER_IS_GNUCXX)
 endmacro()
 
-# - initializes the default CMake policy to 3.12. Call this at the start of a plugin'safe
-# or designer plugin's CMakeLists.txt to have a common CMake policy behaviour.
-# 
-# If you have a CMake version <= 3.12, all existing policies will be considered to be NEW.
-# For CMake versions > 3.12, all policies, that have been introduced after this CMake version will
-# be handled as OLD, all other policies as NEW.
+# initializes the cmake policies up to the given VERSION
+# (the one you are currently working with)
+# Check Headline of cmake-gui, Help->About dialogue or cmake --version.
+# Type that number as argument to the function.
+# cmake < 3.12 does not know that min...max Version syntax and needs
+# to be set explicitly.
+# https://cmake.org/cmake/help/latest/command/cmake_policy.html
+# plus there might be a bug in older msvc cmake-enabled builds which may be 
+# prevented using the following syntax
+# instead of cmake_minimum_required(MINVERSION...MAXVERSION)
 #
 # example:
 # 
@@ -176,12 +183,11 @@ endmacro()
 # 
 # itom_init_cmake_policy()
 # itom_init_plugin_library(${target_name})
-# .
-macro(itom_init_cmake_policy)
-    cmake_minimum_required(VERSION 3.1...3.15)
-
-    if(${CMAKE_VERSION} VERSION_LESS 3.12)
+macro(itom_init_cmake_policy TESTED_CMAKE_VERSION)
+    if(${CMAKE_VERSION} VERSION_LESS ${TESTED_CMAKE_VERSION})
         cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+    else()
+        cmake_policy(VERSION TESTED_CMAKE_VERSION)
     endif()
 endmacro()
 
@@ -988,12 +994,23 @@ macro(itom_list_contains contains value)
   endforeach (value2)
 endmacro(itom_list_contains)
 
-
+# Marc, mach's nicht unnötig kompliziert.
+# ein einfaches
+#
+#set(CMAKE_BUILD_TYPE "Release" CACHE
+#    STRING "Choose the type of build." FORCE)
+# Set the possible values of build type for cmake-gui
+#set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+#    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+#
+# tut' das gleiche...
+# CMAKE_CONFIGURATION_TYPES ist auch leer bei visual studio builds und da wird der buildtyp eh ignoriert...
+#
 # - checks and possibly corrects the CMAKE variables CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE.
 # 
 # If CMAKE_CONFIGURATION_TYPES is missing or an emtpy list, it is set to the default values 
 # Debug, Release, MinSizeRel and RelWithDebInfo.
-#
+# 
 # If CMAKE_BUILD_TYPE is not set yet, it is set to the default value 'Release'. However, if this
 # default value is not among CMAKE_CONFIGURATION_TYPES, CMAKE_BUILD_TYPE is the first value of CMAKE_CONFIGURATION_TYPES.
 macro(itom_set_default_build_type)

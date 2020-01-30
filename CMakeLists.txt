@@ -18,13 +18,12 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
 project(itom)
- 
-cmake_minimum_required(VERSION 3.1...3.15)
+include("cmake/ItomBuildMacros.cmake")
+include("cmake/ItomBuildMacrosInternal.cmake")
+itom_init_cmake_policy(3.15)
 
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
 
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -37,7 +36,6 @@ set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_s
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
-
 # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
 if(BUILD_TARGET64)
     if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -51,11 +49,14 @@ endif(BUILD_TARGET64)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
 
-include("cmake/ItomBuildMacros.cmake")
-include("cmake/ItomBuildMacrosInternal.cmake")
+
 
 # Set a default build type if none was specified
-itom_set_default_build_type()
+set(CMAKE_BUILD_TYPE "Release" CACHE
+    STRING "Choose the type of build.")
+# Set the possible values of build type for cmake-gui
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 
 if(MSVC)
     # add /LTCG flag to remove MSVC linker warning in release build
