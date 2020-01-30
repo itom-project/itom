@@ -35,8 +35,11 @@
 //Git commit hash / date of this commit in UTC file format
 #define GITVERSION "@GITVERSION@"
 
-//Git commit hash
-#define GITCOMMIT "@GITCOMMIT@"
+//Git full commit hash
+#define GITCOMMITHASH "@GITCOMMITHASH@"
+
+//Git short commit hash
+#define GITCOMMITHASHSHORT "@GITCOMMITHASHSHORT@"
 
 //date of this commit in UTC file format
 #define GITCOMMITDATE "@GITCOMMITDATE@"

@@ -213,9 +213,6 @@ endmacro()
 #
 # If REQUIRED is passed to this macro, the Git package has to be found, else a strong CMake error is emitted.
 # If QUIET or nothing is passed, the empty header file is created if the Git package could not be found.
-#
-# Note: If the Git version could be fetched, the project will always be marked as "outdated" once the .git/index
-# file is changed (e.g. if another commit is added). Local changes will not be considered.
 macro(itom_fetch_git_commit_hash)
     set(options QUIET REQUIRED) #default QUIET
     set(oneValueArgs DESTINATION)
@@ -228,7 +225,8 @@ macro(itom_fetch_git_commit_hash)
     
     set(GITVERSIONAVAILABLE 0)
     set(GITVERSION "")
-    set(GITCOMMIT "")
+    set(GITCOMMITHASHSHORT "")
+    set(GITCOMMITHASH "")
     set(GITCOMMITDATE "")
     
     if(BUILD_GIT_TAG)
@@ -259,10 +257,18 @@ macro(itom_fetch_git_commit_hash)
             
             if(Git_FOUND)
                 execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" describe --always HEAD
+                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
                     WORKING_DIRECTORY "${WORKINGDIR}"
                     RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMIT
+                    OUTPUT_VARIABLE GITCOMMITHASH
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%h HEAD
+                    WORKING_DIRECTORY "${WORKINGDIR}"
+                    RESULT_VARIABLE res
+                    OUTPUT_VARIABLE GITCOMMITHASHSHORT
                     ERROR_QUIET
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
                 
@@ -274,7 +280,7 @@ macro(itom_fetch_git_commit_hash)
                     ERROR_QUIET
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
                 
-                set(GITVERSION "${GITCOMMIT}/${GITCOMMITDATE}")
+                set(GITVERSION "${GITCOMMITHASHSHORT}/${GITCOMMITDATE}")
                 set(GITVERSIONAVAILABLE 1)
                 
                 #always mark this project as outdated if the .git/index file changed.
@@ -283,7 +289,7 @@ macro(itom_fetch_git_commit_hash)
                     PROPERTY CMAKE_CONFIGURE_DEPENDS
                     "${WORKINGDIR}/.git/index")
                 
-                message(STATUS "Git commit hash: ${GITCOMMIT} from ${GITCOMMITDATE}")
+                message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
             else()
                 message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
             endif()
