@@ -78,6 +78,7 @@ find_package(PythonLibs 3.0 REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED)
 if(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    
     # actually we need this only to configure the itom.bat including vtk, otherwise 
     # eventually pcl-tools plugin will not be loaded
     find_package(VTK QUIET)    

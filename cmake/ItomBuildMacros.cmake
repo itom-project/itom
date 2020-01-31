@@ -527,6 +527,10 @@ macro(itom_find_package_qt SET_AUTOMOC)
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})
+    
+    if(NOT QT5_FOUND)
+        message(SEND_ERROR "Qt5 could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
+    endif()
 endmacro()
 
 
@@ -559,7 +563,7 @@ endmacro()
 macro(itom_library_translation qm_files target force_translation_update existing_translation_files languages files_to_translate)
 
     if(NOT QT5_FOUND)
-        message(SEND_ERROR "Currently only Qt5 is supported")
+        message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
     endif()
     
     if(${force_translation_update})
