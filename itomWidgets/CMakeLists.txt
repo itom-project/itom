@@ -23,19 +23,21 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-set(target_name itomWidgets)
+cmake_minimum_required(VERSION 3.1)
 
+set(target_name itomWidgets)
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.1...3.15)
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
@@ -51,15 +53,8 @@ find_package(VisualLeakDetector QUIET)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 # set some preprocessor directives
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
-
-add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMSHAREDDESIGNER)
-
-if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
-endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}

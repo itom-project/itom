@@ -23,35 +23,31 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
+
 set(target_name itomCommonQtLib)
 project(${target_name}) 
 
-cmake_minimum_required(VERSION 3.1...3.15)
-
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
- 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
+
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
+option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
 itom_find_package_qt(ON Core Xml PrintSupport Widgets Svg Designer LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 # set some preprocessor directives
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
-add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMCOMMONQT_MOC)
 
 if(BUILD_WITH_PCL)

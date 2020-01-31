@@ -19,26 +19,21 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
+
 project(itom)
+
+message(STATUS "--------------- PROJECT itom -----------------")
+
 include("cmake/ItomBuildMacros.cmake")
 include("cmake/ItomBuildMacrosInternal.cmake")
+
 itom_init_cmake_policy(3.15)
-itom_init_common_vars()
+itom_init_core_common_vars()
 
-if(APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64")
-endif()
-
+option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
-
-
-if(MSVC)
-    # add /LTCG flag to remove MSVC linker warning in release build
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
-    set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-endif()
 
 add_subdirectory(DataObject)
 

@@ -23,40 +23,32 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
+
 set(target_name pointcloud)
 project(${target_name}) 
 
-cmake_minimum_required(VERSION 3.1...3.15)
-
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
+
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 
 # set some preprocessor directives
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DPOINTCLOUD_DLL -D_POINTCLOUD_DLL)
-add_definitions(-DUNICODE -D_UNICODE)
 
 include_directories( 
     ${PCL_INCLUDE_DIRS}
-    #${Boost_INCLUDE_DIR}
-    #${EIGEN_INCLUDE_DIRS}
-    #${FLANN_INCLUDE_DIRS}
 )
 
 set(libSrcs 

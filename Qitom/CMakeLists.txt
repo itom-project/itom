@@ -18,32 +18,29 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-set(target_name qitom) 
+cmake_minimum_required(VERSION 3.1)
 
+set(target_name qitom) 
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.1...3.15)
+message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
-include("../cmake/ItomBuildMacros.cmake")
-include("../cmake/ItomBuildMacrosInternal.cmake")
 
 if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0

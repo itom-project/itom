@@ -6,6 +6,9 @@
 # VISUALLEAKDETECTOR_LIBRARIES - the libraries to link against to use QScintilla
 # VISUALLEAKDETECTOR_LIBRARY - where to find the QScintilla library (not for general use)
 # VISUALLEAKDETECTOR_RUNTIME_LIBRARY - the DLL-file
+#
+# If the Visual Leak Detector library could be found and if the option VISUALLEAKDETECTOR_ENABLED
+# is set to true, the preprocessor VISUAL_LEAK_DETECTOR_CMAKE will be set.
 
 
 set(VISUALLEAKDETECTOR_FOUND "NO")
@@ -36,10 +39,12 @@ endif(EXISTS "${VISUALLEAKDETECTOR_DIR}")
 
 
 if(VISUALLEAKDETECTOR_LIBRARY)
-	if(VISUALLEAKDETECTOR_ENABLED)
-		set(VISUALLEAKDETECTOR_LIBRARIES debug ${VISUALLEAKDETECTOR_LIBRARY}) # optimized "")
-	endif()
-    set(VISUALLEAKDETECTOR_FOUND "YES")
+    if(VISUALLEAKDETECTOR_ENABLED)
+        set(VISUALLEAKDETECTOR_LIBRARIES debug ${VISUALLEAKDETECTOR_LIBRARY}) # optimized "")
+        add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    endif()
+    
+    set(VISUALLEAKDETECTOR_FOUND true CACHE BOOL "" FORCE)
 endif(VISUALLEAKDETECTOR_LIBRARY)
 
 

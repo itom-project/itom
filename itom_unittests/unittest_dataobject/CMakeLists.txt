@@ -18,24 +18,21 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-set(target_name unittest_dataobject)
+cmake_minimum_required(VERSION 3.1)
 
+set(target_name unittest_dataobject)
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.1...3.15)
+message(STATUS "--------------- UNITTEST ${target_name} -----------------")
 
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../../cmake/ItomBuildMacros.cmake")
+include("../../cmake/ItomBuildMacrosInternal.cmake")
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../cmake ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
-
-include("../../cmake/ItomBuildMacros.cmake")
-
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.6.0/cmake/internal_utils.cmake")

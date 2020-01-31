@@ -23,29 +23,24 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
+
 set(target_name itomCommonLib)  
 project(${target_name}) 
 
-cmake_minimum_required(VERSION 3.1...3.15)
-
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+
 # set some preprocessor directives
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
-add_definitions(-DUNICODE -D_UNICODE)
 
 set(ITOMCOMMON_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h

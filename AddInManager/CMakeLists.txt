@@ -23,35 +23,28 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
+
 set(target_name addinmanager)
 project(${target_name}) 
-
-cmake_minimum_required(VERSION 3.1...3.15)
-
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-   
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
+
+option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+
 # add 3rd party packages
 itom_find_package_qt(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(VisualLeakDetector QUIET)
 
 # set some preprocessor directives
-add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
 add_definitions(-DADDINMGR_DLL -D_ADDINMGR_DLL)
-add_definitions(-DUNICODE -D_UNICODE)
 
 if(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
