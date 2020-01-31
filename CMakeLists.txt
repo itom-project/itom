@@ -23,40 +23,15 @@ project(itom)
 include("cmake/ItomBuildMacros.cmake")
 include("cmake/ItomBuildMacrosInternal.cmake")
 itom_init_cmake_policy(3.15)
-
+itom_init_common_vars()
 
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
 endif()
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
-set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
-set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
-option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
-# Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
-if(BUILD_TARGET64)
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
-    endif()
-else()
-    if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
-        message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
-    endif()
-endif(BUILD_TARGET64)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
 
-
-
-# Set a default build type if none was specified
-set(CMAKE_BUILD_TYPE "Release" CACHE
-    STRING "Choose the type of build.")
-# Set the possible values of build type for cmake-gui
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 
 if(MSVC)
     # add /LTCG flag to remove MSVC linker warning in release build

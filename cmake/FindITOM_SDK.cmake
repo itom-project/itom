@@ -26,7 +26,11 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+if(CMAKE_SIZEOF_VOID_P GREATER 4)
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+else()
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+endif()
 
 if (NOT EXISTS ${ITOM_SDK_CONFIG_FILE})
     unset(ITOM_SDK_CONFIG_FILE CACHE)

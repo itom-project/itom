@@ -35,9 +35,6 @@ endif()
 # Okay, warum wird das hier hart ausgeschaltet? Die Werte hier werden beim include gleich befüllt...
 # rein prinzipiell kann man das so schon machen, dann helfen aber die eventuell gesetzten default WErte im plugin/itom CMAkeLists nix mehr,
 # Weil's das ja dann schon gubt und so...
-#option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
-set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
-option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
 
 #These are the overall pre-compiler directives for itom and its plugins:
 #
@@ -307,6 +304,42 @@ macro(itom_fetch_git_commit_hash)
     endif()
 endmacro()
 
+# initializes macros common to plugins and itom.
+# These vars are widely used, shold be available whenever cmake is issued on individual
+# itom project parts.
+
+macro(itom_init_common_vars)
+    set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
+    option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+    option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
+    set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
+    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
+    set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+    option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+    option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
+    # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
+    if(BUILD_TARGET64)
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+            message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
+        endif()
+    else()
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+            message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
+        endif()
+    endif(BUILD_TARGET64)
+    # Set a default build type if none was specified
+    set(CMAKE_BUILD_TYPE "Release" CACHE
+        STRING "Choose the type of build.")
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endmacro()
+
+
+
+
+
 # - This macro set common initializing things for an itom plugin. Call this macro after having
 # included this file at the beginning of the CMakeLists.txt of the plugin.
 #
@@ -322,6 +355,30 @@ endmacro()
 # .
 macro(itom_init_plugin_library target)
     message(STATUS "\n<--- PLUGIN ${target} --->")
+    project(${target})
+    # this is to find ItomBuildMacros and such
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ITOM_SDK_DIR}/cmake)
+    itom_init_common_vars()
+    # all builds should prefer unicode now. Python likes unicode, so why change?
+    add_definitions(-DUNICODE -D_UNICODE)
+    # not sure what this switch is supposed to do...
+    add_definitions(-DITOMWIDGETS_SHARED)
+    # switch you can use in source to declspec(import) or declspec(export)
+    add_definitions(-DEXPORT_${target})
+
+    if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    endif(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    # provides gitversion.h in build folder. Can be used by source.
+    itom_fetch_git_commit_hash()
+
+    # silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
+    find_package(VisualLeakDetector QUIET) 
+    include_directories(
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
+        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (required for moc) as well as necessary 3rd party directories (e.g. from OpenCV)
+    )
+
 endmacro()
 
 # - This macro set common initializing things for an itom designer plugin. Call this macro after having
@@ -339,6 +396,9 @@ endmacro()
 # .
 macro(itom_init_designerplugin_library target)
     message(STATUS "\n<--- DESIGNERPLUGIN ${target} --->")
+    project(&{target})
+    itom_init_common_vars()
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ITOM_SDK_DIR}/cmake)
 endmacro()
 
 # - call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
@@ -1011,6 +1071,12 @@ endmacro(itom_list_contains)
 # If CMAKE_CONFIGURATION_TYPES is missing or an emtpy list, it is set to the default values 
 # Debug, Release, MinSizeRel and RelWithDebInfo.
 # 
+    # Set a default build type if none was specified
+    set(CMAKE_BUILD_TYPE "Release" CACHE
+        STRING "Choose the type of build.")
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 # If CMAKE_BUILD_TYPE is not set yet, it is set to the default value 'Release'. However, if this
 # default value is not among CMAKE_CONFIGURATION_TYPES, CMAKE_BUILD_TYPE is the first value of CMAKE_CONFIGURATION_TYPES.
 macro(itom_set_default_build_type)
