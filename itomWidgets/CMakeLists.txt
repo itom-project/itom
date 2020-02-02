@@ -331,12 +331,8 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
 )
 
-
-
-if(QT5_FOUND)
-    QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
-    QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
-endif()
+QT5_WRAP_UI(itomWidgets_UI_MOC ${target_name} ${itomWidgets_UI})
+QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
 
 #add filters to visual studio
 itom_add_source_group(factories)

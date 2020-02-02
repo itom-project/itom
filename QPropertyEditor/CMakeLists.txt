@@ -102,20 +102,16 @@ set(qpropertyeditor_RCC
     #add absolute pathes to any *.qrc resource files here
 )
 
-if(QT5_FOUND)
-    QT5_WRAP_UI(qpropertyeditor_UI_MOC ${qpropertyeditor_UI})
-    QT5_ADD_RESOURCES(qpropertyeditor_RCC_MOC ${qpropertyeditor_RCC})
-else()
-    message(SEND_ERROR "Currently only Qt5 is supported")
-endif()
-
 if(MSVC)
     list(APPEND qpropertyeditor_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif()
 
-add_library(${target_name} SHARED ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
+add_library(${target_name} SHARED ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS})
 
 target_link_libraries(${target_name} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
+
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY

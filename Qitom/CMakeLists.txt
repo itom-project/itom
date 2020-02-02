@@ -155,6 +155,31 @@ else()
     set(PYMATLAB_INCLUDE_DIR "")
 endif()
 
+if(MSVC)
+    # Qt disables the native wchar_t type, do it too to avoid linking issues
+    # well that changed in qt5 so go back to built-in type
+    if(QT5_FOUND)
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t" )
+    endif()
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../)
+
+# First for the generic no-config case (e.g. with mingw)
+set(ITOMOUTPUTDIR "../")
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
+
+# Second, for multi-config builds (e.g. msvc)
+foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
+    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
+endforeach()
+
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -199,7 +224,6 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/addInManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/algoInterfaceValidator.h
-    
 )
 
 set(qitom_HEADERS
@@ -428,19 +452,9 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.ui
 )
 
-if(QT5_FOUND)
-    QT5_WRAP_UI(qitom_ui_MOC ${qitom_ui})
-endif()
-
 set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
-
-if(QT5_FOUND)
-    QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-else()
-    message(SEND_ERROR "Currently only Qt5 is supported")
-endif()
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
@@ -605,12 +619,6 @@ if(MSVC)
     list(APPEND qitom_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 endif()
 
-#handle translations
-# see e.g. http://stackoverflow.com/questions/5630155/how-to-integrate-qt-internationalization-to-cmake
-#set(qitom_ts
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
-#)
-
 #add filters to visual studio
 itom_add_source_group(api)
 itom_add_source_group(helper)
@@ -628,57 +636,6 @@ itom_add_source_group(codeEditor/panels)
 itom_add_source_group(codeEditor/syntaxHighlighter)
 itom_add_source_group(codeEditor/utils)
 #end add filters to visual studio
-
-if(MSVC)
-    # Qt disables the native wchar_t type, do it too to avoid linking issues
-    # well that changed in qt5 so go back to built-in type
-    if(QT5_FOUND)
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t" )
-    endif()
-endif()
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../)
-
-# First for the generic no-config case (e.g. with mingw)
-set(ITOMOUTPUTDIR "../")
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITOMOUTPUTDIR} )
-
-# Second, for multi-config builds (e.g. msvc)
-foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
-    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
-    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
-endforeach()
-
-# HANDLE VERSION (FROM GIT)
-unset(GIT_FOUND CACHE)
-find_package(Git)
-
-if(CONSIDER_GIT_SVN AND GIT_FOUND)
-    message(STATUS "Using GIT as repository information")
-    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
-    
-    add_custom_target(
-        ${target_name}_prebuild
-        COMMAND    ${PYTHON_EXECUTABLE}
-        "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
-    )
-else()
-    message(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nogit.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-    file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nogit.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-    
-    #empty target. All prebuild-events are connected to this target.
-    add_custom_target(
-        ${target_name}_prebuild
-    )
-endif()
-# END HANDLE VERSION
 
 #Find ITOM_VERION version by looking at global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
@@ -708,7 +665,7 @@ if(APPLE)
     set_source_files_properties(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+    add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${EXISTING_TRANSLATION_FILES})
 
     # Set binary file names for OS X
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
@@ -724,14 +681,38 @@ if(APPLE)
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 else(APPLE)
     # Executable for WINDOWS and LINUX
-    add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} )
+    add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${EXISTING_TRANSLATION_FILES} )
 
     # Set binary file names for  WINDOWS and LINUX
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
 endif(APPLE)
 
-add_dependencies(${target_name} ${target_name}_prebuild)
+
+
+# HANDLE VERSION (FROM GIT)
+unset(GIT_FOUND CACHE)
+find_package(Git)
+
+if(CONSIDER_GIT_SVN AND GIT_FOUND)
+    message(STATUS "Using GIT as repository information")
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
+    
+    add_custom_target(
+        ${target_name}_versionCheck
+        COMMAND    ${PYTHON_EXECUTABLE}
+        "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
+    )
+    
+    add_dependencies(${target_name} ${target_name}_versionCheck)
+else()
+    message(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nogit.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+    file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nogit.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+endif()
+# END HANDLE VERSION
+
 add_dependencies(${target_name} itomWidgets)
 
 set( WINICONRES "" )
@@ -776,6 +757,13 @@ endif()
 
 #translation
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui})
+
+foreach(_nomoc_header ${qitom_HEADERS_NOMOC})
+    set_property(SOURCE ${_nomoc_header} PROPERTY SKIP_AUTOMOC ON)
+endforeach()
+
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
  
 itom_build_parallel_linux(${target_name})
 
@@ -804,7 +792,14 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py               DESTINATI
 # - copy files to itom SDK folder in binary directory as post build step (after every build)
 set(COPY_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
-itom_post_build_copy_files(qitom COPY_SOURCES COPY_DESTINATIONS)
+
+#copy all qm files to the translations subfolder of the itom root directory
+foreach(_qm ${QM_FILES})
+    set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/translation")
+endforeach()
+
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
 if(ITOM_VERSION_TMP)

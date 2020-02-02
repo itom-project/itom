@@ -222,6 +222,14 @@ endmacro()
 # - This macro set common initializing things for an itom plugin. Call this macro after having
 # included this file at the beginning of the CMakeLists.txt of the plugin.
 #
+# itom_init_plugin_library(target [SKIP_GIT_VERSION])
+#
+# - target is the target name of the plugin
+# - SKIP_GIT_VERSION is an optional option. If given, the gitVersion.h file will not be created
+#                   in the binary output folder, containing the current git commit hash of this 
+#                   repository (if Git is available and the sources are a repository). You can also
+#                   manually call this by 'itom_fetch_git_commit_hash()'.
+#
 # example:
 # 
 # set(target_name yourTargetName)
@@ -233,6 +241,12 @@ endmacro()
 # itom_init_plugin_library(${target_name})
 # .
 macro(itom_init_plugin_library target)
+    set(options SKIP_GIT_VERSION)
+    set(oneValueArgs)
+    set(multiValueArgs )
+    cmake_parse_arguments(PARAM "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+    
     message(STATUS "\n<--- PLUGIN ${target} --->")
     
     project(${target})
@@ -248,6 +262,11 @@ macro(itom_init_plugin_library target)
     # silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
     find_package(VisualLeakDetector QUIET) 
     
+    if(NOT SKIP_GIT_VERSION)
+        # provides gitversion.h in build folder. Can be used by source.
+        itom_fetch_git_commit_hash()
+    endif()
+    
     include_directories(
         ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (required for moc) as well as necessary 3rd party directories (e.g. from OpenCV)
@@ -257,6 +276,15 @@ endmacro()
 
 # - This macro set common initializing things for an itom designer plugin. Call this macro after having
 # included this file at the beginning of the CMakeLists.txt of the designer plugin.
+#
+# itom_init_designerplugin_library(target [SKIP_GIT_VERSION])
+#
+# - target is the target name of the plugin
+# - SKIP_GIT_VERSION is an optional option. If given, the gitVersion.h file will not be created
+#                   in the binary output folder, containing the current git commit hash of this 
+#                   repository (if Git is available and the sources are a repository). You can also
+#                   manually call this by 'itom_fetch_git_commit_hash()'.
+
 #
 # example:
 # 
@@ -269,6 +297,12 @@ endmacro()
 # itom_init_designerplugin_library(${target_name})
 # .
 macro(itom_init_designerplugin_library target)
+    set(options SKIP_GIT_VERSION)
+    set(oneValueArgs)
+    set(multiValueArgs )
+    cmake_parse_arguments(PARAM "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+                          
     message(STATUS "\n<--- DESIGNERPLUGIN ${target} --->")
     
     project(${target})
@@ -283,6 +317,11 @@ macro(itom_init_designerplugin_library target)
     
     # silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
     find_package(VisualLeakDetector QUIET) 
+    
+    if(NOT SKIP_GIT_VERSION)
+        # provides gitversion.h in build folder. Can be used by source.
+        itom_fetch_git_commit_hash()
+    endif()
     
     include_directories(
         ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
@@ -541,7 +580,7 @@ endmacro()
 
 #use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
 #
-# itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE file1 file2 ...)
+# itom_library_translation(qm_files TARGET ${target_name} FILES_TO_TRANSLATE file1 file2 ...)
 #
 # This macro creates two cached CMake variables:
 #
@@ -550,11 +589,22 @@ endmacro()
 #                         FILES_TO_TRANSLATE for new texts and update the given source *.ts files (sources/translations/TARGET_LANGUAGE.ts)
 #                         for each language.
 #                         If OFF, the macro checks that all necessary ts-files (for each language) are given in the source folder
-#                         of this library.
+#                         of this library. At configure time of CMake an non-existing ts-file will only be created without
+#                         any contained strings. By compiling the ..._translations project in your IDE the real lupdate
+#                         process will be triggered.
+# ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS (BOOL): This is only relevant if ITOM_UPDATE_TRANSLATIONS is ON. 
+#                         This flag defines if the lupdate process will not only add new translatable strings and
+#                         modify changed strings, but also remove unused strings from the *.ts files (ON). The default is
+#                         OFF.
 #
 # After having created or checked the ts files, Qt's lrelease is used to compile each ts file into a qm file. These qm
-# files are returned as QM_FILES list. All source translation files for all given languages are automatically added as source
+# files are returned as qm_files list. All source translation files for all given languages are automatically added as source
 # files to the given target.
+#
+# Please notice, that the lupdate process complains, if the language tag inside of a *.ts file does not correspond
+# to the language itself (detectable by the filename suffix). A warning will be emitted, if the *.ts file seems to
+# be somehow corrupted. Then you can either modify it manually or delete it and set ITOM_UPDATE_TRANSLATIONS. Then,
+# a totally new *.ts file (nothing translated yet) will be created.
 #
 # example:
 #
@@ -576,7 +626,7 @@ endmacro()
 # itom_add_designer_qm_files_to_copy_list(QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 # itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 # .
-macro(itom_library_translation QM_FILES)
+macro(itom_library_translation qm_files)
     
     option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
     set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
