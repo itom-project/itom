@@ -7,6 +7,9 @@
 ###################################################################
 ###################################################################
 
+#here you give your project a unique name (replace MyGrabberPlugin by the desired project name of your plugin)
+set(target_name MyGrabberPlugin)
+
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
 
@@ -28,9 +31,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # ... for example this one, found in the CMAKE_MODULE_PATH
 include(ItomBuildMacros)
-
-#here you give your project a unique name (replace MyGrabberPlugin by the desired project name of your plugin)
-set(target_name MyGrabberPlugin)
 
 # and this does some magic for you, as setting some common vars and 
 # passing some switches to your project you can use in sourcecode.
