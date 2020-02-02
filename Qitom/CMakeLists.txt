@@ -36,8 +36,6 @@ option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -54,8 +52,6 @@ if(${BUILD_WITH_HELPVIEWER})
 endif()
 
 if(${BUILD_WITH_HELPVIEWER})
-    #at first, get the available Qt version
-    itom_find_package_qt(ON Core)
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
     
@@ -69,11 +65,14 @@ else()
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
-find_package(PythonLibs 3.0 REQUIRED) 
-
+find_package(PythonLibs 3.0 REQUIRED)
 # can be used from 3.12 onwards
 # find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
 # FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+find_package(NumPy REQUIRED)
+message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
+message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
+message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 if(BUILD_WITH_PCL)
@@ -84,14 +83,9 @@ if(BUILD_WITH_PCL)
     find_package(VTK QUIET)    
 endif()
 
-find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
 find_package(LATEX QUIET) 
-
-message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
-message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
-message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
 
 # set some preprocessor directives
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -108,10 +102,6 @@ endif()
 
 if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
-endif()
-
-if(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    add_definitions(-DVISUAL_LEAK_DETECTOR_CMAKE)
 endif()
 
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
@@ -683,42 +673,12 @@ else()
     file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nogit.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     
-    #empty target, necessary for translations (later). All prebuild-events are connected to this target.
+    #empty target. All prebuild-events are connected to this target.
     add_custom_target(
         ${target_name}_prebuild
     )
 endif()
 # END HANDLE VERSION
-
-#handle translations BEGIN
-set(FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui} ) #PARENT_SCOPE)
-set(TRANSLATION_OUTPUT_FILES)
-set(TRANSLATIONS_FILES)
-file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-
-if(UPDATE_TRANSLATIONS)
-    if(QT5_FOUND)
-        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE})
-    else()
-        message(SEND_ERROR "Currently only Qt5 is supported")
-    endif()
-    
-    add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-    add_dependencies(${target_name}_prebuild ${target_name}_translation)
-    
-    if(QT5_FOUND)
-        itom_qt5_compile_translation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
-    else()
-        message(SEND_ERROR "Currently only Qt5 is supported")
-    endif()
-else()
-    if(QT5_FOUND)
-        itom_qt5_compile_translation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${EXISTING_TRANSLATION_FILES})
-    else()
-        message(SEND_ERROR "Currently only Qt5 is supported")
-    endif()
-endif()
-#handle translations END
 
 #Find ITOM_VERION version by looking at global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
@@ -806,7 +766,6 @@ else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
 
-
 if(QT5_FOUND)
     if(WIN32)
         target_link_libraries(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
@@ -814,6 +773,9 @@ if(QT5_FOUND)
         target_link_libraries(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
     endif()
 endif()
+
+#translation
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui})
  
 itom_build_parallel_linux(${target_name})
 

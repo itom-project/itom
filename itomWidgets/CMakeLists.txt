@@ -37,9 +37,6 @@ include("../cmake/ItomBuildMacrosInternal.cmake")
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
 
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -356,18 +353,17 @@ add_library(${target_name} SHARED
     ${itomWidgets_UI_MOC} 
     ${itomWidgets_rcc_MOC} 
     ${paramPropertyBrowser_SOURCES}
-    ${paramPropertyBrowser_MOC}
-    ${EXISTING_TRANSLATION_FILES})
+    ${paramPropertyBrowser_MOC})
 
 if(QT5_FOUND)
     target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} itomCommonLib itomShapeLib itomCommonQtLib)
 endif()
 
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC OFF AUTOUIC OFF)
+
 #translation
-file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-set(FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_UI})
-itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_UI})
 
 #this is a dummy project to force some moc-files to be generated before they are directly included in some cpp files (qtpropertybrowser only)
 add_custom_target(${target_name}GenerateMoc
@@ -376,8 +372,15 @@ add_custom_target(${target_name}GenerateMoc
 add_dependencies(${target_name} ${target_name}GenerateMoc)
 
 # COPY SECTION
-set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/${target_name}_de.qm")
-set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
+
+#copy all qm files to the translations subfolder of the itom root directory
+foreach(_qm ${QM_FILES})
+    set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
+endforeach()
+
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 if(WIN32)

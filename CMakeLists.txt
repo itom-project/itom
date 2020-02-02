@@ -33,6 +33,11 @@ itom_init_core_common_vars()
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 
+option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
+set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS "If ITOM_UPDATE_TRANSLATIONS is ON, this option defines if strings, \
+            which are in current *.ts files, but not in the source code, will be removed (ON) from *.ts or not (OFF)." OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
 
 add_subdirectory(DataObject)

@@ -36,8 +36,6 @@ include("../cmake/ItomBuildMacrosInternal.cmake")
 
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
-
-option(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
  
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -75,20 +73,27 @@ if(MSVC)
     list(APPEND itomShape_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif()
 
-add_library(${target_name} SHARED ${itomShape_SOURCES} ${itomShape_HEADERS} ${itomShape_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} SHARED ${itomShape_SOURCES} ${itomShape_HEADERS})
 
 target_link_libraries(${target_name} ${OpenCV_LIBS} ${QT5_LIBRARIES} dataobject itomCommonLib)
 
-#translation
-file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-set(FILES_TO_TRANSLATE ${itomShape_SOURCES} ${itomShape_HEADERS})
-itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
+#translation
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${itomShape_SOURCES} ${itomShape_HEADERS})
+
 
 # COPY SECTION
-set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomShapeLib_de.qm")
-set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
+
+#copy all qm files to the translations subfolder of the itom root directory
+foreach(_qm ${QM_FILES})
+    set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
+endforeach()
+
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 

@@ -94,22 +94,23 @@ macro(itom_init_plugin_common_vars)
     # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
     
+    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #core libraries are build as shared libraries
+    
     #try to enable OpenMP (e.g. not available with VS Express)
     find_package(OpenMP QUIET)
 
     if(OPENMP_FOUND)
         if(BUILD_OPENMP_ENABLE)
             message(STATUS "OpenMP found and enabled for release compilation")
-            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -DUSEOPENMP" )
-            set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -DUSEOPENMP" )
+            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS}" )
+            set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS}" )
+            add_definitions(-DUSEOPENMP)
         else()
             message(STATUS "OpenMP found but not enabled for release compilation")
         endif()
     else()
         message(STATUS "OpenMP not found.")
     endif()
-    
-    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     
     #These are the overall pre-compiler directives for itom and its plugins:
     #
@@ -540,16 +541,29 @@ endmacro()
 
 #use this macro in order to generate and/or reconfigure the translation of any plugin or designer plugin.
 #
+# itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE file1 file2 ...)
+#
+# This macro creates two cached CMake variables:
+#
+# ITOM_LANGUAGES (STRING): a semicolon separated list of all languages (without 'en', since this is the source code language itself)
+# ITOM_UPDATE_TRANSLATIONS (BOOL): If this is ON (default: OFF), additional targets are generated that will force a re-scan of all
+#                         FILES_TO_TRANSLATE for new texts and update the given source *.ts files (sources/translations/TARGET_LANGUAGE.ts)
+#                         for each language.
+#                         If OFF, the macro checks that all necessary ts-files (for each language) are given in the source folder
+#                         of this library.
+#
+# After having created or checked the ts files, Qt's lrelease is used to compile each ts file into a qm file. These qm
+# files are returned as QM_FILES list. All source translation files for all given languages are automatically added as source
+# files to the given target.
+#
 # example:
 #
-# #1. scan for existing translation files (*.ts)
-# file(GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-# #2. give all source files that should be checked for strings to be translated
+# #give all source files that should be checked for strings to be translated
 # set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UIC}) #adds all files to the list of files that are searched for strings to translate
-# itom_library_translation(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+# itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE "${FILES_TO_TRANSLATE}")
 #
 # Hereby, ITOM_LANGUAGES is a semicolon-separated string with different languages, e.g. "de;fr"
-# UPDATE_TRANSLATIONS is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
+# ITOM_UPDATE_TRANSLATIONS is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
 # is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
 # 
 # Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
@@ -561,31 +575,54 @@ endmacro()
 # # e.g. add further entries to COPY_SOURCES and COPY_DESTINATIONS
 # itom_add_designer_qm_files_to_copy_list(QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 # itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-#
-# This macro automatically adds all translation files (*.ts) as source files to the given target.
 # .
-macro(itom_library_translation qm_files target force_translation_update existing_translation_files languages files_to_translate)
-
+macro(itom_library_translation QM_FILES)
+    
+    option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
+    set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
+    
+    set(options)
+    set(oneValueArgs TARGET)
+    set(multiValueArgs FILES_TO_TRANSLATE)
+    cmake_parse_arguments(PARAM "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+    
+    if(NOT PARAM_TARGET)
+        message(SEND_ERROR "Argument value TARGET not given to itom_library_translation")
+    endif()
+    
+    if(NOT PARAM_FILES_TO_TRANSLATE)
+        message(SEND_ERROR "Argument value FILES_TO_TRANSLATE not given to itom_library_translation")
+    endif()
+    
     if(NOT QT5_FOUND)
         message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
     endif()
     
-    if(${force_translation_update})
-        set(TRANSLATIONS_FILES) #list with all ts files
+    if(${ITOM_UPDATE_TRANSLATIONS})
+        set(TRANSLATIONS_FILES) #list with all ts files, these files will be created here as a custom target
         set(TRANSLATION_OUTPUT_FILES)
-        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
-        add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-        add_dependencies(${target} _${target}_translation)
+        message(STATUS "lupdate for target ${PARAM_TARGET} for languages ${ITOM_LANGUAGES} for files ${PARAM_FILES_TO_TRANSLATE}")
+        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${PARAM_TARGET} ITOM_LANGUAGES ${PARAM_FILES_TO_TRANSLATE})
+        add_custom_target (_${PARAM_TARGET}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${PARAM_TARGET} _${PARAM_TARGET}_translation)
     else()
         set(TRANSLATIONS_FILES ${existing_translation_files})
+        foreach(_lang ${ITOM_LANGUAGES})
+            set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${PARAM_TARGET}_${_lang}.ts)
+            if(NOT EXISTS ${_tsFile})
+                MESSAGE(SEND_ERROR "Source translation file '${_tsFile}' for language '${_lang} is missing. Please create this file first or set ITOM_UPDATE_TRANSLATIONS to ON")
+            endif()
+            set(TRANSLATIONS_FILES ${TRANSLATIONS_FILES} ${_tsFile})
+        endforeach()
     endif()
     
     set(QMFILES)
-    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${PARAM_TARGET} ${TRANSLATIONS_FILES})
     set(${qm_files} ${${qm_files}} ${QMFILES})
     
     #add the translation files to the solution
-    target_sources(${target}
+    target_sources(${PARAM_TARGET}
         PRIVATE
         ${TRANSLATIONS_FILES}
     )
@@ -599,18 +636,24 @@ endmacro()
 # 
 # .
 macro(itom_qt5_create_translation outputFiles tsFiles target languages)
-    message(STATUS "--------------------------------------------------------------------")
-    message(STATUS "itom_qt5_create_translation: Create ts files for target ${target}")
-    message(STATUS "--------------------------------------------------------------------")
+    message(STATUS "itom_qt5_create_translation: Create ts files (lupdate) for target ${target} and languages ${${languages}}.")
+    message(STATUS "--------------------------------------------------")
+    
+    option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS "If ITOM_UPDATE_TRANSLATIONS is ON, this option defines if strings, \
+            which are in current *.ts files, but not in the source code, will be removed (ON) from *.ts or not (OFF)." OFF)
     
     set(options)
     set(oneValueArgs)
-    set(multiValueArgs OPTIONS)
+    set(multiValueArgs LANGUAGES OPTIONS)
 
     cmake_parse_arguments(_LUPDATE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     
     set(_lupdate_files ${_LUPDATE_UNPARSED_ARGUMENTS})
     set(_lupdate_options ${_LUPDATE_OPTIONS})
+    
+    if(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS)
+        set(_lupdate_options ${_lupdate_options} "-no-obsolete")
+    endif()
 
     set(_my_sources)
     set(_my_tsfiles)
@@ -628,24 +671,46 @@ macro(itom_qt5_create_translation outputFiles tsFiles target languages)
         endif()
     endforeach()
     
+    #regular expression for parsing an appropriate start of a ts file
+    #CMAKE_MATCH_1 is the xml version number
+    #CMAKE_MATCH_2 is the TS version tag
+    #CMAKE_MATCH_3 is the language string
+    set(TS_REGEXP "^<\\?xml version=\"([0-9\\.]+)\".*<!DOCTYPE TS>.*<TS version=\"([0-9\\.]+)\" language=\"([a-zA-Z_]+)\">.*")
+    
     foreach( _lang ${${languages}})
         set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
         get_filename_component(_ext ${_tsFile} EXT)
-        get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
+        get_filename_component(_abs_tsFile ${_tsFile} ABSOLUTE)
         
         
-        if(EXISTS ${_abs_FILE})
-            message(STATUS "- Consider existing ts-file: ${_abs_FILE}")
-            list(APPEND _my_tsfiles ${_abs_FILE})
+        if(EXISTS ${_abs_tsFile})
+            message(STATUS "- Consider existing ts-file: ${_abs_tsFile}")
+            file(READ "${_abs_tsFile}" TS_CONTENT LIMIT 200)
+            string(REGEX MATCH "${TS_REGEXP}" RES "${TS_CONTENT}")
+            if("${TS_CONTENT}" MATCHES "${TS_REGEXP}")
+                set(TS_LANGID ${CMAKE_MATCH_3})
+                if("${TS_LANGID}" STREQUAL "${_lang}")
+                    message(STATUS "- Consider existing ts-file: ${_abs_tsFile} for language '${_lang}'")
+                else()
+                    message(WARNING "- The existing ts-file ${_abs_tsFile} does not contain the required language '${_lang}', but '${TS_LANGID}'. \
+                        The lupdate process might fail. Either fix the file or delete it and re-configure to let CMake rebuild an empty, proper ts file.")
+                endif()
+            else()
+                message(WARNING "- The existing ts-file ${_abs_tsFile} seems not to fit to the format of a TS file. \
+                    The lupdate process might fail. Either fix the file or delete it and re-configure to let CMake rebuild an empty, proper ts file.")
+            endif()
+            list(APPEND _my_tsfiles ${_abs_tsFile})
         else()
-            #create new ts file
-            add_custom_command(OUTPUT ${_abs_FILE}_new
-                COMMAND ${Qt5_LUPDATE_EXECUTABLE}
-                ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
-                DEPENDS ${_my_sources} VERBATIM)
-            list(APPEND _my_tsfiles ${_abs_FILE})
-            set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
-            message(STATUS "- Create new ts-file (lupdate process): ${_abs_FILE}")
+            #create new file with the minimum content of a valid ts file (unfortunately Qt5_LUPDATE_EXECUTABLE
+            #is a generator expression, that cannot be evaluated at compile time (e.g. using execute_process):
+            # the basic content is set to a TS version 1.0, however the real lupdate process will overwrite this
+            # to its real version.
+            #The empty file is only created, since lupdate is called as custom_command at generate time, however
+            #we want to add the ts-file to the sources of its project already at compile time.
+            message(STATUS "- Create new ts-file (lupdate process): ${_abs_tsFile} for language ${_lang}")
+            set(TS_CONTENT "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!DOCTYPE TS>\n<TS version=\"1.0\" language=\"${_lang}\">\n</TS>\n")
+            file(WRITE "${_abs_tsFile}" ${TS_CONTENT})
+            
         endif()
     endforeach()
     
@@ -1170,9 +1235,32 @@ macro(ADD_QM_FILES_TO_COPY_LIST)
     itom_add_plugin_qm_files_to_copy_list(${ARGV})
 endmacro()
 
-macro(PLUGIN_TRANSLATION)
-    message(WARNING "Deprecated call to 'PLUGIN_TRANSLATION'. Call 'itom_library_translation' instead.")
-    itom_library_translation(${ARGV})
+macro(PLUGIN_TRANSLATION qm_files target force_translation_update existing_translation_files languages files_to_translate)
+    message(WARNING "Deprecated call to 'PLUGIN_TRANSLATION'. Call 'itom_library_translation' instead. Be careful: The arguments changed in this case.")
+    
+    if(NOT QT5_FOUND)
+        message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
+    endif()
+    
+    if(${force_translation_update})
+        set(TRANSLATIONS_FILES) #list with all ts files
+        set(TRANSLATION_OUTPUT_FILES)
+        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target} _${target}_translation)
+    else()
+        set(TRANSLATIONS_FILES ${existing_translation_files})
+    endif()
+    
+    set(QMFILES)
+    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+    set(${qm_files} ${${qm_files}} ${QMFILES})
+    
+    #add the translation files to the solution
+    target_sources(${target}
+        PRIVATE
+        ${TRANSLATIONS_FILES}
+    )
 endmacro()
 
 macro(BUILD_PARALLEL_LINUX targetName)

@@ -61,22 +61,23 @@ macro(itom_init_core_common_vars)
     # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
     
+    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #build all core libraries as shared libraries
+    
     #try to enable OpenMP (e.g. not available with VS Express)
     find_package(OpenMP QUIET)
 
     if(OPENMP_FOUND)
         if(BUILD_OPENMP_ENABLE)
             message(STATUS "OpenMP found and enabled for release compilation")
-            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -DUSEOPENMP" )
-            set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -DUSEOPENMP" )
+            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS}" )
+            set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS}" )
+            add_definitions(-DUSEOPENMP)
         else()
             message(STATUS "OpenMP found but not enabled for release compilation")
         endif()
     else()
         message(STATUS "OpenMP not found.")
     endif()
-    
-    add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     
     #These are the overall pre-compiler directives for itom and its plugins:
     #
