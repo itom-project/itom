@@ -196,6 +196,9 @@ add_library(${target_name} SHARED
     ${PLUGIN_RCC}
     )
 
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
 #link the compiled library
 #append all libraries this plugin should be linked to at the end of the target_link_libraries command
 # Important variables are:
