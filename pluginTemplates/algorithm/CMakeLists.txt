@@ -32,6 +32,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # ... for example this one, found in the CMAKE_MODULE_PATH
 include(ItomBuildMacros)
 
+# The CMake policies are assumed to behave like the tested version given as argument.
+itom_init_cmake_policy(3.12)
+
 # and this does some magic for you, as setting some common vars and 
 # passing some switches to your project you can use in sourcecode.
 # If your sources are within a Git repository, it will also parse
