@@ -25,6 +25,7 @@ endif()
 
 # ...which contains useful scripts for completing this file
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ITOM_SDK_DIR}/cmake)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # ... for example this one, found in the CMAKE_MODULE_PATH
 include(ItomBuildMacros)
