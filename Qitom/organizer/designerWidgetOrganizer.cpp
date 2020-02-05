@@ -366,7 +366,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         }
                         else
                         {
-                            message = tr("Plugin in file '%1' is a Qt designer plugin but no itom plot widget that inherits 'ito.AbtractItomDesignerPlugin'").arg(status.filename);
+                            message = tr("Plugin in file '%1' is a Qt designer plugin but no itom plot widget that inherits 'ito.AbstractItomDesignerPlugin'").arg(status.filename);
                             status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfIgnored, message));
                         }
                     }
