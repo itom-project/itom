@@ -4341,8 +4341,8 @@ Message: %1</source>
     </message>
     <message>
         <location line="-8"/>
-        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbtractItomDesignerPlugin&apos;</source>
-        <translation>文件&apos;%1&apos;中的插件Qt DesignerWidget,但没有itom绘图部件从&apos;ito.AbtractItomDesignerPlugin&apos;派生 </translation>
+        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbstractItomDesignerPlugin&apos;</source>
+        <translation>文件&apos;%1&apos;中的插件Qt DesignerWidget,但没有itom绘图部件从&apos;ito.AbstractItomDesignerPlugin&apos;派生 </translation>
     </message>
     <message>
         <location line="+61"/>
