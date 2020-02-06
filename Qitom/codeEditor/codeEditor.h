@@ -287,6 +287,8 @@ public:
 
     void callWheelEvent(QWheelEvent *e);
 
+    void reportPositionAsGoBackNavigationItem(const QTextCursor &cursor, const QString &reason) const;
+
 protected:
     struct CursorPosition
     {

@@ -123,12 +123,16 @@ calltipsModificationList = { 'itom': calltipModuleItomModification }
 def calltips(code, line, column, path = None, encoding = "utf-8"):
     '''
     '''
-    
-    if jedi.__version__ >= '0.12.0':
-        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+    if jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
+        signatures = script.get_signatures(line = line + 1, column = column)
     else:
-        script = jedi.Script(code, line + 1, column, path, encoding)
-    signatures = script.call_signatures()
+        if jedi.__version__ >= '0.12.0':
+            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+        else:
+            script = jedi.Script(code, line + 1, column, path, encoding)
+        signatures = script.call_signatures()
+    
     result = []
     for sig in signatures:
         index = sig.index
@@ -165,11 +169,16 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
 def completions(code, line, column, path, prefix, encoding = "utf-8"):
     '''
     '''
-    if jedi.__version__ >= '0.12.0':
-        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+    if jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
+        completions = script.complete(line = line + 1, column = column)
     else:
-        script = jedi.Script(code, line + 1, column, path, encoding)
-    completions = script.completions()
+        if jedi.__version__ >= '0.12.0':
+            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+        else:
+            script = jedi.Script(code, line + 1, column, path, encoding)
+        completions = script.completions()
+    
     result = []
     
     #the following pairs of [name, type] will not be returned as possible completion
@@ -197,39 +206,89 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
     '''
     mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
     '''
-    if jedi.__version__ >= '0.12.0':
-        script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
-    else:
-        script = jedi.Script(code, line + 1, column, path, encoding)
+    if jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
+        
+        try:
+            if mode == 0:
+                assignments = script.infer(line = line + 1, column = column, prefer_stubs = False)
+            elif mode == 1:
+                assignments = script.goto(line = line + 1, column = column,follow_imports =False, prefer_stubs = False)
+            else:
+                assignments = script.goto(line = line + 1, column = column,follow_imports = True, prefer_stubs = False)
+        except Exception as ex:
+            assignments = []
     
-    try:
-        if mode == 0:
-            assignments = script.goto_definitions()
-        elif mode == 1:
-            assignments = script.goto_assignments(False)
+    else:
+        if jedi.__version__ >= '0.12.0':
+            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
         else:
-            assignments = script.goto_assignments(True)
-    except Exception as ex:
-        #print(str(ex))
-        assignments = []
+            script = jedi.Script(code, line + 1, column, path, encoding)
+        
+        try:
+            if mode == 0:
+                assignments = script.goto_definitions()
+            elif mode == 1:
+                assignments = script.goto_assignments(follow_imports =False)
+            else:
+                assignments = script.goto_assignments(follow_imports =True)
+        except Exception as ex:
+            assignments = []
+    
     result = []
     for assignment in assignments:
-        #print("Assignment::", str(assignment), assignment.module_path, assignment.line, assignment.column, assignment.full_name, type(assignment.full_name))
-        result.append( \
-            (assignment.module_path if assignment.module_path is not None else "", \
-            assignment.line - 1 if assignment.line else -1, \
-            assignment.column if assignment.column else -1, \
-            assignment.full_name if assignment.full_name else "", \
-            ) \
+        if assignment.full_name and \
+                assignment.full_name != "" and \
+                (assignment.module_path is None or not assignment.module_path.endswith("pyi")):
+            result.append( \
+                (assignment.module_path if assignment.module_path is not None else "", \
+                assignment.line - 1 if assignment.line else -1, \
+                assignment.column if assignment.column else -1, \
+                assignment.full_name, \
+                ) \
             )
+    
+    if len(result) == 0 and len(assignments) > 0 and mode == 0:
+        #instead of 'infer' try 'goto' instead
+        result = goto_assignments(code, line, column, path, mode = 1, encoding = encoding)
+    
     return result
     
 if __name__ == "__main__":
     
+    text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"
+    print(goto_assignments(text, 3, 8, "", 0))
+    print(goto_assignments(text, 3, 8, "", 1))
+    print(goto_assignments(text, 3, 8, "", 2))
+    
+    text = '''def test():
+    data = b''
+    start = [1,2]
+    while(True):
+        if len(start) > 0:
+            print(data)#data += b'hallo'
+            start = []
+        else:
+            break
+    return data'''
+    
+    print(goto_assignments(text, 9, 13, "", 0))
+    print(goto_assignments(text, 9, 13, "", 1))
+    
+    source = '''def my_func():
+    print ('called')
+
+alias = my_func
+my_list = [1, None, alias]
+inception = my_list[2]
+
+inception()'''
+    print(goto_assignments(source, 7, 1, "", 0))
+    print(goto_assignments(source, 7, 1, "", 1))
+    
     print(calltips("from itom import dataObject\ndataObject.copy(",1,16, "utf-8"))
     print(calltips("from itom import dataObject\na = dataObject()\na.copy(",2,7, "utf-8"))
     print(completions("import win", 0, 10, "", "", "utf-8"))
-    raise
     print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
     result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
