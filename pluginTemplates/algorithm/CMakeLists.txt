@@ -13,7 +13,7 @@ set(target_name MyAlgoPlugin)
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
 
-set(ITOM_SDK_DIR "" CACHE PATH "path of SDK subfolder of itom root (build) directory")
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
