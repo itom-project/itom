@@ -80,8 +80,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     #find include directory
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
     
-    find_path(ITOM_APP_DIR "itoDebugger.py" PATHS "${ITOM_SDK_DIR}" "${ITOM_DIR}" PATH_SUFFIXES ".." "." DOC "")
-    get_filename_component(ITOM_APP_DIR ${ITOM_APP_DIR} ABSOLUTE)
+    find_path(ITOM_APP_DIR "itoDebugger.py" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES .. DOC "")
     
     if(EXISTS "${ITOM_APP_DIR}")
         #try to load the CMakeCache file from itom and extract some useful variables. 
@@ -90,7 +89,17 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         #... if they are valid, 
         #... if they exist in the file system and 
         #... if they do not exist or are not valid in this project, yet.
-        set(CACHE_VARIABLES VTK_DIR VISUALLEAKDETECTOR_DIR Qt5_DIR PCL_DIR OpenCV_DIR EIGEN_INCLUDE_DIRS Boost_LIBRARY_DIR Boost_INCLUDE_DIR BLUBBER GIT_EXECUTABLE)
+        set(CACHE_VARIABLES 
+            VTK_DIR 
+            VISUALLEAKDETECTOR_DIR 
+            Qt5_DIR 
+            PCL_DIR 
+            OpenCV_DIR 
+            EIGEN_INCLUDE_DIRS 
+            Boost_LIBRARY_DIR 
+            Boost_INCLUDE_DIR 
+            GIT_EXECUTABLE
+            )
         
         if(EXISTS "${ITOM_APP_DIR}/CMakeCache.txt")
             load_cache("${ITOM_APP_DIR}" READ_WITH_PREFIX "ITOMCACHE_" ${CACHE_VARIABLES})
@@ -117,6 +126,8 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 endif()
             endforeach()
         endif()
+    else()
+        message(WARNING "ITOM_APP_DIR does not exist. No CMake cache values can be loaded from itom")
     endif()
     
     if(BUILD_TARGET64)

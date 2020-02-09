@@ -86,8 +86,8 @@ macro(itom_init_plugin_common_vars)
     #their real values are usually forced by a find_package(ITOM_SDK)
     #command, since these values are taken from information in the itom SDK.
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-    set(ITOM_APP_DIR "" CACHE PATH "base path to itom build / install folder")
-    set(ITOM_SDK_DIR "" CACHE PATH "base path to SDK subfolder of itom build / install folder")
+    set(ITOM_APP_DIR NOTFOUND CACHE PATH "base path to itom build / install folder")
+    set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
     
     # Set a default build type if none was specified
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
