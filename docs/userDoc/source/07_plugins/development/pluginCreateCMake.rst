@@ -34,12 +34,22 @@ This file usually already contains a lot of subdirectories, added by the CMake-c
 
     project(itom_plugins) #name of the overall project
 
-    cmake_minimum_required(VERSION 2.8)
+    cmake_minimum_required(VERSION 3.1...3.15)
 
-    OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-    OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
-    OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
-    SET(ITOM_DIR "" CACHE PATH "base path to itom") 
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+    set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+    #this is to automatically detect the SDK subfolder of the itom build directory.
+    if(NOT ITOM_SDK_DIR)
+        find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+            HINTS "C:/itom/build/itom/SDK"
+                  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+            DOC "path of SDK subfolder of itom root (build) directory")
+    endif()
+
+    if(NOT ITOM_SDK_DIR)
+        message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    endif()
 
     # Insert the following section for your plugin
     
