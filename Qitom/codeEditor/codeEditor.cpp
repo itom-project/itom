@@ -1160,10 +1160,12 @@ Moves the text cursor to the specified position..
 QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
 {
     QTextCursor text_cursor = moveCursorTo(line);
+
     if (column >= 0)
     {
         text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column);
     }
+
     if (move)
     {
         setTextCursor(text_cursor);
@@ -1171,7 +1173,15 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
         ensureCursorVisible();
     }
 
+    reportGoBackNavigationCursorMovement(CursorPosition(text_cursor), "gotoLine");
+
     return text_cursor;
+}
+
+//-----------------------------------------------------------
+void CodeEditor::reportPositionAsGoBackNavigationItem(const QTextCursor &cursor, const QString &reason) const
+{
+    reportGoBackNavigationCursorMovement(CursorPosition(cursor), reason);
 }
 
 //-----------------------------------------------------------

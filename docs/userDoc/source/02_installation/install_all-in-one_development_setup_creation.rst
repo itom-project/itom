@@ -210,6 +210,8 @@ VTKx.x.x
 Modify setupscript
 =============================================
 
+Update the version of the python packages (pip, setuptools, wheel) of the **setup_itom_all-in-one.bat**.
+
 The setup.py file needs some changes to work with the new version of the 
 software/packages. The setup checks, if the packages are given in the right version. 
 

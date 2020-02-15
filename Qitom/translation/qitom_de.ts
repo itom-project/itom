@@ -4652,8 +4652,8 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="-8"/>
-        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbtractItomDesignerPlugin&apos;</source>
-        <translation>Das Plugin in der Datei &apos;%1&apos; ist ein Qt DesignerWidget, aber kein von &apos;ito.AbtractItomDesignerPlugin&apos; abgeleitetes itom-Plot-Widget</translation>
+        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbstractItomDesignerPlugin&apos;</source>
+        <translation>Das Plugin in der Datei &apos;%1&apos; ist ein Qt DesignerWidget, aber kein von &apos;ito.AbstractItomDesignerPlugin&apos; abgeleitetes itom-Plot-Widget</translation>
     </message>
     <message>
         <location line="+61"/>

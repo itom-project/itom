@@ -377,6 +377,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
 
     if (!inputParam)
     {
+		qWarning("Input parameter '%s' does not exist in input parameters of node. Call 'addInputParam' for this parameter first.", paramName.toLatin1().data());
         return ito::RetVal(ito::retError, 0, QObject::tr("Parameter name '%1' does not exist in input parameters").arg(paramName).toLatin1().data());
     }
 
