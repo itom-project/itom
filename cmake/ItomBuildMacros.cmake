@@ -777,18 +777,19 @@ macro(itom_qt5_create_translation outputFiles tsFiles target languages)
             foreach(_lst_file_src ${_my_sources})
                 set(_lst_file_srcs "${_lst_file_src}\n${_lst_file_srcs}")
             endforeach()
-
+            
             get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
             foreach(_pro_include ${_inc_DIRS})
                 # some include pathes somehow disturb lupdate, such that it requires a long time to finish.
                 # Therefore, they are excluded from the lupdate include list
-                string(FIND ${_pro_include} "boost" pos)
-                if(pos LESS 0)
+                string(REGEX MATCH "boost|pcl-1|pcl-2|pcl-3" match ${_pro_include})
+                if(NOT match)
                     get_filename_component(_abs_include "${_pro_include}" ABSOLUTE)
                     set(_lst_file_srcs "-I${_pro_include}\n${_lst_file_srcs}")
+                else()
+                    message(STATUS "- Exclude include path ${_pro_include} for lupdate since it is on blacklist")
                 endif()
             endforeach()
-
             file(WRITE ${_ts_lst_file} "${_lst_file_srcs}")
         endif()
         add_custom_command(OUTPUT ${_ts_file}_update
