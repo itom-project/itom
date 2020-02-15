@@ -106,7 +106,7 @@ if(MSVC)
     list(APPEND qpropertyeditor_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif()
 
-add_library(${target_name} SHARED ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS})
+add_library(${target_name} SHARED ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qpropertyeditor_UI} ${qpropertyeditor_RCC})
 
 target_link_libraries(${target_name} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
 

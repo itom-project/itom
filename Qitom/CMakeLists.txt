@@ -400,7 +400,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
 )
 
-set(qitom_ui
+set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.ui
@@ -452,7 +452,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.ui
 )
 
-set(qitom_rcc
+set(qitom_RCC
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
@@ -665,7 +665,7 @@ if(APPLE)
     set_source_files_properties(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${EXISTING_TRANSLATION_FILES})
+    add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_UI} ${qitom_RCC})
 
     # Set binary file names for OS X
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
@@ -681,7 +681,7 @@ if(APPLE)
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 else(APPLE)
     # Executable for WINDOWS and LINUX
-    add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${EXISTING_TRANSLATION_FILES} )
+    add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_UI} ${qitom_RCC})
 
     # Set binary file names for  WINDOWS and LINUX
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
