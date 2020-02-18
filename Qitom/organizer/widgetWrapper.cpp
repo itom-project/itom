@@ -863,9 +863,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 case 11001: //setIcon
                 {
                     QPixmap pm(*reinterpret_cast<QString(*)>(_a[1]));
-#if QT_VERSION >= 0x050000
                     pm.setDevicePixelRatio(*reinterpret_cast<double(*)>(_a[2]));
-#endif
                     object2->setIcon(QIcon(pm));
                     return ito::retOk;
                 }

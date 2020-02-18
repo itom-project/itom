@@ -31,11 +31,7 @@
 #include "typeDefs.h"
 
 #include <qstring.h>
-#if QT_VERSION < 0x050000
-#include <qcolor.h>
-#else
 #include <QtGui/qcolor.h>
-#endif
 #include <qpair.h>
 #include <qvector.h>
 

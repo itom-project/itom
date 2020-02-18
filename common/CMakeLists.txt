@@ -1,49 +1,48 @@
-SET (target_name itomCommonLib)  
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# In addition, as a special exception, the Institut fuer Technische
+# Optik (ITO) gives you certain additional rights.
+# These rights are described in the ITO LGPL Exception version 1.0,
+# which can be found in the file LGPL_EXCEPTION.txt in this package.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.1)
+
+set(target_name itomCommonLib)  
 project(${target_name}) 
-cmake_minimum_required(VERSION 2.8)
 
-IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if(POLICY CMP0042)
-        cmake_policy(SET CMP0042 OLD)
-    ENDIF(POLICY CMP0042)
-ENDIF()
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
- 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-       
-include("../ItomBuildMacros.cmake")
-    
-IF(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE SHARED)
-    
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
-ELSE(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE STATIC)
-    
-    #if itomCommon is static, add -fPIC as compiler flag for linux
-    IF(UNIX)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    ENDIF(UNIX)
-ENDIF(BUILD_ITOMLIBS_SHARED)
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 
-set(itomCommon_HEADERS
+# set some preprocessor directives
+add_definitions(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
+
+set(ITOMCOMMON_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
@@ -55,10 +54,10 @@ set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interval.h
     ${CMAKE_CURRENT_SOURCE_DIR}/itomPlotHandle.h
-	${CMAKE_CURRENT_SOURCE_DIR}/sharedStructures.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sharedStructures.h
 )
 
-set(itomCommon_SOURCES 
+set(ITOMCOMMON_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/retVal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp
@@ -67,15 +66,15 @@ set(itomCommon_SOURCES
 )
 
 if(MSVC)
-    list(APPEND itomCommon_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
-endif(MSVC)
+    list(APPEND ITOMCOMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif()
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommon_SOURCES} ${itomCommon_HEADERS})
+add_library(${target_name} SHARED ${ITOMCOMMON_SOURCES} ${ITOMCOMMON_HEADERS})
 
-TARGET_LINK_LIBRARIES(${target_name})
+target_link_libraries(${target_name})
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

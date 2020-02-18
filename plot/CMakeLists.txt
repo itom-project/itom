@@ -1,95 +1,77 @@
-SET (target_name itomCommonPlotLib) 
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# In addition, as a special exception, the Institut fuer Technische
+# Optik (ITO) gives you certain additional rights.
+# These rights are described in the ITO LGPL Exception version 1.0,
+# which can be found in the file LGPL_EXCEPTION.txt in this package.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.1)
+
+set(target_name itomCommonPlotLib) 
 project(${target_name}) 
-    cmake_minimum_required(VERSION 2.8.9)
-  
-#CMAKE Policies
-IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if(POLICY CMP0042)
-        cmake_policy(SET CMP0042 OLD)
-    ENDIF(POLICY CMP0042)
-ENDIF()
-   
-if (POLICY CMP0028)
-    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
-ENDIF (POLICY CMP0028)
-      
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
-OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
- 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-      
-include("../ItomBuildMacros.cmake")
 
-IF(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE SHARED)
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMCOMMONPLOT_DLL -D_ITOMCOMMONPLOT_DLL)
-ELSE(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE STATIC)
-    
-    #if itomCommon is static, add -fPIC as compiler flag for linux
-    IF(UNIX)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    ENDIF(UNIX)
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-#    ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
-                                               #published with void** only one (!) time. if this lib is statically linked to itom, it is already
-                                               #defined within itom and must not be defined in this lib but with extern void**. If this lib is
-                                               #shared, it also needs to be defined there.
-ENDIF(BUILD_ITOMLIBS_SHARED)
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core PrintSupport Designer Xml Svg Widgets UiTools LinguistTools)
+# add 3rd party packages
+itom_find_package_qt(ON Core PrintSupport Designer Xml Svg Widgets UiTools LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
-IF(BUILD_WITH_PCL)
+# set some preprocessor directives
+add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+add_definitions(-DITOMCOMMONPLOT_DLL -D_ITOMCOMMONPLOT_DLL)
+add_definitions(-DUNICODE -D_UNICODE)
+add_definitions(-DITOMCOMMONPLOT_MOC)
+
+if(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
-    ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
-ENDIF(BUILD_WITH_PCL)
+    add_definitions(-DUSEPCL -D_USEPCL)
+endif(BUILD_WITH_PCL)
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
+if(BUILD_WITH_PCL)
+    set(POINTCLOUD_LIBRARIES pointcloud)
+else()
+    set(POINTCLOUD_LIBRARIES "")
+endif()
 
-ADD_DEFINITIONS(-DITOMCOMMONPLOT_MOC)
-
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
-
-IF(BUILD_WITH_PCL)
-    IF(BUILD_ITOMLIBS_SHARED)
-        SET(POINTCLOUD_LIBRARIES pointcloud)
-    ELSE(BUILD_ITOMLIBS_SHARED)
-        SET(POINTCLOUD_LIBRARIES ${PCL_LIBRARIES} pointcloud)
-    ENDIF(BUILD_ITOMLIBS_SHARED)
-ELSE(BUILD_WITH_PCL)
-    SET(POINTCLOUD_LIBRARIES "")
-ENDIF(BUILD_WITH_PCL)
-
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
-
-INCLUDE_DIRECTORIES( 
+include_directories( 
     ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
 )
 
-LINK_DIRECTORIES(
+link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${OpenCV_DIR}/lib
+    
 )
 
 set(itomCommonPlot_HEADERS
@@ -113,27 +95,27 @@ set(itomCommonPlot_SOURCES
 
 if(MSVC)
     list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
-endif(MSVC)
+endif()
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
+add_library(${target_name} SHARED ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS} ${itomCommonPlot_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
+target_link_libraries(${target_name} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${QT5_LIBRARIES} dataobject itomCommonLib itomShapeLib qpropertyeditor itomCommonQtLib)
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${QT5_LIBRARIES} dataobject itomCommonLib itomShapeLib qpropertyeditor itomCommonQtLib)
-
-IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 #translation
-set (FILES_TO_TRANSLATE ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
-
-FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})
 
 # COPY SECTION
-set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomCommonPlotLib_de.qm")
-set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
-ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
+
+#copy all qm files to the translations subfolder of the itom root directory
+foreach(_qm ${QM_FILES})
+    set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
+endforeach()
+
+itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

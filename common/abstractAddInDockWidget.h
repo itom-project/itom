@@ -33,11 +33,7 @@
 #include "sharedStructuresQt.h"
 #include "commonGlobal.h"
 
-#if QT_VERSION < 0x050000
-#include <qwidget.h>
-#else
 #include <QtWidgets/qwidget.h>
-#endif
 #include <qmap.h>
 #include <qsharedpointer.h>
 

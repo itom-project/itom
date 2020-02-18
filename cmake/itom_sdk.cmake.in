@@ -1,0 +1,8 @@
+########################################################
+#          ITOM SDK CONFIGURATION FILE
+########################################################
+
+set(ITOM_SDK_LIB_COMPONENTS @ITOM_SDK_LIB_COMPONENTS_STR@)
+set(ITOM_SDK_PCL_SUPPORT @BUILD_WITH_PCL@)
+set(ITOM_SDK_BUILD_TYPE @CMAKE_BUILD_TYPE@)
+set(ITOM_SDK_BUILD_TARGET64 @BUILD_TARGET64@)

@@ -130,14 +130,12 @@ MotorAxisController::MotorAxisController(QWidget *parent) :
 
     QHeaderView *header = d->ui.tableMovement->horizontalHeader();
     header->setDefaultSectionSize(120);
-
-#if QT_VERSION >= 0x050000
+    
     header->setSectionResizeMode(ColCurrent, QHeaderView::Stretch);
     header->setSectionResizeMode(ColTarget, QHeaderView::Stretch);
     header->setSectionResizeMode(ColStepSize, QHeaderView::Stretch);
     header->setSectionResizeMode(ColCommandAbsolute, QHeaderView::Fixed);
     header->setSectionResizeMode(ColCommandRelative, QHeaderView::Fixed);
-#endif
     header->resizeSection(ColCommandAbsolute, 30);
     header->resizeSection(ColCommandRelative, 64);
 

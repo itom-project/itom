@@ -47,12 +47,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmutex.h>
 #include <qapplication.h>
 #include <qscopedpointer.h>
-
-#if QT_VERSION < 0x050000
-#include <qdockwidget.h>
-#else
 #include <QtWidgets/qdockwidget.h>
-#endif
 
 //plugins define VISUAL_LEAK_DETECTOR_CMAKE in their CMake configuration file
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)

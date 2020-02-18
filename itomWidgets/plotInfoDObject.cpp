@@ -27,11 +27,7 @@
 
 #include "plotInfoDObject.h"
 
-#if QT_VERSION < 0x050000
-#include <qpainter.h>
-#else
 #include <QtGui/qpainter.h>
-#endif
 
 //---------------------------------------------------------------------------------------------------------
 PlotInfoDObject::PlotInfoDObject(QWidget* parent /*= NULL*/) : QPlainTextEdit(parent)

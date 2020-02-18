@@ -33,12 +33,7 @@
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
 #include <qpointer.h>
-
-#if QT_VERSION < 0x050000
-#include <qpluginloader.h>
-#else
 #include <QtCore/qpluginloader.h>
-#endif
 
 #include "abstractAddInDockWidget.h"
 

@@ -60,27 +60,6 @@ Q_DECLARE_METATYPE(QMargins);
 	Q_DECLARE_METATYPE(QMarginsF);
 #endif
 
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_DATASTREAM
-	QDataStream &operator<<(QDataStream &out, const QMargins &obj)
-	{
-		out << obj.bottom() << obj.left() << obj.top() << obj.right();
-        return out;
-	}
-
-	QDataStream &operator>>(QDataStream &in, QMargins &obj)
-	{
-		int bottom, left, top, right;
-		in >> bottom >> left >> top >> right;
-        obj.setLeft(left);
-		obj.setRight(right);
-		obj.setTop(top);
-		obj.setBottom(bottom);
-		return in;
-	}
-#endif
-#endif
-
 class QtEnumPropertyType
 {
 };

@@ -1,20 +1,38 @@
-SET (target_name unittest_dataobject)
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+cmake_minimum_required(VERSION 3.1)
+
+set(target_name unittest_dataobject)
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+message(STATUS "--------------- UNITTEST ${target_name} -----------------")
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_ITOMLIBS_SHARED "Build unittest for itom (including gtest)." OFF)
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../../cmake/ItomBuildMacros.cmake")
+include("../../cmake/ItomBuildMacrosInternal.cmake")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
 
-include("../../ItomBuildMacros.cmake")
-
-IF (BUILD_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-ENDIF (BUILD_ITOMLIBS_SHARED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../cmake ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
 
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.6.0/cmake/internal_utils.cmake")
@@ -24,35 +42,16 @@ find_package(OpenCV REQUIRED COMPONENTS core)
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
 
-IF(WIN32 AND NOT ${gtest_force_shared_crt})
+if(WIN32 AND NOT ${gtest_force_shared_crt})
     message("Please set gtest_force_shared_crt to ON.")
-ENDIF(WIN32 AND NOT ${gtest_force_shared_crt})
+endif(WIN32 AND NOT ${gtest_force_shared_crt})
 
-# IF (BUILD_UNICODE)
-    # ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-# ENDIF (BUILD_UNICODE)
-
-# ADD_DEFINITIONS(-DCMAKE)
-
-# # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-# IF (DEFINED CMAKE_BUILD_TYPE)
-    # SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-# ELSE(CMAKE_BUILD_TYPE)
-    # SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-# ENDIF (DEFINED CMAKE_BUILD_TYPE)
-
-INCLUDE_DIRECTORIES(
+include_directories(
     # ${CMAKE_CURRENT_BINARY_DIR}
     # ${CMAKE_CURRENT_SOURCE_DIR}
     # ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${OpenCV_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
 )
-
-# LINK_DIRECTORIES(
-    # ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
-    # ${OpenCV_DIR}/lib
-# )
 
 set(unittest_dataobject_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonChannel.h    
@@ -94,16 +93,6 @@ set(unittest_dataobject_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ConstIterator_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorTypesTest.cpp
 )
-
-# #add filters to visual studio
-# ADD_SOURCE_GROUP(api)
-# ADD_SOURCE_GROUP(helper)
-# ADD_SOURCE_GROUP(models)
-# ADD_SOURCE_GROUP(organizer)
-# ADD_SOURCE_GROUP(python)
-# ADD_SOURCE_GROUP(ui)
-# ADD_SOURCE_GROUP(widgets)
-# #end add filters to visual studio
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_dataobject_SOURCES} ${unittest_dataobject_HEADERS})
 target_link_libraries(${target_name} dataobject itomCommonLib ${OpenCV_LIBS})

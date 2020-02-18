@@ -37,18 +37,10 @@ extern "C++" {
 #include "../common/shape.h"
 
 #include "commonWidgets.h"
-
-#if QT_VERSION < 0x050000
-#include <qtreewidget.h>
-#include <qhash.h>
-#include <qpixmap.h>
-#else
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpixmap.h>
-//
-#endif
 
-	class ITOMWIDGETS_EXPORT PlotInfoMarker : public QTreeWidget
+class ITOMWIDGETS_EXPORT PlotInfoMarker : public QTreeWidget
 {
     Q_OBJECT
         

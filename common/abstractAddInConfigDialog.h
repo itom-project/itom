@@ -35,11 +35,7 @@
 #include "../common/interval.h"
 #include "../common/qtMetaTypeDeclarations.h"
 
-#if QT_VERSION < 0x050000
-#include <qdialog.h>
-#else
 #include <QtWidgets/qdialog.h>
-#endif
 #include <qmap.h>
 #include <qsharedpointer.h>
 

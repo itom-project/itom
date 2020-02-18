@@ -1,15 +1,15 @@
-SET (target_name unittest_commonlib)
+set(target_name unittest_commonlib)
  
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
 
-include("../../ItomBuildMacros.cmake")
+include("../../cmake/ItomBuildMacros.cmake")
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
@@ -20,20 +20,19 @@ include("../../gtest-1.6.0/cmake/internal_utils.cmake")
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
 
-IF(WIN32 AND NOT ${gtest_force_shared_crt})
+if(WIN32 AND NOT ${gtest_force_shared_crt})
     message("Please set gtest_force_shared_crt to ON.")
-ENDIF(WIN32 AND NOT ${gtest_force_shared_crt})
+endif(WIN32 AND NOT ${gtest_force_shared_crt})
 
 
-INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common
-    ${OpenCV_DIR}/include
 )
 
-LINK_DIRECTORIES(
+link_directories(
     # ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
-    ${OpenCV_DIR}/lib
+    
 )
 
 set(unittest_HEADERS

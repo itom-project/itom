@@ -30,12 +30,7 @@
 
 #include <QApplication>
 #include <QDirIterator>
-
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
-#else
-#include <qtconcurrentrun.h>
-#endif
 
 namespace ito
 {

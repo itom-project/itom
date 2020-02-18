@@ -50,11 +50,7 @@
 #include <qdesktopwidget.h>
 #include <qstringlist.h>
 
-#if QT_VERSION < 0x050000
-#include <qpluginloader.h>
-#else
 #include <QtCore/qpluginloader.h>
-#endif
 
 #include "opencv2/core/core_c.h"
 

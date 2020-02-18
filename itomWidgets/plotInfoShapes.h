@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SHAPELEGENDWIDGET_H
-#define SHAPELEGENDWIDGET_H
+#ifndef PLOTINFOSHAPES_H
+#define PLOTINFOSHAPES_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -38,15 +38,8 @@ extern "C++" {
 
 #include "commonWidgets.h"
 
-#if QT_VERSION < 0x050000
-#include <qtreewidget.h>
-#include <qhash.h>
-#include <qpainterpath.h>
-#else
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpainterpath.h>
-//
-#endif
 
 class relation
 {

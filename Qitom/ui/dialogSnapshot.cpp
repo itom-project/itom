@@ -311,11 +311,7 @@ void DialogSnapshot::acquisitionStart()
         ui.btnSnap->setText(tr("Stop"));
         int interval = ui.checkTimer->isChecked() ? ui.spinTimer->value() : 0;
         timerEvent(NULL);
-#if QT_VERSION < 0x050000
-        m_timerID = startTimer(interval);
-#else
         m_timerID = startTimer(interval, Qt::PreciseTimer);
-#endif
     }
     else
     {

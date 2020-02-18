@@ -55,11 +55,7 @@
 
 #include <QtCore/QMap>
 #include <QtGui/QIcon>
-#if QT_VERSION < 0x050000
-	#include <QtGui/QWidget>
-#else
-	#include <QtWidgets/QWidget>
-#endif
+#include <QtWidgets/QWidget>
 #include <QtCore/QStringList>
 
 #if QT_VERSION >= 0x040400
