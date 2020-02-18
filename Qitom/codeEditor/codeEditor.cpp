@@ -2439,9 +2439,26 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *e)
     if (m_showCtxMenu)
     {
         e->accept();
-        int line, index;
+		int line = -1;
+		int index = -1;
         lineIndexFromPosition(e->pos(), &line, &index);
-        setCursorPosition(line, index);
+
+		int selLineFrom, selLineTo;
+		int selIndexFrom, selIndexTo;
+		getSelection(&selLineFrom, &selIndexFrom, &selLineTo, &selIndexTo);
+
+		if (selLineFrom == -1) //nothing selected yet -> set the cursor to the current mouse position
+		{
+			setCursorPosition(line, index);
+		}
+		else if (line < selLineFrom || 
+			(line == selLineFrom && index < selIndexFrom) ||
+			line > selLineTo ||
+			(line == selLineTo && index > selIndexTo)) //the right mouse click happened out of the current selection, move the cursor to the clicked position
+		{
+			setCursorPosition(line, index);
+		}
+        
         contextMenuAboutToShow(line);
         m_pContextMenu->exec(e->globalPos());
     }
