@@ -298,6 +298,22 @@ void ScriptEditorWidget::loadSettings()
     m_pyGotoAssignmentMode->setMouseClickEnabled(settings.value("gotoAssignmentMouseClickEnabled", m_pyGotoAssignmentMode->mouseClickEnabled()).toBool());
     m_pyGotoAssignmentMode->setDefaultWordClickMode(settings.value("gotoAssignmentMouseClickMode", m_pyGotoAssignmentMode->defaultWordClickMode()).toInt());
 
+	Qt::KeyboardModifiers modifiers;
+	switch (settings.value("gotoAssignmentMouseClickKey", 1).toInt())
+	{
+	case 0:
+		modifiers = Qt::ControlModifier;
+		break;
+	case 1:
+		modifiers = Qt::ControlModifier | Qt::ShiftModifier;
+		break;
+	default:
+		modifiers = Qt::ControlModifier | Qt::AltModifier;
+		break;
+	}
+
+	m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
+
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
     setSelectLineOnCopyEmpty(settings.value("selectLineOnCopyEmpty", true).toBool());

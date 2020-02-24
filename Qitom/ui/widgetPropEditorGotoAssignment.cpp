@@ -51,6 +51,7 @@ void WidgetPropEditorGotoAssignment::readSettings()
     ui.groupGotoDefinition->setChecked( settings.value("gotoAssignmentEnabled", true).toBool());
     ui.groupMouseClick->setChecked( settings.value("gotoAssignmentMouseClickEnabled", true).toBool());
     ui.comboWordClickMode->setCurrentIndex(settings.value("gotoAssignmentMouseClickMode", 1).toInt());
+	ui.comboWordClickKey->setCurrentIndex(settings.value("gotoAssignmentMouseClickKey", 1).toInt());
 
     settings.endGroup();
 }
@@ -63,6 +64,7 @@ void WidgetPropEditorGotoAssignment::writeSettings()
     settings.setValue("gotoAssignmentEnabled", ui.groupGotoDefinition->isChecked());
     settings.setValue("gotoAssignmentMouseClickEnabled", ui.groupMouseClick->isChecked());
     settings.setValue("gotoAssignmentMouseClickMode", ui.comboWordClickMode->currentIndex());
+	settings.setValue("gotoAssignmentMouseClickKey", ui.comboWordClickKey->currentIndex());
     settings.endGroup();
 }
 

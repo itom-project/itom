@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>236</height>
+    <width>533</width>
+    <height>255</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,12 +26,38 @@
       <item>
        <widget class="QGroupBox" name="groupMouseClick">
         <property name="title">
-         <string>Check &quot;goto definition&quot; if Ctrl-key is pressed and mouse is moved over word</string>
+         <string>Check &quot;goto definition&quot; if key-combination is pressed and mouse is moved over word</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Key combination (must be pressed while moving the mouse over a word):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboWordClickKey">
+           <item>
+            <property name="text">
+             <string>Ctrl</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ctrl+Shift</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ctrl+Alt</string>
+            </property>
+           </item>
+          </widget>
+         </item>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
@@ -59,6 +85,13 @@
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Press F12 to goto definition of word under the current cursor position</string>
+        </property>
        </widget>
       </item>
      </layout>
