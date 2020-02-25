@@ -1,5 +1,4 @@
-
-__version__ = '3.1.0'
+__version__ = '4.14.1'
 
 
 def setup(app):
@@ -14,3 +13,8 @@ def setup(app):
     from . import directives
 
     directives.setup(app)
+    return {
+        'version': __version__,
+        'parallel_read_safe': True,
+        'parallel_write_safe': True
+    }
