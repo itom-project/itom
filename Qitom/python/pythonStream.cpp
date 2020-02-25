@@ -180,9 +180,16 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
             v = PyUnicode_AsLatin1String(text); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
             if (v == NULL)
             {
-                PyErr_Print();
-                PyErr_Clear();
-                v = PyBytes_FromString("");
+				//latin1 failed, try utf8 instead
+				PyErr_Clear();
+				v = PyUnicode_AsUTF8String(text);
+
+				if (v == NULL)
+				{
+					PyErr_Print();
+					PyErr_Clear();
+					v = PyBytes_FromString("");
+				}
             }
         }
         else if(PyBytes_Check(text))
