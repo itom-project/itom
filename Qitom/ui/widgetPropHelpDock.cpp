@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -688,7 +688,7 @@ void WidgetPropHelpDock::compareDatabaseVersions()
                 i->updateState = stateDownloadAvailable;
             }
             else
-            { // Not Downloadable because of wrong Scheme ... don´t display
+            { // Not Downloadable because of wrong Scheme ... do not display
                 i->updateState = stateWrongScheme;
             }
         }
@@ -707,7 +707,7 @@ void WidgetPropHelpDock::compareDatabaseVersions()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // This function saves the id of each checked entry of the TreeWidget in the
-// checkedIdList. Don´t modify that list manually.
+// checkedIdList. Do not modify that list manually.
 void WidgetPropHelpDock::updateCheckedIdList()
 {
     checkedIdList.clear();

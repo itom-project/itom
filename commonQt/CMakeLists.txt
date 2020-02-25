@@ -84,6 +84,7 @@ set(ITOMCOMMONQT_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractApiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/fileUtils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/semVerVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/qtMetaTypeDeclarations.h
 )
 
 set(ITOMCOMMONQT_SOURCES 

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -195,11 +195,11 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit) const
     case UnitMm:
         return " mm";
     case UnitMum:
-        return QLatin1String(" µm");
+        return QLatin1String(" \u00B5m"); // \mu
     case UnitNm:
         return " nm";
     case UnitDeg:
-        return QLatin1String(" °");
+        return QLatin1String(" \u00B0"); // \degree
     case UnitAU:
         return d->arbitraryUnit;
     }
@@ -409,7 +409,7 @@ ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
         else if (d->axisType[axisIndex] == TypeRotational && unit != UnitDeg && unit != UnitAU)
         {
             unit = UnitDeg;
-            retval += ito::RetVal(ito::retWarning, 0, "type of axis is rotational, the unit is set to '°'.");
+            retval += ito::RetVal::format(ito::retWarning, 0, "type of axis is rotational, the unit is set to '%s'.", QLatin1String("\u00B0").data());
         }
 
         d->spinTargetPos[axisIndex]->setSuffix(suffixFromAxisUnit(unit));
@@ -547,12 +547,10 @@ ito::RetVal MotorAxisController::setAxisType(int axisIndex, AxisType type)
             if (type == TypeLinear && axisUnit(axisIndex) == UnitDeg)
             {
                 setAxisUnit(axisIndex, UnitMm);
-                //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was '°'. Due to the new type, it is set to 'mm' now.");
             }
             else if (type == TypeRotational && (axisUnit(axisIndex) != UnitDeg && axisUnit(axisIndex) != UnitAU))
             {
                 setAxisUnit(axisIndex, UnitDeg);
-                //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was 'mm', 'nm' or similar. Due to the new type, it is set to '°' now.");
             }
         }
     }
@@ -1218,7 +1216,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
                 }
                 unitMenu->addAction(a);
 
-                a = new QAction(QLatin1String("µm"), this);
+                a = new QAction(QLatin1String("\u00B5m"), this); // \mu m
                 a->setCheckable(true);
                 a->setData(UnitMum);
                 if (axisUnit(index.row()) == UnitMum)
@@ -1238,7 +1236,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
             }
             else
             {
-                a = new QAction(QLatin1String("°"), this);
+                a = new QAction(QLatin1String("\u00B0"), this); // \degree
                 a->setCheckable(true);
                 a->setChecked(true);
                 a->setData(UnitDeg);

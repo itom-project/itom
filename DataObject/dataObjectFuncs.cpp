@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -1883,7 +1883,7 @@ namespace dObjHelper
 
             if ((nrOfValidElements - 1 + devTypFlag) != 0)
             {
-                devValue = sqrt(dev / (nrOfValidElements - 1 + devTypFlag));  // if flag = 1, std = 1/n * sqrt(sum((x - xm)²)) else std = 1/(n-1) * sqrt(sum((x - xm)²)) else
+                devValue = sqrt(dev / (nrOfValidElements - 1 + devTypFlag));  // if flag = 1, std = 1/n * sqrt(sum((x - xm)^2)) else std = 1/(n-1) * sqrt(sum((x - xm)^2)) else
             }
         }
 

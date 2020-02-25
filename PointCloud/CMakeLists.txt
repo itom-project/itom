@@ -58,6 +58,7 @@ include_directories(
 
 set(libSrcs 
     ${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pclDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pclFunctions.h

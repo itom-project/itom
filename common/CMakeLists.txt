@@ -44,6 +44,7 @@ add_definitions(-DITOMCOMMON_DLL -D_ITOMCOMMON_DLL)
 
 set(ITOMCOMMON_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/commonGlobal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/numeric.h

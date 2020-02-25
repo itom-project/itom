@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -49,8 +49,8 @@ public:
 
     AbstractNode* m_pSender; /*!> The node, which is the sender of information over this channel to the receiver */
     AbstractNode* m_pReceiver; /*!> The receiver node*/
-    Param* m_pSenderParam; //!> the parameter-connector on the parent´s side (can be sending or receiving)
-    Param* m_pReceiverParam; //!> the parameter-connector on the child´s side (can be sending or receiving)
+    Param* m_pSenderParam; //!> the parameter-connector on the parent's side (can be sending or receiving)
+    Param* m_pReceiverParam; //!> the parameter-connector on the child's side (can be sending or receiving)
     Channel::UpdateState m_updateState; //!> state of channel: default is idle
     uint m_hashVal;
 };

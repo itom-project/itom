@@ -56,6 +56,7 @@ link_directories(
 set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobjVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/defines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
