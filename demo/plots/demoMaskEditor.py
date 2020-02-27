@@ -62,6 +62,8 @@ def listModificationChanged():
     gui.plot["geometryModificationModes"] = ";".join(sel2)
 
 def userdemo_MaskEditor():
+    global gui
+    
     #create demo data with axis scales and offsets to show that the mask will also work in this special case.
     image = dataObject.randN([1024,1024])
     image.axisScales = (1e-3, 1e-3)
