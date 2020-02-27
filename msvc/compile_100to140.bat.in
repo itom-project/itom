@@ -1,0 +1,8 @@
+TITLE compile @MSVC_CONFIGURATION@ @MSVC_BITNESS1@ - %~dp0
+CALL "@MSVC_VSCOMNTOOLS@\vsvars32.bat" @MSVC_BITNESS1@
+
+msbuild.exe "%~dp0\ALL_BUILD.vcxproj" /p:configuration=@MSVC_CONFIGURATION@ /p:platform=@MSVC_BITNESS2@ @MSVC_REBUILD_TAG@
+
+pause
+
+REM for rebuild add "/t:rebuild" after /p:platform=@MSVC_BITNESS2@

@@ -1,12 +1,12 @@
 
-from ..renderer.rst.doxygen.base import RenderContext
-from ..renderer.rst.doxygen.mask import NullMaskFactory
+from ..renderer import DoxygenToRstRendererFactory
+from ..renderer.base import RenderContext
+from ..renderer.mask import NullMaskFactory
 from ..directive.base import BaseDirective
 from ..project import ProjectError
-from .base import WarningHandler, create_warning
+from .base import create_warning
 
 from docutils.parsers.rst.directives import unchanged_required, flag
-from docutils import nodes
 
 
 class BaseFileDirective(BaseDirective):
@@ -41,17 +41,15 @@ class BaseFileDirective(BaseDirective):
             self.options, project_info, self.state.document)
         filter_ = self.filter_factory.create_file_filter(file_, self.options)
 
-        renderer_factory_creator = self.renderer_factory_creator_constructor.create_factory_creator(
-            project_info,
-            self.state.document,
-            self.options,
-            target_handler
+        renderer_factory = DoxygenToRstRendererFactory(
+            self.parser_factory,
+            project_info
             )
         node_list = []
-        for data_object in matches:
+        for node_stack in matches:
 
-            renderer_factory = renderer_factory_creator.create_factory(
-                data_object,
+            object_renderer = renderer_factory.create_renderer(
+                node_stack,
                 self.state,
                 self.state.document,
                 filter_,
@@ -59,9 +57,8 @@ class BaseFileDirective(BaseDirective):
                 )
 
             mask_factory = NullMaskFactory()
-            context = RenderContext([data_object, self.root_data_object], mask_factory)
-            object_renderer = renderer_factory.create_renderer(context)
-            node_list.extend(object_renderer.render())
+            context = RenderContext(node_stack, mask_factory, self.directive_args)
+            node_list.extend(object_renderer.render(node_stack[0], context))
 
         return node_list
 
@@ -120,4 +117,3 @@ class AutoDoxygenFileDirective(BaseFileDirective):
             return warning.warn('autodoxygenfile: %s' % e)
 
         return self.handle_contents(file_, project_info)
-

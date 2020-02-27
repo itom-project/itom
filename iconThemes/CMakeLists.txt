@@ -1,4 +1,28 @@
-cmake_minimum_required(VERSION 2.8.9)
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.1...3.15)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
  
 include(CMakeParseArguments)
 
@@ -37,7 +61,7 @@ endfunction()
 
 # itom_qt5_add_binary_resources(target inputfiles ... )
 # Since Qt 5.5.0 this macro is part of Qt5 Core. It is copied here for backward compatibility.
-function(ITOM_QT5_ADD_BINARY_RESOURCES target )
+function(itom_qt5_add_binary_resources target )
 
     set(options)
     set(oneValueArgs DESTINATION)
@@ -56,7 +80,7 @@ function(ITOM_QT5_ADD_BINARY_RESOURCES target )
     foreach(it ${rcc_files})
         get_filename_component(infile ${it} ABSOLUTE)
 
-        _ITOM_QT5_PARSE_QRC_FILE(${infile} _out_depends _rc_depends)
+        _ITOM_QT5_PARSE_QRC_file(${infile} _out_depends _rc_depends)
         set(infiles ${infiles} ${infile})
         set(out_depends ${out_depends} ${_out_depends})
         set(rc_depends ${rc_depends} ${_rc_depends})
@@ -69,47 +93,25 @@ function(ITOM_QT5_ADD_BINARY_RESOURCES target )
 
     add_custom_target(${target} ALL DEPENDS ${rcc_destination})
 endfunction()
-    
-#CMAKE Policies
-IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if(POLICY CMP0042)
-        cmake_policy(SET CMP0042 OLD)
-    ENDIF(POLICY CMP0042)
-ENDIF()
-      
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
- 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-      
-include("../ItomBuildMacros.cmake")
 
-SET(LIBRARY_TYPE SHARED)
-
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core Widgets)
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
+itom_find_package_qt(ON Core Widgets)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+add_definitions(-DUNICODE -D_UNICODE)
 
-IF (QT5_FOUND)
-    IF (${Qt5_VERSION} VERSION_LESS 5.5.0)
+if(QT5_FOUND)
+    if(${Qt5_VERSION} VERSION_LESS 5.5.0)
       itom_qt5_add_binary_resources(iconThemeBright ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeBright.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeBright.rcc)
       itom_qt5_add_binary_resources(iconThemeDark ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeDark.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeDark.rcc)
-    ELSE ()
+    else()
       qt5_add_binary_resources(iconThemeBright ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeBright.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeBright.rcc)
       qt5_add_binary_resources(iconThemeDark ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeDark.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeDark.rcc)
-    ENDIF ()
-ENDIF(QT5_FOUND) #for Qt4, the bright theme is directly included in the itom application (no choice available) 
+    endif()
+endif() #for Qt4, the bright theme is directly included in the itom application (no choice available) 
    

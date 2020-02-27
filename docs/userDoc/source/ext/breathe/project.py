@@ -3,11 +3,14 @@ from .exception import BreatheError
 
 import os
 
+
 class ProjectError(BreatheError):
     pass
 
+
 class NoDefaultProjectError(ProjectError):
     pass
+
 
 class AutoProjectInfo(object):
     """Created as a temporary step in the automatic xml generation process"""
@@ -22,7 +25,10 @@ class AutoProjectInfo(object):
             config_dir,
             domain_by_extension,
             domain_by_file_pattern,
-            match
+            match,
+            show_define_initializer,
+            project_refids,
+            order_parameters_first,
             ):
 
         self._name = name
@@ -34,12 +40,18 @@ class AutoProjectInfo(object):
         self._domain_by_extension = domain_by_extension
         self._domain_by_file_pattern = domain_by_file_pattern
         self._match = match
+        self._show_define_initializer = show_define_initializer
+        self._project_refids = project_refids
+        self._order_parameters_first = order_parameters_first
 
     def name(self):
         return self._name
 
     def build_dir(self):
         return self._build_dir
+
+    def project_refids(self):
+        return self._project_refids
 
     def abs_path_to_source_file(self, file_):
         """
@@ -62,8 +74,12 @@ class AutoProjectInfo(object):
             self._config_dir,
             self._domain_by_extension,
             self._domain_by_file_pattern,
-            self._match
+            self._match,
+            self._show_define_initializer,
+            self._project_refids,
+            self._order_parameters_first,
             )
+
 
 class ProjectInfo(object):
 
@@ -77,8 +93,11 @@ class ProjectInfo(object):
             config_dir,
             domain_by_extension,
             domain_by_file_pattern,
-            match
-            ):
+            match,
+            show_define_initializer,
+            project_refids,
+            order_parameters_first
+    ):
 
         self._name = name
         self._project_path = path
@@ -89,6 +108,9 @@ class ProjectInfo(object):
         self._domain_by_extension = domain_by_extension
         self._domain_by_file_pattern = domain_by_file_pattern
         self._match = match
+        self._show_define_initializer = show_define_initializer
+        self._project_refids = project_refids
+        self._order_parameters_first = order_parameters_first
 
     def name(self):
         return self._name
@@ -99,19 +121,23 @@ class ProjectInfo(object):
     def source_path(self):
         return self._source_path
 
+    def project_refids(self):
+        return self._project_refids
+
     def relative_path_to_xml_file(self, file_):
         """
         Returns relative path from Sphinx documentation top-level source directory to the specified
-        file assuming that the specified file is a path relative to the doxygen xml output directory.
+        file assuming that the specified file is a path relative to the doxygen xml output
+        directory.
         """
 
         # os.path.join does the appropriate handling if _project_path is an absolute path
         full_xml_project_path = os.path.join(self._config_dir, self._project_path, file_)
 
         return os.path.relpath(
-                full_xml_project_path,
-                self._source_dir
-                )
+            full_xml_project_path,
+            self._source_dir
+        )
 
     def sphinx_abs_path_to_file(self, file_):
         """
@@ -135,11 +161,17 @@ class ProjectInfo(object):
         except KeyError:
             pass
 
-        for pattern, pattern_domain in list(self._domain_by_file_pattern.items()):
+        for pattern, pattern_domain in self._domain_by_file_pattern.items():
             if self._match(file_, pattern):
                 domain = pattern_domain
 
         return domain
+
+    def show_define_initializer(self):
+        return self._show_define_initializer
+
+    def order_parameters_first(self):
+        return self._order_parameters_first
 
 
 class ProjectInfoFactory(object):
@@ -155,6 +187,10 @@ class ProjectInfoFactory(object):
         self.default_project = None
         self.domain_by_extension = {}
         self.domain_by_file_pattern = {}
+        self.project_refids = False
+
+        self.show_define_initializer = False
+        self.order_parameters_first = False
 
         self.project_count = 0
         self.project_info_store = {}
@@ -168,7 +204,10 @@ class ProjectInfoFactory(object):
             domain_by_extension,
             domain_by_file_pattern,
             projects_source,
-            build_dir
+            build_dir,
+            show_define_initializer,
+            project_refids,
+            order_parameters_first,
             ):
 
         self.projects = projects
@@ -176,6 +215,9 @@ class ProjectInfoFactory(object):
         self.domain_by_extension = domain_by_extension
         self.domain_by_file_pattern = domain_by_file_pattern
         self.projects_source = projects_source
+        self.show_define_initializer = show_define_initializer
+        self.project_refids = project_refids
+        self.order_parameters_first = order_parameters_first
 
         # If the breathe config values has a non-empty value for build_dir then use that otherwise
         # stick with the default
@@ -186,28 +228,29 @@ class ProjectInfoFactory(object):
 
         if not self.default_project:
             raise NoDefaultProjectError(
-                    "No breathe_default_project config setting to fall back on "
-                    "for directive with no 'project' or 'path' specified."
-                    )
+                "No breathe_default_project config setting to fall back on "
+                "for directive with no 'project' or 'path' specified."
+            )
 
         try:
             return self.projects[self.default_project]
         except KeyError:
             raise ProjectError(
-                    ( "breathe_default_project value '%s' does not seem to be a valid key for the "
-                      "breathe_projects dictionary" ) % self.default_project
-                    )
+                ("breathe_default_project value '%s' does not seem to be a valid key for the "
+                 "breathe_projects dictionary") % self.default_project
+            )
 
     def create_project_info(self, options):
 
-        name = ""
+        name = self.default_project
 
         if "project" in options:
             try:
                 path = self.projects[options["project"]]
                 name = options["project"]
             except KeyError:
-                raise ProjectError( "Unable to find project '%s' in breathe_projects dictionary" % options["project"] )
+                raise ProjectError("Unable to find project '%s' in breathe_projects dictionary"
+                                   % options["project"])
 
         elif "path" in options:
             path = options["path"]
@@ -227,16 +270,19 @@ class ProjectInfoFactory(object):
                 self.project_count += 1
 
             project_info = ProjectInfo(
-                    name,
-                    path,
-                    "NoSourcePath",
-                    reference,
-                    self.source_dir,
-                    self.config_dir,
-                    self.domain_by_extension,
-                    self.domain_by_file_pattern,
-                    self.match
-                    )
+                name,
+                path,
+                "NoSourcePath",
+                reference,
+                self.source_dir,
+                self.config_dir,
+                self.domain_by_extension,
+                self.domain_by_file_pattern,
+                self.match,
+                self.show_define_initializer,
+                self.project_refids,
+                self.order_parameters_first
+            )
 
             self.project_info_store[path] = project_info
 
@@ -262,9 +308,9 @@ class ProjectInfoFactory(object):
 
         if name is None:
             raise NoDefaultProjectError(
-                    "No breathe_default_project config setting to fall back on "
-                    "for directive with no 'project' or 'path' specified."
-                    )
+                "No breathe_default_project config setting to fall back on "
+                "for directive with no 'project' or 'path' specified."
+            )
 
         return self.project_info_for_auto_store[name]
 
@@ -284,16 +330,19 @@ class ProjectInfoFactory(object):
                 self.project_count += 1
 
             auto_project_info = AutoProjectInfo(
-                    name,
-                    source_path,
-                    self.build_dir,
-                    reference,
-                    self.source_dir,
-                    self.config_dir,
-                    self.domain_by_extension,
-                    self.domain_by_file_pattern,
-                    self.match
-                    )
+                name,
+                source_path,
+                self.build_dir,
+                reference,
+                self.source_dir,
+                self.config_dir,
+                self.domain_by_extension,
+                self.domain_by_file_pattern,
+                self.match,
+                self.show_define_initializer,
+                self.project_refids,
+                self.order_parameters_first
+            )
 
             self.auto_project_info_store[key] = auto_project_info
 

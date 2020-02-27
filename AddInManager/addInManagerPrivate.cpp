@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
@@ -24,11 +24,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "pluginModel.h"
 #include "addInManager.h"
 
-#if QT_VERSION < 0x050000
-#include <qpluginloader.h>
-#else
 #include <QtCore/qpluginloader.h>
-#endif
 
 namespace ito
 {

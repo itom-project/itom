@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -1029,11 +1029,7 @@ QStringList ScriptEditorOrganizer::openedScripts() const
         openedScripts << sdw->getAllFilenames();
     }
 
-#if QT_VERSION < 0x050000
-    openedScripts.sort();
-#else
     openedScripts.sort(Qt::CaseInsensitive);
-#endif
     openedScripts.removeDuplicates();
     return openedScripts; //return list with all filenames of all opened scripts
 }

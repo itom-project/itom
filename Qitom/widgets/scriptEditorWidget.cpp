@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -34,11 +34,7 @@
 #include "../ui/dialogEditBreakpoint.h"
 
 #include <qmessagebox.h>
-#if QT_VERSION >= 0x050000
-    #include <QtPrintSupport/qprintpreviewdialog.h>
-#else
-    #include <qprintpreviewdialog.h>
-#endif
+#include <QtPrintSupport/qprintpreviewdialog.h>
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qpainter.h>
@@ -301,6 +297,22 @@ void ScriptEditorWidget::loadSettings()
     m_pyGotoAssignmentMode->setEnabled(settings.value("gotoAssignmentEnabled", true).toBool());
     m_pyGotoAssignmentMode->setMouseClickEnabled(settings.value("gotoAssignmentMouseClickEnabled", m_pyGotoAssignmentMode->mouseClickEnabled()).toBool());
     m_pyGotoAssignmentMode->setDefaultWordClickMode(settings.value("gotoAssignmentMouseClickMode", m_pyGotoAssignmentMode->defaultWordClickMode()).toInt());
+
+	Qt::KeyboardModifiers modifiers;
+	switch (settings.value("gotoAssignmentMouseClickKey", 1).toInt())
+	{
+	case 0:
+		modifiers = Qt::ControlModifier;
+		break;
+	case 1:
+		modifiers = Qt::ControlModifier | Qt::ShiftModifier;
+		break;
+	default:
+		modifiers = Qt::ControlModifier | Qt::AltModifier;
+		break;
+	}
+
+	m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
 
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 

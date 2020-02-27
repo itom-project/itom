@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -37,9 +37,9 @@ AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, co
     AbstractFigure(itomSettingsFile, windowMode, parent),
     m_inpType(inpType)
 {
-    addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    addOutputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source pointCloud data for plot").toLatin1().data()));
+    addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source polygonMesh data for plot").toLatin1().data()));
+	addInputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source dataObject data for plot").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -47,9 +47,9 @@ AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, Ab
     AbstractFigure(itomSettingsFile, windowMode, parent),
     m_inpType(0)
 {
-    addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    addOutputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+	addInputParam(new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source pointCloud data for plot").toLatin1().data()));
+	addInputParam(new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source polygonMesh data for plot").toLatin1().data()));
+	addInputParam(new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source dataObject data for plot").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

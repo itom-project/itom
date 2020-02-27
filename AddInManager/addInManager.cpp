@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
@@ -39,11 +39,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qtranslator.h>
 #include <qlibrary.h>
 
-#if QT_VERSION < 0x050000
-#include <qpluginloader.h>
-#else
 #include <QtCore/qpluginloader.h>
-#endif
 
 // in the invokeMethod function parameters are passed with the Q_ARG macro, which works only with preregistered data types
 // the registration of "new" data types is done in two steps. First they are declared with the Q_DECLARE_METATYPE macro

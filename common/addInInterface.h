@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
@@ -47,12 +47,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmutex.h>
 #include <qapplication.h>
 #include <qscopedpointer.h>
-
-#if QT_VERSION < 0x050000
-#include <qdockwidget.h>
-#else
 #include <QtWidgets/qdockwidget.h>
-#endif
 
 //plugins define VISUAL_LEAK_DETECTOR_CMAKE in their CMake configuration file
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)

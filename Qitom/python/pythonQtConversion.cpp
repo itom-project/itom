@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -38,20 +38,11 @@
 #include <qvector3d.h>
 #include <qvector4d.h>
 #include <qelapsedtimer.h>
-
-#if QT_VERSION >= 0x050000
-    #include <QtConcurrent/qtconcurrentrun.h>
-#else
-    #include <qtconcurrentrun.h>
-#endif
+#include <QtConcurrent/qtconcurrentrun.h>
 
 #include "pythonSharedPointerGuard.h"
 
-#if QT_VERSION >= 0x050000
-    #define METATYPE_CONSTRUCT(type, ptr) QMetaType::create(type, ptr)
-#else
-    #define METATYPE_CONSTRUCT(type, ptr) QMetaType::construct(type, ptr)
-#endif
+#define METATYPE_CONSTRUCT(type, ptr) QMetaType::create(type, ptr)
 
 namespace ito
 {
@@ -1919,7 +1910,6 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
     if (QMetaType::isRegistered(type))
     {
 
-#if QT_VERSION >= 0x050000
         if (QMetaType::typeFlags(type) & QMetaType::IsEnumeration)
         {
             unsigned int d = (unsigned int)PyObjGetInt(val, strict, ok);
@@ -1958,7 +1948,6 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 }
             }
         }
-#endif
 
         if (*retPtr == NULL)
         {
@@ -2093,11 +2082,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 QByteArray text = PyObjGetBytes(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
                     *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
-                    #endif
                 }
                 break;
             }
@@ -2106,11 +2091,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 QString text = PyObjGetString(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
                     *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
-                    #endif
                 }
                 break;
             }
@@ -2120,11 +2101,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 if (ok)
                 {
                     QUrl url = QUrl(text);
-                    #if QT_VERSION >= 0x050000
                     *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&url));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&url));
-                    #endif
                 }
                 break;
             }
@@ -2350,11 +2327,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     QSharedPointer<char> text = PyObjGetBytesShared(val, strict, ok);
                     if (ok)
                     {
-                        #if QT_VERSION >= 0x050000
                         *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
-                        #else
-                        *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
-                        #endif
                     }
                     break;
                 }
@@ -3337,13 +3310,8 @@ MethodDescription::MethodDescription(QMetaMethod &method) :
     m_argTypes(NULL)
 {
     m_methodIndex = method.methodIndex();
-#if QT_VERSION >= 0x050000
     m_signature = method.methodSignature();
     QByteArray sig(method.methodSignature());
-#else
-    m_signature = QByteArray(method.signature());
-    QByteArray sig(method.signature());
-#endif
     
     int beginArgs = sig.indexOf("(");
     m_name = sig.left(beginArgs);

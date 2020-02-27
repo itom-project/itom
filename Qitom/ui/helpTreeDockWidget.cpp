@@ -13,11 +13,7 @@
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
 
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
-#else
-#include <qtconcurrentrun.h>
-#endif
 
 #include <qtextdocument.h>
 #include <qtextstream.h>
@@ -952,11 +948,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 */
 QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
 {
-#if QT_VERSION < 0x050000
-    QString output = Qt::escape(input);
-#else
     QString output = input.toHtmlEscaped();
-#endif
     output.replace("\n", "<br>");
     output.replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
     return output;
@@ -1316,15 +1308,9 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         type.append(" [out]");
     }
 
-#if QT_VERSION < 0x050000
-    output.replace("%PARAMNAME%", Qt::escape(name));
-    output.replace("%PARAMTYPE%", Qt::escape(type));
-    output.replace("%PARAMMETA%", Qt::escape(meta));
-#else
     output.replace("%PARAMNAME%", QString(name).toHtmlEscaped());
     output.replace("%PARAMTYPE%", QString(type).toHtmlEscaped());
     output.replace("%PARAMMETA%", QString(meta).toHtmlEscaped());
-#endif
     output.replace("%PARAMINFO%", parseFilterWidgetContent(info));
 
     return output;
@@ -2250,20 +2236,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
         if (link.host() == "widget.html")
         {
             result.append("widget");
-#if QT_VERSION < 0x050000
-            result.append(link.fragment());
-#else
-            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
-#endif     
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));     
         }
         else if (link.host() == "algorithm.html")
         {
             result.append("algorithm");
-#if QT_VERSION < 0x050000
-            result.append(link.fragment());
-#else
-            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
-#endif      
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));      
         }
         else
         {
@@ -2279,11 +2257,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     else if (scheme == "example")
     {
         result.append("example");
-#if QT_VERSION < 0x050000
-        result.append(link.fragment());
-#else
         result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
-#endif
     }
     else if (scheme == "http" || scheme == "https")
     {

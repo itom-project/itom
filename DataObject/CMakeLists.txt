@@ -1,94 +1,87 @@
-SET (target_name dataobject)
+# - itom software
+# URL: http://www.uni-stuttgart.de/ito
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
+#
+# This file is part of itom and its software development toolkit (SDK).
+#
+# itom is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or (at
+# your option) any later version.
+#
+# In addition, as a special exception, the Institut fuer Technische
+# Optik (ITO) gives you certain additional rights.
+# These rights are described in the ITO LGPL Exception version 1.0,
+# which can be found in the file LGPL_EXCEPTION.txt in this package.
+#
+# itom is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU Library General Public License
+# along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.1)
+
+set(target_name dataobject)
 project(${target_name}) 
-   
-cmake_minimum_required(VERSION 2.8)
-  
-IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if(POLICY CMP0042)
-        cmake_policy(SET CMP0042 OLD)
-    ENDIF(POLICY CMP0042)
-ENDIF()
 
-OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
-SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
-OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-    
-IF(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE SHARED)
-    
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
-ELSE(BUILD_ITOMLIBS_SHARED)
-    SET(LIBRARY_TYPE STATIC)
-    
-    #if dataObject is static, add -fPIC as compiler flag for linux
-    IF(UNIX)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    ENDIF(UNIX)
-ENDIF(BUILD_ITOMLIBS_SHARED)
- 
-      
+message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+# include commonly used itom CMake macros (internal can only be used within the core projects) 
+include("../cmake/ItomBuildMacros.cmake")
+include("../cmake/ItomBuildMacrosInternal.cmake")
 
-include("../ItomBuildMacros.cmake")
+itom_init_cmake_policy(3.12)
+itom_init_core_common_vars()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
+# set some preprocessor directives
+add_definitions(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
-
-
-INCLUDE_DIRECTORIES( 
-    ${OpenCV_DIR}/include
+include_directories( 
 )
 
-LINK_DIRECTORIES(
-    ${OpenCV_DIR}/lib
+link_directories(
+    
 )
 
 set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobjVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/defines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp
 )
 
 if(MSVC)
-	list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
-endif(MSVC)
+    list(APPEND libSrcs ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+endif()
 
-add_library(${target_name} ${LIBRARY_TYPE} ${libSrcs})
+add_library(${target_name} SHARED ${libSrcs})
 
-IF(BUILD_ITOMLIBS_SHARED)
+target_link_libraries(${target_name} ${OpenCV_LIBS} itomCommonLib)
 
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} itomCommonLib)
-ENDIF(BUILD_ITOMLIBS_SHARED)
-
-
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 
 #readWriteLock.h is not part of the SDK anymore
-IF(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
-	FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
-ENDIF()
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
+    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject/readWriteLock.h)
+endif()
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(dataobject COPY_SOURCES COPY_DESTINATIONS)
+itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(dataobject COPY_SOURCES COPY_DESTINATIONS)

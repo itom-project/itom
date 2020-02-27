@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -133,16 +133,14 @@ void WidgetPropGeneralStyles::writeSettings()
     else if (ui.radioPredefinedStyle->isChecked())
     {
         QDir appPath(QCoreApplication::applicationDirPath());
- #if QT_VERSION < 0x050000
-        QString name = ui.comboPredefinedStyle->itemData(ui.comboPredefinedStyle->currentIndex()).toString();
-#else
         QString name = ui.comboPredefinedStyle->currentData().toString();
-#endif
         QFileInfo qss(appPath.absoluteFilePath(QString("styles/stylesheets/%1/%1.qss").arg(name)));
+
         if (qss.exists())
         {
             settings.setValue("cssFile", appPath.relativeFilePath(QString("styles/stylesheets/%1/%1.qss").arg(name)));
             QFileInfo rcc(appPath.absoluteFilePath(QString("styles/stylesheets/%1/%1.rcc").arg(name)));
+
             if (rcc.exists())
             {
                 settings.setValue("rccFile", appPath.relativeFilePath(QString("styles/stylesheets/%1/%1.rcc").arg(name)));
@@ -161,6 +159,7 @@ void WidgetPropGeneralStyles::writeSettings()
     else
     {
         QDir appPath(QCoreApplication::applicationDirPath());
+
         if (ui.pathStylesheet->currentPath() != "")
         {
             settings.setValue("cssFile", appPath.relativeFilePath(ui.pathStylesheet->currentPath()));

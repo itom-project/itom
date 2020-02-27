@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -580,11 +580,8 @@ ito::RetVal apiFunctionsGraph::mConnectToOutputAndErrorStream(const QObject *rec
     }
     else
     {
-#if QT_VERSION >= 0x050000
         QMetaObject::Connection conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
-#else
-        int conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
-#endif
+        
         if (!conn)
         {
             retval += ito::RetVal(ito::retError, 0, "connection cannot be established");

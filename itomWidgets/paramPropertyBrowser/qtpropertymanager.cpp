@@ -48,21 +48,12 @@
 #include <QtGui/QIcon>
 #include <QtCore/QMetaEnum>
 #include <QtGui/QFontDatabase>
-#if QT_VERSION < 0x050000
-	#include <QtGui/QStyleOption>
-	#include <QtGui/QStyle>
-	#include <QtGui/QApplication>
-	#include <QtGui/QLabel>
-	#include <QtGui/QCheckBox>
-	#include <QtGui/QLineEdit>
-#else
-	#include <QtWidgets/QStyleOption>
-	#include <QtWidgets/QStyle>
-	#include <QtWidgets/QApplication>
-	#include <QtWidgets/QLabel>
-	#include <QtWidgets/QCheckBox>
-	#include <QtWidgets/QLineEdit>
-#endif
+#include <QtWidgets/QStyleOption>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLineEdit>
 #include <QtGui/QPainter>
 #include <limits.h>
 #include <float.h>

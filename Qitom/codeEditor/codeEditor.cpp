@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -1160,10 +1160,12 @@ Moves the text cursor to the specified position..
 QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
 {
     QTextCursor text_cursor = moveCursorTo(line);
+
     if (column >= 0)
     {
         text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column);
     }
+
     if (move)
     {
         setTextCursor(text_cursor);
@@ -1171,7 +1173,15 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
         ensureCursorVisible();
     }
 
+    reportGoBackNavigationCursorMovement(CursorPosition(text_cursor), "gotoLine");
+
     return text_cursor;
+}
+
+//-----------------------------------------------------------
+void CodeEditor::reportPositionAsGoBackNavigationItem(const QTextCursor &cursor, const QString &reason) const
+{
+    reportGoBackNavigationCursorMovement(CursorPosition(cursor), reason);
 }
 
 //-----------------------------------------------------------
@@ -2429,9 +2439,26 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *e)
     if (m_showCtxMenu)
     {
         e->accept();
-        int line, index;
+		int line = -1;
+		int index = -1;
         lineIndexFromPosition(e->pos(), &line, &index);
-        setCursorPosition(line, index);
+
+		int selLineFrom, selLineTo;
+		int selIndexFrom, selIndexTo;
+		getSelection(&selLineFrom, &selIndexFrom, &selLineTo, &selIndexTo);
+
+		if (selLineFrom == -1) //nothing selected yet -> set the cursor to the current mouse position
+		{
+			setCursorPosition(line, index);
+		}
+		else if (line < selLineFrom || 
+			(line == selLineFrom && index < selIndexFrom) ||
+			line > selLineTo ||
+			(line == selLineTo && index > selIndexTo)) //the right mouse click happened out of the current selection, move the cursor to the clicked position
+		{
+			setCursorPosition(line, index);
+		}
+        
         contextMenuAboutToShow(line);
         m_pContextMenu->exec(e->globalPos());
     }

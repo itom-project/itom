@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -43,6 +43,7 @@
 #include "../delayJobRunner.h"
 #include "AppManagement.h"
 #include "../../widgets/scriptEditorWidget.h"
+#include "../../helper/guiHelper.h"
 
 #include "python/pythonEngine.h"
 
@@ -238,6 +239,7 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &assignment)
     {
         int line = assignment.m_line;
         int col = assignment.m_column;
+
         editor()->gotoLine(line, col, true);
         //_logger().debug("Go to %s" % assignment)
     }
@@ -324,6 +326,9 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
 
             m_gotoRequestedTimerId = startTimer(gotoRequestedTimeoutMs);
 
+            //store current position as go back navigation point before jumping to another position
+            editor()->reportPositionAsGoBackNavigationItem(tc, "goto");
+
             emit jediAssignmentRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "utf-8", mode, "onJediAssignmentResultsAvailable");
         }
         else
@@ -392,52 +397,92 @@ void PyGotoAssignmentMode::clearSelection()
 */
 void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
 {
-    int numUnreachables = 0;
-
-    foreach (const PyAssignment& a, assignments)
+    if (assignments.size() == 0)
     {
-        if (a.m_line < 0 || a.m_fullName == "")
+        QMessageBox::information(editor(), tr("No definition found"), tr("No definition could be found."));
+        return;
+    }
+
+    QList<PyAssignment> assignmentsValid;
+
+    foreach(const PyAssignment& a, assignments)
+    {
+        if (a.m_line >= 0 && \
+            a.m_fullName != "" && \
+            !a.m_modulePath.endsWith(".pyi", Qt::CaseInsensitive))
         {
-            numUnreachables++;
+            assignmentsValid.append(a);
         }
     }
 
-    if ((assignments.size() - numUnreachables) == 1)
+    switch (assignmentsValid.size())
     {
-        for (int i = 0; i < assignments.size(); ++i)
-        {
-            if (assignments[i].m_line >= 0 && assignments[i].m_fullName != "")
-            {
-                doGoto(assignments[i]);
-                break;
-            }
-        }
-    }
-    else if ((assignments.size() - numUnreachables) > 1)
+    case 0:
+        QMessageBox::information(editor(), tr("Source of definition not reachable"), tr("The source of this definition is not reachable."));
+        break;
+    case 1:
+        doGoto(assignmentsValid[0]);
+        break;
+    default:
     {
         /*_logger().debug(
-            "More than 1 assignments in different modules, user "
-            "need to make a choice: %s" % assignments)*/
+        "More than 1 assignments in different modules, user "
+        "need to make a choice: %s" % assignments)*/
         QStringList items;
-        foreach (const PyAssignment &a, assignments)
+        foreach(const PyAssignment &a, assignmentsValid)
         {
-            if (a.m_fullName != "")
+            QString fullname = a.m_fullName;
+
+            if (fullname.size() > 30)
+            {
+                fullname = QString("...%1").arg(fullname.right(27));
+            }
+
+            QString path = a.m_modulePath;
+            int lastIndex = std::max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+
+            if (lastIndex >= 0)
+            {
+                path = path.mid(lastIndex + 1);
+            }
+            else if (path.size() > 30)
+            {
+                path = QString("...%1").arg(path.right(27));
+            }
+
+            if (fullname != "")
             {
                 if (a.m_line >= 0 && a.m_column >= 0)
                 {
-                    items << QString("%1 (line %2, column %3)").arg(a.m_fullName).arg(a.m_line + 1).arg(a.m_column);
+                    items << QString("%1: %2 (line %3, column %4)").arg(path).arg(fullname).arg(a.m_line + 1).arg(a.m_column);
                 }
                 else if (a.m_line >= 0)
                 {
-                    items << QString("%1 (line %2)").arg(a.m_fullName).arg(a.m_line + 1);
+                    items << QString("%1: %2 (line %3)").arg(path).arg(fullname).arg(a.m_line + 1);
                 }
                 else
                 {
-                    items << a.m_fullName;
+                    items << QString("%1: %2").arg(path).arg(fullname);
+                }
+            }
+            else
+            {
+                if (a.m_line >= 0 && a.m_column >= 0)
+                {
+                    items << QString("%1: line %2, column %3").arg(path).arg(a.m_line + 1).arg(a.m_column);
+                }
+                else if (a.m_line >= 0)
+                {
+                    items << QString("%1: line %2").arg(path).arg(a.m_line + 1);
+                }
+                else
+                {
+                    items << a.m_modulePath;
                 }
             }
         }
 
+        float guiFactor = GuiHelper::screenDpiFactor();
 
         QSharedPointer<QInputDialog> dialog(new QInputDialog(editor(), 0));
         dialog->setWindowTitle(tr("Choose a definition"));
@@ -446,33 +491,18 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
         dialog->setTextValue(items[0]);
         dialog->setComboBoxEditable(false);
         dialog->setInputMethodHints(Qt::ImhNone);
+        dialog->resize(500 * guiFactor, 250 * guiFactor);
         dialog->setOption(QInputDialog::UseListViewForComboBoxItems);
         const int ret = dialog->exec();
         bool ok = !!ret;
-        if (ok && ret) 
+        if (ok && ret)
         {
             int idx = items.indexOf(dialog->textValue());
-            doGoto(assignments[idx]);
+            doGoto(assignmentsValid[idx]);
         }
-
-        /*bool ok;
-        QString result = QInputDialog::getItem(editor(), tr("Choose a definition"), tr("Choose the definition you want to go to:"), items, 0, false, &ok);
-        
-        if (ok && result != "")
-        {
-            int idx = items.indexOf(result);
-            doGoto(assignments[idx]);
-        }*/
     }
-    else if (numUnreachables > 0)
-    {
-         QMessageBox::information(editor(), tr("Source of definition not reachable"), tr("The source of this definition is not reachable."));
-    }
-    else if (assignments.size() == 0)
-    {
-        QMessageBox::information(editor(), tr("No definition found"), tr("No definition could be found."));
+    break;
     }
 }
-
 
 } //end namespace ito

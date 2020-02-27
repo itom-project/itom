@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -28,15 +28,9 @@
 #include "itomParamManager.h"
 
 #include <qstring.h>
-#if QT_VERSION < 0x050000
-	#include <QtGui/QStyleOption>
-	#include <QtGui/QStyle>
-	#include <QtGui/QApplication>
-#else
-	#include <QtWidgets/QStyleOption>
-	#include <QtWidgets/QStyle>
-	#include <QtWidgets/QApplication>
-#endif
+#include <QtWidgets/QStyleOption>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QApplication>
 #include <qpainter.h>
 #include <qcheckbox.h>
 

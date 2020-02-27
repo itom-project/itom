@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -27,23 +27,11 @@
 
 #include "plotInfoMarker.h"
 
-#if QT_VERSION < 0x050000
-#include <qpainter.h>
-#else
 #include <QtGui/qpainter.h>
-#endif
-
-#if QT_VERSION < 0x050000
-	Q_DECLARE_METATYPE(QPolygonF);
-#endif
 
 //---------------------------------------------------------------------------------------------------------
 PlotInfoMarker::PlotInfoMarker(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
-#if QT_VERSION < 0x050000
-	qRegisterMetaType<QPolygonF>("QPolygonF");
-#endif
-
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
 
@@ -98,11 +86,7 @@ void PlotInfoMarker::updateMarker(const ito::Shape element)
 				curItem->setData(0, Qt::DisplayRole, element.name());
 			}
 			
-#if QT_VERSION >= 0x050000
 			curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-			curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
 			foreach (const QPointF &basePoint, element.basePoints())
 			{
@@ -170,11 +154,7 @@ void PlotInfoMarker::updateMarkers(const QVector< ito::Shape > elements)
 					curItem->setData(0, Qt::DisplayRole, elements[curSearchIndex].name());
 				}		
 
-#if QT_VERSION >= 0x050000
 				curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
-#else
-				curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(elements[curSearchIndex].basePoints()));
-#endif
 
 				foreach (const QPointF &basePoint, elements[curSearchIndex].basePoints())
 				{

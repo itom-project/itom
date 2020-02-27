@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -268,7 +268,7 @@ void DialogLoadedPlugins::filter()
     {
         int first = m_items[i].first;
         bool show = (first & flag) != 0 &&      // check if button is active for this type of message
-                    (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0) &&    // Isn't compability checkbox set OR if reldgb flag is set it´s incompatibel, if 0 it´s compatible
+                    (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0) &&    // Isn't compability checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's compatible
                     ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.exactMatch(m_items[i].second->text(5))); // has no child OR filter text is empty OR filter text matches node text
         m_items[i].second->setHidden(!show);
     }

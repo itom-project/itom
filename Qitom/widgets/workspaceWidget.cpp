@@ -1,7 +1,7 @@
 ﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -52,9 +52,6 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     QStringList headers;
 
     setDragDropMode(QAbstractItemView::DragOnly);
-#if QT_VERSION < 0x050000
-    this->model()->setSupportedDragActions(Qt::CopyAction);
-#endif
 
     setColumnCount(3);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -110,12 +107,10 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION >= 0x050000
 Qt::DropActions WorkspaceWidget::supportedDragActions() const
 {
     return supportedDropActions() | Qt::CopyAction;
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor

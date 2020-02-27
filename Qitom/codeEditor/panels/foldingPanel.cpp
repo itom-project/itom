@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -358,7 +358,7 @@ void FoldingPanel::paintEvent(QPaintEvent *e)
                     }
                 }
 
-                if (!found)//TODO: was ist das für eine Struktur
+                if (!found)//TODO: was ist das fuer eine Struktur
                 {
                     bool valid;  //valid should always be true, since check for fold trigger was already done above
                     addFoldDecoration(block, FoldScope(block, valid));
@@ -505,11 +505,7 @@ void FoldingPanel::drawFoldIndicator(int top, bool mouseOver, bool collapsed, QP
     QRect rect(0, top, sizeHint().width(), sizeHint().height());
     if (m_native)
     {
-#if QT_VERSION < 0x050000
-        QStyleOptionViewItemV2 opt;
-#else
         QStyleOptionViewItem opt;
-#endif
         opt.rect = rect;
         opt.state = (QStyle::State_Active | \
                         QStyle::State_Item | \

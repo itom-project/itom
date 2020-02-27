@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -25,24 +25,6 @@
 #include "common/typeDefs.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-
-#ifndef CMAKE
-    #if (defined _DEBUG) && (defined WIN32)
-        #pragma comment(lib, "PointCloudd.lib")
-        #pragma comment(lib, "pcl_common_debug.lib")
-    #else
-        #pragma comment(lib, "PointCloud.lib")
-        #pragma comment(lib, "pcl_common_release.lib")
-    #endif
-#else
-    /*#if (defined _DEBUG) && (defined WIN32)
-        #pragma comment(lib, "PointCloud.lib")
-        #pragma comment(lib, "pcl_common_debug.lib")
-    #else
-        #pragma comment(lib, "PointCloud.lib")
-        #pragma comment(lib, "pcl_common_release.lib")
-    #endif*/
-#endif
 
 #include "pythonQtConversion.h"
 #include "pythonDataObject.h"

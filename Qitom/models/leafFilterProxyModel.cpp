@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -28,7 +28,7 @@ namespace ito
  
 /*!
     \class LeafFilterProxyModel
-    \brief  This class provides a special search function to the help model. The normal filtermodel hides nodes if they don´t contain
+    \brief  This class provides a special search function to the help model. The normal filtermodel hides nodes if they don't contain
             the searched term, even though the children contain it.
 
             Example

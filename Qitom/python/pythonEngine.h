@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -160,11 +160,7 @@ protected:
 
     PyObject* setPyErrFromException(const std::exception &exc);
 
-#if QT_VERSION >= 0x050000
     void connectNotify(const QMetaMethod &signal);
-#else
-    void connectNotify(const char* signal);
-#endif
 
 private:
     static PythonEngine *getInstanceInternal();

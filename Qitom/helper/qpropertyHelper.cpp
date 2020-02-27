@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -382,18 +382,10 @@ namespace ito {
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
     {
-#if QT_VERSION < 0x050000
-        if (userDestType < QVariant::UserType && item.canConvert((QVariant::Type)userDestType))
-#else
         if (item.canConvert(userDestType))
-#endif
         {
             result = item;
-#if QT_VERSION < 0x050000
-            result.convert((QVariant::Type)userDestType);
-#else
             result.convert(userDestType);
-#endif
             ok = true;
         }
         else

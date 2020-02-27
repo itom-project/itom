@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -429,7 +429,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         QString iconTheme = settings->value("iconTheme", "bright").toString();
         settings->endGroup();
 
-#if QT_VERSION >= 0x050000
         QDir iconThemeDir(QCoreApplication::applicationDirPath());
         QString iconThemeFile = "iconThemeBright.rcc";
         if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
@@ -441,7 +440,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         {
             qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
         }
-#endif
 
         if (styleName != "")
         {

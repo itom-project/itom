@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -56,6 +56,7 @@ WordClickMode::WordClickMode(const QString &name /*="WordClickMode"*/, const QSt
 {
     m_cursor = QTextCursor();
     m_pTimer = new DelayJobRunnerArgTextCursor<WordClickMode, void(WordClickMode::*)(QTextCursor)>(200);
+	m_mouseMoveKeyboardModifiers = Qt::ControlModifier | Qt::ShiftModifier;
 }
 
 //----------------------------------------------------------
@@ -105,11 +106,11 @@ void WordClickMode::onMouseDoubleClicked(QMouseEvent *e)
 */
 void WordClickMode::onKeyReleased(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Control)
-    {
-        clearSelection();
-        m_deco.clear();
-    }
+	if ((e->modifiers() & m_mouseMoveKeyboardModifiers) == 0)
+	{
+		clearSelection();
+		m_deco.clear();
+	}
 }
 
 //--------------------------------------------------------------
@@ -146,13 +147,14 @@ mouse moved callback
 */
 void WordClickMode::onMouseMoved(QMouseEvent *e)
 {
-    if (e->modifiers() & Qt::ControlModifier)
+    if ((e->modifiers() & m_mouseMoveKeyboardModifiers) == m_mouseMoveKeyboardModifiers)
     {
         QTextCursor cursor = editor()->wordUnderMouseCursor();
         if (!cursor.isNull() && (m_cursor.isNull() || cursor.position() != m_cursor.position()))
         {
             checkWordCursor(cursor);
         }
+
         m_cursor = cursor;
     }
     else

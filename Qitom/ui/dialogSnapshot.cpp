@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -311,11 +311,7 @@ void DialogSnapshot::acquisitionStart()
         ui.btnSnap->setText(tr("Stop"));
         int interval = ui.checkTimer->isChecked() ? ui.spinTimer->value() : 0;
         timerEvent(NULL);
-#if QT_VERSION < 0x050000
-        m_timerID = startTimer(interval);
-#else
         m_timerID = startTimer(interval, Qt::PreciseTimer);
-#endif
     }
     else
     {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SHAPELEGENDWIDGET_H
-#define SHAPELEGENDWIDGET_H
+#ifndef PLOTINFOSHAPES_H
+#define PLOTINFOSHAPES_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -38,15 +38,8 @@ extern "C++" {
 
 #include "commonWidgets.h"
 
-#if QT_VERSION < 0x050000
-#include <qtreewidget.h>
-#include <qhash.h>
-#include <qpainterpath.h>
-#else
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpainterpath.h>
-//
-#endif
 
 class relation
 {

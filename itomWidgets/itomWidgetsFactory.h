@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2018, Institut fuer Technische Optik (ITO), 
+   Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
    Universitaet Stuttgart, Germany 
  
    This file is part of itom.
@@ -33,9 +33,7 @@
 class ItomWidgetsFactory : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface" )
-#endif
     Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
 
 public:

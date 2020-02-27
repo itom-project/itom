@@ -187,7 +187,6 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
     * **Itom Parameter**:
         * **BUILD_TARGET64** to ON.
-        * **BUILD_UNICODE** to ON if you want to build with unicode support (recommended)
         * **BUILD_WITH_PCL** to ON if you have the point cloud library available on your computer and want to compile |itom| with support for point clouds and polygon meshes.
     
     * **System Parameter**:

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -82,25 +82,16 @@ protected:
     {
       if (isSeparator(index))
         {
-        QRect rect = option.rect;
+            QRect rect = option.rect;
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
-        if (const QStyleOptionViewItemV3 *v3 = qstyleoption_cast<const QStyleOptionViewItemV3*>(&option))
-          {
-          if (const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(v3->widget))
+            if (const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(option.widget))
             {
             rect.setWidth(view->viewport()->width());
             }
-          }
-#else
-        if (const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(option.widget))
-          {
-          rect.setWidth(view->viewport()->width());
-          }
-#endif
-        QStyleOption opt;
-        opt.rect = rect;
-        this->ComboBox->style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, painter, this->ComboBox);
+
+            QStyleOption opt;
+            opt.rect = rect;
+            this->ComboBox->style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, painter, this->ComboBox);
         }
       else
         {

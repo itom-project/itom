@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 
-ADD_SUBDIRECTORY(unittest_dataobject)
-ADD_SUBDIRECTORY(unittest_commonlib)
-ADD_SUBDIRECTORY(unittest_addinmanager)
+add_subdirectory(unittest_dataobject)
+add_subdirectory(unittest_commonlib)
+add_subdirectory(unittest_addinmanager)

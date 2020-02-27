@@ -1,7 +1,7 @@
 ﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -967,7 +967,7 @@ RetVal UiOrganizer::showDialog(
         QSharedPointer<int> retCodeIfModal,
         ItomSharedSemaphore *semaphore)
 {
-    RetVal retValue = RetVal(retOk);
+    RetVal retValue;
 
     UiContainer *ptr = getUiDialogByHandle(handle);
     if (ptr)
@@ -1030,6 +1030,7 @@ RetVal UiOrganizer::showDialog(
             }
             break;
             case UiContainer::uiTypeQDockWidget:
+            case UiContainer::uiTypeWidget:
             {
                 QWidget *dockWidget = ptr->getUiWidget();
                 if (dockWidget)
@@ -1038,6 +1039,9 @@ RetVal UiOrganizer::showDialog(
                 }
             }
             break;
+            default:
+                retValue += RetVal(retError, 0, tr("Invalid widget type.").toLatin1().data());
+                break;
 
         }
     }
@@ -2608,14 +2612,7 @@ struct PyCMap {
 //----------------------------------------------------------------------------------------------------------------------------------
 QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bool pythonNotCStyle, QByteArray *methodName /*= NULL*/, bool *valid /*= NULL*/)
 {
-    QByteArray name;
-#if QT_VERSION >= 0x050000
-    name = method.name();
-#else
-    QString methName = method.signature();
-    methName.chop(methName.length() - methName.indexOf('('));
-    name = methName.toLatin1();
-#endif
+    QByteArray name = method.name();
 
     if (methodName)
         *methodName = name;
@@ -2966,11 +2963,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             for (int i = mo->methodCount() - 1; i >= 0; i--)
             {
                 QMetaMethod meth = mo->method(i);
-#if QT_VERSION >= 0x050000
                 QByteArray methodSignature = meth.methodSignature();
-#else
-                QByteArray methodSignature = meth.signature();
-#endif
 
                 if (meth.methodType() == QMetaMethod::Signal)
                 {

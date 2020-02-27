@@ -23,6 +23,7 @@
     10_miscellaneous/miscellaneous.rst
     11_test-scripts/test-scripts.rst
     12_tutorials/tutorials.rst
+    13_contributing/contributing.rst
 
 .. only:: builder_qthelp
     

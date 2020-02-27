@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2019, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -377,6 +377,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
 
     if (!inputParam)
     {
+		qWarning("Input parameter '%s' does not exist in input parameters of node. Call 'addInputParam' for this parameter first.", paramName.toLatin1().data());
         return ito::RetVal(ito::retError, 0, QObject::tr("Parameter name '%1' does not exist in input parameters").arg(paramName).toLatin1().data());
     }
 
@@ -423,7 +424,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
         }
     }
 
-    dumpChannels(d->m_channels, this, "Update input param. After reset.");
+    //dumpChannels(d->m_channels, this, "Update input param. After reset.");
 
     if (retval.containsError())
     {
@@ -515,7 +516,7 @@ RetVal AbstractNode::updateChannelData(QSharedPointer<Channel> updatedChannel)
         }
     }
 
-    dumpChannels(d->m_channels, this, "Update input param. After reset.");
+    //dumpChannels(d->m_channels, this, "Update input param. After reset.");
 
     if (retval.containsError())
     {

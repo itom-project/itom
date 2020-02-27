@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -27,25 +27,12 @@
 
 #include "plotInfoShapes.h"
 
-
-#if QT_VERSION < 0x050000
-#include <qpainter.h>
-#else
 #include <QtGui/qpainter.h>
-#endif
 #include <qpolygon.h>
-
-#if QT_VERSION < 0x050000
-	Q_DECLARE_METATYPE(QPolygonF);
-#endif
 
 //---------------------------------------------------------------------------------------------------------
 PlotInfoShapes::PlotInfoShapes(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
-#if QT_VERSION < 0x050000
-	qRegisterMetaType<QPolygonF>("QPolygonF");
-#endif
-
     m_onlyTwoDims = true;
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
@@ -81,12 +68,8 @@ void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &e
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 1);
 
@@ -103,12 +86,8 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 3);
 
@@ -130,12 +109,8 @@ void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 3);
 
@@ -157,12 +132,8 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
@@ -187,12 +158,8 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();
@@ -214,13 +181,8 @@ void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 4);
 	QPointF center = element.centerPoint();
@@ -245,12 +207,8 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-
-#if QT_VERSION >= 0x050000
+    
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
-#else
-	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
-#endif
 
     adjustNumberOfChildItems(curItem, 3);
 	QPointF center = element.centerPoint();

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -31,11 +31,7 @@
 #include "typeDefs.h"
 
 #include <qstring.h>
-#if QT_VERSION < 0x050000
-#include <qcolor.h>
-#else
 #include <QtGui/qcolor.h>
-#endif
 #include <qpair.h>
 #include <qvector.h>
 
