@@ -378,176 +378,78 @@ int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! checks if text line contains a colon sign as last valid character (only comments or spaces are allowed after the colon)
-/*!
-    This method is necessary in order to verify if the following text lines must be indented with respect
-    to this line in Python syntax.
+//! removes parts of the possible indentation of the given text from line 2 until the end and returns the re-formatted text.
+/*
+This method splits the given text using the \n endline character. If the given text is empty or only contains spaces
+or tabs, an empty string is returned and lineCount is equal to 0.
 
-    \return true if colon is last valid sign, else false
+If the text only contains one line, the trimmed line is returned and lineCount is equal to 1.
+
+Else the current indentation level of each non-empty line is checked and the minimum indentation level is denoted as minIndentLevel.
+Afterwards every line is tried to be unindented by minIndentLevel.
+
+\param text contains the original text
+\param lineCount contains the number of lines in the given text after having called this method (byref)
+
+\returns the modified string
 */
-bool AbstractCodeEditorWidget::haveToIndention(const QString &text) const
-{
-    QString s = text.trimmed();
-    s.replace("'''", "\a");
-    s.replace("\"\"\"", "\a");
-    int count1 = s.count("\a");
-    int count2 = s.count("#");
-
-    if (count1 + count2 > 0)
-    {
-        if (count1 == 0)
-        {
-            s = s.mid(1, s.indexOf("#"));
-        }
-        else if (count2 == 0)
-        {
-            bool comment = (count1 % 2 == 1);
-            if (comment)
-            {
-                s = s.mid(1, s.lastIndexOf("\a") - 1);
-                s = s.trimmed();
-                --count1;
-            }
-
-            while (count1 > 0)
-            {
-                int pos1 = s.indexOf("\a");
-                int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "\a")
-                {
-                    ++pos2;
-                }
-                s = s.mid(0, pos1) + s.mid(pos2 + 1);
-                --count1;
-                --count1;
-            }
-        }
-        else
-        {
-            s = s.mid(1, s.indexOf("#"));
-            s = s.trimmed();
-
-            bool comment = ((count1 & 2) == 1);
-            if (comment)
-            {
-                s = s.mid(1, s.lastIndexOf("\a"));
-                s = s.trimmed();
-                --count1;
-            }
-
-            while (count1 > 0)
-            {
-                int pos1 = s.indexOf("\a");
-                int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "\a")
-                {
-                    ++pos2;
-                }
-                s = s.mid(1, pos1) + s.mid(pos2 + 1);
-                --count1;
-                --count1;
-            }
-        }
-    }
-
-    s = s.trimmed();
-    return s.mid(s.size() - 1, 1) == ":";
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int &lineCount) const
 {
     QString res = "";
     lineCount = 0;
+
     if (text.trimmed() != "")
     {
-        QString endlineRegExp = "[\n]";
         QString endline = "\n";
 
-        QStringList commandList = text.split(QRegExp(endlineRegExp));
+        QStringList commandList = text.split(endline);
         lineCount = commandList.size();
+
         if (lineCount == 1)
         {
             res = text.trimmed();
         }
-        else
+        else if (lineCount > 1)
         {
-            int i = 1;
-            while (i < lineCount && commandList[i].trimmed() == "")
-            {
-                ++i;
-            }
+			//if the first line starts does not start with a space or tab,
+			//it is assumed, that the cursor just starts at the first real
+			//character and subsequent lines might possibly be indented. Then
+			//do not change or consider the first line for indentation detection
+			//and / or removal. Else: consider it.
+			const QString &firstLine = commandList[0];
+			bool firstLineIndented = (firstLine.size() > 0) && (firstLine[0] == ' ' || firstLine[0] == '\t');
 
-            if (i < lineCount)
-            {
-                int spaceTabCount1 = getSpaceTabCount(commandList[i]);
-                int spaceTabCount2 = 0;
-                int tmp = 0;
-                i = 2;
+			int minIndentLevel = 1e6;
+			int startLine = firstLineIndented ? 0 : 1;
 
-                while (i < lineCount && spaceTabCount2 == 0)
-                {
-                    tmp = getSpaceTabCount(commandList[i]);
-                    if (tmp != spaceTabCount1)
-                    {
-                        spaceTabCount2 = tmp;
-                    }
-                    ++i;
-                }
+			for (int i = startLine; i < lineCount; ++i)
+			{
+				if (commandList[i].trimmed() != "")
+				{
+					minIndentLevel = std::min(minIndentLevel, getSpaceTabCount(commandList[i]));
+				}
+			}
 
-                int delCount = 0;
-                if (haveToIndention(commandList[0]))
-                {
-                    int spaceTabDifCount = 0;
-                    if (spaceTabCount2 != 0)
-                    {
-                        if (spaceTabCount1 > spaceTabCount2)
-                        {
-                            spaceTabDifCount = spaceTabCount1 - spaceTabCount2;
-                        }
-                        else
-                        {
-                            spaceTabDifCount = spaceTabCount2 - spaceTabCount1;
-                        }
-                    }
-                    else
-                    {
-                        if (spaceTabCount1 == 0 || spaceTabCount1 % 4 == 0)
-                        {
-                            spaceTabDifCount = 4;
-                        }
-                        else if (spaceTabCount1 % 3 == 0)
-                        {
-                            spaceTabDifCount = 3;
-                        }
-                        else if (spaceTabCount1 % 2 == 0)
-                        {
-                            spaceTabDifCount = 2;
-                        }
-                        else
-                        {
-                            spaceTabDifCount = 1;
-                        }
-                    }
+			if (minIndentLevel == 0)
+			{
+				res = text;
+			}
+			else
+			{
+				if (!firstLineIndented)
+				{
+					res += firstLine;
+				}
+				else
+				{
+					res += firstLine.mid(minIndentLevel);
+				}
 
-                    delCount = spaceTabCount1 - spaceTabDifCount;
-                }
-                else
-                {
-                    delCount = spaceTabCount1;
-                }
-
-                res = commandList[0].trimmed();
-
-                for (i = 1; i < lineCount; ++i)
-                {
-                    res += endline + commandList[i].mid(delCount);
-                }
-            }
-            else
-            {
-                res = text.trimmed(); 
-            }
+				for (int i = 1; i < lineCount; ++i)
+				{
+					res += endline + commandList[i].mid(minIndentLevel);
+				}
+			}
         }
     }
 
