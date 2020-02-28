@@ -40,10 +40,6 @@ itom_init_core_common_vars()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
-include("../cmake/ItomBuildMacros.cmake")
-include("../cmake/ItomBuildMacrosInternal.cmake")
-
 # add 3rd party packages
 itom_find_package_qt(OFF #no automoc for Qt5, aber unten wird er angeschalten?! ?!?!?
         UiTools 
@@ -114,7 +110,7 @@ set(paramPropertyBrowser_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
 )
 
-# List of header that should go though moc
+# List of header that should go through moc
 set(paramPropertyBrowser_HEADERS_MOC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
@@ -131,7 +127,7 @@ set(paramPropertyBrowser_HEADERS_MOC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
 )
 
-# List of cpp files that should go though moc
+# List of cpp files that should go through moc
 set(paramPropertyBrowser_CPP_MOC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
@@ -228,20 +224,21 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
 )
 
-
-
 QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
 QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
 QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
+
 #these header files need to be moc'ed, but the moc file should not be added to the project
 #since it is included in another source file that actually compiles the moc'ed file.
 itom_qt_generate_mocs(
     pathLineEdit.h
     )
-    
-# warum wird das ier so low-lvl gemacht?!
-# damit die einen moc_*.cpp Endung bekommen und die anderen *.moc
+
+# some moc files are directly #included in other cpp files.
+# Therefore, the exact filename of the moc file need to be known,
+# which can only be done by manually processing them by QT5_GENERATE_MOC.
 set(paramPropertyBrowser_MOC_CPP)
+
 foreach(filename ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
     get_filename_component(filename_we ${filename} NAME_WE)
     set(output_file moc_${filename_we}.cpp) #HEEEERE CHECK THIS LINE!!!
@@ -253,14 +250,14 @@ foreach(filename ${paramPropertyBrowser_CPP_MOC_SOURCES})
     get_filename_component(filename_we ${filename} NAME_WE)
     set(output_file ${filename_we}.moc)#it differs from the above one
     QT5_GENERATE_MOC(${filename} ${output_file})
-    LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+    list(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
 endforeach()
 
 
 #append the separately moc'ed header to the list of headers
 list(APPEND itomWidgets_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h")
 
-set(itomWidgets_rcc
+set(itomWidgets_RCC
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgets.qrc
 )
 
@@ -347,7 +344,7 @@ set(itomWidgets_UI
 )
 
 QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
-QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
+QT5_ADD_RESOURCES(itomWidgets_RCC_MOC ${itomWidgets_RCC})
 
 #add filters to visual studio
 itom_add_source_group(factories)
@@ -362,7 +359,7 @@ add_library(${target_name} SHARED
     ${itomWidgets_Factory_HEADERS} 
     ${itomWidgets_Factory_HEADERS_MOC} 
     ${itomWidgets_UI_MOC} 
-    ${itomWidgets_rcc_MOC} 
+    ${itomWidgets_RCC_MOC} 
     ${paramPropertyBrowser_SOURCES}
     ${paramPropertyBrowser_MOC})
 
@@ -397,6 +394,7 @@ itom_library_translation(QM_FILES TARGET ${target_name}
 add_custom_target(${target_name}GenerateMoc
     DEPENDS ${paramPropertyBrowser_MOC_CPP}
 )
+
 add_dependencies(${target_name} ${target_name}GenerateMoc)
 
 # COPY SECTION
@@ -415,7 +413,7 @@ if(WIN32)
     #For Windows, the resulting library is copied to the designer-folder, 
     # such that the widgets are listed in the widget library of QtDesigner
     itom_add_designerlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-else(WIN32)
+else()
    #Under linux, copying the library (like under Windows) will result in a strange 
    # double-linked-list error, since two libraries with the
    #same content will then be loaded by itom. Therefore, a symbolic link to the 
@@ -426,7 +424,7 @@ else(WIN32)
                 "$<TARGET_LINKER_FILE:${target_name}>"                                   # <--this is the old file
                 "${ITOM_APP_DIR}/designer/$<TARGET_LINKER_FILE_NAME:${target_name}>"     # <--this is the new file
         )
-endif(WIN32)
+endif()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
