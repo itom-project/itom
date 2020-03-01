@@ -60,13 +60,16 @@ timeout value.
   is a placeholder for the global PATH variable such that you can define whether a new path
   is prepended or appended to the existing list.
   
+.. _gui-propertydialog-language:
+  
 Language
 ----------------
 
 The default language of |itom| including |Python| is English. However, it is 
 possible to add further translations for texts of the graphical user interface 
-and further messages.
-Select the desired language in this section and restart |itom| to load the new languages.
+and further messages. Select the desired language in this section and restart |itom| 
+to load the new languages. See :ref:`here <translations>` for more information about how
+to create new translations for itom.
 
 .. note::
     
