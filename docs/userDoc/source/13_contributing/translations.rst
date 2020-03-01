@@ -27,12 +27,15 @@ The language can have the following format:
 For language codes (small letters) and / or country codes (capital letters) 
 see https://docs.oracle.com/cd/E13214_01/wli/docs92/xref/xqisocodes.html.
 
-Usually the content of the **ts** files is automatically created or updated by Qt's tool **lupdate**. This tool
+Usually the source strings (in English) of the **ts** files are automatically created or updated by Qt's tool **lupdate**. This tool
 parses all corresponding source files (h, cpp, ui), detects all translatable strings and updates the ts files.
 
-These **ts** files are then compiled using Qt's **lrelease** tool into their binary representation **qm**. Each
+The translations itself are then comfortabily done in the tool QtLinguist of Qt.
+
+The **ts** files are then compiled using Qt's **lrelease** tool into their binary representation **qm**. Each
 **qm** file has the same base filename than its original **ts** file and is put in several **translation** subfolders
-of the install or build folder of itom or its plugins subfolder.
+of the install or build folder of itom or its plugins subfolder. This qm-file compilation is automatically
+done during each build of the corresponding library.
 
 For starting itom with another language, choose the desired language in the :ref:`property dialog of itom <gui-propertydialog-language>`.
 Possible languages depend on the available **qm** translation files:
@@ -84,13 +87,16 @@ translatable strings in the source code.
     language ID does not fit to the suffix of the filename, the **lupdate** process to update the translatable
     strings in this file will fail.
 
-Updating of creating new ts-files
-====================================================0
 
-Usually, the itom build process does not influence any ts-files during the build, hence, no existing ts-files
-are updated nor new ts-files for new languages in the CMake variable **ITOM_LANGAUGES** are created.
+Updating or creating new ts-files
+====================================
 
-However this process can be triggered and controlled by the two boolean CMake variables 
+Usually, the itom build process does not influence any ts-files during the build, hence, no-existing ts-files
+are not updated nor new ts-files for new languages in the CMake variable **ITOM_LANGAUGES** are created. However
+the binary compilation of qm-files from existing ts-files is always started when building the particular
+library.
+
+The source translation update process can be triggered and controlled by the two boolean CMake variables 
 **ITOM_UPDATE_TRANSLATIONS** and **ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS**.
 
 Set **ITOM_UPDATE_TRANSLATIONS** to force the itom (or plugins) build process to always update or
@@ -140,6 +146,12 @@ of the wrapped library. These are for the itom core project:
 
 The translation files for plugins are always located in a subfolder **translation** of
 the particular plugin sources. The same holds for designerplugins.
+
+When deploying itom, the qm-files are located in the following folders:
+
+* itom core project: itom-subfolder **translation**
+* designer plugins: itom-subfolder **designer/translation**
+* plugin (name: targetname): itom-subfolder **plugins/<targetname>/translation**
 
 Translating plugins or designerplugins
 =======================================
