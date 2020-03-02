@@ -40,12 +40,17 @@ itom_init_core_common_vars()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
-include("../cmake/ItomBuildMacros.cmake")
-include("../cmake/ItomBuildMacrosInternal.cmake")
-
 # add 3rd party packages
-itom_find_package_qt(OFF UiTools Widgets Svg Xml Designer PrintSupport LinguistTools) #no automoc for Qt5
+itom_find_package_qt(OFF #no automoc for Qt5, aber unten wird er angeschalten?! ?!?!?
+        UiTools 
+        Widgets 
+        Svg 
+        Xml 
+        Designer 
+        PrintSupport 
+        LinguistTools
+        ) 
+        
 find_package(VisualLeakDetector QUIET)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
@@ -53,18 +58,21 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 add_definitions(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
 add_definitions(-DITOMSHAREDDESIGNER)
 
+#check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
+# if not included like this an "undefined interface error will be risen from Qt (moc?!)
+INCLUDE_DIRECTORIES(
+    ${Qt5Designer_INCLUDE_DIRS}
+    ${ITOM_SDK_INCLUDE_DIR}
+)
+
+# kann ein target_include_directories werden
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Designer_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-)
-
-link_directories(
-    
 )
 
 set(paramPropertyBrowser_SOURCES
@@ -101,6 +109,38 @@ set(paramPropertyBrowser_SOURCES
 set(paramPropertyBrowser_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
 )
+
+# List of header that should go through moc
+set(paramPropertyBrowser_HEADERS_MOC_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
+)
+
+# List of cpp files that should go through moc
+set(paramPropertyBrowser_CPP_MOC_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
+)
+
+
 
 set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
@@ -184,68 +224,40 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
 )
 
-# List of header that should go though moc
-set(paramPropertyBrowser_HEADERS_MOC_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
-)
+QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
+QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
+QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
 
-# List of cpp files that should go though moc
-set(paramPropertyBrowser_CPP_MOC_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
-)
+#these header files need to be moc'ed, but the moc file should not be added to the project
+#since it is included in another source file that actually compiles the moc'ed file.
+itom_qt_generate_mocs(
+    pathLineEdit.h
+    )
 
+# some moc files are directly #included in other cpp files.
+# Therefore, the exact filename of the moc file need to be known,
+# which can only be done by manually processing them by QT5_GENERATE_MOC.
+set(paramPropertyBrowser_MOC_CPP)
 
-if(QT5_FOUND)
-    QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
-    QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
-    QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
-    #these header files need to be moc'ed, but the moc file should not be added to the project
-    #since it is included in another source file that actually compiles the moc'ed file.
-    itom_qt_generate_mocs(
-        pathLineEdit.h)
-        
-    set(paramPropertyBrowser_MOC_CPP)
-    foreach(file ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
-        get_filename_component(filename_we ${file} NAME_WE)
-        set(output_file moc_${filename_we}.cpp)
-        QT5_GENERATE_MOC(${file} ${output_file})
-        LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
-    endforeach()
-    
-    foreach(file ${paramPropertyBrowser_CPP_MOC_SOURCES})
-        get_filename_component(filename_we ${file} NAME_WE)
-        set(output_file ${filename_we}.moc)
-        QT5_GENERATE_MOC(${file} ${output_file})
-        LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
-    endforeach()
-else()
-    message(SEND_ERROR "Only Qt5 is currently supported")
-endif()
+foreach(filename ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
+    get_filename_component(filename_we ${filename} NAME_WE)
+    set(output_file moc_${filename_we}.cpp) #HEEEERE CHECK THIS LINE!!!
+    QT5_GENERATE_MOC(${filename} ${output_file})
+    list(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+endforeach()
+
+foreach(filename ${paramPropertyBrowser_CPP_MOC_SOURCES})
+    get_filename_component(filename_we ${filename} NAME_WE)
+    set(output_file ${filename_we}.moc)#it differs from the above one
+    QT5_GENERATE_MOC(${filename} ${output_file})
+    list(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+endforeach()
+
 
 #append the separately moc'ed header to the list of headers
-LIST(APPEND itomWidgets_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h")
+list(APPEND itomWidgets_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.h")
 
-set(itomWidgets_rcc
+set(itomWidgets_RCC
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgets.qrc
 )
 
@@ -331,8 +343,8 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
 )
 
-QT5_WRAP_UI(itomWidgets_UI_MOC ${target_name} ${itomWidgets_UI})
-QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
+QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
+QT5_ADD_RESOURCES(itomWidgets_RCC_MOC ${itomWidgets_RCC})
 
 #add filters to visual studio
 itom_add_source_group(factories)
@@ -347,24 +359,42 @@ add_library(${target_name} SHARED
     ${itomWidgets_Factory_HEADERS} 
     ${itomWidgets_Factory_HEADERS_MOC} 
     ${itomWidgets_UI_MOC} 
-    ${itomWidgets_rcc_MOC} 
+    ${itomWidgets_RCC_MOC} 
     ${paramPropertyBrowser_SOURCES}
     ${paramPropertyBrowser_MOC})
 
-if(QT5_FOUND)
-    target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} itomCommonLib itomShapeLib itomCommonQtLib)
-endif()
+target_link_libraries(${target_name} 
+    ${VISUALLEAKDETECTOR_LIBRARIES} 
+    ${OpenCV_LIBS} 
+    ${QT5_LIBRARIES} 
+    itomCommonLib 
+    itomShapeLib 
+    itomCommonQtLib
+    )
 
-# Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
-set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC OFF AUTOUIC OFF)
+# Qt: enable all automoc, autouic and autorcc. 
+# Autouic file will be disabled for all files that are 
+# processed manually by itom_qt_wrap_ui.
+set_target_properties(${target_name} PROPERTIES 
+        AUTOMOC OFF 
+        AUTORCC OFF 
+        AUTOUIC OFF
+        )
 
 #translation
-itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_UI})
+itom_library_translation(QM_FILES TARGET ${target_name} 
+    FILES_TO_TRANSLATE 
+    ${itomWidgets_SOURCES} 
+    ${itomWidgets_HEADERS} 
+    ${itomWidgets_UI}
+    )
 
-#this is a dummy project to force some moc-files to be generated before they are directly included in some cpp files (qtpropertybrowser only)
+# this is a dummy project to force some moc-files to be generated before 
+# they are directly included in some cpp files (qtpropertybrowser only)
 add_custom_target(${target_name}GenerateMoc
     DEPENDS ${paramPropertyBrowser_MOC_CPP}
 )
+
 add_dependencies(${target_name} ${target_name}GenerateMoc)
 
 # COPY SECTION
@@ -380,18 +410,21 @@ endforeach()
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 if(WIN32)
-    #For Windows, the resulting library is copied to the designer-folder, such that the widgets are listed in the widget library of QtDesigner
+    #For Windows, the resulting library is copied to the designer-folder, 
+    # such that the widgets are listed in the widget library of QtDesigner
     itom_add_designerlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-else(WIN32)
-   #Under linux, copying the library (like under Windows) will result in a strange double-linked-list error, since two libraries with the
-   #same content will then be loaded by itom. Therefore, a symbolic link to the original library is created in the designer-folder.
+else()
+   #Under linux, copying the library (like under Windows) will result in a strange 
+   # double-linked-list error, since two libraries with the
+   #same content will then be loaded by itom. Therefore, a symbolic link to the 
+   # original library is created in the designer-folder.
     file(MAKE_DIRECTORY "${ITOM_APP_DIR}/designer")
     add_custom_command(TARGET ${target_name} POST_BUILD                                  # Adds a post-build event to this target
             COMMAND ${CMAKE_COMMAND} -E create_symlink                                   # which executes "cmake - E create_symlink..."
                 "$<TARGET_LINKER_FILE:${target_name}>"                                   # <--this is the old file
                 "${ITOM_APP_DIR}/designer/$<TARGET_LINKER_FILE_NAME:${target_name}>"     # <--this is the new file
         )
-endif(WIN32)
+endif()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 

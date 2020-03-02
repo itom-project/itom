@@ -77,7 +77,6 @@ protected:
 
 private:
     int getSpaceTabCount(const QString &text) const;
-    bool haveToIndention(const QString &text) const;
 
 public slots:
     void reloadSettings() { loadSettings(); };

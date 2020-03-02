@@ -22,12 +22,6 @@ import re
 
 from sys import platform as _platform
 
-#def process_docstring(app, what, name, obj, options, lines):
-#    pass
-    
-#def process_signature(app, what, name, obj, options, signature, return_annotation):
-#    pass
-
 clc()
 
 all_files = True
@@ -65,9 +59,6 @@ for buildername in buildernames:
         app.tags.add('PCL')
     else:
         app.tags.add('NOPCL')
-
-    #app.connect('autodoc-process-docstring',process_docstring)
-    #app.connect('autodoc-process-signature',process_signature)
 
     nocolor()
 
