@@ -6,8 +6,8 @@ Translations
 General
 ============
 
-The basic language of itom or its plugins is english. All strings in the source code should be 
-written in english.
+The basic language of itom or its plugins is English. All strings in the source code should be 
+written in English.
 
 itom and its plugins can be translated to different other languages using the `translation system
 of Qt <https://doc.qt.io/qt-5/i18n-source-translation.html>`.
@@ -48,9 +48,11 @@ of its plugins or designerplugins is usually done
 in the CMake configuration process.
 
 Select the desired language codes (see above) as semicolon-separated string to the CMake variable 
-**ITOM_LANGUAGES**. Since english is the default language, never add **en** to this string.
+**ITOM_LANGUAGES**. Since English is the default language, never add **en** to this string.
 
 Example:
+
+.. code-block:: CMake
     
     ITOM_LANGUAGES = de;fr
     #this includes translations for German and French (in addition to English)
@@ -62,6 +64,8 @@ belong to the itom core project.
 There is one common CMake error message, that might occur when setting new languages:
 
 Error (ITOM_LANGUAGES = it):
+
+.. code-block:: CMake
     
     CMake Error at cmake/ItomBuildMacros.cmake:664 (MESSAGE):
       Source translation file
@@ -115,6 +119,8 @@ Please commit all changed **ts** files to the Git repository of the correspondin
 
 If **ITOM_UPDATE_TRANSLATIONS** is **ON** and a **ts** file has a wrong format, the following CMake
 error might occur:
+
+.. code-block:: CMake
     
     CMake Warning at cmake/ItomBuildMacros.cmake:745 (message):
       - The existing ts-file
@@ -161,7 +167,9 @@ While the itom core project can directly be translated by setting the mentioned 
 some additional steps have to be done for translating plugins and / or designerplugins.
 
 Besides configuring the mentioned CMake variables, you also have to set the following exemplary
-lines into the CMakeLists.txt file of the particular plugin::
+lines into the CMakeLists.txt file of the particular plugin:
+
+.. code-block:: CMake
     
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
