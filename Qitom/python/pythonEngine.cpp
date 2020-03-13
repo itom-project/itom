@@ -3870,7 +3870,8 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
         PyObject *repr = PyObject_Repr(obj);
         if (repr == NULL)
         {
-            *extendedValue = "unknown";
+			PyErr_Clear();
+            *extendedValue = "<error during call of repr()>";
         }
         else if (PyUnicode_Check(repr))
         {
