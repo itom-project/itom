@@ -76,15 +76,12 @@ to create new translations for itom.
     Hint: Strings, which are related to script commands are usually not translated, 
     since the Python script language itself is always in English.
 
-Help Viewer
-----------------
+Plugin Help Viewer
+----------------------------------------
 
-This property section is responsible for the behaviour of the "Help" dialog. 
-If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
+This property section is responsible for the behaviour of the "Plugin Help Viewer" window, accessible via the Help
+menu of itom. If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
 
-.. figure:: images/propGeneralHelpViewer.png
-    :scale: 100%
-    :align: center
     
 *Local and remote databases*
 
