@@ -79,27 +79,15 @@ to create new translations for itom.
 Plugin Help Viewer
 ----------------------------------------
 
-This property section is responsible for the behaviour of the "Plugin Help Viewer" window, accessible via the Help
-menu of itom. If the help widget is hidden in you main window, go to View -> Toolboxes -> Help in the main toolbar.
+This property section is responsible for the behaviour of the "Plugin Help Viewer" 
+window, accessible via the help menu of itom. If the help widget is hidden in the 
+main window, go to View -> Toolboxes -> Plugin Help Viewer in the main toolbar.
 
-    
-*Local and remote databases*
+The **plugin help viewer** displays information about all actuator, dataIO and algorithm
+plugins of itom. The information is automatically generated from the plugin libraries.
 
-Most help files are organized in databases. To display these files, the green 
-underlined checkbox has to be checked. To manage, update and load new databases
- the green box offers a variety of options. Each database listed underneath 
- "Local" are saved on the harddrive. The last column shows if there are any 
- online updates available. To refresh the updatestate of the databases, 
- just click the "refresh" button above. 
-
-If the the internet connection is very slow a timeout error might appear during 
-updates. In this case increase the timeout time and check you internet connection.
-
-*Generated help files*
-
-The Algorithms, Widgets, DataIO and Actuator help files are dynamically created 
-during runtime. These help files are displayed when the corresponding checkboxes 
-in the red box are checked.
+In the properties, you can select if the information is properly rendered or if
+you want to display the html raw text (e.g. for debugging purposes).
 
 Styles and Themes
 ----------------------

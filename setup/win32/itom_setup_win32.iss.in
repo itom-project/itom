@@ -23,7 +23,6 @@
 #define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.7.2\32 Bit\Pakete_Basis_Numpy1.16.2"
 #define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.7.2\32 Bit\PYTHON_3.7.2_x86_minimal"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
-#define SourceOpenSSLDir "W:\m\ITOM\Software\Zusaetzliche Software\OpenSSL\openssl-1.0.2n-i386-win32"
 
 ; Python
 ; - FNPythonXY file name of Python module XY
@@ -224,11 +223,6 @@ Source: "{#SourceRedistributableDir}\2015\32 Bit\*.dll"; DestDir: "{app}"; Flags
 ; DLLs QT OpenCV
 Source: "{#SourceDirOpenCV}\opencv_world${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; DLLs OpenSSL for downloading help files
-Source: "{#SourceOpenSSLDir}\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceOpenSSLDir}\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceOpenSSLDir}\OpenSSL License.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Python-Scripts
 Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: ignoreversion
