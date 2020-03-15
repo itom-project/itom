@@ -2092,19 +2092,28 @@ int ScriptEditorWidget::getIndentationLength(const QString &str) const
 //----------------------------------------------------------------------------------------------------------------------------------
 int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation /*= -1*/)
 {
-    int i = lineNumber;
+    int lineIndex = lineNumber;
     int depth = parentDepth;
     int indent;
+	int offset;
+	int count = lineCount();
+	bool signatureFound;
+
     // read from settings
     QString line = "";
     QString decoLine;   // @-Decorato(@)r Line in previous line of a function
     
     // regular expression for Classes
-    QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
+    QRegExp classes("^(\\s*)(class)\\s(.+)(\\(.*\\))?:\\s*(#?.*)");
     classes.setMinimal(true);
     
     QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
     methods.setMinimal(true);
+
+	QRegExp methodStartTag("^(\\s*)def\\s+(_*)(\\w+)\\(");
+	methodStartTag.setMinimal(true);
+
+
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
 	//the regular expression should detect begin of definitions. This is:
 	// 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
@@ -2121,10 +2130,9 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
 
-    while(i < lineCount())
+    while(lineIndex < count)
     {
-        decoLine = this->lineText(i-1);
-        line = this->lineText(i);
+        line = lineText(lineIndex);
 
         // CLASS
         if (classes.indexIn(line) != -1)
@@ -2143,76 +2151,109 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 // classt->m_args = classes.cap(4); // normally not needed
                 classt->setInternalType(ClassNavigatorItem::typePyClass);
                 classt->m_priv = false; // Class is usually not private
-                classt->m_lineno = i;
+                classt->m_lineno = lineIndex;
                 parent->m_member.append(classt);
-                ++i;
-                i = buildClassTree(classt, depth + 1, i, singleIndentation);
+                ++lineIndex;
+                lineIndex = buildClassTree(classt, depth + 1, lineIndex, indent + 1);
                 continue;
             }
             else 
             {
-                return i;
+                return lineIndex;
             }
         }
         // METHOD
-        else if (methods.indexIn(line) != -1)
+        else if (methodStartTag.indexIn(line) != -1)
         {
-            indent = getIndentationLength(methods.cap(1));
-            if (singleIndentation <= 0)
-            {
-                singleIndentation = indent;
-            }
-            // Methode
-            //checken ob line-1 == @decorator besitzt
-            ClassNavigatorItem *meth = new ClassNavigatorItem();
-            meth->m_name = methods.cap(3) + methods.cap(4);
-            meth->m_args = methods.cap(5);
-            meth->m_returnType = methods.cap(7);
-            meth->m_lineno = i;
-            if (methods.cap(3) == "_" || methods.cap(3) == "__")
-            {
-                meth->m_priv = true;                    
-            }
-            else
-            {
-                meth->m_priv = false;
-            }
-          
-            if (indent >= depth * singleIndentation)
-            {// Child des parents
-                if (decorator.indexIn(decoLine) != -1)
-                {
-                    QString decorator_ = decorator.cap(3);
-                    if (decorator_ == "staticmethod")
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
-                    }
-                    else if (decorator_ == "classmethod")
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
-                    }
-                    else // some other decorator
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyDef);
-                    }
-                }
-                else
-                {
-                    meth->setInternalType(ClassNavigatorItem::typePyDef);
-                }
-                parent->m_member.append(meth);
-                ++i;
-                continue;
-            }
-            else
-            {// Negativ indentation => it must be a child of a parental class
-                DELETE_AND_SET_NULL(meth);
-                return i;
-            }
+			//it can be that the def signature is spread over multiple lines.
+			//then iteratively add more lines to the possible text and try
+			//it again (max. 30 lines).
+			offset = 1;
+			signatureFound = true;
+
+			while (methods.indexIn(line) < 0)
+			{
+				if (lineIndex < count && offset < 30) //more than 30 parameter lines are very unlikely
+				{
+					line += lineText(lineIndex + offset).trimmed();
+					offset++;
+				}
+				else
+				{
+					//nothing found
+					signatureFound = false;
+					lineIndex += (offset - 1);
+					break;
+				}
+			}
+
+			if (signatureFound)
+			{
+				indent = getIndentationLength(methods.cap(1));
+
+				if (singleIndentation <= 0)
+				{
+					singleIndentation = indent;
+				}
+
+				// Methode
+				//checken ob line-1 == @decorator besitzt
+				ClassNavigatorItem *meth = new ClassNavigatorItem();
+				meth->m_name = methods.cap(3) + methods.cap(4);
+				meth->m_args = methods.cap(5);
+				meth->m_returnType = methods.cap(7);
+				meth->m_lineno = lineIndex;
+
+				if (methods.cap(3) == "_" || methods.cap(3) == "__")
+				{
+					meth->m_priv = true;
+				}
+				else
+				{
+					meth->m_priv = false;
+				}
+
+				if (indent >= depth * singleIndentation)
+				{
+					decoLine = lineText(lineIndex - 1);
+
+					// Child des parents
+					if (decorator.indexIn(decoLine) != -1)
+					{
+						QString decorator_ = decorator.cap(3);
+						if (decorator_ == "staticmethod")
+						{
+							meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
+						}
+						else if (decorator_ == "classmethod")
+						{
+							meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
+						}
+						else // some other decorator
+						{
+							meth->setInternalType(ClassNavigatorItem::typePyDef);
+						}
+					}
+					else
+					{
+						meth->setInternalType(ClassNavigatorItem::typePyDef);
+					}
+
+					parent->m_member.append(meth);
+					lineIndex += offset;
+					continue;
+				}
+				else
+				{// Negativ indentation => it must be a child of a parental class
+					DELETE_AND_SET_NULL(meth);
+					return lineIndex;
+				}
+			}
         }
-        ++i;
+
+        ++lineIndex;
     }
-    return i;
+    return lineIndex;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

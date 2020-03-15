@@ -8,9 +8,9 @@ class DataObjectNpConversion(unittest.TestCase):
     def setUpClass(cls):
         pass
     
-    def test_dataObject2NpArray(self):
+    def test_continuousDataObject2NpArray(self):
         data = (1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19)
-        a = dataObject([2,3,3],'uint8', data= data)
+        a = dataObject([2,3,3],'uint8', data= data, continuous = 1)
         b1 = np.array(a, copy = False)
         self.assertEqual(np.sum(data), np.sum(b1))
         b2 = np.array(a[:,1:3,:])
@@ -20,6 +20,15 @@ class DataObjectNpConversion(unittest.TestCase):
         for i in a[:,1:3,:]:
             sum += i
         self.assertEqual(result, sum)
+    
+    def test_noncontinuousDataObject2NpArray(self):
+            data = (1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19)
+            a = dataObject([2,3,3],'uint8', data= data, continuous = 0)
+            with self.assertRaises(RuntimeError):
+                np.array(a, copy = False)
+            
+            #make object continuous before going on
+            b1 = np.array(a.makeContinuous(), copy = False)
     
     def test_npArrayBool2DataObject(self):
         boolArray = np.array([[True,False],[False,True]], dtype='bool')
@@ -50,6 +59,17 @@ class DataObjectNpConversion(unittest.TestCase):
                 self.assertEqual(nparray.shape, dobj.shape)
                 diff = nparray.astype(desttype) - dobj
                 self.assertEqual((np.abs(diff) < 0.00001).all(), True)
+    
+    def test_createEmptyDataObjectFromEmptyNpArray(self):
+        '''this test reproduces the issue
+        https://bitbucket.org/itom/itom/issues/114/systemerror-when-converting-an-empty
+        '''
+        dtypes = ['uint8','int8','uint16','int16','int32','float32','float64', 'complex64', 'complex128']
+        for dtype in dtypes:
+            nparray = np.array([], dtype=dtype)
+            dobj = dataObject(nparray) #must pass properly
+            self.assertEqual(len(dobj), 0)
+            self.assertEqual(dobj.dtype, dtype)
 
 if __name__ == '__main__':
     unittest.main(module='dataobject_np_conversion', exit=False)

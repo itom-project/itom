@@ -120,6 +120,11 @@ QString PythonQtConversion::PyObjGetRepresentation(PyObject* val)
         r = PyObjGetString(val, false, ok);
         Py_DECREF(str);
     }
+	else
+	{
+		PyErr_Clear();
+	}
+
     return r;
 }
 
