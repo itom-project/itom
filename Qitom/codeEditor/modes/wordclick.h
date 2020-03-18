@@ -77,8 +77,8 @@ public:
 
     virtual void onStateChanged(bool state);
 
-	Qt::KeyboardModifiers wordClickModifiers() const { return m_mouseMoveKeyboardModifiers; }
-	void setWordClickModifiers(Qt::KeyboardModifiers modifiers) { m_mouseMoveKeyboardModifiers = modifiers; }
+    Qt::KeyboardModifiers wordClickModifiers() const { return m_mouseMoveKeyboardModifiers; }
+    void setWordClickModifiers(Qt::KeyboardModifiers modifiers) { m_mouseMoveKeyboardModifiers = modifiers; }
 
 protected:
     void selectWordCursor();
@@ -99,7 +99,7 @@ private:
         emit wordClicked(cursor);
     }
 
-	Qt::KeyboardModifiers m_mouseMoveKeyboardModifiers;
+    Qt::KeyboardModifiers m_mouseMoveKeyboardModifiers;
 
 private slots:
     void onMouseDoubleClicked(QMouseEvent *e);

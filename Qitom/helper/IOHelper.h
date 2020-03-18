@@ -98,14 +98,14 @@ public:
 
     static QIcon searchIcon(const QString &filename, const SearchFolders &searchFolders = SFAll, const QIcon &fallbackIcon = QIcon());
 
-	static QString getAllItomFilesName() { return allItomFilesName; } /*!< name of file filter that bundles are readable files of itom, usually 'Itom Files'. */
+    static QString getAllItomFilesName() { return allItomFilesName; } /*!< name of file filter that bundles are readable files of itom, usually 'Itom Files'. */
 
 private:
     IOHelper() {}; /*!< private constructor since this class only contains static method and no instance must be created */
     ~IOHelper() {}; /*!< private destructor */
     IOHelper(const IOHelper &) : QObject() {};
 
-	static QString allItomFilesName;
+    static QString allItomFilesName;
 
 };
 

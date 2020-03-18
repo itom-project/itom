@@ -181,7 +181,7 @@ private:
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
     bool m_classNavigatorEnabled;
-    void fillClassBox(const ClassNavigatorItem *parent, QString prefix);
+    void fillClassBox(const ClassNavigatorItem *parent, const QString &prefix);
     void fillMethodBox(const ClassNavigatorItem *parent);
     void showClassNavigator(bool show);
     QMap<int, ClassNavigatorItem*> m_rootElements;
