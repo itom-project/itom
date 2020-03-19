@@ -89,7 +89,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab = new QTabWidgetItom(this);
 
     //!< tab-settings
-    m_tab->setElideMode(Qt::ElideLeft);
+    m_tab->setElideMode(Qt::ElideNone);
     m_tab->setTabShape(QTabWidget::Rounded);
     m_tab->setTabsClosable(true);
     m_tab->setMovable(true);
@@ -224,6 +224,24 @@ void ScriptDockWidget::loadSettings()
     // Class Navigator
     m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
     showClassNavigator(m_classNavigatorEnabled);
+
+    int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();
+
+    switch (elideMode)
+    {
+    case Qt::ElideLeft:
+        m_tab->setElideMode(Qt::ElideLeft);
+        break;
+    case Qt::ElideRight:
+        m_tab->setElideMode(Qt::ElideRight);
+        break;
+    case Qt::ElideMiddle:
+        m_tab->setElideMode(Qt::ElideMiddle);
+        break;
+    default:
+        m_tab->setElideMode(Qt::ElideNone);
+        break;
+    }
 
     settings.endGroup();
 }
