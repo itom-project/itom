@@ -600,11 +600,11 @@ void QtTreePropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         m_treeWidget->setCurrentItem(0);
     }
 
-    delete item;
-
     m_indexToItem.remove(index);
     m_itemToIndex.remove(item);
     m_indexToBackgroundColor.remove(index);
+
+    delete item;
 }
 
 void QtTreePropertyBrowserPrivate::propertyChanged(QtBrowserItem *index)
