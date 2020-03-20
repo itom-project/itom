@@ -212,10 +212,15 @@ of any script editor window. The checkbox of the entire groupbox en- or disables
 Use the timer to recheck the script structure after a certain amount of seconds since the last change of the script. 
 If the timer is disabled, the structure is only analyzed when the script is shown or loaded.
 
-As last option in this property page, you can optionally choose if a vertical line should be displayed in the background
+As second last option in this property page, you can optionally choose if a vertical line should be displayed in the background
 of the script editor windows after a user-defined number of columns. This line can for instance be used to keep the
 script thin and be remembered to add a line break instead of generating long lines that force the reader to horizontally
 scroll in case of smaller displays.
+
+Finally, the last option configures the way how the filenames in the tabs of the script areas are shortened, if there is not enough space.
+The first three options define a way to shorten the filenames, such that all currently opened tabs are still visible, whereas the last option
+forces a display of the full filename (without path) and arrows are shown to scroll through the tabs, if there is not enough space. The last option
+is the default.
 
 .. _gui-prop-calltips:
 

@@ -137,7 +137,7 @@ private:
 
     RetVal executeCmdQueue();
 
-	void autoLineDelete(); //!< delete the first N lines if the command line has more than M (M>=N) lines
+    void autoLineDelete(); //!< delete the first N lines if the command line has more than M (M>=N) lines
     void moveCursorToEnd();
     void moveCursorToValidRegion();
 
@@ -179,7 +179,7 @@ private:
 
     InputTextMode m_inputTextMode;
 
-	static const QString longLineWrapPrefix;
+    static const QString longLineWrapPrefix;
 
 };
 

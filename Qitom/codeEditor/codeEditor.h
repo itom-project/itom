@@ -227,7 +227,7 @@ public:
 
     void removeSelectedText();
     
-    bool findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
+    bool findFirst(const QString &expr, bool re, bool cs, bool wo, bool wrap, \
     bool forward = true, int line = -1, int index = -1, bool show = true);
     bool findNext();
     void replace(const QString &text);

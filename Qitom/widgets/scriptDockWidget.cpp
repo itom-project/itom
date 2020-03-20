@@ -89,7 +89,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab = new QTabWidgetItom(this);
 
     //!< tab-settings
-    m_tab->setElideMode(Qt::ElideLeft);
+    m_tab->setElideMode(Qt::ElideNone);
     m_tab->setTabShape(QTabWidget::Rounded);
     m_tab->setTabsClosable(true);
     m_tab->setMovable(true);
@@ -225,20 +225,43 @@ void ScriptDockWidget::loadSettings()
     m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
     showClassNavigator(m_classNavigatorEnabled);
 
+    int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();
+
+    switch (elideMode)
+    {
+    case Qt::ElideLeft:
+        m_tab->setElideMode(Qt::ElideLeft);
+        break;
+    case Qt::ElideRight:
+        m_tab->setElideMode(Qt::ElideRight);
+        break;
+    case Qt::ElideMiddle:
+        m_tab->setElideMode(Qt::ElideMiddle);
+        break;
+    default:
+        m_tab->setElideMode(Qt::ElideNone);
+        break;
+    }
+
     settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString prefix)
+void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, const QString &prefix)
 {
     QVariant parentPointer = qVariantFromValue((void *)parent);
-    if (parent->m_internalType == ClassNavigatorItem::typePyRoot || prefix == "")
+    if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
     {
-        m_classBox->addItem(parent->m_icon, parent->m_name, parentPointer);
+        //Global Scope
+        m_classBox->addItem(parent->m_icon, QString("%1").arg(parent->m_name), parentPointer);
+    }
+    else if (prefix == "")
+    {
+        m_classBox->addItem(parent->m_icon, QString("class %1").arg(parent->m_name), parentPointer);
     }
     else 
     {
-        m_classBox->addItem(parent->m_icon, prefix+"::"+parent->m_name, parentPointer);
+        m_classBox->addItem(parent->m_icon, QString("class %1::%2").arg(prefix, parent->m_name), parentPointer);
     }
 
     for (int i = 0; i < parent->m_member.length(); ++i)
@@ -269,22 +292,46 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
     
     ClassNavigatorItem const *item;
     QVariant itemPointer;
+
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         item = parent->m_member[i];
         itemPointer = qVariantFromValue((void *)item);
+
         if (item->m_internalType == ClassNavigatorItem::typePyDef ||
             item->m_internalType == ClassNavigatorItem::typePyGlobal)
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")" + item->m_returnType), itemPointer);
+            if (item->m_async)
+            {
+                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+            }
+            else
+            {
+                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+            }
+            
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyStaticDef)                 
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [static]" + item->m_returnType), itemPointer);
+            if (item->m_async)
+            {
+                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+            }
+            else
+            {
+                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+            }
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
         {
-            m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [classmember]" + item->m_returnType), itemPointer);
+            if (item->m_async)
+            {
+                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name+"("+item->m_args+")  [classmember]" + item->m_returnType), itemPointer);
+            }
+            else
+            {
+                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [classmember]" + item->m_returnType), itemPointer);
+            }
         }
     }
 
@@ -330,6 +377,7 @@ void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 
             // This part is responsible for the reselection of the item that was selected before the refresh
             int iClass = m_classBox->findText(lastClass);
+
             if (iClass != -1)
             {
                 bool lastClassFound = false;
@@ -343,6 +391,7 @@ void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
                         break;
                     }
                 }
+
                 /*int iMethod = m_methodBox->findText(lastMethod);*/
                 if (lastClassFound)
                 {
@@ -377,6 +426,7 @@ void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
 void ScriptDockWidget::classChosen(const QString &text)
 {
     ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+
     if (classItem)
     {
         ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
@@ -386,6 +436,7 @@ void ScriptDockWidget::classChosen(const QString &text)
         m_methodBox->setEnabled(false);
         disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->clear();
+
         if (text != "")
         {
             if (classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
@@ -397,6 +448,7 @@ void ScriptDockWidget::classChosen(const QString &text)
                 this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(-1, className, method);
             }
         }
+
         fillMethodBox(classItem);
         connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->setEnabled(true);
@@ -408,6 +460,7 @@ void ScriptDockWidget::methodChosen(const QString &text)
 {
     // When method is chosen, set CursorPosition to "method" definition position
     ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
+
     if (methodItem)
     {
         if (methodItem->m_lineno >= 0)
@@ -1111,7 +1164,7 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
 //! updates actions which deal with editor commands
 void ScriptDockWidget::updateEditorActions()
 {
-	int tabCount = m_tab->count();
+    int tabCount = m_tab->count();
 
     m_saveAllScriptsAction->setEnabled(false);
     for (int i = 0; i < tabCount; i++)
@@ -1777,7 +1830,7 @@ void ScriptDockWidget::mnuTabDock()
 void ScriptDockWidget::mnuTabUndock()
 {
     bool undockToNewScriptWindow = !docked();
-	emit(undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, true)); // !docked()));
+    emit(undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, true)); // !docked()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

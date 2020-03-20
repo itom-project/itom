@@ -105,7 +105,7 @@ y0 : {int, default: -1} \n\
 width : {int, default: -1} \n\
     width of figure or -1 if the width should be unchanged \n\
 height : {int, default: -1} \n\
-    height of figure or -1 if the width should be unchanged");
+    height of figure or -1 if the height should be unchanged");
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -143,7 +143,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     *cols_ = cols;
 
     QSize size;
-    if (width >= 1 && width >= 1)
+    if (width >= 1 && height >= 1)
     {
         size = QSize(width, height);
     }
