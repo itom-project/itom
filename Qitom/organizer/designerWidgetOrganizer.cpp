@@ -426,6 +426,7 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
 {
     ito::RetVal retVal;
     bool success = false;
+
     foreach(const FigurePlugin &plugin, m_figurePlugins)
     {
         if (className == plugin.classname)
@@ -445,6 +446,7 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
                 retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' does not correspond to the minimum requirements").toLatin1().data(), className.toLatin1().data());
                 break;
             }
+
             success = true;
         }
     }
@@ -454,7 +456,11 @@ ito::RetVal DesignerWidgetOrganizer::figureClassMinimumRequirementCheck(const QS
         retVal += ito::RetVal::format(ito::retError, 0, tr("Figure '%s' not found").toLatin1().data(), className.toLatin1().data());
     }
 
-    if (ok) *ok = success;
+    if (ok)
+    {
+        *ok = success;
+    }
+
     return retVal;
 }
 
