@@ -370,6 +370,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
@@ -585,6 +586,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp

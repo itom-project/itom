@@ -53,7 +53,7 @@
 
 #include <qobject.h>
 #include <qcoreapplication.h>
-
+#include <qlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
 #include <qdesktopwidget.h>
@@ -68,6 +68,7 @@
 #include <QtCore/qmath.h>
 
 #include "../organizer/paletteOrganizer.h"
+#include "../codeEditor/codeCheckerItem.h"
 
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
@@ -2447,115 +2448,102 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
 /*!
     This function calls the pyflakes or frosted python module. This module is able to check the syntax.
     It\B4s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
-    calling ScriptEditorWidget::syntaxCheckResult(...).
+    calling ScriptEditorWidget::codeCheckResultsReady(...).
 
-    \param code This QString contains the code that pyflakes or frosted is supposed to check
+    \param code This QString contains the code that the linter / code checker is supposed to check
+    \param filename is the filename of the code (can also be an empty string if no filename is currently given)
+    \param fileSaved is true, if the code is equal to the given filename, else false
     \param sender this is a pointer to the object that called this method
-    \return no real return value. Results are returned by invoking ScriptEditorWidget::syntaxCheckResult(...)
+    \return no real return value. Results are returned by invoking ScriptEditorWidget::codeCheckResultsReady(...)
 */
-void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName)
+void PythonEngine::pythonSyntaxCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName)
 {
     if (m_pyModSyntaxCheck)
     {
-        QString firstLine;
+        QString codeToCheck;
+        QString filename_ = filename;
+
         if (m_includeItomImportBeforeSyntaxCheck)
         {
             //add from itom import * as first line (this is afterwards removed from results)
-            firstLine = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
+            codeToCheck = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
+            filename_ = "";
+            fileSaved = false;
         }
         else
         {
-            firstLine = code;
+            codeToCheck = code;
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().constData());
+        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "ssi", codeToCheck.toUtf8().constData(), filename.toUtf8().constData(), fileSaved ? 1 : 0);
 
-        if (result && PyList_Check(result) && PyList_Size(result) >= 2)
+        if (result && PyList_Check(result))
         {
-            QString unexpectedErrors;
-            QString flakes;
-            QString syntaxErrors;
-            QStringList strlist;
-
+            QString item;
             bool ok;
-            unexpectedErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 0), false, ok);
-            if (!ok)
-            {
-                unexpectedErrors = "<<error>>";
-            }
+            QStringList itemSplit;
+            int msgType;
+            int lineNo;
+            int columnIdx;
+            QList<ito::CodeCheckerItem> codeCheckerItems;
 
-            flakes = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 1), false, ok);
-            if (!ok)
+            for (int i = 0; i < PyList_Size(result); ++i)
             {
-                flakes = "<<error>>";
-            }
-            else
-            {   
-                if (m_includeItomImportBeforeSyntaxCheck)
-                {   // if itom is automatically included, this block is correcting the line numbers
-                    strlist = flakes.split("\n");
-                    if (strlist.length() > 0)
+                item = PythonQtConversion::PyObjGetString(PyList_GET_ITEM(result, i), false, ok);
+
+                if (ok)
+                {
+                    itemSplit = item.split("::");
+
+                    if (itemSplit.size() == 6)
                     {
-                        while (strlist.at(0).startsWith("code:1:"))
+                        msgType = itemSplit[0].toInt();
+
+
+                        if (m_includeItomImportBeforeSyntaxCheck)
                         {
-                            strlist.removeFirst();
-                            if (strlist.length() == 0)
+                            lineNo = itemSplit[2].toInt() - 1;
+                        }
+                        else
+                        {
+                            lineNo = itemSplit[2].toInt();
+                        }
+
+                        columnIdx = itemSplit[3].toInt();
+
+                        if (lineNo != 0) //0 was 1 in case of m_includeItomImportBeforeSyntaxCheck and is related to errors of this virtually added import line No 1
+                        {
+                            ito::CodeCheckerItem::CheckerType type = ito::CodeCheckerItem::Error;
+
+                            if (msgType == 0)
                             {
-                                break;
+                                type = ito::CodeCheckerItem::Info;
                             }
+                            else if (msgType == 1)
+                            {
+                                type = ito::CodeCheckerItem::Warning;
+                            }
+
+                            ito::CodeCheckerItem cci(type, itemSplit[5], itemSplit[4], lineNo, columnIdx, filename);
+                            codeCheckerItems.append(cci);
                         }
-                        for (int i = 0; i < strlist.length(); ++i)
-                        {
-                            QRegExp reg("(code:)(\\d+)");
-                            reg.indexIn(strlist[i]);
-                            int line = reg.cap(2).toInt() - 1;
-                            strlist[i].replace(QRegExp("code:\\d+:"), "code:"+QString::number(line)+":");
-                        }
-                        flakes = strlist.join("\n");
                     }
-                }   // if not, no correction is nessesary
+#ifdef _DEBUG
+                    else
+                    {
+                        std::cerr << "ItomSyntaxCheck.check() method returned an invalid string: " << item.toLatin1().data() << "\n" << std::endl;
+                    }
+#endif
+                }
             }
 
-            if (PyList_Size(result) >= 3)
-            {
-                syntaxErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 2), false, ok);
-                if (!ok)
-                {
-                    syntaxErrors = "<<error>>";
-                }
-                else
-                {
-                    if (m_includeItomImportBeforeSyntaxCheck)
-                    {   // if itom is automatically included, this block is correcting the line numbers
-                        strlist = syntaxErrors.split("\n");
-                        if (strlist.length() > 0)
-                        {
-                            while (strlist.at(0).startsWith("code:1:"))
-                            {
-                                strlist.removeFirst();
-                                if (strlist.length() == 0)
-                                {
-                                    break;
-                                }
-                            }
-                            for (int i = 0; i < strlist.length(); ++i)
-                            {
-                                QRegExp reg("(code:)(\\d+)");
-                                reg.indexIn(strlist[i]);
-                                int line = reg.cap(2).toInt() - 1;
-                                strlist[i].replace(QRegExp("code:\\d+:"), "code:" + QString::number(line) + ":");
-                            }
-                            syntaxErrors = strlist.join("\n");
-                        }
-                    }   // if not, no correction is nessesary
-                }
-            }
 
             QObject *s = sender.data();
+
             if (s && callbackFctName != "")
             {
-                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes), Q_ARG(QString, syntaxErrors));
+                QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QList<ito::CodeCheckerItem>, codeCheckerItems));
             }
         }
 #ifdef _DEBUG

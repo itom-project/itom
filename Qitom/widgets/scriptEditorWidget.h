@@ -32,6 +32,7 @@
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
 #include "../codeEditor/panels/lineNumber.h"
+#include "../codeEditor/codeCheckerItem.h"
 
 #include "../global.h"
 
@@ -219,8 +220,8 @@ signals:
 
 public slots:
     void checkSyntax();
-    void syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors); //if frosted is used, syntaxErrors are contained in flakes
-    void errorListChange(const QStringList &errorList);
+    void codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems);
+    void codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems);
 
     void menuCut();
     void menuCopy();

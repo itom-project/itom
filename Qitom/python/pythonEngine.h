@@ -321,9 +321,7 @@ public slots:
     void readSettings();
     void propertiesChanged();
 
-    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
-    //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
-    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
+    void pythonSyntaxCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName);
     void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);

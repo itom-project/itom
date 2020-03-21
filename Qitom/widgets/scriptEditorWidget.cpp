@@ -76,6 +76,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel)
 {
+    qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
+
     m_syntaxTimer = new QTimer(this);
     connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
     m_syntaxTimer->setInterval(1000);
@@ -254,7 +256,7 @@ void ScriptEditorWidget::loadSettings()
     }
     else
     {
-        errorListChange(QStringList());
+        codeCheckerResultsChanged(QList<ito::CodeCheckerItem>());
     }
 
     // Class Navigator
@@ -1116,23 +1118,17 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     \sa checkSyntax
 */
-void ScriptEditorWidget::syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors)
+void ScriptEditorWidget::codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems)
 { 
-    // this event occurs when the syntax checker is delivering results
-    QStringList errorList = flakes.split("\n") + syntaxErrors.split("\n");
-    for (int i = 0; i < errorList.length(); ++i)
-    {
-        errorList.removeAt(errorList.indexOf("",i));
-    }    
-    errorListChange(errorList);
+    codeCheckerResultsChanged(codeCheckerItems);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Updates the List of Bookmarks and Errors when new Errorlist appears
+//! Updates the list of code checker results if changes are available
 /*!
-    \param errorList Error list of this editor. Including all bugs and bookmarks.
+    \param codeCheckerItems list of all current code checker result messages for this file
 */
-void ScriptEditorWidget::errorListChange(const QStringList &errorList)
+void ScriptEditorWidget::codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems)
 { 
     //at first: remove all errors... from existing blocks
     foreach (TextBlockUserData *userData, textBlockUserDataList())
@@ -1141,22 +1137,21 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
     }
 
     //2nd: add new errors...
-    int line;
-    QString errorMessage;
+    int lineNumber;
     TextBlockUserData *userData;
 
-    for (int i = 0; i < errorList.length(); i++)
+    foreach(const ito::CodeCheckerItem &item, codeCheckerItems)
     {
-        QRegExp regError(":(\\d+):(.*)");
-        regError.indexIn(errorList.at(i),0);
-        line = regError.cap(1).toInt();
-        errorMessage = regError.cap(2);
-        userData = getTextBlockUserData(line - 1);
+        lineNumber = item.lineNumber();
 
-        if (userData)
+        if (lineNumber > 0)
         {
-            CheckerMessage msg(errorMessage, CheckerMessage::StatusError);
-            userData->m_checkerMessages.append(msg);
+            userData = getTextBlockUserData(lineNumber - 1);
+
+            if (userData)
+            {
+                userData->m_checkerMessages.append(item);
+            }
         }
     }
 
@@ -1168,14 +1163,21 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 /*!
     This function is called to send the content of this ScriptEditorWidget to the syntax checker
 
-    \sa syntaxCheckResult
+    \sa codeCheckResultsReady
 */
 void ScriptEditorWidget::checkSyntax()
 {
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->toPlainText()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), Q_ARG(QByteArray, "syntaxCheckResult"));
+        QString filename = getFilename();
+        bool savedFile = (isModified() == false) && filename != "";
+        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", 
+            Q_ARG(QString, this->toPlainText()), 
+            Q_ARG(QString, filename),
+            Q_ARG(bool, savedFile),
+            Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), 
+            Q_ARG(QByteArray, "codeCheckResultsReady"));
     }
 }
 
@@ -1183,7 +1185,7 @@ void ScriptEditorWidget::checkSyntax()
 //! slot invoked by timer
 /*!
     This slot is invoked by the timer to trigger the syntax check. The intervall is set in the option dialog.
-    \sa syntaxCheckResult, checkSyntax
+    \sa codeCheckResultsReady, checkSyntax
 */
 void ScriptEditorWidget::updateSyntaxCheck()
 {

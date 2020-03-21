@@ -1,30 +1,28 @@
 #load either pyflakes, or if not found frosted
+from pyflakes import api as pyflakesapi
+from typing import Optional
+import tempfile
+import os
+
 try:
-    from pyflakes import api
-except ModuleNotFoundError:
-    from frosted import api
+    from flake8.api import legacy as flake8
+    HAS_FLAKE8 = True
+except:
+    HAS_FLAKE8 = False
 
-#import re
-
-class ItomReporter():
-    """Formats the results of pyflakes / frosted checks and then presents them to the user."""
-    def __init__(self):
-        self.__unexpected_errors = []
-        self.__flake = []
-        self.__syntax_errors = []
-
-    def unexpected_error(self, filename, msg):
-        """
-        An unexpected error occurred trying to process C{filename}.
+class ItomFlakesReporter():
+    """Formats the results of pyflakes checks and then presents them to the user."""
+    def __init__(self, filename : str):
+        self.__items = []
+        self.__filename = filename
+    
+    def __addItem__(self, type : int, filename : str, msgCode : str, description : str, lineNo : int = -1, column : int = -1):
+        '''
+        @param type: the type of message (0: Info, 1: Warning, 2: Error)
+        @ptype type: C{int}
+        '''
+        self.__items.append("%i::%s::%i::%i::%s::%s" % (type, self.__filename, lineNo, column, msgCode, description))
         
-        @param filename: The path to a file that we could not process.
-        @ptype filename: C{unicode}
-        @param msg: A message explaining the problem.
-        @ptype msg: C{unicode}
-        
-        This method is called by frosted
-        """
-        return self.unexpectedError(filename, msg)
     
     def unexpectedError(self, filename, msg):
         """
@@ -37,7 +35,7 @@ class ItomReporter():
         
         This method is called by pyflakes
         """
-        self.__unexpected_errors.append("%s: %s\n" % (filename, msg))
+        self.__addItem__(type = 2, filename = filename, msgCode = "", description = msg, lineNo = -1, column = -1)
     
     def syntaxError(self, filename, msg, lineno, offset, text):
         """
@@ -57,12 +55,14 @@ class ItomReporter():
         This method is called by pyflakes
         """
         line = text.splitlines()[-1]
+        
         if offset is not None:
             offset = offset - (len(text) - len(line))
-            self.__syntax_errors.append('%s:%d:%d: %s\n' %
-                               (filename, lineno, offset + 1, msg))
+            self.__addItem__(type = 2, filename = filename, msgCode = "", 
+                            description = msg, lineNo = lineno, column = offset + 1)
         else:
-            self.__syntax_errors.append('%s:%d: %s\n' % (filename, lineno, msg))
+            self.__addItem__(type = 2, filename = filename, msgCode = "", 
+                            description = msg, lineNo = lineno, column = -1)
 
     def flake(self, message):
         """
@@ -70,12 +70,50 @@ class ItomReporter():
         
         @param: A messages.Message.
         """
-        self.__flake.append(str(message))
+        msg = message.message % message.message_args
+        self.__addItem__(type = 2, filename = message.filename, msgCode = "", 
+                    description = msg, lineNo = message.lineno, column = message.col)
     
     def results(self):
-        return ["\n".join(self.__unexpected_errors), "\n".join(self.__flake), "\n".join(self.__syntax_errors)]
+        """
+        returns a list of reported items.
+        Every item is a string that can be separated by :: into 6 parts.
+        The parts are: 
+        1. type (int): 0: Info, 1: Warning, 2: Error
+        2. filename (str): filename of tested file
+        3. lineNo (int): line number or -1 if no line number
+        4. columnIndex (int): column index or -1 if unknown
+        5. message code (str): e.g. E550...
+        6. description (str): text of error
+        """
+        return self.__items
 
-def check(codestring):
-    reporter = ItomReporter()
-    api.check(codestring, "code", reporter = reporter)
+def check(codestring : str, filename : str, fileSaved : bool) -> str:
+    '''run the test for a single file.
+    '''
+    print(filename, fileSaved)
+    if HAS_FLAKE8:
+        style_guide = flake8.get_style_guide(ignore=[])
+        
+        if fileSaved:
+            report = style_guide.input_file(filename)
+        else:
+            with tempfile.NamedTemporaryFile("wt", delete = False, suffix = ".py") as fp:
+                tempfilename = fp.name
+                print("temp filename", tempfilename)
+                fp.write(codestring)
+            
+            try:
+                report = style_guide.input_file(tempfilename)
+            except:
+                pass
+            finally:
+                os.remove(tempfilename)
+        
+        
+        print("Run flake8 on file %s: %i" % (filename, report.total_errors))
+        #pass
+    
+    reporter = ItomFlakesReporter(filename)
+    pyflakesapi.check(codestring, "code", reporter = reporter)
     return reporter.results()

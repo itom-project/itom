@@ -120,7 +120,7 @@ any.
 :return: Marker of None
 :rtype: pyqode.core.Marker
 */
-QList<CheckerMessage> CheckerBookmarkPanel::markersForLine(int line) const
+QList<CodeCheckerItem> CheckerBookmarkPanel::markersForLine(int line) const
 {
     QTextBlock block = editor()->document()->findBlockByNumber(line);
     TextBlockUserData* tbud = dynamic_cast<TextBlockUserData*>(block.userData());
@@ -130,22 +130,22 @@ QList<CheckerMessage> CheckerBookmarkPanel::markersForLine(int line) const
     }
     else
     {
-        return QList<CheckerMessage>();
+        return QList<CodeCheckerItem>();
     }
 }
 
 //----------------------------------------------------------
-/*static*/ QIcon CheckerBookmarkPanel::iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CheckerMessage::CheckerStatus checkerStatus)
+/*static*/ QIcon CheckerBookmarkPanel::iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CodeCheckerItem::CheckerType checkerStatus)
 {
     if (!hasBookmark && hasCheckerMessages)
     {
         switch (checkerStatus)
         {
-        case CheckerMessage::StatusInfo:
+        case CodeCheckerItem::Info:
             return QIcon(":/script/icons/syntaxError.png");
-        case CheckerMessage::StatusWarning:
+        case CodeCheckerItem::Warning:
             return QIcon(":/script/icons/syntaxError.png");
-        case CheckerMessage::StatusError:
+        case CodeCheckerItem::Error:
             return QIcon(":/script/icons/syntaxError.png");
         }
     }
@@ -157,11 +157,11 @@ QList<CheckerMessage> CheckerBookmarkPanel::markersForLine(int line) const
     {
         switch (checkerStatus)
         {
-        case CheckerMessage::StatusInfo:
+        case CodeCheckerItem::Info:
             return QIcon(":/script/icons/bookmarkSyntaxError.png");
-        case CheckerMessage::StatusWarning:
+        case CodeCheckerItem::Warning:
             return QIcon(":/script/icons/bookmarkSyntaxError.png");
-        case CheckerMessage::StatusError:
+        case CodeCheckerItem::Error:
             return QIcon(":/script/icons/bookmarkSyntaxError.png");
         }
     }
@@ -176,25 +176,26 @@ void CheckerBookmarkPanel::paintEvent(QPaintEvent *e)
     QPainter painter(this);
     TextBlockUserData *tbud;
     QIcon icon;
-    CheckerMessage::CheckerStatus worstStatus = CheckerMessage::StatusInfo;
+    CodeCheckerItem::CheckerType worstStatus = CodeCheckerItem::Info;
     bool hasCheckerMessage;
     QRect rect;
 
     foreach (const VisibleBlock &b, editor()->visibleBlocks())
     {
-        worstStatus = CheckerMessage::StatusInfo;
+        worstStatus = CodeCheckerItem::Info;
         hasCheckerMessage = false;
 
         tbud = dynamic_cast<TextBlockUserData*>(b.textBlock.userData());
 
         if (tbud)
         {
-            foreach (const CheckerMessage &cm,tbud->m_checkerMessages)
+            foreach (const CodeCheckerItem &cci,tbud->m_checkerMessages)
             {
                 hasCheckerMessage = true;
-                if (cm.m_status > worstStatus)
+
+                if (cci.type() > worstStatus)
                 {
-                    worstStatus = cm.m_status;
+                    worstStatus = cci.type();
                 }
             }
 
@@ -232,19 +233,28 @@ void CheckerBookmarkPanel::mouseMoveEvent(QMouseEvent *e)
     int line = editor()->lineNbrFromPosition(e->pos().y());
     if (line != -1)
     {
-        QList<CheckerMessage> markers = markersForLine(line);
+        QList<CodeCheckerItem> markers = markersForLine(line);
         QStringList texts;
-        foreach (const CheckerMessage &cm, markers)
+        int msgTypes = 0;
+
+        foreach(const CodeCheckerItem &cci, markers)
         {
-            if (cm.m_description != "")
-            {
-                texts.append(cm.m_description);
-            }
+            msgTypes |= cci.type();
+        }
+
+        bool addShortType = !(msgTypes == CodeCheckerItem::Info ||
+            msgTypes == CodeCheckerItem::Warning ||
+            msgTypes == CodeCheckerItem::Error);
+
+        //all messages are of the same type
+        foreach(const CodeCheckerItem &cm, markers)
+        {
+            texts.append(cm.checkerItemText(addShortType));
         }
 
         QString text = texts.join("\n");
 
-        if (markers.size() > 0)
+        if (text != "")
         {
             if (m_previousLine != line)
             {
