@@ -80,7 +80,7 @@ macro(itom_init_plugin_common_vars)
     set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
-    set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+    set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     
     #the following variables are just created here, but
     #their real values are usually forced by a find_package(ITOM_SDK)
@@ -90,9 +90,13 @@ macro(itom_init_plugin_common_vars)
     set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
     
     # Set a default build type if none was specified
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
-    # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        set(CMAKE_BUILD_TYPE Release CACHE
+            STRING "Choose the type of build.")
+       # Set the possible values of build type for cmake-gui
+       set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+          Debug Release MinSizeRel RelWithDebInfo)
+    endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #core libraries are build as shared libraries
     
@@ -656,7 +660,6 @@ macro(itom_library_translation qm_files)
         set(TRANSLATION_OUTPUT_FILES)
         message(STATUS "lupdate for target ${PARAM_TARGET} for languages ${ITOM_LANGUAGES}" 
                         "for files ${PARAM_FILES_TO_TRANSLATE}")
-                        
         itom_qt5_create_translation(
             TRANSLATION_OUTPUT_FILES 
             TRANSLATIONS_FILES 
@@ -679,8 +682,7 @@ macro(itom_library_translation qm_files)
             set(TRANSLATIONS_FILES ${TRANSLATIONS_FILES} ${_tsFile})
         endforeach()
     endif()
-    
-    set(QMFILES)
+    unset(QMFILES)
     itom_qt5_compile_translation(
             QMFILES 
             ${CMAKE_CURRENT_BINARY_DIR}/translation
@@ -688,7 +690,6 @@ macro(itom_library_translation qm_files)
             ${TRANSLATIONS_FILES}
             )
     set(${qm_files} ${${qm_files}} ${QMFILES})
-    
     #add the translation files to the solution
     target_sources(${PARAM_TARGET}
         PRIVATE ${TRANSLATIONS_FILES}
@@ -839,8 +840,7 @@ endmacro()
 # .
 macro(itom_qt5_compile_translation _qm_files output_location target)
     if(NOT (QT5_FOUND OR Qt5LinguistTools_FOUND))
-        message(send_error "translation requires LinguistTools." 
-            "Put them in your find_package(Qt5 COMPONENTS LinguistTools) call")
+        message(send_error "translation requires LinguistTools")
     endif()
     # use qt5 native translator function.
     # https://doc.qt.io/qt-5/qtlinguist-cmake-qt5-add-translation.html
@@ -851,6 +851,16 @@ macro(itom_qt5_compile_translation _qm_files output_location target)
     # dereference the input/output parameter _qm_files and set its value to the 
     # translated files list to be used outside this scope ...
     set(${_qm_files} ${compiled_qmfiles}) 
+    # now the compilation step needs to be tied to the target, or compilation won't be
+    # invoked...
+    # This could be cool, if we wanted some separate target for compilation/translation updating
+    # add_custom_target(${target}translation DEPENDS ${compiled_qmfiles})
+    # add_dependencies(${target} ${target}translation)
+    # this just appends the compiled translations to the target, assuming OS/dev 
+    # takes take of its uniquity...
+    target_sources(${target}
+        PRIVATE ${compiled_qmfiles}
+        )
 endmacro()
 
 
@@ -867,7 +877,7 @@ endmacro()
 #     pathLineEdit.h
 #     checkBoxSpecial.h
 # )
-macro(itom_qt_generate_mocs)
+function(itom_qt_generate_mocs)
     foreach(file ${ARGN})
         set(moc_file moc_${file})
         
@@ -890,7 +900,7 @@ macro(itom_qt_generate_mocs)
         
         set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
     endforeach()
-endmacro()
+endfunction()
 
 
 # - itom_qt_wrap_ui(outfiles target ui_file1 ui_file2 ... )
