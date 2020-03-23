@@ -77,8 +77,12 @@ endmacro()
 # itom_init_designerplugin_library.
 macro(itom_init_plugin_common_vars)
     #commonly used variables / options in the cache
-    set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
-    option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
+    set(BUILD_QTVERSION "auto" CACHE STRING
+        "currently only Qt5 is supported. Set this value to 'auto' in order\
+        to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
+    option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available.\
+        If TRUE, the definition USEOPENMP is set. This is only the case if\
+        OpenMP is generally available and if the build is release." ON)
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
     set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     
