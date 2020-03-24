@@ -5,12 +5,9 @@
 import os
 import ctypes
 import sys
-from os import path
-from sphinx.util import format_exception_cut_frames, save_traceback
-from sphinx.util.console import darkred, nocolor
+from sphinx.util.console import nocolor
 from sphinx.application import Sphinx
 
-from docutils.utils import SystemMessage
 from packaging import version
 import subprocess
 import itom

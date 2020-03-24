@@ -298,21 +298,21 @@ void ScriptEditorWidget::loadSettings()
     m_pyGotoAssignmentMode->setMouseClickEnabled(settings.value("gotoAssignmentMouseClickEnabled", m_pyGotoAssignmentMode->mouseClickEnabled()).toBool());
     m_pyGotoAssignmentMode->setDefaultWordClickMode(settings.value("gotoAssignmentMouseClickMode", m_pyGotoAssignmentMode->defaultWordClickMode()).toInt());
 
-	Qt::KeyboardModifiers modifiers;
-	switch (settings.value("gotoAssignmentMouseClickKey", 1).toInt())
-	{
-	case 0:
-		modifiers = Qt::ControlModifier;
-		break;
-	case 1:
-		modifiers = Qt::ControlModifier | Qt::ShiftModifier;
-		break;
-	default:
-		modifiers = Qt::ControlModifier | Qt::AltModifier;
-		break;
-	}
+    Qt::KeyboardModifiers modifiers;
+    switch (settings.value("gotoAssignmentMouseClickKey", 1).toInt())
+    {
+    case 0:
+        modifiers = Qt::ControlModifier;
+        break;
+    case 1:
+        modifiers = Qt::ControlModifier | Qt::ShiftModifier;
+        break;
+    default:
+        modifiers = Qt::ControlModifier | Qt::AltModifier;
+        break;
+    }
 
-	m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
+    m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
 
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
@@ -619,7 +619,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int l
     {
         retval += setCursorPosAndEnsureVisible(line);
         // regular expression for Classes and Methods
-        QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
+        QRegExp reg("(\\s*)(class||def||async\\s+def)\\s(.+)\\(.*");
         reg.setMinimal(true);
         reg.indexIn(this->lineText(line), 0);
         setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
@@ -2021,13 +2021,13 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
         {
             QFile file(path);
 
-			if (!file.exists())
-			{
-				//if git updates a file, the file is deleted and then the modified file is created.
-				//this will cause a 'delete' notification, however the 'modified' notification would be correct.
-				//try to sleep for a while and recheck the state of the file again...
-				ito::Sleeper::sleep(0.4);
-			}
+            if (!file.exists())
+            {
+                //if git updates a file, the file is deleted and then the modified file is created.
+                //this will cause a 'delete' notification, however the 'modified' notification would be correct.
+                //try to sleep for a while and recheck the state of the file again...
+                ito::Sleeper::sleep(0.4);
+            }
 
             if (!file.exists()) //file deleted
             {
@@ -2046,31 +2046,31 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
                 }
             }
             else //file changed
-            {	
-				QCryptographicHash fileHash(QCryptographicHash::Sha1);
-				file.open(QIODevice::ReadOnly | QIODevice::Text);
-				fileHash.addData(file.readAll());
+            {    
+                QCryptographicHash fileHash(QCryptographicHash::Sha1);
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                fileHash.addData(file.readAll());
 
-				QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-				fileHash2.addData(toPlainText().toLatin1());
+                QCryptographicHash fileHash2(QCryptographicHash::Sha1);
+                fileHash2.addData(toPlainText().toLatin1());
 
-				//fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
-				
-				if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
-				{
-					msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-					msgBox.setInformativeText(tr("Do you want to reload it?"));
-					int ret = msgBox.exec();
+                //fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
+                
+                if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
+                {
+                    msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
+                    msgBox.setInformativeText(tr("Do you want to reload it?"));
+                    int ret = msgBox.exec();
 
-					if (ret == QMessageBox::Yes)
-					{
-						openFile(path, true);
-					}
-					else
-					{
-						document()->setModified(true);
-					}
-				}
+                    if (ret == QMessageBox::Yes)
+                    {
+                        openFile(path, true);
+                    }
+                    else
+                    {
+                        document()->setModified(true);
+                    }
+                }
                 
             }
         }
@@ -2092,39 +2092,47 @@ int ScriptEditorWidget::getIndentationLength(const QString &str) const
 //----------------------------------------------------------------------------------------------------------------------------------
 int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation /*= -1*/)
 {
-    int i = lineNumber;
+    int lineIndex = lineNumber;
     int depth = parentDepth;
     int indent;
+    int offset;
+    int count = lineCount();
+    bool signatureFound;
+
     // read from settings
     QString line = "";
     QString decoLine;   // @-Decorato(@)r Line in previous line of a function
     
     // regular expression for Classes
-    QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
+    QRegExp classes("^(\\s*)(class)\\s(.+)(\\(.*\\))?:\\s*(#?.*)");
     classes.setMinimal(true);
     
-    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
+    QRegExp methods("^(\\s*)(async\\s*)?(def)\\s(_*)(.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
     methods.setMinimal(true);
+
+    QRegExp methodStartTag("^(\\s*)(async\\s*)?def\\s+(_*)(\\w+)\\(");
+    methodStartTag.setMinimal(true);
+
+
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-	//the regular expression should detect begin of definitions. This is:
-	// 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
-	// 2. 'def' + 1 whitespace characters is following --> (def)\\s
-	// 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
-	// 4. 1..inf arbitrary characters will come (function name) --> (.+)
-	// 5. bracket open '(' --> \\(
-	// 6. arbitrary characters --> (.*)
-	// 7. OR combination --> (cond1|cond2)
-	// 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
-	// 7b. backspace to indicate a newline --> \\\\  
+    //the regular expression should detect begin of definitions. This is:
+    // 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
+    // 2. 'def' + 1 whitespace characters is following --> (def)\\s
+    // 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
+    // 4. 1..inf arbitrary characters will come (function name) --> (.+)
+    // 5. bracket open '(' --> \\(
+    // 6. arbitrary characters --> (.*)
+    // 7. OR combination --> (cond1|cond2)
+    // 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
+    // 7b. backspace to indicate a newline --> \\\\  
     
 
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
 
-    while(i < lineCount())
+    while(lineIndex < count)
     {
-        decoLine = this->lineText(i-1);
-        line = this->lineText(i);
+        line = lineText(lineIndex);
 
         // CLASS
         if (classes.indexIn(line) != -1)
@@ -2143,76 +2151,111 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 // classt->m_args = classes.cap(4); // normally not needed
                 classt->setInternalType(ClassNavigatorItem::typePyClass);
                 classt->m_priv = false; // Class is usually not private
-                classt->m_lineno = i;
+                classt->m_lineno = lineIndex;
+                classt->m_async = false;
                 parent->m_member.append(classt);
-                ++i;
-                i = buildClassTree(classt, depth + 1, i, singleIndentation);
+                ++lineIndex;
+                lineIndex = buildClassTree(classt, depth + 1, lineIndex, indent + 1);
                 continue;
             }
             else 
             {
-                return i;
+                return lineIndex;
             }
         }
         // METHOD
-        else if (methods.indexIn(line) != -1)
+        else if (methodStartTag.indexIn(line) != -1)
         {
-            indent = getIndentationLength(methods.cap(1));
-            if (singleIndentation <= 0)
+            //it can be that the def signature is spread over multiple lines.
+            //then iteratively add more lines to the possible text and try
+            //it again (max. 30 lines).
+            offset = 1;
+            signatureFound = true;
+
+            while (methods.indexIn(line) < 0)
             {
-                singleIndentation = indent;
-            }
-            // Methode
-            //checken ob line-1 == @decorator besitzt
-            ClassNavigatorItem *meth = new ClassNavigatorItem();
-            meth->m_name = methods.cap(3) + methods.cap(4);
-            meth->m_args = methods.cap(5);
-            meth->m_returnType = methods.cap(7);
-            meth->m_lineno = i;
-            if (methods.cap(3) == "_" || methods.cap(3) == "__")
-            {
-                meth->m_priv = true;                    
-            }
-            else
-            {
-                meth->m_priv = false;
-            }
-          
-            if (indent >= depth * singleIndentation)
-            {// Child des parents
-                if (decorator.indexIn(decoLine) != -1)
+                if (lineIndex < count && offset < 30) //more than 30 parameter lines are very unlikely
                 {
-                    QString decorator_ = decorator.cap(3);
-                    if (decorator_ == "staticmethod")
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
-                    }
-                    else if (decorator_ == "classmethod")
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
-                    }
-                    else // some other decorator
-                    {
-                        meth->setInternalType(ClassNavigatorItem::typePyDef);
-                    }
+                    line += lineText(lineIndex + offset).trimmed();
+                    offset++;
                 }
                 else
                 {
-                    meth->setInternalType(ClassNavigatorItem::typePyDef);
+                    //nothing found
+                    signatureFound = false;
+                    lineIndex += (offset - 1);
+                    break;
                 }
-                parent->m_member.append(meth);
-                ++i;
-                continue;
             }
-            else
-            {// Negativ indentation => it must be a child of a parental class
-                DELETE_AND_SET_NULL(meth);
-                return i;
+
+            if (signatureFound)
+            {
+                indent = getIndentationLength(methods.cap(1));
+
+                if (singleIndentation <= 0)
+                {
+                    singleIndentation = indent;
+                }
+
+                // Methode
+                //checken ob line-1 == @decorator besitzt
+                ClassNavigatorItem *meth = new ClassNavigatorItem();
+                meth->m_name = methods.cap(4) + methods.cap(5);
+                meth->m_args = methods.cap(6);
+                meth->m_returnType = methods.cap(8);
+                meth->m_lineno = lineIndex;
+                meth->m_async = methods.cap(2).contains("async", Qt::CaseInsensitive) ? true : false;
+
+                if (methods.cap(4) == "_" || methods.cap(4) == "__")
+                {
+                    meth->m_priv = true;
+                }
+                else
+                {
+                    meth->m_priv = false;
+                }
+
+                if (indent >= depth * singleIndentation)
+                {
+                    decoLine = lineText(lineIndex - 1);
+
+                    // Child des parents
+                    if (decorator.indexIn(decoLine) != -1)
+                    {
+                        QString decorator_ = decorator.cap(3);
+                        if (decorator_ == "staticmethod")
+                        {
+                            meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
+                        }
+                        else if (decorator_ == "classmethod")
+                        {
+                            meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
+                        }
+                        else // some other decorator
+                        {
+                            meth->setInternalType(ClassNavigatorItem::typePyDef);
+                        }
+                    }
+                    else
+                    {
+                        meth->setInternalType(ClassNavigatorItem::typePyDef);
+                    }
+
+                    parent->m_member.append(meth);
+                    lineIndex += offset;
+                    continue;
+                }
+                else
+                {// Negativ indentation => it must be a child of a parental class
+                    DELETE_AND_SET_NULL(meth);
+                    return lineIndex;
+                }
             }
         }
-        ++i;
+
+        ++lineIndex;
     }
-    return i;
+    return lineIndex;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

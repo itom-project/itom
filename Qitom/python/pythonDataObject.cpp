@@ -608,7 +608,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
     PyArrayObject *ndArrayRef = (PyArrayObject*)rhsNpArray; //reference (from now on, copyObject is only used once when the tags are copied, don't use it for further tasks)
     PyArrayObject *ndArrayOut = NULL;
     PyArray_Descr *descr = PyArray_DESCR(ndArrayRef);
-    unsigned char dimensions = -1;
+    int dimensions = -1;
     int destNpArrayTypeNo = -1;
     int destDObjTypeNo = -1;
     int inputNpArrayTypeNo = -1; //-1, if type of np.array has no equivalent in dataObject type
@@ -711,9 +711,18 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
     if (dimensions <= 0 || PyArray_SIZE(ndArrayOut) <= 0)
     {
         DELETE_AND_SET_NULL(self->dataObject);
-        self->dataObject = new ito::DataObject();
+
+		if (destDObjTypeNo >= 0)
+		{
+			self->dataObject = new ito::DataObject(0, destDObjTypeNo);
+		}
+		else
+		{
+			self->dataObject = new ito::DataObject();
+		}
+
         Py_XDECREF((PyObject*)ndArrayOut);
-        return -1;
+        return 0;
     }
     else
     {
@@ -740,7 +749,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
 
             try
             {
-                self->dataObject = new ito::DataObject(dimensions, sizes, destDObjTypeNo, data, steps);
+                self->dataObject = new ito::DataObject(static_cast<unsigned char>(dimensions), sizes, destDObjTypeNo, data, steps);
             }
             catch (cv::Exception &exc)
             {
@@ -768,7 +777,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, P
 
             try
             {
-                self->dataObject = new ito::DataObject(dimensions, sizes_inc, destDObjTypeNo, data, steps_inc);
+                self->dataObject = new ito::DataObject(static_cast<unsigned char>(dimensions), sizes_inc, destDObjTypeNo, data, steps_inc);
             }
             catch (cv::Exception &exc)
             {
@@ -7124,7 +7133,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     if (selfDO->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
         return NULL;
     }
 
@@ -7221,7 +7230,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     }
     else if (self->dataObject->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
+        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
         return NULL;
     }
 
@@ -8950,7 +8959,6 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
 
     PyArrayObject *ndArray = (PyArrayObject*)obj; 
     PyArray_Descr *descr = PyArray_DESCR(ndArray);
-    unsigned char dimensions = -1;
     int typeno = -1;
     uchar* data = NULL;
 
@@ -8979,7 +8987,7 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
             return NULL;
         }
         
-        dimensions = PyArray_NDIM(ndArray); //->nd;
+        int dimensions = PyArray_NDIM(ndArray); //->nd;
         npy_intp* npsizes = PyArray_DIMS(ndArray);
         npy_intp *npsteps = (npy_intp *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
         

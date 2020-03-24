@@ -57,6 +57,7 @@ public:
     QList<const ClassNavigatorItem*> m_member;
     t_type m_internalType;
     bool m_priv;
+    bool m_async;
     
 };
 

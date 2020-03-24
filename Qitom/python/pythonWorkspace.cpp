@@ -425,7 +425,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         if(repr == NULL)
         {
             PyErr_Clear();
-            item->m_extendedValue = item->m_value = "unknown";
+            item->m_extendedValue = item->m_value = "<error during call of repr()>";
         }
         else if(PyUnicode_Check(repr))
         {
@@ -587,7 +587,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                 if(repr == NULL)
                 {
                     PyErr_Clear();
-                    item->m_extendedValue = item->m_value = "unknown";
+                    item->m_extendedValue = item->m_value = "<error during call of repr()>";
                 }
                 else if(PyUnicode_Check(repr))
                 {

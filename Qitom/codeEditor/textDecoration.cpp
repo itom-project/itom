@@ -208,7 +208,7 @@ bool TextDecoration::operator==(const TextDecoration &other) const
 {
     bool f = (format == other.format);
     return ((cursor == other.cursor) && \
-        (m_drawOrder == m_drawOrder) && \
+        (m_drawOrder == other.m_drawOrder) && \
         (m_tooltip == other.m_tooltip) && f);
 }
 

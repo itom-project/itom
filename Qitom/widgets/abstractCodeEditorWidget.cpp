@@ -417,7 +417,25 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 			//do not change or consider the first line for indentation detection
 			//and / or removal. Else: consider it.
 			const QString &firstLine = commandList[0];
+			const QString &firstLineTrimmed = firstLine.trimmed();
+
 			bool firstLineIndented = (firstLine.size() > 0) && (firstLine[0] == ' ' || firstLine[0] == '\t');
+
+			if (!firstLineIndented && firstLineTrimmed.size() > 0)
+			{
+				//it can be that the first line starts with a possible keyword
+				//for a subsequent indented block. If so, also consider the first line to
+				//be indented (such that it is considered for the minIndentLevel.
+				QList<QString> blockKeywords;
+				blockKeywords << "def" << "if" << "elif" << "else" << "while" << \
+					"for" << "try" << "except" << "finally" << "with" << "class" << "async";
+
+				if (blockKeywords.contains(firstLineTrimmed.split(" ")[0]))
+				{
+					firstLineIndented = true;
+				}
+
+			}
 
 			int minIndentLevel = 1e6;
 			int startLine = firstLineIndented ? 0 : 1;

@@ -78,6 +78,24 @@ void WidgetPropEditorScripts::readSettings()
 
     ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 0).toInt());
     ui.colorEdgeBg->setColor(settings.value("edgeColor", QColor(Qt::black)).value<QColor>());
+
+    int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();
+
+    switch (elideMode)
+    {
+    case Qt::ElideLeft:
+        ui.radioElideLeft->setChecked(true);
+        break;
+    case Qt::ElideRight:
+        ui.radioElideRight->setChecked(true);
+        break;
+    case Qt::ElideMiddle:
+        ui.radioElideMiddle->setChecked(true);
+        break;
+    default:
+        ui.radioElideNone->setChecked(true);
+        break;
+    }
     
 
     settings.endGroup();
@@ -105,6 +123,24 @@ void WidgetPropEditorScripts::writeSettings()
     settings.setValue("edgeMode", idx == 0 ? CodeEditor::EdgeNone : (idx == 1 ? CodeEditor::EdgeLine : CodeEditor::EdgeBackground));
     settings.setValue("edgeColumn", ui.spinEdgeColumn->value());
     settings.setValue("edgeColor", ui.colorEdgeBg->color());
+
+    //elide mode (filename shortening in tabs of scriptDockWidget)
+    if (ui.radioElideLeft->isChecked())
+    {
+        settings.setValue("tabElideMode", Qt::ElideLeft);
+    }
+    else if (ui.radioElideRight->isChecked())
+    {
+        settings.setValue("tabElideMode", Qt::ElideRight);
+    }
+    else if (ui.radioElideMiddle->isChecked())
+    {
+        settings.setValue("tabElideMode", Qt::ElideMiddle);
+    }
+    else
+    {
+        settings.setValue("tabElideMode", Qt::ElideNone);
+    }
 
     settings.endGroup();
 }
