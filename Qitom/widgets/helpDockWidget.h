@@ -58,7 +58,6 @@ namespace ito
             QAction *m_pActForward;
             QAction *m_pActExpand;
             QAction *m_pActCollapse;
-            QAction *m_pActReload;
             QWidgetAction *m_pActChanged;
             QToolBar *m_pMainToolbar;
             QLineEdit *m_pFilterEdit;

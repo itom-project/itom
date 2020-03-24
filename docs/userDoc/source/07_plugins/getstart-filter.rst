@@ -23,7 +23,7 @@ Obtaining help for filters and widgets
 A list of **filters** and **widgets**, that are contained in one algorithm plugin, can be seen in the 
 :ref:`plugin toolbox <gui-plugins>`. Additional information about each filter and widget is gained by selecting 
 **Info...** from the context menu of each specific entry in the plugin toolbox or directly by opening the help viewer
-of |itom| (menu **Help** >> **Script Reference**).
+of |itom| (menu **Help** >> **Plugin Help Viewer**).
 
 Additionally, there are few Python methods in the :py:mod:`itom` module, that allow a Python-based access to information
 about each filter and widget. These information is obtained by the methods :py:meth:`itom.filterHelp` for **filters**
@@ -53,7 +53,7 @@ Filters, that might have these feature, need to be programmed based on an altern
 :ref:`documentation about FilterDefExt <plugin-class-algo-filterDefExt>`). The programmer can then indicate in the
 algorithm plugin which feature (cancellation ability, progress information) is implemented in a corresponding filter method.
 
-Use the method :py:meth:`itom.filterHelp` or the itom script reference (help viewer) to see if a filter has these 
+Use the method :py:meth:`itom.filterHelp` or the plugin help viewer of itom to see if a filter has these 
 features implemented. If a filter can be cancelled and the user stops the script execution (KeyboardInterrupt),
 the current filter is notified about this via an interrupt-flag. As soon as the executed algorithm checks the active
 state of this flag, the algorithm is stopped and an interrupt error is returned. However, it is a matter of the

@@ -233,7 +233,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
@@ -462,7 +461,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
