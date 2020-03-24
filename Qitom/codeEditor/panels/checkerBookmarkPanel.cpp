@@ -142,9 +142,9 @@ QList<CodeCheckerItem> CheckerBookmarkPanel::markersForLine(int line) const
         switch (checkerStatus)
         {
         case CodeCheckerItem::Info:
-            return QIcon(":/script/icons/syntaxError.png");
+            return QIcon(":/script/icons/checkerInfo.png");
         case CodeCheckerItem::Warning:
-            return QIcon(":/script/icons/syntaxError.png");
+            return QIcon(":/script/icons/checkerWarning.png");
         case CodeCheckerItem::Error:
             return QIcon(":/script/icons/syntaxError.png");
         }
@@ -158,9 +158,9 @@ QList<CodeCheckerItem> CheckerBookmarkPanel::markersForLine(int line) const
         switch (checkerStatus)
         {
         case CodeCheckerItem::Info:
-            return QIcon(":/script/icons/bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkAndInfo.png");
         case CodeCheckerItem::Warning:
-            return QIcon(":/script/icons/bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkAndWarning.png");
         case CodeCheckerItem::Error:
             return QIcon(":/script/icons/bookmarkSyntaxError.png");
         }
