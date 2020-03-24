@@ -9,7 +9,7 @@ most important internal data structures of |itom|, like matrices (class :py:clas
 or polygon meshes (class :py:class:`~itom.polygonMesh`). Additionally the module provides functions to manipulate or extend the graphical user interface of |itom| as well as to 
 create own dialogs or windows (provided by the class :py:class:`~itom.ui` and :py:class:`~itom.uiItem`).
 
-The full script reference of the module :py:mod:`itom` can be found under :ref:`itom-Script-Reference`.
+The full script reference of the module :py:mod:`itom` can be found in the help of itom.
 
 Import |pyItom|
 ==============================

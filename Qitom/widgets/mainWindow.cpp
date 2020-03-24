@@ -106,7 +106,7 @@ MainWindow::MainWindow() :
     // Setting high res icon for OS X
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
 #else
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon32"));
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
 #endif
 
     qDebug("build main window");
@@ -193,7 +193,7 @@ MainWindow::MainWindow() :
         //addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
 
         // helpDock
-        m_helpDock = new HelpDockWidget(tr("Help Viewer"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
+        m_helpDock = new HelpDockWidget(tr("Plugin Help Viewer"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
@@ -686,7 +686,7 @@ void MainWindow::createActions()
 
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
-        a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Script Reference"), this);
+        a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Plugin Help Viewer..."), this);
         connect(a , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
 
         a = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);

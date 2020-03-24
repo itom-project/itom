@@ -83,7 +83,7 @@ void SearchBoxPrivate::init()
   Q_Q(SearchBox);
 
   // Set a text by default on the QLineEdit
-  q->setPlaceholderText(q->tr("Search..."));
+  q->setPlaceholderText(QObject::tr("Search..."));
 
   QObject::connect(q, SIGNAL(textChanged(QString)),
                    q, SLOT(updateClearButtonState()));
