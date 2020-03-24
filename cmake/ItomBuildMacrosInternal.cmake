@@ -56,10 +56,14 @@ macro(itom_init_core_common_vars)
         endif()
     endif()
     
-    # Set a default build type if none was specified
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
-    # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        # Set a default build type if none was specified
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
+        # Set the possible values of build type for cmake-gui
+        # (will also influence the proposed values in the combo box of Visual Studio)
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
+            STRINGS Debug Release MinSizeRel RelWithDebInfo)
+    endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #build all core libraries as shared libraries
     

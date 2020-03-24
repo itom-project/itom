@@ -42,6 +42,12 @@ option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS
     which are in current *.ts files, but not in the source code, will be\
     removed (ON) from *.ts or not (OFF)." OFF)
 
+# add Debug flag if applicable
+# flag will be available in all subsequent targets ans folders 
+# from this file
+# https://cmake.org/cmake/help/latest/command/add_compile_definitions.html
+add_compile_definitions($<$<CONFIG:DEBUG>:_DEBUG>)
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
