@@ -48,8 +48,9 @@ ClassNavigatorItem::~ClassNavigatorItem()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void ClassNavigatorItem::setInternalType(t_type t)
-{// enum t_type {typePyRoot, typePyGlobal, typePyClass, typePyDef, typePyStaticDef, typePyClMethDef};
-    this->m_internalType = t;
+{
+    // enum t_type {typePyRoot, typePyGlobal, typePyClass, typePyDef, typePyStaticDef, typePyClMethDef};
+    m_internalType = t;
     setIcon(t);
 }
 
