@@ -754,7 +754,7 @@ if(QT5_FOUND)
 endif()
 
 #translation
-itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui})
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_UI})
 
 foreach(_nomoc_header ${qitom_HEADERS_NOMOC})
     set_property(SOURCE ${_nomoc_header} PROPERTY SKIP_AUTOMOC ON)
