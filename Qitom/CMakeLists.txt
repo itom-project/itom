@@ -794,7 +794,7 @@ set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 #copy all qm files to the translations subfolder of the itom root directory
 foreach(_qm ${QM_FILES})
     set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
-    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/translation")
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 endforeach()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
