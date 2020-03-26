@@ -881,7 +881,7 @@ endmacro()
 #     pathLineEdit.h
 #     checkBoxSpecial.h
 # )
-function(itom_qt_generate_mocs)
+macro(itom_qt_generate_mocs)
     foreach(file ${ARGN})
         set(moc_file moc_${file})
         
@@ -902,9 +902,10 @@ function(itom_qt_generate_mocs)
             endif()
         endif()
         
-        set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
+        set_property(SOURCE ${source_name}${source_ext}
+            APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
     endforeach()
-endfunction()
+endmacro()
 
 
 # - itom_qt_wrap_ui(outfiles target ui_file1 ui_file2 ... )
@@ -920,7 +921,7 @@ endfunction()
 #
 # Hint: it is no problem to enable AUTOUIC though, since qt5_wrap_ui will skip the autouic
 # for every single file that is passed to this macro.
-macro(itom_qt_wrap_ui outfiles target)
+function(itom_qt_wrap_ui outfiles target)
     if(QT5_FOUND)
         #parse all *.ui files by Qt's uic process and get the parsed source files
         qt5_wrap_ui(temp_output ${ARGN})
@@ -931,7 +932,7 @@ macro(itom_qt_wrap_ui outfiles target)
     else()
         message(SEND_ERROR "Currently only Qt5 is supported")
     endif()
-endmacro()
+endfunction()
 
 
 # - use this macro in order to append to the sources and destinations
