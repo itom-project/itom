@@ -59,9 +59,21 @@ namespace ito
         bool operator<=(const SemVerVersion &other) const;
         bool operator<(const SemVerVersion &other) const;
         
+        //!< deprecated. Do not use this method anymore. Use svMajor() instead, 
+        //!< since this method will be removed (due to a conflict with a define with the same name under linux)
         int major() const;
+
+        //!< deprecated. Do not use this method anymore. Use svMinor() instead, 
+        //!< since this method will be removed (due to a conflict with a define with the same name under linux)
         int minor() const;
-        int patch() const;
+
+        //!< deprecated. Do not use this method anymore. Use svPatch() instead, 
+        //!< since this method will be removed (due to a conflict with a define with the same name under linux)
+        int patch() const; 
+
+        int svMajor() const;
+        int svMinor() const;
+        int svPatch() const;
 
     private:
         int m_major;
