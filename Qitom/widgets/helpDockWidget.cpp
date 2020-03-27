@@ -45,8 +45,7 @@ HelpDockWidget::HelpDockWidget(const QString &title, const QString &objName, QWi
     m_pMainToolbar(NULL),
     m_pFilterEdit(NULL),
     m_pActExpand(NULL),
-    m_pActCollapse(NULL),
-    m_pActReload(NULL)
+    m_pActCollapse(NULL)
 {
     m_pHelpWidget = new HelpTreeDockWidget(this, this);
 
@@ -82,9 +81,6 @@ void HelpDockWidget::createActions()
     m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
     connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
 
-    m_pActReload = new QAction(QIcon(":/application/icons/reload.png"), tr("reload database"), this);
-    connect(m_pActReload, SIGNAL(triggered()), m_pHelpWidget, SLOT(reloadDB()));
-
     connect(this, SIGNAL(showPluginInfo(QString, int, QModelIndex, bool)), m_pHelpWidget, SLOT(showPluginInfo(QString, int, QModelIndex, bool)));
 }
 
@@ -116,7 +112,6 @@ void HelpDockWidget::createToolBars()
     connect(m_pFilterEdit, SIGNAL(textChanged(QString)), m_pHelpWidget, SLOT(liveFilter(QString)));
     m_pMainToolbar->addAction(m_pActExpand);
     m_pMainToolbar->addAction(m_pActCollapse);
-    m_pMainToolbar->addAction(m_pActReload);
 
     addToolBar(m_pMainToolbar, "navigationToolbar");
 }

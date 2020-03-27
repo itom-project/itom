@@ -233,7 +233,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
@@ -462,7 +461,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
@@ -756,7 +754,7 @@ if(QT5_FOUND)
 endif()
 
 #translation
-itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui})
+itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_UI})
 
 foreach(_nomoc_header ${qitom_HEADERS_NOMOC})
     set_property(SOURCE ${_nomoc_header} PROPERTY SKIP_AUTOMOC ON)
@@ -796,7 +794,7 @@ set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 #copy all qm files to the translations subfolder of the itom root directory
 foreach(_qm ${QM_FILES})
     set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
-    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/translation")
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 endforeach()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
