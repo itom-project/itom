@@ -118,7 +118,7 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
 
     initPages();
 
-	resize(800 * screenFactorDpi, 450 * screenFactorDpi);
+	resize(950 * screenFactorDpi, 450 * screenFactorDpi);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DialogProperties");
