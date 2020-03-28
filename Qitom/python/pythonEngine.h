@@ -197,11 +197,20 @@ private:
     static int queuedInterrupt(void *arg); 
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
+
+	void checkSyntaxStyleCheckRequirements();
+
+	struct SyntaxStyleCheckOptions
+	{
+		bool syntaxCheckEnabled;
+		bool styleCheckEnabled;
+		bool includeItomModuleBeforeCheck;
+	};
     
 
     //member variables
     bool m_started;
-    bool m_syntaxCheckerEnabled;
+	SyntaxStyleCheckOptions m_syntaxStyleCheckOptions;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
@@ -228,9 +237,10 @@ private:
     PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
     PyObject *m_pyModSyntaxCheck;
+	bool m_pyModSyntaxCheckHasSyntaxCheckFeature; //!< true if m_pyModSyntaxCheck could be loaded and pretends to have the syntax check feature (package: pyflakes)
+	bool m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature; //!< true if m_pyModSyntaxCheck could be loaded and pretends to have the syntax and style check feature (package: flake8)
     PyObject *m_pyModJedi;         //!< Python package Jedi for auto completion and calltips (Jedi is tried to be loaded as late as possible)
     bool     m_pyModJediChecked;   //!< defines, if it is already checked if Jedi could be loaded on this computer.
-    //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
     Qt::HANDLE m_pythonThreadId;
 

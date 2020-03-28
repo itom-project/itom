@@ -324,6 +324,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorSyntaxCheck.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h
@@ -433,6 +434,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorSyntaxCheck.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.ui
@@ -545,6 +547,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorSyntaxCheck.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp

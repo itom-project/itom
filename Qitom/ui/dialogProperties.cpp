@@ -25,11 +25,13 @@
 #include "../global.h"
 #include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
+#include <qscrollarea.h>
 
 #include "widgetPropEditorCalltips.h"
 #include "widgetPropEditorStyles.h"
 #include "widgetPropEditorAutoCompletion.h"
 #include "widgetPropEditorGotoAssignment.h"
+#include "widgetPropEditorSyntaxCheck.h"
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropEditorScripts.h"
 #include "widgetPropGeneralLanguage.h"
@@ -49,6 +51,7 @@
 #include "widgetPropPalettes.h"
 
 #include "AppManagement.h"
+#include "../helper/guiHelper.h"
 
 namespace ito
 {
@@ -68,7 +71,9 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     m_pCategories->setHeaderHidden(true);
     m_pCategories->setSortingEnabled(false);
 
-    m_pCategories->setMinimumWidth(200);
+	float screenFactorDpi = GuiHelper::screenDpiFactor();
+
+    m_pCategories->setMinimumWidth(200 * screenFactorDpi);
 
     connect(
         m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), 
@@ -93,6 +98,7 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
 
     m_pVerticalLayoutRight->addWidget(m_pPageTitle);
     m_pVerticalLayoutRight->addWidget(m_pLine);
+
     m_pVerticalLayoutRight->addWidget(m_pStackedWidget);
     
     m_pSplitterRightWidget->setLayout(m_pVerticalLayoutRight);
@@ -102,6 +108,7 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
     m_pSplitter->addWidget(m_pCategories);
     m_pSplitter->addWidget(m_pSplitterRightWidget);
     m_pSplitter->setStretchFactor(1, 10);
+	m_pSplitter->setChildrenCollapsible(false);
 
     m_pVerticalLayout = new QVBoxLayout(this);
     m_pVerticalLayout->addWidget(m_pSplitter);
@@ -111,7 +118,7 @@ DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
 
     initPages();
 
-    resize(700, 450);
+	resize(800 * screenFactorDpi, 450 * screenFactorDpi);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DialogProperties");
@@ -157,6 +164,7 @@ void DialogProperties::initPages()
     m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - Please Choose Subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/01general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/01general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - Scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
+	m_pages["04_editor/03syntax"] = PropertyPage(tr("Syntax and Style Checks"), tr("Editor - Syntax and Style Checks"), "04_editor/03syntax", new WidgetPropEditorSyntaxCheck(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips"), tr("Editor - Calltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - Auto Completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/06gotoassignment"] = PropertyPage(tr("Goto Assignment"), tr("Editor - Goto Assignment"), "04_editor/06gotoassignment", new WidgetPropEditorGotoAssignment(), QIcon(":/application/icons/preferences-general.png"));

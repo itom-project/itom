@@ -1,17 +1,31 @@
-# load either pyflakes, or if not found frosted
-from pyflakes import api as pyflakesapi
-import tempfile
-import os
+"""This module builds a bridge between the syntax and style checks
+of itom and different possible packages in Python
 
+Currently this script supports the Python packages:
+
+* pyflakes
+* flake8
+"""
 try:
     from flake8.api import legacy as flake8
-    HAS_FLAKE8 = True
+    HAS_FLAKE8: bool = True
+except ModuleNotFoundError:
+    HAS_FLAKE8: bool = False
+
+if HAS_FLAKE8:
     from flake8.formatting import base
     
     if False:  # `typing.TYPE_CHECKING` was introduced in 3.5.2
         from flake8.style_guide import Violation
+
+try:
+    from pyflakes import api as pyflakesapi
+    HAS_PYFLAKES: bool = True
 except ModuleNotFoundError:
-    HAS_FLAKE8 = False
+    HAS_PYFLAKES: bool = False
+
+import tempfile
+import os
 
 ###############################################################
 
@@ -183,6 +197,14 @@ class ItomFlake8Formatter(base.BaseFormatter):
         self._addItem(errorType, error.filename, error.code, error.text, error.line_number, error.column_number)
 
 #############################################################
+
+
+def hasSyntaxCheckFeature() -> bool:
+    return HAS_PYFLAKES
+
+
+def hasSyntaxAndStyleCheckFeature() -> bool:
+    return HAS_FLAKE8
 
 
 def check(codestring: str, filename: str, fileSaved: bool) -> str:

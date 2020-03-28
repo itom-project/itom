@@ -176,14 +176,15 @@ PythonEngine::PythonEngine() :
     m_pyFuncWeakRefAutoInc(0),
     m_pyModGC(NULL),
     m_pyModSyntaxCheck(NULL),
+	m_pyModSyntaxCheckHasSyntaxCheckFeature(false),
+	m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature(false),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL),
     m_pythonThreadId(0),
     m_includeItomImportString(""),
     m_pUserDefinedPythonHome(NULL),
     m_pyModJedi(NULL),
-    m_pyModJediChecked(false),
-    m_syntaxCheckerEnabled(true)
+    m_pyModJediChecked(false)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -268,6 +269,10 @@ PythonEngine::PythonEngine() :
     m_autoReload.checkFileExec = true;
     m_autoReload.checkStringExec = true;
     m_autoReload.enabled = false;
+
+	m_syntaxStyleCheckOptions.includeItomModuleBeforeCheck = true;
+	m_syntaxStyleCheckOptions.syntaxCheckEnabled = false;
+	m_syntaxStyleCheckOptions.styleCheckEnabled = false;
 
     bpModel = new ito::BreakPointModel();
     bpModel->restoreState(); //get breakPoints from last session
@@ -779,21 +784,29 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 PyErr_PrintEx(0);
             }
 
-            //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
             //try to add the module 'frosted' or 'pyflakes' (preferred) for syntax check
             m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
             if (m_pyModSyntaxCheck == NULL)
             {
-#if PY_VERSION_HEX < 0x03060000
-                if (PyErr_ExceptionMatches(PyExc_ImportError) && m_syntaxCheckerEnabled)
-#else
-                if (PyErr_ExceptionMatches(PyExc_ModuleNotFoundError) && m_syntaxCheckerEnabled)
-#endif
-                {
-                    (*infoMessages)["PyFlakes"] = "Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.";
-                }
-                PyErr_Clear();
+				(*retValue) += ito::RetVal(ito::retError, 0, tr("Error loading the module itomSyntaxCheck.").toLatin1().data());
+				std::cerr << "the module itomSyntaxCheck could not be loaded." << std::endl;
+				PyErr_PrintEx(0);
+				PyErr_Clear();
+				m_pyModSyntaxCheckHasSyntaxCheckFeature = false;
+				m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature = false;
             }
+			else
+			{
+				PyObject *hasSyntaxCheckFeature = PyObject_CallMethod(m_pyModSyntaxCheck, "hasSyntaxCheckFeature", ""); //new ref
+				m_pyModSyntaxCheckHasSyntaxCheckFeature = PyObject_IsTrue(hasSyntaxCheckFeature);
+				Py_XDECREF(hasSyntaxCheckFeature);
+
+				PyObject *hasSyntaxAndStyleCheckFeature = PyObject_CallMethod(m_pyModSyntaxCheck, "hasSyntaxAndStyleCheckFeature", ""); //new ref
+				m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature = PyObject_IsTrue(hasSyntaxAndStyleCheckFeature);
+				Py_XDECREF(hasSyntaxAndStyleCheckFeature);
+			}
+
+			checkSyntaxStyleCheckRequirements();
 
             // import itoFunctions
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
@@ -900,30 +913,43 @@ void PythonEngine::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
-
-    bool syntaxCheckerEnabled = m_syntaxCheckerEnabled;
-    m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
-    
-    if (m_syntaxCheckerEnabled && !syntaxCheckerEnabled && !m_pyModSyntaxCheck)
-    {
-        QObject* mainWin = AppManagement::getMainWindow();
-        if (mainWin)
-        {
-            QString text = tr("Syntax check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
-            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PyFlakes"));
-        }
-    }
-    else if (!m_syntaxCheckerEnabled)
-    {
-        QObject* mainWin = AppManagement::getMainWindow();
-        if (mainWin)
-        {
-            QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, ""), Q_ARG(QString, "PyFlakes"));
-        }
-    }
+	m_syntaxStyleCheckOptions.includeItomModuleBeforeCheck = settings.value("syntaxIncludeItom", true).toBool();
+	m_syntaxStyleCheckOptions.syntaxCheckEnabled = settings.value("syntaxChecker", true).toBool();
+	m_syntaxStyleCheckOptions.styleCheckEnabled = settings.value("styleChecker", false).toBool();
 
     settings.endGroup();
+
+	checkSyntaxStyleCheckRequirements();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::checkSyntaxStyleCheckRequirements()
+{
+	SyntaxStyleCheckOptions &opt = m_syntaxStyleCheckOptions;
+
+	if (opt.styleCheckEnabled || opt.syntaxCheckEnabled)
+	{
+		if (opt.styleCheckEnabled
+			&& !m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature)
+		{
+			QObject* mainWin = AppManagement::getMainWindow();
+			if (mainWin)
+			{
+				QString text = tr("Style check not possible since package flake8 missing. Install it or disable the style check in the properties.");
+				QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
+			}
+		}
+		else if (opt.syntaxCheckEnabled 
+			&& !m_pyModSyntaxCheckHasSyntaxCheckFeature)
+		{
+			QObject* mainWin = AppManagement::getMainWindow();
+			if (mainWin)
+			{
+				QString text = tr("Syntax check not possible since package pyflakes or flake8 missing. Install at least one of pyflakes or flake8 or disable the syntax check in the properties.");
+				QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
+			}
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

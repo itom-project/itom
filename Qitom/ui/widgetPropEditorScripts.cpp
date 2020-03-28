@@ -50,11 +50,6 @@ void WidgetPropEditorScripts::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    // Syntax Checker
-    ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
-    ui.checkIncludeItom->setChecked(settings.value("syntaxIncludeItom", true).toBool());
-    ui.spinSyntaxInterval->setValue(settings.value("syntaxInterval", 1.00).toDouble());
-
     // Class Navigator
     ui.groupClassNavigator->setChecked(settings.value("classNavigator", true).toBool());
     ui.checkActiveClassNavigatorTimer->setChecked(settings.value("classNavigatorTimerActive", true).toBool());
@@ -106,11 +101,6 @@ void WidgetPropEditorScripts::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-
-    // Syntax Checker
-    settings.setValue("syntaxInterval", ui.spinSyntaxInterval->value());
-    settings.setValue("syntaxChecker", ui.groupSyntaxCheck->isChecked());
-    settings.setValue("syntaxIncludeItom", ui.checkIncludeItom->isChecked());
 
     // Class Navigator
     settings.setValue("classNavigator", ui.groupClassNavigator->isChecked());
