@@ -38,7 +38,7 @@ ByteArray::ByteArray(const char *str) : d(NULL)
     if (str)
     {
         size_t len = strlen(str);
-        d = static_cast<Data*>(malloc(sizeof(Data)+len+1));
+        d = static_cast<Data*>(malloc(sizeof(Data)+len));
         d->m_ref = 0;
         d->m_pData = d->m_buffer;
         memcpy(d->m_buffer, str, len+1);
