@@ -55,6 +55,7 @@ namespace ito {
     */
     class CodeCheckerItem
     {
+
     public:
         enum CheckerType
         {
@@ -92,6 +93,20 @@ namespace ito {
             {
                 m_color = statusToColor(m_type);
             }
+        }
+
+        //-----------------------------------------------------------
+        CodeCheckerItem(const CodeCheckerItem &other) :
+            m_description(other.m_description), //The description of the message, used as a tooltip.
+            m_code(other.m_code),
+            m_type(other.m_type), //The status associated with the message
+            m_col(other.m_col),    //: The start column (used for the text decoration). If the col is None,
+                           //: the whole line is highlighted.
+            m_lineNumber(other.m_lineNumber),
+            m_filePath(other.m_filePath),
+            m_color(other.m_color)
+        {
+
         }
 
         //------------------------------------------------------------

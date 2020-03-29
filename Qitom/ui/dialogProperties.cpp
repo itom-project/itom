@@ -31,7 +31,7 @@
 #include "widgetPropEditorStyles.h"
 #include "widgetPropEditorAutoCompletion.h"
 #include "widgetPropEditorGotoAssignment.h"
-#include "widgetPropEditorSyntaxCheck.h"
+#include "WidgetPropEditorCodeCheckers.h"
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropEditorScripts.h"
 #include "widgetPropGeneralLanguage.h"
@@ -164,7 +164,7 @@ void DialogProperties::initPages()
     m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - Please Choose Subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/01general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/01general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - Scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
-	m_pages["04_editor/03syntax"] = PropertyPage(tr("Syntax and Style Checks"), tr("Editor - Syntax and Style Checks"), "04_editor/03syntax", new WidgetPropEditorSyntaxCheck(), QIcon(":/application/icons/preferences-general.png"));
+	m_pages["04_editor/03syntax"] = PropertyPage(tr("Syntax and Style Checks"), tr("Editor - Syntax and Style Checks"), "04_editor/03syntax", new WidgetPropEditorCodeCheckers(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips"), tr("Editor - Calltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - Auto Completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/06gotoassignment"] = PropertyPage(tr("Goto Assignment"), tr("Editor - Goto Assignment"), "04_editor/06gotoassignment", new WidgetPropEditorGotoAssignment(), QIcon(":/application/icons/preferences-general.png"));

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WidgetPropEditorSyntaxCheck</class>
- <widget class="QWidget" name="WidgetPropEditorSyntaxCheck">
+ <class>WidgetPropEditorCodeCheckers</class>
+ <widget class="QWidget" name="WidgetPropEditorCodeCheckers">
   <property name="geometry">
    <rect>
     <x>0</x>

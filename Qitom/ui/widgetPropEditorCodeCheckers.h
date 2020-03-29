@@ -20,25 +20,25 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef WIDGETPROPEDITORSYNTAXCHECK_H
-#define WIDGETPROPEDITORSYNTAXCHECK_H
+#ifndef WIDGETPROPEDITORCODECHECKERS_H
+#define WIDGETPROPEDITORCODECHECKERS_H
 
 #include "abstractPropertyPageWidget.h"
 
 #include <qwidget.h>
 
-#include "ui_widgetPropEditorSyntaxCheck.h"
+#include "ui_WidgetPropEditorCodeCheckers.h"
 
 namespace ito
 {
 
-class WidgetPropEditorSyntaxCheck: public AbstractPropertyPageWidget
+class WidgetPropEditorCodeCheckers: public AbstractPropertyPageWidget
 {
     Q_OBJECT
 
 public:
-	WidgetPropEditorSyntaxCheck(QWidget *parent = NULL);
-    ~WidgetPropEditorSyntaxCheck();
+    WidgetPropEditorCodeCheckers(QWidget *parent = NULL);
+    ~WidgetPropEditorCodeCheckers();
 
     void readSettings();
     void writeSettings();
@@ -46,7 +46,7 @@ public:
 protected:
 
 private:
-    Ui::WidgetPropEditorSyntaxCheck ui;
+    Ui::WidgetPropEditorCodeCheckers ui;
     
 };
 

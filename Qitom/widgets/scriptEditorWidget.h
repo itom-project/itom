@@ -161,9 +161,10 @@ private:
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex m_fileSystemWatcherMutex;
 
-    bool m_syntaxCheckerEnabled;
-    int m_syntaxCheckerInterval;
-    QTimer *m_syntaxTimer;
+    // the following variables are related to the code checker feature of Python
+    bool m_codeCheckerEnabled;
+    int m_codeCheckerInterval;      //!< timeout time after the last key press, when the next code check is called.
+    QTimer *m_codeCheckerCallTimer; //!< timer, that is used to call a new code check after a certain time after the key press
 
     Qt::CaseSensitivity m_filenameCaseSensitivity;
 
@@ -219,7 +220,7 @@ signals:
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
 public slots:
-    void checkSyntax();
+    void triggerCodeChecker();
     void codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems);
     void codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems);
 

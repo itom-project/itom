@@ -58,6 +58,8 @@
 #include <qdir.h>
 #include <qdesktopwidget.h>
 
+#include <qjsondocument.h>
+#include <qjsonobject.h>
 #include <qsettings.h>
 #include <AppManagement.h>
 
@@ -163,7 +165,7 @@ PythonEngine *PythonEngine::getInstanceInternal()
 PythonEngine::PythonEngine() :
     m_started(false),
     m_pDesktopWidget(NULL),
-    pythonState(pyStateIdle),
+    m_pythonState(pyStateIdle),
     bpModel(NULL),
     mainModule(NULL),
     mainDictionary(NULL),
@@ -175,9 +177,9 @@ PythonEngine::PythonEngine() :
     itomFunctions(NULL),
     m_pyFuncWeakRefAutoInc(0),
     m_pyModGC(NULL),
-    m_pyModSyntaxCheck(NULL),
-	m_pyModSyntaxCheckHasSyntaxCheckFeature(false),
-	m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature(false),
+    m_pyModCodeChecker(NULL),
+	m_pyModCodeCheckerHasPyFlakes(false),
+	m_pyModCodeCheckerHasFlake8(false),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL),
     m_pythonThreadId(0),
@@ -270,9 +272,10 @@ PythonEngine::PythonEngine() :
     m_autoReload.checkStringExec = true;
     m_autoReload.enabled = false;
 
-	m_syntaxStyleCheckOptions.includeItomModuleBeforeCheck = true;
-	m_syntaxStyleCheckOptions.syntaxCheckEnabled = false;
-	m_syntaxStyleCheckOptions.styleCheckEnabled = false;
+	m_codeCheckerOptions.includeItomModuleBeforeCheck = true;
+    m_codeCheckerOptions.mode = PythonCommon::CodeCheckerPyFlakes;
+    m_codeCheckerOptions.minVisibleMessageTypeLevel = PythonCommon::TypeInfo;
+    m_codeCheckerOptions.furtherPropertiesJson = "{}";
 
     bpModel = new ito::BreakPointModel();
     bpModel->restoreState(); //get breakPoints from last session
@@ -785,28 +788,28 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             }
 
             //try to add the module 'frosted' or 'pyflakes' (preferred) for syntax check
-            m_pyModSyntaxCheck = PyImport_ImportModule("itomSyntaxCheck"); //new reference
-            if (m_pyModSyntaxCheck == NULL)
+            m_pyModCodeChecker = PyImport_ImportModule("itomSyntaxCheck"); //new reference
+            if (m_pyModCodeChecker == NULL)
             {
 				(*retValue) += ito::RetVal(ito::retError, 0, tr("Error loading the module itomSyntaxCheck.").toLatin1().data());
 				std::cerr << "the module itomSyntaxCheck could not be loaded." << std::endl;
 				PyErr_PrintEx(0);
 				PyErr_Clear();
-				m_pyModSyntaxCheckHasSyntaxCheckFeature = false;
-				m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature = false;
+				m_pyModCodeCheckerHasPyFlakes = false;
+				m_pyModCodeCheckerHasFlake8 = false;
             }
 			else
 			{
-				PyObject *hasSyntaxCheckFeature = PyObject_CallMethod(m_pyModSyntaxCheck, "hasSyntaxCheckFeature", ""); //new ref
-				m_pyModSyntaxCheckHasSyntaxCheckFeature = PyObject_IsTrue(hasSyntaxCheckFeature);
-				Py_XDECREF(hasSyntaxCheckFeature);
+				PyObject *hasPyFrosted = PyObject_CallMethod(m_pyModCodeChecker, "hasPyFlakes", ""); //new ref
+				m_pyModCodeCheckerHasPyFlakes = hasPyFrosted ? PyObject_IsTrue(hasPyFrosted) : false;
+				Py_XDECREF(hasPyFrosted);
 
-				PyObject *hasSyntaxAndStyleCheckFeature = PyObject_CallMethod(m_pyModSyntaxCheck, "hasSyntaxAndStyleCheckFeature", ""); //new ref
-				m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature = PyObject_IsTrue(hasSyntaxAndStyleCheckFeature);
-				Py_XDECREF(hasSyntaxAndStyleCheckFeature);
+				PyObject *hasFlake8 = PyObject_CallMethod(m_pyModCodeChecker, "hasFlake8", ""); //new ref
+				m_pyModCodeCheckerHasFlake8 = hasFlake8 ? PyObject_IsTrue(hasFlake8) : false;
+				Py_XDECREF(hasFlake8);
 			}
 
-			checkSyntaxStyleCheckRequirements();
+			checkCodeCheckerRequirements();
 
             // import itoFunctions
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
@@ -913,49 +916,82 @@ void PythonEngine::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-	m_syntaxStyleCheckOptions.includeItomModuleBeforeCheck = settings.value("syntaxIncludeItom", true).toBool();
-	m_syntaxStyleCheckOptions.syntaxCheckEnabled = settings.value("syntaxChecker", true).toBool();
-	m_syntaxStyleCheckOptions.styleCheckEnabled = settings.value("styleChecker", false).toBool();
+    CodeCheckerOptions &opt = m_codeCheckerOptions;
+
+    //General settings
+    int mode = settings.value("codeCheckerMode", PythonCommon::CodeCheckerPyFlakes).toInt();
+
+    switch (mode)
+    {
+    case PythonCommon::NoCodeChecker:
+        opt.mode = PythonCommon::NoCodeChecker;
+        break;
+    case PythonCommon::CodeCheckerPyFlakes:
+    default:
+        opt.mode = PythonCommon::CodeCheckerPyFlakes;
+        break;
+    case PythonCommon::CodeCheckerFlake8:
+        opt.mode = PythonCommon::CodeCheckerFlake8;
+        break;
+    }
+
+	opt.includeItomModuleBeforeCheck = settings.value("codeCheckerAutoImportItem", true).toBool();
+
+    int level = settings.value("codeCheckerShowMinCategoryLevel", PythonCommon::TypeInfo).toInt();
+
+    switch (level)
+    {
+    default:
+    case PythonCommon::TypeInfo:
+        opt.minVisibleMessageTypeLevel = PythonCommon::TypeInfo;
+        break;
+    case PythonCommon::TypeWarning:
+        opt.minVisibleMessageTypeLevel = PythonCommon::TypeWarning;
+        break;
+    case PythonCommon::TypeError:
+        opt.minVisibleMessageTypeLevel = PythonCommon::TypeError;
+        break;
+    }
+
+    QJsonObject jsonObject = QJsonObject::fromVariantMap(settings.value("codeCheckerProperties", QVariantMap()).toMap());
+    opt.furtherPropertiesJson = QJsonDocument(jsonObject).toJson();
 
     settings.endGroup();
 
-	checkSyntaxStyleCheckRequirements();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::checkSyntaxStyleCheckRequirements()
-{
-	SyntaxStyleCheckOptions &opt = m_syntaxStyleCheckOptions;
-
-	if (opt.styleCheckEnabled || opt.syntaxCheckEnabled)
-	{
-		if (opt.styleCheckEnabled
-			&& !m_pyModSyntaxCheckHasSyntaxAndStyleCheckFeature)
-		{
-			QObject* mainWin = AppManagement::getMainWindow();
-			if (mainWin)
-			{
-				QString text = tr("Style check not possible since package flake8 missing. Install it or disable the style check in the properties.");
-				QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
-			}
-		}
-		else if (opt.syntaxCheckEnabled 
-			&& !m_pyModSyntaxCheckHasSyntaxCheckFeature)
-		{
-			QObject* mainWin = AppManagement::getMainWindow();
-			if (mainWin)
-			{
-				QString text = tr("Syntax check not possible since package pyflakes or flake8 missing. Install at least one of pyflakes or flake8 or disable the syntax check in the properties.");
-				QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
-			}
-		}
-	}
+	checkCodeCheckerRequirements();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::propertiesChanged()
 {
-    readSettings();
+	readSettings();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::checkCodeCheckerRequirements()
+{
+	CodeCheckerOptions &opt = m_codeCheckerOptions;
+
+	if (opt.mode == PythonCommon::CodeCheckerFlake8
+		&& !m_pyModCodeCheckerHasFlake8)
+	{
+		QObject* mainWin = AppManagement::getMainWindow();
+		if (mainWin)
+		{
+			QString text = tr("Extended code and style check not possible since package flake8 missing. Install it or disable the style check in the properties.");
+			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
+		}
+	}
+	else if (opt.mode == PythonCommon::CodeCheckerPyFlakes 
+		&& !m_pyModCodeCheckerHasPyFlakes)
+	{
+		QObject* mainWin = AppManagement::getMainWindow();
+		if (mainWin)
+		{
+			QString text = tr("Syntax and basic code check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
+			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1078,8 +1114,8 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         Py_XDECREF(itomFunctions);
         itomFunctions = NULL;
 
-        Py_XDECREF(m_pyModSyntaxCheck);
-        m_pyModSyntaxCheck = NULL;
+        Py_XDECREF(m_pyModCodeChecker);
+        m_pyModCodeChecker = NULL;
 
         Py_XDECREF(m_pyModJedi);
         m_pyModJedi = NULL;
@@ -2175,7 +2211,7 @@ void PythonEngine::jediCalltipRequestEnqueued()
     PyObject *result = NULL;
     int lineOffset = 0;
 
-    if (m_includeItomImportBeforeSyntaxCheck)
+    if (m_includeItomImportBeforeCodeAnalysis)
     {
         //add from itom import * as first line (this is afterwards removed from results)
         lineOffset = 1;
@@ -2269,7 +2305,7 @@ void PythonEngine::jediAssignmentRequested(const QString &source, int line, int 
     int lineOffset = 0;
     PyObject *result = NULL;
 
-    if (m_includeItomImportBeforeSyntaxCheck)
+    if (m_includeItomImportBeforeCodeAnalysis)
     {
         lineOffset = 1;
         //add from itom import * as first line (this is afterwards removed from results)
@@ -2377,7 +2413,7 @@ void PythonEngine::jediCompletionRequestEnqueued()
     {
         PyObject *result = NULL;
 
-        if (m_includeItomImportBeforeSyntaxCheck)
+        if (m_includeItomImportBeforeCodeAnalysis)
         {
             //add from itom import * as first line (this is afterwards removed from results)
             result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
@@ -2473,7 +2509,7 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
 //! public slot invoked by the scriptEditorWidget
 /*!
     This function calls the pyflakes or frosted python module. This module is able to check the syntax.
-    It\B4s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
+    It\B4s called from ScriptEditorWidget::triggerCodeChecker() and delivers the results by 
     calling ScriptEditorWidget::codeCheckResultsReady(...).
 
     \param code This QString contains the code that the linter / code checker is supposed to check
@@ -2482,27 +2518,36 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
     \param sender this is a pointer to the object that called this method
     \return no real return value. Results are returned by invoking ScriptEditorWidget::codeCheckResultsReady(...)
 */
-void PythonEngine::pythonSyntaxCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName)
+void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName)
 {
-    if (m_pyModSyntaxCheck)
+    if (m_pyModCodeChecker)
     {
-        QString codeToCheck;
+        QString codeToCheck = code;
         QString filename_ = filename;
 
-        if (m_includeItomImportBeforeSyntaxCheck)
-        {
-            //add from itom import * as first line (this is afterwards removed from results)
-            codeToCheck = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
-            filename_ = "";
-            fileSaved = false;
-        }
-        else
-        {
-            codeToCheck = code;
-        }
+        //if (m_includeItomImportBeforeCodeAnalysis)
+        //{
+        //    //add from itom import * as first line (this is afterwards removed from results)
+        //    codeToCheck = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
+        //    filename_ = "";
+        //    fileSaved = false;
+        //}
+        //else
+        //{
+        //    codeToCheck = code;
+        //}
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "ssi", codeToCheck.toUtf8().constData(), filename.toUtf8().constData(), fileSaved ? 1 : 0);
+        PyObject *result = PyObject_CallMethod(m_pyModCodeChecker, 
+            "check", 
+            "ssiiis", 
+            codeToCheck.toUtf8().constData(), 
+            filename.toUtf8().constData(), 
+            fileSaved ? 1 : 0,
+            (int)m_codeCheckerOptions.mode,
+            m_includeItomImportBeforeCodeAnalysis ? 1 : 0,
+            m_codeCheckerOptions.furtherPropertiesJson.constData()
+            );
 
         if (result && PyList_Check(result))
         {
@@ -2526,8 +2571,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, const QString &filenam
                     {
                         msgType = itemSplit[0].toInt();
 
-
-                        if (m_includeItomImportBeforeSyntaxCheck)
+                        if (0 && m_includeItomImportBeforeCodeAnalysis)
                         {
                             lineNo = itemSplit[2].toInt() - 1;
                         }
@@ -2538,7 +2582,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, const QString &filenam
 
                         columnIdx = itemSplit[3].toInt();
 
-                        if (lineNo != 0) //0 was 1 in case of m_includeItomImportBeforeSyntaxCheck and is related to errors of this virtually added import line No 1
+                        if (lineNo != 0) //0 was 1 in case of m_includeItomImportBeforeCodeAnalysis and is related to errors of this virtually added import line No 1
                         {
                             ito::CodeCheckerItem::CheckerType type = ito::CodeCheckerItem::Error;
 
@@ -2921,7 +2965,7 @@ void PythonEngine::pythonRunString(QString cmd)
     }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         {
@@ -2954,7 +2998,7 @@ void PythonEngine::pythonRunFile(QString filename)
 {
     QStringList list;
 
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         {
@@ -2989,7 +3033,7 @@ void PythonEngine::pythonRunFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugFile(QString filename)
 {
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         {
@@ -3022,7 +3066,7 @@ void PythonEngine::pythonDebugString(QString cmd)
         ba.prepend("pass"); //a single comment while cause an error in python
     }
 
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         {
@@ -3056,7 +3100,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
     }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
 
@@ -3100,7 +3144,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
@@ -3141,7 +3185,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
 void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     m_interruptCounter = 0;
-    switch (pythonState)
+    switch (m_pythonState)
     {
         case pyStateIdle:
             pythonStateTransition(pyTransBeginRun);
@@ -3323,17 +3367,17 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     RetVal retValue(retOk);
     pythonStateChangeMutex.lock();
 
-    switch (pythonState)
+    switch (m_pythonState)
     {
     case pyStateIdle:
         if (transition == pyTransBeginRun)
         {
-            pythonState = pyStateRunning;
+            m_pythonState = pyStateRunning;
             emit(pythonStateChanged(transition));
         }
         else if (transition == pyTransBeginDebug)
         {
-            pythonState = pyStateDebugging;
+            m_pythonState = pyStateDebugging;
             emit(pythonStateChanged(transition));
         }
         else
@@ -3344,7 +3388,7 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     case pyStateRunning:
         if (transition == pyTransEndRun)
         {
-            pythonState = pyStateIdle;
+            m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition));
         }
         else
@@ -3355,12 +3399,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     case pyStateDebugging:
         if (transition == pyTransEndDebug)
         {
-            pythonState = pyStateIdle;
+            m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition));
         }
         else if (transition == pyTransDebugWaiting)
         {
-            pythonState = pyStateDebuggingWaiting;
+            m_pythonState = pyStateDebuggingWaiting;
             emit(pythonStateChanged(transition));
         }
         else
@@ -3371,17 +3415,17 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     case pyStateDebuggingWaiting:
         if (transition == pyTransEndDebug)
         {
-            pythonState = pyStateIdle;
+            m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition));
         }
         else if (transition == pyTransDebugContinue)
         {
-            pythonState = pyStateDebugging;
+            m_pythonState = pyStateDebugging;
             emit(pythonStateChanged(transition));
         }
         else if (transition == pyTransDebugExecCmdBegin)
         {
-            pythonState = pyStateDebuggingWaitingButBusy;
+            m_pythonState = pyStateDebuggingWaitingButBusy;
             emit(pythonStateChanged(transition));
         }
         else
@@ -3392,12 +3436,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     case pyStateDebuggingWaitingButBusy:
         if (transition == pyTransEndDebug)
         {
-            pythonState = pyStateIdle;
+            m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition));
         }
         else if (transition == pyTransDebugExecCmdEnd)
         {
-            pythonState = pyStateDebuggingWaiting;
+            m_pythonState = pyStateDebuggingWaiting;
             emit(pythonStateChanged(transition));
         }
         else
@@ -4408,23 +4452,23 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     bool retVal = true;
     PyObject* dict = NULL;
     PyObject* value;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         std::cerr << "it is not allowed to rename a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
         retVal = false;
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -4608,23 +4652,23 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     bool retVal = true;
     PyObject* dict = NULL;
     QString key;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         std::cerr << "it is not allowed to delete a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
         retVal = false;
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -4754,21 +4798,21 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -4865,21 +4909,21 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -4996,22 +5040,22 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
 ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     PyObject* destinationDict = NULL;
     bool released = false;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5134,23 +5178,23 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
     bool released = false;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5237,23 +5281,23 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const QString &find, QSharedPointer<QStringList> varnameList, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
     bool released = false;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5329,7 +5373,7 @@ of the GIL.
 ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    //tPythonState oldState = pythonState;
+    //tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
@@ -5339,17 +5383,17 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
     {
         retVal += ito::RetVal(ito::retError, 0, tr("The number of names and values must be equal").toLatin1().data());
     }
-    /*else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    /*else if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to put variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }*/
     else
     {
-        //if (pythonState == pyStateIdle)
+        //if (m_pythonState == pyStateIdle)
         //{
         //    pythonStateTransition(pyTransBeginRun);
         //}
-        //else if (pythonState == pyStateDebuggingWaiting)
+        //else if (m_pythonState == pyStateDebuggingWaiting)
         //{
         //    pythonStateTransition(pyTransDebugExecCmdBegin);
         //}
@@ -5468,7 +5512,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
 ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
     PyObject* value = NULL;
     bool released = false;
@@ -5481,17 +5525,17 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
     {
         retVal += ito::RetVal(ito::retError, 0, tr("The number of names and types must be equal").toLatin1().data());
     }
-    else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    else if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5594,7 +5638,7 @@ ito::RetVal PythonEngine::pythonClearAll()
     {
         retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
     }
-    /*else if (pythonState &(pyStateRunning | pyStateDebugging | pyStateDebuggingWaitingButBusy))
+    /*else if (m_pythonState &(pyStateRunning | pyStateDebugging | pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
         std::cerr << "It is not allowed to clear all variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
@@ -5615,12 +5659,12 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     ItomSharedSemaphoreLocker locker(semaphore);
     RetVal retVal(retOk);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     PyObject* dict = NULL;
     PyObject* value = NULL;
     bool globalNotLocal = true; //may also be accessed by parameter, if desired
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
 
@@ -5632,11 +5676,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5778,21 +5822,21 @@ PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::Re
 ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue;
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     PyObject *elem;
     bool ok;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5853,21 +5897,21 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
 ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue;
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     //PyObject *elem;
     //bool ok;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5927,21 +5971,21 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6026,21 +6070,21 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 {
     ItomSharedSemaphoreLocker locker(semaphore);
 
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6268,22 +6312,22 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    tPythonState oldState = m_pythonState;
     RetVal retVal;
     bool released = false;
     PyObject* destinationDict = NULL;
 
-    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (pythonState == pyStateIdle)
+        if (m_pythonState == pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
