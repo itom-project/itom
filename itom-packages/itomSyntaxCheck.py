@@ -28,6 +28,7 @@ import tempfile
 import os
 from typing import List
 import json
+import re
 
 ###############################################################
 import itom
@@ -53,6 +54,17 @@ __main__.__dict__["_CHECKER_CACHE"] = _CHECKER_CACHE
 ###############################################################
 
 
+class CheckerException(Exception):
+    """exception raised if any parameter to the checkers is invalid.
+    This exception should always be presented to itom users.
+    
+    Default exceptions are only shown in Debug mode of itom and ignored in Release.
+    """
+    pass
+
+#############################################################
+
+
 class ItomFlakesReporter():
     """Formats the results of pyflakes checks and then presents them to the user."""
     def __init__(self, filename: str, lineOffset: int = 0, defaultMsgType: int = 2):
@@ -61,14 +73,22 @@ class ItomFlakesReporter():
         self._lineOffset = lineOffset
         self._defaultMsgType = defaultMsgType
     
+    def reset(self):
+        """reset all current message items
+        """
+        self._items = []
+    
     def _addItem(self, type: int, filename: str, msgCode: str, description: str, lineNo: int = -1, column: int = -1):
         '''
         @param type: the type of message (0: Info, 1: Warning, 2: Error)
         @ptype type: C{int}
         '''
-        self._items.append("%i::%s::%i::%i::%s::%s" % 
-                            (type, self._filename, lineNo - self._lineOffset, 
-                            column, msgCode, description))
+        if lineNo > self._lineOffset:
+            # all messages earlier than _lineOffset belong to the additional itom import.
+            # ignore them.
+            self._items.append("%i::%s::%i::%i::%s::%s" % 
+                                (type, self._filename, lineNo - self._lineOffset, 
+                                column, msgCode, description))
 
     def unexpectedError(self, filename, msg):
         """
@@ -143,22 +163,51 @@ class ItomFlake8Formatter(base.BaseFormatter):
     def __init__(self, *args, **kwargs):
         super(ItomFlake8Formatter, self).__init__(*args, **kwargs)
         self._items = []
-        self._line_offset: int = 0
+        self._lineOffset: int = 0
+        self._errorCodes : str = ["F",]
+        self._warningCodes : str = ["E", "C"]
     
     @property
     def line_offset(self) -> int:
-        return self._line_offset
+        return self._lineOffset
     
     @line_offset.setter
     def line_offset(self, value: int) -> int:
-        self._line_offset = value
+        self._lineOffset = value
+    
+    def _check_categories(self, codes : str) -> List[str]:
+        """
+        """
+        listOfCodes = codes.split(",")
+        listOfCodes = [item.strip() for item in listOfCodes]
+        
+        #check
+        validName = re.compile(r"[A-Z](0-9){0,4}")
+        
+        for item in listOfCodes:
+            if validName.match(item) is None:
+                raise CheckerException("invalid code name: %s" % item)
+        
+        return listOfCodes
+    
+    def set_warn_and_error_categories(self, errorCodes : str, warnCodes : str):
+        """
+        """
+        self._errorCodes = self._check_categories(errorCodes)
+        self._warningCodes = self._check_categories(warnCodes)
     
     def _addItem(self, errorType: int, filename: str, msgCode: str, description: str, lineNo: int = -1, column: int = -1):
-        '''
+        """
         @param type: the type of message (0: Info, 1: Warning, 2: Error)
         @ptype type: C{int}
-        '''
-        self._items.append("%i::%s::%i::%i::%s::%s" % (errorType, filename, lineNo - self._line_offset, column, msgCode, description))
+        """
+        if lineNo > self._lineOffset:
+            # all messages earlier than _lineOffset belong to the additional itom import.
+            # ignore them.
+            self._items.append("%i::%s::%i::%i::%s::%s" % 
+                               (errorType, filename, 
+                                lineNo - self._lineOffset, column, 
+                                msgCode, description))
     
     def results(self):
         """
@@ -223,10 +272,10 @@ class ItomFlake8Formatter(base.BaseFormatter):
         5. message code (str): e.g. E550...
         6. description (str): text of error
         """
-        if error.code.startswith("F"):  # errors from pyflakes
+        if list(filter(error.code.startswith, self._errorCodes)) != []:
             errorType = 2  # error
-        elif error.code.startswith("E"):  # usually errors from pycodestyle
-            errorType = 1  # warning
+        elif list(filter(error.code.startswith, self._warningCodes)) != []:
+            errorType = 1  # error
         else:  # e.g. "W" --> warnings from pycodestyle
             errorType = 0  # info
         
@@ -243,6 +292,17 @@ def hasFlake8() -> bool:
     return _HAS_FLAKE8
 
 
+def createFlake8OptionsFromProperties(props : dict) -> dict:
+    '''converts properties, obtained from itom, to a options dict,
+    that can be passed to flake8.
+    '''
+    options = {}
+    
+    # if pydocstyle is installed:
+    if "codeCheckerFlake8Docstyle" in props:
+        options["convention"] = props["codeCheckerFlake8Docstyle"]
+    
+    return options
 
 def check(codestring: str, 
           filename: str, 
@@ -333,6 +393,9 @@ def check(codestring: str,
             style_guide.init_report(reporter=ItomFlake8Formatter)
             reporter = style_guide._application.formatter #instance to ItomFlake8Formatter
             reporter.line_offset = lineOffset
+            reporter.set_warn_and_error_categories(
+                config["codeCheckerFlake8ErrorNumbers"],
+                config["codeCheckerFlake8WarningNumbers"])
             report = None
             
             if fileSaved:

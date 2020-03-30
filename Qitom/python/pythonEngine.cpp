@@ -936,6 +936,7 @@ void PythonEngine::readSettings()
     }
 
 	opt.includeItomModuleBeforeCheck = settings.value("codeCheckerAutoImportItem", true).toBool();
+    m_includeItomImportBeforeCodeAnalysis = opt.includeItomModuleBeforeCheck;
 
     int level = settings.value("codeCheckerShowMinCategoryLevel", PythonCommon::TypeInfo).toInt();
 
@@ -2545,7 +2546,7 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             filename.toUtf8().constData(), 
             fileSaved ? 1 : 0,
             (int)m_codeCheckerOptions.mode,
-            m_includeItomImportBeforeCodeAnalysis ? 1 : 0,
+            m_codeCheckerOptions.includeItomModuleBeforeCheck ? 1 : 0,
             m_codeCheckerOptions.furtherPropertiesJson.constData()
             );
 
@@ -2582,7 +2583,7 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
 
                         columnIdx = itemSplit[3].toInt();
 
-                        if (lineNo != 0) //0 was 1 in case of m_includeItomImportBeforeCodeAnalysis and is related to errors of this virtually added import line No 1
+                        if (lineNo > 0)
                         {
                             ito::CodeCheckerItem::CheckerType type = ito::CodeCheckerItem::Error;
 

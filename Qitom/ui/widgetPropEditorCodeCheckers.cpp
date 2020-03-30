@@ -126,6 +126,11 @@ void WidgetPropEditorCodeCheckers::readSettings()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+
+Please consider to set all default values, which are directly passed to pyflakes
+or flake8 (contained in codeCheckerProperties) in the python script itomSyntaxCheck.py, too.
+*/
 void WidgetPropEditorCodeCheckers::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
