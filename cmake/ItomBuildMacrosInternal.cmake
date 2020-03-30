@@ -43,7 +43,7 @@ macro(itom_init_core_common_vars)
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
     set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
     set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
-    set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+    set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     
     # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
     if(BUILD_TARGET64)
@@ -56,10 +56,14 @@ macro(itom_init_core_common_vars)
         endif()
     endif()
     
-    # Set a default build type if none was specified
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
-    # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        # Set a default build type if none was specified
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
+        # Set the possible values of build type for cmake-gui
+        # (will also influence the proposed values in the combo box of Visual Studio)
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
+            STRINGS Debug Release MinSizeRel RelWithDebInfo)
+    endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #build all core libraries as shared libraries
     

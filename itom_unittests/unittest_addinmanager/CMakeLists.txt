@@ -5,7 +5,6 @@ project(${target_name})
 cmake_minimum_required(VERSION 3.0.2)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../cmake ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
 

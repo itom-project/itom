@@ -12,8 +12,21 @@ doc provided by it.
 
 .. |cmakelist_boost_dir| replace:: set this to the boost base folder you want to compile 
    into itom. This folder contains folders "boost" and "lib64-msvc-xxx". If you 
-   set the right one here the boost libraries will get autopoulated...
-    
+   set the right one here the boost libraries will get autopoulated... 
+    If not, this entry gets cleared again...
+
+.. |cmakelist_boost_includedir| replace:: from FindBoost.cmake:
+   "preferred include directory e.g. <prefix>/include"
+    create this entry if you have multiple boost versions installed and point it to the 
+    include directory(the folder containing **headers**) of the right version.
+    Note the all-caps spelling.
+
+.. |cmakelist_boost_librarydir| replace:: from FindBoost.cmake:
+    "Preferred library directory e.g. <prefix>/lib"
+    create this entry and point it to the folder containing the 
+    **compiled** boost libraries(*.dll, *.lib, *.a *.so ...)
+    Note the all-caps spelling.
+
 .. |cmakelist_build_type| replace:: sets the output build type. only relevant for 
    single configuration builds, as makefiles. not relevant for high-end IDEs like 
    Visual Studio. Build Flags are set according to this selection.
@@ -78,6 +91,10 @@ Liste
     | **VISUALLEAKDETECTOR_DIR** | |cmakelist_vld_dir|                                                                                                                  |
     +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
     | **Boost_INCLUDE_DIR**      | |cmakelist_boost_dir|                                                                                                                |
+    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
+    | **BOOST_INCLUDEDIR**       | |cmakelist_boost_includedir|                                                                                                         |
+    +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
+    | **BOOST_LIBRARYDIR**       | |cmakelist_boost_librarydir|                                                                                                         |
     +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
     | **LibUSB_DIR**             | |cmakelist_libusb_dir|                                                                                                               |
     +----------------------------+--------------------------------------------------------------------------------------------------------------------------------------+
