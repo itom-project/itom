@@ -77,10 +77,14 @@ endmacro()
 # itom_init_designerplugin_library.
 macro(itom_init_plugin_common_vars)
     #commonly used variables / options in the cache
-    set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
-    option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
+    set(BUILD_QTVERSION "auto" CACHE STRING
+        "currently only Qt5 is supported. Set this value to 'auto' in order\
+        to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
+    option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available.\
+        If TRUE, the definition USEOPENMP is set. This is only the case if\
+        OpenMP is generally available and if the build is release." ON)
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
-    set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
+    set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     
     #the following variables are just created here, but
     #their real values are usually forced by a find_package(ITOM_SDK)
@@ -90,9 +94,13 @@ macro(itom_init_plugin_common_vars)
     set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
     
     # Set a default build type if none was specified
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
-    # Set the possible values of build type for cmake-gui (will also influence the proposed values in the combo box of Visual Studio)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        set(CMAKE_BUILD_TYPE Release CACHE
+            STRING "Choose the type of build.")
+       # Set the possible values of build type for cmake-gui
+       set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+          Debug Release MinSizeRel RelWithDebInfo)
+    endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #core libraries are build as shared libraries
     
@@ -645,15 +653,24 @@ macro(itom_library_translation qm_files)
         message(SEND_ERROR "Argument value FILES_TO_TRANSLATE not given to itom_library_translation")
     endif()
     
-    if(NOT QT5_FOUND)
+    # also support cmakes findpackage qt using virtual targets... 
+    # https://doc.qt.io/qt-5/cmake-variable-reference.html#module-variables
+    if(NOT (QT5_FOUND OR Qt5Core_FOUND))
         message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
     endif()
     
     if(${ITOM_UPDATE_TRANSLATIONS})
         set(TRANSLATIONS_FILES) #list with all ts files, these files will be created here as a custom target
         set(TRANSLATION_OUTPUT_FILES)
-        message(STATUS "lupdate for target ${PARAM_TARGET} for languages ${ITOM_LANGUAGES} for files ${PARAM_FILES_TO_TRANSLATE}")
-        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${PARAM_TARGET} ITOM_LANGUAGES ${PARAM_FILES_TO_TRANSLATE})
+        message(STATUS "lupdate for target ${PARAM_TARGET} for languages ${ITOM_LANGUAGES}" 
+                        "for files ${PARAM_FILES_TO_TRANSLATE}")
+        itom_qt5_create_translation(
+            TRANSLATION_OUTPUT_FILES 
+            TRANSLATIONS_FILES 
+            ${PARAM_TARGET} 
+            ITOM_LANGUAGES 
+            ${PARAM_FILES_TO_TRANSLATE}
+            )
         add_custom_target (_${PARAM_TARGET}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${PARAM_TARGET} _${PARAM_TARGET}_translation)
     else()
@@ -661,20 +678,25 @@ macro(itom_library_translation qm_files)
         foreach(_lang ${ITOM_LANGUAGES})
             set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${PARAM_TARGET}_${_lang}.ts)
             if(NOT EXISTS ${_tsFile})
-                MESSAGE(SEND_ERROR "Source translation file '${_tsFile}' for language '${_lang} is missing. Please create this file first or set ITOM_UPDATE_TRANSLATIONS to ON")
+                MESSAGE(SEND_ERROR 
+                    "Source translation file '${_tsFile}' for language '${_lang} "
+                    "is missing. Please create this file first or set "
+                    "ITOM_UPDATE_TRANSLATIONS to ON")
             endif()
             set(TRANSLATIONS_FILES ${TRANSLATIONS_FILES} ${_tsFile})
         endforeach()
     endif()
-    
-    set(QMFILES)
-    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${PARAM_TARGET} ${TRANSLATIONS_FILES})
+    unset(QMFILES)
+    itom_qt5_compile_translation(
+            QMFILES 
+            ${CMAKE_CURRENT_BINARY_DIR}/translation
+            ${PARAM_TARGET} 
+            ${TRANSLATIONS_FILES}
+            )
     set(${qm_files} ${${qm_files}} ${QMFILES})
-    
     #add the translation files to the solution
     target_sources(${PARAM_TARGET}
-        PRIVATE
-        ${TRANSLATIONS_FILES}
+        PRIVATE ${TRANSLATIONS_FILES}
     )
 endmacro()
 
@@ -817,24 +839,32 @@ endmacro()
 #
 # example:
 # set(QM_FILES "")
-# itom_qt5_add_transation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" "build_translation_target" "file1.ts file2.ts file3.ts")
+# itom_qt5_add_transation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" 
+# "build_translation_target" "file1.ts file2.ts file3.ts")
 # .
 macro(itom_qt5_compile_translation _qm_files output_location target)
-    foreach (_current_FILE ${ARGN})
-        get_filename_component(_abs_FILE ${_current_FILE} ABSOLUTE)
-        get_filename_component(qm ${_abs_FILE} NAME_WE)
-
-        file(MAKE_DIRECTORY "${output_location}")
-        set(qm "${output_location}/${qm}.qm")
-        add_custom_command(TARGET ${target}
-            PRE_BUILD
-            COMMAND ${Qt5_LRELEASE_EXECUTABLE}
-            ARGS ${_abs_FILE} -qm ${qm}
-            VERBATIM
-            )
-
-        set(${_qm_files} ${${_qm_files}} ${qm})
-    endforeach ()
+    if(NOT (QT5_FOUND OR Qt5LinguistTools_FOUND))
+        message(send_error "translation requires LinguistTools")
+    endif()
+    # use qt5 native translator function.
+    # https://doc.qt.io/qt-5/qtlinguist-cmake-qt5-add-translation.html
+    set(TS_FILES ${ARGN})
+    set_source_files_properties(${TS_FILES} 
+        PROPERTIES OUTPUT_LOCATION ${output_location})
+    qt5_add_translation(compiled_qmfiles ${TS_FILES})
+    # dereference the input/output parameter _qm_files and set its value to the 
+    # translated files list to be used outside this scope ...
+    set(${_qm_files} ${compiled_qmfiles}) 
+    # now the compilation step needs to be tied to the target, or compilation won't be
+    # invoked...
+    # This could be cool, if we wanted some separate target for compilation/translation updating
+    # add_custom_target(${target}translation DEPENDS ${compiled_qmfiles})
+    # add_dependencies(${target} ${target}translation)
+    # this just appends the compiled translations to the target, assuming OS/dev 
+    # takes take of its uniquity...
+    target_sources(${target}
+        PRIVATE ${compiled_qmfiles}
+        )
 endmacro()
 
 
@@ -872,7 +902,8 @@ macro(itom_qt_generate_mocs)
             endif()
         endif()
         
-        set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
+        set_property(SOURCE ${source_name}${source_ext}
+            APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
     endforeach()
 endmacro()
 
@@ -886,10 +917,10 @@ endmacro()
 # Usually Qt's AUTOUIC would do the same, however it might also be required
 # to translate these processed files. Then, the access to the list of parsed filenames
 # must be available, such that it can be passed to the translation macro.
-# Therefore it is recommended to use this method.
+# One can also pass .ui files to the translator. So there's no need to uic manually...
 #
 # Hint: it is no problem to enable AUTOUIC though, since qt5_wrap_ui will skip the autouic
-# for every single file that is passed to this function.
+# for every single file that is passed to this macro.
 function(itom_qt_wrap_ui outfiles target)
     if(QT5_FOUND)
         #parse all *.ui files by Qt's uic process and get the parsed source files
@@ -968,9 +999,9 @@ macro(itom_add_pluginlibrary_to_copy_list target sources destinations)
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
-    
-    list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
-    
+    #adds the complete source path including filename of the dll 
+    # (configuration-dependent) to the list 'sources'
+    list(APPEND ${sources} "$<TARGET_FILE:${target}>") 
     list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
 endmacro()
 
@@ -982,12 +1013,13 @@ endmacro()
 #
 # qm_files are usually obtained by calling 'itom_library_translation'.
 macro(itom_add_plugin_qm_files_to_copy_list target qm_files sources destinations)
-    if(${ITOM_APP_DIR} STREQUAL "")
+    if(NOT ITOM_APP_DIR)
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
-    
-    foreach(_qmfile ${${qm_files}})
-        list(APPEND ${sources} ${_qmfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+    foreach(_qmfile IN LISTS ${qm_files})
+        # adds the complete source path including filename 
+        # of the dll (configuration-dependent) to the list 'sources'
+        list(APPEND ${sources} ${_qmfile}) 
         list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target}/translation)
     endforeach()
 endmacro()
@@ -1108,8 +1140,10 @@ macro(itom_add_source_group subfolder)
     set(REG_EXT_HEADERS "[^/]*([.]ui|[.]h|[.]hpp)$")
     set(REG_EXT_SOURCES "[^/]*([.]cpp|[.]c)$")
 
-    source_group("Header Files\\${subfolder_backslash}" REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_HEADERS}")
-    source_group("Source Files\\${subfolder_backslash}" REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_SOURCES}")
+    source_group("Header Files\\${subfolder_backslash}" 
+        REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_HEADERS}")
+    source_group("Source Files\\${subfolder_backslash}" 
+        REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${subfolder}/${REG_EXT_SOURCES}")
 endmacro()
 
 
@@ -1132,7 +1166,8 @@ macro(itom_configure_plugin_documentation target main_document) #main_document w
     set(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
     set(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
     set(PLUGIN_DOC_MAIN ${main_document})
-    configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
+    configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in 
+            ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
 endmacro()
 
 macro(itom_copy_file_if_changed in_file out_file target)
@@ -1183,71 +1218,6 @@ macro(itom_list_contains contains value)
     endif(${value} STREQUAL ${value2})
   endforeach (value2)
 endmacro(itom_list_contains)
-
-# Marc, mach's nicht unnötig kompliziert.
-# ein einfaches
-#
-#set(CMAKE_BUILD_TYPE "Release" CACHE
-#    STRING "Choose the type of build." FORCE)
-# Set the possible values of build type for cmake-gui
-#set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-#    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-#
-# tut' das gleiche...
-# CMAKE_CONFIGURATION_TYPES ist auch leer bei visual studio builds und da wird der buildtyp eh ignoriert...
-#
-# - checks and possibly corrects the CMAKE variables CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE.
-# 
-# If CMAKE_CONFIGURATION_TYPES is missing or an emtpy list, it is set to the default values 
-# Debug, Release, MinSizeRel and RelWithDebInfo.
-# 
-    # Set a default build type if none was specified
-    set(CMAKE_BUILD_TYPE "Release" CACHE
-        STRING "Choose the type of build.")
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-        "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-# If CMAKE_BUILD_TYPE is not set yet, it is set to the default value 'Release'. However, if this
-# default value is not among CMAKE_CONFIGURATION_TYPES, CMAKE_BUILD_TYPE is the first value of CMAKE_CONFIGURATION_TYPES.
-macro(itom_set_default_build_type)
-    # Set a default build type if none was specified
-    set(DEFAULT_BUILD_TYPE "Release")
-    
-    if(NOT CMAKE_CONFIGURATION_TYPES)
-        set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo" CACHE STRING 
-            "Semicolon separated list of supported configuration types, only supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything will be ignored." FORCE)
-    else()
-        list(LENGTH CMAKE_CONFIGURATION_TYPES len)
-        if(len LESS 1)
-            message(WARNING "CMAKE_CONFIGURATION_TYPES does not contain values. It is reset to the default values Debug, Release, MinSizeRel, RelWithDebInfo.")
-            set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo" CACHE STRING 
-                "Semicolon separated list of supported configuration types, only supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything will be ignored." FORCE)
-        else()
-            itom_list_contains(contains ${DEFAULT_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
-            if(NOT contains)
-                list(GET CMAKE_CONFIGURATION_TYPES 0 DEFAULT_BUILD_TYPE)
-                message(WARNING "The default build type ${DEFAULT_BUILD_TYPE} is not among CMAKE_CONFIGURATION_TYPES. The default is set to ${DEFAULT_BUILD_TYPE}")
-            endif()
-        endif()
-    endif()
-    
-    if(CMAKE_BUILD_TYPE)
-        itom_list_contains(contains ${CMAKE_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
-        if(NOT contains)
-            message(WARNING "CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} is not among the allowed values in CMAKE_CONFIGURATION_TYPES. It will be set to the default ${DEFAULT_BUILD_TYPE}")
-            unset(CMAKE_BUILD_TYPE)
-        endif()
-    endif()
-    
-    if(NOT CMAKE_BUILD_TYPE)
-        message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
-        set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE
-            STRING "Choose the type of build." FORCE)
-    endif()
-    
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${CMAKE_CONFIGURATION_TYPES})
-endmacro()
 
 # Deprecated macros added with itom 4.0 (January 2020). They will be removed in the future.
 # These macros are only redirects to renamed macros.
