@@ -45,15 +45,10 @@ extern "C++" {
 namespace ito
 {
 
-#if 1
-    /*non thread-safe but faster*/
-    #define BYTEARRAY_DECREF(d) d->m_ref--
-    #define BYTEARRAY_INCCREF(d) d->m_ref++
-#else
-    /*thread safe*/
-    #define BYTEARRAY_DECREF(d) ITOM_DECREF(&(d->m_ref))
-    #define BYTEARRAY_INCCREF(d) ITOM_INCREF(&(d->m_ref))
-#endif
+
+/*thread safe*/
+#define BYTEARRAY_DECREF(d) ITOM_DECREF(&(d->m_ref))
+#define BYTEARRAY_INCCREF(d) ITOM_INCREF(&(d->m_ref))
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
