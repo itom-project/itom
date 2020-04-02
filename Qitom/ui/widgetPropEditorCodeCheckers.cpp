@@ -109,12 +109,12 @@ void WidgetPropEditorCodeCheckers::readSettings()
     ui.checkAllChecksSelect->setChecked(syntaxCheckerParams.value("codeCheckerFlake8SelectEnabled", false).toBool());
     ui.lblAllChecksSelect->setText(syntaxCheckerParams.value("codeCheckerFlake8SelectValues", "").toString());
 
-    ui.checkAllChecksIgnore->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreEnabled", false).toBool());
-    ui.lblAllChecksIgnore->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreValues", "").toString());
+    ui.checkAllChecksIgnore->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreEnabled", true).toBool());
+    ui.lblAllChecksIgnore->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreValues", "E121,E123,E126,E226,E24,E704,W503,W504,W293").toString());
 
     ui.comboAllChecksDocstyle->setCurrentText(syntaxCheckerParams.value("codeCheckerFlake8Docstyle", "pep257").toString());
 
-    ui.checkAllChecksMaxComplexity->setChecked(syntaxCheckerParams.value("codeCheckerFlake8MaxComplexityEnabled", true).toBool());
+    ui.checkAllChecksMaxComplexity->setChecked(syntaxCheckerParams.value("codeCheckerFlake8MaxComplexityEnabled", false).toBool());
     ui.spinAllChecksMaxComplexity->setValue(syntaxCheckerParams.value("codeCheckerFlake8MaxComplexity", 10).toInt());
 
     ui.lblAllChecksErrorNumbers->setText(syntaxCheckerParams.value("codeCheckerFlake8ErrorNumbers", "F").toString());
