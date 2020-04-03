@@ -30,8 +30,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "typeDefs.h"
 
-#include <qstring.h>
-
 //###########################################################################################################
 //   Interface version:
 //###########################################################################################################
@@ -98,6 +96,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/3.2.0", //outdated on 2019-03-03 due to cleanup in AddInInterface including Private-classes for all AddIn classes and the ability to return the last reported state and position of axes (even while the axis is currently moving)
     "ito.AddIn.InterfaceBase/3.3.0", //outdated on 2019-11-19 due to new FilterDefExt class and semver based interface numbering
     "ito.AddIn.InterfaceBase/4.0.0", //outdated on 2020-01-01 due to removal of Qt4 support and removal of #precompiler checks that differ between Qt4 and Qt5.
+    "ito.AddIn.InterfaceBase/4.0.1", //outdated on 2020-03-31 due to atomic reference counting in ito::ByteArray
     NULL
 };
 
@@ -110,9 +109,9 @@ static const char* ito_AddInInterface_OldVersions[] = {
 //and add the major version number only as argument of the macro in the last line.
 #define ITOM_ADDININTERFACE_MAJOR 4
 #define ITOM_ADDININTERFACE_MINOR 0
-#define ITOM_ADDININTERFACE_PATCH 1
+#define ITOM_ADDININTERFACE_PATCH 2
 #define ITOM_ADDININTERFACE_VERSION CREATEVERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-#define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(4,0,1)
+#define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(4,0,2)
 static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(4); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 4 can not be replaced by the macros above. Does not work properly)
 
 #endif

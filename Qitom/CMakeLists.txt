@@ -37,7 +37,10 @@ option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documenta
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(${BUILD_WITH_HELPVIEWER})
@@ -668,11 +671,17 @@ if(APPLE)
     set_source_files_properties(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    add_executable(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_UI} ${qitom_RCC})
+    add_executable(${target_name}
+        MACOSX_BUNDLE ${target_icon_path}
+        ${qitom_SOURCES}
+        ${qitom_HEADERS}
+        ${qitom_UI}
+        ${qitom_RCC}
+        )
 
     # Set binary file names for OS X
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "itom")
+    set_target_properties(${target_name}
+        PROPERTIES OUTPUT_NAME itom$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>)
 
     # Copy files into app bundle after build
     itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
@@ -684,11 +693,17 @@ if(APPLE)
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 else(APPLE)
     # Executable for WINDOWS and LINUX
-    add_executable(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_UI} ${qitom_RCC})
+    add_executable(${target_name}
+        WIN32
+        ${qitom_SOURCES}
+        ${qitom_HEADERS}
+        ${qitom_UI}
+        ${qitom_RCC}
+        )
 
     # Set binary file names for  WINDOWS and LINUX
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+    set_target_properties(${target_name}
+        PROPERTIES OUTPUT_NAME qitom$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>)
 endif(APPLE)
 
 
@@ -752,14 +767,49 @@ endif()
 
 if(QT5_FOUND)
     if(WIN32)
-        target_link_libraries(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
+        target_link_libraries(${target_name}
+            ${WINICONRES}
+            ${PYTHON_LIBRARY_ITOM}
+            ${OpenCV_LIBS}
+            ${POINTCLOUD_LIBRARIES}
+            ${VISUALLEAKDETECTOR_LIBRARIES}
+            ${QT5_LIBRARIES}
+            dataobject
+            addinmanager
+            qpropertyeditor
+            itomCommonLib
+            itomCommonQtLib
+            itomWidgets
+            itomCommonPlotLib
+            ${PYMATLAB_LIBRARIES}
+            shell32)
     else()
-        target_link_libraries(${target_name} ${WINICONRES} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT5_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
+        target_link_libraries(${target_name}
+            ${WINICONRES}
+            ${PYTHON_LIBRARY_ITOM}
+            ${OpenCV_LIBS}
+            ${POINTCLOUD_LIBRARIES}
+            ${VISUALLEAKDETECTOR_LIBRARIES}
+            ${QT5_LIBRARIES}
+            dataobject
+            addinmanager
+            qpropertyeditor
+            itomCommonLib
+            itomCommonQtLib
+            itomWidgets
+            itomCommonPlotLib
+            ${PYMATLAB_LIBRARIES})
     endif()
 endif()
 
 #translation
-itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_ui})
+itom_library_translation(QM_FILES
+    TARGET ${target_name}
+    FILES_TO_TRANSLATE
+    ${qitom_SOURCES}
+    ${qitom_HEADERS}
+    ${qitom_HEADERS_NOMOC}
+    ${qitom_UI})
 
 foreach(_nomoc_header ${qitom_HEADERS_NOMOC})
     set_property(SOURCE ${_nomoc_header} PROPERTY SKIP_AUTOMOC ON)
@@ -799,7 +849,7 @@ set(COPY_DESTINATIONS ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 #copy all qm files to the translations subfolder of the itom root directory
 foreach(_qm ${QM_FILES})
     set(COPY_SOURCES ${COPY_SOURCES} ${_qm})
-    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/translation")
+    set(COPY_DESTINATIONS ${COPY_DESTINATIONS} "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 endforeach()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

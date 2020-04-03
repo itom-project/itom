@@ -131,12 +131,18 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     PluginLoadStatus status;
     QString message;
     QPluginLoader *loader = NULL;
-    SemVerVersion requiredItomDesignerPluginInterface = SemVerVersion::fromInt(ITOM_DESIGNERPLUGININTERFACE_VERSION);
-    SemVerVersion requiredAddInInterfaceVersion(ITOM_ADDININTERFACE_MAJOR, ITOM_ADDININTERFACE_MINOR, ITOM_ADDININTERFACE_PATCH);
+    SemVerVersion requiredItomDesignerPluginInterface =
+        SemVerVersion::fromInt(ITOM_DESIGNERPLUGININTERFACE_VERSION);
+    SemVerVersion requiredAddInInterfaceVersion(
+            ITOM_ADDININTERFACE_MAJOR,
+            ITOM_ADDININTERFACE_MINOR,
+            ITOM_ADDININTERFACE_PATCH);
     const QMetaObject *metaObj = NULL;
 
-    //This regular expression is used to check whether the error message during loading a plugin contains the words
-    //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
+    //This regular expression is used to check whether the error message
+    //during loading a plugin contains the words
+    //'debug' or 'release'. This means, that a release plugin is tried to be
+    //loaded with a debug version of itom or vice-versa
     QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive);
 
     foreach(const QString &plugin, candidates)
@@ -217,7 +223,9 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 {
                     message = QString("The file '%1' is no valid Qt designer plugin inherited from QDesignerCustomWidgetInterface").arg(absolutePluginPath);
                     pluginStatus = plsfWarning;
-                    status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                    status.messages.append(
+                            QPair<ito::PluginLoadStatusFlags,
+                            QString>(pluginStatus, message));
                 }
                 else
                 {
@@ -228,7 +236,8 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         message = QString("The designer plugin '%1' seems to be a release version and cannot be loaded in a debug build of itom.").
                             arg(absolutePluginPath);
                         pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags,
+                                QString>(pluginStatus, message));
                     }
 #else
                     if (debug)
@@ -236,7 +245,8 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         message = QString("The designer plugin '%1' seems to be a debug version and cannot be loaded in a release build of itom.").
                             arg(absolutePluginPath);
                         pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
-                        status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));
+                        status.messages.append(QPair<ito::PluginLoadStatusFlags,
+                                QString>(pluginStatus, message));
                     }
 #endif
                 }

@@ -93,7 +93,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 
     restoreSettings();
 
-    reloadHelpResources();
+    //reloadHelpResources();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1542,7 +1542,7 @@ void HelpTreeDockWidget::propertiesChanged()
     if (plaintext != m_plaintext)
     {
         m_plaintext = plaintext;
-        m_state ^= stateContentLoaded; //invalidate the content loaded flag
+        m_state = m_state & (~stateContentLoaded); //invalidate the content loaded flag
     }
 
     if ((m_state & stateVisible) &&
@@ -1566,7 +1566,19 @@ void HelpTreeDockWidget::reloadHelpResources()
         m_loaderWatcher.waitForFinished();
     }
 
-    //Create and Display Mainmodel
+    bool success = m_dbLoaderMutex.tryLock(1); //!< will be unlocked again if QtConcurrent run is finished.
+
+    if (!success)
+    {
+        //the reloadHelpResources is still active. The finished-slot of the m_loaderWatcher
+        //has to be called first to reset the renewed m_pMainModel. This slot can only be called
+        //if the main thread, from which this method has also be called, is idle. Therefore
+        //initialize a short singleShot timer to recall this method after a short time.
+        QTimer::singleShot(50, this, SLOT(reloadHelpResources()));
+        return;
+    }
+
+    //clear the main model which will be updated in the QtConcurrent run later on...
     m_pMainModel->clear();
     ui.treeView->reset();
     
@@ -1577,8 +1589,6 @@ void HelpTreeDockWidget::reloadHelpResources()
     ui.treeView->setVisible(false);
     ui.splitter->setVisible(false);
     ui.lblProcessText->setText(tr("Help resources are loading..."));
-
-    m_dbLoaderMutex.lock();
 
     // THREAD START QtConcurrent::run
     QFuture<ito::RetVal> f1 = QtConcurrent::run(loadHelpResources, m_pMainModel/*, m_pDBList*/, &m_iconGallery);

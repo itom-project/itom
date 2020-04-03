@@ -24,8 +24,8 @@ project(itom)
 
 message(STATUS "--------------- PROJECT itom -----------------")
 
-include("cmake/ItomBuildMacros.cmake")
-include("cmake/ItomBuildMacrosInternal.cmake")
+include(cmake/ItomBuildMacros.cmake)
+include(cmake/ItomBuildMacrosInternal.cmake)
 
 itom_init_cmake_policy(3.15)
 itom_init_core_common_vars()
@@ -33,12 +33,25 @@ itom_init_core_common_vars()
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 
-option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
-set(ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS "If ITOM_UPDATE_TRANSLATIONS is ON, this option defines if strings, \
-            which are in current *.ts files, but not in the source code, will be removed (ON) from *.ts or not (OFF)." OFF)
+option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files\
+    (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
+set(ITOM_LANGUAGES de CACHE STRING "semicolon separated list of languages that should be created\
+    (en must not be given since it is the default)")
+option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS
+    "If ITOM_UPDATE_TRANSLATIONS is ON, this option defines if strings,\
+    which are in current *.ts files, but not in the source code, will be\
+    removed (ON) from *.ts or not (OFF)." OFF)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
+# add Debug flag if applicable
+# flag will be available in all subsequent targets ans folders 
+# from this file
+# https://cmake.org/cmake/help/latest/command/add_compile_definitions.html
+add_compile_definitions($<$<CONFIG:DEBUG>:_DEBUG>)
+
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/cmake)
 
 add_subdirectory(DataObject)
 
@@ -81,27 +94,42 @@ message(STATUS "")
 ################################################################################################################
 #CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in
+    ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in
+    ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in
+    ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py
+    ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 ################################################################################################################
 itom_find_package_qt(ON Core)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
 
 if(SETUP_ISSCONFIG)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in
+        ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in
+        ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
 endif()
 ################################################################################################################
 
