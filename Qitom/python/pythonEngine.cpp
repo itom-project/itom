@@ -809,7 +809,18 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 				Py_XDECREF(hasFlake8);
 			}
 
-			checkCodeCheckerRequirements();
+			QVariantMap codeCheckerInformation = checkCodeCheckerRequirements();
+
+            if (infoMessages)
+            {
+                QVariantMap::iterator it = codeCheckerInformation.begin();
+
+                while (it != codeCheckerInformation.end())
+                {
+                    infoMessages->insert(it.key(), it.value());
+                    it++;
+                }
+            }
 
             // import itoFunctions
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
@@ -969,30 +980,42 @@ void PythonEngine::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::checkCodeCheckerRequirements()
+QVariantMap PythonEngine::checkCodeCheckerRequirements()
 {
+    QVariantMap messages;
+
 	CodeCheckerOptions &opt = m_codeCheckerOptions;
 
 	if (opt.mode == PythonCommon::CodeCheckerFlake8
 		&& !m_pyModCodeCheckerHasFlake8)
 	{
+        QString text = tr("Extended code and style check not possible since package flake8 missing. Install it or disable the style check in the properties.");
+        messages["PySyntaxStyleCheck"] = text;
+
 		QObject* mainWin = AppManagement::getMainWindow();
+
 		if (mainWin)
 		{
-			QString text = tr("Extended code and style check not possible since package flake8 missing. Install it or disable the style check in the properties.");
+			
 			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
 		}
 	}
 	else if (opt.mode == PythonCommon::CodeCheckerPyFlakes 
 		&& !m_pyModCodeCheckerHasPyFlakes)
 	{
+        QString text = tr("Syntax and basic code check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
+        messages["PySyntaxStyleCheck"] = text;
+
 		QObject* mainWin = AppManagement::getMainWindow();
+
 		if (mainWin)
 		{
-			QString text = tr("Syntax and basic code check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
+			
 			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
-		}
+		}       
 	}
+
+    return messages;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2523,20 +2546,29 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
 {
     if (m_pyModCodeChecker)
     {
+        CodeCheckerOptions &opt = m_codeCheckerOptions;
+
+        //check if the required python packages are available
+        switch (opt.mode)
+        {
+        case PythonCommon::NoCodeChecker:
+            return;
+        case PythonCommon::CodeCheckerFlake8:
+            if (!m_pyModCodeCheckerHasFlake8)
+            {
+                return;
+            }
+            break;
+        case PythonCommon::CodeCheckerPyFlakes:
+            if (!m_pyModCodeCheckerHasPyFlakes)
+            {
+                return;
+            }
+            break;
+        }
+
         QString codeToCheck = code;
         QString filename_ = filename;
-
-        //if (m_includeItomImportBeforeCodeAnalysis)
-        //{
-        //    //add from itom import * as first line (this is afterwards removed from results)
-        //    codeToCheck = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
-        //    filename_ = "";
-        //    fileSaved = false;
-        //}
-        //else
-        //{
-        //    codeToCheck = code;
-        //}
 
         PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject *result = PyObject_CallMethod(m_pyModCodeChecker, 
@@ -2545,9 +2577,9 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             codeToCheck.toUtf8().constData(), 
             filename.toUtf8().constData(), 
             fileSaved ? 1 : 0,
-            (int)m_codeCheckerOptions.mode,
-            m_codeCheckerOptions.includeItomModuleBeforeCheck ? 1 : 0,
-            m_codeCheckerOptions.furtherPropertiesJson.constData()
+            (int)opt.mode,
+            opt.includeItomModuleBeforeCheck ? 1 : 0,
+            opt.furtherPropertiesJson.constData()
             );
 
         if (result && PyList_Check(result))
@@ -2559,6 +2591,7 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             int lineNo;
             int columnIdx;
             QList<ito::CodeCheckerItem> codeCheckerItems;
+            bool ignore;
 
             for (int i = 0; i < PyList_Size(result); ++i)
             {
@@ -2586,18 +2619,32 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
                         if (lineNo > 0)
                         {
                             ito::CodeCheckerItem::CheckerType type = ito::CodeCheckerItem::Error;
+                            ignore = false;
 
                             if (msgType == 0)
                             {
                                 type = ito::CodeCheckerItem::Info;
+
+                                if (opt.minVisibleMessageTypeLevel > PythonCommon::TypeInfo)
+                                {
+                                    ignore = true;
+                                }
                             }
                             else if (msgType == 1)
                             {
                                 type = ito::CodeCheckerItem::Warning;
+
+                                if (opt.minVisibleMessageTypeLevel > PythonCommon::TypeWarning)
+                                {
+                                    ignore = true;
+                                }
                             }
 
-                            ito::CodeCheckerItem cci(type, itemSplit[5], itemSplit[4], lineNo, columnIdx, filename);
-                            codeCheckerItems.append(cci);
+                            if (!ignore)
+                            {
+                                ito::CodeCheckerItem cci(type, itemSplit[5], itemSplit[4], lineNo, columnIdx, filename);
+                                codeCheckerItems.append(cci);
+                            }
                         }
                     }
 #ifdef _DEBUG

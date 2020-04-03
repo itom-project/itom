@@ -208,7 +208,7 @@ namespace ito {
             {
                 if (m_col != -1)
                 {
-                    return QObject::tr("%1 (Column %2)").arg(prefix + m_description).arg(m_col);
+                    return QObject::tr("%1 (Column %2)").arg(prefix + m_description).arg(m_col + 1);
                 }
                 else
                 {
@@ -219,7 +219,7 @@ namespace ito {
             {
                 if (m_col != -1)
                 {
-                    return QObject::tr("%1: %2 (Column %3)").arg(prefix + m_code).arg(m_description).arg(m_col);
+                    return QObject::tr("%1: %2 (Column %3)").arg(prefix + m_code).arg(m_description).arg(m_col + 1);
                 }
                 else
                 {

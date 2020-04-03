@@ -109,8 +109,11 @@ void WidgetPropEditorCodeCheckers::readSettings()
     ui.checkAllChecksSelect->setChecked(syntaxCheckerParams.value("codeCheckerFlake8SelectEnabled", false).toBool());
     ui.lblAllChecksSelect->setText(syntaxCheckerParams.value("codeCheckerFlake8SelectValues", "").toString());
 
-    ui.checkAllChecksIgnore->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreEnabled", true).toBool());
-    ui.lblAllChecksIgnore->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreValues", "E121,E123,E126,E226,E24,E704,W503,W504,W293").toString());
+    ui.checkAllChecksIgnore->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreEnabled", false).toBool());
+    ui.lblAllChecksIgnore->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreValues", "").toString());
+
+    ui.checkAllChecksIgnoreExtend->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreExtendEnabled", true).toBool());
+    ui.lblAllChecksIgnoreExtend->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreExtendValues", "W293").toString());
 
     ui.comboAllChecksDocstyle->setCurrentText(syntaxCheckerParams.value("codeCheckerFlake8Docstyle", "pep257").toString());
 
@@ -158,13 +161,13 @@ void WidgetPropEditorCodeCheckers::writeSettings()
     {
     case 0: //information
     default:
-        settings.setValue("codeCheckerShowMinCategoryLevel", CodeCheckerItem::Info);
+        settings.setValue("codeCheckerShowMinCategoryLevel", PythonCommon::TypeInfo);
         break;
     case 1: //warning
-        settings.setValue("codeCheckerShowMinCategoryLevel", CodeCheckerItem::Warning);
+        settings.setValue("codeCheckerShowMinCategoryLevel", PythonCommon::TypeWarning);
         break;
     case 2: //error
-        settings.setValue("codeCheckerShowMinCategoryLevel", CodeCheckerItem::Error);
+        settings.setValue("codeCheckerShowMinCategoryLevel", PythonCommon::TypeError);
         break;
     }
 
@@ -194,6 +197,9 @@ void WidgetPropEditorCodeCheckers::writeSettings()
     syntaxCheckerParams["codeCheckerFlake8IgnoreEnabled"] = ui.checkAllChecksIgnore->isChecked();
     syntaxCheckerParams["codeCheckerFlake8IgnoreValues"] = ui.lblAllChecksIgnore->text();
 
+    syntaxCheckerParams["codeCheckerFlake8IgnoreExtendEnabled"] = ui.checkAllChecksIgnoreExtend->isChecked();
+    syntaxCheckerParams["codeCheckerFlake8IgnoreExtendValues"] = ui.lblAllChecksIgnoreExtend->text();
+
     syntaxCheckerParams["codeCheckerFlake8Docstyle"] = ui.comboAllChecksDocstyle->currentText();
 
     syntaxCheckerParams["codeCheckerFlake8MaxComplexityEnabled"] = ui.checkAllChecksMaxComplexity->isChecked();
@@ -202,7 +208,19 @@ void WidgetPropEditorCodeCheckers::writeSettings()
     syntaxCheckerParams["codeCheckerFlake8ErrorNumbers"] = ui.lblAllChecksErrorNumbers->text();
     syntaxCheckerParams["codeCheckerFlake8WarningNumbers"] = ui.lblAllCheckWarningNumbers->text();
 
-    syntaxCheckerParams["codeCheckerFlake8OtherOptions"] = ui.txtAllChecksMoreOptions->toPlainText();
+    QString text = ui.txtAllChecksMoreOptions->toPlainText();
+    QStringList texts = text.trimmed().split("\n");
+    QStringList texts2;
+
+    foreach(const QString &t, texts)
+    {
+        if (t.trimmed() != "")
+        {
+            texts2.append(t.trimmed());
+        }
+    }
+
+    syntaxCheckerParams["codeCheckerFlake8OtherOptions"] = texts2.join("\n");
 
     settings.setValue("codeCheckerProperties", syntaxCheckerParams);
 

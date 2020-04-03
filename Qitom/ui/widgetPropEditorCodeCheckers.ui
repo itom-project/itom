@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>543</width>
-    <height>537</height>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
         <x>0</x>
         <y>0</y>
         <width>506</width>
-        <height>767</height>
+        <height>795</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -320,7 +320,7 @@
                     <string>Default: 79</string>
                    </property>
                    <property name="suffix">
-                    <string> characters</string>
+                    <string/>
                    </property>
                    <property name="minimum">
                     <number>5</number>
@@ -367,11 +367,76 @@
                    </item>
                   </layout>
                  </item>
+                 <item row="5" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <item>
+                    <widget class="QCheckBox" name="checkAllChecksMaxComplexity">
+                     <property name="toolTip">
+                      <string>If checked the complexity check is executed using the package McCabe</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="spinAllChecksMaxComplexity">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximum">
+                      <number>10000</number>
+                     </property>
+                     <property name="value">
+                      <number>10</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum complexity (requires &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_11">
                    <property name="text">
                     <string>Ignore the following errors or warnings:</string>
                    </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="comboAllChecksDocstyle">
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>pep257</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>numpy</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>google</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="2" column="1">
@@ -401,7 +466,7 @@
                    </item>
                   </layout>
                  </item>
-                 <item row="3" column="0">
+                 <item row="4" column="0">
                   <widget class="QLabel" name="label_9">
                    <property name="text">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Docstyle convention (requires &lt;a href=&quot;https://pypi.org/project/flake8-docstrings/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;flake8-docstrings&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -411,66 +476,41 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
-                  <widget class="QComboBox" name="comboAllChecksDocstyle">
-                   <property name="editable">
-                    <bool>true</bool>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>pep257</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>numpy</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>google</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_12">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_13">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum complexity (requires &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="openExternalLinks">
-                    <bool>true</bool>
+                    <string>Extend the (default) ignore list by:</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
-                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item row="3" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
                    <item>
-                    <widget class="QCheckBox" name="checkAllChecksMaxComplexity">
+                    <widget class="QCheckBox" name="checkAllChecksIgnoreExtend">
                      <property name="toolTip">
-                      <string>If checked the complexity check is executed using the package McCabe</string>
+                      <string>If checked, the --ignore option of flake8 is overwritten by this text</string>
                      </property>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="spinAllChecksMaxComplexity">
+                    <widget class="QLineEdit" name="lblAllChecksIgnoreExtend">
                      <property name="enabled">
                       <bool>false</bool>
                      </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
+                     <property name="toolTip">
+                      <string>Comma-separated list of numbers (e.g. E, E1, E12, E123...)</string>
                      </property>
-                     <property name="maximum">
-                      <number>10000</number>
+                     <property name="text">
+                      <string>W293</string>
                      </property>
-                     <property name="value">
-                      <number>10</number>
+                     <property name="placeholderText">
+                      <string>Example: E121,E123,E126,E226,E24,E704,W503,W504</string>
                      </property>
                     </widget>
                    </item>
@@ -577,6 +617,30 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>checkIncludeItom</tabstop>
+  <tabstop>spinSyntaxInterval</tabstop>
+  <tabstop>comboShowMinLevel</tabstop>
+  <tabstop>radioDisableChecks</tabstop>
+  <tabstop>radioEnableSyntaxCheck</tabstop>
+  <tabstop>lblSyntaxError</tabstop>
+  <tabstop>comboSyntaxCategories</tabstop>
+  <tabstop>radioEnableAllChecks</tabstop>
+  <tabstop>spinAllChecksLineLength</tabstop>
+  <tabstop>checkAllChecksSelect</tabstop>
+  <tabstop>lblAllChecksSelect</tabstop>
+  <tabstop>checkAllChecksIgnore</tabstop>
+  <tabstop>lblAllChecksIgnore</tabstop>
+  <tabstop>checkAllChecksIgnoreExtend</tabstop>
+  <tabstop>lblAllChecksIgnoreExtend</tabstop>
+  <tabstop>comboAllChecksDocstyle</tabstop>
+  <tabstop>checkAllChecksMaxComplexity</tabstop>
+  <tabstop>spinAllChecksMaxComplexity</tabstop>
+  <tabstop>lblAllChecksErrorNumbers</tabstop>
+  <tabstop>lblAllCheckWarningNumbers</tabstop>
+  <tabstop>txtAllChecksMoreOptions</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -590,8 +654,8 @@
      <y>70</y>
     </hint>
     <hint type="destinationlabel">
-     <x>82</x>
-     <y>88</y>
+     <x>128</x>
+     <y>104</y>
     </hint>
    </hints>
   </connection>
@@ -602,12 +666,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>74</x>
-     <y>177</y>
+     <x>93</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
-     <x>64</x>
-     <y>205</y>
+     <x>110</x>
+     <y>312</y>
     </hint>
    </hints>
   </connection>
@@ -618,12 +682,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>344</y>
+     <x>322</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
-     <x>340</x>
-     <y>344</y>
+     <x>483</x>
+     <y>367</y>
     </hint>
    </hints>
   </connection>
@@ -634,12 +698,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>306</x>
-     <y>370</y>
+     <x>322</x>
+     <y>391</y>
     </hint>
     <hint type="destinationlabel">
-     <x>345</x>
-     <y>370</y>
+     <x>483</x>
+     <y>395</y>
     </hint>
    </hints>
   </connection>
@@ -650,12 +714,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>307</x>
-     <y>425</y>
+     <x>322</x>
+     <y>473</y>
     </hint>
     <hint type="destinationlabel">
-     <x>337</x>
-     <y>433</y>
+     <x>483</x>
+     <y>477</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkAllChecksIgnoreExtend</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lblAllChecksIgnoreExtend</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>411</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>417</y>
     </hint>
    </hints>
   </connection>

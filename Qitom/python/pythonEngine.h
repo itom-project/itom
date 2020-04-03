@@ -200,7 +200,7 @@ private:
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
 
-	void checkCodeCheckerRequirements();
+	QVariantMap checkCodeCheckerRequirements();
 
 	struct CodeCheckerOptions
 	{
