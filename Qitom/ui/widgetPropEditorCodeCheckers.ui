@@ -488,7 +488,7 @@
                    <item>
                     <widget class="QCheckBox" name="checkAllChecksIgnoreExtend">
                      <property name="toolTip">
-                      <string>If checked, the --ignore option of flake8 is overwritten by this text</string>
+                      <string>If checked, the --extend-ignore option of flake8 is overwritten by this text</string>
                      </property>
                      <property name="text">
                       <string/>
@@ -530,7 +530,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string>Message numbers, displayed as errors:</string>
+                    <string>Message codes, displayed as errors:</string>
                    </property>
                   </widget>
                  </item>
@@ -550,7 +550,7 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
-                    <string>Message numbers, displayed as warnings:</string>
+                    <string>Message codes, displayed as warnings:</string>
                    </property>
                   </widget>
                  </item>

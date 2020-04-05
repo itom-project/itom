@@ -174,6 +174,8 @@ of |itom|. This option can be enabled by the checkbox below the file list.
 Section Editor
 ================
 
+The editor section covers all properties, that are related to the :ref:`script editor windows <gui-editor>`.
+
 .. _gui-prop-py-general:
     
 General
@@ -181,31 +183,147 @@ General
 
 In this tab, you can mainly set all settings that are related to indentation:
 
-* **Auto indentation** automatically indents the next block after a colon at the end of a line, like after a "if (...):" statement, a method definition or a for loop (among others). 
-* If the **Use tabs for indentation** checkbox is not checked, every tab is automatically replaced by N spaces (N is adjustable by the spinbox below).
-* **Show Whitespaces** displays small dots in each indentation. The color of these dots can be adjusted by the style **whitespace color**
-* The **Indentation Width** spinbox sets the standard width for the indentation. This is the number of spaces which are inserted if a tab is inserted (only if the **Use tabs for indentation** checkbox is unchecked.
-* **Show indentation guides** defines if small, dotted vertical lines should be displayed in front of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
+* **Auto indentation** automatically indents the next block after a colon at the end of a line, 
+    like after a "if (...):" statement, a method definition or a for loop (among others). 
+* If the **Use tabs for indentation** checkbox is not checked, every tab is automatically replaced 
+    by N spaces (N is adjustable by the spinbox below).
+* The **Indentation Width** spinbox sets the standard width for the indentation. This is the 
+    number of spaces which are inserted if a tab is inserted (only if the 
+    **Use tabs for indentation** checkbox is unchecked.
+* **Show Whitespaces** displays small dots in each indentation. The color of these dots can be 
+    adjusted by the style **whitespace color**
+* **Show indentation guides** defines if small, dotted vertical lines should be displayed in front 
+    of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
 * In the group **Cut, Copy, Paste Behaviour** you can select how the script editor should behave if code is copied / cut or if code
-   should be pasted from the clipboard. In the first case, you can select if the cut or copy operation is available if no text is
-   currently selected, since it is possible to entirely copy or cut the current line instead. Another option controls a smart
-   paste behaviour if indented code, that has possibly been removed from a block with another initial indentation level, should
-   be adapted to the current identation level of the current cursor position.
+   should be pasted from the clipboard. In the first case, you can select if the cut or copy 
+   operation is available if no text is currently selected, since it is possible to entirely 
+   copy or cut the current line instead. Another option controls a smart paste behaviour if 
+   indented code, that has possibly been removed from a block with another initial indentation 
+   level, should be adapted to the current identation level of the current cursor position.
 
+
+Code Checkers
+----------------------
+
+|itom| provides the possiblity to regularily check a script for syntax errors,
+code style errors, docstring style errors or other linter hints in any scripts.
+All these checks are done by means of a code analysis only, the script(s) is / are
+not executed for these checks.
+
+|itom| supports three different modes of code checks, that can be selected as major
+options in this property page:
+
+* **No code checks**: nothing is checked
+* **Basic code checks**: This requires the python package `pyflakes <https://github.com/PyCQA/pyflakes>`_. 
+    Using this package general code errors and syntax errors are checked.
+* **Extended code checks**: This requires the python package `flake8 <https://flake8.pycqa.org/en/latest/`_.
+    **Flake8** depends on **pyflakes**, **pycodestyle** and **mccabe**. However it can be extended by further
+    plugins, like for instance **flake8-docstrings**. Therefore **flake8** can check for various things which
+    extends the features of **pyflakes**. For instance it can give hints if the Python standard style guide **pep8**
+    is violated, it can check for the complexity of methods and so on.
+
+If any code checker is activated, a check for a script is executed whenever the properties have been
+changed or after a certain amount of time after the last key press in the corresponding script. This amount
+of time can be configured at the top of the property page.
+
+Since |itom| automatically imports all methods, classes and modules of the module :py:mod:`itom`
+globally at startup (**from itom import \***), scripts that are directly executed via the run or debug button
+do not require explicit import statements for components, that belong to the itom package.
+
+The code checkers would however complain, that some itom-related references are not imported in a script.
+To avoid these messages, you can enable the first check box, such that all the code checkers consider 
+parts of the itom module as globally imported.
+
+All messages, returned by the code checkers, will be categorized by itom into the three categories
+**information**, **warning** and **error**. You can define the minimum level, that is displayed in the
+scripts via the combobox in the general section of the code checker property page.
+
+.. figure:: images/propEditorCodeCheckers.png
+    :scale: 100%
+    :align: center
+
+Messages of type **info** are displayed with a blue dot in the most-left column of the affected
+line in the script editor. By hovering over the icon, the message text is displayed as tooltip text.
+Messages of type **warning** are displayed with an orange dot and **error** messages are displayed
+by a red ladybug (for more information see the help about the :ref:`script editor window <gui-editor-syntax-check>`).
+
+Depending on the selected checker mode, there are different options, which are only active for
+the corresponding mode:
+
+Pyflakes options (basic checks)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pyflakes will either return a syntax error, if the current script can not be fully parsed
+due to a syntax error. These syntax errors will always be displayed as message type **error**.
+
+All other check results, returned by pyflakes can be assigned to one of the message types **info**,
+**warning** or **error**. Chose the preferred category from the combobox (category of other messages).
+
+Further sub-categories are not available if the basic checks are enabled only.
+
+Flake8 options
+^^^^^^^^^^^^^^^
+
+Flake8 provides many options, that can be set to configure all checks. Only the most important
+subset of options can be configured via given fields in the property dialog. For further options,
+the optional text box can be used.
+
+Nevertheless, flake8 provides different possiblities to configure options. This can be an ini configuration file 
+(tox.ini, .flake8 or setup.cfg) in the user directory of your operating system, or such an ini configuration file
+in the directory of your project (e.g. the directory, where the scripts are located or one of its
+parent directories, stopped if for instance a .git folder is detected). For more information see the
+:ref:`documentation of flake8 <https://flake8.pycqa.org/en/latest/user/configuration.html>`_.
+
+When flake8 is used within itom, the ranking of these configuration files are:
+
+1. flake8 default options
+2. user folder
+3. itom settings in itom properties dialog
+4. project folder
+
+This means, that options, set in the project configuration files, will always overwrite any other options.
+The **flake8 options section** in the itom property dialog provides several options, that are covered by
+a checkbox. If the checkbox is not set, the respective option is considered to be not active, hence 
+it will not overwrite the same option from the flake8 defaults or the user configuration file (if it exists).
+
+Flake8 provides error codes, starting with a character and followed by a number, for each message.
+The character always describes the underlying package, that produced this message, e.g. **F** originates
+from **pyflakes**, **E** from **pycodestyle** or **C** from **mccabe**. Other letters might appear if
+further flake8 plugin packages are installed. The number (three digits) describes the specific error message,
+however all numbers starting with 1, with 2 and so on, belong to a specific sub-category of messages.
+
+Within itom you can set the following options:
+
+1. **Maximum allowed line length**: This is the maximum number of characters for one line before flake8 will
+   return a warning, that the line should better be split into several lines. The default from PEP8 is usually 79,
+   however auto-style correction packages like **black** recommend a number of 88.
+2. **Show the following errors or warning**: If the checkbox is clicked, indicate a comma-separated list of
+    error codes that should be considered. This affects the option **--select** of flake8. You can either indicate
+    one specific error code, or only the major character to consider all messages from this major category, or it
+    is also possible to write for instance **E1** to select all error codes starting with **E1**.
+3. **Ignore the following errors or warning**: Similar to the option above, however this overwrites the option **--ignore**,
+    and let itom ignore certain error codes.
+4. **Extend the (default) ignore list**: This is similar than no 3, however it affects the flake8 option **--extend-ignore**.
+    This means, that the ignored error codes are only appended to the defaults from flake8 or the user configuration files,
+    without fully replacing them. Itom defaults here to **W293**, which ignores lines, that consist of spaces only.
+5. **Docstyle convention**: This is only important, if the plugin package **flake8-docstrings** is installed and
+    will then indicate the default style guide that is applied to check the docstrings of any functions and classes.
+6. **Max complexity**: By this option, you can enable the code complexity checks from **mccabe**. Enable it by checking
+    the checkbox and setting the value to anything >= 0.
+7. **Message codes, displayed as errors**: Indicate here error codes (again a character or a character followed by 1-3 digits)
+    as comma-separated list. All messages that belong to error codes in this list, will be shown as errors (ladybug icon).
+8. **Message codes, displayed as warnings**: See no. 7, however the affected messages will be displayed as warnings. All
+    other messages will be displayed as info.
+9. **Further options**: You can indicate here further options, that should be passed to flake8. Every option must
+    be on a separate line. See :ref:`the flake8 documentation <https://flake8.pycqa.org/en/latest/user/options.html>`_
+    for a list of options. Further plugins can append more options. Indicate here the option (without the -- characters),
+    optionally followed by an equal sign and the value. If no value is given, True is assumed. Examples are:
+        
+        max-doc-length=79
+        disable-noqa
 
 Script Editors
 ----------------------
-
-|itom| provides the possiblity to regularily check a script for syntax errors (by means of a code analysis only - the script(s) is / are not executed for this check).
-Enable this syntax check by the checkbox related to the group **Python Syntax Checker**. This feature is only available if either the Python package **pyflakes** or
-**frosted** (legacy) are available. If enabled, one of these packages can be used to check the code for bugs or other syntax-related styles.
-
-If there are any bugs, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a 
-tooltip shows the error (for more information see the help about the :ref:`script editor window <gui-editor-syntax-check>`).
-
-At startup of |itom|, the module :py:mod:`itom` is globally imported (*from itom import ``*``*). This holds for any commands, executed in the console widget or
-for scripts, which are directly executed. In order to tell *pyflakes* or *frosted* about this imported module :py:mod:`itom`, check the corresponding checkbox.
-Additionally, you can decide when the next check should be executed. This is given in a number of seconds after the last key press in any script editor.
 
 The **Class Navigator** feature allows configuring the :ref:`class navigator <gui-editor-class-navigator>` 
 of any script editor window. The checkbox of the entire groupbox en- or disables this feature. 
