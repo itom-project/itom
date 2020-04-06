@@ -113,6 +113,7 @@ void WidgetPropEditorCodeCheckers::readSettings()
     ui.lblAllChecksIgnore->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreValues", "").toString());
 
     ui.checkAllChecksIgnoreExtend->setChecked(syntaxCheckerParams.value("codeCheckerFlake8IgnoreExtendEnabled", true).toBool());
+    ui.lblAllChecksIgnoreExtend->setEnabled(ui.checkAllChecksIgnoreExtend->isChecked());
     ui.lblAllChecksIgnoreExtend->setText(syntaxCheckerParams.value("codeCheckerFlake8IgnoreExtendValues", "W293").toString());
 
     ui.comboAllChecksDocstyle->setCurrentText(syntaxCheckerParams.value("codeCheckerFlake8Docstyle", "pep257").toString());
