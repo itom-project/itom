@@ -38,6 +38,7 @@
 #include <qaction.h>
 #include <qmenu.h>
 #include <qevent.h>
+#include <qsize.h>
 #include <qsignalmapper.h>
 
 namespace ito {
@@ -70,6 +71,8 @@ public:
     QWidget *getSubplot(int index) const;
 
     RetVal changeCurrentSubplot(int newIndex);
+
+    virtual QSize defaultSize() const;
 
     //---------------------------------
     // setter / getter
