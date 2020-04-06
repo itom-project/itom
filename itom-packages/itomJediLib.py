@@ -123,6 +123,8 @@ calltipsModificationList = { 'itom': calltipModuleItomModification }
 def calltips(code, line, column, path = None, encoding = "utf-8"):
     '''
     '''
+    max_calltip_line_length = 120
+    
     if jedi.__version__ >= '0.16.0':
         script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
         signatures = script.get_signatures(line = line + 1, column = column)
@@ -134,15 +136,18 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
         signatures = script.call_signatures()
     
     result = []
+    
     for sig in signatures:
         index = sig.index
+        
         if index is None:
             index = -1
-        #create a formatted calltip (current index appear in bold)
+        
+        # create a formatted calltip (current index appear in bold)
         module_name = str(sig.module_name)
         call_name = str(sig.name)
-        
         paramlist = None
+        
         if module_name in calltipsModificationList:
             paramlist = calltipsModificationList[module_name](sig, sig.params)
         
@@ -151,17 +156,60 @@ def calltips(code, line, column, path = None, encoding = "utf-8"):
         
         if index >= 0 and index < len(paramlist):
             paramlist[index] = "<b>%s</b>" % paramlist[index]
+        
         params = ", ".join(paramlist)
+        
         if module_name != "":
-            calltip = "<p style='white-space:pre'>%s.%s(%s)</p>" % (module_name, call_name, params)
+            method_name = "%s.%s" % (module_name, call_name)
         else:
-            calltip = "<p style='white-space:pre'>%s(%s)</p>" % (call_name, params)
+            method_name = call_name
+        
+        # calculate suitable lines in the calltip, such that every
+        # line is not longer than max_calltip_line_length
+        method_length = len(method_name)
+        param_lengths = [len(p) for p in paramlist]
+        
+        params = []
+        
+        remaining_length = max_calltip_line_length - method_length - 1
+        pidx_start = 0  # start index for the first param in the current line
+        pidx_end = 0
+        line_started = True
+        pidx = 0
+        
+        while pidx < len(paramlist):
+            if ((remaining_length - param_lengths[pidx]) >= 0) or \
+                (not line_started):
+                # if not line_started: the line is currently empty, but the next 
+                # parameter does not fit to it... however it is necessary to 
+                # get along. Therefore add one parameter in any case
+                pidx_end += 1
+                line_started = True
+                remaining_length -= param_lengths[pidx]
+                pidx += 1
+            else:
+                # finish the current line
+                params.append(", ".join(paramlist[pidx_start: pidx_end]))
+                pidx_start = pidx_end
+                line_started = False
+                remaining_length = max_calltip_line_length
+        
+        # add the last remaining parameters to the last line
+        if pidx_end > pidx_start:
+            params.append(", ".join(paramlist[pidx_start: pidx_end]))
+        
+        separator = ",<br>%s" % (" " * (len(method_name) + 1))
+        params = separator.join(params)
+        
+        calltip = "<p style='white-space:pre'>%s(%s)</p>" % (method_name, params)
+        
         result.append( \
             (calltip, \
             column, \
             sig.bracket_start[0], \
             sig.bracket_start[1]) \
             )
+        
     return result
 
 
