@@ -26,6 +26,7 @@
 #include "../AppManagement.h"
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../organizer/uiOrganizer.h"
+#include "../helper/guiHelper.h"
 #include "plot/AbstractDObjFigure.h"
 #include "plot/AbstractDObjPCLFigure.h"
 
@@ -84,7 +85,7 @@ FigureWidget::FigureWidget(
 
     changeCurrentSubplot(0);
 
-    resize(700,400);
+    resize(defaultSize());
 
     setContentWidget(m_pCenterWidget);
     m_pCenterWidget->setContentsMargins(0,0,0,0);
@@ -98,6 +99,14 @@ FigureWidget::FigureWidget(
 */
 FigureWidget::~FigureWidget()
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!> returns the default size of this figure widget
+QSize FigureWidget::defaultSize() const
+{
+    float f = ito::GuiHelper::screenDpiFactor();
+    return QSize(750 * f, 450 * f);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
