@@ -41,12 +41,12 @@ Application
 ---------------
 
 * If the "show message before closing the application" checkbox is checked, the 
-application will ask you if you really want to close |itom| before it is really closed.
+  application will ask you if you really want to close |itom| before it is really closed.
 
 * |itom| is created as multi-threaded application. For instance, every hardware 
-instance runs in its own thread and can therefore run parallely to the main application.
-Timeout values control the sychronization process between all these threads. 
-Timeout values for different situations can be adjusted using the spin boxes in the group *Timeouts*.
+  instance runs in its own thread and can therefore run parallely to the main application.
+  Timeout values control the sychronization process between all these threads. 
+  Timeout values for different situations can be adjusted using the spin boxes in the group *Timeouts*.
 
 There are two specific timeout values for initializing or closing a plugin as 
 well as loading or saving data from or to files. All other timeouts are handled by the general
@@ -99,8 +99,8 @@ between the following style sheet options:
 
 * no stylesheet (default look)
 * some pre-defined stylesheets (located in the **styles/stylesheets**-folder 
-of |itom| or its subfolders). For a dark theme, the theme in the **darkStyle** 
-subfolder is recommended.
+  of |itom| or its subfolders). For a dark theme, the theme in the **darkStyle** 
+  subfolder is recommended.
 * use-defined stylesheet (indicate a qss style sheet file and an optional rcc resource file)
 
 Some icons have two different representations, one for bright themes and 
@@ -132,7 +132,8 @@ after which the wrap occurs. Wrapped lines will start with three leading dots (.
 Command History
 ---------------------
 
-These options refer to the command history widget that is available under View -> Toolboxes -> Command History. 
+These options refer to the command history widget that is available under 
+View -> Toolboxes -> Command History. 
 
 Section Python
 ===============
@@ -141,40 +142,45 @@ General
 ----------------
 
 * Use the drop-down menu to define if changes in scripts should automatically 
-be saved before executing the script.
+  be saved before executing the script.
 
 * Every version of |itom| is compiled against a certain version of Python. 
-At runtime, Python can be loaded from different directories, which 
-can be given in the 2nd part of this
-property page. Per default, Python is located in the **python3** subdirectory 
-of your |itom| installation. However, if Python is installed as stand-alone 
-application, it also might publish its root dir in the registry (Windows) or 
-in the environment variable PYTHONHOME. Choose the second option to force itom 
-to look for one of these directories. Via the third option is it also possible 
-to indicate a user-defined directory, where the Python installation is located.
-You have to restart |itom| such that these changes are applied.
+  At runtime, Python can be loaded from different directories, which 
+  can be given in the 2nd part of this
+  property page. Per default, Python is located in the **python3** subdirectory 
+  of your |itom| installation. However, if Python is installed as stand-alone 
+  application, it also might publish its root dir in the registry (Windows) or 
+  in the environment variable PYTHONHOME. Choose the second option to force itom 
+  to look for one of these directories. Via the third option is it also possible 
+  to indicate a user-defined directory, where the Python installation is located.
+  You have to restart |itom| such that these changes are applied.
 
 * Python does have a very huge help system which can also launch 3rd party 
-programs to view the output of help() internal command. You can specify the 
-command which is passed a file to containing the output of help() via PAGER enver.
-The help system is very OS specific, and the commandpresets are only tested on win10.
-It uses the SystemEnvironment's variables. You can test the command using the
-cmd shell. win10: use setx instead of set for setting environment variables.
+  programs to view the output of help() internal command. You can specify the 
+  command which is passed a file to containing the output of help() via PAGER enver.
+  The help system is very OS specific, and the commandpresets are only tested on win10.
+  It uses the SystemEnvironment's variables. You can test the command using the
+  cmd shell. win10: use setx instead of set for setting environment variables.
 
 Startup
 --------------------
 
-It is possible to indicate one or several python scripts, which will executed after the startup of |itom|. These files can be indicated in this property page. Another possiblity to
-define this list is by editing a user role in the :ref:`user management system <gui-user-management>` of |itom|. You can load new files, remove existing files from the list or change the
-order of execution. 
+It is possible to indicate one or several python scripts, which will executed 
+after the startup of |itom|. These files can be indicated in this property page. 
+Another possiblity to define this list is by editing a user role in the 
+:ref:`user management system <gui-user-management>` of |itom|. You can load new 
+files, remove existing files from the list or change the order of execution. 
 
-Usually, all files are stored as absolute path in the settings file. However, it is also possible to let |itom| shorten newly loaded files to a relative path with respect to the root directory
-of |itom|. This option can be enabled by the checkbox below the file list.
+Usually, all files are stored as absolute path in the settings file. However, it 
+is also possible to let |itom| shorten newly loaded files to a relative path with 
+respect to the root directory of |itom|. This option can be enabled by the 
+checkbox below the file list.
 
 Section Editor
 ================
 
-The editor section covers all properties, that are related to the :ref:`script editor windows <gui-editor>`.
+The editor section covers all properties, that are related to the 
+:ref:`script editor windows <gui-editor>`.
 
 .. _gui-prop-py-general:
     
@@ -184,23 +190,25 @@ General
 In this tab, you can mainly set all settings that are related to indentation:
 
 * **Auto indentation** automatically indents the next block after a colon at the end of a line, 
-    like after a "if (...):" statement, a method definition or a for loop (among others). 
+  like after a "if (...):" statement, a method definition or a for loop (among others). 
 * If the **Use tabs for indentation** checkbox is not checked, every tab is automatically replaced 
-    by N spaces (N is adjustable by the spinbox below).
+  by N spaces (N is adjustable by the spinbox below).
 * The **Indentation Width** spinbox sets the standard width for the indentation. This is the 
-    number of spaces which are inserted if a tab is inserted (only if the 
-    **Use tabs for indentation** checkbox is unchecked.
+  number of spaces which are inserted if a tab is inserted (only if the 
+  **Use tabs for indentation** checkbox is unchecked.
 * **Show Whitespaces** displays small dots in each indentation. The color of these dots can be 
-    adjusted by the style **whitespace color**
+  adjusted by the style **whitespace color**
 * **Show indentation guides** defines if small, dotted vertical lines should be displayed in front 
-    of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
-* In the group **Cut, Copy, Paste Behaviour** you can select how the script editor should behave if code is copied / cut or if code
-   should be pasted from the clipboard. In the first case, you can select if the cut or copy 
-   operation is available if no text is currently selected, since it is possible to entirely 
-   copy or cut the current line instead. Another option controls a smart paste behaviour if 
-   indented code, that has possibly been removed from a block with another initial indentation 
-   level, should be adapted to the current identation level of the current cursor position.
+  of indented blocks. The spacing between these vertical lines corresponds to the indentation width, too.
+* In the group **Cut, Copy, Paste Behaviour** you can select how the script editor 
+  should behave if code is copied / cut or if code
+  should be pasted from the clipboard. In the first case, you can select if the cut or copy 
+  operation is available if no text is currently selected, since it is possible to entirely 
+  copy or cut the current line instead. Another option controls a smart paste behaviour if 
+  indented code, that has possibly been removed from a block with another initial indentation 
+  level, should be adapted to the current identation level of the current cursor position.
 
+    .. _gui-prop-py-code-checkers:
 
 Code Checkers
 ----------------------
@@ -215,12 +223,12 @@ options in this property page:
 
 * **No code checks**: nothing is checked
 * **Basic code checks**: This requires the python package `pyflakes <https://github.com/PyCQA/pyflakes>`_. 
-    Using this package general code errors and syntax errors are checked.
+  Using this package general code errors and syntax errors are checked.
 * **Extended code checks**: This requires the python package `flake8 <https://flake8.pycqa.org/en/latest/`_.
-    **Flake8** depends on **pyflakes**, **pycodestyle** and **mccabe**. However it can be extended by further
-    plugins, like for instance **flake8-docstrings**. Therefore **flake8** can check for various things which
-    extends the features of **pyflakes**. For instance it can give hints if the Python standard style guide **pep8**
-    is violated, it can check for the complexity of methods and so on.
+  **Flake8** depends on **pyflakes**, **pycodestyle** and **mccabe**. However it can be extended by further
+  plugins, like for instance **flake8-docstrings**. Therefore **flake8** can check for various things which
+  extends the features of **pyflakes**. For instance it can give hints if the Python standard style guide **pep8**
+  is violated, it can check for the complexity of methods and so on.
 
 If any code checker is activated, a check for a script is executed whenever the properties have been
 changed or after a certain amount of time after the last key press in the corresponding script. This amount
@@ -298,26 +306,26 @@ Within itom you can set the following options:
    return a warning, that the line should better be split into several lines. The default from PEP8 is usually 79,
    however auto-style correction packages like **black** recommend a number of 88.
 2. **Show the following errors or warning**: If the checkbox is clicked, indicate a comma-separated list of
-    error codes that should be considered. This affects the option **--select** of flake8. You can either indicate
-    one specific error code, or only the major character to consider all messages from this major category, or it
-    is also possible to write for instance **E1** to select all error codes starting with **E1**.
+   error codes that should be considered. This affects the option **--select** of flake8. You can either indicate
+   one specific error code, or only the major character to consider all messages from this major category, or it
+   is also possible to write for instance **E1** to select all error codes starting with **E1**.
 3. **Ignore the following errors or warning**: Similar to the option above, however this overwrites the option **--ignore**,
-    and let itom ignore certain error codes.
+   and let itom ignore certain error codes.
 4. **Extend the (default) ignore list**: This is similar than no 3, however it affects the flake8 option **--extend-ignore**.
-    This means, that the ignored error codes are only appended to the defaults from flake8 or the user configuration files,
-    without fully replacing them. Itom defaults here to **W293**, which ignores lines, that consist of spaces only.
+   This means, that the ignored error codes are only appended to the defaults from flake8 or the user configuration files,
+   without fully replacing them. Itom defaults here to **W293**, which ignores lines, that consist of spaces only.
 5. **Docstyle convention**: This is only important, if the plugin package **flake8-docstrings** is installed and
-    will then indicate the default style guide that is applied to check the docstrings of any functions and classes.
+   will then indicate the default style guide that is applied to check the docstrings of any functions and classes.
 6. **Max complexity**: By this option, you can enable the code complexity checks from **mccabe**. Enable it by checking
-    the checkbox and setting the value to anything >= 0.
+   the checkbox and setting the value to anything >= 0.
 7. **Message codes, displayed as errors**: Indicate here error codes (again a character or a character followed by 1-3 digits)
-    as comma-separated list. All messages that belong to error codes in this list, will be shown as errors (ladybug icon).
+   as comma-separated list. All messages that belong to error codes in this list, will be shown as errors (ladybug icon).
 8. **Message codes, displayed as warnings**: See no. 7, however the affected messages will be displayed as warnings. All
-    other messages will be displayed as info.
+   other messages will be displayed as info.
 9. **Further options**: You can indicate here further options, that should be passed to flake8. Every option must
-    be on a separate line. See :ref:`the flake8 documentation <https://flake8.pycqa.org/en/latest/user/options.html>`_
-    for a list of options. Further plugins can append more options. Indicate here the option (without the -- characters),
-    optionally followed by an equal sign and the value. If no value is given, True is assumed. Examples are:
+   be on a separate line. See :ref:`the flake8 documentation <https://flake8.pycqa.org/en/latest/user/options.html>`_
+   for a list of options. Further plugins can append more options. Indicate here the option (without the -- characters),
+   optionally followed by an equal sign and the value. If no value is given, True is assumed. Examples are:
         
         max-doc-length=79
         disable-noqa
@@ -382,7 +390,9 @@ The completion popup is shown when the user press **Ctrl+Space** or automaticall
     3. Fuzzy filtering, using the subsequence matcher. This is the most powerful filter mode but also the SLOWEST.
 
 * **case sensitivity**: select whether the search is case sensitive (or not)
-* **show tooltips**: select if a tooltip is shown next to the currently selected item in the auto completion list. This tooltip contains an additional information string about this entry.
+* **show tooltips**: select if a tooltip is shown next to the currently selected 
+  item in the auto completion list. This tooltip contains an additional 
+  information string about this entry.
 
 This example shows an example for an auto completion list, with an additional tooltip:
 
@@ -398,7 +408,8 @@ The other function  shows a list of available members of classes after entering 
 
 .. note::
     
-    Auto completion hints can only be checked and displayed, if both the Python packages **jedi** (version >= 0.12) and **parso** are installed.
+    Auto completion hints can only be checked and displayed, if both the Python 
+    packages **jedi** (version >= 0.12) and **parso** are installed.
 
 
 .. _gui-prop-py-styles:
@@ -417,13 +428,20 @@ This property page is divided into the following parts:
 
 1. Select the style type, that you want to edit using the group 2. The first part of the list contains styles for specific parts of a code, whereas the second part
    of the list also contains generals styles, like the page style itself.
-2. Setting of the selected style. Depending of the style, you can select the foreground color (text color), the background color (use a transparent color, to use the paper color instead) or the font.
-3. Some general settings: Change the overall font size for all styles, reset all styles to the default values or set all background colors of text to transparent, such that the paper color is the only
-   valid background color.
-4. It is possible to export all styles to an **ini** file that can be imported again. Furthermore, the editor styles of |itom| are mostly compatible
-   with the xml-style files of the open source project **Notepad++**, such that these xml files can be imported, too. Some xml style files are located
-   in the **styles/editorThemes** folder.
-5. This sample text can be used to see the style of the currently selected style category.
+2. Setting of the selected style. Depending of the style, you can select the 
+   foreground color (text color), the background color (use a transparent 
+   color, to use the paper color instead) or the font.
+3. Some general settings: Change the overall font size for all styles, 
+   reset all styles to the default values or set all background colors of 
+   text to transparent, such that the paper color is the only valid 
+   background color.
+4. It is possible to export all styles to an **ini** file that can be 
+   imported again. Furthermore, the editor styles of |itom| are mostly 
+   compatible with the xml-style files of the open source project **Notepad++**, 
+   such that these xml files can be imported, too. Some xml style files are 
+   located in the **styles/editorThemes** folder.
+5. This sample text can be used to see the style of the currently selected 
+   style category.
 
 .. note::
     
@@ -472,8 +490,13 @@ Section Plots and Figures
 Default Plots
 ------------------
 
-* The first table lists all available plugins to plot data. The different columns show what kind of input data they accept and what they should be used for.
-* The second table shows different categories for plots. For each category a default plugin can be selected. This default plugin will be used to plot the incoming data. To change the standard plugin, double click the last column. 
+* The first table lists all available plugins to plot data. The different 
+  columns show what kind of input data they accept and what they should 
+  be used for.
+* The second table shows different categories for plots. For each category 
+  a default plugin can be selected. This default plugin will be used to plot 
+  the incoming data. To change the standard plugin, double click the last 
+  column. 
 
 .. figure:: images/propPlotsDefaultPlots.png
     :scale: 80%
@@ -488,7 +511,7 @@ The figures below are showing some examples of the different settings.
 .. figure:: images/generalPlotSettings.png
     :scale: 80%
     :align: center
-	
+
 .. figure:: images/1dLineElements.png
     :scale: 80%
     :align: center
@@ -515,10 +538,10 @@ find the following features:
 
 * **name**: every color palette must have an unique name. This name will be displayed in any newly opened plot.
 * **inverse colors**: Every color does not only consist of an array of colors, but also of two inverse colors (colors with a high contrast with respect to the available
-    colors in the palette itself), as well as of an invalid color, which is used to visualize NaN values. Change these colors by clicking the appropriate color button.
+  colors in the palette itself), as well as of an invalid color, which is used to visualize NaN values. Change these colors by clicking the appropriate color button.
 * **color stops**: Click on any color stop in the line plot to see the color and position (normalized between 0 and 1) of the color stop. Move a color stop with the mouse
-    to change the position or enter a new position in the text field. You can also remove a selected color stop or insert a new color stop right of the currently selected
-    color stop. Furthermore there is a possibility to change the positions of all color stops such that an equidistant distribution is obtained.
+  to change the position or enter a new position in the text field. You can also remove a selected color stop or insert a new color stop right of the currently selected
+  color stop. Furthermore there is a possibility to change the positions of all color stops such that an equidistant distribution is obtained.
 * **toggle color buttons**: You can toggle the red, green and blue color button in order to display or hide the specific red, green and blue line.
 
 Using Python, it is also possible to get a list of all available color palette names, using the method :py:meth:`itom.getPaletteList`. In order to obtain a dictionary

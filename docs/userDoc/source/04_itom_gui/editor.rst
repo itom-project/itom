@@ -5,39 +5,53 @@
 Script-Editor
 **************
 
-The script editor is one of the main windows of |itom| and allows creating, modifying and executing one or several python scripts.
+The script editor is one of the main windows of |itom| and allows creating, 
+modifying and executing one or several python scripts.
 
 .. figure:: images/scripteditor.png
     :scale: 100%
     :align: center
 
-Every script editor window can display one or multiple script files that are separated in different tabs at the bottom of the window.
-Click a tab to show the corresponding script in the center of the window. You can close, save, reorder or (un-)dock every single tab
-by its context menu.
+Every script editor window can display one or multiple script files that 
+are separated in different tabs at the bottom of the window. Click a tab 
+to show the corresponding script in the center of the window. You can 
+close, save, reorder or (un-)dock every single tab by its context menu.
 
 .. figure:: images/scripteditor-tab-context.png
     :scale: 100%
     :align: center
 
-The content of the current script file is displayed in the center of the script editor window. Use this text editor to write or modify a script
-that can then be run or debugged. The menus of the script editor window provide many possibilities to edit and finally run or debug the script. The most important
-functions are also accessible via the toolbar and / or the context menu of the script area.
+The content of the current script file is displayed in the center of the 
+script editor window. Use this text editor to write or modify a script
+that can then be run or debugged. The menus of the script editor window 
+provide many possibilities to edit and finally run or debug the script. 
+The most important functions are also accessible via the toolbar and / or 
+the context menu of the script area.
 
 Basic functions
 ========================
 
-The file menu gives the opportunity to open an existing script or create a new one, to save the current script or to print or close the script.
+The file menu gives the opportunity to open an existing script or create 
+a new one, to save the current script or to print or close the script.
 
-Basic and advanced functions to edit the current script are contained in the **edit** menu. These are:
+Basic and advanced functions to edit the current script are contained in 
+the **edit** menu. These are:
 
 * cut, copy and paste parts of the script.
-* comment (Ctrl+R) the selected lines using the #-character or uncomment lines (Ctrl+Shift+R).
+* comment (Ctrl+R) the selected lines using the #-character or uncomment 
+  lines (Ctrl+Shift+R).
 * indent or unindent the selected lines.
-* open a search bar at the bottom of the script to search for a string (quick search) (Ctrl+F).
+* open a search bar at the bottom of the script to search for a string 
+  (quick search) (Ctrl+F).
 * open a search and replace dialog (Ctrl+H).
-* open a goto-dialog (Ctrl+G) where you can enter a specific line number the cursor should be moved to.
-* open the :ref:`icon browser <gui-editor-iconbrowser>` to search internal icons of itom and loaded plugins that can also be used for specific user interfaces.
-* You can set bookmarks by clicking the left margin (left from the line numbers). A star icon indicates a bookmarked line. Modify the bookmarks or jump to the next by clicking the corresponding menu entries.
+* open a goto-dialog (Ctrl+G) where you can enter a specific line number 
+  the cursor should be moved to.
+* open the :ref:`icon browser <gui-editor-iconbrowser>` to search internal 
+  icons of itom and loaded plugins that can also be used for specific user 
+  interfaces.
+* You can set bookmarks by clicking the left margin (left from the line numbers). 
+  A star icon indicates a bookmarked line. Modify the bookmarks or jump 
+  to the next by clicking the corresponding menu entries.
 
 .. _gui-editor-run-debug-script:
 
@@ -71,9 +85,12 @@ More information about breakpoints are given in the next section.
 Breakpoints
 ========================
 
-Breakpoints are red or gray points in the right side of the margin of a script window. In every valid script line, there can be at most one breakpoint.
-A breakpoint is added to a specific line by clicking the margin at the right side of the line numbers. You cannot add a breakpoint to a commented or empty line.
-If you clear or comment a line that already contains a breakpoint, the script debugger will fail with a corresponding error message.
+Breakpoints are red or gray points in the right side of the margin of a script 
+window. In every valid script line, there can be at most one breakpoint.
+A breakpoint is added to a specific line by clicking the margin at the right 
+side of the line numbers. You cannot add a breakpoint to a commented or empty 
+line. If you clear or comment a line that already contains a breakpoint, the 
+script debugger will fail with a corresponding error message.
 
 .. figure:: images/editor-breakpoints.png
     :scale: 100%
@@ -81,9 +98,12 @@ If you clear or comment a line that already contains a breakpoint, the script de
 
 There are three different types of breakpoints:
 
-* Red point: This is an enabled, standard breakpoint. Once the script is debugged, it will always stop at this breakpoint.
-* Gray point: Disabled breakpoint. This breakpoint is currently inactive. You can enable or disable a breakpoint by clicking it or via its context menu.
-* Red point with white cross: Special breakpoint. Right click on a breakpoint and choose **edit breakpoint** to set further settings to the breakpoints behaviour.
+* Red point: This is an enabled, standard breakpoint. Once the script is 
+  debugged, it will always stop at this breakpoint.
+* Gray point: Disabled breakpoint. This breakpoint is currently inactive. You 
+  can enable or disable a breakpoint by clicking it or via its context menu.
+* Red point with white cross: Special breakpoint. Right click on a breakpoint 
+  and choose **edit breakpoint** to set further settings to the breakpoints behaviour.
 
 .. figure:: images/editor-edit-breakpoints.png
     :scale: 100%
@@ -91,35 +111,57 @@ There are three different types of breakpoints:
 
 The **edit breakpoint** dialog allows configuring the following properties of a breakpoint:
 
-* Condition: Indicate a python statement that is evaluated once the debugger comes to the corresponding line. It will only stop at this line of the condition returns true. You can use any global or active local variables inside of the condition.
-* Ignore Count: If this number is bigger than zero, the debugger ignores this breakpoint for the first n times, where n is the value of **ignore count**.
-* Temporary Breakpoint: The debugger only stops at this breakpoint once and ignores it after having stopped there for the first time.
+* Condition: Indicate a python statement that is evaluated once the debugger 
+  comes to the corresponding line. It will only stop at this line of the condition 
+  returns true. You can use any global or active local variables inside of 
+  the condition.
+* Ignore Count: If this number is bigger than zero, the debugger ignores this 
+  breakpoint for the first n times, where n is the value of **ignore count**.
+* Temporary Breakpoint: The debugger only stops at this breakpoint once and 
+  ignores it after having stopped there for the first time.
 * Enabled: En/Disables the breakpoint.
 
-The breakpoints of this and other scripts are all listed in the :ref:`breakpoint toolbox <gui-breakpoints>` of |itom|. If |itom| is closed, all current active and inactive breakpoints are saved and restored once |itom| is started again. Breakpoints are also active if the corresponding script is currently not visible in any script editor window.
+The breakpoints of this and other scripts are all listed in the 
+:ref:`breakpoint toolbox <gui-breakpoints>` of |itom|. If |itom| is closed, all 
+current active and inactive breakpoints are saved and restored once |itom| is started 
+again. Breakpoints are also active if the corresponding script is currently not 
+visible in any script editor window.
 
 .. note::
     
-    In order to stop the script execution in a debug-mode in any method that is for instance called by clicking a button in an user-defined interface or via a timer event, you need to set a breakpoint in the corresponding line in the script and toggle the button |vardebugpython| **Run Python in debug mode** in the main window of |itom| (toolbar or menu **script**). The same holds for a method that you call from the command line. Toggle this button and set a breakpoint in the method in order to run this method in debug-mode and let the debugger stop in the line marked with the breakpoint.
+    In order to stop the script execution in a debug-mode in any method that is 
+    for instance called by clicking a button in an user-defined interface or via 
+    a timer event, you need to set a breakpoint in the corresponding line in the 
+    script and toggle the button |vardebugpython| **Run Python in debug mode** 
+    in the main window of |itom| (toolbar or menu **script**). The same holds 
+    for a method that you call from the command line. Toggle this button and set 
+    a breakpoint in the method in order to run this method in debug-mode and let 
+    the debugger stop in the line marked with the breakpoint.
 
 .. _gui-editor-bookmarks:
 
 Bookmarks
 ============
 
-It is possible to mark certain lines in a or multiple scripts with bookmarks, displayed as star icon in the most-left column (left to the column numbers).
-The list of all bookmarks is then visible in the :ref:`bookmarks <gui-bookmarks>` toolbox of |itom|. To add a bookmark
-to a line, which is not decorated with a bookmark yet, either click in the most-left column in the desired line or
-click at any character in the desired line to move the cursor there and click the **toggle bookmark** button in the toolbar.
+It is possible to mark certain lines in a or multiple scripts with bookmarks, 
+displayed as star icon in the most-left column (left to the column numbers).
+The list of all bookmarks is then visible in the 
+:ref:`bookmarks <gui-bookmarks>` toolbox of |itom|. To add a bookmark to a 
+line, which is not decorated with a bookmark yet, either click in the 
+most-left column in the desired line or click at any character in the desired 
+line to move the cursor there and click the **toggle bookmark** button in 
+the toolbar.
 
-To remove a bookmark, click on an existing bookmark icon in the editor again or click the **toggle bookmark** button again,
-if the cursor is currently in the line of a bookmark. It is additionally possible to clear all existing bookmarks.
+To remove a bookmark, click on an existing bookmark icon in the editor again 
+or click the **toggle bookmark** button again, if the cursor is currently in the 
+line of a bookmark. It is additionally possible to clear all existing bookmarks.
 
-Using the **previous bookmark** and **next bookmark** buttons (in the toolbar of the editor, in the context menu of the most-left column
-or via the bookmark toolbox) it is possible to jump to the previous or next bookmark in the global list of bookmarks.
+Using the **previous bookmark** and **next bookmark** buttons (in the toolbar 
+of the editor, in the context menu of the most-left column or via the bookmark toolbox) 
+it is possible to jump to the previous or next bookmark in the global list of bookmarks.
 
-Bookmarks are persisted at shutdown of |itom| and reloaded at the next startup. Bookmarks, that belong to non-existing
-Python scripts will not be persisted or reloaded.
+Bookmarks are persisted at shutdown of |itom| and reloaded at the next startup. 
+Bookmarks, that belong to non-existing Python scripts will not be persisted or reloaded.
 
 Navigate forward and backward
 ===============================
@@ -192,18 +234,23 @@ imported packages. This might take some time, when a new package is imported and
 Goto definition or assignment
 ================================================
 
-The script editor allows navigating to the definitions (or assignments) of function calls, used variables etc. in a script.
-You can either call the context menu over the word, to whose definition you would like to go to, or you press the shift-key
-and move the cursor over a specific word. If a definition (or assignment) can be found for this word, it is underlined after a short moment.
-Click the click to jump to the definition. A jump can be done within the same script, else the requested script is opened.
+The script editor allows navigating to the definitions (or assignments) 
+of function calls, used variables etc. in a script. You can either call the 
+context menu over the word, to whose definition you would like to go to, or 
+you press the shift-key and move the cursor over a specific word. If a 
+definition (or assignment) can be found for this word, it is underlined 
+after a short moment. Click the click to jump to the definition. A jump 
+can be done within the same script, else the requested script is opened.
 
 .. figure:: images/scripteditor_gotodef.png
     :scale: 100%
     :align: center
 
-The difference between an assignment and a definition is shown with respect to the image above. In the depicted sample, the
-definition of the call to **myfunc** is the original definition of the method, here this is the method **calc_diff**. The assignment
-however is the place, where the variable **myfunc** is introduced for the first time.
+The difference between an assignment and a definition is shown with respect 
+to the image above. In the depicted sample, the definition of the call to 
+**myfunc** is the original definition of the method, here this is the 
+method **calc_diff**. The assignment however is the place, where the 
+variable **myfunc** is introduced for the first time.
 
 *New in |itom| 3.2
 
@@ -212,51 +259,86 @@ however is the place, where the variable **myfunc** is introduced for the first 
 Direction class and method navigator
 ================================================
 
-Above every script, there are two comboboxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
+Above every script, there are two comboboxes that are part of a class and 
+method navigator. If these combo boxes are not available, you need to 
+enable this navigator in the property dialog, 
+:ref:`tab general <gui-prop-py-general>`. After a configurable number of 
+seconds after the last change in the script, it is analyzed and the combo 
+boxes are adapted with respect to the current structure of the script.
 
 .. figure:: images/editor-class-navigator.png
     :scale: 100%
     :align: center
 
-The left combobox displays all classes and the global namespace of the script. By clicking on any class name, the cursor jumps to the class and the name is highlighted. The right combobox shows the sub-items that belong
-to the chosen class or namespace.
+The left combobox displays all classes and the global namespace of the 
+script. By clicking on any class name, the cursor jumps to the class 
+and the name is highlighted. The right combobox shows the sub-items that 
+belong to the chosen class or namespace.
 
-The navigator can distinguish between public and private methods, static methods (with the decorator **@staticmethod**) and specially marked class methods (decorator **@classmethod**). All globally defined methods are
+The navigator can distinguish between public and private methods, static 
+methods (with the decorator **@staticmethod**) and specially marked class 
+methods (decorator **@classmethod**). All globally defined methods are
 categorized into the global namespace (**Global Scope**).
 
 
 .. _gui-editor-syntax-check:
 
-Automatic syntax check
-========================
+Automatic syntax and code check
+=================================
 
-If desired, the current script can be checked for syntax and other errors or hints. This is done using the python package **pyflakes** (https://pypi.python.org/pypi/pyflakes/).
-You need to have this package installed in order to benefit from this service. If **pyflakes** is not installed, the syntax check is automatically disabled.
+If desired, all opened scripts can be continuously be checked for syntax
+and other errors or hints, like the compliance with the Python style guide
+(PEP8) or the style guide for docstrings (PEP257).
 
-If **pyflakes** is installed, the syntax and style check can be dis- or enabled and configured via the :ref:`property dialog of itom <gui-prop-py-styles>`. Syntax bugs or other
-hints, warnings or errors detected by **pyflakes** will be displayed via a bug symbol in the left margin of the script editor window:
+Basic checks can already be provided, if the python package 
+`pyflakes <https://pypi.python.org/pypi/pyflakes/>`_ is installed. 
+Style guide checks etc. (denoted as extended checks) 
+are only available if the package `flake8 <https://flake8.pycqa.org/en/latest/>`_, 
+that depends on `pyflakes <https://github.com/pycqa/mccabe>`_, 
+`pycodestyle <https://pypi.org/project/pycodestyle/>`_ 
+and `mccabe <https://github.com/pycqa/mccabe>`_.
+
+You need to have these packages installed in order to benefit from the desired service.
+If the necessary packages could not be found, the service is deactivated and a warning
+appears at startup or if you changed the properties.
+
+The check mode (no check, basic checks, extended checks) as well as the detailed
+configuration can be done in the corresponding page of the 
+:ref:`property dialog of itom <gui-prop-py-code-checkers>`.
+
+Any kind of message has one of the three possible levels **info**, **warning** or **error**.
+It is then displayed via one of three possible bug symbols in the left-most margin
+of the script editor window (blue dot: info, orange dot: warning, red ladybug: error):
+
+.. figure:: images/propEditorCodeCheckers.png
+    :scale: 100%
+    :align: center
+
+The tooltip text of every bug icon displays the reason for the bug. Since the bug 
+icon is displayed in the same margin column than the bookmarks, there is also a 
+combined icon for a bug and a bookmark in one line. 
 
 .. figure:: images/editor-syntax-check.png
     :scale: 100%
     :align: center
 
-The tooltip text of every bug icon displays the reason for the bug. Since the bug icon is displayed in the same margin column than the bookmarks, there is also a combined icon
-for a bug and a bookmark in one line. Please note, that one line can also contain multiple syntax hints, they are displayed in multiple lines in the tooltip text.
+Please note, that one line can also contain multiple syntax hints, they are 
+displayed in multiple lines in the tooltip text.
 
 .. note::
     
-    You can automatically download and install **pyflakes** using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible via the *Script* menu of the main window.
-    Click *install* in the manager and search the python package index for the package **pyflakes**. Try to call::
+    You can automatically download and install **pyflakes**, **flake8**, **pycodestyle** 
+    etc. using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible 
+    via the *Script* menu of the main window.
+    
+    Click *install* in the manager and search the python package index for the 
+    package **pyflakes** (or others). Try to call::
         
         import pyflakes
         
     to check if pyflakes is installed correctly.
-
-.. note::
     
-    Older versions of |itom| used the former python package **frosted** to provide the syntax check. This package can still be used. However it is not maintained any more,
-    therefore it is recommended to switch to the equivalent package **pyflakes**.
-    
+    The bug icons are then available after a restart of itom.
 
 .. _gui-editor-iconbrowser:
 
