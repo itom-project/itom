@@ -88,7 +88,7 @@ namespace ito
             Out             = 0x080000,
 			NotAvailable    = 0x100000,
 
-            //type (bit 1-16), except for the NoAutosave bit, which is bit 17
+            //type (bit 1-16)
             Pointer         = 0x000001,
             Char            = 0x000002,
             Int             = 0x000004,

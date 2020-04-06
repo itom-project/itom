@@ -758,42 +758,16 @@ bool ParamBase::operator == (const ParamBase &rhs) const
 //----------------------------------------------------------------------------------------------------------------------------------
 void ParamBase::inOutCheck()
 {
-    //set direction to be at least in...
-    if ((m_type & (ParamBase::Type::In | ParamBase::Type::Out)) == 0)
+    if ((m_type & (ParamBase::In | ParamBase::Out)) == 0)
     {
-        m_type |= ParamBase::Type::In;
+        m_type |= ParamBase::In;
     }
-    if (m_type & ParamBase::Type::Out)
+    if (((m_type & ParamBase::In) | ParamBase::Out) == ParamBase::Out)
     {
-        //These types are not allowed to be output-only.
-        //        DObjPtr         = 0x000010 | Pointer | NoAutosave,
-        //        HWRef           = 0x000040 | Pointer | NoAutosave,
-        //        PointCloudPtr   = 0x000080 | Pointer | NoAutosave,
-        //        PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave
-        //since NoAutosave is not in the type part of m_type it needs to be appended to the
-        //comparison mask. Yes. Really.
-        switch(m_type & (paramTypeMask | ParamBase::Type::NoAutosave))
+        //out only not allowed for pointer-based types (beside arrays)
+        if (m_type & ((DObjPtr | PointCloudPtr | PolygonMeshPtr| HWRef) ^ (Pointer | NoAutosave)))
         {
-            case DObjPtr:
-            case PointCloudPtr:
-            case PolygonMeshPtr:
-            case HWRef:
-            {
-                //throw exception only in debug mode. You don't want
-                //Exceptions of this type in a production system.
-                //You cannot check where it comes from then.
-                //To check the origin of this exception you would need
-                //a debugger attached or a call stack at hand.
-                assert(m_type & ParamBase::Type::In);
-                //force it in/out...
-                m_type |= ParamBase::Type::In;
-                break;
-            }
-
-            default:
-                //well nothing to be done here
-                break;
-
+            throw std::logic_error("It is not allowed to delcare a parameter as OUT for types DObjPtr, PointCloudPtr, PolygonMeshPtr or HWRef");
         }
     }
 }
