@@ -33,6 +33,8 @@
 #include <qdebug.h>
 #include <qboxlayout.h>
 #include <qmessagebox.h>
+#include <qdir.h>
+
 #include "../ui/dialogGoto.h"
 #include "../ui/dialogReplace.h"
 
@@ -643,9 +645,9 @@ RetVal ScriptDockWidget::openScript()
 */
 RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 {
-    QFile file(filename);
+    QFileInfo fileInfo(filename);
 
-    if (!file.exists())
+    if (!fileInfo.exists())
     {
         if (!silent)
         {
@@ -656,8 +658,8 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     }
     else
     {
-        QFileInfo info(file);
-        if (info.suffix().toLower() != "py")
+        
+        if (fileInfo.suffix().toLower() != "py")
         {
             if (!silent)
             {
@@ -670,7 +672,27 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 
     ScriptEditorWidget* sew = new ScriptEditorWidget(m_pBookmarkModel, m_tab);
 
-    RetVal retValue = sew->openFile(filename, false);
+    QString absoluteFilename = fileInfo.absoluteFilePath();
+
+    // under Windows, pathes must not be case sensitive. Therefore
+    // filename can be case insensitive. To show the correct name,
+    // try to figure out how the case-correct filename would be.
+    // Hint: this does not consider the pathes so far.
+    QDir path(fileInfo.absolutePath());
+    QStringList nameFilters;
+    nameFilters << "*.py";
+    QFileInfoList filesInfo = path.entryInfoList(nameFilters, QDir::Files);
+
+    foreach(const QFileInfo &f, filesInfo)
+    {
+        if (QString::compare(f.absoluteFilePath(), absoluteFilename, Qt::CaseInsensitive) == 0)
+        {
+            absoluteFilename = f.absoluteFilePath();
+            break;
+        }
+    }
+
+    RetVal retValue = sew->openFile(absoluteFilename, false);
 
     if (retValue.containsError())
     {
