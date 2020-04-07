@@ -23,9 +23,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-97</y>
+        <y>0</y>
         <width>506</width>
-        <height>795</height>
+        <height>844</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -153,9 +153,11 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QRadioButton" name="radioDisableChecks">
+           <widget class="QRadioButton" name="radioEnableAutoChecks">
             <property name="text">
-             <string>Disable all Syntax and Style Checks</string>
+             <string>Auto Selection: If flake8 could be found, enable the Extended Check.
+ Else if pyflakes can be loaded, use the Basic Check.
+ Else: Disable any Check.</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -163,9 +165,19 @@
            </widget>
           </item>
           <item>
+           <widget class="QRadioButton" name="radioDisableChecks">
+            <property name="text">
+             <string>Disable all Syntax and Style Checks</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QRadioButton" name="radioEnableSyntaxCheck">
             <property name="text">
-             <string>Enable Basic Source Code and Syntax Check only
+             <string>Basic Check: Enable Basic Source Code and Syntax Check only
 (requires the Python package &quot;pyflakes&quot;)</string>
             </property>
             <property name="checked">
@@ -194,7 +206,7 @@
             <item>
              <widget class="QGroupBox" name="groupBox_3">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="title">
                <string>PyFlakes Options</string>
@@ -257,8 +269,8 @@
           <item>
            <widget class="QRadioButton" name="radioEnableAllChecks">
             <property name="text">
-             <string>Syntax, Style and further Checks
-(requires the Python package &quot;flake8&quot; and optional flake8 plugin packages)</string>
+             <string>Extended Check: Syntax, Style and further Checks
+(requires the Python package &quot;flake8&quot; and Optional flake8 Plugin Packages)</string>
             </property>
            </widget>
           </item>
@@ -283,7 +295,7 @@
             <item>
              <widget class="QGroupBox" name="groupBox_2">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -644,38 +656,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>radioEnableSyntaxCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>groupBox_3</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>92</x>
-     <y>70</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>128</x>
-     <y>104</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioEnableAllChecks</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>groupBox_2</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>110</x>
-     <y>312</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>checkAllChecksSelect</sender>
    <signal>toggled(bool)</signal>
    <receiver>lblAllChecksSelect</receiver>
@@ -683,11 +663,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>322</x>
-     <y>363</y>
+     <y>520</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
-     <y>367</y>
+     <y>524</y>
     </hint>
    </hints>
   </connection>
@@ -699,11 +679,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>322</x>
-     <y>391</y>
+     <y>548</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
-     <y>395</y>
+     <y>552</y>
     </hint>
    </hints>
   </connection>
@@ -715,11 +695,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>322</x>
-     <y>473</y>
+     <y>630</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
-     <y>477</y>
+     <y>634</y>
     </hint>
    </hints>
   </connection>
@@ -730,12 +710,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>321</x>
-     <y>411</y>
+     <x>322</x>
+     <y>576</y>
     </hint>
     <hint type="destinationlabel">
-     <x>353</x>
-     <y>417</y>
+     <x>483</x>
+     <y>580</y>
     </hint>
    </hints>
   </connection>

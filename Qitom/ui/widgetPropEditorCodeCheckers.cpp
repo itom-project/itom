@@ -57,17 +57,20 @@ void WidgetPropEditorCodeCheckers::readSettings()
     ui.spinSyntaxInterval->setValue(settings.value("codeCheckerInterval", 1.00).toDouble());
 
     // Basic Options
-    switch (settings.value("codeCheckerMode", 1).toInt())
+    switch (settings.value("codeCheckerMode", PythonCommon::CodeCheckerAuto).toInt())
     {
     case PythonCommon::NoCodeChecker:
         ui.radioDisableChecks->setChecked(true);
         break;
-    default:
     case PythonCommon::CodeCheckerPyFlakes:
         ui.radioEnableSyntaxCheck->setChecked(true);
         break;
     case PythonCommon::CodeCheckerFlake8:
         ui.radioEnableAllChecks->setChecked(true);
+        break;
+    case PythonCommon::CodeCheckerAuto:
+    default:
+        ui.radioEnableAutoChecks->setChecked(true);
         break;
     }
 
@@ -153,9 +156,13 @@ void WidgetPropEditorCodeCheckers::writeSettings()
     {
         settings.setValue("codeCheckerMode", PythonCommon::CodeCheckerPyFlakes);
     }
-    else
+    else if (ui.radioEnableAllChecks->isChecked())
     {
         settings.setValue("codeCheckerMode", PythonCommon::CodeCheckerFlake8);
+    }
+    else
+    {
+        settings.setValue("codeCheckerMode", PythonCommon::CodeCheckerAuto);
     }
 
     switch (ui.comboShowMinLevel->currentIndex())

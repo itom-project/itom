@@ -930,7 +930,7 @@ void PythonEngine::readSettings()
     CodeCheckerOptions &opt = m_codeCheckerOptions;
 
     //General settings
-    int mode = settings.value("codeCheckerMode", PythonCommon::CodeCheckerPyFlakes).toInt();
+    int mode = settings.value("codeCheckerMode", PythonCommon::CodeCheckerAuto).toInt();
 
     switch (mode)
     {
@@ -938,11 +938,14 @@ void PythonEngine::readSettings()
         opt.mode = PythonCommon::NoCodeChecker;
         break;
     case PythonCommon::CodeCheckerPyFlakes:
-    default:
         opt.mode = PythonCommon::CodeCheckerPyFlakes;
         break;
     case PythonCommon::CodeCheckerFlake8:
         opt.mode = PythonCommon::CodeCheckerFlake8;
+        break;
+    case PythonCommon::CodeCheckerAuto:
+    default:
+        opt.mode = PythonCommon::CodeCheckerAuto;
         break;
     }
 
@@ -2548,27 +2551,48 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
     {
         CodeCheckerOptions &opt = m_codeCheckerOptions;
 
+        int modeNumber = 0; //!< this is the mode number, that is understood by the check method in itomSyntaxCheck.py
+
         //check if the required python packages are available
         switch (opt.mode)
         {
         case PythonCommon::NoCodeChecker:
             return;
-        case PythonCommon::CodeCheckerFlake8:
-            if (!m_pyModCodeCheckerHasFlake8)
-            {
-                return;
-            }
-            break;
         case PythonCommon::CodeCheckerPyFlakes:
             if (!m_pyModCodeCheckerHasPyFlakes)
             {
                 return;
             }
+            modeNumber = 1;
             break;
+        case PythonCommon::CodeCheckerFlake8:
+            if (!m_pyModCodeCheckerHasFlake8)
+            {
+                return;
+            }
+            modeNumber = 2;
+            break;
+        
+        case PythonCommon::CodeCheckerAuto:
+            if ((!m_pyModCodeCheckerHasFlake8) &&
+                (!m_pyModCodeCheckerHasPyFlakes))
+            {
+                return;
+            }
+            else if (m_pyModCodeCheckerHasFlake8)
+            {
+                modeNumber = 2;
+            }
+            else
+            {
+                modeNumber = 1;
+            }
         }
 
         QString codeToCheck = code;
         QString filename_ = filename;
+
+        
 
         PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject *result = PyObject_CallMethod(m_pyModCodeChecker, 
@@ -2577,7 +2601,7 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             codeToCheck.toUtf8().constData(), 
             filename.toUtf8().constData(), 
             fileSaved ? 1 : 0,
-            (int)opt.mode,
+            modeNumber,
             opt.includeItomModuleBeforeCheck ? 1 : 0,
             opt.furtherPropertiesJson.constData()
             );
