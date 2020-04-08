@@ -490,55 +490,6 @@ const RetVal ito::AddInManager::getAboutInfo(const QString &name, QString &versi
                 }
             }
         }
-        //if nothing found try to find by the name of the dll
-        if (!found)
-        {
-            QFileInfo fi;
-            QString name_(name);
-#ifdef _DEBUG
-            name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
-#endif
-
-                          //test actuator (objectName)
-            for (int n = 0; n < d->m_addInListAct.size(); n++)
-            {
-                aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAct[n]);
-                fi.setFile(aib->getFilename());
-                if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                {
-                    found = 1;
-                    break;
-                }
-            }
-
-            if (!found) //test dataIO (objectName)
-            {
-                for (int n = 0; n < d->m_addInListDataIO.size(); n++)
-                {
-                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListDataIO[n]);
-                    fi.setFile(aib->getFilename());
-                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                    {
-                        found = 1;
-                        break;
-                    }
-                }
-            }
-
-            if (!found) //test Algorithm (objectName)
-            {
-                for (int n = 0; n < d->m_addInListAlgo.size(); n++)
-                {
-                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAlgo[n]);
-                    fi.setFile(aib->getFilename());
-                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                    {
-                        found = 1;
-                        break;
-                    }
-                }
-            }
-        }
         if (aib && found)
         {
             versionString = aib->getAboutInfo();
@@ -569,7 +520,11 @@ const RetVal ito::AddInManager::getAboutInfo(const QString &name, QString &versi
 *   plugin is found its information about number, name ... returned. For all parameters of type char** provide the address to a char*-variable.
 *   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
 */
-const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about)
+const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType,
+                                         int &pluginNum, int &version, QString &typeString,
+                                         QString &author, QString &description,
+                                         QString &detaildescription, QString &license,
+                                         QString &about)
 {
     Q_D(AddInManager);
 
@@ -624,65 +579,6 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, i
                     aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAlgo[n]);
                     found = 1;
                     break;
-                }
-            }
-        }
-
-        //if nothing found until then, try to find name as filename within the dll-filename of the plugin
-        if (!found)
-        {
-            QFileInfo fi;
-            QString name_(name);
-#ifdef _DEBUG
-            name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
-#endif
-
-            //test actuator (objectName)
-            for (int n = 0; n < d->m_addInListAct.size(); n++)
-            {
-                aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAct[n]);
-                fi.setFile(aib->getFilename());
-                if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                {
-                    pluginNum = n;
-                    pluginType = ito::typeActuator;
-                    typeString = "Actuator";
-                    found = 1;
-                    break;
-                }
-            }
-
-            if (!found) //test dataIO (objectName)
-            {
-                for (int n = 0; n < d->m_addInListDataIO.size(); n++)
-                {
-                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListDataIO[n]);
-                    fi.setFile(aib->getFilename());
-                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                    {
-                        pluginNum = n;
-                        pluginType = ito::typeDataIO;
-                        typeString = "DataIO";
-                        found = 1;
-                        break;
-                    }
-                }
-            }
-
-            if (!found) //test Algorithm (objectName)
-            {
-                for (int n = 0; n < d->m_addInListAlgo.size(); n++)
-                {
-                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAlgo[n]);
-                    fi.setFile(aib->getFilename());
-                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
-                    {
-                        pluginNum = n;
-                        pluginType = ito::typeAlgo;
-                        typeString = "Algorithm";
-                        found = 1;
-                        break;
-                    }
                 }
             }
         }
