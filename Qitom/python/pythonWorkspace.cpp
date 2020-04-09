@@ -243,10 +243,20 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
             }
             else if (PyObject_HasAttr(obj, slotsUnicode))
             {
+                //__slots__ can return any sequence, here list and tuple are supported.
                 PyObject *subitem = NULL;
                 keys = PyObject_GetAttr(obj, slotsUnicode); //new ref (list)
-                if (keys)
+                
+                if (keys && (PyList_Check(keys) || PyTuple_Check(keys)))
                 {
+                    //if keys should be a tuple, turn it into a list, first...
+                    if (keys && PyTuple_Check(keys))
+                    {
+                        PyObject* keysList = PySequence_List(keys); //new ref (list)
+                        Py_XDECREF(keys);
+                        keys = keysList;
+                    }
+
                     values = PyList_New(PyList_GET_SIZE(keys)); //new ref (list)
 
                     for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(keys); ++idx)
@@ -266,6 +276,10 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                     }
 
                     keyType[0] = PY_ATTR;
+                } 
+                else
+                {
+                    Py_XDECREF(keys);
                 }
             }
 
@@ -414,7 +428,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         item->m_extendedValue = "";
         item->m_compatibleParamBaseType = 0; //not compatible
     }
-    else if(PyObject_HasAttr(value,dictUnicode) || PyObject_HasAttr(value, slotsUnicode))
+    else if(PyObject_HasAttr(value, dictUnicode) || PyObject_HasAttr(value, slotsUnicode))
     {
         //user-defined class (has attr '__dict__' or '__slots__')
         expandableType = true;
