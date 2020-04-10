@@ -32,13 +32,13 @@ public:
 
     enum HelpItemType 
     {  
-        typeFilter = 2, 
-        typeWidget = 3, 
-        typeFPlugin = 4, 
-        typeWPlugin = 5, 
-        typeCategory = 6, 
-        typeDataIO = 7, 
-        typeActuator = 8 
+        typeFilter = 2,   /* a filter method from an algorithm plugin */
+        typeWidget = 3,   /* a widget method from an algorithm plugin */
+        typeFPlugin = 4,  /* an algorithm plugin in the filter section */
+        typeWPlugin = 5,  /* an algorithm plugin in the widget section */
+        typeCategory = 6, /* a category */
+        typeDataIO = 7,   /* a dataIO plugin */
+        typeActuator = 8  /* an actuator plugin */
     };
 
     enum IconType 

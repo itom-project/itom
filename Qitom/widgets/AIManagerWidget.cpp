@@ -69,7 +69,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pAIManagerView->setSortingEnabled(true);
     m_pAIManagerView->setDragEnabled(true);
-    connect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint&)));
+    connect(m_pAIManagerView, &QTreeView::customContextMenuRequested, this, &AIManagerWidget::treeViewContextMenuRequested);
 
     m_pContextMenu = new QMenu(this);
 
@@ -1125,38 +1125,45 @@ void AIManagerWidget::mnuShowInfo()
             if (itemType & PlugInModel::itemFilter)
             { // Filter 
                 ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
-                emit(showPluginInfo("Algorithms."+awd->m_pBasePlugin->objectName()+"."+awd->m_name, 2));
+                emit showPluginInfo("Algorithms." + awd->m_pBasePlugin->objectName() + \
+                    "." + awd->m_name, HelpTreeDockWidget::typeFilter);
             }
             else if(itemType & PlugInModel::itemWidget)
             { // Widget 
                 ito::AddInAlgo::AlgoWidgetDef *awd = (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
-                emit(showPluginInfo("Widgets."+awd->m_pBasePlugin->objectName()+"."+awd->m_name, 3));
+                emit showPluginInfo("Widgets." + awd->m_pBasePlugin->objectName() + \
+                    "." + awd->m_name, HelpTreeDockWidget::typeWidget);
             }
             else if(itemType & PlugInModel::itemPlugin)
             { // DataIO and Actuator and Plugins (eg BasicFilters)
                 ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)itemInternalData;
                 if (aib->getType() & ito::typeActuator)
                 {
-                    emit(showPluginInfo("Actuator."+aib->objectName(), 8));
+                    emit showPluginInfo("Actuator." + aib->objectName(), 
+                        HelpTreeDockWidget::typeActuator);
                 }
                 else if (aib->getType() & ito::typeDataIO)
                 {
                     if (aib->getType() & ito::typeADDA)
                     {
-                        emit(showPluginInfo("DataIO.ADDA."+aib->objectName(), 7));
+                        emit showPluginInfo("DataIO.ADDA." + aib->objectName(), 
+                            HelpTreeDockWidget::typeDataIO);
                     }
                     else if (aib->getType() & ito::typeGrabber)
                     {
-                        emit(showPluginInfo("DataIO.Grabber."+aib->objectName(), 7));
+                        emit showPluginInfo("DataIO.Grabber." + aib->objectName(), 
+                            HelpTreeDockWidget::typeDataIO);
                     }
                     else if (aib->getType() & ito::typeRawIO)
                     {
-                        emit(showPluginInfo("DataIO.Raw IO."+aib->objectName(), 7));
+                        emit showPluginInfo("DataIO.Raw IO." + aib->objectName(), 
+                            HelpTreeDockWidget::typeDataIO);
                     }
                 }  
                 else if (aib->getType() & ito::typeAlgo)
                 {
-                    emit(showPluginInfo("Algorithms."+aib->objectName(), 4));
+                    emit showPluginInfo("Algorithms." + aib->objectName(), 
+                        HelpTreeDockWidget::typeFPlugin);
                 }         
             }
         }
