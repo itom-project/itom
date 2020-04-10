@@ -81,7 +81,7 @@ void HelpDockWidget::createActions()
     m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
     connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
 
-    connect(this, SIGNAL(showPluginInfo(QString, int, QModelIndex, bool)), m_pHelpWidget, SLOT(showPluginInfo(QString, int, QModelIndex, bool)));
+    connect(this, &HelpDockWidget::showPluginInfo, m_pHelpWidget, &HelpTreeDockWidget::showPluginInfo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -122,9 +122,9 @@ void HelpDockWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void HelpDockWidget::mnuShowInfo(QString name, int type)
+void HelpDockWidget::mnuShowInfo(QString name, HelpTreeDockWidget::HelpItemType type)
 {
-    emit(showPluginInfo(name, type, QModelIndex(), true));
+    emit showPluginInfo(name, type, QModelIndex(), true);
 }
 
 

@@ -254,8 +254,8 @@ MainWindow::MainWindow() :
 
     if (m_pAIManagerWidget != NULL && m_helpDock != NULL)
     {
-        connect(m_pAIManagerWidget, SIGNAL(showPluginInfo(QString, int)), m_helpDock, SLOT(mnuShowInfo(QString, int)));
-        connect(m_pAIManagerWidget, SIGNAL(showDockWidget()), this, SLOT(mnuShowScriptReference()));
+        connect(m_pAIManagerWidget, &AIManagerWidget::showPluginInfo, m_helpDock, &HelpDockWidget::mnuShowInfo);
+        connect(m_pAIManagerWidget, &AIManagerWidget::showDockWidget, this, &MainWindow::mnuShowScriptReference);
     }
 
     // connections
