@@ -2152,13 +2152,13 @@ void PythonEngine::jediCalltipRequestEnqueued()
     {
         //add from itom import * as first line (this is afterwards removed from results)
         lineOffset = 1;
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
-            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+            request.m_line + 1, request.m_col, request.m_path.toUtf8().constData()); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siiss", request.m_source.toUtf8().constData(), \
-            request.m_line, request.m_col, request.m_path.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "calltips", "siis", request.m_source.toUtf8().constData(), \
+            request.m_line, request.m_col, request.m_path.toUtf8().constData()); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2233,7 +2233,7 @@ void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &requ
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName)
+void PythonEngine::jediAssignmentRequested(const QString &source, int line, int col, const QString &path, int mode, QByteArray callbackFctName)
 {
     QVector<ito::JediAssignment> assignments;
 
@@ -2246,11 +2246,15 @@ void PythonEngine::jediAssignmentRequested(const QString &source, int line, int 
     {
         lineOffset = 1;
         //add from itom import * as first line (this is afterwards removed from results)
-        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", (m_includeItomImportString + "\n" + source).toUtf8().constData(), line + 1, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisi", 
+            (m_includeItomImportString + "\n" + source).toUtf8().constData(),
+            line + 1, col, 
+            path.toUtf8().constData(), mode); //new ref
     }
     else
     {
-        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisis", source.toUtf8().constData(), line, col, path.toUtf8().constData(), mode, encoding.toUtf8().constData()); //new ref
+        result = PyObject_CallMethod(m_pyModJedi, "goto_assignments", "siisi", 
+            source.toUtf8().constData(), line, col, path.toUtf8().constData(), mode); //new ref
     }
 
     if (result && PyList_Check(result))
@@ -2353,13 +2357,13 @@ void PythonEngine::jediCompletionRequestEnqueued()
         if (m_includeItomImportBeforeSyntaxCheck)
         {
             //add from itom import * as first line (this is afterwards removed from results)
-            result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
-                request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+            result = PyObject_CallMethod(m_pyModJedi, "completions", "siiss", (m_includeItomImportString + "\n" + request.m_source).toUtf8().constData(), \
+                request.m_line + 1, request.m_col, request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData()); //new ref
         }
         else
         {
-            result = PyObject_CallMethod(m_pyModJedi, "completions", "siisss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
-                request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData(), request.m_encoding.toUtf8().constData()); //new ref
+            result = PyObject_CallMethod(m_pyModJedi, "completions", "siiss", request.m_source.toUtf8().constData(), request.m_line, request.m_col, \
+                request.m_path.toUtf8().constData(), request.m_prefix.toUtf8().constData()); //new ref
         }
 
         if (result && PyList_Check(result))
