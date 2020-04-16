@@ -179,11 +179,7 @@
              <enum>Itom1DQwtPlot::Right</enum>
             </property>
             <property name="legendTitles">
-             <stringlist>
-              <string>Profile</string>
-              <string>Roughness</string>
-              <string>Waviness</string>
-             </stringlist>
+             <stringlist/>
             </property>
             <property name="grid">
              <enum>Itom1DQwtPlot::GridNo</enum>
@@ -478,6 +474,9 @@
                  <property name="text">
                   <string>split into 5 samples (length should be Lc)</string>
                  </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -493,7 +492,7 @@
                   <string>split into 5 samples of length Lc (from left)</string>
                  </property>
                  <property name="checked">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>

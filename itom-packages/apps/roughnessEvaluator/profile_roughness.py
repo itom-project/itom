@@ -18,6 +18,8 @@ class ProfileRoughness(ItomUi):
         self.gui.tabWidget["currentIndex"] = 0
         self.gui.lblRoughnessWarning["visible"] = False
         self.scanWorkspace()
+        self.roughness = None
+        self.waviness = None
         
     def show(self):
         self.gui.show()
@@ -31,7 +33,7 @@ class ProfileRoughness(ItomUi):
                 vals.append(key)
         self.gui.comboBox.call("addItems", vals)
         
-    def loadItem(self, dataObj):
+    def loadItem(self, dataObj: dataObject):
         possibleTypes = ['int8','int16','int32','float32','float64']
         possibleUnits = ['µm', 'mm', 'nm']
         if not type(dataObj) is dataObject:
@@ -58,7 +60,7 @@ class ProfileRoughness(ItomUi):
             
     def filterProfile(self):
         self.gui.groupFiltering["enabled"] = False
-        if self.sourceObjCropped:
+        if self.sourceObjCropped is not None:
             
             if self.gui.comboFilterForm["currentText"] == "tilt correction":
                 filter("subtract1DRegression", self.sourceObjCropped, self.sourceObjCropped, 1)
@@ -100,7 +102,7 @@ class ProfileRoughness(ItomUi):
                 self.gui.groupFiltering["enabled"] = True
         
     def calcRoughness(self):
-        if self.roughness:
+        if self.roughness is not None:
             try:
                 Lc = float(self.gui.comboFilterLc["currentText"])
             except Exception:
@@ -123,7 +125,11 @@ class ProfileRoughness(ItomUi):
             
             for param in params:
                 with warnings.catch_warnings(record = True) as w:
-                    [temp, samples] = filter("evalRoughnessProfile", self.roughness, param, Lc, self.endeffect, sampling_length_mode = samplingMode, mr_range=rangeRdc)
+                    try:
+                        [temp, samples] = filter("evalRoughnessProfile", self.roughness, param, Lc, self.endeffect, sampling_length_mode = samplingMode, mr_range=rangeRdc)
+                    except RuntimeError as ex:
+                        ui.msgCritical("Roughness", str(ex))
+                        break
                     if w:
                         warns.append("%s: %s" % (param, w[-1].message))
                 
@@ -142,11 +148,11 @@ class ProfileRoughness(ItomUi):
             
             self.gui.roughnessTable["data"] = result
             
-    def calcAbbott(self, roughnessNotWaviness):
+    def calcAbbott(self, roughnessNotWaviness: bool):
         abbott = dataObject()
-        if self.roughness and roughnessNotWaviness:
+        if self.roughness is not None and roughnessNotWaviness:
             filter("calcAbbottCurve",self.roughness, abbott, self.endeffect)
-        elif self.waviness and not roughnessNotWaviness:
+        elif self.waviness is not None and not roughnessNotWaviness:
             filter("calcAbbottCurve",self.waviness, abbott, self.endeffect)
         self.gui.plotAbbott["source"] = abbott
             
@@ -155,8 +161,8 @@ class ProfileRoughness(ItomUi):
         result = dataObject()
         
             
-    def showFilteredProfile(self, row = 0):
-        if self.roughness:
+    def showFilteredProfile(self, row: int = 0):
+        if self.roughness is not None:
             obj = dataObject([3, self.roughness.shape[1]], self.roughness.dtype)
             
             if self.roughness.shape[0] > 1:
@@ -175,6 +181,8 @@ class ProfileRoughness(ItomUi):
             obj.valueUnit = self.sourceObjCropped.valueUnit
             obj.valueDescription = self.sourceObjCropped.valueDescription
             self.gui.plotFiltering["source"] = obj
+            self.gui.plotFiltering["legendTitles"] = ("Raw Profile", "Roughness", "Waviness")
+            print(self.gui.plotFiltering["legendTitles"])
         else:
             self.gui.plotFiltering["source"] = dataObject()
                 
@@ -188,9 +196,9 @@ class ProfileRoughness(ItomUi):
         itemName = self.gui.comboBox["currentText"]
         try:
             dataObj = __main__.__dict__[itemName]
-        except Exception as ex:
+        except Exception:
             ui.msgWarning("not available", "The object %s is not available" % itemName, parent = self.gui)
-        if not dataObj is None:
+        if dataObj is not None:
             self.loadItem(dataObj)
             
     @ItomUi.autoslot("")
@@ -224,7 +232,7 @@ class ProfileRoughness(ItomUi):
         
     @ItomUi.autoslot("")
     def on_btnRoughnessGo_clicked(self):
-        if not self.roughness:
+        if self.roughness is None:
             self.filterProfile()
         else:
             self.calcRoughness()
