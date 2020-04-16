@@ -952,8 +952,16 @@ void AbstractDockWidget::dockWidget()
     raiseAndActivate();
 
     m_pWindow->menuBar()->hide();
-    if (m_actDock) m_actDock->setVisible(false);
-    if (m_actUndock) m_actUndock->setVisible(true);
+
+    if (m_actDock)
+    {
+        m_actDock->setVisible(false);
+    }
+
+    if (m_actUndock)
+    {
+        m_actUndock->setVisible(true);
+    }
 
     windowStateChanged(false);
 
@@ -966,6 +974,7 @@ void AbstractDockWidget::dockWidget()
     }
 
     QList<Toolbar>::iterator it;
+
     for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
     {
         it->tb->setIconSize(QSize(16 * dpiScale, 16 * dpiScale));
@@ -975,6 +984,7 @@ void AbstractDockWidget::dockWidget()
 
     toggleViewAction()->setVisible(true);
     
+    emit dockStateChanged(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1003,8 +1013,15 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 #endif // __APPLE__
 
         m_pWindow->menuBar()->show();
-        if (m_actDock) m_actDock->setVisible(true);
-        if (m_actUndock) m_actUndock->setVisible(false);
+        if (m_actDock) 
+        {
+            m_actDock->setVisible(true);
+        }
+
+        if (m_actUndock)
+        {
+            m_actUndock->setVisible(false);
+        }
 
         windowStateChanged(true);
 
@@ -1071,6 +1088,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     }
 
     QList<Toolbar>::iterator it;
+
     for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
     {
         if (m_floatingStyle == floatingWindow)
@@ -1089,6 +1107,8 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     }
 
     setAdvancedWindowTitle();
+
+    emit dockStateChanged(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
