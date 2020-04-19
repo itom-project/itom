@@ -151,22 +151,26 @@ def calltipModuleItomModification(sig, params):
     else:
         return None
 
+
 calltipsModificationList = {'itom': calltipModuleItomModification}
 
 
-def calltips(code, line, column, path=None, encoding="utf-8"):
+def calltips(code, line, column, path=None):
     """
     """
     max_calltip_line_length = 120
     
-    if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source=code, path=path, encoding=encoding, environment=jedienv)
+    if jedi.__version__ >= '0.17.0':
+        script = jedi.Script(code=code, path=path, environment=jedienv)
+        signatures = script.get_signatures(line=line + 1, column=column)
+    elif jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
         signatures = script.get_signatures(line=line + 1, column=column)
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment=jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         signatures = script.call_signatures()
     
     result = []
@@ -253,17 +257,20 @@ def calltips(code, line, column, path=None, encoding="utf-8"):
     return result
 
 
-def completions(code, line, column, path, prefix, encoding="utf-8"):
+def completions(code, line, column, path, prefix):
     """
     """
-    if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source=code, path=path, encoding=encoding, environment=jedienv)
+    if jedi.__version__ >= '0.17.0':
+        script = jedi.Script(code=code, path=path, environment=jedienv)
+        completions = script.complete(line=line + 1, column=column)
+    elif jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
         completions = script.complete(line=line + 1, column=column)
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment=jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         completions = script.completions()
     
     result = []
@@ -303,23 +310,26 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
     """
     if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
+        if jedi.__version__ >= '0.17.0':
+            script = jedi.Script(code=code, path=path, environment=jedienv)
+        else:
+            script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
         
         try:
             if mode == 0:
                 assignments = script.infer(line=line + 1, column=column, prefer_stubs=False)
             elif mode == 1:
-                assignments = script.goto(line=line + 1, column=column,follow_imports=False, prefer_stubs=False)
+                assignments = script.goto(line=line + 1, column=column, follow_imports=False, prefer_stubs=False)
             else:
-                assignments = script.goto(line=line + 1, column=column,follow_imports=True, prefer_stubs=False)
+                assignments = script.goto(line=line + 1, column=column, follow_imports=True, prefer_stubs=False)
         except Exception:
             assignments = []
     
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment=jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         
         try:
             if mode == 0:
@@ -346,7 +356,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     
     if len(result) == 0 and len(assignments) > 0 and mode == 0:
         # instead of 'infer' try 'goto' instead
-        result = goto_assignments(code, line, column, path, mode=1, encoding = encoding)
+        result = goto_assignments(code, line, column, path, mode=1, encoding=encoding)
     
     return result
 
@@ -383,26 +393,23 @@ inception()'''
     print(goto_assignments(source, 7, 1, "", 0))
     print(goto_assignments(source, 7, 1, "", 1))
     
-    print(calltips("from itom import dataObject\ndataObject.copy(",1,16, "utf-8"))
-    print(calltips("from itom import dataObject\na = dataObject()\na.copy(",2,7, "utf-8"))
-    print(completions("import win", 0, 10, "", "", "utf-8"))
-    print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
-    result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
-    print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
-    print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5, "utf-8"))
+    print(calltips("from itom import dataObject\ndataObject.copy(", 1, 16))
+    print(calltips("from itom import dataObject\na = dataObject()\na.copy(", 2, 7))
+    print(completions("import win", 0, 10, "", ""))
+    print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17))
+    result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "")
+    print(calltips("from itom import dataObject\ndataObject([4,5], 'u", 1, 17))
+    print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5))
     
-    print(completions("from itom import dataObject\ndataO, 'u",1,5, "", "", "utf-8"))
-    print(completions("1", 0, 1, "", "", "utf-8"))
-    print(completions("import numpy as np\nnp.arr", 1, 6, "", "", "utf-8"))
+    print(completions("from itom import dataObject\ndataO, 'u", 1, 5, "", ""))
+    print(completions("1", 0, 1, "", ""))
+    print(completions("import numpy as np\nnp.arr", 1, 6, "", ""))
     print(goto_assignments("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
     print(goto_assignments("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
-    
 
-    
-
-#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None, "Utf-8")
-#script = jedi.Script(text,4,5,None, "Utf-8")
-#script = jedi.Script(text2, 3, 12,None,"Utf-8")
+#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None)
+#script = jedi.Script(text,4,5,None)
+#script = jedi.Script(text2, 3, 12,None)
 #sigs = script.call_signatures()
 #for sig in sigs:
     #print("Signature (%s)\n-----------------" % str(sig))

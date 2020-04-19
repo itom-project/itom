@@ -674,7 +674,6 @@ bool CodeCompletionMode::requestCompletion()
                 request.m_line = line;
                 request.m_col = col;
                 request.m_path = filename;
-                request.m_encoding = "utf-8";
                 request.m_prefix = m_completionPrefix;
                 request.m_requestId = m_requestId;
                 request.m_callbackFctName = "onJediCompletionResultAvailable";

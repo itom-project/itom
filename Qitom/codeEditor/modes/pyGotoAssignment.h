@@ -144,7 +144,7 @@ private slots:
 signals:
     void outOfDoc(PyAssignment assignment); //Signal emitted when the definition cannot be reached in the current document
     void noResultsFound(); //Signal emitted when no results could be found.
-    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, int mode, QByteArray callbackFctName);
+    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, int mode, QByteArray callbackFctName);
     
 
 };

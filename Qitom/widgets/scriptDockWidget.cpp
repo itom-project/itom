@@ -1309,7 +1309,8 @@ void ScriptDockWidget::createActions()
     m_tabMoveLastAction = new ShortcutAction(QIcon(":/arrows/icons/2rightarrow.png"), tr("Move Last"), this);
     m_tabMoveLastAction->connectTrigger(this, SLOT(mnuTabMoveLast()));
 
-    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.png"), tr("Close"), this, QKeySequence::Close, Qt::WidgetWithChildrenShortcut);
+    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.png"), tr("Close"), 
+        this, QKeySequence::Close, Qt::WidgetWithChildrenShortcut);
     m_tabCloseAction->connectTrigger(this, SLOT(mnuTabClose()));
 
     m_tabCloseOthersAction = new ShortcutAction(QIcon(), tr("Close Others"), this);
@@ -1322,92 +1323,120 @@ void ScriptDockWidget::createActions()
     m_tabDockAction->connectTrigger(this, SLOT(mnuTabDock()));
 
     m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
+    m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
     m_tabUndockAction->connectTrigger(this, SLOT(mnuTabUndock()));
 
-    m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("New"), this, QKeySequence::New, Qt::WidgetWithChildrenShortcut);
+    m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("New"), 
+        this, QKeySequence::New, Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_newScriptAction->connectTrigger(this, SLOT(mnuNewScript()));
 
-    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open"), this, QKeySequence::Open, Qt::WidgetWithChildrenShortcut);
+    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open"), 
+        this, QKeySequence::Open, Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_openScriptAction->connectTrigger(this, SLOT(mnuOpenScript()));
 
-    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.png"), tr("Save"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
+    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.png"), tr("Save"), 
+        this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAction->connectTrigger(this, SLOT(mnuSaveScript()));
 
-    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.png"), tr("Save As..."), this, QKeySequence::SaveAs, Qt::WidgetWithChildrenShortcut);
+    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.png"), tr("Save As..."), 
+        this, QKeySequence::SaveAs, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAsAction->connectTrigger(this, SLOT(mnuSaveScriptAs()));
 
     m_saveAllScriptsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAll.png"), tr("Save All"), this);
     m_saveAllScriptsAction->connectTrigger(this, SLOT(mnuSaveAllScripts()));
 
-    m_printAction = new ShortcutAction(QIcon(":/plots/icons/print.png"), tr("Print..."), this, QKeySequence::Print, Qt::WidgetWithChildrenShortcut);
+    m_printAction = new ShortcutAction(QIcon(":/plots/icons/print.png"), tr("Print..."),
+        this, QKeySequence::Print, Qt::WidgetWithChildrenShortcut);
     m_printAction->connectTrigger(this, SLOT(mnuPrint()));
 
-    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
+    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), 
+        this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_cutAction->connectTrigger(this, SLOT(mnuCut()));
 
-    m_copyAction = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
+    m_copyAction = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), 
+        this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_copyAction->connectTrigger(this, SLOT(mnuCopy()));
 
-    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
+    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), 
+        this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pasteAction->connectTrigger(this, SLOT(mnuPaste()));
 
-    m_undoAction = new ShortcutAction(QIcon(":/editor/icons/editUndo.png"), tr("Undo"), this, QKeySequence::Undo, Qt::WidgetWithChildrenShortcut);
+    m_undoAction = new ShortcutAction(QIcon(":/editor/icons/editUndo.png"), tr("Undo"), 
+        this, QKeySequence::Undo, Qt::WidgetWithChildrenShortcut);
     m_undoAction->connectTrigger(this, SLOT(mnuUndo()));
 
-    m_redoAction = new ShortcutAction(QIcon(":/editor/icons/editRedo.png"), tr("Redo"), this, QKeySequence::Redo, Qt::WidgetWithChildrenShortcut);
+    m_redoAction = new ShortcutAction(QIcon(":/editor/icons/editRedo.png"), tr("Redo"), 
+        this, QKeySequence::Redo, Qt::WidgetWithChildrenShortcut);
     m_redoAction->connectTrigger(this, SLOT(mnuRedo()));
 
-    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, QKeySequence(tr("Ctrl+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_commentAction = new ShortcutAction(QIcon(":/editor/icons/editComment.png"), tr("Comment"), 
+        this, QKeySequence(tr("Ctrl+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_commentAction->connectTrigger(this, SLOT(mnuComment()));
 
-    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, QKeySequence(tr("Ctrl+Shift+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_uncommentAction = new ShortcutAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), 
+        this, QKeySequence(tr("Ctrl+Shift+R", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_uncommentAction->connectTrigger(this, SLOT(mnuUncomment()));
 
-    m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, QKeySequence(tr("Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_indentAction = new ShortcutAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), 
+        this, QKeySequence(tr("Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_indentAction->connectTrigger(this, SLOT(mnuIndent()));
 
-    m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, QKeySequence(tr("Shift+Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), 
+        this, QKeySequence(tr("Shift+Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
 
-    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), 
+        this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
-    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, QKeySequence(tr("F9", "QShortcut")));
+    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), 
+        this, QKeySequence(tr("F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
 
-    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("Debug"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("Debug"), 
+        this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
-    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), 
+        this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
-    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("Continue"), 
+        this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptContinueAction->connectTrigger(this, SLOT(mnuScriptContinue()));
 
-    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("Step"), this, QKeySequence(tr("F11", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepAction = new ShortcutAction(QIcon(":/script/icons/step.png"), tr("Step"), 
+        this, QKeySequence(tr("F11", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptStepAction->connectTrigger(this, SLOT(mnuScriptStep()));
 
-    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this, QKeySequence(tr("F10", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepOverAction = new ShortcutAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), 
+        this, QKeySequence(tr("F10", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptStepOverAction->connectTrigger(this, SLOT(mnuScriptStepOver()));
 
-    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this, QKeySequence(tr("Shift+F11", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStepOutAction = new ShortcutAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), 
+        this, QKeySequence(tr("Shift+F11", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptStepOutAction->connectTrigger(this, SLOT(mnuScriptStepOut()));
 
-    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."), this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
+    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."), 
+        this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 //    m_findTextExprAction->action()->setCheckable(true);
 
     // To add a secound shortcut. It works, but I don't know why!
-    m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."), this, QKeySequence(tr("F3", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."), 
+        this, QKeySequence(tr("F3", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findTextExprActionSC->connectTrigger(this, SLOT(mnuFindTextExpr()));
 
-    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("Find And Replace..."), this, QKeySequence(tr("Ctrl+H", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("Find And Replace..."), 
+        this, QKeySequence(tr("Ctrl+H", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
 
-    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("Icon &Browser..."),this, QKeySequence(tr("Ctrl+B", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_openIconBrowser = new ShortcutAction(QIcon(":/editor/icons/iconList.png"), tr("Icon &Browser..."),
+        this, QKeySequence(tr("Ctrl+B", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_openIconBrowser->connectTrigger(this, SLOT(mnuOpenIconBrowser()));
 
-    m_gotoAction = new ShortcutAction(QIcon(), tr("Goto..."), this, QKeySequence(tr("Ctrl+G", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_gotoAction = new ShortcutAction(QIcon(), tr("Goto..."), 
+        this, QKeySequence(tr("Ctrl+G", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_gotoAction->connectTrigger(this, SLOT(mnuGoto()));
 
     m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this);

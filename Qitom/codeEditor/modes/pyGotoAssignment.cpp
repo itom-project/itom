@@ -74,7 +74,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pPythonEngine = AppManagement::getPythonEngine();
     if (m_pPythonEngine)
     {
-        connect(this, SIGNAL(jediAssignmentRequested(QString,int,int,QString,QString,int,QByteArray)), m_pPythonEngine, SLOT(jediAssignmentRequested(QString,int,int,QString,QString,int,QByteArray)));
+        connect(this, &PyGotoAssignmentMode::jediAssignmentRequested, qobject_cast<PythonEngine*>(m_pPythonEngine), &PythonEngine::jediAssignmentRequested);
     }
 
     m_pActionGotoDefinition = new QAction(tr("Go To Definition"), this);
@@ -329,7 +329,7 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
             //store current position as go back navigation point before jumping to another position
             editor()->reportPositionAsGoBackNavigationItem(tc, "goto");
 
-            emit jediAssignmentRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, "utf-8", mode, "onJediAssignmentResultsAvailable");
+            emit jediAssignmentRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, mode, "onJediAssignmentResultsAvailable");
         }
         else
         {

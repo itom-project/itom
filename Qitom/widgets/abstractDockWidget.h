@@ -25,6 +25,7 @@
 
 #include "../global.h"
 #include "../common/sharedStructures.h"
+#include "shortcutAction.h"
 
 #include <qmainwindow.h>
 #include <qdockwidget.h>
@@ -211,104 +212,10 @@ namespace ito
 
             virtual QSize sizeHint() const;
             virtual QSize minimumSizeHint() const;
-
-        public Q_SLOTS:
-            void setEnabled(bool);
-            virtual void setVisible(bool visible);
    
         protected:
 
-            class ShortcutAction : public QObject
-            {
-            public:
-                ShortcutAction(const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
-                {
-                    m_action = new QAction(text, parent);
-                    QString toolTipText = text;
-                    toolTipText.replace("&", "");
-                    m_action->setToolTip(toolTipText);
-                }
-
-                ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent) : QObject(parent), m_action(NULL), m_shortcut(NULL)
-                {
-                    m_action = new QAction(icon, text, parent);
-                    QString toolTipText = text;
-                    toolTipText.replace("&", "");
-                    m_action->setToolTip(toolTipText);
-                }
-
-                ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent, const QKeySequence &key, Qt::ShortcutContext context = Qt::WindowShortcut) : QObject(parent), m_action(NULL), m_shortcut(NULL)
-                {
-                    QString text2 = text;
-                    QString text3 = text;
-                    text3.replace("&", "");
-
-                    //some key sequences do not exist as default on all operating systems
-                    if (key.isEmpty() == false)
-                    {
-                        text2 += "\t" + key.toString(QKeySequence::NativeText);
-                        text3 += " (" + key.toString(QKeySequence::NativeText) + ")";
-
-                        m_shortcut = new QShortcut(key, parent->getCanvas());
-                        m_shortcut->setContext(context);
-                    }
-
-                    m_action = new QAction(icon, text2, parent);
-                    m_action->setToolTip(text3);
-                }
-
-                ~ShortcutAction()
-                {
-                    //do not delete action and shortcut here, since it will be deleted by common parent.
-                }
-
-                void connectTrigger(const QObject *receiver, const char *method, Qt::ConnectionType type = Qt::AutoConnection)
-                {
-                    if(m_action)
-                    {
-                        QObject::connect(m_action, SIGNAL(triggered()), receiver, method, type);
-                    }
-                    if(m_shortcut)
-                    {
-                        QObject::connect(m_shortcut, SIGNAL(activated()), receiver, method, type);
-                    }
-                }
-
-                void setEnabled(bool actionEnabled, bool shortcutEnabled)
-                {
-                    if(m_action) 
-                    {
-                        m_action->setEnabled(actionEnabled);
-                        if(m_shortcut) m_shortcut->setEnabled(shortcutEnabled);
-                    }
-                }
-
-                void setEnabled(bool enabled)
-                {
-                    setEnabled(enabled,enabled);
-                }
-
-                void setVisible(bool actionVisible, bool shortcutEnabled)
-                {
-                    if(m_action) 
-                    {
-                        m_action->setVisible(actionVisible);
-                        if(m_shortcut) m_shortcut->setEnabled(shortcutEnabled);
-                    }
-                }
-
-                void setVisible(bool visible)
-                {
-                    setVisible(visible,visible);
-                }
-
-                QAction* action() { return m_action; }
-
-            private:
-                QAction *m_action;
-                QShortcut *m_shortcut;
-                
-            };
+            friend class ShortcutAction; //to access canvas of this dock widget
 
             //! eventFilter for m_pWindow
             /*!
@@ -404,9 +311,10 @@ namespace ito
             QRect m_lastUndockedSize;
             QByteArray m_pendingGeometryState; //if the window has a loaded geometry state from the settings file, but has been hidden at startup, the geometry is saved here and applied once the window becomes visible. Then, this variable is cleared.
 
-        public slots:
-            virtual void dockedToMainWindow(AbstractDockWidget * /*widget*/){}
-            virtual void removedFromMainWindow(AbstractDockWidget * /*widget*/){}
+        public Q_SLOTS:
+            void setEnabled(bool);
+            virtual void setVisible(bool visible);
+
             virtual void pythonStateChanged(tPythonTransitions pyTransition);
 
             void raiseAndActivate();  /*!< activates this dock widget or window and raises it on top of all opened windows (if possible) */
@@ -424,6 +332,9 @@ namespace ito
             void mnuStayOnTopOfApp(bool checked);
 
             void returnToOldMinMaxSizes();
+
+        Q_SIGNALS:
+            void dockStateChanged(bool docked); //!< emitted if the widget is either docked or undocked from the main window
     };
 
 } //end namespace ito

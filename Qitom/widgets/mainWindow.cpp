@@ -705,27 +705,22 @@ void MainWindow::createActions()
 
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
         a = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this);
         a->setShortcut(tr("F6"));
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
         m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("Step"), this);
         m_actions["python_stepAction"]->setShortcut(tr("F11"));
-        m_actions["python_stepAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
         a = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this);
         a->setShortcut(tr("F10"));
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
         a = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this);
         a->setShortcut(tr("Shift+F11"));
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
         a = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload Modules..."), this);
