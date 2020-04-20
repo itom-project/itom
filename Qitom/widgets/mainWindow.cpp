@@ -279,7 +279,9 @@ MainWindow::MainWindow() :
     {
         showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way. \nStart itom again with the argument 'log' and look-up the error message in the file itomlog.txt."));
         if (m_console)
+        {
             m_console->setReadOnly(true);
+        }
     }
 
     // signal mapper for user defined actions

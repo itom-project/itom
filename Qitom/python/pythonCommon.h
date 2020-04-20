@@ -72,6 +72,30 @@ namespace ito
     {
         public:
 
+            //!< mode that can be chosen for the code checker
+            /*
+            The values must only be changed in accordance to the
+            argument 'mode' of the method 'check' of the python
+            module itomSyntaxCheck.py (itom-packages subfolder).
+
+            @seealso WidgetPropEditorCodeCheckers
+            */
+            enum CodeCheckerMode
+            {
+                NoCodeChecker = 0,       //!< no code checker active
+                CodeCheckerPyFlakes = 1, //!< syntax error and further static code analysis based on PyFlakes
+                CodeCheckerFlake8 = 2,   //!< extended code checks (syntax, style, doc style, complexity...) based on Flake8
+                CodeCheckerAuto = 3      //!< chose Flake8 if flake8 is available, else chose PyFlakes if pyflakes is available, else No Checker
+            };
+
+            //!< type of a message from any code checker
+            enum CodeCheckerMessageType
+            {
+                TypeInfo = 0,    //!< the assigned message is displayed as information (blue dot)
+                TypeWarning = 1, //!< the assigned message is displayed as warning (orange dot)
+                TypeError = 2    //!< the assigned message is displayed as error (bug symbol)
+            };
+
             enum tErrMsg
             {
                 noMsg = 0,
@@ -80,7 +104,6 @@ namespace ito
                 invokeFunc = 3,
                 getProperty = 4,
                 runFunc = 5
-            
             };
 
             static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);

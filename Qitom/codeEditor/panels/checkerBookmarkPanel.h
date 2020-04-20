@@ -77,9 +77,9 @@ public:
     
     virtual void onUninstall();
 
-    QList<CheckerMessage> markersForLine(int line) const;
+    QList<CodeCheckerItem> markersForLine(int line) const;
 
-    static QIcon iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CheckerMessage::CheckerStatus checkerStatus);
+    static QIcon iconFromMessages(bool hasCheckerMessages, bool hasBookmark, CodeCheckerItem::CheckerType checkerStatus);
 
 protected:
     virtual void paintEvent(QPaintEvent *e);

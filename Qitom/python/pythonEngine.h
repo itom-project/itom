@@ -59,11 +59,13 @@
 #include "pythonItom.h"
 #include "pythonProxy.h"
 #include "pythonStream.h"
+#include "pythonCommon.h"
 
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
 #include "../../common/addInInterface.h"
 #include "../../common/functionCancellationAndObserver.h"
+#include "../codeEditor/codeCheckerItem.h"
 #include "../global.h"
 
 #include "pythonWorkspace.h"
@@ -123,16 +125,16 @@ public:
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
     inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
-    inline bool isPythonBusy() const                { return pythonState != ito::pyStateIdle; }
-    inline bool isPythonDebugging() const           { return (pythonState == ito::pyStateDebuggingWaitingButBusy || pythonState == ito::pyStateDebugging || pythonState == ito::pyStateDebuggingWaiting); }
-    inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
+    inline bool isPythonBusy() const                { return m_pythonState != ito::pyStateIdle; }
+    inline bool isPythonDebugging() const           { return (m_pythonState == ito::pyStateDebuggingWaitingButBusy || m_pythonState == ito::pyStateDebugging || m_pythonState == ito::pyStateDebuggingWaiting); }
+    inline bool isPythonDebuggingAndWaiting() const { return m_pythonState == ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
-    inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
+    inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
     bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
     QString getPythonExecutable() const { return m_pythonExecutable; }
@@ -197,11 +199,21 @@ private:
     static int queuedInterrupt(void *arg); 
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
+
+	QVariantMap checkCodeCheckerRequirements();
+
+	struct CodeCheckerOptions
+	{
+        PythonCommon::CodeCheckerMode mode;
+		bool includeItomModuleBeforeCheck;
+        PythonCommon::CodeCheckerMessageType minVisibleMessageTypeLevel; //!< minimum message class that should be shown in editor margin
+        QByteArray furtherPropertiesJson; //!< these parameters are parsed from a QVariantMap to json and will be passed to itomSyntaxCheck.py
+	};
     
 
     //member variables
     bool m_started;
-    bool m_syntaxCheckerEnabled;
+	CodeCheckerOptions m_codeCheckerOptions;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
@@ -214,7 +226,7 @@ private:
     QQueue<ito::JediCompletionRequest> m_queuedJediCompletionRequests;
     QQueue<ito::JediCalltipRequest> m_queuedJediCalltipRequests;
     
-    ito::tPythonState pythonState;
+    ito::tPythonState m_pythonState;
     
     ito::BreakPointModel *bpModel;
 
@@ -227,10 +239,11 @@ private:
     PyObject *itomModule;          //!< itom module [new ref]
     PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
-    PyObject *m_pyModSyntaxCheck;
+    PyObject *m_pyModCodeChecker;
+	bool m_pyModCodeCheckerHasPyFlakes; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax check feature (package: pyflakes)
+	bool m_pyModCodeCheckerHasFlake8; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax and style check feature (package: flake8)
     PyObject *m_pyModJedi;         //!< Python package Jedi for auto completion and calltips (Jedi is tried to be loaded as late as possible)
     bool     m_pyModJediChecked;   //!< defines, if it is already checked if Jedi could be loaded on this computer.
-    //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
     Qt::HANDLE m_pythonThreadId;
 
@@ -248,8 +261,8 @@ private:
     PyMethodDef* PythonAdditionalModuleITOM;
 
     // decides if itom is automatically included in every source file before it is handed to the syntax checker
-    bool m_includeItomImportBeforeSyntaxCheck;
-    QString m_includeItomImportString; //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeSyntaxCheck is true)
+    bool m_includeItomImportBeforeCodeAnalysis;
+    QString m_includeItomImportString; //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeCodeAnalysis is true)
 
     wchar_t *m_pUserDefinedPythonHome;
 
@@ -321,9 +334,9 @@ public slots:
     void readSettings();
     void propertiesChanged();
 
-    void pythonSyntaxCheck(const QString &code, QPointer<QObject> sender, QByteArray callbackFctName);
-    //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
-    //void jediCompletionRequested(const ito::JediCompletionRequest &request);
+
+    void pythonCodeCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName);
+
     void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, int mode, QByteArray callbackFctName);
 
     void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
