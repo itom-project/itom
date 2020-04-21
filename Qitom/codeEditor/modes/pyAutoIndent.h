@@ -47,6 +47,7 @@ Contains python smart indent modes
 
 #include <qtextcursor.h>
 #include <qstring.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -81,6 +82,7 @@ protected:
     void getParenPos(const QTextCursor &cursor, int column, int &ol, int &oc, int &cl, int &cc) const;
     void parensCountForBlock(int column, const QTextBlock &block, int &numOpenParentheses, int &numClosedParentheses) const;
     int getIndentOfOpeningParen(const QTextCursor &cursor) const;
+    bool checkKwInLine(const QStringList &kwds, const QString &lparam) const;
 
     static QPair<bool, QChar> isInStringDef(const QString &fullline, int column);
     static bool isParenOpen(const Utils::ParenthesisInfo &paren);
