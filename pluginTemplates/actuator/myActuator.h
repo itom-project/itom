@@ -9,7 +9,6 @@
 #define MYACTUATOR_H
 
 #include "common/addInInterface.h"
-#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "dialogMyActuator.h"
 

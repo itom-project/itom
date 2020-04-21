@@ -9,7 +9,6 @@
 #define MYGRABBER_H
 
 #include "common/addInGrabber.h"
-#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "dialogMyGrabber.h"
 
