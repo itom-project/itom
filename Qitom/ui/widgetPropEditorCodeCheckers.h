@@ -27,7 +27,7 @@
 
 #include <qwidget.h>
 
-#include "ui_WidgetPropEditorCodeCheckers.h"
+#include "ui_widgetPropEditorCodeCheckers.h"
 
 namespace ito
 {

@@ -31,7 +31,7 @@
 #include "widgetPropEditorStyles.h"
 #include "widgetPropEditorAutoCompletion.h"
 #include "widgetPropEditorGotoAssignment.h"
-#include "WidgetPropEditorCodeCheckers.h"
+#include "widgetPropEditorCodeCheckers.h"
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropEditorScripts.h"
 #include "widgetPropGeneralLanguage.h"
