@@ -430,7 +430,7 @@ QString enumValuesText(const QMetaEnum &enumerator)
     for (int i = 0; i < enumerator.keyCount(); ++i)
     {
         const char* key = enumerator.key(i);
-        output << QString("%1 (%2)").arg(key).arg(enumerator.keyToValue(key));
+        output << QString("'%1' (%2)").arg(key).arg(enumerator.keyToValue(key));
     }
 
     return output.join(", ");
@@ -466,8 +466,10 @@ QString enumValuesText(const QMetaEnum &enumerator)
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The value %i contains a bitmask that is not fully covered by an or-combination of the enumeration %s::%s (flags)").toLatin1().data(),
-                    val, enumerator.scope(), enumerator.name());
+                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The value %i contains a bitmask that is not fully covered " \
+                    "by an or-combination of the flags enumeration %s::%s. " \
+                    "It can only consist of a combination of the following keys or values: %s.").toLatin1().data(),
+                    val, enumerator.scope(), enumerator.name(), enumValuesText(enumerator).toLatin1().data());
                 return result;
             }
         }
@@ -480,8 +482,9 @@ QString enumValuesText(const QMetaEnum &enumerator)
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The value %i does not exist in the enumeration %s::%s").toLatin1().data(), 
-                    val, enumerator.scope(), enumerator.name());
+                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The value %i does not exist in the enumeration %s::%s. " \
+                    "Possible keys or values are: %s.").toLatin1().data(),
+                    val, enumerator.scope(), enumerator.name(), enumValuesText(enumerator).toLatin1().data());
                 return result;
             }
         }
@@ -506,7 +509,7 @@ QString enumValuesText(const QMetaEnum &enumerator)
                         }
                         else
                         {
-                            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The key %s does not exist in the flags enumeration %s::%s. " \
+                            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The key '%s' does not exist in the flags enumeration %s::%s. " \
                                 "It can only consist of a combination of the following keys or values: %s.").toLatin1().data(),
                                 str.toLatin1().data(), enumerator.scope(), enumerator.name(), enumValuesText(enumerator).toLatin1().data());
                             return result;
@@ -525,7 +528,7 @@ QString enumValuesText(const QMetaEnum &enumerator)
                 }
                 else
                 {
-                    retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The key %s does not exist in the enumeration %s::%s. " \
+                    retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The key '%s' does not exist in the enumeration %s::%s. " \
                         "Possible keys or values are: %s.").toLatin1().data(),
                         str.toLatin1().data(), enumerator.scope(), enumerator.name(), enumValuesText(enumerator).toLatin1().data());
                     return result;
