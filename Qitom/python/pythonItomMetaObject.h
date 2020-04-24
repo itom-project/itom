@@ -36,7 +36,23 @@ namespace ito
     struct PythonQObjectMarshal
     {
         PythonQObjectMarshal() : m_objectID(0), m_object(NULL) {}
-        PythonQObjectMarshal(QByteArray objName, const char* className, QObject *object) : m_objName(objName), m_objectID(0), m_object(object) { m_className = QByteArray(className); }
+        
+        PythonQObjectMarshal(QByteArray objName, const char* className, QObject *object) : 
+            m_objName(objName), 
+            m_objectID(0), 
+            m_object(object) 
+        { 
+            m_className = QByteArray(className); 
+        }
+
+        PythonQObjectMarshal(QObject *obj) :
+            m_objName(obj->objectName().toLatin1()),
+            m_objectID(0),
+            m_object(obj)
+        {
+            m_className = QByteArray(obj->metaObject()->className());
+        }
+
         QByteArray m_objName;
         QByteArray m_className;
         unsigned int m_objectID;

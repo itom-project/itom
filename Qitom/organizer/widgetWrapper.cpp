@@ -36,6 +36,9 @@
 #include <qtoolbar.h>
 #include <qlabel.h>
 #include <qpixmap.h>
+#include <qlayout.h>
+#include <qformlayout.h>
+#include <qgridlayout.h>
 
 namespace ito
 {
@@ -189,6 +192,25 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qAction;
         qAction << buildMethodDescription(QMetaObject::normalizedSignature("setIcon(QString,double)"), "void", 11001, ok);
         methodHash["QAction"] = qAction;
+
+        //QLayout
+        MethodDescriptionList qLayout;
+        qLayout << buildMethodDescription(QMetaObject::normalizedSignature("itemAt(int)"), "ito::PythonQObjectMarshal", 12001, ok);
+        qLayout << buildMethodDescription(QMetaObject::normalizedSignature("count()"), "int", 12002, ok);
+        methodHash["QLayout"] = qLayout;
+
+        //QFormLayout
+        MethodDescriptionList qFormLayout;
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("removeRow(int)"), "void", 13001, ok);
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowCount()"), "int", 13002, ok);
+        methodHash["QFormLayout"] = qFormLayout;
+
+        //QGridLayout
+        MethodDescriptionList qGridLayout;
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("itemAtPosition(int,int)"), "ito::PythonQObjectMarshal", 14001, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowCount()"), "int", 14002, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnCount()"), "int", 14003, ok);
+        methodHash["QGridLayout"] = qGridLayout;
     }
 }
 
@@ -313,6 +335,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         if(QString::compare(className, "QListWidget", Qt::CaseInsensitive) == 0)
         {
             QListWidget *object2 = qobject_cast<QListWidget*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QListWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -492,6 +515,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if(QString::compare(className, "QComboBox", Qt::CaseInsensitive) == 0)
         {
             QComboBox *object2 = qobject_cast<QComboBox*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("ComboBox object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -536,6 +560,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if(QString::compare(className, "QTabWidget", Qt::CaseInsensitive) == 0)
         {
             QTabWidget *object2 = qobject_cast<QTabWidget*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTabWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -556,6 +581,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if(QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
         {
             QMainWindow *object2 = qobject_cast<QMainWindow*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QMainWindow object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -587,6 +613,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if(QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
         {
             QWidget *object2 = qobject_cast<QWidget*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -631,6 +658,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if(QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
         {
             QTableWidget *object2 = qobject_cast<QTableWidget*>(object);
+
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
@@ -651,11 +679,13 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     int row = (*reinterpret_cast< const int(*)>(_a[1]));
                     int col = (*reinterpret_cast< const int(*)>(_a[2]));
                     QTableWidgetItem *item = object2->item(row,col);
+
                     if(item)
                     {
                         (*reinterpret_cast<QVariant*>(_a[0])) = item->data(Qt::DisplayRole);
                         return ito::retOk;
                     }
+
                     return ito::RetVal(ito::retError, 0, QObject::tr("Could not access row / col, maybe out of range").toLatin1().data());
                 }
                 case 6004: //setItem
@@ -750,6 +780,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         {
             QTableView *object2 = qobject_cast<QTableView*>(object);
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
+
             switch(methodIndex)
             {
                 case 7001: //horizontalHeader
@@ -770,6 +801,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         {
             QSplitter *object2 = qobject_cast<QSplitter*>(object);
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
+
             switch(methodIndex)
             {
                 case 8001: //setStretchFactor
@@ -808,6 +840,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         {
             QStatusBar *object2 = qobject_cast<QStatusBar*>(object);
             if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QStatusBar object is null").toLatin1().data());
+
             switch (methodIndex)
             {
                 case 9001: //addLabelWidget
@@ -830,6 +863,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         {
             QToolBar *object2 = qobject_cast<QToolBar*>(object);
             if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QToolBar object is null").toLatin1().data());
+
             switch (methodIndex)
             {
                 case 10001: //addSeparator
@@ -858,6 +892,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         {
             QAction *object2 = qobject_cast<QAction*>(object);
             if (object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QAction object is null").toLatin1().data());
+
             switch (methodIndex)
             {
                 case 11001: //setIcon
@@ -865,6 +900,135 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     QPixmap pm(*reinterpret_cast<QString(*)>(_a[1]));
                     pm.setDevicePixelRatio(*reinterpret_cast<double(*)>(_a[2]));
                     object2->setIcon(QIcon(pm));
+                    return ito::retOk;
+                }
+            }
+        }
+        else if (QString::compare(className, "QLayout", Qt::CaseInsensitive) == 0)
+        {
+            QLayout *layout = qobject_cast<QLayout*>(object);
+            if (layout == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
+
+            switch (methodIndex)
+            {
+                case 12001: //itemAt
+                {
+                    int index = *reinterpret_cast<int(*)>(_a[1]);
+
+                    if (index < 0 || index >= layout->count())
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "index exceeds the valid range [0, %i]", layout->count() - 1);
+                    }
+
+                    QLayoutItem *item = layout->itemAt(index);
+
+                    if (item == NULL)
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "Layout has no item at index %i", index);
+                    }
+                
+                    QObject *layoutItem = item->widget();
+
+                    if (layoutItem == NULL)
+                    {
+                        layoutItem = item->layout();
+                    }
+
+                    if (layoutItem == NULL)
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "Layout has no item at index %i", index);
+                    }
+
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(layoutItem);
+                    return ito::retOk;
+                }
+                case 12002: //count
+                {
+                    (*reinterpret_cast<int*>(_a[0])) = layout->count();
+                    return ito::retOk;
+                }
+            }
+        }
+        else if (QString::compare(className, "QFormLayout", Qt::CaseInsensitive) == 0)
+        {
+            QFormLayout *layout = qobject_cast<QFormLayout*>(object);
+            if (layout == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
+
+            switch (methodIndex)
+            {
+                case 13001: //removeRow
+                {
+                    int row = *reinterpret_cast<int(*)>(_a[1]);
+
+                    if (row < 0 || row >= layout->rowCount())
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+                    }
+
+                    layout->removeRow(row);
+
+                    return ito::retOk;
+                }
+                case 13002: //rowCount
+                {
+                    (*reinterpret_cast<int*>(_a[0])) = layout->rowCount();
+                    return ito::retOk;
+                }
+            }
+        }
+        else if (QString::compare(className, "QGridLayout", Qt::CaseInsensitive) == 0)
+        {
+            QGridLayout *layout = qobject_cast<QGridLayout*>(object);
+            if (layout == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
+
+            switch (methodIndex)
+            {
+                case 14001: //itemAtPosition
+                {
+                    int row = *reinterpret_cast<int(*)>(_a[1]);
+                    int column = *reinterpret_cast<int(*)>(_a[2]);
+
+                    if (row < 0 || row >= layout->rowCount())
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+                    }
+
+                    if (column < 0 || column >= layout->columnCount())
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->columnCount() - 1);
+                    }
+
+                    QLayoutItem *item = layout->itemAtPosition(row, column);
+
+                    if (item == NULL)
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i and column %i", row, column);
+                    }
+
+                    QObject *layoutItem = item->widget();
+
+                    if (layoutItem == NULL)
+                    {
+                        layoutItem = item->layout();
+                    }
+
+                    if (layoutItem == NULL)
+                    {
+                        return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i and column %i", row, column);
+                    }
+
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(layoutItem);
+
+                    return ito::retOk;
+                }
+                case 14002: //rowCount
+                {
+                    (*reinterpret_cast<int*>(_a[0])) = layout->rowCount();
+                    return ito::retOk;
+                }
+                case 14003: //columnCount
+                {
+                    (*reinterpret_cast<int*>(_a[0])) = layout->columnCount();
                     return ito::retOk;
                 }
             }
