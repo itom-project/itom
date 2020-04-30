@@ -38,6 +38,7 @@ import itom
 import warnings
 from builtins import filter as bfilter  # due to potential conflict with itom.filter
 import time
+import logging
 
 try:
     from flake8.api import legacy as flake8legacy
@@ -53,7 +54,10 @@ if _HAS_FLAKE8:
     
     if False:  # `typing.TYPE_CHECKING` was introduced in 3.5.2
         from flake8.style_guide import Violation
-
+    
+    # disable the flake8.checker logger
+    log = logging.getLogger("flake8.checker")
+    log.disabled = True
 try:
     from pyflakes import api as pyflakesapi
     _HAS_PYFLAKES: bool = True
@@ -738,7 +742,7 @@ def check(codestring: str,
                     with warnings.catch_warnings():
                         # when parsing the file by the checker, a warning
                         # can occure (e.g. from an assert statement). ignore this warning.
-                        warnings.simplefilter("error")
+                        warnings.simplefilter("ignore")
                         report = style_guide.check_files([tempfilename, ])
                 except Exception as ex:
                     # import traceback
