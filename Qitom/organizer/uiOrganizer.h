@@ -383,6 +383,8 @@ public:
 
     QWidget* loadDesignerPluginWidget(const QString &name, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent = NULL);
 
+    QWidget* createWidget(const QString &className, RetVal &retValue, QWidget *parent = NULL, const QString &objectName = QString());
+
 	QList<TimerContainer> getRegisteredTimers();
 
 protected:

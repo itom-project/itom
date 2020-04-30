@@ -123,7 +123,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     m_dialogList.clear();
     m_objectList.clear();
 
-    m_widgetWrapper = new WidgetWrapper();
+    m_widgetWrapper = new WidgetWrapper(this);
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
@@ -932,6 +932,34 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(
         retValue += RetVal::format(retError, 0, tr("No designer plugin with className '%s' could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder").toLatin1().data(),className.toLatin1().data());
     }
     return widget;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* creates a widget with a given className (case insensitive) and returns it. */
+QWidget* UiOrganizer::createWidget(const QString &className, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectName /*= QString()*/)
+{
+    QStringList availableWidgets = m_pUiLoader->availableWidgets();
+
+    QString className_;
+
+    foreach(const QString &availableWidget, availableWidgets)
+    {
+        if (className.compare(availableWidget, Qt::CaseInsensitive) == 0)
+        {
+            className_ = availableWidget;
+            break;
+        }
+    }
+
+    if (className_ == "")
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, tr("Cannot find a widget with class name '%1'").arg(className).toLatin1().data());
+        return NULL;
+    }
+
+    QWidget *w = m_pUiLoader->createWidget(className, parent, objectName);
+
+    return w;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

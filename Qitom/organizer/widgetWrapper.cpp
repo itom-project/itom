@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonQtConversion.h"
+#include "uiOrganizer.h"
 #include "widgetWrapper.h"
 
 
@@ -64,7 +65,9 @@ namespace ito
 
     \sa PythonUiDialog, UiOrganizer
 */
-WidgetWrapper::WidgetWrapper() : initialized(false)
+WidgetWrapper::WidgetWrapper(UiOrganizer *uiOrganizer) : 
+    initialized(false),
+    m_pUiOrganizer(uiOrganizer)
 {
     initMethodHash();
 }

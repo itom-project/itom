@@ -33,10 +33,12 @@
 namespace ito
 {
 
+class UiOrganizer; // forward declaration
+
 class WidgetWrapper
 {
 public:
-    WidgetWrapper(); //constructor
+    WidgetWrapper(UiOrganizer *uiOrganizer); //constructor
     ~WidgetWrapper(); //destructor
 
     MethodDescriptionList getMethodList(QObject *object);
@@ -50,6 +52,8 @@ private:
 
     QHash<QString, MethodDescriptionList> methodHash; /*!< Hash-table containing a list of method description for all public methods of a class derived from QObject which should be accessed by the call method of WidgetWrapper at runtime. */
     bool initialized; /*!< member indicating whether the initMethodHash method already has been executed, which is done in the constructor of WidgetWrapper. */
+
+    UiOrganizer *m_pUiOrganizer;
 };
 
 } //end namespace ito
