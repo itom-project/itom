@@ -557,7 +557,7 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 
         ito::AddInAlgo *algoInst = NULL;
         QVector<ito::ParamBase> paramsMand, paramsOpt;
-        retValue += initAddIn(m_addInListAlgo.size() - 1, plugin->objectName(), &algoInst, &paramsMand, &paramsOpt, true);
+        retValue += initAddInAlgo(m_addInListAlgo.size() - 1, plugin->objectName(), &algoInst, &paramsMand, &paramsOpt, true);
         if (!algoInst)
         {
             message = tr("Error initializing plugin: %1").arg(plugin->objectName());
@@ -748,7 +748,7 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** initAddIn initialize new instance of a algo addIn class
+/** initAddInAlgo initialize new instance of a algo addIn class
 *   @param [in]  pluginNum      number of the plugin in the plugin list, retrieved with \ref getInitParams
 *   @param [in]  name           name of the plugin to be initialized, this just a check that number and name correspond, principally it should not be necessary to pass the name
 *   @param [out] addIn          pointer to the new instance of the plugin class
@@ -761,7 +761,14 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 *   new instance from the addIn class is created. In contrast to the dataIO and actuator plugins the new object is not moved to a new thread and no init method is called.
 *   As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
+const ito::RetVal AddInManagerPrivate::initAddInAlgo(
+    const int pluginNum, 
+    const QString &name, 
+    ito::AddInAlgo **addIn, 
+    QVector<ito::ParamBase> *paramsMand, 
+    QVector<ito::ParamBase> *paramsOpt, 
+    bool autoLoadPluginParams, 
+    ItomSharedSemaphore *aimWait)
 {
     ItomSharedSemaphoreLocker locker(aimWait);
     ito::RetVal retval = ito::retOk;
@@ -827,9 +834,9 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/** initAddIn initialize new instance of a actuator addIn class
+/** initAddIn initialize new instance of a dataIO addIn class
+*   @param [in]  actuatorNotDataIO true if an actuator plugin should be initialized, else false
 *   @param [in]  pluginNum      number of the plugin in the plugin list, retrieved with \ref getInitParams
 *   @param [in]  name           name of the plugin to be initialized, this just a check that number and name correspond, principally it should not be necessary to pass the name
 *   @param [out] addIn          pointer to the new instance of the plugin class
@@ -843,26 +850,51 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 *   A new instance from the addIn class is created then the newly created object is moved into a new thread. Afterwards the classes init method is invoked with
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
+template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorOrDataIO(
+    bool actuatorNotDataIO,
+    const int pluginNum,
+    const QString &name,
+    _Tp** addIn,
+    QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt,
+    bool autoLoadPluginParams,
+    ItomSharedSemaphore *aimWait)
 {
     ItomSharedSemaphoreLocker locker(aimWait);
-    ItomSharedSemaphore *waitCond = NULL;
     ito::RetVal retval = ito::retOk;
+    ItomSharedSemaphore *waitCond = NULL;
     ito::tAutoLoadPolicy policy = ito::autoLoadNever;
     ito::AddInInterfaceBase *aib = NULL;
     bool callInitInNewThread;
     bool timeoutOccurred = false;
+    bool modelInsertAnnounced = false;
 
-    if (QString::compare((m_addInListAct[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
+    QObjectList *addInList = (actuatorNotDataIO) ? &m_addInListAct : &m_addInListDataIO;
+
+    if (addIn == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, "Empty plugin pointer");
+    }
+    else if (QString::compare(((*addInList)[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Wrong plugin name").toLatin1().data());
     }
     else
     {
-        aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[pluginNum]);
+        aib = qobject_cast<ito::AddInInterfaceBase *>((*addInList)[pluginNum]);
         m_plugInModel->insertInstance(aib, true); //begin insert
-        retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
-        if ((!addIn) || (!*addIn))
+        modelInsertAnnounced = true;
+
+        try
+        {
+            retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
+        }
+        catch (...)
+        {
+            retval += ito::RetVal(ito::retError, 0, "Exception during call of constructor of plugin.");
+        }
+
+        if (!retval.containsError() && (*addIn) == NULL)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Plugin instance is invalid (NULL)").toLatin1().data());
         }
@@ -871,9 +903,11 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     if (!retval.containsError())
     {
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if (aib->getRef(*addIn) != 0)
+        if (aib->getRef((*addIn)) != 0)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, 
+                tr("Reference counter of plugin has to be initialized with zero. "
+                    "This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
         }
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
@@ -884,16 +918,23 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
     if (!retval.containsError())
     {
-        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
+        retval += initDockWidget((*addIn));
 
         callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-        if (callInitInNewThread)
+        if (QApplication::instance() && callInitInNewThread)
         {
             (*addIn)->MoveToThread();
         }
+
         waitCond = new ItomSharedSemaphore();
         Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
-        QMetaObject::invokeMethod(*addIn, "init", conType, Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
+        QMetaObject::invokeMethod(
+            (*addIn),
+            "init", 
+            conType, 
+            Q_ARG(QVector<ito::ParamBase>*, paramsMand), 
+            Q_ARG(QVector<ito::ParamBase>*, paramsOpt), 
+            Q_ARG(ItomSharedSemaphore*, waitCond));
 
         //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
         //having finished this initAddIn method (since main thread is blocked).
@@ -901,7 +942,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         {
             if (!(*addIn)->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, tr("Timeout while initializing actuator").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while initializing dataIO").toLatin1().data());
                 timeoutOccurred = true;
                 break;
             }
@@ -911,7 +952,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         waitCond->deleteSemaphore();
         waitCond = NULL;
 
-        if (!callInitInNewThread)
+        if (QApplication::instance() && !callInitInNewThread)
         {
             (*addIn)->MoveToThread();
         }
@@ -919,48 +960,45 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         if (timeoutOccurred == true)
         {
             //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
-            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+            incRefParamPlugins((*addIn), paramsMand, paramsOpt);
 
-            retval += registerPluginAsDeadPlugin(*addIn);
-            *addIn = NULL;
+            retval += registerPluginAsDeadPlugin((*addIn));
+            (*addIn) = NULL;
         }
         else
         {
-            if (!((*addIn)->getBasePlugin()->getType() & ito::typeActuator) || retval.containsError())
+            //no timeout
+            if (retval.containsError() ||
+                (actuatorNotDataIO && !((*addIn)->getBasePlugin()->getType() & ito::typeActuator)) ||
+                (!actuatorNotDataIO && !((*addIn)->getBasePlugin()->getType() & ito::typeDataIO)))
             {
-                if (*addIn != NULL)
+                if (modelInsertAnnounced)
                 {
                     m_plugInModel->insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                    retval += closeAddIn(*addIn);
+                    modelInsertAnnounced = false;
                 }
-                *addIn = NULL;
+                    
+                retval += closeAddIn((*addIn));
+
+                (*addIn) = NULL;
             }
             else
             {
-                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+                incRefParamPlugins((*addIn), paramsMand, paramsOpt);
 
                 policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
-                // ck 31.12.16 removed warning about ignoring autoload settings
-                //                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-                //                {
-                //                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
-                //                }
-
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
                 {
-                    retval += loadParamVals(*addIn);
+                    retval += loadParamVals((*addIn));
                 }
             }
         }
+    }
 
-        if (*addIn)
-        {
-            m_plugInModel->insertInstance(aib, false); //end insert
-
-
-            
-        }
+    if (modelInsertAnnounced)
+    {
+        m_plugInModel->insertInstance(aib, false); //end insert
     }
 
     if (aimWait)
@@ -1304,148 +1342,6 @@ ito::RetVal AddInManagerPrivate::initDockWidget(const ito::AddInBase *addIn)
     }
 
     return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** initAddIn initialize new instance of a dataIO addIn class
-*   @param [in]  pluginNum      number of the plugin in the plugin list, retrieved with \ref getInitParams
-*   @param [in]  name           name of the plugin to be initialized, this just a check that number and name correspond, principally it should not be necessary to pass the name
-*   @param [out] addIn          pointer to the new instance of the plugin class
-*   @param [in]  paramsMand     mandatory initialisation parameters which are required by the initialisation. As this vector should(must) be retrieved from the plugin
-*                               previously with the \ref getInitParams method it should always be filled with meaningful values
-*   @param [in]  paramsOpt      mandatory initialisation parameters which may optionally be passed to the initialisation. As this vector should(must) be retrieved from the plugin
-*                               previously with the \ref getInitParams method it should always be filled with meaningful values
-*   @param [in, out] aimWait    wait condition for calls from other threads. See also \ref ItomSharedSemaphore
-*   @return      on success ito::retOk, ito::retError otherwise
-*
-*   A new instance from the addIn class is created then the newly created object is moved into a new thread. Afterwards the classes init method is invoked with
-*   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
-*/
-const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
-{
-    ItomSharedSemaphoreLocker locker(aimWait);
-    ito::RetVal retval = ito::retOk;
-    ItomSharedSemaphore *waitCond = NULL;
-    ito::tAutoLoadPolicy policy = ito::autoLoadNever;
-    ito::AddInInterfaceBase *aib = NULL;
-    bool callInitInNewThread;
-    bool timeoutOccurred = false;
-
-    if (QString::compare((m_addInListDataIO[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
-    {
-        retval += ito::RetVal(ito::retError, 0, tr("Wrong plugin name").toLatin1().data());
-    }
-    else
-    {
-        aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[pluginNum]);
-        m_plugInModel->insertInstance(aib, true); //begin insert
-        retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
-        if ((!addIn) || (!*addIn))
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("Plugin instance is invalid (NULL)").toLatin1().data());
-        }
-    }
-
-    if (!retval.containsError())
-    {
-        //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if (aib->getRef(*addIn) != 0)
-        {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
-        }
-
-        if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
-        {
-            retval += ito::RetVal(ito::retError, 2000, tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
-        }
-    }
-
-    if (!retval.containsError())
-    {
-        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
-
-        callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-        if (QApplication::instance() && callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        waitCond = new ItomSharedSemaphore();
-        Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
-        QMetaObject::invokeMethod(*addIn, "init", conType, Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
-        //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
-        //having finished this initAddIn method (since main thread is blocked).
-        while (!waitCond->waitAndProcessEvents(m_timeOutInitClose, QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers))
-        {
-            if (!(*addIn)->isAlive())
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Timeout while initializing dataIO").toLatin1().data());
-                timeoutOccurred = true;
-                break;
-            }
-        }
-        retval += waitCond->returnValue;
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-
-        if (QApplication::instance() && !callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        if (timeoutOccurred == true)
-        {
-            //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
-            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-            retval += registerPluginAsDeadPlugin(*addIn);
-            *addIn = NULL;
-        }
-        else
-        {
-            //no timeout
-
-            if (!((*addIn)->getBasePlugin()->getType() & ito::typeDataIO) || retval.containsError())
-            {
-                if (*addIn != NULL)
-                {
-                    m_plugInModel->insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                    retval += closeAddIn(*addIn);
-                }
-                *addIn = NULL;
-            }
-            else
-            {
-                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-                policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-                // ck 31.12.16 removed warning about ignoring autoload settings
-                //                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-                //                {
-                //                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
-                //                }
-
-                if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
-                {
-                    retval += loadParamVals(*addIn);
-                }
-            }
-        }
-
-        if (*addIn)
-        {
-            m_plugInModel->insertInstance(aib, false); //end insert
-        }
-    }
-
-    if (aimWait)
-    {
-        aimWait->returnValue = retval;
-        aimWait->release();
-    }
-
-    return retval;
 }
 
 } //end namespace ito

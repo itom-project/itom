@@ -42,6 +42,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmainwindow.h>
 #include <qpair.h>
 #include <qpointer.h>
+#include <qsharedpointer.h>
 
 
 namespace ito
@@ -92,9 +93,18 @@ class AddInManagerPrivate : public QObject
         ito::RetVal decRefParamPlugins(ito::AddInBase *ai);
         const RetVal decRef(ito::AddInBase **plugin);
         const RetVal closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait = NULL);
-        const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
-        const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
-        const RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
+
+        template<typename _Tp> const RetVal initAddInActuatorOrDataIO(
+            bool actuatorNotDataIO,
+            const int pluginNum, const QString &name,
+            _Tp** addIn, QVector<ito::ParamBase> *paramsMand, 
+            QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+            ItomSharedSemaphore *aimWait = NULL);
+
+        const RetVal initAddInAlgo(
+            const int pluginNum, const QString &name, ito::AddInAlgo **addIn, 
+            QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, 
+            bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
 
     protected:
         void setItomProperties(void *propPtr) {};
@@ -113,5 +123,14 @@ class AddInManagerPrivate : public QObject
 };
 
 } //end namespace ito
+
+//explicit template instantiation
+template const ito::RetVal ito::AddInManagerPrivate::initAddInActuatorOrDataIO<ito::AddInActuator>(
+    bool, const int, const QString&, ito::AddInActuator**, 
+    QVector<ito::ParamBase>*, QVector<ito::ParamBase>*, bool, ItomSharedSemaphore*);
+
+template const ito::RetVal ito::AddInManagerPrivate::initAddInActuatorOrDataIO<ito::AddInDataIO>(
+    bool, const int, const QString&, ito::AddInDataIO**, 
+    QVector<ito::ParamBase>*, QVector<ito::ParamBase>*, bool, ItomSharedSemaphore*);
 
 #endif // ADDINMANAGERIMPL_H
