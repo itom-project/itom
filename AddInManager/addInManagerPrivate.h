@@ -124,13 +124,6 @@ class AddInManagerPrivate : public QObject
 
 } //end namespace ito
 
-//explicit template instantiation
-template const ito::RetVal ito::AddInManagerPrivate::initAddInActuatorOrDataIO<ito::AddInActuator>(
-    bool, const int, const QString&, ito::AddInActuator**, 
-    QVector<ito::ParamBase>*, QVector<ito::ParamBase>*, bool, ItomSharedSemaphore*);
 
-template const ito::RetVal ito::AddInManagerPrivate::initAddInActuatorOrDataIO<ito::AddInDataIO>(
-    bool, const int, const QString&, ito::AddInDataIO**, 
-    QVector<ito::ParamBase>*, QVector<ito::ParamBase>*, bool, ItomSharedSemaphore*);
 
 #endif // ADDINMANAGERIMPL_H
