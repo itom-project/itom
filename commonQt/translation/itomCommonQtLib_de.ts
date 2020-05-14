@@ -20,305 +20,305 @@
         <translation type="obsolete">Parameter: Existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="71"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished">Es wurde versucht eine unskalierbare Einheit zu skalieren</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="75"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="71"/>
         <source>No unit specified</source>
         <translation type="unfinished">Keine Einheiten festgelegt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="206"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="202"/>
         <source>Pluginname undefined. No xml file loaded</source>
         <translation type="unfinished">Der Plugin-Name ist nicht definiert. Es wurde keine XML-Datei geladen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="243"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished">Die ParamList wurde nicht richtig inizialisiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="488"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="704"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="484"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="700"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished">XML-Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="776"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="772"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished">%1
 Der Autosave-Parameter %2 wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="780"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="776"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
         <translation type="unfinished">Warnung beim XML-Import:
 Der Autosave-Parameter %1 wurde nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="807"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="803"/>
         <source>%1
 Obsolete parameter %2</source>
         <translation type="unfinished">%1
 Parameter &apos;%2&apos; veraltet</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="811"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="807"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
         <translation type="unfinished">Warnung beim XML-Import:
 Der Parameter &apos;%1&apos; ist veraltet</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="820"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="816"/>
         <source>%1
 Parameter %2 not autosave</source>
         <translation type="unfinished">%1
 Der Parameter &apos;%2&apos; ist nicht Autosave</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="824"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="820"/>
         <source>XML-Import warnings:
 Parameter %1 not autosave</source>
         <translation type="unfinished">Warnung beim XML-Import:
 Der Parameter &apos;%1&apos; ist nicht Autosave</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="849"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="845"/>
         <source>%1
 Parameter not loadable %2</source>
         <translation type="unfinished">%1
 Der Parameter &apos;%2&apos; kann nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="853"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="849"/>
         <source>XML-Import warnings:
 Parameter not loadable %1</source>
         <translation type="unfinished">Warnung beim XML-Import:
 Der Parameter &apos;%1&apos; kann nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="863"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="859"/>
         <source>%1
 Type conflict for %2</source>
         <translation type="unfinished">%1
 Typkonflikt für &apos;%2&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="867"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="863"/>
         <source>XML-Import warnings:
 Type conflict for %1</source>
         <translation type="unfinished">Warnung beim XML-Import:
 Typkonflikt für &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="944"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="940"/>
         <source>Save object failed: Type not supported</source>
         <translation type="unfinished">Fehler beim Speichern des Objekts: Der Typ wird nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1238"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1234"/>
         <source>Save object failed: Invalid object handle</source>
         <translation type="unfinished">Fehler beim Speichern des Objekts: Ungültiges Objekt-Handle</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1243"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1239"/>
         <source>Save object failed: Object seems empty</source>
         <translation type="unfinished">Fehler beim Speichern des Objekts: Das Objekt scheint leer zu sein</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1278"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1274"/>
         <source>Save object failed: File not writeable</source>
         <translation type="unfinished">Fehler beim Speichern des Objekts: Das Objekt ist nicht beschreibbar</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1373"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1402"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1369"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1398"/>
         <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Bei Attribut &apos;%2&apos; fehlt MetaData &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1438"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1434"/>
         <source>Load object failed: Number of dims smaller 2</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Anzahl der Dimensionen ist kleiner als 2</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1446"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1442"/>
         <source>Not enough memory to alloc sizes vector</source>
         <translation type="unfinished">Für diese Vektorgröße ist nicht genug Arbeitsspeicher verfügbar</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1462"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1458"/>
         <source>Load object failed: dimension size missing</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Dimensionsgröße wurde nicht angegeben</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1476"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1472"/>
         <source>Load object failed: dimX not specified</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;DimX&apos; ist nicht spezifiziert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1488"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1484"/>
         <source>Load object failed: dimY not specified</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;DimY&apos; ist nicht spezifiziert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1563"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1559"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Typ wird nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1572"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1568"/>
         <source>Load object failed: Error during allocating memory</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Fehler beim Speicherallozieren</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1617"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1613"/>
         <source>Load object failed: file corrupted at metaData (v1.0)</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Datei ist beschädigt (v1.0)</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1624"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1620"/>
         <source>Load object warning: file has invalid metaData for v1.0</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Die Datei hat ungültige MetaData für v1.0</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1642"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1638"/>
         <source>Load object warning: DoubleExportType for v1.0 invalid</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Ungültiger &apos;DoubleExportType&apos; für v1.0</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1647"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1643"/>
         <source>Load object warning: DoubleExportType for v1.0 missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Fehlender &apos;DoubleExportType&apos; für v1.0</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1681"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1677"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Fehlende MetaData für &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1714"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1710"/>
         <source>Load object warning: MetaData for dimX missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Fehlende MetaData für &apos;DimX&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1744"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1740"/>
         <source>Load object warning: MetaData for dimY missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Fehlende MetaData für &apos;DimY&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1774"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1770"/>
         <source>Load object warning: MetaData for values missing</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Fehlende MetaData-Werte</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1803"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1799"/>
         <source>Load object warning: MetaData import for Rotation Matrix failed</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Der MetaData-Import für die Rotationsmatrix schlug fehl</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1838"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1834"/>
         <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Datei bei &apos;TagSpace&apos; beschädigt (v1.0)</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1843"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1839"/>
         <source>Load object failed: tag space not at expected position. Got %1 instead</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;TagSpace&apos; an falscher Position. (Position %1)</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1856"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1852"/>
         <source>Load object failed: tags Space invalid</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;TagSpace&apos; ist ungültig</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1894"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1900"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1890"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1896"/>
         <source>Load object warning: invalid tagType found</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Ungültiger &apos;TagTyp&apos; gefunden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1906"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1902"/>
         <source>Load object warning: tagsSpace invalid</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: Ungültiges &apos;TagsSpace&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1945"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1941"/>
         <source>Load object failed: dataSpace missing</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Fehlendes &apos;DataSpace&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1950"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1946"/>
         <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;DataSpace&apos; an falscher Position. (Position %1)</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1960"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1956"/>
         <source>Load object warning: dataSpace and dataObject are not equal</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: &apos;DataSpace&apos; und &apos;DataObject&apos; sind nicht gleich</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1965"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1961"/>
         <source>Load object warning: dataSpace attributes corrupted</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: die Attribute von &apos;DataSpace&apos; sind defekt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1978"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1974"/>
         <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
         <translation type="unfinished">Warnung beim Laden des Objekts: &apos;DataSpace&apos; für eine Ebene ungültig. Statt %2 wurden %1 Byte(s) übergeben</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1989"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1985"/>
         <source>Load object failed: dataStream ended before finished reading</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: &apos;DataStream&apos; unerwartet zuende</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2019"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2015"/>
         <source>Load object failed: Invalid object handle</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Ungültiges Objekt-Handle</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2046"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2042"/>
         <source>Load object failed: file not readable or does not exists</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Datei kann nicht geöffnet werden oder exisitert nicht</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2060"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2056"/>
         <source>Load object failed: file seems corrupt</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Datei scheint defekt zu sein</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2069"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2065"/>
         <source>Load object failed: wrong xml version</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Falsche XML-Version</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2078"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2074"/>
         <source>Load object failed: wrong document encoding</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Falscher Dokumenten-Encoder</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2084"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2080"/>
         <source>Load object failed: unexpected file ending</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Datei endet unerwartet</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2103"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2099"/>
         <source>Load object failed: file is no itomDataObjectFile</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Datei ist kein &apos;itomDataObjectFile&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2131"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2127"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Ungültige Formatversion</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2136"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2132"/>
         <source>Load object failed: object header not valied</source>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
     </message>
@@ -542,55 +542,55 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractAddInConfigDialog</name>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="82"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="78"/>
         <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;setParam&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="87"/>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="155"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="83"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="151"/>
         <source>pointer to plugin is invalid.</source>
         <translation type="unfinished">Zeiger des Plugins ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="101"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="97"/>
         <source>Error while setting parameter &apos;%1&apos;</source>
         <translation type="unfinished">Fehler beim Parametersetzen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="105"/>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="166"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="101"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="162"/>
         <source>Error while setting parameter</source>
         <translation type="unfinished">Fehler beim Parametersetzen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="119"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="115"/>
         <source>Warning while setting parameter &apos;%1&apos;</source>
         <translation type="unfinished">Warnung beim Parametersetzen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="123"/>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="177"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="119"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="173"/>
         <source>Warning while setting parameter</source>
         <translation type="unfinished">Warnung beim Parametersetzen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="150"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="146"/>
         <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;setParamVector&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="202"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="198"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
         <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="215"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="211"/>
         <source>Error while execution</source>
         <translation type="unfinished">Fehler bei der Ausführung</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="226"/>
+        <location filename="../../common/sources/abstractAddInConfigDialog.cpp" line="222"/>
         <source>Warning while execution</source>
         <translation type="unfinished">Warnung bei der Ausführung</translation>
     </message>
@@ -598,94 +598,94 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractAddInDockWidget</name>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="81"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="77"/>
         <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;setParam&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="86"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="134"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="242"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="300"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="350"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="397"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="82"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="130"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="238"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="296"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="346"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="393"/>
         <source>pointer to plugin is invalid.</source>
         <translation type="unfinished">Zeiger des Plugins ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="92"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="140"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="88"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="136"/>
         <source>Error while setting parameter</source>
         <translation type="unfinished">Fehler beim Parametersetzen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="103"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="151"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="99"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="147"/>
         <source>Warning while setting parameter</source>
         <translation type="unfinished">Warnung beim Parametersetzen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="129"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="125"/>
         <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;setParamVector&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="176"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="172"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
         <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="189"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="185"/>
         <source>Error while execution</source>
         <translation type="unfinished">Fehler bei der Ausführung</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="200"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="196"/>
         <source>Warning while execution</source>
         <translation type="unfinished">Warnung bei der Ausführung</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="224"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="282"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="338"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="220"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="278"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="334"/>
         <source>setActuatorPosition can only be called for actuator plugins</source>
         <translation type="unfinished">Der Parameter &apos;setActuatorPosition&apos; kann nur für Motor-Plugins aufgerufen werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="236"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="294"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="232"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="290"/>
         <source>slot &apos;%1&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;%1&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="248"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="306"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="244"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="302"/>
         <source>Error while calling %1</source>
         <translation type="unfinished">Fehler beim Aufruf von %1</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="259"/>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="317"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="255"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="313"/>
         <source>Warning while calling %1</source>
         <translation type="unfinished">Warnung beim Aufruf von %1</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="344"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="340"/>
         <source>slot &apos;requestStatusAndPosition&apos; could not be invoked since it does not exist.</source>
         <translation type="unfinished">Der Slot &apos;requestStatusAndPosition&apos; kann nicht aufgerufen werden, da dieser nicht exisitert.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="356"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="352"/>
         <source>Error while calling &apos;requestStatusAndPosition&apos;</source>
         <translation type="unfinished">Fehler beim Aufruf von  &apos;requestStatusAndPosition&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="367"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="363"/>
         <source>Warning while calling &apos;requestStatusAndPosition&apos;</source>
         <translation type="unfinished">Warnung beim Aufruf von  &apos;requestStatusAndPosition&apos;</translation>
     </message>
     <message>
-        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="388"/>
+        <location filename="../../common/sources/abstractAddInDockWidget.cpp" line="384"/>
         <source>setActuatorInterrupt can only be called for actuator plugins</source>
         <translation type="unfinished">Der Parameter &apos;setActuatorInterrupt&apos; kann nur für Motor-Plugins aufgerufen werden</translation>
     </message>
@@ -693,22 +693,22 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1478"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1499"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1482"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1503"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1486"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1507"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Ausgabeparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1409"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1430"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Der Konstruktor muss überschrieben sein</translation>
     </message>
@@ -716,22 +716,22 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="495"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="490"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion &apos;execution&apos; wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="547"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="542"/>
         <source>Toolbox</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="706"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="701"/>
         <source>function with this name is already registered.</source>
         <translation type="unfinished">Es existiert bereits eine Funktion mit diesem Namen.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="765"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="760"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Das Plugin hat vermutlich einen Konfigurationsdialog, aber die Methode &apos;showConfDialog&apos; wurde nicht implementiert</translation>
     </message>
@@ -739,73 +739,79 @@ Typkonflikt für &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="838"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="833"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished">&apos;Listener&apos; hat keinen Slot </translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="842"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="837"/>
         <source>this object already has been registered as listener</source>
         <translation type="unfinished">Diese Objekt wurde bereits beim &apos;Listener&apos; registriert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="856"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="851"/>
         <source>timer could not be set</source>
         <translation type="unfinished">Timer kann nicht gesetzt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="887"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="882"/>
         <source>the object could not been removed from the listener list</source>
         <translation type="unfinished">Das Objekt kann nicht aus der &apos;Listener&apos;-Liste entfernt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="985"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="980"/>
         <source>empty interval buffer has been given</source>
         <translation type="unfinished">Es wurde ein leerer Bereichspuffer übergeben</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1023"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1043"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1061"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1079"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1097"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1115"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="1133"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1018"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1038"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1056"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1074"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1092"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1110"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1128"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1146"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1029"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1024"/>
         <source>method startDevice() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;startDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1047"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1042"/>
         <source>method stopDevice() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;stopDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1065"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1060"/>
         <source>method acquire() is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;acquire&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1083"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1078"/>
+        <source>method stop() is not implemented in this plugin</source>
+        <translation type="unfinished">Die Methode &apos;stop&apos; wurde in diesem Plugin nicht implementiert</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="1096"/>
         <source>method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;getVal(void*, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1101"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1114"/>
         <source>method getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1119"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1132"/>
         <source>method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;copyVal(void*,ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="1137"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1150"/>
         <source>method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin</source>
         <translation type="unfinished">Die Methode &apos;setVal(const char*, const int, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
@@ -819,12 +825,13 @@ Typkonflikt für &apos;%1&apos;</translation>
         <translation type="unfinished">Der Slot &apos;setSource&apos; kann nicht aufgerufen werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInGrabber.cpp" line="234"/>
+        <location filename="../../common/sources/addInGrabber.cpp" line="236"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished">Fehler beim überprüfen der Daten. Das externe Datenobjekt ist ungültig. Das Objekt hat mehr oder weniger als eine Ebene. Es muss die richtige Größe und vom richtigen Typ sein oder ein nicht initialisiertes Image.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInGrabber.cpp" line="238"/>
+        <location filename="../../common/sources/addInGrabber.cpp" line="240"/>
+        <location filename="../../common/sources/addInGrabber.cpp" line="263"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished">Fehler beim überprüfen der Daten. Das externe Datenobjekt ist ungültig. Das Objekt muss die richtige Größe und vom richtigen Typ sein oder ein nicht initialisiertes Image.</translation>
     </message>

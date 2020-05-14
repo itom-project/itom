@@ -739,19 +739,19 @@
     </message>
     <message>
         <source>dataIO(&quot;%1&quot;%2)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">DataIO (&quot;%1&quot;%2)</translation>
     </message>
     <message>
         <source>actuator(&quot;%1&quot;%2)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Motor (&quot;%1&quot;%2)</translation>
     </message>
     <message>
         <source>filter(&quot;%1&quot;%2)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter (&quot;%1&quot;%2)</translation>
     </message>
     <message>
         <source>ui.createNewPluginWidget(&quot;%1%2&quot;)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;ui.createNewPluginWidget&apos; (&quot;%1%2&quot;)</translation>
     </message>
 </context>
 </TS>
