@@ -38,9 +38,11 @@
 
 namespace ito
 {
-    class AddInGrabberPrivate;
+    class AddInAbstractGrabberPrivate;
+	class AddInGrabberPrivate;
+	class AddInMultiChannelGrabberPrivate;
 
-    class ITOMCOMMONQT_EXPORT AddInGrabber : public ito::AddInDataIO
+    class ITOMCOMMONQT_EXPORT AddInAbstractGrabber : public ito::AddInDataIO
     {
         Q_OBJECT
 
@@ -54,22 +56,12 @@ namespace ito
         */
         int m_started;
 
-        AddInGrabberPrivate *dd;        
+        AddInAbstractGrabberPrivate *dd;        
 
     protected:
         void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
 
-        //! implement this method in order to check if m_image should be (re)allocated with respect to the current sizex, sizey, bpp...
-        /*!
-            Call this method if the size or bitdepth of your camera has changed (e.g. in your constructor, too). In this method, compare if the new size
-            is equal to the old one. If this is not the case, use the following example to set m_image to a newly allocated dataObject. The old dataObject
-            is deleted automatically with respect to its internal reference counter:
 
-            m_image = ito::DataObject(futureHeight,futureWidth,futureType);
-
-            \see m_image
-        */
-        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
         //! implement this method in your camera plugin. In this method the image is grabbed and stored in the m_image variable.
         /*!
@@ -81,7 +73,7 @@ namespace ito
         */
         virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0; 
 
-        ito::RetVal sendDataToListeners(int waitMS);  /*!< sends m_data to all registered listeners. */
+		virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
 
         inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
         
@@ -112,13 +104,71 @@ namespace ito
             runStatusChanged( value > 0 );
         }  
 
-        ito::DataObject m_data; /*!< variable for the recently grabbed image */
-
     public:
-        AddInGrabber();
-        ~AddInGrabber();
+        AddInAbstractGrabber();
+        ~AddInAbstractGrabber();
 
     };
+
+	class ITOMCOMMONQT_EXPORT AddInGrabber : public AddInAbstractGrabber
+	{
+		Q_OBJECT
+	private:
+			
+		AddInGrabberPrivate *dd;
+	protected:
+		ito::DataObject m_data; /*!< variable for the recently grabbed image*/
+
+		//! implement this method in order to check if m_image should be (re)allocated with respect to the current sizex, sizey, bpp...
+		/*!
+		Call this method if the size or bitdepth of your camera has changed (e.g. in your constructor, too). In this method, compare if the new size
+		is equal to the old one. If this is not the case, use the following example to set m_image to a newly allocated dataObject. The old dataObject
+		is deleted automatically with respect to its internal reference counter:
+
+		m_image = ito::DataObject(futureHeight,futureWidth,futureType);
+
+		\see m_image
+		*/
+		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+
+		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+	public:
+		AddInGrabber();
+		~AddInGrabber();
+
+	};
+
+	class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AddInAbstractGrabber
+	{
+		Q_OBJECT
+	private:
+		AddInMultiChannelGrabberPrivate *dd;
+	protected:
+		
+		struct ChannelContainer 
+		{
+			ito::DataObject data;
+			QMap<QString, ito::Param> m_channelParam;
+			ChannelContainer() {};
+			ChannelContainer(ito::Param sizex, ito::Param sizey, ito::Param bpp)
+			{
+				m_channelParam.insert("sizex",sizex);
+				m_channelParam.insert("sizey",sizey);
+				m_channelParam.insert("bpp", bpp);
+			}
+		};
+		QMap<QString, ChannelContainer> m_data; /*!< Map for recently grabbed images of various channels*/
+		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
+		void addChannel(QString name, ito::Param sizex, ito::Param sizey, ito::Param bpp);
+	public:
+		AddInMultiChannelGrabber();
+		~AddInMultiChannelGrabber();
+	};
+
+
+
 } //end namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)

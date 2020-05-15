@@ -19,9 +19,8 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-  
 project(itom)
-
+   
 message(STATUS "--------------- PROJECT itom -----------------")
 
 include(cmake/ItomBuildMacros.cmake)
