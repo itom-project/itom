@@ -474,9 +474,13 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    DialogVariableDetail *dlg = new DialogVariableDetail(name, item->text(2), extendedValue); //wItem.m_extendedValue);
-    dlg->exec();
-    DELETE_AND_SET_NULL(dlg);
+    DialogVariableDetail *dlg = new DialogVariableDetail(name, item->text(2), extendedValue, this);
+
+    dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+    dlg->setModal(false);
+    dlg->show();
+    dlg->raise();
+    dlg->activateWindow();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
