@@ -1159,13 +1159,30 @@ endmacro()
 # example if the rst main document of the plugin is called myPluginDoc.rst (and located in the docs subfolder
 # of the plugin sources):
 # itom_configure_plugin_documentation(${target_name} myPluginDoc)
+#
+# If the plugin name (the name used to initialize the plugin in itom) differs from target,
+# pass the itom internal plugin name as 3rd argument, e.g.:
+# itom_configure_plugin_documentation(${target_name} myPluginDoc plugin-name)
 # .
-macro(itom_configure_plugin_documentation target main_document) #main_document without .rst at the end
+macro(itom_configure_plugin_documentation target main_doc_filename) #main_doc_filename without .rst at the end
+    
+    set (extra_macro_args ${ARGN})
+    
     set(PLUGIN_NAME ${target})
+
+    # Did we get any optional args? If yes, the plugin name of
+    # the plugin in itom differs from the target name.
+    list(LENGTH extra_macro_args num_extra_args)
+    if (${num_extra_args} GREATER 0)
+        list(GET extra_macro_args 0 optional_arg)
+        set(PLUGIN_NAME ${optional_arg})
+    endif()
+    
+    set(PLUGIN_TARGET_NAME ${target})
     set(PLUGIN_DOC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     set(PLUGIN_DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs/build)
     set(PLUGIN_DOC_INSTALL_DIR ${ITOM_APP_DIR}/plugins/${target}/docs)
-    set(PLUGIN_DOC_MAIN ${main_document})
+    set(PLUGIN_DOC_MAIN ${main_doc_filename})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in 
             ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
 endmacro()
