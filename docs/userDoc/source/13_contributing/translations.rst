@@ -84,7 +84,7 @@ a **ts** file is created for each non-existing language and Qt's **lupdate** pro
 building each library. This also affects all existing **ts** file, such that they are also updated by new
 translatable strings in the source code.
 
-.. info::
+.. note::
     
     It is not recommended to manually create a new ts-file for a new language by copying an existing ts-file
     from another language, since each ts-file contains xml-content with the language ID as subcontent. If this

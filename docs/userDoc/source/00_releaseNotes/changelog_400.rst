@@ -10,7 +10,98 @@ itom
 
 **Version 4.0.0 (2020-05-28)**
 
-(more than xx commits in itom repository)
+(more than 300 commits in itom repository)
+
+**New or changed major features:**
+
+* New alternative interface for algorithms (ito::FilterDefExt) in algorithm plugins. This allows both continuously reporting the progress of an algorithm to Python (class py:class:`itom.progressObserver`) or C++ GUIs as well as interrupting a long running algorithm from these GUIs, too.
+* The keyword '_observer' is not allowed in any algorithm plugin filters, since it is a reserved keyword for passing an progress observer to a filter. Filters having such a keyword will be rejected by itom.
+* Forward and backward navigation buttons in script editors are available. Their behaviour is similar than in Visual Studio (see https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/)
+* Improved callstack toolbox: The internal traceback of the debugger is ignored, now. It is possible to double click every level of the callstack in order to jump to these lines. The top level will be marked with a yellow arrow in the script, other affected lines by a green arrow.
+* Added an alternative, optional code checked based on the Python package **flake8**. This enhances the functionality of **pyflakes** and displays more information in the first margin of the script editors. The code checker can be heavily configured by the property dialog of itom.
+* Bookmarks in all script are now managed by one bookmark model. A toolbox for all recent bookmarks is now available. The bookmark forward and backward buttons will now navigate over all bookmarks in all scripts (`Issue 112 <https://bitbucket.org/itom/itom/issues/112>`_).
+* Press F12 if the cursor is within a word in a script to trigger the "Goto definition" action for the word under the cursor.
+* The user can now select the keyboard modifiers that are used to start a "goto definition" operation in a script upon moving the mouse cursor over a word in the "goto assignment" property page. Default: Ctrl+Shift.
+* Shortcuts to open an existing or new script, as well as shortcuts to debug any script are now globally available (see `Issue 115 <https://bitbucket.org/itom/itom/issues/115>`_).
+* The standard user can now also have a password (see `Issue 88 <https://bitbucket.org/itom/itom/issues/88>`_).
+* More members of :py:class:`itom.dataObject` now also accept keyword-based arguments
+* :class:`itom.ui`: new window type ui.TYPECENTRALWIDGET added. Use this type to permanently include this widget or QMainWindow to the central area of itom, on top of the command line (see :ref:`qtdesigner`).
+* Drop of Qt4 support in itom and its plugins.
+* More robust compatibility check (by means of Semantic versioning) when loading designer plugins, to avoid crashes if incompatible plugins are loaded (this requires modifications in designer plugins).
+* New interface :py:meth:`~itom.dataIO.stop` as well as ito::DataIO::stop() to allow stopping continuous acquisition or write operations for ADDA (I/O) devices.
+* Refactoring of all CMake files to follow the new CMake style guide rules of itom (see :ref:`cmake-style-guide`). The CMake files for the itom SDK are now in a **cmake** subfolder. Macros in **ItomBuildMacros.cmake** are now renamed and start all with the prefix *itom*. The minimum CMake version is now 3.1. Many unused preprocessors, useless things etc. removed from CMake files.
+* CMake: Plugins will now try to automatically detect the ITOM SDK in some standard directories and read some 3rd party libraries from the CMakeCache.txt file of itom (if possible).
+* :py:meth:`uiItem.getChild`(widgetName) added as alternative for **uiItem.<widgetName>**, since the first method can also be used if the widgetName is a variable of type str.
+* Widget wrapper 'setItemText' for QListWidget added. gui.listWidget.call("setItemText", 0, "new text") changes the text of the first item in the given list widget.
+* The script reference window (help viewer) of itom is now renamed to "plugin help viewer" and only shows information about plugins. The former script reference, based on offline database, hosted at sourceforge.net/p/itom, has been removed since the live script reference (using the python package jedi) fully replaces this technique. OpenSSL is no more needed now.
+* Modifications of the license information of itom, add of the new licenses folder in the itom sources with all major 3rd party projects that are used in the core as well as commonly used plugins/designer plugins of itom.
+* Python **help** output can now also be opened in external editor. This can be configured in the itom property dialog, page **Python >> General**
+* Some more demo scripts added (e.g. face detection via OpenCV, settings the color of shapes, starting the roughness evaluator, or cancelling long running algorithms including showing their progress in own GUIs
+* Improved icon browser dialog: icons can be filtered by a text box. The load is put into a concurrent run task to improve the startup. name of selected item is displayed in textbox below the tree widget.
+* :py:meth:`itom.pluginLoaded` now only allows the name of a plugin, not the filename of a plugin library.
+* Some fixes in python auto indent to provide a better indentation after line breaks based on the pep8 indentation rules
+* Selection from auto completion list is only confirmed with the Return key in a script. In the console, only the Tab-Key is feasible.
+* New property page for actuators: It can be chosen if an interrupt flag should be send to all active actuator instances if a python script execution is interrupted (default: false). Calling itom.setPosAbs, itom.setPosRel, itom.calib or itom.setOrigin will now reset the interrupt flag before execution (as well as calling these methods from the motorAxisController.
+* Macro 'itom_fetch_git_commit_hash' added to ItomBuildMacros.cmake to get the current Git commit hash and store it in a gitVersion.h file in the file gitVersion.h in the project's output folder (can be changed). This behaviour can be toggled by the BUILD_GIT_TAG flag in CMake. This can only be done if the Git package can be found by CMake.
+* Script editor tabs: it is now possible to configure how long filenames are shortened if there are many scripts opened (see itom property dialog >> editor >> script editors)
+* File system dock widget: list of recent folders, loaded at startup from settings, will only contain pathes that exist at startup.
+* Grabber plugins can now have an optional **sizez** parameter and must then return a 3D dataObject (image stack) with shape (sizez, sizey, sizex)
+* Added the new default editor style *DefaultConsolas.ini*, that is based on the default style, but uses the consolas font for all style types.
+* The type **ItomPlotHandle** can now be set to None in Python. This allows removing assigned plot widgets for line cuts, z-stack cuts etc. and remove this connection between two plots.
+
+**Bugfixes:**
+
+* `Issue 87 <https://bitbucket.org/itom/itom/issues/87>`_: multiple files can now be opened by droping on script editor
+* `Issue 89 <https://bitbucket.org/itom/itom/issues/89>`_: Removed a wrong "container=1" line in the ui-files for itom designer plugins. This line will let the QtDesigner crash if another widget is drag&dropped over a widget of the affected designer plugin class.
+* `Issue 94 <https://bitbucket.org/itom/itom/issues/94>`_: method navigation combobox above script editor did not show methods with some typehints.
+* `Issue 95 <https://bitbucket.org/itom/itom/issues/95>`_: correctly highlight private methods in scripts, that have numbers in their method name.
+* `Issue 96 <https://bitbucket.org/itom/itom/issues/96>`_: bookmark icons are directly removed if 'clear all bookmarks' is clicked
+* `Issue 97 <https://bitbucket.org/itom/itom/issues/97>`_: removed uint32 from docstrings in itom.dataObject (since not supported)
+* `Issue 98 <https://bitbucket.org/itom/itom/issues/98>`_: camera can be disconnected from plot by assigning **None** to the camera property
+* `Issue 100 <https://bitbucket.org/itom/itom/issues/100>`_: Bugfix when obtaining the variable name from a selected sub-item in the workspace tree.
+* `Issue 104 <https://bitbucket.org/itom/itom/issues/104>`_: corrected ascending or descending sorting of elements in the workspaceWidget if values in variable name column are numbers, represented as texts. Therefore "10" should follow "2" instead of the text-based comparison.
+* `Issue 106 <https://bitbucket.org/itom/itom/issues/106>`_: drag&drop from/to command line: - it is not allowed to drop something in protected lines of the command line - dragging from protected lines of the command line must always be a copy operation
+* `Issue 109 <https://bitbucket.org/itom/itom/issues/109>`_: Commands, added to the recent list of commands, are only considered as duplicates if their command string is equal to any older command in a case-sensitive way.
+* `Issue 110 <https://bitbucket.org/itom/itom/issues/110>`_: bugfix in scope decoration of code editor.
+* `Issue 113 <https://bitbucket.org/itom/itom/issues/113>`_: Current selection of script removed upon a mouse right click in script.
+* `Issue 114 <https://bitbucket.org/itom/itom/issues/114>`_: SystemError when converting an empty np.ndarray to an itom.dataObject (python unittest added to reproduce this error)
+* `Issue 120 <https://bitbucket.org/itom/itom/issues/120>`_: bugfix in shape.createPoint, unittest added to verify this bug.
+* `Issue 121 <https://bitbucket.org/itom/itom/issues/121>`_: The dialog, displaying the content of a variable in the workspace, will now be displayed as non-modal dialog on top of the workspace widget.
+* Matplotlib backend: fixes several bugs in matplotlib backen (e.g. due to deprecated arguments in matplotlib 3.x) 
+* Redo button in script editor is now working properly
+* Workaround in font selection of WidgetPropEditorStyles
+* Bugfix: memory leak for copy constructor **itom.dataObject(cpy: np.ndarray)**
+* Bugfix in itomWidgets: ledStatus reported wrong header file, which made it hard to insert it into an ui file
+* Reference counter of ito::ByteArray is now incremented or decremented atomically. This improves the usage of a ByteArray within different threads.
+* AddInManager: fix when closing plugin instances, opened via GUI, in destructor of AddInManager: instances should only be directly closed by AddInManager if they are not only referenced any more by any other plugin instance(s). In this case closing the owning instance will also close the referenced instance.
+* Script editor: class and method navigation combobox can now handle multiline method signatures
+* Fixes and improvements due to **deepcode.ai** analysis
+* Bugfix in pythonWorkspace when parsing a class that has a __slots__ attribute. __slots__ can return either a list or tuple.
+* Bugfix in uiOrganizer (QMetaType 43 exception due to exception of invoked method) in several methods if ui window or dialog have already been deleted before.
+* Bugfix in node base structure of plots: input parameter 'dataObject' was wrongly added as output parameter to AbstractDObjPCLFigure
+* Bugfixes and code refinement of UserOrganizer, UserModel If the startup argument name=<userID> is passed, this user is loaded without further dialog (only if password is required). New startup argument run=<path_to_script> is added (can be stacked) to indicate scripts that should be executed at startup
+* Fixes and improvements of code editor, especially if tabs are used instead of spaces
+* Many linux bugfixes, especially for a better compilation on a Raspberry
+* Many other bugfixes
+
+**Others:**
+
+* Long error messages (sent to std::cerr) are now split into several lines based on word-boundaries
+* Python syntax highlighting: added 'async' and 'await' as further keywords
+* Documentation improved in many pages, added the section 'Contributing' with infos about a CMake style guide and information about translations.
+* more unittests added
+* many smaller improvements when using auto completion, calltips etc. from the python package jedi. Adaptions to support jedi 0.15, 0.16 and 0.17.
+* templates for plugins adapted to the current state of the art
+* replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 11) set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+**Internal changes and improvements:**
+
+* Official name of python class itom.pythonStream renamed to 'itom.pythonStream' (was pythonStream.PythonStream before)
+* initAddIn in addInManager is now able to properly catch exceptions from constructors of plugins. initAddIn of actuators and dataIO merged into one common templated method.
+* plotLegends is not used any more (since a long time) because it is integrated in itomWidgets. Therefore plotLegends is removed and also deleted from the SDK folder.
+* User doc extension package 'breathe' (doxygen in sphinx docs) updated to latest version
+* Major refactoring of itomCommonPlotLib library: classes Channel, AbstractNode, AbstractFigure refactored and commented, parameter propagation through node tree improved, private classes added to enable easier updates with kept binary compatibility. These changes require adaptions in figure classes / plugins.
+* Improved error message, containing all allowed enumeration values and keys, if one tries to set an enumeration or flag-based property (e.g. of a plot or another widget)
 
 
 Plugins
