@@ -138,21 +138,6 @@ Properties
     
     Set an overlay dataObject which is shown above the main dataObject and whose opacity (see 'overlayAlpha') can be controlled by a slider in the toolbar. Assign None to remove the overlay object.
 
-.. py:attribute:: grid : GridStyle 
-    :noindex:
-    
-    Style of the grid ('GridNo', 'GridMajorXY', 'GridMajorX', 'GridMajorY', 'GridMinorXY', 'GridMinorX', 'GridMinorY').
-    
-    The type 'GridStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'GridNo' (0)
-    * 'GridMajorXY' (1)
-    * 'GridMajorX' (2)
-    * 'GridMajorY' (3)
-    * 'GridMinorXY' (4)
-    * 'GridMinorX' (5)
-    * 'GridMinorY' (6)
-
 .. py:attribute:: showCenterMarker : bool 
     :noindex:
     
@@ -418,7 +403,6 @@ Slots
     
     removes an overlay image. This is the same than assigning 'None' to the property 'overlayImage'
     
-    .. index:: 
 
 .. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
     :noindex:
@@ -437,7 +421,6 @@ Slots
     :param destID: optional and unused
     :type destID: int
     
-    .. index:: 
 
 .. py:function:: getDisplayedLineCut() [slot]
     :noindex:
@@ -445,7 +428,6 @@ Slots
     
     returns the currently displayed line cut dataObject
     
-    .. index:: 
 
 .. py:function:: getDisplayed() [slot]
     :noindex:
@@ -453,7 +435,6 @@ Slots
     
     returns the currently displayed dataObject.
     
-    .. index:: 
 
 .. py:function:: replot() [slot]
     :noindex:
@@ -461,7 +442,6 @@ Slots
     
     Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
     
-    .. index:: 
 
 .. py:function:: deleteMarkers(id) [slot]
     :noindex:
@@ -472,7 +452,6 @@ Slots
     :param id: name of the marker set that should be removed (optional)
     :type id: str
     
-    .. index:: 
 
 .. py:function:: plotMarkers(coordinates, style, id, plane) [slot]
     :noindex:
@@ -489,7 +468,6 @@ Slots
     :param plane: If the dataObject has more than 2 dimensions, it is possible to add the markers to a specific plane only (optional, default=-1 -> all planes)
     :type plane: int
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabelVisible(idx, visible) [slot]
     :noindex:
@@ -502,7 +480,6 @@ Slots
     :param visible: True if the label should be displayed close to the shape, else False
     :type visible: bool
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabel(idx, label) [slot]
     :noindex:
@@ -515,7 +492,6 @@ Slots
     :param label: new label of the shape
     :type label: str
     
-    .. index:: 
 
 .. py:function:: updateGeometricShape(geometricShape) [slot]
     :noindex:
@@ -529,7 +505,6 @@ Slots
     :param geometricShape: new geometric shape
     :type geometricShape: shape
     
-    .. index:: 
 
 .. py:function:: addGeometricShape(geometricShape) [slot]
     :noindex:
@@ -545,7 +520,6 @@ Slots
     
     :raises RuntimeError: if the index of the shape is != -1 and does already exist
     
-    .. index:: 
 
 .. py:function:: setGeometricShapes(geometricShapes) [slot]
     :noindex:
@@ -556,7 +530,6 @@ Slots
     :param geometricShapes: Sequence (e.g tuple or list) of shapes that replace all existing shapes by this new set.
     :type geometricShapes: seq. of shapes
     
-    .. index:: 
 
 .. py:function:: deleteGeometricShape(idx) [slot]
     :noindex:
@@ -567,7 +540,6 @@ Slots
     :param idx: idx is the index of the shape to be removed. This is the index of the shape instance itself and must not always correspond to the index-position of the shape within the tuple of all shapes
     :type idx: int
     
-    .. index:: 
 
 .. py:function:: clearGeometricShapes() [slot]
     :noindex:
@@ -575,7 +547,6 @@ Slots
     
     removes all geometric shapes from the canvas.
     
-    .. index:: 
 
 .. py:function:: userInteractionStart(type, start, maxNrOfPoints) [slot]
     :noindex:
@@ -590,7 +561,6 @@ Slots
     :param maxNrOfPoints: number of shapes that should be added, the user can quit earlier by pressing Esc (optional, default: -1 -> infinite number of shapes)
     :type maxNrOfPoints: int
     
-    .. index:: 
 
 .. py:function:: renderToPixMap(xsize, ysize, resolution) [slot]
     :noindex:
@@ -605,7 +575,6 @@ Slots
     :param resolution: resolution of the pixmap in dpi
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: savePlot(filename, xsize, ysize, resolution) [slot]
     :noindex:
@@ -622,7 +591,6 @@ Slots
     :param resolution: resolution of image components in the plot in dpi (default: 300dpi)
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: copyToClipBoard() [slot]
     :noindex:
@@ -630,7 +598,6 @@ Slots
     
     copies the entire plot to the clipboard as bitmap data (uses the default export resolution).
     
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
@@ -638,7 +605,6 @@ Slots
     
     Triggers an update of the current plot window.
     
-    .. index:: 
 
 .. py:function:: getPlotID() [slot]
     :noindex:
@@ -646,7 +612,6 @@ Slots
     
     Return window ID of this plot {int}.
     
-    .. index:: 
 
 Signals
 -------------------------
@@ -667,7 +632,6 @@ Signals
         
             yourItem.connect('planeIndexChanged(int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeCurrentChanged(currentShape) [signal]
     :noindex:
@@ -684,7 +648,6 @@ Signals
         
             yourItem.connect('geometricShapeCurrentChanged(ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeFinished(shapes, aborted) [signal]
     :noindex:
@@ -703,7 +666,6 @@ Signals
         
             yourItem.connect('geometricShapeFinished(QVector<ito::Shape>,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapesDeleted() [signal]
     :noindex:
@@ -717,7 +679,6 @@ Signals
         
             yourItem.connect('geometricShapesDeleted()', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeDeleted(idx) [signal]
     :noindex:
@@ -734,7 +695,6 @@ Signals
         
             yourItem.connect('geometricShapeDeleted(int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeChanged(idx, shape) [signal]
     :noindex:
@@ -753,7 +713,6 @@ Signals
         
             yourItem.connect('geometricShapeChanged(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeAdded(idx, shape) [signal]
     :noindex:
@@ -772,7 +731,6 @@ Signals
         
             yourItem.connect('geometricShapeAdded(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: userInteractionDone(type, aborted, shapes) [signal]
     :noindex:
@@ -793,7 +751,6 @@ Signals
         
             yourItem.connect('userInteractionDone(int,bool,QVector<ito::Shape>)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeStartUserInput(type, userInteractionReason) [signal]
     :noindex:
@@ -812,7 +769,6 @@ Signals
         
             yourItem.connect('geometricShapeStartUserInput(int,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: windowTitleModified(windowTitleSuffix) [signal]
     :noindex:
@@ -820,8 +776,6 @@ Signals
     
     signature for connection to this signal: windowTitleModified(QString)
     
-    .. index:: 
-
 
 .. END plot_help_to_rst_format.py: itom2dqwtplot
  

@@ -48,6 +48,7 @@ itom
 * Grabber plugins can now have an optional **sizez** parameter and must then return a 3D dataObject (image stack) with shape (sizez, sizey, sizex)
 * Added the new default editor style *DefaultConsolas.ini*, that is based on the default style, but uses the consolas font for all style types.
 * The type **ItomPlotHandle** can now be set to None in Python. This allows removing assigned plot widgets for line cuts, z-stack cuts etc. and remove this connection between two plots.
+* The python package **breathe**, required to build the user documentation, is no longer shipped together with the itom sources, but must be installed as official Python package (for easier updates)
 
 **Bugfixes:**
 
@@ -99,7 +100,6 @@ itom
 * Official name of python class itom.pythonStream renamed to 'itom.pythonStream' (was pythonStream.PythonStream before)
 * initAddIn in addInManager is now able to properly catch exceptions from constructors of plugins. initAddIn of actuators and dataIO merged into one common templated method.
 * plotLegends is not used any more (since a long time) because it is integrated in itomWidgets. Therefore plotLegends is removed and also deleted from the SDK folder.
-* User doc extension package 'breathe' (doxygen in sphinx docs) updated to latest version
 * Major refactoring of itomCommonPlotLib library: classes Channel, AbstractNode, AbstractFigure refactored and commented, parameter propagation through node tree improved, private classes added to enable easier updates with kept binary compatibility. These changes require adaptions in figure classes / plugins.
 * Improved error message, containing all allowed enumeration values and keys, if one tries to set an enumeration or flag-based property (e.g. of a plot or another widget)
 

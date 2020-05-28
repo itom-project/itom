@@ -19,7 +19,6 @@ categories
     :scale: 100%
     :align: center
     
-	
 
 This plot has been created by the following code snippet:
 
@@ -112,6 +111,7 @@ For acessing the propties via the user interface the line properties widget can 
 .. figure:: images/curveProperties.png
     :scale: 100%
     :align: center
+
 This shows the curve Properties widget.
 
 If you want to set a propertie global for all curves you can also use the properties widget (View >> properties or via right click on the toolbar)
@@ -623,13 +623,11 @@ Slots
     
     returns the currently displayed dataObject.
     
-    .. index:: 
 
 .. py:function:: showCurveProperties() [slot]
     :noindex:
     
     
-    .. index:: 
 
 .. py:function:: getCurveProperty(index, property) [slot]
     :noindex:
@@ -647,7 +645,6 @@ Slots
     :return: value -> value of the requested property
     :rtype: variant
     
-    .. index:: 
 
 .. py:function:: setCurveProperty(index, property, value) [slot]
     :noindex:
@@ -665,7 +662,6 @@ Slots
     :param value: value of the property
     :type value: various
     
-    .. index:: 
 
 .. py:function:: deletePicker(id) [slot]
     :noindex:
@@ -676,7 +672,6 @@ Slots
     :param id: zero-based index of the picker to be deleted, or -1 if all pickers should be deleted (default). This parameter is optional.
     :type id: int
     
-    .. index:: 
 
 .. py:function:: appendPicker(coordinates, curveIndex, physicalCoordinates) [slot]
     :noindex:
@@ -692,7 +687,6 @@ Slots
     :param physicalCoordinates: optional, if True (default), 'coordinates' are given in axis coordinates of the plot (hence, physical coordinates of the dataObject; False: 'coordinates' are given in pixel coordinates of the dataObject
     :type physicalCoordinates: bool
     
-    .. index:: 
 
 .. py:function:: setPicker(coordinates, curveIndex, physicalCoordinates) [slot]
     :noindex:
@@ -708,13 +702,11 @@ Slots
     :param physicalCoordinates: optional, if True (default), 'coordinates' are given in axis coordinates of the plot (hence, physical coordinates of the dataObject; False: 'coordinates' are given in pixel coordinates of the dataObject
     :type physicalCoordinates: bool
     
-    .. index:: 
 
 .. py:function:: setLegendTitles(legends) [slot]
     :noindex:
     
     
-    .. index:: 
 
 .. py:function:: replot() [slot]
     :noindex:
@@ -722,7 +714,6 @@ Slots
     
     Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
     
-    .. index:: 
 
 .. py:function:: deleteMarkers(id) [slot]
     :noindex:
@@ -733,7 +724,6 @@ Slots
     :param id: name of the marker set that should be removed (optional)
     :type id: str
     
-    .. index:: 
 
 .. py:function:: plotMarkers(coordinates, style, id, plane) [slot]
     :noindex:
@@ -750,7 +740,6 @@ Slots
     :param plane: If the dataObject has more than 2 dimensions, it is possible to add the markers to a specific plane only (optional, default=-1 -> all planes)
     :type plane: int
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabelVisible(idx, visible) [slot]
     :noindex:
@@ -763,7 +752,6 @@ Slots
     :param visible: True if the label should be displayed close to the shape, else False
     :type visible: bool
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabel(idx, label) [slot]
     :noindex:
@@ -776,7 +764,6 @@ Slots
     :param label: new label of the shape
     :type label: str
     
-    .. index:: 
 
 .. py:function:: updateGeometricShape(geometricShape) [slot]
     :noindex:
@@ -790,7 +777,6 @@ Slots
     :param geometricShape: new geometric shape
     :type geometricShape: shape
     
-    .. index:: 
 
 .. py:function:: addGeometricShape(geometricShape) [slot]
     :noindex:
@@ -806,7 +792,6 @@ Slots
     
     :raises RuntimeError: if the index of the shape is != -1 and does already exist
     
-    .. index:: 
 
 .. py:function:: setGeometricShapes(geometricShapes) [slot]
     :noindex:
@@ -817,7 +802,6 @@ Slots
     :param geometricShapes: Sequence (e.g tuple or list) of shapes that replace all existing shapes by this new set.
     :type geometricShapes: seq. of shapes
     
-    .. index:: 
 
 .. py:function:: deleteGeometricShape(idx) [slot]
     :noindex:
@@ -828,7 +812,6 @@ Slots
     :param idx: idx is the index of the shape to be removed. This is the index of the shape instance itself and must not always correspond to the index-position of the shape within the tuple of all shapes
     :type idx: int
     
-    .. index:: 
 
 .. py:function:: clearGeometricShapes() [slot]
     :noindex:
@@ -836,7 +819,6 @@ Slots
     
     removes all geometric shapes from the canvas.
     
-    .. index:: 
 
 .. py:function:: userInteractionStart(type, start, maxNrOfPoints) [slot]
     :noindex:
@@ -851,7 +833,6 @@ Slots
     :param maxNrOfPoints: number of shapes that should be added, the user can quit earlier by pressing Esc (optional, default: -1 -> infinite number of shapes)
     :type maxNrOfPoints: int
     
-    .. index:: 
 
 .. py:function:: renderToPixMap(xsize, ysize, resolution) [slot]
     :noindex:
@@ -866,7 +847,6 @@ Slots
     :param resolution: resolution of the pixmap in dpi
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: savePlot(filename, xsize, ysize, resolution) [slot]
     :noindex:
@@ -883,7 +863,6 @@ Slots
     :param resolution: resolution of image components in the plot in dpi (default: 300dpi)
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: copyToClipBoard() [slot]
     :noindex:
@@ -891,7 +870,6 @@ Slots
     
     copies the entire plot to the clipboard as bitmap data (uses the default export resolution).
     
-    .. index:: 
 
 .. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
     :noindex:
@@ -899,7 +877,6 @@ Slots
     
     This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.
     
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
@@ -907,7 +884,6 @@ Slots
     
     Triggers an update of the current plot window.
     
-    .. index:: 
 
 .. py:function:: getPlotID() [slot]
     :noindex:
@@ -915,7 +891,6 @@ Slots
     
     Return window ID of this plot {int}.
     
-    .. index:: 
 
 Signals
 -------------------------
@@ -942,7 +917,6 @@ Signals
         
             yourItem.connect('pickerChanged(int,double,double,int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeCurrentChanged(currentShape) [signal]
     :noindex:
@@ -959,7 +933,6 @@ Signals
         
             yourItem.connect('geometricShapeCurrentChanged(ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeFinished(shapes, aborted) [signal]
     :noindex:
@@ -978,7 +951,6 @@ Signals
         
             yourItem.connect('geometricShapeFinished(QVector<ito::Shape>,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapesDeleted() [signal]
     :noindex:
@@ -992,7 +964,6 @@ Signals
         
             yourItem.connect('geometricShapesDeleted()', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeDeleted(idx) [signal]
     :noindex:
@@ -1009,7 +980,6 @@ Signals
         
             yourItem.connect('geometricShapeDeleted(int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeChanged(idx, shape) [signal]
     :noindex:
@@ -1028,7 +998,6 @@ Signals
         
             yourItem.connect('geometricShapeChanged(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeAdded(idx, shape) [signal]
     :noindex:
@@ -1047,7 +1016,6 @@ Signals
         
             yourItem.connect('geometricShapeAdded(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: userInteractionDone(type, aborted, shapes) [signal]
     :noindex:
@@ -1068,7 +1036,6 @@ Signals
         
             yourItem.connect('userInteractionDone(int,bool,QVector<ito::Shape>)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeStartUserInput(type, userInteractionReason) [signal]
     :noindex:
@@ -1087,7 +1054,6 @@ Signals
         
             yourItem.connect('geometricShapeStartUserInput(int,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: windowTitleModified(windowTitleSuffix) [signal]
     :noindex:
@@ -1095,8 +1061,6 @@ Signals
     
     signature for connection to this signal: windowTitleModified(QString)
     
-    .. index:: 
-
 
 .. END plot_help_to_rst_format.py: itom1dqwtplot
 

@@ -231,7 +231,7 @@ options in this property page:
   `pyflakes <https://github.com/PyCQA/pyflakes>`_. Using this package general 
   code errors and syntax errors are checked.
 * **Extended code checks**: This requires the python package 
-  `flake8 <https://flake8.pycqa.org/en/latest/`_. **Flake8** depends on 
+  `flake8 <https://flake8.pycqa.org/en/latest/>_. **Flake8** depends on 
   **pyflakes**, **pycodestyle** and **mccabe**. However it can be extended by further
   plugins, like for instance **flake8-docstrings**. Therefore **flake8** can 
   check for various things whichextends the features of **pyflakes**. For 
@@ -442,9 +442,9 @@ automatically while the user is typing some code. The possible settings are:
     
     1. Filter completion based on the prefix (fast method)
     2. Filter completions based on whether the prefix is contained in the 
-      suggestion (fast method)
+       suggestion (fast method)
     3. Fuzzy filtering, using the subsequence matcher. This is the most powerful 
-      filter mode but also the SLOWEST.
+       filter mode but also the SLOWEST.
 
 * **case sensitivity**: select whether the search is case sensitive (or not)
 * **show tooltips**: select if a tooltip is shown next to the currently selected 

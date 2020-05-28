@@ -52,7 +52,7 @@ Select the desired language codes (see above) as semicolon-separated string to t
 
 Example:
 
-.. code-block:: CMake
+.. code-block:: cmake
     
     ITOM_LANGUAGES = de;fr
     #this includes translations for German and French (in addition to English)
@@ -65,7 +65,7 @@ There is one common CMake error message, that might occur when setting new langu
 
 Error (ITOM_LANGUAGES = it):
 
-.. code-block:: CMake
+.. code-block:: cmake
     
     CMake Error at cmake/ItomBuildMacros.cmake:664 (MESSAGE):
       Source translation file
@@ -120,7 +120,7 @@ Please commit all changed **ts** files to the Git repository of the correspondin
 If **ITOM_UPDATE_TRANSLATIONS** is **ON** and a **ts** file has a wrong format, the following CMake
 error might occur:
 
-.. code-block:: CMake
+.. code-block:: cmake
     
     CMake Warning at cmake/ItomBuildMacros.cmake:745 (message):
       - The existing ts-file
@@ -169,7 +169,7 @@ some additional steps have to be done for translating plugins and / or designerp
 Besides configuring the mentioned CMake variables, you also have to set the following exemplary
 lines into the CMakeLists.txt file of the particular plugin:
 
-.. code-block:: CMake
+.. code-block:: cmake
     
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})

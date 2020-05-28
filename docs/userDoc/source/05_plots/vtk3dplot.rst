@@ -299,7 +299,6 @@ Slots
     
     set mesh for pick point event. The cloud of the mesh is used only (arguments: mesh)
     
-    .. index:: 
 
 .. py:function:: setPickPointCloud(pcl) [slot]
     :noindex:
@@ -307,7 +306,6 @@ Slots
     
     set cloud for pick point event. Nearest point from the position of the cursor (x,y,z) position is searched (arguments: cloud)
     
-    .. index:: 
 
 .. py:function:: setItemProperty(name, property, value) [slot]
     :noindex:
@@ -315,7 +313,6 @@ Slots
     
     set the property of an item (arguments: key, property-name, value)
     
-    .. index:: 
 
 .. py:function:: setGeometriesPosition(names, positions) [slot]
     :noindex:
@@ -323,7 +320,6 @@ Slots
     
     changes the position of various geometries (arguments: list of keys, list of (pos_x, pos_y, pos_z)
     
-    .. index:: 
 
 .. py:function:: setGeometryPose(name, translation, rotation) [slot]
     :noindex:
@@ -331,7 +327,6 @@ Slots
     
     moves and/or rotates a given geometry (arguments: key, (t_x, t_y, t_z), (r_x, r_y, r_z)
     
-    .. index:: 
 
 .. py:function:: deleteGeometry(name) [slot]
     :noindex:
@@ -339,7 +334,6 @@ Slots
     
     delete the geometry with key
     
-    .. index:: 
 
 .. py:function:: deleteMesh(name) [slot]
     :noindex:
@@ -347,7 +341,6 @@ Slots
     
     delete the mesh with key
     
-    .. index:: 
 
 .. py:function:: deletePointCloud(name) [slot]
     :noindex:
@@ -355,7 +348,6 @@ Slots
     
     delete the cloud with key
     
-    .. index:: 
 
 .. py:function:: updateText(text, x, y, fontsize, name, color, rgba or hex, createIfNotExists) [slot]
     :noindex:
@@ -363,7 +355,6 @@ Slots
     
     updates or creates new 2d text (arguments: text, x, y, fontsize, key, color = white, createIfNotExists = false)
     
-    .. index:: 
 
 .. py:function:: addText(text, x, y, fontsize, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -371,7 +362,6 @@ Slots
     
     add a 2d text to a specific position (arguments: text, x, y, fontsize, key, color = white)
     
-    .. index:: 
 
 .. py:function:: addPolygon(points, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -379,7 +369,6 @@ Slots
     
     adds a 2d polygon (arguments: points, key, color = white) where points is a Mx3 data object where each line is the (x,y,z) coordinate of a point of the polygon. The point values will internally be converted to float32.
     
-    .. index:: 
 
 .. py:function:: addSphere(point, radius, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -387,7 +376,6 @@ Slots
     
     add a sphere (arguments: [center_x, center_y, center_z], radius, key, color = red]).
     
-    .. index:: 
 
 .. py:function:: addLines(points, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -395,7 +383,6 @@ Slots
     
     add m lines to the canvas. The coordintates are given by a float32 data object [m x 6] where one row is (x0,y0,z0,x1,y1,z1) (arguments: points, key, color=red).
     
-    .. index:: 
 
 .. py:function:: addCube(size, translation, rotation, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -403,7 +390,6 @@ Slots
     
     add cube (arguments: [size_x, size_y, size_z], [t_x, t_y, t_z], [r_x, r_y, r_z], key, color=white)
     
-    .. index:: 
 
 .. py:function:: addCuboid(points, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -411,7 +397,6 @@ Slots
     
     add cube. The 8 corner points are given in a 3x8 data object (arguments: points, key, color=white)
     
-    .. index:: 
 
 .. py:function:: addPyramid(points, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -419,7 +404,6 @@ Slots
     
     add pyramid. The 5 corner points are given in a 3x5 data object (arguments: points, key, color=white)
     
-    .. index:: 
 
 .. py:function:: addCylinder(point, orientation, radius, fullname, color, rgba or hex) [slot]
     :noindex:
@@ -427,7 +411,6 @@ Slots
     
     add a cylinder (arguments: (center_x, center_y, center_y), (orientation_x, orientation_y, orientation_z), radius, key, color=white)
     
-    .. index:: 
 
 .. py:function:: updatePointCloud(pcl, name, createIfNotExists) [slot]
     :noindex:
@@ -435,7 +418,6 @@ Slots
     
     updates an existing cloud (arguments: cloud, key, createIfNotExists=false)
     
-    .. index:: 
 
 .. py:function:: addPointCloudNormal(pcl, fullname) [slot]
     :noindex:
@@ -443,7 +425,6 @@ Slots
     
     add the given cloud with normal vectors to the tree with a key name (arguments: cloud, key)
     
-    .. index:: 
 
 .. py:function:: addPointCloud(pcl, name) [slot]
     :noindex:
@@ -451,7 +432,6 @@ Slots
     
     add the given cloud to the tree with a key name (arguments: cloud, key)
     
-    .. index:: 
 
 .. py:function:: addMesh(mesh, fullname) [slot]
     :noindex:
@@ -459,7 +439,6 @@ Slots
     
     add the given mesh to the tree with a key name (arguments: mesh, key)
     
-    .. index:: 
 
 .. py:function:: registerModel(mesh, modelName) [slot]
     :noindex:
@@ -467,7 +446,6 @@ Slots
     
     see addMesh
     
-    .. index:: 
 
 .. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
     :noindex:
@@ -475,7 +453,6 @@ Slots
     
     This (virtual) slot can be invoked by python to trigger a lineplot.
     
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
@@ -483,7 +460,6 @@ Slots
     
     Triggers an update of the current plot window.
     
-    .. index:: 
 
 .. py:function:: getPlotID() [slot]
     :noindex:
@@ -491,7 +467,6 @@ Slots
     
     Return window ID of this plot {int}.
     
-    .. index:: 
 
 Signals
 -------------------------
@@ -503,7 +478,6 @@ Signals
     
     signature for connection to this signal: pointPicked(float,float,float,int)
     
-    .. index:: 
 
 .. py:function:: windowTitleModified(windowTitleSuffix) [signal]
     :noindex:
@@ -511,7 +485,6 @@ Signals
     
     signature for connection to this signal: windowTitleModified(QString)
     
-    .. index:: 
 
 
 .. END plot_help_to_rst_format.py: vtk3dvisualizer
