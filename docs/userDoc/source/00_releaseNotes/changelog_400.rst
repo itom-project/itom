@@ -111,12 +111,15 @@ Plugins
 
 (136 commits in plugins repository)
 
-* all plugins: adaptations for OpenCV 4
-* all plugins: CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, such that also CMake policies are globally set. ITOM_SDK_DIR is now "auto"-detected in the overall CMakeLists.txt file.
-* all plugins: adapted to new CMake macros / structure of itom SDK
-* all plugins: Qt4 support removed
+* all plugins: 
+    - adaptations for OpenCV 4
+    - CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, such that also CMake policies are globally set. ITOM_SDK_DIR is now "auto"-detected in the overall CMakeLists.txt file.
+    - adapted to new CMake macros / structure of itom SDK
+    - Qt4 support removed
+
 
 * new plugins: NerianSceneScanPro
+
 
 * DummyMotor: status is updated after movement has been interrupted. Interrupt flag is always reset before a movement is started.
 * GenICam: build script prepared for GenICam 3.1
