@@ -109,9 +109,39 @@ Plugins
 
 **Version 4.0.0 (2020-05-28)**
 
-(xx commits in plugins repository)
+(136 commits in plugins repository)
 
+* all plugins: adaptations for OpenCV 4
+* all plugins: CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, such that also CMake policies are globally set. ITOM_SDK_DIR is now "auto"-detected in the overall CMakeLists.txt file.
+* all plugins: adapted to new CMake macros / structure of itom SDK
+* all plugins: Qt4 support removed
 
+* new plugins: NerianSceneScanPro
+
+* DummyMotor: status is updated after movement has been interrupted. Interrupt flag is always reset before a movement is started.
+* GenICam: build script prepared for GenICam 3.1
+* MSMediaFoundation: CPU load decreased during acquisition (> 50%) + minor bugfixes
+* MSMediaFoundation: plugin refactored: static instances are mostly replaced by shared pointers to avoid for instance a crash when closing itom (fixes issue #7)
+* NIDAQmx: implement stop() method of ito::AddInDataIO to stop a running task
+* NIDAQmx: single value acquisition and write (software trigger only) is now possible. Added a demo for this.
+* NerianSceneScanPro: removed parameter integrationTime... instead use manualExposureTime
+* NiDAQmx: analog and digital input tasks now work in finite and continuous mode
+* OpenCVFilters: added bilateralFilter for input image of type uint8, float32 because this filter is only implemented for those two types in OpenCV (4.1.2)
+* OpenCVGrabber: avoid OpenCV warnung: "[ WARN:0] terminating async callback"
+* PGRFlyCapture: added strobe_mode
+* Roughness: Corrected Zsk and Zku parameters and changed Zv to be positive.
+* SerialIO: add serialIO Sync Mutex
+* Ximea: inserted aperture value as parameter
+* Ximea: ready for hyperspectral sensors
+* another time a deepcode.ai analysis
+* demoAlgorithms: Extension of the demoAlgorithms with respect to the algorithmInterrupt branch of the itom sources: Added a long-running algorithm (10sec) 'demoCancellationFunction', that can be interrupted by a python scipt cancellation. Additionally, you can obtain progress and cancel this function via a GUI. See the widget example 'demoCancellationFunctionWidget' for this
+* more work on niDAQmx: digital output tasks are now also running in finite and continuous mode
+* niDAQmx: complete set of demo files for digital and analog input and output tasks (finite, continuous and single value)
+* niDAQmx: rework of NIDAQMX plugin, mainly done by D. Nessett. See: https://bitbucket.org/dnessett/plugins
+* niDAQmx: start trigger added
+* niDAQmx: startDevice / stopDevice are now required for data acquisition or data output (similar to cameras). First steps towards continuous task. Finite analog / digital input are working.
+* niDAQmx: working analog and digital, input and output, finite and continuous tasks; toolbox dock widget added; tdms logging for input tasks possible
+* work on analog output tasks for niDAQmx
 
 
 Designer Plugins
