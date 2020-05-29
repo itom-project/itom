@@ -449,7 +449,7 @@ if _HAS_FLAKE8:
         
         application = app.Application()
         
-        if not hasattr(app, 'parse_preliminary_options_and_args'):  # flake8 >= 3.8
+        if not hasattr(application, 'parse_preliminary_options_and_args'):  # flake8 >= 3.8
             application.parse_preliminary_options([])
             prelim_opts, remaining_args = application.parse_preliminary_options([])
             flake8.configure_logging(
