@@ -539,7 +539,7 @@ void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected,
         }
     }*/
 
-    ui.btnUpdate->setEnabled(updateAvailabe);
+    ui.btnUpdate->setEnabled(updateAvailabe && ui.btnInstall->isEnabled());
 }
 
 //---------------------------------------------------------------------------------

@@ -632,11 +632,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             if (m_pipVersion >= 0x070100)
             {
-                arguments << "--only-binary=:all:";
-            }
-            else
-            {
-                arguments << "--use-wheel";
+                arguments << "--prefer-binary"; // << ("--only-binary=" + installSettings.packageName.trimmed());
             }
         }
         else if (installSettings.type == PipInstall::typeSearchIndex)
@@ -650,11 +646,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             if (m_pipVersion >= 0x070100)
             {
-                arguments << "--no-binary=:all:";
-            }
-            else
-            {
-                arguments << "--no-use-wheel";
+                arguments << "--prefer-binary"; // << ("--no-binary=" + installSettings.packageName.trimmed());
             }
         }
 
