@@ -63,7 +63,13 @@ struct PipGeneralOptions
 
 struct PipInstall
 {
-    enum Type { typeWhl = 0, typeTarGz = 1, typeSearchIndex = 2}; //these are the same types than in DialogPipManager
+    enum Type 
+    { 
+        typeWhl = 0, 
+        typeTarGz = 1, 
+        typeSearchIndex = 2
+    }; //these are the same types than in DialogPipManager
+
     Type type;
     QString packageName;
     bool upgrade;

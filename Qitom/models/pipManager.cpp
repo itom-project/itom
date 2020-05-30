@@ -639,7 +639,14 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
                 arguments << "--use-wheel";
             }
         }
-        else
+        else if (installSettings.type == PipInstall::typeSearchIndex)
+        {
+            if (m_pipVersion >= 0x070100)
+            {
+                arguments << "--prefer-binary";
+            }
+        }
+        else // typeTarGz
         {
             if (m_pipVersion >= 0x070100)
             {
@@ -654,6 +661,8 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         arguments << parseGeneralOptions(options, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
 
         arguments << installSettings.packageName;
+
+        emit pipRequestStarted(taskInstall, arguments.mid(1).join(" ") + "\n");
 
         if (installSettings.runAsSudo)
         {
