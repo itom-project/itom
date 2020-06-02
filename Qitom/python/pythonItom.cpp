@@ -4001,7 +4001,7 @@ _observer : {progressObserver, optional} \n\
     The observer object is reset() before passed to the called filter function (using the slot reset()). \n\
 \n\
 Returns \n\
-------- \n\
+-------- \n\
 out : {variant} \n\
     The returned values depend on the definition of each filter. In general it is a tuple of all output parameters that are defined by the filter function.\n\
 \n\
