@@ -3998,6 +3998,7 @@ _observer : {progressObserver, optional} \n\
     if the called filter implements the extended interface with progress and status information, an optional itom.progressObserver \n\
     object can be given (only as keyword-based parameter) which is then used as observer for the current progress of the filter \n\
     execution. It is then also possible to interrupt the execution earlier (depending on the implementation of the filter). \n\
+    The observer object is reset() before passed to the called filter function (using the slot reset()). \n\
 \n\
 Returns \n\
 ------- \n\
@@ -4144,6 +4145,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         if (fFuncExt)
         {
+            observer->reset();
             ret = (*(fFuncExt->m_filterFuncExt))(&paramsMandBase, &paramsOptBase, &paramsOutBase, observer);
         }
         else

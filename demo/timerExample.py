@@ -14,7 +14,11 @@ from itom import *
 
 def imageAcquisition():
     global iters
+    global t
+    global cam
+    global myImages
     
+    print("acquire next image")
     cam.acquire()
     d = dataObject()
     cam.getVal(d)
@@ -27,10 +31,17 @@ def imageAcquisition():
 
 def cancel():
     '''call this method (e.g. by your gui) to stop the timer'''
+    global t
+    global cam
     t.stop()
     cam.stopDevice()
     
 def demo_timedAcquisition():
+    global t
+    global cam
+    global myImages
+    global iters
+    
     cam = dataIO("DummyGrabber")
     myImages = []
     iters = 0
