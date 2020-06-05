@@ -76,6 +76,7 @@ itom
 * Reference counter of ito::ByteArray is now incremented or decremented atomically. This improves the usage of a ByteArray within different threads.
 * AddInManager: fix when closing plugin instances, opened via GUI, in destructor of AddInManager: instances should only be directly closed by AddInManager if they are not only referenced any more by any other plugin instance(s). In this case closing the owning instance will also close the referenced instance.
 * Script editor: class and method navigation combobox can now handle multiline method signatures
+* Script editor: Bugfix in cut() method if cutting without active selection
 * Fixes and improvements due to **deepcode.ai** analysis
 * Bugfix in pythonWorkspace when parsing a class that has a __slots__ attribute. __slots__ can return either a list or tuple.
 * Bugfix in uiOrganizer (QMetaType 43 exception due to exception of invoked method) in several methods if ui window or dialog have already been deleted before.

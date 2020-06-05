@@ -1247,7 +1247,8 @@ int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
 
 //-------------------------------------------------------------
 /*
-Cuts the selected text or the whole line if no text was selected
+Cuts the selected text or the whole line if no text was selected, 
+the current line is not empty and selectLineOnCopy() is true. 
 (the latter feature can be turned off by
 setting :attr:`select_line_on_copy_empty` to False).
 */
@@ -1255,36 +1256,29 @@ void CodeEditor::cut()
 {
     QTextCursor tc = textCursor();
     tc.beginEditBlock();
-    bool no_selection = false;
+    bool from_selection = false;
 
-    if (currentLineText() == "")
+    if (!tc.hasSelection() && selectLineOnCopyEmpty() && currentLineText() != "")
     {
-        tc.deleteChar();
+        tc.movePosition(QTextCursor::StartOfLine);
+        tc.movePosition(QTextCursor::Left);
+        tc.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+        tc.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        from_selection = true;
     }
     else
     {
-        if (!textCursor().hasSelection())
-        {
-            if (selectLineOnCopyEmpty())
-            {
-                no_selection = true;
-                selectWholeLine();
-            }
-        }
-
-        QPlainTextEdit::cut();
-
-        if (no_selection)
-        {
-            tc.deleteChar();
-        }
+        from_selection = true;
     }
 
     tc.endEditBlock();
     setTextCursor(tc);
+
+    if (from_selection)
+    {
+        QPlainTextEdit::cut();
+    }
 }
-
-
 
 //-------------------------------------------------------------
 /*
