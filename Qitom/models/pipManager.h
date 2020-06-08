@@ -67,7 +67,8 @@ struct PipInstall
     { 
         typeWhl = 0, 
         typeTarGz = 1, 
-        typeSearchIndex = 2
+        typeSearchIndex = 2,
+        typeRequirements = 3
     }; //these are the same types than in DialogPipManager
 
     Type type;

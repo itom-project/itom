@@ -49,6 +49,7 @@ itom
 * Added the new default editor style *DefaultConsolas.ini*, that is based on the default style, but uses the consolas font for all style types.
 * The type **ItomPlotHandle** can now be set to None in Python. This allows removing assigned plot widgets for line cuts, z-stack cuts etc. and remove this connection between two plots.
 * The python package **breathe**, required to build the user documentation, is no longer shipped together with the itom sources, but must be installed as official Python package (for easier updates)
+* Python package manager of itom can now also install packages from a **requirements.txt** file.
 
 **Bugfixes:**
 

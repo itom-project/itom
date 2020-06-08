@@ -611,18 +611,24 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         QStringList arguments;
         arguments << "-m" << "pip" << "install";
 
-        if (installSettings.upgrade)
+        if (installSettings.type != PipInstall::typeRequirements)
         {
-            arguments << "--upgrade";
+            if (installSettings.upgrade)
+            {
+                arguments << "--upgrade";
+            }
+
+            if (!installSettings.installDeps)
+            {
+                arguments << "--no-deps";
+            }
         }
-        if (!installSettings.installDeps)
-        {
-            arguments << "--no-deps";
-        }
+
         if (installSettings.ignoreIndex)
         {
             arguments << "--no-index";
         }
+
         if (installSettings.findLinks != "")
         {
             arguments << "--find-links" << installSettings.findLinks;
@@ -642,7 +648,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
                 arguments << "--prefer-binary";
             }
         }
-        else // typeTarGz
+        else if (installSettings.type == PipInstall::typeTarGz) // typeTarGz
         {
             if (m_pipVersion >= 0x070100)
             {
@@ -652,6 +658,11 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
 
         arguments << parseGeneralOptions(options, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
 
+        if (installSettings.type == PipInstall::typeRequirements) // typeRequirements
+        {
+            arguments << "-r";
+        }
+        
         arguments << installSettings.packageName;
 
         emit pipRequestStarted(taskInstall, arguments.mid(1).join(" ") + "\n");
