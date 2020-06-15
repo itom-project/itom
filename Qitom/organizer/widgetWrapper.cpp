@@ -200,6 +200,7 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qLayout;
         qLayout << buildMethodDescription(QMetaObject::normalizedSignature("itemAt(int)"), "ito::PythonQObjectMarshal", 12001, ok);
         qLayout << buildMethodDescription(QMetaObject::normalizedSignature("count()"), "int", 12002, ok);
+        qLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString,QString)"), "ito::PythonQObjectMarshal", 12003, ok);
         methodHash["QLayout"] = qLayout;
 
         //QFormLayout
@@ -910,7 +911,10 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
         else if (QString::compare(className, "QLayout", Qt::CaseInsensitive) == 0)
         {
             QLayout *layout = qobject_cast<QLayout*>(object);
-            if (layout == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
+            if (layout == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
+            }
 
             switch (methodIndex)
             {
@@ -949,6 +953,37 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 {
                     (*reinterpret_cast<int*>(_a[0])) = layout->count();
                     return ito::retOk;
+                }
+                case 12003: // addItem(QString,QString) -> ito::PythonQObjectMarshal
+                {
+                    QString className = *reinterpret_cast<QString(*)>(_a[1]);
+                    QString objectName = *reinterpret_cast<QString(*)>(_a[2]);
+                    ito::RetVal retValue;
+
+                    if (objectName == "")
+                    {
+                        objectName = QString();
+                    }
+
+                    QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
+                        className,
+                        retValue,
+                        ito::AbstractFigure::WindowMode::ModeInItomFigure,
+                        layout->parentWidget());
+                    
+                    if (!retValue.containsError())
+                    {
+                        if (objectName != "")
+                        {
+                            widget->setObjectName(objectName);
+                        }
+
+                        layout->addWidget(widget);
+
+                        (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+                    }
+
+                    return retValue;
                 }
             }
         }
