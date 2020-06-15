@@ -213,7 +213,10 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     for (int i = 0; i < counter; ++i)
     {
         settings.setArrayIndex(i);
-        fi.setFile(settings.value("path").toString());
+
+        QString path = settings.value("path").toString();
+
+        fi.setFile(path);
         if (fi.exists())
         {
             m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));

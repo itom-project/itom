@@ -28,8 +28,8 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------
-DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &type, const QString &value) :
-    QDialog()
+DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &type, const QString &value, QWidget *parent) :
+    QDialog(parent)
 {
     ui.setupUi(this);
     

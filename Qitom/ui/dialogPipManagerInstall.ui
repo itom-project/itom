@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>492</width>
-    <height>362</height>
+    <height>381</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QRadioButton" name="radioRequirements">
+        <property name="text">
+         <string>Install or upgrade listed packages in requirements text file</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -54,7 +61,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Package file or name:</string>
+         <string>Package file, package name or requirements file:</string>
         </property>
        </widget>
       </item>

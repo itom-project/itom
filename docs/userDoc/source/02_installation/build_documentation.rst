@@ -42,6 +42,11 @@ In order to be able to build the documentation, you need to have some tools
     also available from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However, you 
     then need to separately install all depending packages of **Sphinx**.
 
+3. Python-Packacke breathe
+    
+    Install the python package **breathe** (e.g. from pypi.org) in order to
+    integrate some doxygen outputs into the Sphinx user documentation.
+
 Run doxygen
 ---------------
 

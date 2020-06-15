@@ -1,7 +1,8 @@
 #configuration file for itom plugin ${PLUGIN_NAME}
 #-------------------------------------------------
 
-pluginDocTarget       = "${PLUGIN_NAME}"
+pluginName            = "${PLUGIN_NAME}"
+pluginDocTarget       = "${PLUGIN_TARGET_NAME}"
 pluginDocSourceDir    = "${PLUGIN_DOC_SOURCE_DIR}"
 pluginDocBuildDir    = "${PLUGIN_DOC_BUILD_DIR}"
 pluginDocInstallDir   = "${PLUGIN_DOC_INSTALL_DIR}"

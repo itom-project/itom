@@ -38,6 +38,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qtimer.h>
 #include <qtranslator.h>
 #include <qlibrary.h>
+#include <qsharedpointer.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -619,16 +620,23 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType,
 *   A new instance from the addIn class is created then the newly created object is moved into a new thread. Afterwards the classes init method is invoked with
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
+ito::RetVal AddInManager::initAddIn(
+    const int pluginNum, const QString &name, 
+    ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, 
+    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+    ItomSharedSemaphore *aimWait)
 {
     Q_D(AddInManager);
+
     try
     {
-        return d->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+        return d->initAddInActuatorOrDataIO<ito::AddInDataIO>(false, pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
     }
     catch (...)
     {
-        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+        QString txt = tr("Caught exception during initAddIn of: %1").arg(name);
+        qDebug() << txt;
+        return ito::RetVal(ito::retError, 0, txt.toLatin1().data());
     }
 }
 
@@ -649,16 +657,23 @@ ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, it
 *   A new instance from the addIn class is created then the newly created object is moved into a new thread. Afterwards the classes init method is invoked with
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
+ito::RetVal AddInManager::initAddIn(
+    const int pluginNum, const QString &name, 
+    ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, 
+    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+    ItomSharedSemaphore *aimWait)
 {
     Q_D(AddInManager);
+
     try 
     {
-        return d->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+        return d->initAddInActuatorOrDataIO<ito::AddInActuator>(true, pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
     }
     catch (...)
     {
-        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+        QString txt = tr("Caught exception during initAddIn of: %1").arg(name);
+        qDebug() << txt;
+        return ito::RetVal(ito::retError, 0, txt.toLatin1().data());
     }
 }
 
@@ -678,16 +693,23 @@ ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, it
 *   new instance from the addIn class is created. In contrast to the dataIO and actuator plugins the new object is not moved to a new thread and no init method is called.
 *   As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
-ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams,ItomSharedSemaphore *aimWait)
+ito::RetVal AddInManager::initAddIn(
+    const int pluginNum, const QString &name, 
+    ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, 
+    QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams,
+    ItomSharedSemaphore *aimWait)
 {
     Q_D(AddInManager);
+
     try
     {
-        return d->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+        return d->initAddInAlgo(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
     }
     catch (...)
     {
-        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+        QString txt = tr("Caught exception during initAddIn of: %1").arg(name);
+        qDebug() << txt;
+        return ito::RetVal(ito::retError, 0, txt.toLatin1().data());
     }
 }
 
@@ -710,7 +732,9 @@ ito::RetVal AddInManager::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimW
     }
     catch (...)
     {
-        return ito::RetVal(ito::retError, 0, tr("Caught exception during closeAddIn of: %1").arg(addIn->getBasePlugin()->getFilename()).toLatin1().data());
+        QString txt = tr("Caught exception during closeAddIn of: %1").arg(addIn->getBasePlugin()->getFilename());
+        qDebug() << txt;
+        return ito::RetVal(ito::retError, 0, txt.toLatin1().data());
     }
 }
 

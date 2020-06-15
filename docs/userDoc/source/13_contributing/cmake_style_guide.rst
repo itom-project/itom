@@ -1,3 +1,5 @@
+.. _cmake-style-guide:
+
 CMake Style Guide
 ************************
 

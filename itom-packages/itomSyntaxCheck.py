@@ -38,6 +38,7 @@ import itom
 import warnings
 from builtins import filter as bfilter  # due to potential conflict with itom.filter
 import time
+import logging
 
 try:
     from flake8.api import legacy as flake8legacy
@@ -53,7 +54,10 @@ if _HAS_FLAKE8:
     
     if False:  # `typing.TYPE_CHECKING` was introduced in 3.5.2
         from flake8.style_guide import Violation
-
+    
+    # disable the flake8.checker logger
+    log = logging.getLogger("flake8.checker")
+    log.disabled = True
 try:
     from pyflakes import api as pyflakesapi
     _HAS_PYFLAKES: bool = True
@@ -444,27 +448,57 @@ if _HAS_FLAKE8:
         os.chdir(base_directory)
         
         application = app.Application()
-        application.parse_preliminary_options_and_args([])  # for max logging pass: ["-vvv"]
-        flake8.configure_logging(
-            application.prelim_opts.verbose, application.prelim_opts.output_file
-        )
-        application.make_config_finder()
         
-        application.find_plugins()
-        application.register_plugin_options()
+        if not hasattr(application, 'parse_preliminary_options_and_args'):  # flake8 >= 3.8
+            application.parse_preliminary_options([])
+            prelim_opts, remaining_args = application.parse_preliminary_options([])
+            flake8.configure_logging(
+                prelim_opts.verbose, prelim_opts.output_file)
+            
+            config_finder = config.ConfigFileFinder(
+                application.program,
+                prelim_opts.append_config,
+                config_file=prelim_opts.config,
+                ignore_config_files=prelim_opts.isolated,
+            )
+            
+            application.find_plugins(config_finder)
+            application.register_plugin_options()
+            application.parse_configuration_and_cli(
+                config_finder, remaining_args
+            )
+            
+            config_parser = config.MergedConfigParser(
+                option_manager=application.option_manager,
+                config_finder=config_finder
+            )
+            
+            
+        else:  # for older versions of flake8 < 3.8.0
+            application.parse_preliminary_options_and_args([])  # for max logging pass: ["-vvv"]
+            
+            flake8.configure_logging(
+                application.prelim_opts.verbose, application.prelim_opts.output_file
+            )
+            application.make_config_finder()
+            
+            application.find_plugins()
+            application.register_plugin_options()
+            
+            application.parse_configuration_and_cli([])
+            
+            config_finder = application.config_finder
         
-        application.parse_configuration_and_cli([])
-        
-        config_parser = config.MergedConfigParser(
-            option_manager=application.option_manager,
-            config_finder=application.config_finder
-        )
+            config_parser = config.MergedConfigParser(
+                option_manager=application.option_manager,
+                config_finder=config_finder
+            )
         
         # Get the local (project) config again
         local_config = config_parser.parse_local_config()
         
         # the dependent local config files can be read by this list:
-        local_config_files = application.config_finder._local_found_files  # careful: might change!!!
+        # local_config_files = config_finder._local_found_files  # careful: might change!!!
         # print("local_files:", local_config_files)
         
         # reset current working directory
@@ -492,7 +526,16 @@ if _HAS_FLAKE8:
         if options_extended:
             # parse the options again, since they have been changed again
             # and must then be propagated to the flake8 plugins
-            application.parse_configuration_and_cli([])
+            # the following lines are taken from 
+            # application.parse_configuration_and_cli
+            options._running_from_vcs = False
+            
+            application.check_plugins.provide_options(
+                application.option_manager, options, application.args
+            )
+            application.formatting_plugins.provide_options(
+                application.option_manager, options, application.args
+            )
         
         # import pprint
         # pprint.pprint(options)
@@ -738,7 +781,7 @@ def check(codestring: str,
                     with warnings.catch_warnings():
                         # when parsing the file by the checker, a warning
                         # can occure (e.g. from an assert statement). ignore this warning.
-                        warnings.simplefilter("error")
+                        warnings.simplefilter("ignore")
                         report = style_guide.check_files([tempfilename, ])
                 except Exception as ex:
                     # import traceback
@@ -765,6 +808,7 @@ if __name__ == "__main__":
     
     codestring = """def test(i : str , b) :
     a=2*3
+    
     p = getCurrentPath()
     assert(1, 1)
     
