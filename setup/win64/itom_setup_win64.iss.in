@@ -20,8 +20,8 @@
 ;#define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 ;#define SourceRedistributable2015 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
 #define SourceRedistributable2017 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
-#define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.8.3\64 Bit\Pakete"
-#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8.3\64 Bit\Minimal"
+#define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.8\64 Bit\Pakete"
+#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8\64 Bit\Minimal"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
 
 ; Python
