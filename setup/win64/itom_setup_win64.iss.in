@@ -20,8 +20,8 @@
 ;#define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 ;#define SourceRedistributable2015 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
 #define SourceRedistributable2017 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
-#define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.7.2\64 Bit\Pakete_Basis_Numpy1.16.2"
-#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.7.2\64 Bit\PYTHON-3.7.2_x64_minimal"
+#define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.8.3\64 Bit\Pakete"
+#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8.3\64 Bit\Minimal"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
 
 ; Python
@@ -31,91 +31,107 @@
 
 ;#define FNPython ""
 #define NaPython "Python"
-#define VePython "3.7.2"
+#define VePython "3.8.3"
 
-#define FNPythonPip "pip-19.0.2-py2.py3-none-any.whl"
+#define FNPythonPip "pip-20.1.1-py2.py3-none-any.whl"
 #define NaPythonPip "Pip"
-#define VePythonPip "19.0.2"
+#define VePythonPip "20.1.1"
 
-#define FNPythonNumPy "numpy-1.16.2+mkl-cp37-cp37m-win_amd64.whl"
+#define FNPythonNumPy "numpy-1.18.5-cp38-cp38-win_amd64.whl"
 #define NaPythonNumPy "NumPy"
-#define VePythonNumPy "1.16.2"
+#define VePythonNumPy "1.18.5"
 
-#define FNPythonSciPy "scipy-1.2.1-cp37-cp37m-win_amd64.whl"
+#define FNPythonSciPy "scipy-1.4.1-cp38-cp38-win_amd64.whl"
 #define NaPythonSciPy "SciPy"
-#define VePythonSciPy "1.2.1"
+#define VePythonSciPy "1.4.1"
 
-#define FNPythonSix "six-1.12.0-py2.py3-none-any.whl"
+#define FNPythonSix "six-1.15.0-py2.py3-none-any.whl"
 #define NaPythonSix "Six"
-#define VePythonSix "1.12.0"
+#define VePythonSix "1.15.0"
 
-#define FNPythonPyPars "pyparsing-2.3.1-py2.py3-none-any.whl"
+#define FNPythonPyPars "pyparsing-2.4.7-py2.py3-none-any.whl"
 #define NaPythonPyPars "PyParsing"
-#define VePythonPyPars "2.3.1"
+#define VePythonPyPars "2.4.7"
 
-#define FNPythonPyDateu "python_dateutil-2.8.0-py2.py3-none-any.whl"
+#define FNPythonPyDateu "python_dateutil-2.8.1-py2.py3-none-any.whl"
 #define NaPythonPyDateu "DateUtil"
-#define VePythonPyDateu "2.8.0"
+#define VePythonPyDateu "2.8.1"
 
-#define FNPythonMatPlotLib "matplotlib-3.0.3-cp37-cp37m-win_amd64.whl"
+#define FNPythonMatPlotLib "matplotlib-3.2.1-cp38-cp38-win_amd64.whl"
 #define NaPythonMatPlotLib "MatPlotLib"
-#define VePythonMatPlotLib "3.0.3"
+#define VePythonMatPlotLib "3.2.1"
 
 #define FNPythonCycler "cycler-0.10.0-py2.py3-none-any.whl"
 #define NaPythonCycler "Cycler"
 #define VePythonCycler "0.10.0"
 
-#define FNPythonSciKit "scikit_image-0.15.0-cp37-cp37m-win_amd64.whl"
+#define FNPythonSciKit "scikit_image-0.17.2-cp38-cp38-win_amd64.whl"
 #define NaPythonSciKit "SciKit Image"
-#define VePythonSciKit "0.15.0"
+#define VePythonSciKit "0.17.2"
 
-#define FNPythonDecor "decorator-4.4.0-py2.py3-none-any.whl"
+#define FNPythonDecor "decorator-4.4.2-py2.py3-none-any.whl"
 #define NaPythonDecor "Decorator"
-#define VePythonDecor "4.4.0"
+#define VePythonDecor "4.4.2"
 
-#define FNPythonNetWorkX "networkx-2.1-py2.py3-none-any.whl"
+#define FNPythonNetWorkX "networkx-2.4-py3-none-any.whl"
 #define NaPythonNetWorkX "NetworkX"
-#define VePythonNetWorkX "2.1"
+#define VePythonNetWorkX "2.4"
 
-#define FNPythonPillow "Pillow-6.0.0-cp37-cp37m-win_amd64.whl"
+#define FNPythonPillow "Pillow-7.1.2-cp38-cp38-win_amd64.whl"
 #define NaPythonPillow "Pillow"
-#define VePythonPillow "6.0.0"
+#define VePythonPillow "7.1.2"
 
-#define FNPythonPyWav "PyWavelets-1.0.2-cp37-cp37m-win_amd64.whl"
+#define FNPythonPyWav "PyWavelets-1.1.1-cp38-cp38-win_amd64.whl"
 #define NaPythonPyWav "PyWavelets"
-#define VePythonPyWav "1.0.2"
+#define VePythonPyWav "1.1.1"
 
-#define FNPythonOpCVPy "opencv_python-4.0.1-cp37-cp37m-win_amd64.whl"
+#define FNPythonOpCVPy "opencv_python-4.2.0.34-cp38-cp38-win_amd64.whl"
 #define NaPythonOpCVPy "OpenCV Python"
-#define VePythonOpCVPy "4.0.1"
+#define VePythonOpCVPy "4.2.0"
 
-#define FNPythonParso "parso-0.3.4-py2.py3-none-any.whl"
+#define FNPythonParso "parso-0.7.0-py2.py3-none-any.whl"
 #define NaPythonParso "Parso"
-#define VePythonParso "0.3.4"
+#define VePythonParso "0.7.0"
 
-#define FNPythonJedi "jedi-0.13.3-py2.py3-none-any.whl"
+#define FNPythonJedi "jedi-0.17.0-py2.py3-none-any.whl"
 #define NaPythonJedi "Jedi"
-#define VePythonJedi "0.13.3"
+#define VePythonJedi "0.17.3"
 
-#define FNPythonPyFla "pyflakes-2.1.1-py2.py3-none-any.whl"
+#define FNPythonPyFla "pyflakes-2.2.0-py2.py3-none-any.whl"
 #define NaPythonPyFla "Pyflakes"
-#define VePythonPyFla "2.1.1"
+#define VePythonPyFla "2.2.0"
 
-#define FNPythonWheel "wheel-0.33.1-py2.py3-none-any.whl"
+#define FNPythonWheel "wheel-0.34.2-py2.py3-none-any.whl"
 #define NaPythonWheel "Wheel"
-#define VePythonWheel "0.33.1"
+#define VePythonWheel "0.34.2"
 
-#define FNPythonKiSo "kiwisolver-1.0.1-cp37-cp37m-win_amd64.whl"
+#define FNPythonKiSo "kiwisolver-1.2.0-cp38-none-win_amd64.whl"
 #define NaPythonKiSo "Kiwisolver"
-#define VePythonKiSo "1.0.1"
+#define VePythonKiSo "1.2.0"
 
-#define FNPythonSetUpTs "setuptools-41.0.0-py2.py3-none-any.whl"
+#define FNPythonSetUpTs "setuptools-47.3.1-py3-none-any.whl"
 #define NaPythonSetUpTs "Setuptools"
-#define VePythonSetUpTs "41.0.0"
+#define VePythonSetUpTs "47.3.1"
 
-#define FNPythonImageio "imageio-2.5.0-py2.py3-none-any.whl"
+#define FNPythonImageio "imageio-2.8.0-py3-none-any.whl"
 #define NaPythonImageio "Imageio"
-#define VePythonImageio "2.5.0"
+#define VePythonImageio "2.8.0"
+
+#define FNPythonFlake8 "flake8-3.8.3-py2.py3-none-any.whl"
+#define NaPythonFlake8 "flake8"
+#define VePythonFlake8 "3.8.3"
+
+#define FNPythonMcCabe "mccabe-0.6.1-py2.py3-none-any.whl"
+#define NaPythonMcCabe "McCabe"
+#define VePythonMcCabe "0.6.1"
+
+#define FNPythonPyCodeStyle "pycodestyle-2.6.0-py2.py3-none-any.whl"
+#define NaPythonPyCodeStyle "PyCodeStyle"
+#define VePythonPyCodeStyle "2.6.0"
+
+#define FNPythonTiffFile "tifffile-2020.6.3-py3-none-any.whl"
+#define NaPythonTiffFile "TiffFile"
+#define VePythonTiffFile "2020.6.3"
 
 
 [Setup]
@@ -183,6 +199,10 @@ Source: "{#SourcePythonPackDir}\{#FNPythonWheel}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonKiSo}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonSetUpTs}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonImageio}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonFlake8}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonMcCabe}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPyCodeStyle}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonTiffFile}"; DestDir: "{tmp}"
 
 [Languages]
 Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
@@ -545,7 +565,11 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonOpCVPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonOpCVPy}..."; Components: PYTHON\OPENCVPYTHON
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonParso}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonParso}..."; Components: PYTHON\JEDI
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonJedi}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonJedi}..."; Components: PYTHON\JEDI
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyFla}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyFla}..."; Components: PYTHON\PYFLAKES
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFlake8}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFlake8}..."; Components: PYTHON\FLAKE8
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyFla}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyFla}..."; Components: PYTHON\FLAKE8
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMcCabe}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMcCabe}..."; Components: PYTHON\FLAKE8
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyCodeStyle}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyCodeStyle}..."; Components: PYTHON\FLAKE8
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonTiffFile}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonTiffFile}..."; Components: PYTHON
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
@@ -575,6 +599,10 @@ Type: files; Name: "{tmp}\{#FNPythonOpCVPy}"
 Type: files; Name: "{tmp}\{#FNPythonParso}"
 Type: files; Name: "{tmp}\{#FNPythonJedi}"
 Type: files; Name: "{tmp}\{#FNPythonPyFla}"
+Type: files; Name: "{tmp}\{#FNPythonFlake8}"
+Type: files; Name: "{tmp}\{#FNPythonMcCabe}"
+Type: files; Name: "{tmp}\{#FNPythonPyCodeStyle}"
+Type: files; Name: "{tmp}\{#FNPythonTiffFile}"
 Type: filesandordirs; Name: "{tmp}\wheelhouse"
 
 [Types]
@@ -593,7 +621,7 @@ Name: "PYTHON\MATPLOTLIB"; Description: "{#NaPythonMatPlotLib} {#VePythonMatPlot
 Name: "PYTHON\SCIKIT"; Description: "{#NaPythonSciKit} {#VePythonSciKit}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\OPENCVPYTHON"; Description: "{#NaPythonOpCVPy} {#VePythonOpCVPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\JEDI"; Description: "{#NaPythonJedi} {#VePythonJedi}"; Types: Install; Flags: checkablealone
-Name: "PYTHON\PYFLAKES"; Description: "{#NaPythonPyFla} {#VePythonPyFla}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\FLAKE8"; Description: "{#NaPythonFlake8} {#VePythonFlake8}"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
