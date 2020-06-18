@@ -647,9 +647,18 @@ p, li { white-space: pre-wrap; }
         <translation>Python-Paket manuell herunterladen und installieren</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Package file or name:</source>
-        <translation>Paketdatei oder Paketname:</translation>
+        <translation type="vanished">Paketdatei oder Paketname:</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Install or upgrade listed packages in requirements text file</source>
+        <translation>Installiert oder aktualisiert Pakete, die in einer &quot;requirements.txt&quot; Textdatei eingetragen sind</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Package file, package name or requirements file:</source>
+        <translation>Paketdatei, Paketname oder &quot;requirements.txt&quot; Dateiname:</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1226,7 +1235,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+919"/>
+        <location line="+918"/>
         <source>point1 cannot be changed for square and circle. Change center and width / height.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1258,35 +1267,35 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+54"/>
         <source>%s: float64 array with two elements required (x,y)</source>
-        <translation type="unfinished">%s: Float64-Array mit zwei elementen erwartet (x,y)</translation>
+        <translation>%s: Float64-Array mit zwei Elementen erwartet (x,y)</translation>
     </message>
     <message>
         <location filename="../python/pythonUi.cpp" line="+3478"/>
         <source>no widget name specified</source>
-        <translation type="unfinished">Kein Widget-Name vergeben</translation>
+        <translation>Kein Widget-Name angegeben</translation>
     </message>
     <message>
         <location line="+15"/>
         <location line="+193"/>
         <source>no addin-manager found</source>
-        <translation type="unfinished">Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
+        <translation>Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-185"/>
         <source>the first parameter must contain the widget name as string</source>
-        <translation type="unfinished">Der erste Parameter muss einen String mit dem Widget-Name enthalten</translation>
+        <translation>Der erste Parameter muss einen String mit dem Namen des Widgets enthalten</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+185"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
-        <translation type="unfinished">Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-178"/>
         <location line="+185"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
-        <translation type="unfinished">Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
+        <translation>Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
     </message>
     <message>
         <location filename="../python/pythontParamConversion.cpp" line="+329"/>
@@ -1670,12 +1679,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
-        <location line="+947"/>
+        <location line="+948"/>
         <source>Error while parsing parameters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>OpenCV Error: %s (%s) in %s, file %s, line %d</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2170,27 +2179,27 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
-        <source>The value %i contains a bitmask that is not fully covered by an or-combination of the enumeration %s::%s (flags)</source>
+        <location line="+57"/>
+        <source>The value %i contains a bitmask that is not fully covered by an or-combination of the flags enumeration %s::%s. It can only consist of a combination of the following keys or values: %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>The value %i does not exist in the enumeration %s::%s</source>
+        <location line="+16"/>
+        <source>The value %i does not exist in the enumeration %s::%s. Possible keys or values are: %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
-        <source>The key %s does not exist in the enumeration %s::%s (flags)</source>
+        <location line="+27"/>
+        <source>The key &apos;%s&apos; does not exist in the flags enumeration %s::%s. It can only consist of a combination of the following keys or values: %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>The key %s does not exist in the enumeration %s::%s</source>
+        <location line="+19"/>
+        <source>The key &apos;%s&apos; does not exist in the enumeration %s::%s. Possible keys or values are: %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Use an integer or a string for a value of the enumeration %s::%s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2771,7 +2780,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+9"/>
         <source>Maximum line length:</source>
-        <translation type="unfinished">Maximale Zeilenlänge:</translation>
+        <translation>Maximale Zeilenlänge:</translation>
     </message>
     <message>
         <source>Flag at start of every wrapped line</source>
@@ -5556,12 +5565,12 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <translation>Paket updaten</translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+96"/>
         <source>Select package archive</source>
         <translation>Paket-Archiv auswählen</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>Select directory</source>
         <translation>Verzeichnis wählen</translation>
     </message>
@@ -5571,17 +5580,22 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <translation>Whl-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>choose tar.gz or zip archive...</source>
         <translation>Tar.gz-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>package-name</source>
         <translation>Paketname</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+12"/>
+        <source>choose requirements txt file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>Missing package</source>
         <translation>Fehlendes Paket</translation>
     </message>
@@ -8157,7 +8171,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>unbekannt</translation>
     </message>
     <message>
-        <location line="+360"/>
+        <location line="+372"/>
         <source>Could not start python pip
 </source>
         <translation>Python-Pip kann nicht gestartet werden</translation>
@@ -9199,7 +9213,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Zurück navigieren</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+242"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>

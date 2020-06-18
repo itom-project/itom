@@ -579,7 +579,7 @@
     </message>
     <message>
         <source>Timeout while initializing actuator</source>
-        <translation type="unfinished">Zeitüberschreitung beim Initialisieren des Motors</translation>
+        <translation type="obsolete">Zeitüberschreitung beim Initialisieren des Motors</translation>
     </message>
     <message>
         <source>Timeout while pulling plugin back to main thread.</source>
