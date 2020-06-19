@@ -20,7 +20,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:6.6pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#000000;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;) Universitaet Stuttgart Prof. Dr. Wolfgang Osten Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+29"/>
@@ -56,7 +56,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:6.6pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-122"/>
@@ -71,7 +71,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+27"/>
         <source>The following license text corresponds to the file COPYING.txt, which is provided with this installation of itom. </source>
-        <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
+        <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde. </translation>
     </message>
 </context>
 <context>
@@ -188,12 +188,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Name Filter:</source>
-        <translation>Namensfilter:</translation>
+        <translation>Filtername:</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>type parts of a name to filter icons...</source>
-        <translation>Teil eines Namens eintragen, um Icons zu filtern...</translation>
+        <translation>Filtername eingeben...</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -294,7 +294,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[name]</source>
-        <translation></translation>
+        <translation>[Name]</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -304,7 +304,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[type]</source>
-        <translation></translation>
+        <translation>[Typ]</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -357,7 +357,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[name]</source>
-        <translation></translation>
+        <translation>[Name]</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -367,7 +367,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[filter]</source>
-        <translation></translation>
+        <translation>[Filter]</translation>
     </message>
     <message>
         <location line="+28"/>
@@ -420,12 +420,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/dialogOpenNewGui.ui" line="+14"/>
         <source>Open plugin widget</source>
-        <translation></translation>
+        <translation>Plugin-Widget öffnen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Widget Information</source>
-        <translation></translation>
+        <translation>Widget-Informationen</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -468,7 +468,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Update...</source>
-        <translation>Update...</translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+10"/>
@@ -500,22 +500,12 @@ p, li { white-space: pre-wrap; }
         <translation>Pip-Einstellungen</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Version:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+28"/>
         <source>No connection to pip available</source>
         <translation>Keine Verbindung zu Pip verfügbar</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Proxy:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+14"/>
         <source>Proxy in the form [user:passwd@]proxy.server:port</source>
         <translation>Proxy-Angaben in der Form: [Benutzer:Passwort@]Proxy.Server:Port</translation>
     </message>
@@ -548,14 +538,24 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+41"/>
+        <source>Version:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Proxy:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>[user:passwd@]proxy.server:port</source>
         <translation>[Benutzer:Passwort@]Proxy.Server:Port</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Timeout:</source>
-        <translation></translation>
+        <translation>Zeitüberschreitung:</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -566,7 +566,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-27"/>
         <source> s</source>
-        <translation></translation>
+        <translation> s</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -586,12 +586,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+23"/>
         <source>Trusted Hosts:</source>
-        <translation></translation>
+        <translation>&quot;Trusted&quot; Hosts:</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Semicolon-separated list of hosts. These hosts are trusted (avoiding SSL security issues).</source>
-        <translation>Host-Liste mit Semikolon getrennt. Diese Hosts sind  &quot;trusted&quot; (SSL ist zu vermeiden).</translation>
+        <translation>Mit Semikolon getrennte Host-Liste. Diese Hosts sind &quot;trusted&quot; (SSL ist zu vermeiden).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -653,18 +653,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Install or upgrade listed packages in requirements text file</source>
-        <translation>Installiert oder aktualisiert Pakete, die in einer requirements Textdatei eingetragen sind</translation>
+        <translation>Installiert oder aktualisiert Pakete, die in einer &quot;requirements.txt&quot; Textdatei eingetragen sind</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Package file, package name or requirements file:</source>
-        <translation>Paketdatei, Paketname or Requirements Dateiname:</translation>
+        <translation>Paketdatei, Paketname oder &quot;requirements.txt&quot; Dateiname:</translation>
     </message>
     <message>
         <location line="+16"/>
         <location line="+60"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="-48"/>
@@ -908,7 +908,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[name]</source>
-        <translation></translation>
+        <translation>[Name]</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -918,7 +918,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>[filter]</source>
-        <translation></translation>
+        <translation>[Filter]</translation>
     </message>
     <message>
         <location line="+28"/>
@@ -1055,12 +1055,27 @@ p, li { white-space: pre-wrap; }
         <translation>Mehrere Aufnahmen</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+59"/>
+        <source>ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Timer</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Auto Grabbing</source>
         <translation>Auto-Grabbing</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+32"/>
+        <source>%p%</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>File Name</source>
         <translation>Dateiname</translation>
     </message>
@@ -1079,31 +1094,16 @@ p, li { white-space: pre-wrap; }
         <translation>Stapel</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>ms</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Timer</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Auto grabbing</source>
         <translation type="vanished">Live-Anzeige</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+41"/>
         <source>Snapshot</source>
         <translation>Aufnahme</translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>%p%</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+32"/>
         <source>progress...</source>
         <translation>Fortschritt...</translation>
     </message>
@@ -1196,12 +1196,7 @@ p, li { white-space: pre-wrap; }
         <translation>Fenster</translation>
     </message>
     <message>
-        <location line="+103"/>
-        <source>CommandLinkButton</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-55"/>
+        <location line="+48"/>
         <source>&lt;&gt;</source>
         <translation></translation>
     </message>
@@ -1209,6 +1204,11 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>CommandLinkButton</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1267,35 +1267,35 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+54"/>
         <source>%s: float64 array with two elements required (x,y)</source>
-        <translation type="unfinished">%s: Float64-Array mit zwei elementen erwartet (x,y)</translation>
+        <translation>%s: Float64-Array mit zwei Elementen erwartet (x,y)</translation>
     </message>
     <message>
         <location filename="../python/pythonUi.cpp" line="+3478"/>
         <source>no widget name specified</source>
-        <translation type="unfinished">Kein Widget-Name vergeben</translation>
+        <translation>Kein Widget-Name angegeben</translation>
     </message>
     <message>
         <location line="+15"/>
         <location line="+193"/>
         <source>no addin-manager found</source>
-        <translation type="unfinished">Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
+        <translation>Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-185"/>
         <source>the first parameter must contain the widget name as string</source>
-        <translation type="unfinished">Der erste Parameter muss einen String mit dem Widget-Name enthalten</translation>
+        <translation>Der erste Parameter muss einen String mit dem Namen des Widgets enthalten</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+185"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
-        <translation type="unfinished">Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="-178"/>
         <location line="+185"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
-        <translation type="unfinished">Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
+        <translation>Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
     </message>
     <message>
         <location filename="../python/pythontParamConversion.cpp" line="+329"/>
@@ -2442,12 +2442,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>%1 (Column %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (Spalte %2)</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>%1: %2 (Column %3)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2 (Spalte %3)</translation>
     </message>
     <message>
         <source>Paper color</source>
@@ -2589,7 +2589,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/widgetFindWord.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -2609,7 +2609,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Shift+F3</source>
-        <translation></translation>
+        <translation>Umschalt+F3</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -2670,7 +2670,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/widgetPropConsoleGeneral.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2734,13 +2734,13 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>WidgetPropConsoleWrap</name>
     <message>
-        <location filename="../ui/widgetPropConsoleWrap.ui" line="+14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Line Wrap</source>
         <translation type="vanished">Zeilenumbruch</translation>
+    </message>
+    <message>
+        <location filename="../ui/widgetPropConsoleWrap.ui" line="+14"/>
+        <source>Form</source>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2780,7 +2780,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+9"/>
         <source>Maximum line length:</source>
-        <translation type="unfinished">Maximale Zeilenlänge:</translation>
+        <translation>Maximale Zeilenlänge:</translation>
     </message>
     <message>
         <source>Flag at start of every wrapped line</source>
@@ -2844,32 +2844,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/widgetPropEditorAutoCompletion.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Auto-completion enabled (requires Python packages jedi and parso)</source>
-        <translation type="unfinished">Autovervollständigung einschalten (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
+        <translation>Autovervollständigung einschalten (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>Filter Mode</source>
-        <translation type="unfinished">Filtermodus</translation>
+        <translation>Filtermodus</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Completion is based on prefix only - fast</source>
-        <translation type="unfinished">Vervollständigung nur basierend auf gleichem Prefix - schnell</translation>
+        <translation>Vervollständigung nur basierend auf gleichem Prefix (schnell)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Completion checks if prefix is contained in the suggestions - fast</source>
-        <translation type="unfinished">Vervollständigung prüft Prefix als Teil des Vorschlags - schnell</translation>
+        <translation type="unfinished">Vervollständigung prüft Prefix als Teil des Vorschlags (schnell)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Fuzzy filtering - most powerful method - slow</source>
-        <translation type="unfinished">Fuzzy Filtering - sehr mächtige Methode - langsam</translation>
+        <translation type="unfinished">Fuzzy Filtering - sehr mächtige Methode (langsam)</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2879,7 +2879,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Show tooltips</source>
-        <translation type="unfinished">Tooltips anzeigen</translation>
+        <translation>Tooltips anzeigen</translation>
     </message>
     <message>
         <source>Use fill-up characters</source>
@@ -2924,12 +2924,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/widgetPropEditorCalltips.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Calltips enabled (requires Python packages jedi and parso)</source>
-        <translation type="unfinished">Vorschläge aktivieren (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
+        <translation>Vorschläge aktivieren (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
     </message>
     <message>
         <source>Calltips enabled</source>
@@ -2965,261 +2965,263 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/widgetPropEditorCodeCheckers.ui" line="+14"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>General Settings for Syntax and Style Checker</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemeine Einstellungen zur Prüfung von Syntax und Style</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Consider the itom module to be globally included in all scripts</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das itom-Modul wird auch global in allen Skripts berücksichtigt</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Minimum category level, displayed in left column of script editor:</source>
         <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Der Timer beginnt beim Erreichen einer neuen Zeile</translatorcomment>
+        <translation type="unfinished">Mindeststufe der Kategorie (wird in der linken Spalte des Editors angezeigt):</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Update checks after last key press:</source>
         <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Der Timer beginnt beim Erreichen einer neuen Zeile</translatorcomment>
+        <translation type="unfinished">Erneute Prüfung nach letztem Tastendruck:</translation>
     </message>
     <message>
         <location line="+28"/>
         <source> s</source>
-        <translation type="unfinished"> s</translation>
+        <translation> s</translation>
     </message>
     <message>
         <location line="+29"/>
         <location line="+123"/>
         <source>Information</source>
-        <translation type="unfinished">Informationen</translation>
+        <translation>Informationen</translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+123"/>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnungen</translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+92"/>
         <location line="+31"/>
         <source>Error</source>
-        <translation type="unfinished">Fehler</translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location line="-110"/>
         <source>Syntax and Style Checker</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Syntax- und Style-Prüfung</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Auto Selection: If flake8 could be found, enable the Extended Check.
  Else if pyflakes can be loaded, use the Basic Check.
  Else: Disable any Check.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatische Einstellung:
+Ist &quot;Flake8&quot; installiert, wird nach &quot;Erweiterte Prüfung&quot; verfahren,
+ist  &quot;PyFlakes&quot; installiert, entspricht dies der &quot;Basisprüfung&quot;,
+ansonsten wird die Prüfung deaktiviert.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Disable all Syntax and Style Checks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Deaktivierung aller Syntax- und Style-Prüfungen</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Basic Check: Enable Basic Source Code and Syntax Check only
 (requires the Python package &quot;pyflakes&quot;)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Basisprüfung:
+Der Quellcode und die Syntax werden nur auf Wesentliches geprüft (hierfür wird das Python-Package &quot;PyFlakes&quot; benötigt)</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>PyFlakes Options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;PyFlakes&quot;-Optionen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Category of syntax errors:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kategorie der Syntaxfehler:</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Category of other messages:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kategorie anderer Hinweise:</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Extended Check: Syntax, Style and further Checks
 (requires the Python package &quot;flake8&quot; and Optional flake8 Plugin Packages)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Erweiterte Prüfung:
+Syntax, Style und weiteres wird geprüft  (hierfür wird das Python-Package &quot;Flake8&quot; und Optional &quot;Flake8&quot;-Plugin-Packages benötigt)</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Flake8 Options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;Flake8&quot;-Optionen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hint:&lt;/span&gt; all options can be overwriten by .flake8, tox.ini... settings files (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;more...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Common number groups are (extendable):&lt;/span&gt;&lt;br/&gt;F: errors from &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: errors from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W: warnings from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: messages from &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hinweis:&lt;/span&gt; Flake8 kann auch mit Hilfe der Einstellungsdateien .flake8, tox.ini... selbst konfiguriert werden (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;siehe...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Allgemeine Gruppen sind (erweiterbar):&lt;/span&gt;&lt;br/&gt;F: Fehler von &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: Fehler von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W:Warnungen von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: Hinweise von &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Maximum allowed line length:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maximal erlaubte Zeilenlänge:</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Default: 79</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standard: 79</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Show the following errors or warnings:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Folgende Fehler und Warnungen anzeigen:</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>If checked, the --select option of flake8 is overwritten by this text</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bei gewählter Option wird &quot;--select option&quot; von &quot;Flake8&quot; mit diesem Text überschrieben</translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+99"/>
         <location line="+47"/>
         <source>Comma-separated list of numbers (e.g. E, E1, E12, E123...)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eine Liste mit durch Komma getrennten Werten (z.B. E, E1, E12, E123...)</translation>
     </message>
     <message>
         <location line="-143"/>
         <source>Example: E, F, W, C</source>
-        <translation type="unfinished"></translation>
+        <translation>Beispiel: E, F, W, C</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>If checked the complexity check is executed using the package McCabe</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bei gewählter Option wird die &quot;complexity&quot;-Prüfung unter Verwendung des Packages McCabe durchgeführt</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum complexity (requires &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximale &quot;complexity&quot; (benötigt &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Ignore the following errors or warnings:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Folgende Fehler und Warnungen werden ignoriert:</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>pep257</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+5"/>
         <source>numpy</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+5"/>
         <source>google</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+10"/>
         <source>If checked, the --ignore option of flake8 is overwritten by this text</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bei gewählter Option wird &quot;--ignore option&quot; von &quot;Flake8&quot; mit diesem Text überschrieben</translation>
     </message>
     <message>
         <location line="+16"/>
         <location line="+50"/>
         <source>Example: E121,E123,E126,E226,E24,E704,W503,W504</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beispiele: E121,E123,E126,E226,E24,E704,W503,W504</translation>
     </message>
     <message>
         <location line="-41"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Docstyle convention (requires &lt;a href=&quot;https://pypi.org/project/flake8-docstrings/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;flake8-docstrings&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Docstyle Einstellungen (benötigt &lt;a href=&quot;https://pypi.org/project/flake8-docstrings/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;flake8-docstrings&lt;/span&gt;&lt;/a&gt;):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Extend the (default) ignore list by:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Erweitert die (Standard-) &quot;Ignore list&quot; durch:</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>If checked, the --extend-ignore option of flake8 is overwritten by this text</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bei gewählter Option wird &quot;--extend option&quot; von &quot;Flake8&quot; mit diesem Text überschrieben</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>W293</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Message codes, displayed as errors:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hinweise als Fehler markiert:</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Comma-separated list of numbers (allowed: E, E1, E12, E123...)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eine Liste mit durch Komma getrennten Werten (erlaubt: E, E1, E12, E123...)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Example: F</source>
-        <translation type="unfinished"></translation>
+        <translation>Beispiel: F</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Message codes, displayed as warnings:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hinweise als Warnung markiert:</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>E, C</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Example: E, C</source>
-        <translation type="unfinished"></translation>
+        <translation>Beispiel: E, C</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>all other messages belong to information.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle anderen Hinweise werden als Informationen markiert.</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Further &lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/options.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;options&lt;/span&gt;&lt;/a&gt;, passed to flake8 (each option is one line; format: optionname=value):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Weitere &lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/options.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Optionen&lt;/span&gt;&lt;/a&gt; entsprechend &quot;Flake8&quot; (jede Zeile entspricht einer Option im Format: Optionsname=Wert):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Example:max-doc-length=79</source>
-        <translation type="unfinished"></translation>
+        <translation>Beispiel: max-doc-length=79</translation>
     </message>
 </context>
 <context>
     <name>WidgetPropEditorGeneral</name>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="+14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location filename="../ui/widgetPropEditorGeneral.ui" line="+22"/>
         <source>Indentation</source>
         <translation>Einzug</translation>
     </message>
@@ -3281,7 +3283,13 @@ p, li { white-space: pre-wrap; }
         <translation>Aufsteigend (über jeder Zeile)</translation>
     </message>
     <message>
+        <location line="+7"/>
         <location line="+30"/>
+        <source> px</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-7"/>
         <source>Extra descent (below)</source>
         <translation>Absteigend (unter jeder Zeile)</translation>
     </message>
@@ -3291,31 +3299,40 @@ p, li { white-space: pre-wrap; }
         <translation>Modus für Zeilenende</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-111"/>
+        <source>Form</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Use Tabs for Indentation</source>
         <translation>Tabs als Einzug verwenden</translation>
     </message>
     <message>
         <location line="+56"/>
         <source>Cut, Copy, Paste Behaviour</source>
-        <translation>Verhalten bei Ausschneiden, Kopieren und Einfügen</translation>
+        <translation type="unfinished">Verhalten beim Kopieren, Ausschneiden und Einfügen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Cut or copy the full current line if nothing is currently selected</source>
-        <translation>Die komplette Zeile ausschneiden oder kopieren, wenn aktuell kein Bereich markiert ist</translation>
+        <translation type="unfinished">Falls nichts markiert wurde, die aktuelle Zeile kopieren oder ausschneiden</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>If code is pasted to a script, remove the identation level of the first line 
 from all lines and add all spaces and tabs from the beginning of the 
 current line until the current cursor position.</source>
-        <translation>Wenn Code in ein Skript eingeführt wird, wird von allen Zeilen die Einrückung 
-der ersten Zeile entfernt und stattdessen wird die Einrückung an die aktuelle 
-Zeile und Cursorposition angepasst.</translation>
+        <translation type="unfinished">Beim Einfügen in ein Skript den Einzug (vorangestellte Tabs oder Leerzeichen)
+der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+20"/>
+        <source>Mac</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Windows</source>
         <translation></translation>
     </message>
@@ -3328,17 +3345,6 @@ Zeile und Cursorposition angepasst.</translation>
         <location line="+18"/>
         <source>Line Spacing</source>
         <translation>Zeilenabstand</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <location line="+30"/>
-        <source> px</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-75"/>
-        <source>Mac</source>
-        <translation></translation>
     </message>
     <message>
         <source>Folding Style</source>
@@ -3384,27 +3390,27 @@ Zeile und Cursorposition angepasst.</translation>
     <message>
         <location line="+9"/>
         <source>Check &quot;goto definition&quot; if key-combination is pressed and mouse is moved over word</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Prüfe &quot;gehe zu Definition&quot;, wenn bei gedrückter Tastekombination die Maus über einen Ausdruck bewegt wird</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Key combination (must be pressed while moving the mouse over a word):</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tastekombination (die gerückt sein muss ,während die Maus über einen Ausdruck bewegt wird):</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ctrl</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Strg</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Ctrl+Shift</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Strg+Umschalt</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Ctrl+Alt</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Strg+Alt</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -3429,7 +3435,7 @@ Zeile und Cursorposition angepasst.</translation>
     <message>
         <location line="+11"/>
         <source>Press F12 to goto definition of word under the current cursor position</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mit F12 gelangt man zur Definition des sich unter dem aktuellen Cursor befindlichen Ausdrucks</translation>
     </message>
 </context>
 <context>
@@ -3513,38 +3519,33 @@ Zeile und Cursorposition angepasst.</translation>
     <message>
         <location line="+25"/>
         <source>Filename Shortening Mode in Tabs (e.g. if many scripts are opened)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateinamenkürzung in den Tabs (z.B. wenn viele Skripts offen sind)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Elide Left (longScriptName.py will become ...ptName.py)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Links (aus &quot;LangerSktiptname.py&quot; wird &quot;...ptname.py&quot;)</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Elide Right (longScriptName.py will become longScript...)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rechts (aus &quot;LangerSktiptname.py&quot; wird &quot;LangerSktipt...&quot;)</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Elide Middle (longScriptName.py will become long...me.py)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mittig (aus &quot;LangerSktiptname.py&quot; wird &quot;Lang...me.py&quot;)</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>No Elide (the original names are shown, but arrows appear if too many tabs are opened)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nicht (der volle Name wird angezeigt, bei zu vielen Sktips erscheinen Pfeile)</translation>
     </message>
 </context>
 <context>
     <name>WidgetPropEditorStyles</name>
     <message>
-        <location filename="../ui/widgetPropEditorStyles.ui" line="+14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+60"/>
+        <location filename="../ui/widgetPropEditorStyles.ui" line="+74"/>
         <source>Foreground Color</source>
         <translation>Vordergundsfarbe</translation>
     </message>
@@ -3568,7 +3569,12 @@ Zeile und Cursorposition angepasst.</translation>
         <translation>Standard zurücksetzen</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+18"/>
+        <source>Import / Export</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Import Style...</source>
         <translation>Style importieren...</translation>
     </message>
@@ -3583,7 +3589,12 @@ Zeile und Cursorposition angepasst.</translation>
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-21"/>
+        <source>Form</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>Style Settings</source>
         <translation>Einstellungen der Ansicht</translation>
     </message>
@@ -3624,13 +3635,8 @@ Zeile und Cursorposition angepasst.</translation>
         <location line="+34"/>
         <source>Set All Text Backgrounds
 To Transparent</source>
-        <translation type="unfinished">Alle Texthintergründe
-transparent setzen</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Import / Export</source>
-        <translation></translation>
+        <translation>Alle Texthintergründe
+transparent anzeigen</translation>
     </message>
 </context>
 <context>
@@ -3659,12 +3665,7 @@ transparent setzen</translation>
 <context>
     <name>WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.ui" line="+14"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location filename="../ui/widgetPropGeneralApplication.ui" line="+20"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -3740,7 +3741,12 @@ transparent setzen</translation>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-191"/>
+        <source>Form</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <location line="+201"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
@@ -3750,7 +3756,7 @@ transparent setzen</translation>
     <message>
         <location filename="../ui/widgetPropGeneralLanguage.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -3825,7 +3831,17 @@ transparent setzen</translation>
         <translation type="unfinished">Malstift</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+20"/>
+        <source>2D Plot</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>1D Plot</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Line style</source>
         <translation type="unfinished">Linienstil</translation>
     </message>
@@ -3865,12 +3881,7 @@ transparent setzen</translation>
         <translation type="unfinished">Diese Auflösung wird benutzt, wenn ein Plot in die Zwischenablage kopiert wird</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source> dpi</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-350"/>
+        <location line="-347"/>
         <source>Label font</source>
         <translation type="unfinished">Schriftart für Label</translation>
     </message>
@@ -3895,17 +3906,7 @@ transparent setzen</translation>
         <translation type="unfinished">Einstellungen der Geometrischen Formen</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <source>1D Plot</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-69"/>
-        <source>2D Plot</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location line="+82"/>
         <source>Z stack marker pen</source>
         <translation type="unfinished">Stil der Z-Stapelmarkierung</translation>
     </message>
@@ -3920,7 +3921,12 @@ transparent setzen</translation>
         <translation type="unfinished">Achsenbeschriftung</translation>
     </message>
     <message>
-        <location line="+391"/>
+        <location line="+356"/>
+        <source> dpi</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <source>Set To Default</source>
         <translation type="unfinished">Zurücksetzen</translation>
     </message>
@@ -4166,12 +4172,12 @@ transparent setzen</translation>
     <message>
         <location line="+21"/>
         <source>Add</source>
-        <translation type="unfinished">Hinzufügen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Remove</source>
-        <translation type="unfinished">Entfernen</translation>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -4238,22 +4244,22 @@ transparent setzen</translation>
     <message>
         <location filename="../ui/widgetPropPluginsActuators.ui" line="+14"/>
         <source>Form</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Interrupt</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Abbruch</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Send interrupt signal to all opened actuators if a Python script is interrupted.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wird ein Pythenskript abgebrochen, ein Abbruchsbefehl an alle offenen Motoren senden.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Hint: Before a new setOrigin, setPosAbs/Rel or calib command, all interrupt flags of actuators are reset.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hinweis: Vor einem neuen Verfahrbefehl (setOrigin, setPosAbs/Rel oder calib), müssen alle Interrupt-Flags zurückgesetzt werden.</translation>
     </message>
 </context>
 <context>
@@ -4339,22 +4345,22 @@ transparent setzen</translation>
     <message>
         <location line="+32"/>
         <source>Python Help System</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Python-Hilfe</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>By default (aka fallback) python prints help to stdout. But you can also specify a 3rd Party command to display the help. This requires setting the environment Variable PAGER. Changing Variables requires a RESTART of ITOM on some systems. The command must be in PATH.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standardmäßig nutzt Pythen zur Ausgabe der Hilfe &quot;stdout&quot;. Es ist aber auch möglich diese durch eine Befehlszeile eines Drittanbieterprogramms anzeigen zu lassen. Dafür ist es notwendig die Umgebungsvariable PAGER zu setzen. Auf manchen Systemen ist nach einer Änderung ein Neustart von itom nötig. Die Befehlszeile muss in der Umgebungsvariable PATH stehen.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>use 3rd Party Tool to display Help</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zur Darstellung der Hilfe ein Tool eines Drittanbieters verwenden</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>apply</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übernehmen</translation>
     </message>
 </context>
 <context>
@@ -4362,7 +4368,7 @@ transparent setzen</translation>
     <message>
         <location filename="../ui/widgetPropPythonStartup.ui" line="+14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -4511,7 +4517,7 @@ transparent setzen</translation>
     <message>
         <location line="+108"/>
         <source>Plugin Toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin-Toolbox</translation>
     </message>
     <message>
         <location line="+88"/>
@@ -4791,7 +4797,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/bookmarkDockWidget.cpp" line="+124"/>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesezeichen</translation>
     </message>
 </context>
 <context>
@@ -4799,27 +4805,27 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../models/bookmarkModel.cpp" line="+66"/>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesezeichen</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>&amp;Next Bookmark</source>
-        <translation type="unfinished">&amp;Nächstes Lesezeichen</translation>
+        <translation>&amp;Nächstes Lesezeichen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Previous Bookmark</source>
-        <translation type="unfinished">&amp;Vorheriges Lesezeichen</translation>
+        <translation>&amp;Vorheriges Lesezeichen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Clear All Bookmarks</source>
-        <translation type="unfinished">Alle Lesezeichen &amp;löschen</translation>
+        <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
         <location line="+222"/>
         <source>%1, Line %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1, Zeile %2</translation>
     </message>
 </context>
 <context>
@@ -4972,7 +4978,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../codeEditor/panels/checkerBookmarkPanel.cpp" line="+71"/>
         <source>&amp;Toggle Bookmark</source>
-        <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
+        <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
         <source>Next Bookmark</source>
@@ -5060,7 +5066,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+2"/>
         <source>Select All</source>
-        <translation type="unfinished">Alles auswählen</translation>
+        <translation>Alles auswählen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -5095,32 +5101,32 @@ Meldung: &apos;%1&apos;</translation>
         <location line="-85"/>
         <location line="+7"/>
         <source>The ito.itomDesignerPlugin.version of the meta data of the designer plugin in file &apos;%1&apos; is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die &apos;ito.itomDesignerPlugin&apos;-Version der Metadaten des Designer-Plugins der Datei &apos;%1&apos; ist ungültig.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>The ito.addInInterface.version of the meta data of the designer plugin in file &apos;%1&apos; is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die &apos;ito.addInInterface&apos;-Version der Metadaten des Designer-Plugins der Datei &apos;%1&apos; ist ungültig.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>The ito.addInInterface.version (%1) of the meta data of the designer plugin in file &apos;%2&apos; is incompatible to the required version %3.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die &apos;ito.addInInterface&apos;-Version (%1) der Metadaten des Designer-Plugis der Datei &apos;%2&apos; ist zur erforderlichen Version %3 nicht kompatibel.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>The ito.itomDesignerPlugin.version (%1) of the meta data of the designer plugin in file &apos;%2&apos; is incompatible to the required version %3.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die &apos;ito.itomDesignerPlugin&apos;-Version (%1) der Metadaten des Designer-Plugis der Datei &apos;%2&apos; ist zur erforderlichen Version %3 nicht kompatibel.</translation>
     </message>
     <message>
         <location line="+62"/>
         <source>The designer plugin in file &apos;%1&apos; does not implement the ItomDesignerPluginInterface, required by itom &gt; 3.2.1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Designer-Plugin der Datei &apos;%1&apos; wurde nicht für das &apos;ItomDesignerPluginInterface&apos; implementiert (für die itom-Verson 3.2.1 erforderlich).</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Plugin in file &apos;%1&apos; is a Qt designer plugin but no itom plot widget that inherits &apos;ito.AbstractItomDesignerPlugin&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin der Datei &apos;%1&apos; ist zwar ein Qt-Designer-Plugin, jedoch kein itom-Plot-Widget auf Basis (Vererbung) von &apos;ito.AbstractItomDesignerPlugin&apos;</translation>
     </message>
     <message>
         <location line="+67"/>
@@ -5673,12 +5679,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Syntax and Style Checks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Prüfung von Syntax und Style</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Editor - Syntax and Style Checks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Editor - Prüfung von Syntax und Style</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5807,12 +5813,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Plugin Help Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pugin-Hilfeansicht</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>General - Plugin Help Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemein - Pugin-Hilfeansicht</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5842,12 +5848,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Actuators</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Motoren</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Plugins - Actuators</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugins - Motoren</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6220,7 +6226,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+5"/>
         <source>The user name &quot;Standard User&quot; is reserved!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Benutzername &quot;Standard User&quot; ist reserviert!</translation>
     </message>
     <message>
         <location line="+98"/>
@@ -6635,49 +6641,49 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-871"/>
         <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
-        <translation>Vorlagenfehler: Die Parametersektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Template-Fehler: &quot;Parameters section&quot; ist  nur entweder durch ein Start- oder End-Tag definiert.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of parameters section comes before start tag.</source>
-        <translation>Vorlagenfehler: Der Endzeiger der Parametersektion liegt vor dem Startzeiger.</translation>
+        <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;Parameters section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Parameters</source>
-        <translation>Parameter</translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+17"/>
         <location line="+52"/>
         <source>Template Error: Returns section is only defined by either the start or end tag.</source>
-        <translation>Vorlagenfehler: Die Rückgabesektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Template-Fehler: &quot;Returns section&quot; nur entweder durch ein Start- oder End-Tag definiert.</translation>
     </message>
     <message>
         <location line="-48"/>
         <location line="+52"/>
         <source>Template Error: End tag of returns section comes before start tag.</source>
-        <translation>Vorlagenfehler: Der Endzeiger der Rückgabesektion liegt vor dem Startzeiger.</translation>
+        <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;Returns section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
         <location line="-47"/>
         <source>Returns</source>
-        <translation>Rückgabe</translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Template Error: Observer section is only defined by either the start or end tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Template-Fehler: &quot;Observer section&quot; nur entweder durch ein Start- oder End-Tag definiert.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of observer section comes before start tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;Observer section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Status observation and cancellation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Überwachungs- und Abbruchsstatus</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -6692,29 +6698,29 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+29"/>
         <source>Filter provides status information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter unterstützt Statusinformationen</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+15"/>
         <source>Filter does not provide status information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter unterstützt Statusinformationen nicht</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Filter can be cancelled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter kann abgebrochen werden</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+7"/>
         <source>Filter cannot be cancelled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filter kann nicht abgebrochen werden</translation>
     </message>
     <message>
         <location line="-2"/>
         <source>No observer can be passed to this filter</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kein &quot;Observer&quot; kann mit diesem Filter etwas anfangen</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -6757,12 +6763,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+160"/>
         <source>Template Error: %s section is only defined by either the start or end tag.</source>
-        <translation>Vorlagenfehler: Die &quot;%s&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;%s section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of %s section comes before start tag.</source>
-        <translation>Vorlagenfehler: Der Endzeiger der &quot;%s&quot;-Sektion liegt vor dem Startzeiger.</translation>
+        <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;%s section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -6853,7 +6859,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+310"/>
         <source>Help resources are loading...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Hilfe wird geladen...</translation>
     </message>
     <message>
         <source>Database %s could not be opened</source>
@@ -7224,7 +7230,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+23"/>
         <source> (copy)</source>
-        <translation type="unfinished"> (Kopie)</translation>
+        <translation type="unfinished"> (kopieren)</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -7240,7 +7246,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+24"/>
         <source>- Copy</source>
-        <translation type="unfinished">- Kopie</translation>
+        <translation type="unfinished">- Kopieren</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -7308,14 +7314,16 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+26"/>
         <source>Incompatible designer plugins</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nicht kompatible Designer-Plugins</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated: 
 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Ordner &apos;designer&apos; enthält nicht kompatible Designer-Plugins. Beim Öffnen von itom oder dazugehörigen ui-Dateien können diese zu Problemen führen wenn sie nicht gelöscht oder geupdated werden:
+
+%1</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -7698,17 +7706,17 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="-708"/>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lesezeichen</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Plugin Help Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pugin-Hilfeansicht</translation>
     </message>
     <message>
         <location line="+495"/>
         <source>Plugin Help Viewer...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pugin-Hilfeansicht...</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -7733,12 +7741,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+401"/>
         <source>User: %1   </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Benutzer: %1   </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Username: %1, ID: %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Benutzername: %1, ID: %2</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -8052,7 +8060,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+83"/>
         <source>%1, Identifier: %2</source>
-        <translation type="unfinished">%1, Indikator: %2</translation>
+        <translation type="unfinished">%1, Identifikator: %2</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -8192,12 +8200,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location filename="../codeEditor/modes/pyGotoAssignment.cpp" line="+80"/>
         <source>Go To Definition</source>
-        <translation type="unfinished">Gehe zu Definition</translation>
+        <translation>Gehe zu Definition</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Go To Assignment</source>
-        <translation type="unfinished">Gehe zu Zuweisung</translation>
+        <translation>Gehe zu Zuweisung</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -8409,7 +8417,20 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+308"/>
+        <location line="+18"/>
+        <source>Error importing pydoc in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+3"/>
+        <source>Error setting up help pipe in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+283"/>
         <source>The module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8607,20 +8628,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4472"/>
-        <source>Error importing pydoc in start python engine
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <location line="+3"/>
-        <source>Error setting up help pipe in start python engine
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+248"/>
+        <location line="-4217"/>
         <source>Error loading the module itomSyntaxCheck.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8821,7 +8829,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+250"/>
         <source>Bookmark and Navigation Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Symbolleiste Lesezeichen und Navigation</translation>
     </message>
     <message>
         <location line="+652"/>
@@ -8855,17 +8863,17 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="-747"/>
         <location line="+12"/>
         <source>Open Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skript öffnen</translation>
     </message>
     <message>
         <location line="-12"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The file &apos;%1&apos; is not a python script.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos;  ist kein Python-Skript.</translation>
     </message>
     <message>
         <location line="+769"/>
@@ -9197,15 +9205,15 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location filename="../organizer/scriptEditorOrganizer.cpp" line="+86"/>
         <source>Navigate Forward</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorwärts navigieren</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Navigate Backward</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zurück navigieren</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+242"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>
@@ -9222,23 +9230,23 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+592"/>
         <source>goto bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gehe zu Lesezeichen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The script &apos;%1&apos; does not exist. The bookmark will be removed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Skript &apos;%1&apos; existiert nicht. Das Lesezeichen wird gelöscht.</translation>
     </message>
     <message>
         <location line="+82"/>
         <location line="+4"/>
         <source>Navigation marker</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Navigationsmarker</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>General error jumping to the desired navigation marker</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemeiner Fehler beim Navigieren auf den gewünschten Marker</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -9248,17 +9256,17 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+3"/>
         <source>&lt;empty line&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;Leere zeile&gt;</translation>
     </message>
     <message>
         <location line="+80"/>
         <source>File &apos;%1&apos; of go back navigation marker does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; zum Zurücknavigieren existiert nicht.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Not enough rights to open scripts.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keine Berechtigung zum Öffnen des Skripts.</translation>
     </message>
 </context>
 <context>
@@ -9767,17 +9775,17 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="-1555"/>
         <source>A widget inherited from QDialog cannot be inserted into the main window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Widget, welches von QDialog abgeleitet wurde, kann nicht in das Hauptfenster eingefügt werden</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Main window not available for inserting the user interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Hauptfenster ist zum Einfügen nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+484"/>
         <source>Invalid widget type.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiger &apos;Widget-Type&apos;.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -9790,7 +9798,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+24"/>
         <location line="+338"/>
         <source>Dialog or plot handle does not (longer) exist. Maybe it has been closed before.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Dialog- oder Plot-Handle existiert nicht (mehr). Vielleicht wurde es zuvor geschlossen.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -9833,7 +9841,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+48"/>
         <source>signal could not be connected to slot requesting the cancellation of the observed function call.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Signal konnte nicht mit einem Slot verbunden werden.</translation>
     </message>
     <message>
         <location line="+37"/>
@@ -10035,12 +10043,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+74"/>
         <source>User Password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Benutzerpasswort</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Enter the password for the user %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Passwort für den Benutzer %1 eingeben</translation>
     </message>
     <message>
         <location line="+270"/>
@@ -10648,7 +10656,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+5"/>
         <source>Clear All Variables</source>
-        <translation type="unfinished">Alle Variablen bereinigen</translation>
+        <translation>Alle Variablen löschen</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -10797,7 +10805,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location filename="../ui/paramInputDialog.ui" line="+14"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+9"/>
@@ -10832,7 +10840,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+3"/>
         <source>U</source>
-        <translation></translation>
+        <translation type="unfinished">H</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -10842,7 +10850,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+3"/>
         <source>D</source>
-        <translation></translation>
+        <translation type="unfinished">R</translation>
     </message>
 </context>
 <context>
@@ -10889,17 +10897,17 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Name</translation>
     </message>
     <message>
-        <location line="+30"/>
-        <source>ID</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-23"/>
+        <location line="+7"/>
         <source>Ini File</source>
         <translation>Ini-Datei</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+23"/>
+        <source>ID</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>New User</source>
         <translation>Neuer Benutzer erstellen</translation>
     </message>
@@ -10934,7 +10942,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location filename="../widgets/userManagementEdit.ui" line="+20"/>
         <source>User Management Edit / New</source>
-        <translation></translation>
+        <translation type="unfinished">Benutzerverwaltung - Neu / Ändern</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -11038,9 +11046,14 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Rolle</translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Developer</source>
+        <location line="+6"/>
+        <source>Administrator</source>
         <translation></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Developer</source>
+        <translation type="unfinished">Entwickler</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -11071,11 +11084,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+24"/>
         <source>Add new files relative to itom base path: %1</source>
         <translation type="unfinished">Neue Dateien relativ zum itom Hauptverzeichnis laden: %1</translation>
-    </message>
-    <message>
-        <location line="-161"/>
-        <source>Administrator</source>
-        <translation></translation>
     </message>
 </context>
 </TS>

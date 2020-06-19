@@ -4,23 +4,17 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="87"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="43"/>
         <source>Live data source for plot</source>
         <translation>Live Datenquelle für Plot</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="40"/>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="41"/>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="42"/>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="50"/>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="51"/>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="52"/>
         <location filename="../sources/AbstractDObjFigure.cpp" line="42"/>
         <source>Source data for plot</source>
         <translation>Quelldaten für Plot</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="43"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="44"/>
         <source>Actual output data of plot</source>
         <translation>Aktuelle Ausgabedaten für Plot</translation>
     </message>
@@ -29,62 +23,73 @@
         <translation type="vanished">Der Parameter existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="116"/>
         <source>Parameter name &apos;%1&apos; does not exist in updateParam</source>
-        <translation type="unfinished">Der Parameter &apos;%1&apos; existiert nicht in &apos;updateParam&apos;</translation>
+        <translation type="obsolete">Der Parameter &apos;%1&apos; existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="125"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
-        <translation type="unfinished">Es wurde versucht einen geblockten Parameter zu aktualisieren (evtl. ist das &apos;updatePending&apos;-Flag nicht gesetzt)</translation>
+        <translation type="obsolete">Es wurde versucht einen geblockten Parameter zu aktualisieren (evtl. ist das &apos;updatePending&apos;-Flag nicht gesetzt)</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="130"/>
+        <location filename="../sources/AbstractNode.cpp" line="175"/>
+        <source>The output parameter of the sender and the input parameter of the receiver are not compatible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractNode.cpp" line="223"/>
+        <source>The given channel is already attached.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractNode.cpp" line="381"/>
+        <location filename="../sources/AbstractNode.cpp" line="462"/>
+        <source>Parameter name &apos;%1&apos; does not exist in input parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractNode.cpp" line="471"/>
+        <source>Updated input data can only be propagated through a connected channel, if its &apos;update pending&apos; flag has been set before.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractNode.cpp" line="476"/>
         <source>Channel is already updating</source>
         <translation type="unfinished">Der Channel wird breits aktualisiert</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="248"/>
+        <location filename="../sources/AbstractNode.cpp" line="690"/>
         <source>Not all parameters in list could not be found in channels, in updateChannels</source>
         <translation type="unfinished">Nicht alle Parameter in der Liste konnten in Channels gefunden werden (&apos;updateChannels&apos;)</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="287"/>
+        <location filename="../sources/AbstractNode.cpp" line="743"/>
         <source>channel is not a sender in setUpdatePending</source>
         <translation type="unfinished">Channel ist kein Sender in &apos;setUpdatePending&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractNode.cpp" line="292"/>
+        <location filename="../sources/AbstractNode.cpp" line="751"/>
         <source>unknown channel in setUpdatePending</source>
         <translation type="unfinished">Unbekannter Channel in &apos;setUpdatePending&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="234"/>
-        <location filename="../sources/AbstractFigure.cpp" line="280"/>
         <source>duplicate Channel, in addChannel</source>
-        <translation type="unfinished">Doppelter Channel in &apos;addChannel&apos;</translation>
+        <translation type="obsolete">Doppelter Channel in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="242"/>
-        <location filename="../sources/AbstractFigure.cpp" line="249"/>
         <source>parameters incompatible, while adding channel</source>
-        <translation type="unfinished">Inkompatible Parameter beim hinzufügen des Channels</translation>
+        <translation type="obsolete">Inkompatible Parameter beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="254"/>
         <source>undefined channel direction, while adding channel</source>
-        <translation type="unfinished">Undefinierte Channel-Richtung beim hinzufügen des Channels</translation>
+        <translation type="obsolete">Undefinierte Channel-Richtung beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="269"/>
         <source>invalid child pointer, in addChannel</source>
-        <translation type="unfinished">Ungültiger Pointer in &apos;addChannel&apos;</translation>
+        <translation type="obsolete">Ungültiger Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="296"/>
-        <location filename="../sources/AbstractFigure.cpp" line="321"/>
         <source>channel does not exist</source>
-        <translation type="unfinished">Channel existiert nicht</translation>
+        <translation type="obsolete">Channel existiert nicht</translation>
     </message>
     <message>
         <source>No unit specified</source>
@@ -110,16 +115,34 @@
         <source>invalid parameter name</source>
         <translation type="obsolete">Ungültiger Parametername</translation>
     </message>
+    <message>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="40"/>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="50"/>
+        <source>Source pointCloud data for plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="41"/>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="51"/>
+        <source>Source polygonMesh data for plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="42"/>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="52"/>
+        <source>Source dataObject data for plot</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="175"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="176"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation>Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="315"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="339"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation>Der Plot besitzt keinen Slot für Live-Quellen</translation>
     </message>
@@ -127,20 +150,24 @@
 <context>
     <name>ito::AbstractDObjPclFigure</name>
     <message>
-        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="199"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
-        <translation>Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
+        <translation type="vanished">Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
+    </message>
+    <message>
+        <location filename="../sources/AbstractDObjPCLFigure.cpp" line="208"/>
+        <source>Function &apos;setLinePlot&apos; not supported from this plot widget</source>
+        <translation type="unfinished">Die Funktion  &apos;setLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
 </context>
 <context>
     <name>ito::AbstractFigure</name>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="177"/>
+        <location filename="../sources/AbstractFigure.cpp" line="173"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="732"/>
+        <location filename="../sources/AbstractFigure.cpp" line="642"/>
         <source> - </source>
         <translation></translation>
     </message>
