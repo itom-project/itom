@@ -66,13 +66,13 @@ namespace ito
             HelpTreeDockWidget *m_pHelpWidget;
 
         signals:
-            void showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink);
+            void showPluginInfo(QString name, HelpTreeDockWidget::HelpItemType type, const QModelIndex modelIndex, bool fromLink);
 
         private slots:
             
 
         public slots:
-            void mnuShowInfo(QString name, int type);
+            void mnuShowInfo(QString name, HelpTreeDockWidget::HelpItemType type);
 
     };
 

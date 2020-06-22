@@ -51,7 +51,6 @@ class DialogPipManagerInstall : public QDialog
     Q_OBJECT
 
 public:
-    enum Type { typeWhl = 0, typeTarGz = 1, typeSearchIndex = 2};
     DialogPipManagerInstall(QWidget *parent = NULL, QString package = "");
     ~DialogPipManagerInstall();
 
@@ -59,7 +58,6 @@ public:
 
 private:
     Ui::DialogPipManagerInstall ui;
-    Type m_selectedType;
     bool m_upgradeMode;
 
 protected:
@@ -72,6 +70,7 @@ private slots:
     void on_radioWhl_clicked(bool checked);
     void on_radioTarGz_clicked(bool checked);
     void on_radioSearchIndex_clicked(bool checked);
+    void on_radioRequirements_clicked(bool checked);
     void on_buttonBox_accepted();
     
 };

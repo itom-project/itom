@@ -49,6 +49,7 @@ namespace ito {
 /*static*/ QStringList PyAutoIndentMode::newScopeKeywords = QStringList() << "if" << "class" << "def" << "while" << "for" << \
                                                                 "else" << "elif" << "except" << "finally" << "try" << "with";
 
+//----------------------------------------------------------
 PyAutoIndentMode::PyAutoIndentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     AutoIndentMode("PyAutoIndentMode", description, parent)
 {
@@ -82,7 +83,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
 {
     int ln, column;
     editor()->cursorPosition(ln, column);
-    QString fullline = getFullLine(cursor);
+    QString fullline = Utils::rstrip(getFullLine(cursor));
     QString line = fullline.left(column);
     QPair<QString, QString> pre_post =AutoIndentMode::getIndent(cursor);
     
@@ -120,19 +121,22 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
     else 
     {
         QString lastword = getLastWord(cursor);
-        QString lastwordu = getLastWordUnstripped(cursor);
-        bool end_with_op = fullline.endsWith("+") || \
-            fullline.endsWith("-") || \
-            fullline.endsWith("*") || \
-            fullline.endsWith("/") || \
-            fullline.endsWith("=") || \
-            fullline.endsWith(" &&") || \
-            fullline.endsWith(" ||") || \
-            fullline.endsWith("%");
+        
+        //hint: the original pyqode checked here the fullline, in itom this was changed to line.
+        QString line_rstrip = Utils::rstrip(line);
+        bool end_with_op = line_rstrip.endsWith("+") || \
+            line_rstrip.endsWith("-") || \
+            line_rstrip.endsWith("*") || \
+            line_rstrip.endsWith("/") || \
+            line_rstrip.endsWith("=") || \
+            line_rstrip.endsWith(" &&") || \
+            line_rstrip.endsWith(" ||") || \
+            line_rstrip.endsWith("%");
 
         QPair<bool, QChar> temp = isInStringDef(fullline, column);
         bool in_string_def = temp.first;
-        QChar c =temp.second;
+        QChar c = temp.second;
+
         if (in_string_def)
         {
             handleIndentInsideString(c, cursor, fullline, post, pre);
@@ -157,6 +161,8 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
         else if (!fullline.endsWith("\\") && !fullline.replace(" ", "").endsWith("import*") && 
                 (end_with_op || !atBlockEnd(cursor, fullline)))
         {
+            QString lastwordu = getLastWordUnstripped(cursor);
+
             handleIndentInStatement(fullline, lastwordu, post, pre);
         }
         else if ((atBlockEnd(cursor, fullline) &&
@@ -396,13 +402,14 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
 
     QChar next_char = getNextChar(cursor);
     QChar prev_char = getPrevChar(cursor);
-    bool prev_open = QString("[({").contains(prev_char);
-    bool next_close = QString("])}").contains(next_char);
+    bool prev_open = QString("[({").contains(prev_char); // true if the character before the cursor position is a opening paren
+    bool next_close = QString("])}").contains(next_char); // true if the character after the cursor position is a opening paren
 
     int open_line, open_symbol_col, close_line, close_col; //if open_line and open_symbol_col is -1, no open symbol could be found; if close_line and close_col is -1, no closing symbol could be found
     getParenPos(cursor, column, open_line, open_symbol_col, close_line, close_col);
     QString open_line_txt = editor()->lineText(open_line);
     int open_line_indent = open_line_txt.size() - Utils::lstrip(open_line_txt).size();
+
     if (prev_open)
     {
         post = QString(open_line_indent, indentChar()) + singleIndent();
@@ -434,6 +441,7 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
         int bn = cursor.block().blockNumber();
         bool flg = (bn == close_line);
         QString next_indent = QString(editor()->lineIndent(bn + 1), indentChar());
+
         if (flg && Utils::strip(txt).endsWith(':') && (next_indent == post))
         {
             // | look at how the previous line ( ``':'):`` ) was
@@ -441,6 +449,15 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
             // achieve here
             post += singleIndent();
         }
+    }
+    else if (prev_open && checkKwInLine(PyAutoIndentMode::newScopeKeywords, line.left(column)))
+    {
+        //the line break is after a new scope keyword and directly after the opening paren. Add
+        //another indentation level at the next line, such that
+        //there is a visual break between the arguments within the parenthesis
+        //and the real indentend block.
+        //see also: https://www.python.org/dev/peps/pep-0008/#id17
+        post += singleIndent();
     }
 
     QTextCursor cursor2(cursor);
@@ -477,12 +494,13 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
 }
 
 //---------------------------------------------------------------------------
-void PyAutoIndentMode::handleIndentInsideString(const QString &c, const QTextCursor &cursor, const QString &fullline, QString &post, QString &pre) const
+void PyAutoIndentMode::handleIndentInsideString(const QChar &c, const QTextCursor &cursor, const QString &fullline, QString &post, QString &pre) const
 {
     // break string with a '\' at the end of the original line, always
     // breaking strings enclosed by parens is done in the
     // _handle_between_paren method
     pre = QString("%1 \\").arg(c);
+
     post += singleIndent();
 
     if (fullline.endsWith(':'))
@@ -493,13 +511,21 @@ void PyAutoIndentMode::handleIndentInsideString(const QString &c, const QTextCur
 }
 
 //----------------------------------------------------------------------------
-bool checkKwInLine(const QStringList &kwds, const QString &lparam)
+bool PyAutoIndentMode::checkKwInLine(const QStringList &kwds, const QString &lparam) const
 {
     foreach (const QString &kw, kwds)
     {
         if (lparam.contains(kw, Qt::CaseSensitive))
         {
-            return true;
+            //check whether the kw really starts with a word boundary,
+            //however that it is not directly followed by a character, number etc.
+            // e.g. allowed is " def " and " def(" but not "def1"
+            QRegularExpression re("\\b" + kw + "(?!\\w)");
+
+            if (lparam.contains(re))
+            {
+                return true;
+            }
         }
     }
     return false;
@@ -625,7 +651,7 @@ void PyAutoIndentMode::handleIndentAfterParen(const QTextCursor &cursor, QString
     QTextCursor tc2 = QTextCursor(cursor);
     tc2.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, 1);
     tc2.movePosition(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
-    return Utils::strip(tc2.selectedText());
+    return tc2.selectedText();
 }
 
 //----------------------------------------------------------------------------

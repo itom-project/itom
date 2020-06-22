@@ -50,6 +50,7 @@
 #include "scriptEditorPrinter.h"
 #include "../organizer/userOrganizer.h"
 #include "../widgets/consoleWidget.h"
+#include "../python/pythonCommon.h"
 
 namespace ito 
 {
@@ -69,16 +70,18 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_pythonBusy(false), 
     m_pythonExecutable(true),
     m_canCopy(false),
-    m_syntaxTimer(NULL),
+    m_codeCheckerCallTimer(NULL),
     m_classNavigatorTimer(NULL),
     m_contextMenu(NULL),
     m_keepIndentationOnPaste(true),
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel)
 {
-    m_syntaxTimer = new QTimer(this);
-    connect(m_syntaxTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
-    m_syntaxTimer->setInterval(1000);
+    qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
+
+    m_codeCheckerCallTimer = new QTimer(this);
+    connect(m_codeCheckerCallTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
+    m_codeCheckerCallTimer->setInterval(1000);
 
     m_classNavigatorTimer = new QTimer(this);
     connect(m_classNavigatorTimer, SIGNAL(timeout()), this, SLOT(classNavTimerElapsed()));
@@ -238,23 +241,25 @@ void ScriptEditorWidget::loadSettings()
         setShowWhitespaces(false);
     }
 
-    // SyntaxChecker
-    m_syntaxCheckerEnabled = settings.value("syntaxChecker", true).toBool();
-    m_syntaxCheckerInterval = (int)(settings.value("syntaxInterval", 1).toDouble()*1000);
+    // Code Checker
+    m_codeCheckerEnabled = settings.value("codeCheckerMode", 
+                            PythonCommon::CodeCheckerPyFlakes).toInt() 
+                            != PythonCommon::NoCodeChecker;
+    m_codeCheckerInterval = (int)(settings.value("codeCheckerInterval", 1).toDouble()*1000);
 
-    if (m_syntaxTimer)
+    if (m_codeCheckerCallTimer)
     {
-        m_syntaxTimer->stop();
-        m_syntaxTimer->setInterval(m_syntaxCheckerInterval);
+        m_codeCheckerCallTimer->stop();
+        m_codeCheckerCallTimer->setInterval(m_codeCheckerInterval);
     }
 
-    if (m_syntaxCheckerEnabled)
+    if (m_codeCheckerEnabled)
     { // empty call: all bugs disappear
-        checkSyntax();
+        triggerCodeChecker();
     }
     else
     {
-        errorListChange(QStringList());
+        codeCheckerResultsChanged(QList<ito::CodeCheckerItem>());
     }
 
     // Class Navigator
@@ -362,7 +367,7 @@ void ScriptEditorWidget::initMenus()
 const ScriptEditorStorage ScriptEditorWidget::saveState() const
 {
     ScriptEditorStorage storage;
-    storage.filename = getFilename().toLatin1();
+    storage.filename = getFilename();
     storage.firstVisibleLine = firstVisibleLine();
 
     return storage;
@@ -1110,29 +1115,23 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by pythonEnginge::pythonSyntaxCheck
+//! slot invoked by pythonEnginge::pythonCodeCheck
 /*!
     This function is automatically called to deliver the results of the syntax checker
 
-    \sa checkSyntax
+    \sa triggerCodeChecker
 */
-void ScriptEditorWidget::syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors)
+void ScriptEditorWidget::codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems)
 { 
-    // this event occurs when the syntax checker is delivering results
-    QStringList errorList = flakes.split("\n") + syntaxErrors.split("\n");
-    for (int i = 0; i < errorList.length(); ++i)
-    {
-        errorList.removeAt(errorList.indexOf("",i));
-    }    
-    errorListChange(errorList);
+    codeCheckerResultsChanged(codeCheckerItems);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Updates the List of Bookmarks and Errors when new Errorlist appears
+//! Updates the list of code checker results if changes are available
 /*!
-    \param errorList Error list of this editor. Including all bugs and bookmarks.
+    \param codeCheckerItems list of all current code checker result messages for this file
 */
-void ScriptEditorWidget::errorListChange(const QStringList &errorList)
+void ScriptEditorWidget::codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems)
 { 
     //at first: remove all errors... from existing blocks
     foreach (TextBlockUserData *userData, textBlockUserDataList())
@@ -1141,22 +1140,21 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
     }
 
     //2nd: add new errors...
-    int line;
-    QString errorMessage;
+    int lineNumber;
     TextBlockUserData *userData;
 
-    for (int i = 0; i < errorList.length(); i++)
+    foreach(const ito::CodeCheckerItem &item, codeCheckerItems)
     {
-        QRegExp regError(":(\\d+):(.*)");
-        regError.indexIn(errorList.at(i),0);
-        line = regError.cap(1).toInt();
-        errorMessage = regError.cap(2);
-        userData = getTextBlockUserData(line - 1);
+        lineNumber = item.lineNumber();
 
-        if (userData)
+        if (lineNumber > 0)
         {
-            CheckerMessage msg(errorMessage, CheckerMessage::StatusError);
-            userData->m_checkerMessages.append(msg);
+            userData = getTextBlockUserData(lineNumber - 1);
+
+            if (userData)
+            {
+                userData->m_checkerMessages.append(item);
+            }
         }
     }
 
@@ -1168,14 +1166,21 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 /*!
     This function is called to send the content of this ScriptEditorWidget to the syntax checker
 
-    \sa syntaxCheckResult
+    \sa codeCheckResultsReady
 */
-void ScriptEditorWidget::checkSyntax()
+void ScriptEditorWidget::triggerCodeChecker()
 {
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
-        QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->toPlainText()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), Q_ARG(QByteArray, "syntaxCheckResult"));
+        QString filename = getFilename();
+        bool savedFile = (isModified() == false) && filename != "";
+        QMetaObject::invokeMethod(pyEng, "pythonCodeCheck", 
+            Q_ARG(QString, this->toPlainText()), 
+            Q_ARG(QString, filename),
+            Q_ARG(bool, savedFile),
+            Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), 
+            Q_ARG(QByteArray, "codeCheckResultsReady"));
     }
 }
 
@@ -1183,14 +1188,14 @@ void ScriptEditorWidget::checkSyntax()
 //! slot invoked by timer
 /*!
     This slot is invoked by the timer to trigger the syntax check. The intervall is set in the option dialog.
-    \sa syntaxCheckResult, checkSyntax
+    \sa codeCheckResultsReady, triggerCodeChecker
 */
 void ScriptEditorWidget::updateSyntaxCheck()
 {
-    if (m_syntaxTimer)
+    if (m_codeCheckerCallTimer)
     {
-        m_syntaxTimer->stop();
-        checkSyntax();
+        m_codeCheckerCallTimer->stop();
+        triggerCodeChecker();
     }
 }
 
@@ -1200,11 +1205,11 @@ bool ScriptEditorWidget::event(QEvent *event)
     if (event->type() == QEvent::KeyRelease)
     {
         // SyntaxCheck   
-        if (m_pythonExecutable && m_syntaxCheckerEnabled)
+        if (m_pythonExecutable && m_codeCheckerEnabled)
         {
-            if (m_syntaxTimer)
+            if (m_codeCheckerCallTimer)
             {
-                m_syntaxTimer->start(); //starts or restarts the timer
+                m_codeCheckerCallTimer->start(); //starts or restarts the timer
             }
         }
         if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)
@@ -1938,11 +1943,11 @@ void ScriptEditorWidget::nrOfLinesChanged()
     }
 
     // SyntaxCheck   
-    if (m_pythonExecutable && m_syntaxCheckerEnabled)
+    if (m_pythonExecutable && m_codeCheckerEnabled)
     {
-        if (m_syntaxTimer)
+        if (m_codeCheckerCallTimer)
         {
-            m_syntaxTimer->start(); //starts or restarts the timer
+            m_codeCheckerCallTimer->start(); //starts or restarts the timer
         }
     }
     if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)

@@ -91,7 +91,24 @@ class ShapeTest(unittest.TestCase):
             s.contains(dataObject([3,7]))
         with self.assertRaises(RuntimeError):
             s.contains(dataObject([2,7], 'complex64'))
-
+    
+    def test_create_point(self):
+        center = (2.2, -7)
+        pointShape: shape = shape.createPoint(center, index=5, name="test")
+        
+        self.assertAlmostEqual(pointShape.center, center)
+        self.assertEqual(pointShape.index, 5)
+        self.assertEqual(pointShape.flags, 0)
+        self.assertEqual(pointShape.name, "test")
+        
+        pointShape = shape.createPoint(point=(0,0), flags = shape.MoveLock)
+        self.assertEqual(pointShape.flags, shape.MoveLock)
+        
+        pointShape = shape(shape.Point, center, index=5, name="test")
+        self.assertAlmostEqual(pointShape.center, center)
+        self.assertEqual(pointShape.index, 5)
+        self.assertEqual(pointShape.flags, 0)
+        self.assertEqual(pointShape.name, "test")
     
     
 if __name__ == '__main__':

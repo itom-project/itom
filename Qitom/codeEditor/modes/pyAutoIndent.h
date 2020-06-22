@@ -47,6 +47,7 @@ Contains python smart indent modes
 
 #include <qtextcursor.h>
 #include <qstring.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -72,7 +73,7 @@ protected:
     virtual QPair<QString, QString> getIndent(const QTextCursor &cursor) const;
 
     QPair<QString, QString> handleIndentBetweenParen(int column, const QString &line, const QPair<QString, QString> &parent_impl, const QTextCursor &cursor) const;
-    void handleIndentInsideString(const QString &c, const QTextCursor &cursor, const QString &fullline, QString &post, QString &pre) const;
+    void handleIndentInsideString(const QChar &c, const QTextCursor &cursor, const QString &fullline, QString &post, QString &pre) const;
     QString handleNewScopeIndentation(const QTextCursor &cursor, const QString &fullline) const;
     void handleIndentInStatement(const QString &fullline, const QString &lastword, QString &post, QString &pre) const;
     void handleIndentAfterParen(const QTextCursor &cursor, QString &post) const; 
@@ -81,6 +82,7 @@ protected:
     void getParenPos(const QTextCursor &cursor, int column, int &ol, int &oc, int &cl, int &cc) const;
     void parensCountForBlock(int column, const QTextBlock &block, int &numOpenParentheses, int &numClosedParentheses) const;
     int getIndentOfOpeningParen(const QTextCursor &cursor) const;
+    bool checkKwInLine(const QStringList &kwds, const QString &lparam) const;
 
     static QPair<bool, QChar> isInStringDef(const QString &fullline, int column);
     static bool isParenOpen(const Utils::ParenthesisInfo &paren);

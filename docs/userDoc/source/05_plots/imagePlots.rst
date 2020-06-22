@@ -52,6 +52,7 @@ This example shows how the colorMap is set with the **itom** :py:meth:`~itom.plo
 .. _itom2dqwtplot-ref:
 
 .. BEGIN The following part is obtained by the script plot_help_to_rst_format.py (source/itom/docs/userDoc) from the designer plugin itom2dqwtplot
+..       Before starting this script, disable the long-line wrap mode in the console / line wrap property page of itom.
 
 Properties
 -------------------------
@@ -60,8 +61,7 @@ Properties
 .. py:attribute:: volumeCutPlotItem : uiItem 
     :noindex:
     
-    Set/get the uiItem of the current line plot respective the destination line plot for the volume cut. The 'uiItem' can be savely cast to 'plotItem'
-... .
+    Set/get the uiItem of the current line plot respective the destination line plot for the volume cut. The 'uiItem' can be savely cast to 'plotItem'.
 
 .. py:attribute:: zSlicePlotItem : uiItem 
     :noindex:
@@ -71,8 +71,7 @@ Properties
 .. py:attribute:: lineCutPlotItem : uiItem 
     :noindex:
     
-    Set/get the uiItem of the current line plot respective the destination line plot for lateral slicing. The 'uiItem' can be savely cast to 'plotItem
-... '.
+    Set/get the uiItem of the current line plot respective the destination line plot for lateral slicing. The 'uiItem' can be savely cast to 'plotItem'.
 
 .. py:attribute:: dataChannel : ItomQwtPlotEnums::DataChannel 
     :noindex:
@@ -112,20 +111,17 @@ Properties
 .. py:attribute:: contourColorMap : str 
     :noindex:
     
-    Defines which color map should be used for the contour lines [e.g. gray, grayMarked, falseColor, falseColorIR, hotIron, red, blue, green, viridis]
-... .
+    Defines which color map should be used for the contour lines [e.g. gray, grayMarked, falseColor, falseColorIR, hotIron, red, blue, green, viridis].
 
 .. py:attribute:: contourLevels : dataObject 
     :noindex:
     
-    Defines which contour levels should be plotted. Each value inside the given dataObject results in one contour level. Possible types are uint8, int
-... 8, uint16, int16, int32, float32 and float64.
+    Defines which contour levels should be plotted. Each value inside the given dataObject results in one contour level. Possible types are uint8, int8, uint16, int16, int32, float32 and float64.
 
 .. py:attribute:: overlayColorMap : str 
     :noindex:
     
-    Defines which color map should be used for the overlay channel [e.g. gray, grayMarked, falseColor, falseColorIR, hotIron, red, blue, green, viridi
-... s].
+    Defines which color map should be used for the overlay channel [e.g. gray, grayMarked, falseColor, falseColorIR, hotIron, red, blue, green, viridis].
 
 .. py:attribute:: overlayInterval : autoInterval 
     :noindex:
@@ -140,8 +136,7 @@ Properties
 .. py:attribute:: overlayImage : dataObject 
     :noindex:
     
-    Set an overlay dataObject which is shown above the main dataObject and whose opacity (see 'overlayAlpha') can be controlled by a slider in the too
-... lbar. Assign None to remove the overlay object.
+    Set an overlay dataObject which is shown above the main dataObject and whose opacity (see 'overlayAlpha') can be controlled by a slider in the toolbar. Assign None to remove the overlay object.
 
 .. py:attribute:: showCenterMarker : bool 
     :noindex:
@@ -176,8 +171,7 @@ Properties
 .. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine 
     :noindex:
     
-    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please consider, that a logarithmic scale can only displ
-... ay values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
+    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
     
     The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
     
@@ -227,8 +221,7 @@ Properties
 .. py:attribute:: complexStyle : ItomQwtPlotEnums::ComplexType 
     :noindex:
     
-    Defines whether the real, imaginary, phase or absolute of a complex number is shown. Possible options are CmplxAbs(0), CmplxImag (1), CmplxReal (2
-... ) and CmplxArg (3).
+    Defines whether the real, imaginary, phase or absolute of a complex number is shown. Possible options are CmplxAbs(0), CmplxImag (1), CmplxReal (2) and CmplxArg (3).
     
     The type 'ItomQwtPlotEnums::ComplexType' is an enumeration that can have one of the following values (str or int):
     
@@ -273,8 +266,7 @@ Properties
     
     Combination of values of enumeration ShapeType to decide which types of geometric shapes are allowed (default: all shape types are allowed)
     
-    The type 'ItomQwtPlotEnums::ShapeTypes' is a flag mask that can be a combination of one or several of the following values (or-combination number 
-... values or semicolon separated strings):
+    The type 'ItomQwtPlotEnums::ShapeTypes' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
     
     * 'MultiPointPick' (1)
     * 'Point' (2)
@@ -288,11 +280,9 @@ Properties
 .. py:attribute:: geometryModificationModes : ItomQwtPlotEnums::ModificationModes 
     :noindex:
     
-    Bitmask to globally change how geometric shapes can be modified. The possible modes of a shape are both restricted by the shape's flags and the al
-... lowed modes of the plot (move: 0x01, rotate: 0x02, resize: 0x04)
+    Bitmask to globally change how geometric shapes can be modified. The possible modes of a shape are both restricted by the shape's flags and the allowed modes of the plot (move: 0x01, rotate: 0x02, resize: 0x04)
     
-    The type 'ItomQwtPlotEnums::ModificationModes' is a flag mask that can be a combination of one or several of the following values (or-combination 
-... number values or semicolon separated strings):
+    The type 'ItomQwtPlotEnums::ModificationModes' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
     
     * 'Move' (1)
     * 'Rotate' (2)
@@ -361,20 +351,17 @@ Properties
 .. py:attribute:: zAxisInterval : autoInterval 
     :noindex:
     
-    Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default
-... ].
+    Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
 
 .. py:attribute:: yAxisInterval : autoInterval 
     :noindex:
     
-    Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default
-... ].
+    Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
 
 .. py:attribute:: xAxisInterval : autoInterval 
     :noindex:
     
-    Sets the visible range of the displayed x-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default
-... ].
+    Sets the visible range of the displayed x-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
 
 .. py:attribute:: camera : dataIO 
     :noindex:
@@ -416,7 +403,6 @@ Slots
     
     removes an overlay image. This is the same than assigning 'None' to the property 'overlayImage'
     
-    .. index:: 
 
 .. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
     :noindex:
@@ -435,7 +421,6 @@ Slots
     :param destID: optional and unused
     :type destID: int
     
-    .. index:: 
 
 .. py:function:: getDisplayedLineCut() [slot]
     :noindex:
@@ -443,7 +428,6 @@ Slots
     
     returns the currently displayed line cut dataObject
     
-    .. index:: 
 
 .. py:function:: getDisplayed() [slot]
     :noindex:
@@ -451,7 +435,6 @@ Slots
     
     returns the currently displayed dataObject.
     
-    .. index:: 
 
 .. py:function:: replot() [slot]
     :noindex:
@@ -459,7 +442,6 @@ Slots
     
     Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
     
-    .. index:: 
 
 .. py:function:: deleteMarkers(id) [slot]
     :noindex:
@@ -470,7 +452,6 @@ Slots
     :param id: name of the marker set that should be removed (optional)
     :type id: str
     
-    .. index:: 
 
 .. py:function:: plotMarkers(coordinates, style, id, plane) [slot]
     :noindex:
@@ -478,18 +459,15 @@ Slots
     
     Draws sub-pixel wise markers to the canvas of the plot
     
-    :param coordinates: 2xN data object with the 2D coordinates of the markers (first row: X, second row: Y coordinates in axis coordinates of the plo
-... t)
+    :param coordinates: 2xN data object with the 2D coordinates of the markers (first row: X, second row: Y coordinates in axis coordinates of the plot)
     :type coordinates: dataObject
     :param style: Style string for the set of markers (e.g. 'r+20' for red crosses with a size of 20px)
     :type style: str
     :param id: Name of the set of added markers (optional, default='')
     :type id: str
-    :param plane: If the dataObject has more than 2 dimensions, it is possible to add the markers to a specific plane only (optional, default=-1 -> al
-... l planes)
+    :param plane: If the dataObject has more than 2 dimensions, it is possible to add the markers to a specific plane only (optional, default=-1 -> all planes)
     :type plane: int
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabelVisible(idx, visible) [slot]
     :noindex:
@@ -502,7 +480,6 @@ Slots
     :param visible: True if the label should be displayed close to the shape, else False
     :type visible: bool
     
-    .. index:: 
 
 .. py:function:: setGeometricShapeLabel(idx, label) [slot]
     :noindex:
@@ -515,14 +492,12 @@ Slots
     :param label: new label of the shape
     :type label: str
     
-    .. index:: 
 
 .. py:function:: updateGeometricShape(geometricShape) [slot]
     :noindex:
     
     
-    Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'a
-... ddGeometricShape'. 
+    Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'addGeometricShape'. 
     
     If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
     stored in the optional 'newIndex' parameter).
@@ -530,7 +505,6 @@ Slots
     :param geometricShape: new geometric shape
     :type geometricShape: shape
     
-    .. index:: 
 
 .. py:function:: addGeometricShape(geometricShape) [slot]
     :noindex:
@@ -546,19 +520,16 @@ Slots
     
     :raises RuntimeError: if the index of the shape is != -1 and does already exist
     
-    .. index:: 
 
 .. py:function:: setGeometricShapes(geometricShapes) [slot]
     :noindex:
     
     
-    This slot is the same than assigning a sequence of shape to the property 'geometricShapes'. It replaces all existing shapes by the new set of shap
-... es.
+    This slot is the same than assigning a sequence of shape to the property 'geometricShapes'. It replaces all existing shapes by the new set of shapes.
     
     :param geometricShapes: Sequence (e.g tuple or list) of shapes that replace all existing shapes by this new set.
     :type geometricShapes: seq. of shapes
     
-    .. index:: 
 
 .. py:function:: deleteGeometricShape(idx) [slot]
     :noindex:
@@ -566,11 +537,9 @@ Slots
     
     deletes the geometric shape with the given index.
     
-    :param idx: idx is the index of the shape to be removed. This is the index of the shape instance itself and must not always correspond to the inde
-... x-position of the shape within the tuple of all shapes
+    :param idx: idx is the index of the shape to be removed. This is the index of the shape instance itself and must not always correspond to the index-position of the shape within the tuple of all shapes
     :type idx: int
     
-    .. index:: 
 
 .. py:function:: clearGeometricShapes() [slot]
     :noindex:
@@ -578,7 +547,6 @@ Slots
     
     removes all geometric shapes from the canvas.
     
-    .. index:: 
 
 .. py:function:: userInteractionStart(type, start, maxNrOfPoints) [slot]
     :noindex:
@@ -590,11 +558,9 @@ Slots
     :type type: int
     :param start: True if the interaction should be started, False if a running interaction process should be aborted
     :type start: bool
-    :param maxNrOfPoints: number of shapes that should be added, the user can quit earlier by pressing Esc (optional, default: -1 -> infinite number o
-... f shapes)
+    :param maxNrOfPoints: number of shapes that should be added, the user can quit earlier by pressing Esc (optional, default: -1 -> infinite number of shapes)
     :type maxNrOfPoints: int
     
-    .. index:: 
 
 .. py:function:: renderToPixMap(xsize, ysize, resolution) [slot]
     :noindex:
@@ -609,7 +575,6 @@ Slots
     :param resolution: resolution of the pixmap in dpi
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: savePlot(filename, xsize, ysize, resolution) [slot]
     :noindex:
@@ -626,7 +591,6 @@ Slots
     :param resolution: resolution of image components in the plot in dpi (default: 300dpi)
     :type resolution: int
     
-    .. index:: 
 
 .. py:function:: copyToClipBoard() [slot]
     :noindex:
@@ -634,7 +598,6 @@ Slots
     
     copies the entire plot to the clipboard as bitmap data (uses the default export resolution).
     
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
@@ -642,7 +605,6 @@ Slots
     
     Triggers an update of the current plot window.
     
-    .. index:: 
 
 .. py:function:: getPlotID() [slot]
     :noindex:
@@ -650,7 +612,6 @@ Slots
     
     Return window ID of this plot {int}.
     
-    .. index:: 
 
 Signals
 -------------------------
@@ -671,7 +632,6 @@ Signals
         
             yourItem.connect('planeIndexChanged(int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeCurrentChanged(currentShape) [signal]
     :noindex:
@@ -688,7 +648,6 @@ Signals
         
             yourItem.connect('geometricShapeCurrentChanged(ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeFinished(shapes, aborted) [signal]
     :noindex:
@@ -707,7 +666,6 @@ Signals
         
             yourItem.connect('geometricShapeFinished(QVector<ito::Shape>,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapesDeleted() [signal]
     :noindex:
@@ -721,7 +679,6 @@ Signals
         
             yourItem.connect('geometricShapesDeleted()', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeDeleted(idx) [signal]
     :noindex:
@@ -738,7 +695,6 @@ Signals
         
             yourItem.connect('geometricShapeDeleted(int)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeChanged(idx, shape) [signal]
     :noindex:
@@ -757,7 +713,6 @@ Signals
         
             yourItem.connect('geometricShapeChanged(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeAdded(idx, shape) [signal]
     :noindex:
@@ -776,7 +731,6 @@ Signals
         
             yourItem.connect('geometricShapeAdded(int,ito::Shape)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: userInteractionDone(type, aborted, shapes) [signal]
     :noindex:
@@ -788,8 +742,7 @@ Signals
     
     :param type: type of the shapes that have been recently added (e.g. shape.Line, shape.Point, shape.Rectangle, ...)
     :type type: int
-    :param aborted: True if the user aborted the process by pressing the Esc key before having added the total number of requested shapesshapes : {lis
-... t of shape} list of shapes that have been added.
+    :param aborted: True if the user aborted the process by pressing the Esc key before having added the total number of requested shapesshapes : {list of shape} list of shapes that have been added.
     :type aborted: bool
     
     .. note::
@@ -798,7 +751,6 @@ Signals
         
             yourItem.connect('userInteractionDone(int,bool,QVector<ito::Shape>)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: geometricShapeStartUserInput(type, userInteractionReason) [signal]
     :noindex:
@@ -808,8 +760,7 @@ Signals
     
     :param type: Type of the shape that could be added by the user, this is one of the constants shape.Circle, shape.Ellipse, shape.Line...
     :type type: int
-    :param userInteractionReason: True if the process to add a new shape has been initialized by a script-base call, False if it has been started by a
-...  button in the toolbar or menu of the plot
+    :param userInteractionReason: True if the process to add a new shape has been initialized by a script-base call, False if it has been started by a button in the toolbar or menu of the plot
     :type userInteractionReason: bool
     
     .. note::
@@ -818,7 +769,6 @@ Signals
         
             yourItem.connect('geometricShapeStartUserInput(int,bool)', yourMethod)
     
-    .. index:: 
 
 .. py:function:: windowTitleModified(windowTitleSuffix) [signal]
     :noindex:
@@ -826,7 +776,6 @@ Signals
     
     signature for connection to this signal: windowTitleModified(QString)
     
-    .. index:: 
 
 .. END plot_help_to_rst_format.py: itom2dqwtplot
  

@@ -327,6 +327,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h
@@ -356,6 +357,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
@@ -372,6 +374,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
@@ -435,6 +438,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.ui
@@ -547,6 +551,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
@@ -575,6 +580,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
@@ -586,6 +592,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp

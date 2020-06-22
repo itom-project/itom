@@ -26,6 +26,7 @@
 #include "../organizer/uiOrganizer.h"
 #include "../../common/addInInterface.h"
 #include "abstractDockWidget.h"
+#include "../ui/helpTreeDockWidget.h"
 
 #include <qdockwidget.h>
 #include <qtreeview.h>
@@ -106,7 +107,7 @@ namespace ito
             void mnuShowInfo();
 
         signals:
-            void showPluginInfo(QString name, int type);
+            void showPluginInfo(QString name, HelpTreeDockWidget::HelpItemType type);
             void showDockWidget();
     };
 

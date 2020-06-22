@@ -344,6 +344,10 @@
         <source>Basic</source>
         <translation></translation>
     </message>
+    <message>
+        <source>Search...</source>
+        <translation type="unfinished">Suchen...</translation>
+    </message>
 </context>
 <context>
     <name>RangeWidget</name>
@@ -356,7 +360,7 @@
     <name>SearchBoxPrivate</name>
     <message>
         <source>Search...</source>
-        <translation>Suchen...</translation>
+        <translation type="vanished">Suchen...</translation>
     </message>
 </context>
 <context>

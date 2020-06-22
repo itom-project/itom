@@ -756,18 +756,76 @@ bool ParamBase::operator == (const ParamBase &rhs) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//!< Verifies and possibly corrects the proper set of the direction flags depending on the type.
+/* 
+    Every parameter also has some "direction" flags as part of its type value.
+    If the parameter is used to transport a generic value from a caller to a called
+    method or returns a new parameter back, the direction indicates, if the called method
+
+    * is consuming this parameter (In flag must be set),
+    * will consume the parameter and will change its value 
+      (only the value, not the type) (In | Out flag must both be set),
+    * or will create a new value and set it to a previously empty parameter
+      (only if the parameter is a return value of a method) (Out flag only must be set).
+
+    If no in/out flag is set, the in-flag as default is automatically added to m_type.
+
+    \seealso ito::ParamBase::Type
+*/
 void ParamBase::inOutCheck()
 {
-    if ((m_type & (ParamBase::In | ParamBase::Out)) == 0)
+    if ((m_type & (ParamBase::Type::In | ParamBase::Type::Out)) == 0)
     {
-        m_type |= ParamBase::In;
+        // if no direction is set, set at least In...
+        m_type |= ParamBase::Type::In;
     }
-    if (((m_type & ParamBase::In) | ParamBase::Out) == ParamBase::Out)
+
+    // verify that Out-only parameters as part of out-vectors of methods
+    // in algorithm plugins must not contain any pointer types (like
+    // dataObject, pointCloud, polygonMesh, HWRef, point), since
+    // the destruction of the created value inside of the algorithm
+    // will usually be earlier than the consumer will read these values.
+    if ((m_type & ParamBase::Type::Out) && 
+        !(m_type & ParamBase::Type::In))
     {
-        //out only not allowed for pointer-based types (beside arrays)
-        if (m_type & ((DObjPtr | PointCloudPtr | PolygonMeshPtr| HWRef) ^ (Pointer | NoAutosave)))
+        //These types are not allowed to be output-only.
+        //        DObjPtr         = 0x000010 | Pointer | NoAutosave,
+        //        HWRef           = 0x000040 | Pointer | NoAutosave,
+        //        PointCloudPtr   = 0x000080 | Pointer | NoAutosave,
+        //        PointPtr        = 0x000100 | Pointer | NoAutosave,
+        //        PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave
+        //since NoAutosave is not in the type part of m_type it needs to be appended to the
+        //comparison mask.
+        switch (m_type & (paramTypeMask | ParamBase::Type::NoAutosave))
         {
-            throw std::logic_error("It is not allowed to delcare a parameter as OUT for types DObjPtr, PointCloudPtr, PolygonMeshPtr or HWRef");
+        case DObjPtr:
+        case PointCloudPtr:
+        case PointPtr:
+        case PolygonMeshPtr:
+        case HWRef:
+        {
+            // throw exception only in debug mode. You don't want
+            // Exceptions of this type in a production system.
+            // You cannot check where it comes from then.
+            // To check the origin of this exception you would need
+            // a debugger attached or a call stack at hand.
+            assert(m_type & ParamBase::Type::In && "An out-only param must not be a Ptr-type"); // will always be false!
+            
+            // do not force the type to be In, too, here, since the
+            // parameter is likely to be defined in an out-vector of
+            // an algorithm plugin and then it is strictly forbidden
+            // to have pointer-like parameters there (beside string).
+
+            //throw std::logic_error("It is not allowed to declare a parameter as OUT"
+            //    "only for types DObjPtr, PointCloudPtr, PolygonMeshPtr or HWRef");
+
+            break;
+        }
+
+        default:
+            //well nothing to be done here
+            break;
+
         }
     }
 }

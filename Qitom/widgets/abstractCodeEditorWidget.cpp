@@ -407,7 +407,7 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 
         if (lineCount == 1)
         {
-            res = text.trimmed();
+            res = text;
         }
         else if (lineCount > 1)
         {

@@ -173,7 +173,6 @@ void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, co
             ito::JediCalltipRequest request;
             request.m_callbackFctName = "onJediCalltipResultAvailable";
             request.m_col = col;
-            request.m_encoding = encoding;
             request.m_line = line;
             request.m_path = filename;
             request.m_sender = this;

@@ -35,7 +35,7 @@ class DialogVariableDetail : public QDialog
     Q_OBJECT
 
 public:
-    DialogVariableDetail(const QString &name, const QString &type, const QString &value);
+    DialogVariableDetail(const QString &name, const QString &type, const QString &value, QWidget *parent);
     ~DialogVariableDetail() {};
 
 private:

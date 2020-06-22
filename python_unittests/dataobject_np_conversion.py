@@ -20,15 +20,29 @@ class DataObjectNpConversion(unittest.TestCase):
         for i in a[:,1:3,:]:
             sum += i
         self.assertEqual(result, sum)
+        self.assertIs(b1.base, a)
     
     def test_noncontinuousDataObject2NpArray(self):
             data = (1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19)
             a = dataObject([2,3,3],'uint8', data= data, continuous = 0)
-            with self.assertRaises(RuntimeError):
-                np.array(a, copy = False)
+            
+            # a non-continuous dataObject cannot share its data with a np.ndarray.
+            # Instead, an implicit deep-copy is done.
+            b2 = np.array(a, copy = False)
             
             #make object continuous before going on
             b1 = np.array(a.makeContinuous(), copy = False)
+            
+            b2[0,0,0] = 100
+            b1[0,0,0] = 99
+            a[0,0,0] = 98
+            self.assertEqual(b2[0,0,0], 100)
+            self.assertEqual(b1[0,0,0], 99)
+            self.assertEqual(a[0,0,0],98)
+            self.assertIsNone(a.base)
+            self.assertIsNotNone(b1.base)
+            self.assertIsNotNone(b2.base)
+            self.assertIsNot(b1.base, b2.base)
     
     def test_npArrayBool2DataObject(self):
         boolArray = np.array([[True,False],[False,True]], dtype='bool')

@@ -37,7 +37,6 @@ namespace ito
         int     m_line;
         int     m_col;
         QString m_path;
-        QString m_encoding;
         QByteArray m_callbackFctName;
         QPointer<QObject> m_sender;
     };
@@ -66,7 +65,6 @@ namespace ito
         int     m_line;
         int     m_col;
         QString m_path;
-        QString m_encoding;
         QString m_prefix;
         int m_requestId;
         QByteArray m_callbackFctName;

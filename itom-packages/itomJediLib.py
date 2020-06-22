@@ -1,29 +1,60 @@
+"""This module builds a bridge between the 
+autocompletion and static analysis package jedi
+and the GUI of itom.
+
+License information:
+
+itom software
+URL: http://www.uni-stuttgart.de/ito
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+Universitaet Stuttgart, Germany
+
+This file is part of itom.
+
+itom is free software; you can redistribute it and/or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or (at
+your option) any later version.
+
+itom is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom. If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import jedi
 import sys
-import itom
 
-#avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
+# avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
 maxreclimit = 1600
 if sys.getrecursionlimit() > maxreclimit:
     sys.setrecursionlimit(maxreclimit)
 
 if jedi.__version__ >= '0.12.0':
     jedienv = jedi.api.environment.InterpreterEnvironment()
-    
-ICON_CLASS = ('code-class', ':/classNavigator/icons/class.png') #':/pyqode_python_icons/rc/class.png')
-ICON_FUNC = ('code-function', ':/classNavigator/icons/method.png') #':/pyqode_python_icons/rc/func.png')
-ICON_FUNC_PRIVATE = ('code-function', ':/classNavigator/icons/method_private.png') #':/pyqode_python_icons/rc/func_priv.png')
-ICON_FUNC_PROTECTED = ('code-function',
-                       ':/classNavigator/icons/method_protected.png') #':/pyqode_python_icons/rc/func_prot.png')
-ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png') #':/pyqode_python_icons/rc/namespace.png')
-ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png') #':/pyqode_python_icons/rc/var.png')
-ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png') #':/pyqode_python_icons/rc/keyword.png')
 
+ICON_CLASS = ('code-class', ':/classNavigator/icons/class.png')
+ICON_FUNC = ('code-function', ':/classNavigator/icons/method.png')
+ICON_FUNC_PRIVATE = ('code-function', ':/classNavigator/icons/method_private.png')
+ICON_FUNC_PROTECTED = ('code-function',
+                       ':/classNavigator/icons/method_protected.png')
+ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
+ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
+ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png')
 
 
 class StreamHider:
+    """A stream class, that emits nothing.
+    
+    The stderr output of jedi is redirected to this
+    stream in order not display unwanted background
+    errors or warnings in itom.
+    """
     def __init__(self, channels=('stdout',)):
-        self._orig = {ch : None for ch in channels}
+        self._orig = {ch: None for ch in channels}
 
     def __enter__(self):
         for ch in self._orig:
@@ -87,16 +118,19 @@ def icon_from_typename(name, icon_type):
     if icon_type in ICONS:
         ret_val = ICONS[icon_type][1]
     elif icon_type:
-        _logger().warning("Unimplemented completion icon_type: %s", icon_type)
+        pass
+        # _logger().warning("Unimplemented completion icon_type: %s", icon_type)
     return ret_val
 
+
 def calltipModuleItomModification(sig, params):
-    '''mod that returns the call signature for all methods and classes in the itom module
+    """mod that returns the call signature for all 
+    methods and classes in the itom module
     based on their special docstrings
-    '''
+    """
     try:
-        doc = sig.docstring(raw = False, fast = True)
-    except:
+        doc = sig.docstring(raw=False, fast=True)
+    except Exception:
         return None
     
     arrow_idx = doc.find("->")
@@ -105,7 +139,6 @@ def calltipModuleItomModification(sig, params):
         return None
     
     signature = doc[len(sig.name):arrow_idx].strip()
-    #remove ( and )
     signature = signature[1:-1]
     parts = signature.split(",")
     
@@ -114,125 +147,198 @@ def calltipModuleItomModification(sig, params):
     elif len(params) >= 1 and \
         params[0].name == "self" and \
             len(parts) == len(params) - 1:
-        return ["self",] + parts
+        return ["self", ] + parts
     else:
         return None
 
-calltipsModificationList = { 'itom': calltipModuleItomModification }
 
-def calltips(code, line, column, path = None, encoding = "utf-8"):
-    '''
-    '''
-    if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
-        signatures = script.get_signatures(line = line + 1, column = column)
+calltipsModificationList = {'itom': calltipModuleItomModification}
+
+
+def calltips(code, line, column, path=None):
+    """
+    """
+    max_calltip_line_length = 120
+    
+    if jedi.__version__ >= '0.17.0':
+        script = jedi.Script(code=code, path=path, environment=jedienv)
+        signatures = script.get_signatures(line=line + 1, column=column)
+    elif jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+        signatures = script.get_signatures(line=line + 1, column=column)
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         signatures = script.call_signatures()
     
     result = []
+    
     for sig in signatures:
         index = sig.index
+        
         if index is None:
             index = -1
-        #create a formatted calltip (current index appear in bold)
+        
+        # create a formatted calltip (current index appear in bold)
         module_name = str(sig.module_name)
         call_name = str(sig.name)
-        
         paramlist = None
+        
         if module_name in calltipsModificationList:
             paramlist = calltipsModificationList[module_name](sig, sig.params)
         
         if paramlist is None:
             paramlist = [p.description for p in sig.params]
         
+        # remove the prefix "param " from every parameter (if it exists)
+        pkwd = "param "
+        pkwdlen = len(pkwd)
+        for pidx in range(len(paramlist)):
+            if paramlist[pidx].startswith(pkwd):
+                paramlist[pidx] = paramlist[pidx][pkwdlen:]
+        
         if index >= 0 and index < len(paramlist):
             paramlist[index] = "<b>%s</b>" % paramlist[index]
-        params = ", ".join(paramlist)
+        
         if module_name != "":
-            calltip = "<p style='white-space:pre'>%s.%s(%s)</p>" % (module_name, call_name, params)
+            method_name = "%s.%s" % (module_name, call_name)
         else:
-            calltip = "<p style='white-space:pre'>%s(%s)</p>" % (call_name, params)
-        result.append( \
-            (calltip, \
-            column, \
-            sig.bracket_start[0], \
-            sig.bracket_start[1]) \
+            method_name = call_name
+        
+        # calculate suitable lines in the calltip, such that every
+        # line is not longer than max_calltip_line_length
+        method_length = len(method_name)
+        param_lengths = [len(p) for p in paramlist]
+        
+        params = []
+        
+        remaining_length = max_calltip_line_length - method_length - 1
+        pidx_start = 0  # start index for the first param in the current line
+        pidx_end = 0
+        line_started = True
+        pidx = 0
+        
+        while pidx < len(paramlist):
+            if ((remaining_length - param_lengths[pidx]) >= 0) or \
+                    (not line_started):
+                # if not line_started: the line is currently empty, but the next 
+                # parameter does not fit to it... however it is necessary to 
+                # get along. Therefore add one parameter in any case
+                pidx_end += 1
+                line_started = True
+                remaining_length -= param_lengths[pidx]
+                pidx += 1
+            else:
+                # finish the current line
+                params.append(", ".join(paramlist[pidx_start: pidx_end]))
+                pidx_start = pidx_end
+                line_started = False
+                remaining_length = max_calltip_line_length
+        
+        # add the last remaining parameters to the last line
+        if pidx_end > pidx_start:
+            params.append(", ".join(paramlist[pidx_start: pidx_end]))
+        
+        indentation = min(16, len(method_name) + 1)  # +1 is the open bracket
+        separator = ",<br>%s" % (" " * indentation)
+        params = separator.join(params)
+        
+        calltip = "<p style='white-space:pre'>%s(%s)</p>" % (method_name, params)
+        
+        result.append(
+            (calltip,
+             column,
+             sig.bracket_start[0],
+             sig.bracket_start[1])
             )
+        
     return result
 
 
-    
-def completions(code, line, column, path, prefix, encoding = "utf-8"):
-    '''
-    '''
-    if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
-        completions = script.complete(line = line + 1, column = column)
+def completions(code, line, column, path, prefix):
+    """
+    """
+    if jedi.__version__ >= '0.17.0':
+        script = jedi.Script(code=code, path=path, environment=jedienv)
+        completions = script.complete(line=line + 1, column=column)
+    elif jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+        completions = script.complete(line=line + 1, column=column)
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         completions = script.completions()
     
     result = []
     
-    #the following pairs of [name, type] will not be returned as possible completion
-    blacklist = [['and', 'keyword'], ['if', 'keyword'], ['in', 'keyword'], ['is', 'keyword'], ['not', 'keyword'], ['or', 'keyword']]
+    # the following pairs of [name, type] will not be returned as possible completion
+    blacklist = [
+        ['and', 'keyword'],
+        ['if', 'keyword'],
+        ['in', 'keyword'],
+        ['is', 'keyword'],
+        ['not', 'keyword'],
+        ['or', 'keyword']
+    ]
     
-    #disable error stream to avoid import errors of jedi, which are directly printed to sys.stderr (no exception)
-    with StreamHider(('stderr',)) as h:
+    # disable error stream to avoid import errors of jedi, 
+    # which are directly printed to sys.stderr (no exception)
+    with StreamHider(('stderr', )) as h:
         for completion in completions:
             if [completion.name, completion.type] in blacklist:
                 continue
             try:
                 desc = completion.description
-                result.append( \
-                    (completion.name, \
-                    desc, \
-                    icon_from_typename(completion.name, completion.type), \
-                    completion.docstring()) \
+                result.append(
+                    (completion.name,
+                     desc,
+                     icon_from_typename(completion.name, completion.type),
+                     completion.docstring())
                     )
-            except:
-                break #todo, check this further
+            except Exception:
+                break  # todo, check this further
     
     return result
 
-def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
-    '''
+
+def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
+    """
     mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
-    '''
+    """
     if jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source = code, path = path, encoding = encoding, environment = jedienv)
+        if jedi.__version__ >= '0.17.0':
+            script = jedi.Script(code=code, path=path, environment=jedienv)
+        else:
+            script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
         
         try:
             if mode == 0:
-                assignments = script.infer(line = line + 1, column = column, prefer_stubs = False)
+                assignments = script.infer(line=line + 1, column=column, prefer_stubs=False)
             elif mode == 1:
-                assignments = script.goto(line = line + 1, column = column,follow_imports =False, prefer_stubs = False)
+                assignments = script.goto(line=line + 1, column=column, follow_imports=False, prefer_stubs=False)
             else:
-                assignments = script.goto(line = line + 1, column = column,follow_imports = True, prefer_stubs = False)
-        except Exception as ex:
+                assignments = script.goto(line=line + 1, column=column, follow_imports=True, prefer_stubs=False)
+        except Exception:
             assignments = []
     
     else:
         if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding, environment = jedienv)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
         else:
-            script = jedi.Script(code, line + 1, column, path, encoding)
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         
         try:
             if mode == 0:
                 assignments = script.goto_definitions()
             elif mode == 1:
-                assignments = script.goto_assignments(follow_imports =False)
+                assignments = script.goto_assignments(follow_imports=False)
             else:
-                assignments = script.goto_assignments(follow_imports =True)
-        except Exception as ex:
+                assignments = script.goto_assignments(follow_imports=True)
+        except Exception:
             assignments = []
     
     result = []
@@ -240,20 +346,21 @@ def goto_assignments(code, line, column, path, mode=0, encoding = "utf-8"):
         if assignment.full_name and \
                 assignment.full_name != "" and \
                 (assignment.module_path is None or not assignment.module_path.endswith("pyi")):
-            result.append( \
-                (assignment.module_path if assignment.module_path is not None else "", \
-                assignment.line - 1 if assignment.line else -1, \
-                assignment.column if assignment.column else -1, \
-                assignment.full_name, \
+            result.append(
+                (assignment.module_path if assignment.module_path is not None else "",
+                assignment.line - 1 if assignment.line else -1,
+                assignment.column if assignment.column else -1,
+                assignment.full_name,
                 ) \
             )
     
     if len(result) == 0 and len(assignments) > 0 and mode == 0:
-        #instead of 'infer' try 'goto' instead
-        result = goto_assignments(code, line, column, path, mode = 1, encoding = encoding)
+        # instead of 'infer' try 'goto' instead
+        result = goto_assignments(code, line, column, path, mode=1, encoding=encoding)
     
     return result
-    
+
+
 if __name__ == "__main__":
     
     text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"
@@ -286,26 +393,23 @@ inception()'''
     print(goto_assignments(source, 7, 1, "", 0))
     print(goto_assignments(source, 7, 1, "", 1))
     
-    print(calltips("from itom import dataObject\ndataObject.copy(",1,16, "utf-8"))
-    print(calltips("from itom import dataObject\na = dataObject()\na.copy(",2,7, "utf-8"))
-    print(completions("import win", 0, 10, "", "", "utf-8"))
-    print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17, "utf-8"))
-    result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "", "utf-8")
-    print(calltips("from itom import dataObject\ndataObject([4,5], 'u",1,17, "utf-8"))
-    print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5, "utf-8"))
+    print(calltips("from itom import dataObject\ndataObject.copy(", 1, 16))
+    print(calltips("from itom import dataObject\na = dataObject()\na.copy(", 2, 7))
+    print(completions("import win", 0, 10, "", ""))
+    print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17))
+    result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "")
+    print(calltips("from itom import dataObject\ndataObject([4,5], 'u", 1, 17))
+    print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5))
     
-    print(completions("from itom import dataObject\ndataO, 'u",1,5, "", "", "utf-8"))
-    print(completions("1", 0, 1, "", "", "utf-8"))
-    print(completions("import numpy as np\nnp.arr", 1, 6, "", "", "utf-8"))
+    print(completions("from itom import dataObject\ndataO, 'u", 1, 5, "", ""))
+    print(completions("1", 0, 1, "", ""))
+    print(completions("import numpy as np\nnp.arr", 1, 6, "", ""))
     print(goto_assignments("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
     print(goto_assignments("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
-    
 
-    
-
-#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None, "Utf-8")
-#script = jedi.Script(text,4,5,None, "Utf-8")
-#script = jedi.Script(text2, 3, 12,None,"Utf-8")
+#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None)
+#script = jedi.Script(text,4,5,None)
+#script = jedi.Script(text2, 3, 12,None)
 #sigs = script.call_signatures()
 #for sig in sigs:
     #print("Signature (%s)\n-----------------" % str(sig))

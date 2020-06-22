@@ -450,6 +450,9 @@ class ItomDocString(collections.Mapping):
     def _str_index(self):
         idx = self['index']
         out = []
+        if len(idx) == 0:
+            # itom specific hack
+            return out
         out += ['.. index:: %s' % idx.get('default', '')]
         for section, references in idx.items():
             if section == 'default':

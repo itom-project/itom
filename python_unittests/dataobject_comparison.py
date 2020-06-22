@@ -19,6 +19,7 @@ class DataObjectComparison(unittest.TestCase):
         #This will be changed in the future and behaves than similar to np.ndarray: It will
         #raise a ValueError if the dataObject has more than one value, else the single value is
         #compared and the result of this single value comparison is returned.
+        #see: https://bitbucket.org/itom/itom/issues/119/python-boolean-operator-of-dataobject
         dataObj = dataObject([2,3,4])
         with self.assertRaises(ValueError):
             result = not dataObj
@@ -30,6 +31,7 @@ class DataObjectComparison(unittest.TestCase):
         #This will be changed in the future and behaves than similar to np.ndarray: It will
         #raise a ValueError if the dataObject has more than one value, else the single value is
         #compared and the result of this single value comparison is returned.
+        #see: https://bitbucket.org/itom/itom/issues/119/python-boolean-operator-of-dataobject
         
         dtypes = ['uint8','int8','uint16','int16','int32','float32','float64','complex64','complex128','rgba32']
         for dt in dtypes:

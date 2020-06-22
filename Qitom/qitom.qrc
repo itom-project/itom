@@ -162,7 +162,11 @@
         <file>icons/stopScript.png</file>
         <file>icons/bookmark.png</file>
         <file>icons/syntaxError.png</file>
+        <file>icons/checkerInfo.png</file>
+        <file>icons/checkerWarning.png</file>
         <file>icons/bookmarkSyntaxError.png</file>
+        <file>icons/bookmarkAndWarning.png</file>
+        <file>icons/bookmarkAndInfo.png</file>
         <file>icons/currentLine.png</file>
         <file>icons/callstackLine.png</file>
     </qresource>

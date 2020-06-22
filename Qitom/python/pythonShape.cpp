@@ -316,14 +316,13 @@ This static method is equal to the command:: \n\
 /*static*/ PyObject* PythonShape::PyShape_StaticPoint(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *point = NULL;
-    double radius = 0.0;
     int index = -1;
     char* name = NULL;
     int flags = 0;
     ito::RetVal retval;
     const char *kwlist[] = {"point", "index", "name", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isi", const_cast<char**>(kwlist), &point, &radius, &index, &name, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isi", const_cast<char**>(kwlist), &point, &index, &name, &flags))
     {
         return NULL;
     }

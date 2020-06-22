@@ -8,28 +8,25 @@ Jedes Mal, wenn ein neues Setup von 'itom' herauskommt, wird die Patch-Nummer de
 nur bei größeren Änderungen und werden durch die Core-Entwickler mitfestgelegt.
 
 
-Inkrementierung der 'itom'-Versions-Nummer:
+Inkrementierung der 'itom'-Versionsnummer:
 -------------------------------------------
 
-In 'global.h' sowohl die Zahl ITOM_VERSION_PATCH inkrementieren als auch den String
-ITOM_VERSION_STR anpassen.
+In 'global.h' die neue itom Versionsnummer nach dem Prinzip von Semantic Versioning
+vergeben.
 
 
-Überprüfung der AddInInterface-Versionsnummer:
-----------------------------------------------
+Überprüfung der AddInInterface- und DesignerPluginInterface-Versionsnummer:
+----------------------------------------------------------------------------
 
-Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface vorkam. Dies führt
-zu einer Inkrementierung der Versionsnummern, die am Ende von addInInterfaceVersion.h
-vergeben werden.
+Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface und / oder 
+DesignerPluginInterface vorkam. Dies führt zu einer Inkrementierung der Versionsnummer(n)
+nach dem Prinzip von Semantic Versioning, die in den Dateien addInInterfaceVersion.h und 
+designerPluginInterfaceVersion.h vergeben werden.
 
-Windows: OpenSSL Bibliotheken in das Hauptverzeichnis der qitom.exe durch das Setup kopieren:
-----------------------------------------------------------------------------------------------
+itom, designer plugins und dann alle plugins kompilieren
+---------------------------------------------------------
 
-1. Die für 32bit oder 64bit korrekte Version der OpenSSL Bibliothek (Version 1.0.2 - LTS bis 31.12.2019)
-   in der letzten Version (größter Buchstabe nach der Version) von https://indy.fulgan.com/SSL/ herunterladen.
-2. Die beiden Dateien libeay32.dll und ssleay32.dll in das Setup aufnehmen und somit in das itom Verzeichnis kopieren.
-3. Die Lizenzdatei OpenSSL License.txt ebenfalls ins Setup aufnehmen und in das itom Verzeichnis kopieren.
-
+1. Compile
 
 Doku erstellen:
 ---------------
@@ -37,8 +34,8 @@ Doku erstellen:
 1. \Build\itom\docs\doxygen\itom_doxygen.dox per Doppelklick starten
 2. itom starten
 3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
-4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, Build-Verzeichnis der freien Plugins wählen und Hilfe starten
-5. Syntax Hilfe API Datei erstellen: E:\itom\sources\itom\itom-packages\api_generator\gen_python3_api.py ausführen (dies führt dann zu einer Änderung in einer *.api Datei. Diese muss eingecheckt werden)
+4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, 
+   Build-Verzeichnis der freien Plugins wählen und Hilfe starten
 
 
 CHANGE-LOG

@@ -1,5 +1,10 @@
 import numpy as np
-import distortion
+
+try:
+    import distortion
+except ModuleNotFoundError:
+    from . import distortion
+
 import itom
 
 '''Demo script to show the usage and performance of the distortion module'''

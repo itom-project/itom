@@ -96,6 +96,7 @@ import sys
 import traceback
 import types
 import weakref
+import gc
 from importlib import import_module
 from importlib.util import source_from_cache
 from imp import reload
@@ -248,6 +249,18 @@ def update_function(old, new):
             pass
 
 
+def update_instances(old, new):
+    """Use garbage collector to find all instances that refer to the old
+    class definition and update their __class__ to point to the new class
+    definition"""
+    
+    refs = gc.get_referrers(old)
+
+    for ref in refs:
+        if type(ref) is old:
+            ref.__class__ = new
+
+
 def update_class(old, new):
     """Replace stuff in the __dict__ of a class, and upgrade
     method code objects, and add new methods, if any"""
@@ -255,7 +268,9 @@ def update_class(old, new):
         old_obj = getattr(old, key)
         try:
             new_obj = getattr(new, key)
-            if old_obj == new_obj:
+            # explicitly checking that comparison returns True to handle
+            # cases where `==` doesn't return a boolean.
+            if (old_obj == new_obj) is True:
                 continue
         except AttributeError:
             # obsolete attribute: remove it
@@ -278,6 +293,9 @@ def update_class(old, new):
                 setattr(old, key, getattr(new, key))
             except (AttributeError, TypeError):
                 pass # skip non-writable attributes
+
+    # update all instances of class
+    update_instances(old, new)
 
 
 def update_property(old, new):

@@ -13,6 +13,7 @@ from itom import *
 def demo_fitGeometricElementstoPointcloud(doPlot = True):
     geometryList = ["circle2D", "circle3D", "sphere", "cylinder", "line", "plane"]
     cloud = pointCloud()
+    
     for fitGeometry in geometryList:
         if fitGeometry == "line":
             
@@ -34,7 +35,7 @@ def demo_fitGeometricElementstoPointcloud(doPlot = True):
             Y *= np.cos(45 * np.pi / 180)
             cloud = pointCloud.fromXYZ(dataObject(X.astype('float32')),dataObject(Y.astype('float32')),dataObject(Z.astype('float32')))
             
-            [cVec, cPt, cInl] = filter("pclFitPlane", cloud,  [1, 6], optimizeParameters=0)
+            [cVec, cPt, cInl] = filter("pclFitPlane", cloud, 1, optimizeParameters=0)
             
             print("The plane's direction is ({}, {}, {}) with the constant {}".format(cVec[0], cVec[1], cVec[2], cPt))
             

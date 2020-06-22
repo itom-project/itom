@@ -1,6 +1,5 @@
 import numpy as np
 from scipy import spatial
-from itom import dataObject()
 
 def demo_nearest_neighbours():
     #make a grid of 0:9 in X and 0:20 in Y
@@ -13,8 +12,8 @@ def demo_nearest_neighbours():
     kdtree = spatial.cKDTree(XY, leafsize=4)
 
     #choose some random points in the grid and get the 8 nearest neighbours
-    rand = dataObject.randN([1, 20],'float32') * X.size
-        
+    rand = np.random.random_integers(0, XY.shape[1], size=(20,))
+    
     for r in rand:
         #random point:
         point = XY[r,:]

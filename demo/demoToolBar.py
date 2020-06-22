@@ -14,7 +14,7 @@ class myToolBar():
         '''
         clean up buttonbar entries after killing the class
         '''
-        removeButton("amipola","HelloWorld")
+        removeButton("amipola", "HelloWorld")
         
     #Add a new function to the class
     def printHelloWorld(self, test):
@@ -28,11 +28,13 @@ class myToolBar():
         return 42
 
 def demo_toolbar():
+    global app
+    
     # Create a new instance of myToolBar with the name app
     app = myToolBar()
 
     #Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
-    addButton("amipola","Hello","res = app.printHelloWorld(True)", "icons_m/HV_on.png")
+    addButton("amipola","HelloWorld","res = app.printHelloWorld(True)", "icons_m/HV_on.png")
 
     #For Debug test with single step
     app.printHelloWorld(True)

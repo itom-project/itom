@@ -32,6 +32,7 @@
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
 #include "../codeEditor/panels/lineNumber.h"
+#include "../codeEditor/codeCheckerItem.h"
 
 #include "../global.h"
 
@@ -52,14 +53,14 @@ QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
 
-
+  
 
 namespace ito
 {
 
 struct ScriptEditorStorage
 {
-    QByteArray  filename;
+    QString     filename;
     int         firstVisibleLine;
     QList<int>  bookmarkLines; //! this is deprecated, since bookmarks are now managed by the global bookmarkModel
 };
@@ -160,9 +161,10 @@ private:
     QFileSystemWatcher *m_pFileSysWatcher;
     QMutex m_fileSystemWatcherMutex;
 
-    bool m_syntaxCheckerEnabled;
-    int m_syntaxCheckerInterval;
-    QTimer *m_syntaxTimer;
+    // the following variables are related to the code checker feature of Python
+    bool m_codeCheckerEnabled;
+    int m_codeCheckerInterval;      //!< timeout time after the last key press, when the next code check is called.
+    QTimer *m_codeCheckerCallTimer; //!< timer, that is used to call a new code check after a certain time after the key press
 
     Qt::CaseSensitivity m_filenameCaseSensitivity;
 
@@ -218,9 +220,9 @@ signals:
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
 public slots:
-    void checkSyntax();
-    void syntaxCheckResult(QString unexpectedErrors, QString flakes, QString syntaxErrors); //if frosted is used, syntaxErrors are contained in flakes
-    void errorListChange(const QStringList &errorList);
+    void triggerCodeChecker();
+    void codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems);
+    void codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems);
 
     void menuCut();
     void menuCopy();

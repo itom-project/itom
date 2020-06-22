@@ -81,29 +81,61 @@ namespace ito
 
     public:
         enum Type {
-            //flags (bit 17-32)
+            //!< Flag section (bit 17-32)
+
+            /* If this bit is set, this parameter should be automatically
+            stored if for instance a plugin is closed and if the plugin
+            with the same identifier is opened again, the parameter
+            value will be tried to be reconstructed from the stored value. */
             NoAutosave      = 0x010000,
-            Readonly        = 0x020000, // this flag is not used inside Param but you can check for it
+
+            /* Flag to define this parameter to be readonly. It cannot for instance not be changed 
+            from Python. Internally, the setVal method does not check for Readonly.
+            This has to be programmed manually. Plugins can also set or unset this flag
+            during the runtime. */
+            Readonly        = 0x020000,
+
+            /* Flag to mark this parameter as input value only.
+            If a plugin defines this flag without the Out-flag, it pretends
+            to only consume the given value, but the consumer will not change the value at any time.
+            If the Out-flag is set, too, the consumer (e.g. plugin) will read and write the
+            value, such that for instance a given dataObject will have another content after having
+            called a method of a plugin. Return parameters of a method must never have the In-flag set. */
             In              = 0x040000,
+
+            /* Flag to mark this parameter, that the consumer will create or change
+            the value of this parameter. 
+            This can be set together with In (or alone). All return parameters of an method in
+            an algorithm plugin, must have this flag set. For other mandatory or optional
+            input parameter, this flag can only be set together with In and means then,
+            that the content of the given parameter will be changed by the called method. */
             Out             = 0x080000,
+
+            /* Flag to mark a parameter to be temporarily not available. 
+            Plugins can also set or unset this flag
+            during the runtime. */
 			NotAvailable    = 0x100000,
 
-            //type (bit 1-16)
+            //!< Type section (bit 1-16), except for the NoAutosave bit, which is bit 17
+
+            /* Helper-bit for all types that only contain a pointer to the real value and
+            not the value itself. For these types, the caller need to keep the pointed object
+            until both caller and called method do not use it any more! */
             Pointer         = 0x000001,
-            Char            = 0x000002,
-            Int             = 0x000004,
-            Double          = 0x000008,
-            Complex         = 0x000400,
-            DObjPtr         = 0x000010 | Pointer | NoAutosave,
-            String          = 0x000020 | Pointer,
-            HWRef           = 0x000040 | Pointer | NoAutosave,
-            CharArray       = Char     | Pointer,
-            IntArray        = Int      | Pointer,
-            DoubleArray     = Double   | Pointer,
-            ComplexArray    = Complex  | Pointer,
-            PointCloudPtr   = 0x000080 | Pointer | NoAutosave,
-            PointPtr        = 0x000100 | Pointer | NoAutosave,
-            PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave
+            Char            = 0x000002, //!< character (int8) parameter
+            Int             = 0x000004, //!< integer (int32) parameter
+            Double          = 0x000008, //!< double (float64) parameter
+            Complex         = 0x000400, //!< complex (complex128) parameter
+            DObjPtr         = 0x000010 | Pointer | NoAutosave, //!< dataObject parameter (pointer, no auto-save possible)
+            String          = 0x000020 | Pointer, //!< string parameter
+            HWRef           = 0x000040 | Pointer | NoAutosave, //!< reference to another plugin instance (pointer, no auto-save possible)
+            CharArray       = Char     | Pointer, //!< array of characters
+            IntArray        = Int      | Pointer, //!< array of integers
+            DoubleArray     = Double   | Pointer, //!< array of doubles
+            ComplexArray    = Complex  | Pointer, //!< array of complex numbers
+            PointCloudPtr   = 0x000080 | Pointer | NoAutosave, //!< point cloud parameter (pointer, no auto-safe possible)
+            PointPtr        = 0x000100 | Pointer | NoAutosave, //!< point parameter (pointer, no auto-safe possible)
+            PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave //!< polygon mesh parameter (pointer, no auto-safe possible)
         };
 
         
