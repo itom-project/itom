@@ -165,7 +165,8 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
         texts.append(getPythonReadableName(item));
     }
 
-    mimeData->setData("text/plain", texts.join("\n").toLatin1());
+    //text in mimeData must be UTF8 encoded, not Latin1 (since it could also be read by other applications).
+    mimeData->setData("text/plain", texts.join("\n").toUtf8());
     return mimeData;
 }
 
