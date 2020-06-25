@@ -245,27 +245,53 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
 
-    QPixmap pixmap(spashScreenFileName);
+    QPixmap pixmap(spashScreenFileName);    
+    QString versionText;
+    QString buildText;
 
-    QString text;
+    QPainter p;
+    p.begin(&pixmap);
+    p.setPen(Qt::white);
+
+    versionText = QString(tr("Version %1")).arg(ITOM_VERSION_STR);
 
     if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
     {
-        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
+        buildText = QString(tr("%2")).arg(tr("64 bit (x64)"));
     }
     else
     {
-        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
+        buildText = QString(tr("%1")).arg(tr("32 bit (x86)"));
     }
 
 #if USING_GIT == 1
-    text.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));
+    buildText.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));
 #endif
-    QPainter p;
-    p.begin(&pixmap);
-    p.setPen(Qt::black);
-    QRectF rect(250 /*311*/,217 /*115*/,200,100); //position of the version text within the image
-    p.drawText(rect, Qt::AlignLeft, text);
+
+    QRectF rectVersion(250 /*311*/,217 /*115*/,200,100); //position of the version text within the image
+    QFont fontVersion;
+    fontVersion.setPixelSize(16);
+    p.setFont(fontVersion);
+    p.drawText(rectVersion, Qt::AlignLeft, versionText);
+
+    QRectF rectBuild(250, 245, 200, 100);
+    QFont fontBuild;
+    fontBuild.setPixelSize(12);
+    p.setFont(fontBuild);
+    p.drawText(rectBuild, Qt::AlignLeft, buildText);
+
+#ifdef USETRUMPFEDITIONSPLASHSCREEN 
+    QString editionText = QString(tr("TRUMPF Edition").toLatin1().data());
+    QRectF rectEdition(380, 16, 534, 67);
+
+    QFont font;
+    font.setPixelSize(20);
+    p.setFont(font);
+    p.setPen(Qt::white);
+    
+    p.drawText(rectEdition, Qt::AlignLeft, editionText);
+#endif
+
     p.end();
 
     m_splashScreen = new QSplashScreen(pixmap);
