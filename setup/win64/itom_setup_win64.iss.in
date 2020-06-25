@@ -414,7 +414,7 @@ Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_2.dll"; DestDir: "{app}\li
 Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-;Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
