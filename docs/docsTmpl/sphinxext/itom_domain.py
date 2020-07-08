@@ -11,7 +11,7 @@ from docutils.parsers.rst import directives
 
 from sphinx import addnodes
 from sphinx.roles import XRefRole
-from sphinx.locale import l_, _
+from sphinx.locale import _
 from sphinx.domains import Domain, ObjType, Index
 from sphinx.directives import ObjectDescription
 from sphinx.util.nodes import make_refnode
@@ -110,19 +110,19 @@ class PyItomObject(ObjectDescription):
     #]
     
     doc_field_types = [
-        TypedField('paramsmand', label=l_('Mandatory parameters'),
+        TypedField('paramsmand', label=_('Mandatory parameters'),
                    names=('parammand', 'param'),
                    typerolename='obj', typenames=('parammandtype', 'type'),
                    can_collapse=True),
-        TypedField('paramsopt', label=l_('Optional parameters'),
+        TypedField('paramsopt', label=_('Optional parameters'),
                    names=('paramopt',),
                    typerolename='obj', typenames=('paramopttype',),
                    can_collapse=True),
-        TypedField('returnvalue', label=l_('Returns'),
+        TypedField('returnvalue', label=_('Returns'),
                    names=('returns', 'return'),
                    typerolename='obj', typenames=('returntype','rtype'),
                    can_collapse=True),
-        GroupedField('exceptions', label=l_('Raises'), rolename='exc',
+        GroupedField('exceptions', label=_('Raises'), rolename='exc',
                      names=('raises', 'raise', 'exception', 'except'),
                      can_collapse=True),
     ]
@@ -275,7 +275,7 @@ class PyItomDomain(Domain):
     name = 'pyitom'
     label = 'PyItom'
     object_types = {
-        'filter':     ObjType(l_('filter'),      'filt', 'obj'),
+        'filter':     ObjType(_('filter'),      'filt', 'obj'),
     }
 
     directives = {

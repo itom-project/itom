@@ -1627,6 +1627,7 @@ QMimeData* PlugInModel::mimeData(const QModelIndexList &indexes) const
 {
     QMimeData *mimeData = QAbstractItemModel::mimeData(indexes);
     QStringList texts;
+
     foreach(const QModelIndex item, indexes)
     {
         if (item.column() == 0)
@@ -1635,7 +1636,9 @@ QMimeData* PlugInModel::mimeData(const QModelIndexList &indexes) const
             texts.append(getInitCommand(item));
         }
     }
-    mimeData->setData("text/plain", texts.join("\n").toLatin1());
+
+    //text in mimeData must be UTF8 encoded, not Latin1 (since it could also be read by other applications).
+    mimeData->setData("text/plain", texts.join("\n").toUtf8());
     return mimeData;
 }
 } //end namespace ito

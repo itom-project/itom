@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-
+  
 cmake_minimum_required(VERSION 3.1)
 project(itom)
    
@@ -41,12 +41,14 @@ option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS
     which are in current *.ts files, but not in the source code, will be\
     removed (ON) from *.ts or not (OFF)." OFF)
 
-# add Debug flag if applicable
-# flag will be available in all subsequent targets ans folders 
-# from this file
-# https://cmake.org/cmake/help/latest/command/add_compile_definitions.html
-add_compile_definitions($<$<CONFIG:DEBUG>:_DEBUG>)
-
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
+    # add Debug flag if applicable
+    # flag will be available in all subsequent targets and folders 
+    # from this file
+    # https://cmake.org/cmake/help/latest/command/add_compile_definitions.html
+    add_compile_definitions($<$<CONFIG:DEBUG>:_DEBUG>)
+endif()
+    
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
@@ -99,8 +101,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py
-    ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles

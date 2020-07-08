@@ -53,14 +53,14 @@ QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
 
-
+  
 
 namespace ito
 {
 
 struct ScriptEditorStorage
 {
-    QByteArray  filename;
+    QString     filename;
     int         firstVisibleLine;
     QList<int>  bookmarkLines; //! this is deprecated, since bookmarks are now managed by the global bookmarkModel
 };

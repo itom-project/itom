@@ -45,7 +45,19 @@ namespace ito
 
     QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj)
     {
-        in >> obj.filename >> obj.firstVisibleLine >> obj.bookmarkLines;
+        // from itom 3.2.1 to itom 4.0 a bug was fixed in ito::ScriptEditorStorage (QByteArray / QString mixure in filename).
+        // This has been fixed. However, when an old setting file is loaded, the load will crash. This is caught here.
+        try
+        {
+            in >> obj.filename >> obj.firstVisibleLine >> obj.bookmarkLines;
+        }
+        catch (std::bad_alloc)
+        {
+            obj.filename = "";
+            obj.firstVisibleLine = 0;
+            obj.bookmarkLines.clear();
+        }
+
         return in;
     }
 
@@ -213,7 +225,10 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     for (int i = 0; i < counter; ++i)
     {
         settings.setArrayIndex(i);
-        fi.setFile(settings.value("path").toString());
+
+        QString path = settings.value("path").toString();
+
+        fi.setFile(path);
         if (fi.exists())
         {
             m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));

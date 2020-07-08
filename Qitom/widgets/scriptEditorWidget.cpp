@@ -367,7 +367,7 @@ void ScriptEditorWidget::initMenus()
 const ScriptEditorStorage ScriptEditorWidget::saveState() const
 {
     ScriptEditorStorage storage;
-    storage.filename = getFilename().toLatin1();
+    storage.filename = getFilename();
     storage.firstVisibleLine = firstVisibleLine();
 
     return storage;

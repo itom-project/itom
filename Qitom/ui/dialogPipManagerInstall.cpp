@@ -23,6 +23,7 @@
 #include "dialogPipManagerInstall.h"
 
 #include "../global.h"
+#include "../models/pipManager.h"
 
 #include <qfiledialog.h>
 #include <qmessagebox.h>
@@ -35,8 +36,7 @@ namespace ito {
 
 //--------------------------------------------------------------------------------
 DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString package) :
-    QDialog(parent),
-    m_selectedType(typeWhl)
+    QDialog(parent)
 {
     ui.setupUi(this);
 
@@ -109,19 +109,30 @@ DialogPipManagerInstall::~DialogPipManagerInstall()
 }
 
 //--------------------------------------------------------------------------------
-void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex, bool &runAsSudo)
+void DialogPipManagerInstall::getResult(
+        int &type,
+        QString &packageName,
+        bool &upgrade,
+        bool &installDeps,
+        QString &findLinks,
+        bool &ignoreIndex,
+        bool &runAsSudo)
 {
     if (ui.radioWhl->isChecked())
     {
-        type = typeWhl;
+        type = PipInstall::typeWhl;
     }
     else if (ui.radioTarGz->isChecked())
     {
-        type = typeTarGz;
+        type = PipInstall::typeTarGz;
+    }
+    else if (ui.radioSearchIndex->isChecked())
+    {
+        type = PipInstall::typeSearchIndex;
     }
     else
     {
-        type = typeSearchIndex;
+        type = PipInstall::typeRequirements;
     }
 
     packageName = ui.txtPackage->text();
@@ -136,8 +147,23 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
 void DialogPipManagerInstall::on_btnPackage_clicked()
 {
     static QString btnPackageDirectory;
-	QString filter = (m_selectedType == typeWhl) ? "Python Wheel (*.whl)" : "Python archives (*.tar.gz *.zip)";
+    QString filter;
+    
+    if (ui.radioWhl->isChecked())
+    {
+        filter = "Python Wheel (*.whl)";
+    }
+    else if (ui.radioTarGz->isChecked())
+    {
+        filter = "Python archives (*.tar.gz *.zip)";
+    }
+    else if (ui.radioRequirements->isChecked())
+    {
+        filter = "Requirements file (*.txt)";
+    }
+
     QString name = QFileDialog::getOpenFileName(this, tr("Select package archive"), btnPackageDirectory, filter);
+
     if (name != "")
     {
         btnPackageDirectory = QDir(name).absolutePath();
@@ -150,6 +176,7 @@ void DialogPipManagerInstall::on_btnFindLinks_clicked()
 {
     static QString btnFindLinksDirectory;
     QString directory = QFileDialog::getExistingDirectory(this, tr("Select directory"), btnFindLinksDirectory);
+
     if (directory != "")
     {
         btnFindLinksDirectory = directory;
@@ -160,32 +187,47 @@ void DialogPipManagerInstall::on_btnFindLinks_clicked()
 //--------------------------------------------------------------------------------
 void DialogPipManagerInstall::on_radioWhl_clicked(bool checked)
 {
-    m_selectedType = typeWhl;
     ui.btnPackage->setEnabled(true);
     ui.txtPackage->setText("");
     ui.txtPackage->setPlaceholderText(tr("choose whl archive..."));
     ui.txtPackage->setReadOnly(true);
+    ui.checkUpgrade->setVisible(true);
+    ui.checkInstallDeps->setVisible(true);
 }
 
 //--------------------------------------------------------------------------------
 void DialogPipManagerInstall::on_radioTarGz_clicked(bool checked)
 {
-    m_selectedType = typeTarGz;
     ui.btnPackage->setEnabled(true);
     ui.txtPackage->setText("");
     ui.txtPackage->setPlaceholderText(tr("choose tar.gz or zip archive..."));
     ui.txtPackage->setReadOnly(true);
+    ui.checkUpgrade->setVisible(true);
+    ui.checkInstallDeps->setVisible(true);
 }
 
 //--------------------------------------------------------------------------------
 void DialogPipManagerInstall::on_radioSearchIndex_clicked(bool checked)
 {
-    m_selectedType = typeSearchIndex;
     ui.btnPackage->setEnabled(false);
     ui.txtPackage->setText("");
     ui.txtPackage->setReadOnly(false);
     ui.txtPackage->setPlaceholderText(tr("package-name"));
     ui.txtPackage->setFocus();
+    ui.checkUpgrade->setVisible(true);
+    ui.checkInstallDeps->setVisible(true);
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_radioRequirements_clicked(bool checked)
+{
+    ui.btnPackage->setEnabled(true);
+    ui.txtPackage->setText("");
+    ui.txtPackage->setReadOnly(false);
+    ui.txtPackage->setPlaceholderText(tr("choose requirements txt file..."));
+    ui.txtPackage->setFocus();
+    ui.checkUpgrade->setVisible(false);
+    ui.checkInstallDeps->setVisible(false);
 }
 
 //--------------------------------------------------------------------------------
