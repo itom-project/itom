@@ -710,7 +710,7 @@ void ScriptEditorWidget::menuComment()
             if (searchIndex >= 0)
             {
                 QTextCursor cursor = setCursorPosition(i, searchIndex, false);
-                cursor.insertText("#");
+                cursor.insertText("# ");
 
                 if (i == lineFrom)
                 {
@@ -757,7 +757,16 @@ void ScriptEditorWidget::menuUncomment()
             lineTextFull = lineText(i);
             lineTextTrimmed = lineTextFull.trimmed();
 
-            if (lineTextTrimmed.left(1) == "#")
+            if (lineTextTrimmed.left(2) == "# ") // delete # with space characters
+            {
+                searchIndex = lineTextFull.indexOf("# ");
+                if (searchIndex >= 0)
+                {
+                    setSelection(i, searchIndex, i, searchIndex + 2);
+                    textCursor().removeSelectedText();
+                }
+            }
+            else if (lineTextTrimmed.left(1) == "#")
             {
                 searchIndex = lineTextFull.indexOf("#");
                 if (searchIndex >= 0)
@@ -766,6 +775,7 @@ void ScriptEditorWidget::menuUncomment()
                     textCursor().removeSelectedText();
                 }
             }
+            
         }
 
         if (lineFrom != indexFrom || lineTo != indexTo)
