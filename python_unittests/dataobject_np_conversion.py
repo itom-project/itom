@@ -58,6 +58,13 @@ class DataObjectNpConversion(unittest.TestCase):
         dtypes = ['uint8','int8','uint16','int16','int32','float32','float64','complex64','complex128']
         for dt in dtypes:
             nparray = np.ndarray([2,5,6],dtype=dt)
+            
+            # fill with some values
+            for z in range(0, 2):
+                for y in range(0, 5):
+                    for x in range(0, 6):
+                        nparray[z, y, x] = z * (-0.96) + y * x * 1.02
+            
             dobj = dataObject(nparray)
             self.assertEqual(nparray.shape, dobj.shape)
             self.assertEqual(dobj.dtype, dt)
@@ -69,6 +76,13 @@ class DataObjectNpConversion(unittest.TestCase):
         for dt in srcdtypes:
             for desttype in ['float32','complex128','int16']:
                 nparray = np.ndarray([2,5,6],dtype=dt)
+                
+                # fill with some values
+                for z in range(0, 2):
+                        for y in range(0, 5):
+                            for x in range(0, 6):
+                                nparray[z, y, x] = z * (-0.96) + y * x * 1.02
+                                       
                 dobj = dataObject(nparray, dtype=desttype)
                 self.assertEqual(nparray.shape, dobj.shape)
                 diff = nparray.astype(desttype) - dobj
