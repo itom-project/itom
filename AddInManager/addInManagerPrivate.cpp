@@ -382,10 +382,21 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     QEvent evt((QEvent::Type)(QEvent::User + 123));
                     QCoreApplication::sendEvent(ain, &evt);
 
-                    switch (ain->getType()&(ito::typeDataIO | ito::typeAlgo | ito::typeActuator))
+                    switch (ain->getType() & (ito::typeDataIO | ito::typeAlgo | ito::typeActuator))
                     {
                     case typeDataIO:
-                        retValue += loadAddInDataIO(plugin, pls);
+                        if ((ain->getType() & (ito::typeADDA | ito::typeRawIO | ito::typeGrabber)) == 0)
+                        {
+                            message = tr("Plugin with filename '%1' is a dataIO type, but no subtype is given in the type flag.").arg(filename);
+                            qDebug() << message;
+
+                            pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                        }
+                        else
+                        {
+                            retValue += loadAddInDataIO(plugin, pls);
+                        }
+                        
                         break;
 
                     case typeActuator:
