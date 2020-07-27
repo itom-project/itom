@@ -407,7 +407,8 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 
         if (lineCount == 1)
         {
-            res = text;
+            res = text.trimmed();
+
         }
         else if (lineCount > 1)
         {
@@ -442,7 +443,7 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 
 			for (int i = startLine; i < lineCount; ++i)
 			{
-				if (commandList[i].trimmed() != "")
+                if (commandList[i].trimmed() != "" && commandList[i][0]!='#')
 				{
 					minIndentLevel = std::min(minIndentLevel, getSpaceTabCount(commandList[i]));
 				}
@@ -465,7 +466,14 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 
 				for (int i = 1; i < lineCount; ++i)
 				{
-					res += endline + commandList[i].mid(minIndentLevel);
+                    if (commandList[i][0] != '#')
+                    {
+                        res += endline + commandList[i].mid(minIndentLevel);
+                    }
+                    else
+                    {
+                        res += endline + commandList[i]; // do not remove indent from comment line
+                    }
 				}
 			}
         }
