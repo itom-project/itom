@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+
+plt.figure()
 
 plt.subplots_adjust(hspace=0.4)
 t = np.arange(0.01, 20.0, 0.01)
@@ -18,14 +21,23 @@ plt.grid(True)
 
 # log x and y axis
 plt.subplot(223)
-plt.loglog(t, 20*np.exp(-t/10.0), basex=2)
+
+if matplotlib.__version__ < '3.3.0':
+    plt.loglog(t, 20 * np.exp(-t / 10.0), basex=2)
+else:
+    plt.loglog(t, 20 * np.exp(-t / 10.0), base=2)
 plt.grid(True)
 plt.title('loglog base 4 on x')
 
 # with errorbars: clip non-positive values
 ax = plt.subplot(224)
-ax.set_xscale("log", nonposx='clip')
-ax.set_yscale("log", nonposy='clip')
+
+if matplotlib.__version__ < '3.3.0':
+    ax.set_xscale("log", nonposx='clip')
+    ax.set_yscale("log", nonposy='clip')
+else:
+    ax.set_xscale("log", nonpositive='clip')
+    ax.set_yscale("log", nonpositive='clip')
 
 x = 10.0**np.linspace(0.0, 2.0, 20)
 y = x**2.0
