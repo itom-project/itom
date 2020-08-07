@@ -280,10 +280,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     p.setFont(fontBuild);
     p.drawText(rectBuild, Qt::AlignLeft, buildText);
 
-#ifdef USETRUMPFEDITIONSPLASHSCREEN 
-    QString editionText = QString(tr("TRUMPF Edition").toLatin1().data());
+#ifdef USEITOMEDITIONSPLASHSCREEN 
+    QString editionText = QString("%1").arg(ITOM_EDITION_SPLASHSCREEN);
     QRectF rectEdition(380, 16, 534, 67);
-
+    
     QFont font;
     font.setPixelSize(20);
     p.setFont(font);

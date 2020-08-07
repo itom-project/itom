@@ -35,7 +35,7 @@ itom_init_core_common_vars()
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
-option(BUILD_TRUMPF_EDITION "Build itom with Trumpf Edition splashscreen text." OFF)
+option(BUILD_WITH_EDITION_SPLASHSCREEN "usw itom Edition splashscreen text." OFF)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 
 set(CMAKE_MODULE_PATH
@@ -108,8 +108,10 @@ if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
 endif()
 
-if(BUILD_TRUMPF_EDITION)
-    add_definitions(-DUSETRUMPFEDITIONSPLASHSCREEN -D_USETRUMPFEDITIONSPLASHSCREEN)
+if(BUILD_WITH_EDITION_SPLASHSCREEN)
+    add_definitions(-DUSEITOMEDITIONSPLASHSCREEN -D_USEITOMEDITIONSPLASHSCREEN)
+    set(ITOM_EDITION_SPLASHSCREEN "" CACHE STRING "itom edition text on the slashscreen")
+    add_definitions( "-DITOM_EDITION_SPLASHSCREEN=\"${ITOM_EDITION_SPLASHSCREEN}\"")
 endif()
 
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
