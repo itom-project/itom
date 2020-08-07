@@ -554,7 +554,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(center, retval, "center");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1 - pt2/2, size);
     }
     else if (corner1 && size)
@@ -567,7 +567,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(corner1, retval, "corner1");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1, size);
     }
     else if (corner2 && size)
@@ -580,7 +580,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(corner2, retval, "corner2");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1 - pt2, size);
     }
     else
@@ -745,7 +745,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(center, retval, "center");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1 - pt2/2, size);
     }
     else if (corner1 && size)
@@ -758,7 +758,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(corner1, retval, "corner1");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1, size);
     }
     else if (corner2 && size)
@@ -771,7 +771,7 @@ This static method is equal to the command:: \n\
 
         pt1 = PyObject2PointF(corner2, retval, "corner2");
         pt2 = PyObject2PointF(size, retval, "size");
-        QSize size(pt2.x(), pt2.y());
+        QSizeF size(pt2.x(), pt2.y());
         rect = QRectF(pt1 - pt2, size);
     }
     else

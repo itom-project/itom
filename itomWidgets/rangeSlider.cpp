@@ -75,8 +75,9 @@ public:
   int pixelPosFromRangeValue(int val) const;
 
   /// Draw the bottom and top sliders.
-  void drawMinimumSlider( QStylePainter* painter ) const;
-  void drawMaximumSlider( QStylePainter* painter ) const;
+  void drawMinimumSlider( QStylePainter* painter, const QRect &rect ) const;
+  void drawMaximumSlider( QStylePainter* painter, const QRect &rect ) const;
+  void drawMinMaxSlider(QStylePainter *painter, const QRect &rect, bool isSliderDown, QStyleOptionSlider &option) const;
     
   /// End points of the range on the Model
   int m_MaximumValue;
@@ -113,6 +114,10 @@ public:
   /// symmetrically, otherwise the handles are independent.
   bool m_SymmetricMoves;
 
+  bool m_UseStyleSheets;
+
+  float m_HandleBorderRadius;
+
   QString m_HandleToolTip;
 
 private:
@@ -134,6 +139,8 @@ RangeSliderPrivate::RangeSliderPrivate(RangeSlider& object)
   this->m_SubclassWidth = 0.0;
   this->m_SelectedHandles = 0;
   this->m_SymmetricMoves = false;
+  this->m_UseStyleSheets = false; // per default, the default OS depending styling is enabled.
+  this->m_HandleBorderRadius = 0.0;
 
   this->m_PositionStepSize = 1;
   this->m_MinimumRange = 0;
@@ -416,53 +423,118 @@ int RangeSliderPrivate::pixelPosFromRangeValue( int val ) const
 }
 
 //---------------------------------------------------------------------------
+void RangeSliderPrivate::drawMinMaxSlider(QStylePainter *painter, const QRect &rect, bool isSliderDown, QStyleOptionSlider &option) const
+{
+    Q_Q(const RangeSlider);
+
+    option.subControls = QStyle::SC_SliderHandle;
+
+    if (isSliderDown)
+    {
+        option.activeSubControls = QStyle::SC_SliderHandle;
+        option.state |= QStyle::State_Sunken;
+    }
+#ifdef Q_OS_MAC
+    // On mac style, drawing just the handle actually draws also the groove.
+    QRect clip = q->style()->subControlRect(QStyle::CC_Slider, &option,
+        QStyle::SC_SliderHandle, q);
+    painter->setClipRect(clip);
+#endif
+
+    if (m_UseStyleSheets)
+    {
+        // the filling is given by the following css styles:
+        // if the slider is down: 'selection-color', else 'color'.
+        // For a disabled widget, us the disabled selector.
+        QColor filling;
+        QColor pen;
+
+        if (isSliderDown)
+        {
+            if (q->isEnabled())
+            {
+                filling = q->palette().color(QPalette::Normal, QPalette::HighlightedText);
+            }
+            else
+            {
+                filling = q->palette().color(QPalette::Disabled, QPalette::HighlightedText);
+            }
+        }
+        else
+        {
+            if (q->isEnabled())
+            {
+                filling = q->palette().color(QPalette::Normal, QPalette::WindowText);
+            }
+            else
+            {
+                filling = q->palette().color(QPalette::Disabled, QPalette::WindowText);
+            }
+        }
+
+        pen = filling;
+
+        if (q->hasFocus())
+        {
+            if (q->isEnabled())
+            {
+                pen = q->palette().color(QPalette::Normal, QPalette::HighlightedText);
+            }
+            else
+            {
+                pen = q->palette().color(QPalette::Disabled, QPalette::HighlightedText);
+            }
+        }
+
+        painter->setPen(QPen(pen, 1));
+        painter->setBrush(filling);
+
+        bool wasAntialiased = painter->renderHints() & QPainter::Antialiasing;
+        painter->setRenderHint(QPainter::Antialiasing);
+
+        if (m_HandleBorderRadius <= 0.001)
+        {
+            painter->drawRect(rect);
+        }
+        else
+        {
+            painter->drawRoundedRect(rect, m_HandleBorderRadius, m_HandleBorderRadius);
+        }
+
+        painter->setRenderHint(QPainter::Antialiasing, wasAntialiased);
+    }
+    else
+    {
+        painter->drawComplexControl(QStyle::CC_Slider, option);
+    }
+}
+
+//---------------------------------------------------------------------------
 // Draw slider at the bottom end of the range
-void RangeSliderPrivate::drawMinimumSlider( QStylePainter* painter ) const
+void RangeSliderPrivate::drawMinimumSlider( QStylePainter* painter, const QRect &rect ) const
 {
   Q_Q(const RangeSlider);
   QStyleOptionSlider option;
   q->initMinimumSliderStyleOption( &option );
 
-  option.subControls = QStyle::SC_SliderHandle;
   option.sliderValue = m_MinimumValue;
   option.sliderPosition = m_MinimumPosition;
-  if (q->isMinimumSliderDown())
-    {
-    option.activeSubControls = QStyle::SC_SliderHandle;
-    option.state |= QStyle::State_Sunken;
-    }
-#ifdef Q_OS_MAC
-  // On mac style, drawing just the handle actually draws also the groove.
-  QRect clip = q->style()->subControlRect(QStyle::CC_Slider, &option,
-                                          QStyle::SC_SliderHandle, q);
-  painter->setClipRect(clip);
-#endif
-  painter->drawComplexControl(QStyle::CC_Slider, option);
+  
+  drawMinMaxSlider(painter, rect, q->isMinimumSliderDown(), option);
 }
 
 //---------------------------------------------------------------------------
 // Draw slider at the top end of the range
-void RangeSliderPrivate::drawMaximumSlider( QStylePainter* painter ) const
+void RangeSliderPrivate::drawMaximumSlider(QStylePainter* painter, const QRect &rect) const
 {
-  Q_Q(const RangeSlider);
-  QStyleOptionSlider option;
-  q->initMaximumSliderStyleOption( &option );
+    Q_Q(const RangeSlider);
+    QStyleOptionSlider option;
+    q->initMaximumSliderStyleOption(&option);
 
-  option.subControls = QStyle::SC_SliderHandle;
-  option.sliderValue = m_MaximumValue;
-  option.sliderPosition = m_MaximumPosition;
-  if (q->isMaximumSliderDown())
-    {
-    option.activeSubControls = QStyle::SC_SliderHandle;
-    option.state |= QStyle::State_Sunken;
-    }
-#ifdef Q_OS_MAC
-  // On mac style, drawing just the handle actually draws also the groove.
-  QRect clip = q->style()->subControlRect(QStyle::CC_Slider, &option,
-                                          QStyle::SC_SliderHandle, q);
-  painter->setClipRect(clip);
-#endif
-  painter->drawComplexControl(QStyle::CC_Slider, option);
+    option.sliderValue = m_MaximumValue;
+    option.sliderPosition = m_MaximumPosition;
+    
+    drawMinMaxSlider(painter, rect, q->isMaximumSliderDown(), option);
 }
 
 // --------------------------------------------------------------------------
@@ -779,6 +851,34 @@ bool RangeSlider::symmetricMoves()const
 }
 
 // --------------------------------------------------------------------------
+bool RangeSlider::useStyleSheets()const
+{
+    Q_D(const RangeSlider);
+    return d->m_UseStyleSheets;
+}
+// --------------------------------------------------------------------------
+void RangeSlider::setUseStyleSheets(bool useStyleSheets)
+{
+    Q_D(RangeSlider);
+    d->m_UseStyleSheets = useStyleSheets;
+    this->update();
+}
+
+// --------------------------------------------------------------------------
+float RangeSlider::handleBorderRadius()const
+{
+    Q_D(const RangeSlider);
+    return d->m_HandleBorderRadius;
+}
+// --------------------------------------------------------------------------
+void RangeSlider::setHandleBorderRadius(float radius)
+{
+    Q_D(RangeSlider);
+    d->m_HandleBorderRadius = radius;
+    this->update();
+}
+
+// --------------------------------------------------------------------------
 void RangeSlider::onRangeChanged(int _minimum, int _maximum)
 {
   Q_UNUSED(_minimum);
@@ -809,14 +909,14 @@ void RangeSlider::paintEvent( QPaintEvent* )
                                             &option, 
                                             QStyle::SC_SliderHandle, 
                                             this);
+  
   option.sliderPosition = d->m_MaximumPosition;
-
   const QRect ur = style()->subControlRect( QStyle::CC_Slider, 
                                             &option, 
                                             QStyle::SC_SliderHandle, 
                                             this);
 
-  QRect sr = style()->subControlRect( QStyle::CC_Slider, 
+  QRect grooveTotal = style()->subControlRect( QStyle::CC_Slider, 
                                       &option, 
                                       QStyle::SC_SliderGroove, 
                                       this);
@@ -824,63 +924,75 @@ void RangeSlider::paintEvent( QPaintEvent* )
   if (option.orientation == Qt::Horizontal)
     {
     rangeBox = QRect(
-      QPoint(qMin( lr.center().x(), ur.center().x() ), sr.center().y() - 2),
-      QPoint(qMax( lr.center().x(), ur.center().x() ), sr.center().y() + 1));
+      QPoint(qMin( lr.center().x(), ur.center().x() ), grooveTotal.top()),
+      QPoint(qMax( lr.center().x(), ur.center().x() ), grooveTotal.bottom()));
     }
   else
     {
     rangeBox = QRect(
-      QPoint(sr.center().x() - 2, qMin( lr.center().y(), ur.center().y() )),
-      QPoint(sr.center().x() + 1, qMax( lr.center().y(), ur.center().y() )));
+      QPoint(grooveTotal.left(), qMin( lr.center().y(), ur.center().y() )),
+      QPoint(grooveTotal.right(), qMax( lr.center().y(), ur.center().y() )));
     }
 
   // -----------------------------
   // Render the range
   //
-  QRect groove = this->style()->subControlRect( QStyle::CC_Slider, 
-                                                &option, 
-                                                QStyle::SC_SliderGroove, 
-                                                this );
-  groove.adjust(0, 0, -1, 0);
+  grooveTotal.adjust(0, 0, -1, 0);
 
   // Create default colors based on the transfer function.
+  // 
+  // The main color of the groove within the two handes (active groove)
+  // are given by the css selector 'selection-background-color' (either
+  // the default RangeSlider section or the disabled section for disabled
+  // widgets).
   //
-  QColor highlight = this->palette().color(QPalette::Normal, QPalette::Highlight);
-  QLinearGradient gradient;
-  if (option.orientation == Qt::Horizontal)
-    {
-    gradient = QLinearGradient( groove.center().x(), groove.top(),
-                                groove.center().x(), groove.bottom());
-    }
+  QColor highlight = isEnabled() ?
+      this->palette().color(QPalette::Normal, QPalette::Highlight) :
+      this->palette().color(QPalette::Disabled, QPalette::Highlight);
+
+  if (!useStyleSheets())
+  {
+      QLinearGradient gradient;
+      if (option.orientation == Qt::Horizontal)
+      {
+          gradient = QLinearGradient(grooveTotal.center().x(), grooveTotal.top(),
+              grooveTotal.center().x(), grooveTotal.bottom());
+      }
+      else
+      {
+          gradient = QLinearGradient(grooveTotal.left(), grooveTotal.center().y(),
+              grooveTotal.right(), grooveTotal.center().y());
+      }
+
+      // TODO: Set this based on the supplied transfer function
+      //QColor l = Qt::darkGray;
+      //QColor u = Qt::black;
+
+      gradient.setColorAt(0, highlight.darker(120));
+      gradient.setColorAt(1, highlight.lighter(160));
+
+      painter.setBrush(gradient);
+  }
   else
-    {
-    gradient = QLinearGradient( groove.left(), groove.center().y(),
-                                groove.right(), groove.center().y());
-    }
+  {
+    painter.setBrush(QBrush(highlight));
+  }
 
-  // TODO: Set this based on the supplied transfer function
-  //QColor l = Qt::darkGray;
-  //QColor u = Qt::black;
-
-  gradient.setColorAt(0, highlight.darker(120));
-  gradient.setColorAt(1, highlight.lighter(160));
-
-  painter.setPen(QPen(highlight.darker(150), 0));
-  painter.setBrush(gradient);
-  painter.drawRect( rangeBox.intersected(groove) );
+  painter.setPen(QPen(highlight.darker(150)));
+  painter.drawRect( rangeBox.intersected(grooveTotal) );
 
   //  -----------------------------------
   // Render the sliders
   //
-  if (this->isMinimumSliderDown())
+    if (this->isMinimumSliderDown())
     {
-    d->drawMaximumSlider( &painter );
-    d->drawMinimumSlider( &painter );
+        d->drawMaximumSlider(&painter, ur);
+        d->drawMinimumSlider(&painter, lr);
     }
-  else
+    else
     {
-    d->drawMinimumSlider( &painter );
-    d->drawMaximumSlider( &painter );
+        d->drawMinimumSlider(&painter, lr);
+        d->drawMaximumSlider(&painter, ur);
     }
 }
 
@@ -962,6 +1074,7 @@ void RangeSlider::mousePressEvent(QMouseEvent* mouseEvent)
 void RangeSlider::mouseMoveEvent(QMouseEvent* mouseEvent)
 {
   Q_D(RangeSlider);
+
   if (!d->m_SelectedHandles)
     {
     mouseEvent->ignore();
@@ -1021,6 +1134,62 @@ void RangeSlider::mouseReleaseEvent(QMouseEvent* mouseEvent)
   d->m_SelectedHandles = 0;
 
   this->update();
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::keyPressEvent(QKeyEvent* keyEvent)
+{
+    keyEvent->ignore();
+
+    if (keyEvent->key() == Qt::Key_Left || keyEvent->key() == Qt::Key_Down)
+    {
+        keyEvent->accept();
+
+        if (keyEvent->modifiers() & Qt::ShiftModifier)
+        {
+            int valMin = qMax(minimum(), minimumValue() - (int)stepSizePosition());
+            int width = maximumValue() - minimumValue();
+
+            setValues(valMin, valMin + width);
+        }
+        else if (keyEvent->key() == Qt::Key_Left)
+        {
+            int val = qMax(minimum(), minimumValue() - (int)stepSizePosition());
+            setMinimumValue(val);
+        }
+        else
+        {
+            int val = qMax(maximumValue() - (int)stepSizePosition(), minimum());
+            setMaximumValue(val);
+        }
+    }
+    else if (keyEvent->key() == Qt::Key_Right || keyEvent->key() == Qt::Key_Up)
+    {
+        keyEvent->accept();
+
+        if (keyEvent->modifiers() & Qt::ShiftModifier)
+        {
+            int valMax = qMin(maximum(), maximumValue() + (int)stepSizePosition());
+            int width = maximumValue() - minimumValue();
+
+            setValues(valMax - width, valMax);
+        }
+        else if (keyEvent->key() == Qt::Key_Right)
+        {
+            int val = qMin(maximum(), minimumValue() + (int)stepSizePosition());
+            setMinimumValue(val);
+        }
+        else
+        {
+            int val = qMin(maximumValue() + (int)stepSizePosition(), maximum());
+            setMaximumValue(val);
+        }
+    }
+
+    if (!keyEvent->isAccepted())
+    {
+        this->Superclass::keyPressEvent(keyEvent);
+    }
 }
 
 // --------------------------------------------------------------------------

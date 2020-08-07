@@ -72,6 +72,8 @@ class ITOMWIDGETS_EXPORT RangeSlider : public QSlider
   Q_PROPERTY(bool rangeIncludeLimits READ rangeIncludeLimits WRITE setRangeIncludeLimits)
   Q_PROPERTY(bool symmetricMoves READ symmetricMoves WRITE setSymmetricMoves)
   Q_PROPERTY(QString handleToolTip READ handleToolTip WRITE setHandleToolTip)
+  Q_PROPERTY(bool useStyleSheets READ useStyleSheets WRITE setUseStyleSheets) // special property to allow a basic support for style sheets (else one handle is not displayed among others)
+  Q_PROPERTY(float handleBorderRadius READ handleBorderRadius WRITE setHandleBorderRadius) // special property to indicate the border radius of the handles (only if useStyleSheets is true) 
 
 public:
   // Superclass typedef
@@ -151,6 +153,22 @@ public:
   bool symmetricMoves()const; 
   void setSymmetricMoves(bool symmetry);
 
+  ///
+  /// When useStyleSheets is enabled, the groove and handles are not rendered
+  /// by the native style methods, but by special methods, that obtain colors from
+  /// the current palette. This option should be enabled by style sheets, since the
+  /// Qt QStyleSheetStyle is not able to properly render two handles and a colored groove.
+  bool useStyleSheets()const;
+  void setUseStyleSheets(bool useStyleSheets);
+
+  ///
+  /// When useStyleSheets is enabled, the groove and handles are not rendered
+  /// by the native style methods, but by special methods, that obtain colors from
+  /// the current palette. This option should be enabled by style sheets, since the
+  /// Qt QStyleSheetStyle is not able to properly render two handles and a colored groove.
+  float handleBorderRadius()const;
+  void setHandleBorderRadius(float radius);
+  
   ///
   /// Controls the text to display for the handle tooltip. It is in addition
   /// to the widget tooltip.
@@ -242,6 +260,8 @@ protected:
   virtual void mousePressEvent(QMouseEvent* ev);
   virtual void mouseMoveEvent(QMouseEvent* ev);
   virtual void mouseReleaseEvent(QMouseEvent* ev);
+
+  virtual void keyPressEvent(QKeyEvent* ev);
 
   // Description:
   // Rendering is done here.

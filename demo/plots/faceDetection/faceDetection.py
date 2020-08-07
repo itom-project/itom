@@ -35,7 +35,10 @@ def drawEyes(img, eyes, color):
     for x, y, w, h in eyes:
         eye = shape.createEllipse((x, y + h),(x + w, y), index = cnt)
         eye.color = color
-        win.plot.call('updateGeometricShape', eye)
+        try:
+            win.plot.call('updateGeometricShape', eye)
+        except AttributeError:
+            break
         cnt = cnt + 1
 
 def snap():

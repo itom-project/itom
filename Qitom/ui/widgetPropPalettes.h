@@ -44,11 +44,15 @@ class ColCurve : public QObject, public QGraphicsPathItem
             : QObject(parent), QGraphicsPathItem(), 
             m_parentWidget(parentWidget), m_colChannel(colChannel),
             m_editable(true)
-        { }
-        int getColChannel() { return m_colChannel; }
+        { 
+        }
+
+        int getColChannel() const { return m_colChannel; }
 
         void setEditable(bool editable) { m_editable = editable; }
         bool editable() const { return m_editable; }
+
+        void setActiveSceneSize(const QSizeF size) { m_activeSceneSize = size; }
 
     private:
         int m_colChannel;
@@ -56,11 +60,14 @@ class ColCurve : public QObject, public QGraphicsPathItem
         QPointF m_insertPos;
         bool m_editable;
 
-    protected slots:
+        QSizeF m_activeSceneSize;
+
+    protected:
         void mousePressEvent(QGraphicsSceneMouseEvent*);
         void mouseMoveEvent(QGraphicsSceneMouseEvent*);
-        void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+
+    protected slots:
         void removeDataPoint();
         void addDataPoint();
 };
@@ -72,10 +79,12 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
 
     public:
         WidgetPropPalettes(QWidget *parent = NULL);
+        ~WidgetPropPalettes();
+
         void readSettings();
         void writeSettings();
         const ItomPaletteBase* getCurPalette() const { return &m_currentPalette; }
-        void drawPalCurves(int selPt = -1, int x0 = 5, int y0 = 5, int dx = 10, int dy = 10);
+        void drawPalCurves(int selPt = -1);
         void updateOptionPalette();
 
         void removeColorStop(int index);
@@ -95,11 +104,20 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         int m_isUpdating;
         int m_isDirty;
 
+        float m_gvSceneMarginLeftRight;
+        float m_gvPaletteSceneMarginTopBottom;
+        float m_gvCurveSceneMarginTopBottom;
+
         void updatePaletteList();
+
+        void updateViewOnResize();
 
         QList<ito::ItomPaletteBase> m_palettes; //all existing palettes
         int m_curPaletteIndex; //index of current palette in m_palettes or -1 if new and not saved, yet
         ito::ItomPaletteBase m_currentPalette;
+
+        QGraphicsScene *m_pSceneCurPalette;
+        QGraphicsScene *m_pScenePalCurves;
 
     public slots:
         void lwCurrentRowChanged(int row);
@@ -108,19 +126,22 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         
         void palSpecialColorChanged(QColor color);
 
-    private slots :
+    private slots:
         void on_sbIndex_valueChanged(double value);
         void on_pbAdd_clicked();
         void on_pbDuplicate_clicked();
         void on_pbRemove_clicked();
         void on_pbPalSave_clicked();
-        void resizeEvent(QResizeEvent *event);
         void on_pbEquidistantColorStop_clicked();
         void on_pbRemoveColorStop_clicked();
         void on_pbAddColorStop_clicked();
         void on_lePalName_textChanged(const QString & text);
         void on_pbImportPalette_clicked();
         void on_pbExportPalette_clicked();
+        void on_btnColor_colorChanged(QColor color);
+
+    protected:
+        bool eventFilter(QObject *obj, QEvent *event);
 };
 
 }//end namespace
