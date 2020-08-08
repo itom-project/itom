@@ -135,7 +135,6 @@
         <file>icons/editBookmarks.png</file>
         <file>icons/editComment.png</file>
         <file>icons/editCopy.png</file>
-        <file>icons/editCut.png</file>
         <file>icons/editDelete.png</file>
         <file>icons/editIndent.png</file>
         <file>icons/editPaste.png</file>
@@ -146,7 +145,6 @@
         <file>icons/editUncomment.png</file>
         <file>icons/editUndo.png</file>
         <file>icons/editUnindent.png</file>
-        <file>icons/find.png</file>
         <file>icons/iconList.png</file>
         <file>icons/navigateBackward.png</file>
         <file>icons/navigateForward.png</file>
@@ -207,7 +205,6 @@
     <qresource prefix="/plugins">
         <file>icons/plugin.png</file>
         <file>icons/pluginActuator.png</file>
-        <file>icons/pluginFilter.png</file>
         <file>icons/pluginGrabber.png</file>
         <file>icons/pluginRawIO.png</file>
         <file>icons/pluginADDA.png</file>
