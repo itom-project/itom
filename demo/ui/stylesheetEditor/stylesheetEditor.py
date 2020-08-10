@@ -22,12 +22,12 @@ the editor. Whenever you want to update the GUI click the update button.
 from itomUi import ItomUi  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itom import ui, dataObject
 
-class StyleCreator(ItomUi): #StyleCreator is inherited from ItomUi
+class StyleSheetEditor(ItomUi): #StyleCreator is inherited from ItomUi
     
     def __init__(self): # constructor
         
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
-        ItomUi.__init__(self, "stylecreator.ui", ui.TYPEWINDOW)
+        ItomUi.__init__(self, "stylesheetEditor.ui", ui.TYPEWINDOW)
         
         # initialize some plots
         self.gui.itom1DQwtPlot["source"] = dataObject.rand([4, 500], 'uint16')
@@ -57,7 +57,7 @@ class StyleCreator(ItomUi): #StyleCreator is inherited from ItomUi
                 ui.msgCritical("Error", f"Could not load resource file '{rccFile}'")
 
 
-hmi = StyleCreator()
+hmi = StyleSheetEditor()
 hmi.gui.show()
 
 print("Text from python command line")

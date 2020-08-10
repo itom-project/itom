@@ -40,13 +40,57 @@ QTextBrowser#helpTreeContent
     color: #000000;
 }
 
+RangeSlider {
+  /* background: #ff0000; background of enabled widget */
+  border: 0px dashed #0000ff; /* border of entire enabled widget */
+  selection-background-color: #1464A0; /* active groove color */
+  selection-color: #148CD2; /* Palette: Active, Highlighted Text, color of dragged handle*/
+  color: #787878; /* Palette: Active, WindowText + Text, color of handle */
+  qproperty-useStyleSheets: true;
+  qproperty-handleBorderRadius: 0;
+}
+
+RangeSlider:disabled {
+  /* background: #ab00cc; background of disabled widget */
+  border: 0px dotted #cc00ab; /* border of entire disabled widget */
+  selection-background-color: #14506E; /* active groove color */
+  selection-color: #787878; /* Palette: Disabled, HighlightedText: color of dragged handle */
+  color: #787878; /* Palette: Disabled, WindowText or Text, color of handle */
+}
+
+/* the inner part of the groove between
+   minimum and maximum handle is not handled
+   by the following styles, but by the main
+   styles of RangeSlider.
+*/
+RangeSlider::groove:horizontal {
+  background: #32414B; /* fill color of groove */
+  border: 1px solid #32414B; /* margin of groove */
+  height: 4px; /* height of groove */
+  margin: 0px; /* margin of groove */
+  border-radius: 4px; /* border radius of groove */
+}
+
+/* the inner part of the groove between
+   minimum and maximum handle is not handled
+   by the following styles, but by the main
+   styles of RangeSlider.
+*/
+RangeSlider::groove:vertical {
+  background: #32414B; /* fill color of groove */
+  border: 1px solid #32414B; /* border of groove */
+  width: 4px; /* height of groove */
+  margin: 0px; /* margin of groove */
+  border-radius: 4px; /* border radius of groove */
+}
+
 QToolTip
 {
      border: 1px solid black;
      background-color: #ffa02f;
      padding: 1px;
      border-radius: 3px;
-     opacity: 255;
+     opacity: 100;
 }
 
 QWidget
