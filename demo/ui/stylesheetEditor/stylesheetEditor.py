@@ -39,8 +39,6 @@ class StyleSheetEditor(ItomUi): #StyleCreator is inherited from ItomUi
         
         self.gui.call("statusBar").call("showMessage","Status bar message...")
         
-        self.on_btnUpdate_clicked()
-        
     @ItomUi.autoslot("")  # the signal is clicked()
     def on_btnUpdate_clicked(self):
         # apply the current content of the text field to the stylesheet
