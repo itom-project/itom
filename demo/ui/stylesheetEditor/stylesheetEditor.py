@@ -51,6 +51,8 @@ class StyleSheetEditor(ItomUi): #StyleCreator is inherited from ItomUi
                                      parent=self.gui)
         
         if rccFile is not None:
+            unregisterResource(rccFile)
+            
             if not registerResource(rccFile):
                 ui.msgCritical("Error", f"Could not load resource file '{rccFile}'")
 
