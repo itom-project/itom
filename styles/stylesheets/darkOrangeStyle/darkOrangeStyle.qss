@@ -1792,6 +1792,8 @@ QDockWidget {
 QDockWidget::title {
   /* Better size for title bar */
   padding: 5px;
+  padding-top: 6px;
+  padding-bottom: 0px;
   spacing: 5px;
   border: none;
   background-color: #37464F;
