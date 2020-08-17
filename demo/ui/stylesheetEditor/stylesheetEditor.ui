@@ -1,0 +1,1322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1295</width>
+    <height>804</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>itom Style Demonstrator</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>true</bool>
+       </property>
+       <property name="movable">
+        <bool>true</bool>
+       </property>
+       <property name="tabBarAutoHide">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Default Widgets 1</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="toolButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>Push Button Toggled</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Push Button Disabled</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Push Button Enabled</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton">
+           <property name="text">
+            <string>RadioButton</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_2">
+           <property name="text">
+            <string>RadioButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_3">
+           <property name="text">
+            <string>RadioButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="tristate">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_2">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+           <property name="tristate">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_3">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+           <property name="tristate">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCommandLinkButton" name="commandLinkButton">
+           <property name="text">
+            <string>CommandLinkButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDialogButtonBox" name="buttonBox">
+           <property name="standardButtons">
+            <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>item 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_2">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string>item 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFontComboBox" name="fontComboBox"/>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="toolTip">
+            <string>tool tip text</string>
+           </property>
+           <property name="text">
+            <string>test text </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox"/>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Default Widgets 2</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QTimeEdit" name="timeEdit_2"/>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="dateEdit">
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateTimeEdit" name="dateTimeEdit">
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDial" name="dial"/>
+         </item>
+         <item>
+          <widget class="QTimeEdit" name="timeEdit">
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="progressBar">
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QScrollBar" name="horizontalScrollBar">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcdNumber">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="smallDecimalPoint">
+            <bool>false</bool>
+           </property>
+           <property name="mode">
+            <enum>QLCDNumber::Dec</enum>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Filled</enum>
+           </property>
+           <property name="intValue" stdset="0">
+            <number>123456</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCalendarWidget" name="calendarWidget">
+           <property name="gridVisible">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_5">
+        <attribute name="title">
+         <string>Default Widgets 3</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QScrollArea" name="scrollArea">
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>985</width>
+              <height>493</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="1" column="2" rowspan="2">
+              <widget class="QTreeWidget" name="treeWidget">
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+               <column>
+                <property name="text">
+                 <string notr="true">1</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Column 1</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Column 2</string>
+                </property>
+               </column>
+               <item>
+                <property name="text">
+                 <string>Main 2</string>
+                </property>
+                <property name="text">
+                 <string>Main 2_1</string>
+                </property>
+                <property name="text">
+                 <string>Main 2_2</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Main 1</string>
+                </property>
+                <property name="text">
+                 <string>Main 1_1</string>
+                </property>
+                <property name="text">
+                 <string>Main 1_2</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Sub 1_2</string>
+                 </property>
+                 <property name="text">
+                  <string>Sub 1_2 (1)</string>
+                 </property>
+                 <property name="text">
+                  <string>Sub 1_2 (2)</string>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Sub 1_1</string>
+                 </property>
+                 <property name="text">
+                  <string>Sub 1_1 (1)</string>
+                 </property>
+                 <property name="text">
+                  <string>Sub 1_1 (2)</string>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
+                </item>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="4" rowspan="2">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>QTableWidget</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>QListWidget</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" rowspan="2">
+              <widget class="QListWidget" name="listWidget">
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Element 1 (Non selectable)</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Element 2 (Editable)</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Element 3 (Disabled)</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Element 4 (Checked)</string>
+                </property>
+                <property name="checkState">
+                 <enum>Checked</enum>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Element 5 (Unchecked)</string>
+                </property>
+                <property name="checkState">
+                 <enum>Unchecked</enum>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Element 6 (Partially)</string>
+                </property>
+                <property name="checkState">
+                 <enum>PartiallyChecked</enum>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="2" column="4">
+              <widget class="QTableWidget" name="tableWidget">
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="rowCount">
+                <number>7</number>
+               </property>
+               <property name="columnCount">
+                <number>8</number>
+               </property>
+               <row>
+                <property name="text">
+                 <string>Row 1</string>
+                </property>
+               </row>
+               <row>
+                <property name="text">
+                 <string>Row 2</string>
+                </property>
+               </row>
+               <row>
+                <property name="text">
+                 <string>Row 3</string>
+                </property>
+               </row>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <column>
+                <property name="text">
+                 <string>Column 1</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Column 2</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Column 3</string>
+                </property>
+               </column>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <item row="0" column="0">
+                <property name="text">
+                 <string>Inhalt 1</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item row="0" column="1">
+                <property name="text">
+                 <string>Inhalt 2</string>
+                </property>
+                <property name="checkState">
+                 <enum>PartiallyChecked</enum>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+                </property>
+               </item>
+               <item row="1" column="2">
+                <property name="text">
+                 <string>Inhalt 3</string>
+                </property>
+                <property name="checkState">
+                 <enum>Checked</enum>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>QTreeWidget</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>itom Plot Plugins</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>All plots within a tool box (different background and toolbars):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolBox" name="toolBox">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <property name="tabSpacing">
+            <number>6</number>
+           </property>
+           <widget class="QWidget" name="page">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>987</width>
+              <height>368</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>itom1dqwtplot</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="leftMargin">
+              <number>9</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_2"/>
+             </item>
+             <item>
+              <widget class="Itom1DQwtPlot" name="itom1DQwtPlot"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_2">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>264</width>
+              <height>293</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>itom2dqwtplot</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="Itom2dQwtPlot" name="itom2dQwtPlot"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_3">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>98</width>
+              <height>119</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>matplotlibplot</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="MatplotlibPlot" name="matplotlibPlot"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_4">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>98</width>
+              <height>52</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>Vtk3dVisualizer</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="Vtk3dVisualizer" name="vtk3dVisualizer"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_6">
+        <attribute name="title">
+         <string>itom Plot Plugins 2</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>plots outside of Tool Box</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Itom2dQwtPlot" name="itom2dQwtPlot_2"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>itom Widgets</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="CheckableComboBox" name="CheckableComboBox">
+           <item>
+            <property name="text">
+             <string>item 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>item 3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="BrushCreatorButton" name="BrushCreatorButton"/>
+           </item>
+           <item>
+            <widget class="PenCreatorButton" name="PenCreatorButton"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="CollapsibleGroupBox" name="collapsibleGroupBox">
+           <property name="title">
+            <string>GroupBox</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="ColorPickerButton" name="ColorPickerButton"/>
+            </item>
+            <item>
+             <widget class="DoubleRangeSlider" name="doubleRangeSlider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="DoubleSlider" name="doubleSlider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="DoubleSpinBox" name="doubleSpinBox_2"/>
+           </item>
+           <item>
+            <widget class="FontButton" name="FontButton"/>
+           </item>
+           <item>
+            <widget class="ComboBox" name="ComboBox">
+             <item>
+              <property name="text">
+               <string>item 1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>item 2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>item 3</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="RangeSlider" name="rangeSlider_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="minimumPosition">
+            <number>10</number>
+           </property>
+           <property name="maximumPosition">
+            <number>80</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RangeSlider" name="rangeSlider">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+           <property name="minimumPosition">
+            <number>10</number>
+           </property>
+           <property name="maximumPosition">
+            <number>80</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DoubleRangeWidget" name="doubleRangeWidget"/>
+         </item>
+         <item>
+          <widget class="SliderWidget" name="sliderWidget">
+           <property name="value">
+            <double>50.000000000000000</double>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SliderWidget" name="sliderWidget_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="value">
+            <double>50.000000000000000</double>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="PathLineEdit" name="pathLineEdit"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="StatusLed" name="StatusLed">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="colorOnEdge">
+              <color>
+               <red>49</red>
+               <green>198</green>
+               <blue>49</blue>
+              </color>
+             </property>
+             <property name="colorOffEdge">
+              <color>
+               <red>247</red>
+               <green>49</green>
+               <blue>0</blue>
+              </color>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="StatusLed" name="StatusLed_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="colorOnEdge">
+              <color>
+               <red>49</red>
+               <green>198</green>
+               <blue>49</blue>
+              </color>
+             </property>
+             <property name="colorOffEdge">
+              <color>
+               <red>247</red>
+               <green>49</green>
+               <blue>0</blue>
+              </color>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="StatusLed" name="StatusLed_2">
+             <property name="colorOnEdge">
+              <color>
+               <red>49</red>
+               <green>198</green>
+               <blue>49</blue>
+              </color>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="PythonLogWidget" name="pythonLogWidget">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser">
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1295</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuPoint_2">
+     <property name="title">
+      <string>Point 2</string>
+     </property>
+     <addaction name="actionSubpoint_2_1"/>
+     <addaction name="actionSubpoint_2_2"/>
+     <addaction name="actionSubpoint_2_3"/>
+    </widget>
+    <addaction name="actionPoint_1"/>
+    <addaction name="menuPoint_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionPoint_3"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionEdit_1"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_2"/>
+    <addaction name="actionEdit_3"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="windowTitle">
+    <string>QSS Style</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="leftMargin">
+      <number>3</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <property name="rightMargin">
+      <number>3</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="btnLoadRcc">
+       <property name="text">
+        <string>Load RCC Resource File...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Paste your QSS code here and press update:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="txtStyle">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Courier New</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::NoWrap</enum>
+       </property>
+       <property name="plainText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnUpdate">
+         <property name="text">
+          <string>Update</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionPoint_1">
+   <property name="icon">
+    <iconset resource="../../../Qitom/qitom.qrc">
+     <normaloff>:/bookmark/icons/bookmark.png</normaloff>:/bookmark/icons/bookmark.png</iconset>
+   </property>
+   <property name="text">
+    <string>Point 1</string>
+   </property>
+  </action>
+  <action name="actionPoint_3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../Qitom/qitom.qrc">
+     <normaloff>:/breakpoints/icons/itomBreak.png</normaloff>:/breakpoints/icons/itomBreak.png</iconset>
+   </property>
+   <property name="text">
+    <string>Point 3</string>
+   </property>
+  </action>
+  <action name="actionSubpoint_2_1">
+   <property name="text">
+    <string>Subpoint 2_1</string>
+   </property>
+  </action>
+  <action name="actionSubpoint_2_2">
+   <property name="text">
+    <string>Subpoint 2_2</string>
+   </property>
+  </action>
+  <action name="actionSubpoint_2_3">
+   <property name="text">
+    <string>Subpoint 2_3</string>
+   </property>
+  </action>
+  <action name="actionEdit_1">
+   <property name="icon">
+    <iconset resource="../../../Qitom/qitom.qrc">
+     <normaloff>:/helpTreeDockWidget/link_package</normaloff>:/helpTreeDockWidget/link_package</iconset>
+   </property>
+   <property name="text">
+    <string>Edit 1</string>
+   </property>
+  </action>
+  <action name="actionEdit_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Edit 2</string>
+   </property>
+  </action>
+  <action name="actionEdit_3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Edit 3</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Itom1DQwtPlot</class>
+   <extends>QMainWindow</extends>
+   <header>itom1DQwtPlot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Itom2dQwtPlot</class>
+   <extends>QMainWindow</extends>
+   <header>itom2dqwtplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BrushCreatorButton</class>
+   <extends>QPushButton</extends>
+   <header>brushCreatorButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>collapsibleGroupBox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColorPickerButton</class>
+   <extends>QPushButton</extends>
+   <header>colorPickerButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleRangeSlider</class>
+   <extends>QWidget</extends>
+   <header>doubleRangeSlider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSlider</class>
+   <extends>QWidget</extends>
+   <header>doubleSlider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QWidget</extends>
+   <header>doubleSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RangeSlider</class>
+   <extends>QSlider</extends>
+   <header>rangeSlider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleRangeWidget</class>
+   <extends>QWidget</extends>
+   <header>doubleRangeWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SliderWidget</class>
+   <extends>QWidget</extends>
+   <header>sliderWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QWidget</extends>
+   <header>pathLineEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>comboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckableComboBox</class>
+   <extends>QComboBox</extends>
+   <header>checkableComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PenCreatorButton</class>
+   <extends>QPushButton</extends>
+   <header>penCreatorButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>StatusLed</class>
+   <extends>QWidget</extends>
+   <header>statusLed.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FontButton</class>
+   <extends>QPushButton</extends>
+   <header>fontButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PythonLogWidget</class>
+   <extends>QWidget</extends>
+   <header>pythonLogWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MatplotlibPlot</class>
+   <extends>QMainWindow</extends>
+   <header>matplotlibplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Vtk3dVisualizer</class>
+   <extends>QMainWindow</extends>
+   <header>win3dVisualizer.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../../Qitom/qitom.qrc"/>
+ </resources>
+ <connections/>
+</ui>

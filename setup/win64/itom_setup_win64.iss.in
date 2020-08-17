@@ -270,6 +270,7 @@ Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion  
+Source: "{#SourceDirQT}\rcc.exe"; DestDir: "{app}"; Flags: ignoreversion 
 
 ; Default INI
 Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion  

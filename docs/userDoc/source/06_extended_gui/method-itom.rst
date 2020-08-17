@@ -162,6 +162,10 @@ The dialog is wrapped by the static method :py:meth:`~itom.ui.getExistingDirecto
     
     ret = ui.getExistingDirectory(caption, startDirectory [, options = 1, parent])
 
+.. figure:: images/selectDirectory.png
+    :align: center
+    :scale: 100%
+
 The parameters are as follows:
 
 * **caption** is the title of the dialog

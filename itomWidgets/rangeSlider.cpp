@@ -921,18 +921,41 @@ void RangeSlider::paintEvent( QPaintEvent* )
                                       QStyle::SC_SliderGroove, 
                                       this);
   QRect rangeBox;
-  if (option.orientation == Qt::Horizontal)
-    {
-    rangeBox = QRect(
-      QPoint(qMin( lr.center().x(), ur.center().x() ), grooveTotal.top()),
-      QPoint(qMax( lr.center().x(), ur.center().x() ), grooveTotal.bottom()));
-    }
+
+  if (useStyleSheets())
+  {
+      // it seems that if style sheets are used, the height of a horizontal groove
+      // in grooveTotal corresponds to the real height of this groove. Without style sheets,
+      // subControlRect seems to return the total height of the widget for the groove, too.
+      if (option.orientation == Qt::Horizontal)
+      {
+          rangeBox = QRect(
+              QPoint(qMin(lr.center().x(), ur.center().x()), grooveTotal.top()),
+              QPoint(qMax(lr.center().x(), ur.center().x()), grooveTotal.bottom()));
+      }
+      else
+      {
+          rangeBox = QRect(
+              QPoint(grooveTotal.left(), qMin(lr.center().y(), ur.center().y())),
+              QPoint(grooveTotal.right(), qMax(lr.center().y(), ur.center().y())));
+      }
+  }
   else
-    {
-    rangeBox = QRect(
-      QPoint(grooveTotal.left(), qMin( lr.center().y(), ur.center().y() )),
-      QPoint(grooveTotal.right(), qMax( lr.center().y(), ur.center().y() )));
-    }
+  {
+      if (option.orientation == Qt::Horizontal)
+      {
+          rangeBox = QRect(
+              QPoint(qMin(lr.center().x(), ur.center().x()), grooveTotal.center().y() - 2),
+              QPoint(qMax(lr.center().x(), ur.center().x()), grooveTotal.center().y() + 1));
+      }
+      else
+      {
+          rangeBox = QRect(
+              QPoint(grooveTotal.center().x() - 2, qMin(lr.center().y(), ur.center().y())),
+              QPoint(grooveTotal.center().x() + 1, qMax(lr.center().y(), ur.center().y())));
+      }
+  }
+  
 
   // -----------------------------
   // Render the range

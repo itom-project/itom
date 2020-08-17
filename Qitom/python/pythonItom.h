@@ -89,6 +89,9 @@ public:
     static PyObject* PySaveDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyLoadDataObject(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
 
+    static PyObject* PyRegisterResource(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+    static PyObject* PyUnregisterResource(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+
     static PyObject* PyAddButton(PyObject* pSelf, PyObject* pArgs, PyObject *kwds);
     static PyObject* PyRemoveButton(PyObject* pSelf, PyObject* pArgs);
 
