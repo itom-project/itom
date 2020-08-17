@@ -176,7 +176,7 @@ namespace ito
 
         signals:
             //!> show plugin load splash screen
-            void splashLoadMessage(const QString &message, int alignment = Qt::AlignLeft, const QColor &color = Qt::black);
+            void splashLoadMessage(const QString &message);
 
         public slots:
             //!> show plugin configuration dialog, don't call this method if no Qt gui application is available.

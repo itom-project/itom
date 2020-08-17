@@ -78,6 +78,8 @@ QMap<QString, QString> getItomVersionMap()
     //itom_version
     items["itom_Version"] = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
 
+    items["itom_EditionName"] = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
+
 
 #if (defined ITOMLIBS_SHARED)
 	items["itom_sharedLibs"] = QString("dataobject v.%1; itomCommonLib v.%2; itomCommonQtLib v.%3; pointcloud v.%4; plot v.%5; widgets v.%6; shape v.%7; addInManager v.%8; property editor v.%9").arg(\

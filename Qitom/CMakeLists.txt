@@ -35,7 +35,6 @@ itom_init_core_common_vars()
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
-option(BUILD_WITH_EDITION_SPLASHSCREEN "usw itom Edition splashscreen text." OFF)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 
 set(CMAKE_MODULE_PATH
@@ -108,11 +107,13 @@ if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
 endif()
 
-if(BUILD_WITH_EDITION_SPLASHSCREEN)
-    add_definitions(-DUSEITOMEDITIONSPLASHSCREEN -D_USEITOMEDITIONSPLASHSCREEN)
-    set(ITOM_EDITION_SPLASHSCREEN "" CACHE STRING "itom edition text on the slashscreen")
-    add_definitions( "-DITOM_EDITION_SPLASHSCREEN=\"${ITOM_EDITION_SPLASHSCREEN}\"")
-endif()
+# it is possible to add an optional, additional string as edition name
+# of itom (e.g. in order to indicate a special combination of plugins,
+# build settings etc.). This optional name is shown in both the startup
+# splashscreen as well as the about dialog of itom.
+set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE 
+    STRING "Optional, additional name of this itom edition (shown in splashscreen and about dialog)")
+add_definitions( "-DITOM_ADDITIONAL_EDITION_NAME=\"${ITOM_ADDITIONAL_EDITION_NAME}\"")
 
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
 if(BUILD_WITH_PYMATLAB)
