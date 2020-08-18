@@ -14,7 +14,7 @@ class DataObjectComparison(unittest.TestCase):
         with self.assertRaises(ValueError):
             result = not npArray #The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
         
-        #until further notice, this test will fail, since itom <= 3.2.1 did not implement the
+        #until further notice, this test will fail, since itom <= 4.0.0 did not implement the
         #bool operator, such that dataObject == True always returned True, independent on the content.
         #This will be changed in the future and behaves than similar to np.ndarray: It will
         #raise a ValueError if the dataObject has more than one value, else the single value is
@@ -26,7 +26,7 @@ class DataObjectComparison(unittest.TestCase):
         
     ##########################################################
     def test_bool(self):
-        #until further notice, this test will fail, since itom <= 3.2.1 did not implement the
+        #until further notice, this test will fail, since itom <= 4.0.0 did not implement the
         #bool operator, such that dataObject == True always returned True, independent on the content.
         #This will be changed in the future and behaves than similar to np.ndarray: It will
         #raise a ValueError if the dataObject has more than one value, else the single value is

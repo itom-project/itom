@@ -58,7 +58,7 @@ class DataObjectConstructors(unittest.TestCase):
     
     ##########################################################
     def test_copy_constructor_noncontinuous(self):
-        a = dataObject([2,100,100], 'float32')
+        a = dataObject([2,100,100], 'uint16')
         b = dataObject(a)
         self.assertEqual(b.continuous, False)
         c = dataObject(a, continuous = True)

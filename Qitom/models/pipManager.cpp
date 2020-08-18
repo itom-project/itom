@@ -881,6 +881,22 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     }
                 }
 
+                //in rare cases, there are temporary, backup directories, starting with '-'.
+                //they have to be removed here.
+                QStringList::iterator it = packages_out.begin();
+
+                while (it != packages_out.end())
+                {
+                    if (it->startsWith("-"))
+                    {
+                        it = packages_out.erase(it);
+                    }
+                    else
+                    {
+                        it++;
+                    }
+                }
+
                 if (packages_out.length() > 0)
                 {
                     listAvailablePackages2(packages_out);

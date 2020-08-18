@@ -270,6 +270,7 @@ Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion  
+Source: "{#SourceDirQT}\rcc.exe"; DestDir: "{app}"; Flags: ignoreversion 
 
 ; Default INI
 Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion  
@@ -381,6 +382,7 @@ Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins\ThorlabsISM"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubePA\*.*"; DestDir: "{app}\plugins\ThorlabsKCubePA"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsFF\*.*"; DestDir: "{app}\plugins\ThorlabsFF"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs
@@ -414,7 +416,7 @@ Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_2.dll"; DestDir: "{app}\li
 Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-;Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -443,6 +445,7 @@ Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.DeviceManager.dll"; De
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.IntegratedStepperMotors.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.PositionAligner.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.Quad.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.FilterFlipper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\vcruntime140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -530,8 +533,6 @@ Source: "{#SourceDirVTK}\bin\vtkViewsContext2D-8.2.dll"; DestDir: "{app}\lib"; F
 Source: "{#SourceDirVTK}\bin\vtkViewsCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkzlib-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
-
-
 [Run]
 Filename: "{tmp}\Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1.exe"; Parameters: "/install /quiet /norestart"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1..."; Components: CREDPACK2017;
 ;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
@@ -551,15 +552,15 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyWav}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyWav}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonImageio}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonImageio}..."; Components: PYTHON\SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonOpCVPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonOpCVPy}..."; Components: PYTHON\OPENCVPYTHON
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonParso}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonParso}..."; Components: PYTHON\JEDI
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonJedi}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonJedi}..."; Components: PYTHON\JEDI
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFlake8}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFlake8}..."; Components: PYTHON\FLAKE8
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyFla}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyFla}..."; Components: PYTHON\FLAKE8
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMcCabe}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMcCabe}..."; Components: PYTHON\FLAKE8
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyCodeStyle}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyCodeStyle}..."; Components: PYTHON\FLAKE8
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonTiffFile}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonTiffFile}..."; Components: PYTHON
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFlake8}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFlake8}..."; Components: PYTHON\FLAKE8
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
