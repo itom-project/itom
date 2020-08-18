@@ -968,7 +968,7 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
                         className,
                         retValue,
-                        ito::AbstractFigure::WindowMode::ModeInItomFigure,
+                        ito::AbstractFigure::WindowMode::ModeStandaloneInUi,
                         layout->parentWidget());
                     
                     if (!retValue.containsError())
