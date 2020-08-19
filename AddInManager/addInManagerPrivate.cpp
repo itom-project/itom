@@ -296,7 +296,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
     }
     else
     {
-        emit q->splashLoadMessage(tr("Scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
+        emit q->splashLoadMessage(tr("Scan and load plugins (%1)").arg(finfo.fileName()));
         QCoreApplication::processEvents();
 
         QString language("en");
