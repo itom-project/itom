@@ -28,6 +28,16 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="btnSetStretch">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Set Stretch(s)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -51,6 +61,13 @@
        <widget class="QPushButton" name="btnAddButton">
         <property name="text">
          <string>Add Button</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnInsertButton">
+        <property name="text">
+         <string>Insert Button</string>
         </property>
        </widget>
       </item>
