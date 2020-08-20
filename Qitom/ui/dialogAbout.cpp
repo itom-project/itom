@@ -52,6 +52,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 
     bool hasGIT = false;
     bool hasSVN = false;
+    bool hasAdditionalEdition = false;
 
     ui.setupUi(this);
     ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo3_64.png")));
@@ -64,18 +65,25 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 
         m_VersionString.append(QString("%1: %2\n").arg(i.key(), i.value()));
         QString keyWord = QString("$%1$").arg(i.key());
+        
         if (m_aboutText.contains(keyWord))
         {
             m_aboutText = m_aboutText.replace(keyWord, QString(i.value()).replace('\n', "<p>"));
         }
+
         if (i.key() == "itom_GIT_Rev" && i.value() != "")
         {
             hasGIT = true;
+        }
+        else if (i.key() == "itom_EditionName" && i.value() != "")
+        {
+            hasAdditionalEdition = true;
         }
     }
 
     int x0 = m_aboutText.indexOf("$USINGGIT$");
     int x1 = m_aboutText.lastIndexOf("$USINGGIT$");
+
     if (!hasGIT)
     {
         m_aboutText.remove(x0, x1 - x0 + 10);
@@ -94,6 +102,19 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 #else
     m_aboutText.remove(x0, x1 - x0 + 9);
 #endif
+
+    x0 = m_aboutText.indexOf("$HASITOMEDITION$");
+    x1 = m_aboutText.lastIndexOf("$HASITOMEDITION$");
+
+    if (!hasAdditionalEdition)
+    {
+        m_aboutText.remove(x0, x1 - x0 + 16);
+    }
+    else
+    {
+        m_aboutText.remove(x0, 16);
+        m_aboutText.remove(x1 - 16, 16);
+    }
 
 
     ui.txtBasic->setHtml(m_aboutText);

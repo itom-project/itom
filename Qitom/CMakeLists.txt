@@ -107,6 +107,14 @@ if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)
 endif()
 
+# it is possible to add an optional, additional string as edition name
+# of itom (e.g. in order to indicate a special combination of plugins,
+# build settings etc.). This optional name is shown in both the startup
+# splashscreen as well as the about dialog of itom.
+set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE 
+    STRING "Optional, additional name of this itom edition (shown in splashscreen and about dialog)")
+add_definitions( "-DITOM_ADDITIONAL_EDITION_NAME=\"${ITOM_ADDITIONAL_EDITION_NAME}\"")
+
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
 if(BUILD_WITH_PYMATLAB)
     if(WIN32)
