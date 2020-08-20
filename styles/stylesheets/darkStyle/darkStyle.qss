@@ -2363,6 +2363,13 @@ QwtPlot QWidget {
   border-radius: 0px;
 }
 
+MotorAxisController {
+  /* background colors for spinboxes for different movement states of axes */
+  qproperty-backgroundColorMoving: #1464A0;
+  qproperty-backgroundColorInterrupted: #BF0041;
+  qproperty-backgroundColorTimeout: #780373;
+}
+
 PathLineEdit>QToolButton {
   /* keep a little bit of space between
   combo box and tool button */

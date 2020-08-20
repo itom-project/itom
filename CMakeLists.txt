@@ -19,7 +19,7 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-
+ 
 project(itom)
 
 message(STATUS "--------------- PROJECT itom -----------------")
@@ -104,8 +104,18 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
+
+# copy the entire styles folder including subfolders to the binary dir
+# However ignore files with endings svg, png, qrc, py (mainly the source
+# files for Qt style, since these sources should be compiled to a rcc and 
+# qss file).
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    PATTERN "*.svg" EXCLUDE
+    PATTERN "*.png" EXCLUDE
+    PATTERN "*.qrc" EXCLUDE
+    PATTERN "*.py" EXCLUDE
+    PATTERN "*.odg" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 

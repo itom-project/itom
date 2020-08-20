@@ -34,6 +34,7 @@
 #include <qstring.h>
 #include <qpoint.h>
 #include <qpointer.h>
+#include <qcolor.h>
 #include <qstringlist.h>
 #include "common/retVal.h"
 #include "common/interval.h"
@@ -70,6 +71,9 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(MovementType movementType READ movementType WRITE setMovementType)
     Q_PROPERTY(bool movementTypeVisible READ movementTypeVisible WRITE setMovementTypeVisible)
     Q_PROPERTY(QString arbitraryUnit READ arbitraryUnit WRITE setArbitraryUnit)
+    Q_PROPERTY(QColor backgroundColorMoving READ backgroundColorMoving WRITE setBackgroundColorMoving)
+    Q_PROPERTY(QColor backgroundColorInterrupted READ backgroundColorInterrupted WRITE setBackgroundColorInterrupted)
+    Q_PROPERTY(QColor backgroundColorTimeout READ backgroundColorTimeout WRITE setBackgroundColorTimeout)
 
     Q_CLASSINFO("prop://actuator", "Actuator instance that is monitored and controlled by this widget (or None in order to remove a previous actuator).")
     Q_CLASSINFO("prop://numAxis", "Number of axes that are monitored.")
@@ -84,6 +88,9 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_CLASSINFO("prop://movementType", "Style of the widget depending if it should be optimized for an absolute movement, relative movement, both or no movement.")
     Q_CLASSINFO("prop://movementTypeVisible", "Hide or show a combobox above the axes values that can be used to select an appropriate movement type.")
     Q_CLASSINFO("prop://arbitraryUnit", "Unit name that is used for axes, whose unit is set to UnitAU (Arbitrary unit).")
+    Q_CLASSINFO("prop://backgroundColorMoving", "Background color for spinboxes of axes that are currently moving.")
+    Q_CLASSINFO("prop://backgroundColorInterrupted", "Background color for spinboxes of axes that were interrupted.")
+    Q_CLASSINFO("prop://backgroundColorTimeout", "Background color for spinboxes of axes that run into a timeout.")
 
 public:
     enum AxisUnit {
@@ -139,6 +146,15 @@ public:
     bool movementTypeVisible() const;
     bool axisEnabled(int axisIndex) const;
     QString arbitraryUnit() const;
+
+    QColor backgroundColorMoving() const;
+    void setBackgroundColorMoving(const QColor &color);
+
+    QColor backgroundColorInterrupted() const;
+    void setBackgroundColorInterrupted(const QColor &color);
+
+    QColor backgroundColorTimeout() const;
+    void setBackgroundColorTimeout(const QColor &color);
 
 private:
     void retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const;
