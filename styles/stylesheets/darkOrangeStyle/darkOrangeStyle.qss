@@ -2351,12 +2351,16 @@ ito--DialogAboutQItom {
 }
 
 ito--FigureWidget {
-  qproperty-currentBorderColor: #fffff;
+  qproperty-currentBorderColor: #FFFFFF;
 }
 
 ito--ScriptDockWidget QTabWidget::pane { 
   /* The tab widget frame */
   border: none;
+}
+
+ito--AIManagerWidget {
+  qproperty-backgroundColorInstancesWithPythonRef: #FF7700;
 }
 
 ItomQwtDObjFigure {
