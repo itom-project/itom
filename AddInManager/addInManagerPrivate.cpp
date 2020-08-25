@@ -1021,12 +1021,13 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** closeAddIn  close an instance of an actuator addIn object
 *   @param [in]  addIn  the addIn to close
 *   @return      on success ito::retOk, ito::retError otherwise
 *
-*   At first the close method of the plugin class is invoked. Then the \ref closeInst method of the addInInterfaceBase is called.
+*   At first the close method of the plugin class is invoked. 
+*   Then the \ref closeInst method of the addInInterfaceBase is called.
 */
 const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait)
 {
@@ -1039,24 +1040,43 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
 
     if (aib->getRef(addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
     {
+        // if the plugin is an actuator, raise its interrupt flag
+        // to make sure that a possible movement is stopped as
+        // soon as possible (if implemented in the specific actuator
+        // plugin). Then the instance can be closed.
+        ito::AddInActuator *aia = qobject_cast<ito::AddInActuator*>(addIn);
+
+        if (aia)
+        {
+            aia->setInterrupt();
+        }
+
         if (QApplication::instance())
         {
-            //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
+            //we always promised that if the init-method is called in the main thread, 
+            // the close method is called in the main thread, too.
             //Therefore pull it to the main thread, if necessary.
             if (!aib->getCallInitInNewThread())
             {
                 ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-                if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+
+                if (QMetaObject::invokeMethod(
+                        addIn, 
+                        "moveBackToApplicationThread", 
+                        Q_ARG(ItomSharedSemaphore*, 
+                        moveToThreadLocker.getSemaphore())))
                 {
                     if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
                     {
-                        retval += ito::RetVal(ito::retWarning, 0, tr("Timeout while pulling plugin back to main thread.").toLatin1().data());
+                        retval += ito::RetVal(ito::retWarning, 0, 
+                            tr("Timeout while pulling plugin back to main thread.").toLatin1().data());
                     }
                 }
                 else
                 {
                     moveToThreadLocker->deleteSemaphore();
-                    retval += ito::RetVal(ito::retWarning, 0, tr("Error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
+                    retval += ito::RetVal(ito::retWarning, 0, 
+                        tr("Error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
                 }
             }
 
@@ -1087,6 +1107,7 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                     ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
                     // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
                     Qt::ConnectionType conType = (QApplication::instance() != NULL && !(m_pQCoreApp && QApplication::hasPendingEvents())) ? Qt::AutoConnection : Qt::DirectConnection;
+
                     if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", conType, Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
                     {
                         if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
@@ -1141,7 +1162,7 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** decRef  decrement reference counter of addin and close it if necessary
 *   @param [in]  addIn  the addIn to increment reference
 *   @return      on success ito::retOk, ito::retError otherwise
