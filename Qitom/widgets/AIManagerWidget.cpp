@@ -60,7 +60,8 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pColumnWidth(NULL),
     m_pMainToolbar(NULL),
     m_pViewList(NULL),
-    m_pViewDetails(NULL)
+    m_pViewDetails(NULL),
+    m_pPlugInModel(NULL)
 {
     int size = 0;
     ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
@@ -127,16 +128,18 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pContextMenu->addAction(m_pActSendToPython);
 
     m_pSortFilterProxyModel = new QSortFilterProxyModel(this);
+
     if (aim)
     {
-        m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
+        m_pPlugInModel = aim->getPluginModel();
+
+        m_pSortFilterProxyModel->setSourceModel(m_pPlugInModel);
         m_pAIManagerView->setModel(m_pSortFilterProxyModel);
         m_pAIManagerView->sortByColumn(0, Qt::AscendingOrder);
         connect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
 
         // expanding DataIO node
-        PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-        QModelIndex index = plugInModel->getTypeNode(typeDataIO);
+        QModelIndex index = m_pPlugInModel->getTypeNode(typeDataIO);
         if (index.isValid() && m_pSortFilterProxyModel)
         {
             index = m_pSortFilterProxyModel->mapFromSource(index);
@@ -154,12 +157,12 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
         }
         settings->endArray();
     
-        m_pColumnWidth = new int[plugInModel->columnCount()];
+        m_pColumnWidth = new int[m_pPlugInModel->columnCount()];
         size = settings->beginReadArray("StandardColWidth");
-        if (size != plugInModel->columnCount())
+        if (size != m_pPlugInModel->columnCount())
         {
             m_pColumnWidth[0] = 200;
-            for (int i = 1; i < plugInModel->columnCount(); ++i)
+            for (int i = 1; i < m_pPlugInModel->columnCount(); ++i)
             {
                 m_pColumnWidth[i] = 120;
             }
@@ -422,6 +425,26 @@ void AIManagerWidget::updateActions()
     m_pMainToolbarSeparator2->setVisible((m_pActInfo->isVisible() || m_pActSendToPython->isVisible()) && 
         (m_pMainToolbarSeparator1->isVisible() || m_pActCloseAllInstances->isVisible() || m_pActNewInstance->isVisible() || m_pShowConfDialog->isVisible() ||
         m_pActDockWidget->isVisible() || m_pActDockWidgetToolbar->isVisible() || m_pActCloseInstance->isVisible() || m_pActOpenWidget->isVisible()));
+}
+
+//-------------------------------------------------------------------------------------
+QColor AIManagerWidget::backgroundColorInstancesWithPythonRef() const
+{
+    if (m_pPlugInModel)
+    {
+        return m_pPlugInModel->backgroundColorInstancesWithPythonRef();
+    }
+
+    return QColor();
+}
+
+//-------------------------------------------------------------------------------------
+void AIManagerWidget::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor)
+{
+    if (m_pPlugInModel)
+    {
+        m_pPlugInModel->setBackgroundColorInstancesWithPythonRef(bgColor);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

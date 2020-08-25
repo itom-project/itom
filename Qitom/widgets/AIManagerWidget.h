@@ -36,14 +36,22 @@
 
 namespace ito 
 {
+    class PlugInModel; //forward declaration
+
     class AIManagerWidget : public AbstractDockWidget
     {
         Q_OBJECT
+
+        Q_PROPERTY(QColor backgroundColorInstancesWithPythonRef READ backgroundColorInstancesWithPythonRef WRITE setBackgroundColorInstancesWithPythonRef)
 
         public:
 //            AIManagerWidget();
             AIManagerWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled);
             ~AIManagerWidget();
+
+            //!< returns the background color for instances, that have been created by Python or which have at least one current reference by Python code
+            QColor backgroundColorInstancesWithPythonRef() const;
+            void setBackgroundColorInstancesWithPythonRef(const QColor &bgColor);
 
         protected:
 //            QList<QAction*> getAlgoWidgetActions(const ito::AddInInterfaceBase *aib);
@@ -83,6 +91,7 @@ namespace ito
             QTreeView *m_pAIManagerView;
             QSortFilterProxyModel *m_pSortFilterProxyModel;
             int *m_pColumnWidth;
+            PlugInModel *m_pPlugInModel;
 
         public slots:
 

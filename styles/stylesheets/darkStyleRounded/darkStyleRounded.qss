@@ -821,7 +821,8 @@ QToolBar QSlider::groove:horizontal {
   border-radius: 4px;
 }
 
-QToolBar QAbstractSpinBox {
+QToolBar QAbstractSpinBox,
+QToolBar QLineEdit {
   border: 1px solid #505F69;
 }
 
@@ -2343,12 +2344,16 @@ ito--DialogAboutQItom {
 }
 
 ito--FigureWidget {
-  qproperty-currentBorderColor: #fffff;
+  qproperty-currentBorderColor: #FFFFFF;
 }
 
 ito--ScriptDockWidget QTabWidget::pane { 
   /* The tab widget frame */
   border: none;
+}
+
+ito--AIManagerWidget {
+  qproperty-backgroundColorInstancesWithPythonRef: #FF7700;
 }
 
 ItomQwtDObjFigure {
@@ -2361,6 +2366,13 @@ ItomQwtDObjFigure {
 
 QwtPlot QWidget {
   border-radius: 0px;
+}
+
+MotorAxisController {
+  /* background colors for spinboxes for different movement states of axes */
+  qproperty-backgroundColorMoving: #1464A0;
+  qproperty-backgroundColorInterrupted: #BF0041;
+  qproperty-backgroundColorTimeout: #780373;
 }
 
 PathLineEdit>QToolButton {

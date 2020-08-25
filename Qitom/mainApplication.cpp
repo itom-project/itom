@@ -465,8 +465,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
-    m_widgetsTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
-    QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
+    m_addinmanagerTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
 
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);

@@ -60,7 +60,10 @@ public:
         stepUpMapper(NULL),
         stepDownMapper(NULL),
         runSingleMapper(NULL),
-        arbitraryUnit(" a.u.")
+        arbitraryUnit(" a.u."),
+        bgColorMoving("yellow"),
+        bgColorInterrupted("red"),
+        bgColorTimeout("#FFA3FD")
     {
 
     }
@@ -96,6 +99,10 @@ public:
 
     MotorAxisController::MovementType movementType;
     QString arbitraryUnit;
+
+    QColor bgColorMoving;
+    QColor bgColorInterrupted;
+    QColor bgColorTimeout;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
@@ -714,6 +721,51 @@ int MotorAxisController::defaultDecimals() const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+QColor MotorAxisController::backgroundColorMoving() const
+{
+    return d->bgColorMoving;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setBackgroundColorMoving(const QColor &color)
+{
+    if (color != d->bgColorMoving)
+    {
+        d->bgColorMoving = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+QColor MotorAxisController::backgroundColorInterrupted() const
+{
+    return d->bgColorInterrupted;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setBackgroundColorInterrupted(const QColor &color)
+{
+    if (color != d->bgColorInterrupted)
+    {
+        d->bgColorInterrupted = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+QColor MotorAxisController::backgroundColorTimeout() const
+{
+    return d->bgColorTimeout;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setBackgroundColorTimeout(const QColor &color)
+{
+    if (color != d->bgColorTimeout)
+    {
+        d->bgColorTimeout = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MotorAxisController::setAxisDecimals(int axisIndex, int decimals)
 {
     if (axisIndex >= 0 && axisIndex < d->axisType.size())
@@ -958,17 +1010,17 @@ void MotorAxisController::actuatorStatusChanged(QVector<int> status, QVector<dou
 
         if (status[i] & ito::actuatorMoving)
         {
-            style = "background-color: yellow";
+            style = "background-color: " + d->bgColorMoving.name();
             running = true;
             globalRunning = true;
         }
         else if (status[i] & ito::actuatorInterrupted)
         {
-            style = "background-color: red";
+            style = "background-color: " + d->bgColorInterrupted.name();
         }
         else if (status[i] & ito::actuatorTimeout)
         {
-            style = "background-color: #FFA3FD";
+            style = "background-color: " + d->bgColorTimeout.name();
         }
         else
         {
@@ -1037,6 +1089,7 @@ void MotorAxisController::on_btnStart_clicked()
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QVector<int> axes;
         QVector<double> positions;
+
         for (int i = 0; i < d->spinCurrentPos.size(); ++i)
         {
             axes << i;
@@ -1122,6 +1175,13 @@ ito::RetVal MotorAxisController::observeInvocation(ItomSharedSemaphore *waitCond
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const
 {
+    if ((retval.containsWarningOrError()) && d->actuator.isNull())
+    {
+        // it seems that the covered actuator has been deleted in the meantime.
+        // Do not show any messages any more!
+        return;
+    }
+
     if (retval.containsError())
     {
         QMessageBox msgBox;

@@ -1145,19 +1145,19 @@ ito::RetVal AddInManager::showDockWidget(ito::AddInBase *addin, int visible, Ito
                 {
                     if (toggleAction->isChecked()) //dock widget is currently visible -> hide it now
                     {
-                        dw->toggleViewAction()->trigger();
+                        toggleAction->trigger();
                     }
                 }
                 else if (visible == 1) //show
                 {
                     if (toggleAction->isChecked() == false) //dock widget is currently hidden -> show it now
                     {
-                        dw->toggleViewAction()->trigger();
+                        toggleAction->trigger();
                     }
                 }
                 else //toggle
                 {
-                    dw->toggleViewAction()->trigger();
+                    toggleAction->trigger();
                 }
             }
             else
