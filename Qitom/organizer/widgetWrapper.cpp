@@ -205,6 +205,7 @@ void WidgetWrapper::initMethodHash()
         qLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString,QString)"), "ito::PythonQObjectMarshal", 12003, ok);
         qLayout << buildMethodDescription(QMetaObject::normalizedSignature("removeItemAt(int)"), "void", 12004, ok);
         qLayout << buildMethodDescription(QMetaObject::normalizedSignature("setContentsMargins(int,int,int,int)"), "void", 12005, ok);
+        qLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItemFromUiFile(QString,QString)"), "ito::PythonQObjectMarshal", 12006, ok);
         m_methodHash["QLayout"] = qLayout;
 
         //QFormLayout
@@ -218,6 +219,14 @@ void WidgetWrapper::initMethodHash()
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("itemAtPosition(int,int)"), "ito::PythonQObjectMarshal", 14001, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowCount()"), "int", 14002, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnCount()"), "int", 14003, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnStretch(int)"), "int", 14004, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setColumnStretch(int,int)"), "void", 14005, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowStretch(int)"), "int", 14006, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setRowStretch(int,int)"), "void", 14007, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnMinimumWidth(int)"), "int", 14004, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setColumnMinimumWidth(int,int)"), "void", 14005, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowMinimumHeight(int)"), "int", 14006, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setRowMinimumHeight(int,int)"), "void", 14007, ok);
         m_methodHash["QGridLayout"] = qGridLayout;
 
         //QBoxLayout
@@ -225,6 +234,7 @@ void WidgetWrapper::initMethodHash()
         qBoxLayout << buildMethodDescription(QMetaObject::normalizedSignature("insertItem(int,QString,QString)"), "ito::PythonQObjectMarshal", 15001, ok);
         qBoxLayout << buildMethodDescription(QMetaObject::normalizedSignature("stretch(int)"), "int", 15002, ok);
         qBoxLayout << buildMethodDescription(QMetaObject::normalizedSignature("setStretch(int,int)"), "", 15003, ok);
+        qBoxLayout << buildMethodDescription(QMetaObject::normalizedSignature("insertItemFromUiFile(int,QString,QString)"), "ito::PythonQObjectMarshal", 15004, ok);
         m_methodHash["QBoxLayout"] = qBoxLayout;
     }
 }
@@ -1171,6 +1181,27 @@ ito::RetVal WidgetWrapper::callLayout(QLayout *layout, int methodIndex, void **_
         layout->setContentsMargins(left, top, right, bottom);
         return ito::retOk;
     }
+    case 12006: //addItemFromUiFile(QString,QString)
+    {
+        QString filename = *reinterpret_cast<QString(*)>(_a[1]);
+        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[2]);
+        ito::RetVal retValue;
+
+        QWidget *widget = m_pUiOrganizer->loadUiFile(
+            filename,
+            retValue,
+            layout->parentWidget(),
+            objectNamePostfix);
+
+        if (!retValue.containsError())
+        {
+            layout->addWidget(widget);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
     }
 
     return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
@@ -1227,7 +1258,7 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
 
         if (column < 0 || column >= layout->columnCount())
         {
-            return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->columnCount() - 1);
+            return ito::RetVal::format(ito::retError, 0, "column exceeds the valid range [0, %i]", layout->columnCount() - 1);
         }
 
         QLayoutItem *item = layout->itemAtPosition(row, column);
@@ -1261,6 +1292,106 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
     case 14003: //columnCount
     {
         (*reinterpret_cast<int*>(_a[0])) = layout->columnCount();
+        return ito::retOk;
+    }
+    case 14004: //columnStretch(int) -> int
+    {
+        int column = *reinterpret_cast<int(*)>(_a[1]);
+
+        if (column < 0 || column >= layout->columnCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "column exceeds the valid range [0, %i]", layout->columnCount() - 1);
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = layout->columnStretch(column);
+        return ito::retOk;
+    }
+    case 14005: //setColumnStretch(int,int)
+    {
+        int column = *reinterpret_cast<int(*)>(_a[1]);
+        int value = *reinterpret_cast<int(*)>(_a[2]);
+
+        if (column < 0 || column >= layout->columnCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "column exceeds the valid range [0, %i]", layout->columnCount() - 1);
+        }
+
+        layout->setColumnStretch(column, value);
+        return ito::retOk;
+    }
+    case 14006: //rowStretch(int) -> int
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+
+        if (row < 0 || row >= layout->rowCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = layout->rowStretch(row);
+        return ito::retOk;
+    }
+    case 14007: //setRowStretch(int,int)
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        int value = *reinterpret_cast<int(*)>(_a[2]);
+
+        if (row < 0 || row >= layout->rowCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+        }
+
+        layout->setRowStretch(row, value);
+        return ito::retOk;
+    }
+    case 14008: //columnMinimumWidth(int) -> int
+    {
+        int column = *reinterpret_cast<int(*)>(_a[1]);
+
+        if (column < 0 || column >= layout->columnCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "column exceeds the valid range [0, %i]", layout->columnCount() - 1);
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = layout->columnMinimumWidth(column);
+        return ito::retOk;
+    }
+    case 14009: //setColumnMinimumWidth(int,int)
+    {
+        int column = *reinterpret_cast<int(*)>(_a[1]);
+        int value = *reinterpret_cast<int(*)>(_a[2]);
+
+        if (column < 0 || column >= layout->columnCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "column exceeds the valid range [0, %i]", layout->columnCount() - 1);
+        }
+
+        layout->setColumnMinimumWidth(column, value);
+        return ito::retOk;
+    }
+    case 14010: //rowMinimumHeight(int) -> int
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+
+        if (row < 0 || row >= layout->rowCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = layout->rowMinimumHeight(row);
+        return ito::retOk;
+    }
+    case 14011: //setRowMinimumHeight(int,int)
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        int value = *reinterpret_cast<int(*)>(_a[2]);
+
+        if (row < 0 || row >= layout->rowCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "row exceeds the valid range [0, %i]", layout->rowCount() - 1);
+        }
+
+        layout->setRowMinimumHeight(row, value);
         return ito::retOk;
     }
     }
@@ -1332,6 +1463,28 @@ ito::RetVal WidgetWrapper::callBoxLayout(QBoxLayout *layout, int methodIndex, vo
 
         layout->setStretch(index, stretch);
         return ito::retOk;
+    }
+    case 15004: //insertItemFromUiFile(int,QString,QString)
+    {
+        int index = *reinterpret_cast<int(*)>(_a[1]);
+        QString filename = *reinterpret_cast<QString(*)>(_a[2]);
+        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[3]);
+        ito::RetVal retValue;
+
+        QWidget *widget = m_pUiOrganizer->loadUiFile(
+            filename,
+            retValue,
+            layout->parentWidget(),
+            objectNamePostfix);
+
+        if (!retValue.containsError())
+        {
+            layout->insertWidget(index, widget);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
     }
     }
 

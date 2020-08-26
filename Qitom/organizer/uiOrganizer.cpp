@@ -660,6 +660,102 @@ RetVal UiOrganizer::getNewPluginWindow(
     return retValue;
 }
 
+//-------------------------------------------------------------------------------------
+QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectNamePostfix /*= QString()*/)
+{
+    QFile file(QDir::cleanPath(filename));
+    QWidget *wid = NULL;
+
+    if (file.exists())
+    {
+        // set the working directory if QLoader to the directory where the ui-file is stored. 
+        // Then icons, assigned to the user-interface may be properly loaded, since their 
+        // path is always saved relatively to the ui-file,too.
+        file.open(QFile::ReadOnly);
+        QFileInfo fileinfo(filename);
+        QDir workingDirectory = fileinfo.absoluteDir();
+
+        // try to load translation file with the same basename than the ui-file and the suffix .qm. 
+        // After the basename the location string can be added using _ as delimiter.
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+        settings.beginGroup("Language");
+        QString language = settings.value("language", "en").toString();
+        settings.endGroup();
+
+        QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+
+        QTranslator *qtrans = new QTranslator();
+        bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
+        if (couldLoad)
+        {
+            QString canonicalFilePath = fileinfo.canonicalFilePath();
+            if (m_transFiles.contains(canonicalFilePath))
+            {
+                delete m_transFiles.value(canonicalFilePath);
+                m_transFiles.remove(canonicalFilePath);
+            }
+
+            QCoreApplication::instance()->installTranslator(qtrans);
+            m_transFiles.insert(canonicalFilePath, qtrans);
+        }
+        else
+        {
+            DELETE_AND_SET_NULL(qtrans);
+        }
+
+        m_pUiLoader->setWorkingDirectory(workingDirectory);
+
+        if (objectNamePostfix == "")
+        {
+            wid = m_pUiLoader->load(&file, parent);
+        }
+        else
+        {
+            wid = m_pUiLoader->load(&file, NULL);
+        }
+
+        file.close();
+
+        if (wid == NULL)
+        {
+            QString err = m_pUiLoader->errorString();
+            retValue += RetVal(retError, 1007,
+                tr("ui-file '%1' could not be loaded. Reason: %2.").arg(filename).arg(err).toLatin1().data());
+        }
+        else
+        {
+            if (objectNamePostfix != "")
+            {
+                QList<QWidget*> childWidgets = wid->findChildren<QWidget*>();
+                QList<QLayout*> childLayouts = wid->findChildren<QLayout*>();
+
+                foreach(QWidget *w, childWidgets)
+                {
+                    w->setObjectName(w->objectName() + objectNamePostfix);
+                }
+
+                foreach(QLayout *l, childLayouts)
+                {
+                    l->setObjectName(l->objectName() + objectNamePostfix);
+                }
+
+                // rename the widget itself
+                wid->setObjectName(wid->objectName() + objectNamePostfix);
+
+                wid->setParent(parent);
+            }  
+        }
+    }
+    else
+    {
+        wid = NULL;
+        retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toLatin1().data());
+    }
+
+    return wid;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::createNewDialog(
         const QString &filename,
@@ -677,7 +773,9 @@ RetVal UiOrganizer::createNewDialog(
 
     if (filename.indexOf("itom://") == 0)
     {
-        if (filename.toLower() == "itom://matplotlib" || filename.toLower() == "itom://matplotlibfigure" || filename.toLower() == "itom://matplotlibplot")
+        if (filename.toLower() == "itom://matplotlib" || 
+            filename.toLower() == "itom://matplotlibfigure" || 
+            filename.toLower() == "itom://matplotlibplot")
         {
             pluginClassName = "MatplotlibPlot";
 
@@ -719,7 +817,8 @@ RetVal UiOrganizer::createNewDialog(
                     }
                     else
                     {
-                        retValue += RetVal::format(retError, 0, tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
+                        retValue += RetVal::format(retError, 0, 
+                            tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
                     }
                 }
                 else
@@ -736,61 +835,12 @@ RetVal UiOrganizer::createNewDialog(
     }
     else
     {
-        QFile file(QDir::cleanPath(filename));
-        if (file.exists())
-        {
-            bool childOfMainWindow;
-            UiOrganizer::parseUiDescription(uiDescription, NULL, NULL, &childOfMainWindow, NULL, NULL);
-            QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
+        bool childOfMainWindow;
+        UiOrganizer::parseUiDescription(uiDescription, NULL, NULL, &childOfMainWindow, NULL, NULL);
+        QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
-            //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
-            file.open(QFile::ReadOnly);
-            QFileInfo fileinfo(filename);
-            QDir workingDirectory = fileinfo.absoluteDir();
-
-            //try to load translation file with the same basename than the ui-file and the suffix .qm. After the basename the location string can be added using _ as delimiter.
-            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-
-            settings.beginGroup("Language");
-            QString language = settings.value("language", "en").toString();
-            settings.endGroup();
-
-            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
-
-            QTranslator *qtrans = new QTranslator();
-            bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
-            if (couldLoad)
-            {
-                QString canonicalFilePath = fileinfo.canonicalFilePath();
-                if (m_transFiles.contains(canonicalFilePath))
-                {
-                    delete m_transFiles.value(canonicalFilePath);
-                    m_transFiles.remove(canonicalFilePath);
-                }
-
-                QCoreApplication::instance()->installTranslator(qtrans);
-                m_transFiles.insert(canonicalFilePath, qtrans);
-            }
-            else
-            {
-                delete qtrans;
-            }
-
-            m_pUiLoader->setWorkingDirectory(workingDirectory);
-            wid = m_pUiLoader->load(&file, mainWin);
-            file.close();
-
-            if (wid == NULL)
-            {
-                retValue += RetVal(retError, 1007, tr("ui-file '%1' could not be correctly parsed.").arg(filename).toLatin1().data());
-            }
-        }
-        else
-        {
-            wid = NULL;
-            retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toLatin1().data());
-        }
-
+        wid = loadUiFile(filename, retValue, mainWin, "");
+        
         if (!retValue.containsError())
         {
             retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, objectID, className);

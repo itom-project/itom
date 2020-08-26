@@ -51,6 +51,16 @@ class MultiPlotHorLayout(ItomUi):
         self.gui.btnSetStretch["enabled"] = self.numWidgets > 0
     
     @ItomUi.autoslot("")
+    def on_btnAddPlot_clicked(self):
+        className = "itom2dqwtplot"
+        objectName = f"Plot_{self.numWidgets}"
+        obj: uiItem = self.layout.call("addItem", className, objectName)
+        obj["source"] = dataObject.randN([30, 10])
+        
+        self.gui.btnRemove["enabled"] = self.numWidgets > 0
+        self.gui.btnSetStretch["enabled"] = self.numWidgets > 0
+    
+    @ItomUi.autoslot("")
     def on_btnInsertButton_clicked(self):
         
         idx, valid = ui.getInt(
@@ -71,14 +81,23 @@ class MultiPlotHorLayout(ItomUi):
             self.gui.btnSetStretch["enabled"] = self.numWidgets > 0
     
     @ItomUi.autoslot("")
-    def on_btnAddPlot_clicked(self):
-        className = "itom2dqwtplot"
-        objectName = f"Plot_{self.numWidgets}"
-        obj: uiItem = self.layout.call("addItem", className, objectName)
-        obj["source"] = dataObject.randN([30, 10])
+    def on_btnInsertFromUiFile_clicked(self):
+        idx, valid = ui.getInt(
+            "Position", 
+            "At which index should the widget from the UI file 'container.ui' be inserted (-1: end)?", 
+            0,
+            parent=self.gui)
         
-        self.gui.btnRemove["enabled"] = self.numWidgets > 0
-        self.gui.btnSetStretch["enabled"] = self.numWidgets > 0
+        if valid:
+            obj: uiItem = self.layout.call(
+                "insertItemFromUiFile",
+                idx,  # index
+                "container.ui",  # filename to ui file
+                "_%i" % self.numWidgets  # prefix, added to the objectNames of all new widgets and layouts
+            )
+            
+            self.gui.btnRemove["enabled"] = self.numWidgets > 0
+            self.gui.btnSetStretch["enabled"] = self.numWidgets > 0
     
     @ItomUi.autoslot("")
     def on_btnRemove_clicked(self):
