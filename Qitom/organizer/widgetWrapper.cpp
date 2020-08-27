@@ -223,10 +223,13 @@ void WidgetWrapper::initMethodHash()
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setColumnStretch(int,int)"), "void", 14005, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowStretch(int)"), "int", 14006, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setRowStretch(int,int)"), "void", 14007, ok);
-        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnMinimumWidth(int)"), "int", 14004, ok);
-        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setColumnMinimumWidth(int,int)"), "void", 14005, ok);
-        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowMinimumHeight(int)"), "int", 14006, ok);
-        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setRowMinimumHeight(int,int)"), "void", 14007, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("columnMinimumWidth(int)"), "int", 14008, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setColumnMinimumWidth(int,int)"), "void", 14009, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowMinimumHeight(int)"), "int", 14010, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setRowMinimumHeight(int,int)"), "void", 14011, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItemToGrid(QString,QString,int,int,int,int)"), "ito::PythonQObjectMarshal", 14012, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItemToGridFromUiFile(QString,QString,int,int,int,int)"), "ito::PythonQObjectMarshal", 14013, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("removeItemFromGrid(int,int)"), "void", 14014, ok);
         m_methodHash["QGridLayout"] = qGridLayout;
 
         //QBoxLayout
@@ -1062,6 +1065,29 @@ ito::RetVal WidgetWrapper::callAction(QAction *action, int methodIndex, void **_
     return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
+//-------------------------------------------------------------------------------------
+/* helper method for callLayout, callGridLayout, callFormLayout and callBoxLayout */
+void removeAndDeleteLayoutItem(QLayout *layout, QLayoutItem *item)
+{
+    if (item)
+    {
+        layout->removeItem(item);
+
+        if (item->widget())
+        {
+            item->widget()->deleteLater();
+        }
+        else if (item->layout())
+        {
+            item->layout()->deleteLater();
+        }
+        else if (item->spacerItem())
+        {
+            delete item->spacerItem();
+        }
+    }
+}
+
 
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callLayout(QLayout *layout, int methodIndex, void **_a)
@@ -1165,7 +1191,14 @@ ito::RetVal WidgetWrapper::callLayout(QLayout *layout, int methodIndex, void **_
 
         if (layoutItem == NULL)
         {
-            return ito::RetVal::format(ito::retError, 0, "Layout has no item at index %i", index);
+            if (item->spacerItem())
+            {
+                delete item->spacerItem();
+            }
+            else
+            {
+                return ito::RetVal::format(ito::retError, 0, "Layout has no item at index %i", index);
+            }
         }
 
         layoutItem->deleteLater();
@@ -1217,6 +1250,7 @@ ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, 
     {
     case 13001: //removeRow
     {
+#if QT_VERSION >= 0x050800
         int row = *reinterpret_cast<int(*)>(_a[1]);
 
         if (row < 0 || row >= layout->rowCount())
@@ -1227,6 +1261,9 @@ ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, 
         layout->removeRow(row);
 
         return ito::retOk;
+#else
+        return ito::RetVal(ito::retError, 0, "Unsupported method. Requires at least Qt 5.8");
+#endif
     }
     case 13002: //rowCount
     {
@@ -1277,6 +1314,11 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
 
         if (layoutItem == NULL)
         {
+            if (item->spacerItem())
+            {
+                return ito::RetVal::format(ito::retError, 0, "The spacer item at row %i and column %i cannot be accessed", row, column);
+            }
+
             return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i and column %i", row, column);
         }
 
@@ -1392,6 +1434,127 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
         }
 
         layout->setRowMinimumHeight(row, value);
+        return ito::retOk;
+    }
+    case 14012: //addItemToGrid(QString,QString,int,int,int,int) -> uiItem
+    {
+        QString className = *reinterpret_cast<QString(*)>(_a[1]);
+        QString objectName = *reinterpret_cast<QString(*)>(_a[2]);
+        int fromRow = *reinterpret_cast<int(*)>(_a[3]);
+        int fromCol = *reinterpret_cast<int(*)>(_a[4]);
+        int rowSpan = *reinterpret_cast<int(*)>(_a[5]);
+        int colSpan = *reinterpret_cast<int(*)>(_a[6]);
+
+        ito::RetVal retValue;
+
+        if (objectName == "")
+        {
+            objectName = QString();
+        }
+
+        QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
+            className,
+            retValue,
+            ito::AbstractFigure::WindowMode::ModeStandaloneInUi,
+            layout->parentWidget());
+
+        if (!retValue.containsError())
+        {
+            // delete all existing layouts at the indicated cells
+            QLayoutItem *layoutItem = NULL;
+
+            for (int r = fromRow; r < fromRow + rowSpan; ++r)
+            {
+                for (int c = fromCol; c < fromCol + colSpan; ++c)
+                {
+                    layoutItem = layout->itemAtPosition(r, c);
+                    removeAndDeleteLayoutItem(layout, layoutItem);
+                }
+            }
+
+            if (objectName != "")
+            {
+                widget->setObjectName(objectName);
+            }
+
+            layout->addWidget(widget, fromRow, fromCol, rowSpan, colSpan);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
+    case 14013: //addItemToGridFromUiFile(QString,QString,int,int,int,int) -> uiItem
+    {
+        QString filename = *reinterpret_cast<QString(*)>(_a[1]);
+        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[2]);
+        int fromRow = *reinterpret_cast<int(*)>(_a[3]);
+        int fromCol = *reinterpret_cast<int(*)>(_a[4]);
+        int rowSpan = *reinterpret_cast<int(*)>(_a[5]);
+        int colSpan = *reinterpret_cast<int(*)>(_a[6]);
+
+        ito::RetVal retValue;
+
+        QWidget *widget = m_pUiOrganizer->loadUiFile(
+            filename,
+            retValue,
+            layout->parentWidget(),
+            objectNamePostfix);
+
+        if (!retValue.containsError())
+        {
+            // delete all existing layouts at the indicated cells
+            QLayoutItem *layoutItem = NULL;
+
+            for (int r = fromRow; r < fromRow + rowSpan; ++r)
+            {
+                for (int c = fromCol; c < fromCol + colSpan; ++c)
+                {
+                    layoutItem = layout->itemAtPosition(r, c);
+                    removeAndDeleteLayoutItem(layout, layoutItem);
+                }
+            }
+
+            layout->addWidget(widget, fromRow, fromCol, rowSpan, colSpan);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
+    case 14014: //removeItemFromGrid(int,int) -> void
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        int col = *reinterpret_cast<int(*)>(_a[2]);
+
+        QLayoutItem *item = layout->itemAtPosition(row, col);
+
+        if (item == NULL)
+        {
+            return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i, column %i", row, col);
+        }
+
+        QObject *layoutItem = item->widget();
+
+        if (layoutItem == NULL)
+        {
+            layoutItem = item->layout();
+        }
+
+        if (layoutItem == NULL)
+        {
+            if (item->spacerItem())
+            {
+                delete item->spacerItem();
+            }
+            else
+            {
+                return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i, column %i", row, col);
+            }
+        }
+
+        layoutItem->deleteLater();
+
         return ito::retOk;
     }
     }
