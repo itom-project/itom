@@ -1445,6 +1445,15 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
         int rowSpan = *reinterpret_cast<int(*)>(_a[5]);
         int colSpan = *reinterpret_cast<int(*)>(_a[6]);
 
+        if (fromRow < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "row start index must be >= 0.");
+        }
+        else if (fromCol < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "column start index must be >= 0.");
+        }
+
         ito::RetVal retValue;
 
         if (objectName == "")
@@ -1492,6 +1501,15 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
         int fromCol = *reinterpret_cast<int(*)>(_a[4]);
         int rowSpan = *reinterpret_cast<int(*)>(_a[5]);
         int colSpan = *reinterpret_cast<int(*)>(_a[6]);
+
+        if (fromRow < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "row start index must be >= 0.");
+        }
+        else if (fromCol < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "column start index must be >= 0.");
+        }
 
         ito::RetVal retValue;
 
