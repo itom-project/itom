@@ -203,6 +203,30 @@ PyObject* PythonUi::PyUiItem_repr(PyUiItem *self)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetClassName_doc, "getClassName() -> returns the Qt class name of this uiItem (widget or layout).  \n\
+\n\
+Every ui item wraps a widget or layout of the user interface. This method returns \n\
+the class name of this item, as it is given by the Qt framework. \n\
+\n\
+New in itom 4.1. \n\
+\n\
+Returns \n\
+----------- \n\
+className : {str} \n\
+    The class name of the uiItem.");
+PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
+{
+    if (self->widgetClassName)
+    {
+        return PyUnicode_FromFormat("%s", self->widgetClassName);
+    }
+    else
+    {
+        return PyUnicode_FromString("");
+    }
+}
+
 //--------------------------------------------------------------------------------------------
 // mapping methods
 //--------------------------------------------------------------------------------------------
@@ -1817,6 +1841,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {"children", (PyCFunction)PyUiItem_children, METH_KEYWORDS | METH_VARARGS, PyUiItemChildren_doc},
         {"getChild", (PyCFunction)PyUiItem_getChild, METH_KEYWORDS | METH_VARARGS, PyUiItemGetChild_doc},
+        {"getClassName", (PyCFunction)PyUiItem_getClassName, METH_NOARGS, PyUiItemGetClassName_doc},
         {NULL}  /* Sentinel */
 };
 
