@@ -212,6 +212,10 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qFormLayout;
         qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("removeRow(int)"), "void", 13001, ok);
         qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("rowCount()"), "int", 13002, ok);
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("addRow(QString,QString,QString)"), "ito::PythonQObjectMarshal", 13003, ok);
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("insertRow(int,QString,QString,QString)"), "ito::PythonQObjectMarshal", 13004, ok);
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("setItem(int,int,QString,QString)"), "ito::PythonQObjectMarshal", 13005, ok);
+        qFormLayout << buildMethodDescription(QMetaObject::normalizedSignature("itemAtPosition(int,int)"), "ito::PythonQObjectMarshal", 13006, ok);
         m_methodHash["QFormLayout"] = qFormLayout;
 
         //QGridLayout
@@ -1268,6 +1272,192 @@ ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, 
     case 13002: //rowCount
     {
         (*reinterpret_cast<int*>(_a[0])) = layout->rowCount();
+        return ito::retOk;
+    }
+    case 13003: //addRow(QString,QString,QString) -> ito::PythonQObjectMarshal
+    {
+        QString label = *reinterpret_cast<QString(*)>(_a[1]);
+        QString className = *reinterpret_cast<QString(*)>(_a[2]);
+        QString objectName = *reinterpret_cast<QString(*)>(_a[3]);
+
+        ito::RetVal retValue;
+
+        if (objectName == "")
+        {
+            objectName = QString();
+        }
+
+        QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
+            className,
+            retValue,
+            ito::AbstractFigure::WindowMode::ModeStandaloneInUi,
+            layout->parentWidget());
+
+        if (!retValue.containsError())
+        {
+            if (objectName != "")
+            {
+                widget->setObjectName(objectName);
+            }
+
+            layout->addRow(label, widget);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
+    case 13004: //insertRow(int,QString,QString,QString) -> ito::PythonQObjectMarshal
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        QString label = *reinterpret_cast<QString(*)>(_a[2]);
+        QString className = *reinterpret_cast<QString(*)>(_a[3]);
+        QString objectName = *reinterpret_cast<QString(*)>(_a[4]);
+
+        if (row < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "row must be >= 0.");
+        }
+
+        ito::RetVal retValue;
+
+        if (objectName == "")
+        {
+            objectName = QString();
+        }
+
+        QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
+            className,
+            retValue,
+            ito::AbstractFigure::WindowMode::ModeStandaloneInUi,
+            layout->parentWidget());
+
+        if (!retValue.containsError())
+        {
+            if (objectName != "")
+            {
+                widget->setObjectName(objectName);
+            }
+
+            layout->insertRow(row, label, widget);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
+    case 13005: //setItem(int,int,QString,QString) -> ito::PythonQObjectMarshal
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        int role = *reinterpret_cast<int(*)>(_a[2]);
+        QString className = *reinterpret_cast<QString(*)>(_a[3]);
+        QString objectName = *reinterpret_cast<QString(*)>(_a[4]);
+
+        if (row < 0)
+        {
+            return ito::RetVal(ito::retError, 0, "row must be >= 0.");
+        }
+
+        if (role < QFormLayout::LabelRole || role > QFormLayout::SpanningRole)
+        {
+            return ito::RetVal::format(ito::retError, 0,
+                "role value must be one of: %i for the label widget in the first column, " \
+                "%i for the field widget in the 2nd column or %i for a widget, that spans both columns.",
+                QFormLayout::LabelRole, QFormLayout::FieldRole, QFormLayout::SpanningRole);
+        }
+
+        ito::RetVal retValue;
+
+        if (objectName == "")
+        {
+            objectName = QString();
+        }
+
+        QWidget *widget = m_pUiOrganizer->loadDesignerPluginWidget(
+            className,
+            retValue,
+            ito::AbstractFigure::WindowMode::ModeStandaloneInUi,
+            layout->parentWidget());
+
+        if (!retValue.containsError())
+        {
+            if (objectName != "")
+            {
+                widget->setObjectName(objectName);
+            }
+
+            // check if the dedicated space is already occupied and if so remove the widget there first.
+            QLayoutItem* layoutItem = NULL;
+
+            switch (role)
+            {
+            case QFormLayout::LabelRole:
+            case QFormLayout::FieldRole:
+                layoutItem = layout->itemAt(row, (QFormLayout::ItemRole)role);
+                removeAndDeleteLayoutItem(layout, layoutItem);
+                break;
+            case QFormLayout::SpanningRole:
+                // we never know where a widget could exist (label only, field only, both, spanning...)
+                layoutItem = layout->itemAt(row, QFormLayout::FieldRole);
+                removeAndDeleteLayoutItem(layout, layoutItem);
+                layoutItem = layout->itemAt(row, QFormLayout::LabelRole);
+                removeAndDeleteLayoutItem(layout, layoutItem);
+                layoutItem = layout->itemAt(row, QFormLayout::SpanningRole);
+                removeAndDeleteLayoutItem(layout, layoutItem);
+                break;
+            }
+            
+            layout->setWidget(row, (QFormLayout::ItemRole)role, widget);
+
+            (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
+        }
+
+        return retValue;
+    }
+    case 13006: //itemAtPosition(int,int) -> ito::PythonQObjectMarshal
+    {
+        int row = *reinterpret_cast<int(*)>(_a[1]);
+        int role = *reinterpret_cast<int(*)>(_a[2]);
+
+        if (row < 0 || row >= layout->rowCount())
+        {
+            return ito::RetVal::format(ito::retError, 0, "row is out of bounds [0, %i]", layout->rowCount() - 1);
+        }
+
+        if (role < QFormLayout::LabelRole || role > QFormLayout::SpanningRole)
+        {
+            return ito::RetVal::format(ito::retError, 0,
+                "role value must be one of: %i for the label widget in the first column, " \
+                "%i for the field widget in the 2nd column or %i for a widget, that spans both columns.",
+                QFormLayout::LabelRole, QFormLayout::FieldRole, QFormLayout::SpanningRole);
+        }
+
+        QLayoutItem *item = layout->itemAt(row, (QFormLayout::ItemRole)role);
+
+        if (item == NULL)
+        {
+            return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i with role %i", row, role);
+        }
+
+        QObject *layoutItem = item->widget();
+
+        if (layoutItem == NULL)
+        {
+            layoutItem = item->layout();
+        }
+
+        if (layoutItem == NULL)
+        {
+            if (item->spacerItem())
+            {
+                return ito::RetVal::format(ito::retError, 0, "The spacer item at row %i and role %i cannot be accessed", row, role);
+            }
+
+            return ito::RetVal::format(ito::retError, 0, "Layout has no item at row %i and role %i", row, role);
+        }
+
+        (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(layoutItem);
+
         return ito::retOk;
     }
     }
