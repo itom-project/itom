@@ -27,6 +27,7 @@
 #include "pythonUi.h"
 #include "../organizer/uiOrganizer.h"
 #include "../AppManagement.h"
+#include "pythonQtConversion.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -180,16 +181,85 @@ PyObject* PythonProgressObserver::PyProgressObserver_getProgressMaximum(PyProgre
     return PyLong_FromLong((*(self->progressObserver))->progressMaximum());
 }
 
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_getProgressValue_doc, "gets the current progress value");
+PyObject* PythonProgressObserver::PyProgressObserver_getProgressValue(PyProgressObserver *self, void * /*closure*/)
+{
+    if (!self || self->progressObserver == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    return PyLong_FromLong((*(self->progressObserver))->progressValue());
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_isCancelled_doc, "returns true if a cancellation request has been signalled; false otherwise");
+PyObject* PythonProgressObserver::PyProgressObserver_isCancelled(PyProgressObserver *self, void * /*closure*/)
+{
+    if (!self || self->progressObserver == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    return PyBool_FromLong((*(self->progressObserver))->isCancelled());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_requestCancellation_doc, "requestCancellation() -> requests the cancellation of the filter");
+PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgressObserver *self /*self*/, void * /*closure*/)
+{
+    if (!self || self->progressObserver == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    (*(self->progressObserver))->requestCancellation(ito::FunctionCancellationAndObserver::ReasonGeneral);
+    Py_RETURN_NONE;
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_setProgressValue_doc, "setProgressValue() -> changes the current value of the progress.\n \
+    \n \
+    This method emits the progressValueChanged signal. It can for instance be connected\n \
+    with a 'setValue' slot of a QProgressBar.\n \
+    \n \
+    The value will be clipped to progressMinimum and progressMaximum.");
+PyObject* PythonProgressObserver::PyProgressObserver_setProgressValue(PyProgressObserver *self /*self*/, PyObject *args)
+{
+    if (!self || self->progressObserver == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    int val;
+    if (!PyArg_ParseTuple(args, "i", &val))
+    {
+        PyErr_SetString(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
+        return NULL;
+    }
+
+    (*(self->progressObserver))->setProgressValue(val);
+    Py_RETURN_NONE;
+};
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
     {"progressMinimum", (getter)PyProgressObserver_getProgressMinimum,       (setter)NULL, progressObserver_getProgressMinimum_doc, NULL},
     {"progressMaximum", (getter)PyProgressObserver_getProgressMaximum,       (setter)NULL, progressObserver_getProgressMaximum_doc, NULL},
+    {"progressValue",   (getter)PyProgressObserver_getProgressValue,         (setter)NULL, progressObserver_getProgressValue_doc,   NULL},
+    {"isCancelled",     (getter)PyProgressObserver_isCancelled,              (setter)NULL, progressObserver_isCancelled_doc,        NULL},
     {NULL}  /* Sentinel */
 };
 
 //-----------------------------------------------------------------------------
 PyMethodDef PythonProgressObserver::PyProgressObserver_methods[] = {
+    { "requestCancellation", (PyCFunction)PythonProgressObserver::PyProgressObserver_requestCancellation, METH_NOARGS, progressObserver_requestCancellation_doc },
+    { "setProgressValue",    (PyCFunction)PythonProgressObserver::PyProgressObserver_setProgressValue,    METH_VARARGS, progressObserver_setProgressValue_doc },
     {NULL}  /* Sentinel */
 };
 
