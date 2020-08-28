@@ -13,6 +13,10 @@ from matplotlib._pylab_helpers import Gcf
 from matplotlib.backend_bases import (
     _Backend, FigureCanvasBase, FigureManagerBase, NavigationToolbar2,
     TimerBase, cursors, ToolContainerBase, StatusbarBase)
+
+if matplotlib.__version__ >= '3.3.0':
+    from matplotlib.backend_bases import _Mode
+
 import mpl_itom.figureoptions as figureoptions
 #from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
 from matplotlib.figure import Figure
@@ -24,7 +28,7 @@ from itom import uiItem, timer, ui
 import weakref
 #itom specific imports (end)
 
-backend_version = "3.0.1"
+backend_version = "3.0.2"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -175,8 +179,9 @@ class TimerItom(TimerBase):
 class FigureCanvasItom(FigureCanvasBase):
 
     # map Qt button codes to MouseEvent's ones:
-    # left 1, middle 2, right 3
-    buttond = {1: 1,
+    # left 1, middle 2, right 3, no mouse button 0
+    buttond = {0: 0,
+               1: 1,
                2: 2,
                4: 3,
                # QtCore.Qt.XButton1: None,
@@ -338,8 +343,14 @@ class FigureCanvasItom(FigureCanvasBase):
 
         """
         dpi_ratio = self._dpi_ratio
+        
         # flip y so y=0 is bottom of canvas
-        y = self.figure.bbox.height / dpi_ratio - y
+        if self.figure is not None:
+            y = self.figure.bbox.height / dpi_ratio - y
+        else:
+            # figure has already been closed.
+            y, x = 0, 0
+        
         return x * dpi_ratio, y * dpi_ratio
     
     def mouseEvent(self, eventType, x, y, button): 
@@ -348,17 +359,20 @@ class FigureCanvasItom(FigureCanvasBase):
         if DEBUG:
             print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x,y,button))
         try:
-            #button: left 1, middle 2, right 3
-            if(eventType == 0): #mousePressEvent
-                FigureCanvasBase.button_press_event( self, x, y, button)
-            elif(eventType == 1): #mouseDoubleClickEvent
-                FigureCanvasBase.button_press_event( self, x, y, button, dblclick=True)
-            elif(eventType == 2): #mouseMoveEvent
-                if(button == 0): #if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
+            # button: left 1, middle 2, right 3
+            if(eventType == 0):  # mousePressEvent
+                FigureCanvasBase.button_press_event(self, x, y, button)
+            elif(eventType == 1):  # mouseDoubleClickEvent
+                FigureCanvasBase.button_press_event(self, x, y, button, dblclick=True)
+            elif(eventType == 2):  # mouseMoveEvent
+                if(button == 0):  # if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
                     self.matplotlibWidgetUiItem.call("stopTimer")
-                FigureCanvasBase.motion_notify_event( self, x, y)
-            elif(eventType == 3): #mouseReleaseEvent
-                FigureCanvasBase.button_release_event( self, x, y, button)
+                FigureCanvasBase.motion_notify_event(self, x, y)
+            elif(eventType == 3):  # mouseReleaseEvent
+                FigureCanvasBase.button_release_event(self, x, y, button)
+        except NotImplementedError:
+            # derived from RuntimeError, therefore handle it separately.
+            pass
         except RuntimeError:
             self.signalDestroyedWidget()
     
@@ -366,18 +380,18 @@ class FigureCanvasItom(FigureCanvasBase):
         x, y = self.mouseEventCoords(x, y)
         # from QWheelEvent::delta doc
         steps = delta/120
-        if (orientation == 1): #vertical
-            FigureCanvasBase.scroll_event( self, x, y, steps)
+        if (orientation == 1):  # vertical
+            FigureCanvasBase.scroll_event(self, x, y, steps)
     
     def keyEvent(self, type, key, modifiers, autoRepeat):
         key = self._get_key(key, modifiers, autoRepeat)
         if(key is None):
             return
         
-        if(type == 0): #keyPressEvent
-            FigureCanvasBase.key_press_event( self, key )
-        elif(type == 1): #keyReleaseEvent
-            FigureCanvasBase.key_release_event( self, key )
+        if(type == 0):  # keyPressEvent
+            FigureCanvasBase.key_press_event(self, key )
+        elif(type == 1):  # keyReleaseEvent
+            FigureCanvasBase.key_release_event(self, key )
     
     @property
     @cbook.deprecated("3.0", message="Manually check `event.guiEvent.isAutoRepeat()` "
@@ -622,13 +636,17 @@ class FigureManagerItom( FigureManagerBase ):
         
         self.toolmanager = self._get_toolmanager()
         self.toolbar = self._get_toolbar(self.canvas, self.windowUi)
-        self.statusbar = None
+        
+        if matplotlib.__version__ < '3.3.0':
+            self.statusbar = None
         
         if self.toolmanager:
             backend_tools.add_tools_to_manager(self.toolmanager)
             if self.toolbar:
                 backend_tools.add_tools_to_container(self.toolbar)
-                self.statusbar = StatusbarItom(matplotlibplotUiItem, self.toolmanager)
+                
+                if matplotlib.__version__ < '3.3.0':
+                    self.statusbar = StatusbarItom(matplotlibplotUiItem, self.toolmanager)
         
         if self.toolbar is not None:
             #self.windowUi.addToolBar(self.toolbar)
@@ -790,8 +808,9 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self.message = Signal()
         self.subplotConfigDialog = None
         
-        """A mapping of toolitem method names to their QActions"""
-
+        """initializes the toolbar."""
+        self._initToolbar()
+        
         NavigationToolbar2.__init__(self, canvas)
     
     def _get_predef_action(self, callback_name):
@@ -824,6 +843,12 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         return re.sub('[^a-zA-Z0-9_]', '_', objectName) #replace all characters, which are not among the given set, by an underscore
 
     def _init_toolbar(self):
+        """Empty method for backward compatibility.
+        This method must be kept empty from MPL 3.3.0 on.
+        Its content is now contained in the method _initToolbar.
+        """
+    
+    def _initToolbar(self):
         self.basedir = os.path.join(matplotlib.rcParams['datapath'], 'images')
         
         w = self.matplotlibplotUiItem()
@@ -869,41 +894,12 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 if tooltip_text is not None:
                     a["toolTip"] = tooltip_text
 
+        # not used in MPL >= 3.3.0 any more
         self.buttons = {}
 
-        '''# Add the x,y location widget at the right side of the toolbar
-        # The stretch factor is 1 which means any resizing of the toolbar
-        # will resize this label instead of the buttons.
-        if self.coordinates:
-            self.locLabel = QtWidgets.QLabel("", self)
-            self.locLabel.setAlignment(
-                    QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-            self.locLabel.setSizePolicy(
-                QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                      QtWidgets.QSizePolicy.Ignored))
-            labelAction = self.addWidget(self.locLabel)
-            labelAction.setVisible(True)
-        '''
-
         # reference holder for subplots_adjust window
+        # not used in MPL >= 3.3.0 any more
         self.adj_window = None
-
-        '''# Esthetic adjustments - we need to set these explicitly in PyQt5
-        # otherwise the layout looks different - but we don't want to set it if
-        # not using HiDPI icons otherwise they look worse than before.
-        if is_pyqt5():
-            self.setIconSize(QtCore.QSize(24, 24))
-            self.layout().setSpacing(12)
-
-        if is_pyqt5():
-        # For some reason, self.setMinimumHeight doesn't seem to carry over to
-        # the actual sizeHint, so override it instead in order to make the
-        # aesthetic adjustments noted above.
-        def sizeHint(self):
-            size = super(NavigationToolbar2QT, self).sizeHint()
-            size.setHeight(max(48, size.height()))
-            return size
-        '''
 
     def edit_parameters(self):
         allaxes = self.canvas.figure.get_axes()
@@ -931,8 +927,16 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
-        self._get_predef_action('pan')["checked"] = (self._active == 'PAN')
-        self._get_predef_action('zoom')["checked"] = (self._active == 'ZOOM')
+        if matplotlib.__version__ < '3.3.0':
+            self._get_predef_action('pan')["checked"] = \
+                (self._active == 'PAN')
+            self._get_predef_action('zoom')["checked"] = \
+                (self._active == 'ZOOM')
+        else:
+            self._get_predef_action('pan')["checked"] = \
+                (self.mode == _Mode.PAN)
+            self._get_predef_action('zoom')["checked"] = \
+                (self.mode == _Mode.ZOOM)
 
     def pan(self, *args):
         super().pan(*args)
@@ -1101,6 +1105,9 @@ class ToolbarItom(ToolContainerBase):
         ToolContainerBase.__init__(self, toolmanager)
         self._toolitems = {}
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
+        
+        # add text label to status bar (make it self, since the connect command only holds a weakref)
+        self.statusbar_label = self.matplotlibplotUiItem().call("statusBar").call("addLabelWidget", "statusbarLabel")
 
     @property
     def _icon_extension(self):
@@ -1151,14 +1158,32 @@ class ToolbarItom(ToolContainerBase):
 
     def remove_toolitem(self, name):
         if self.matplotlibplotUiItem():
-            self.matplotlibplotUiItem().call("removeUserDefinedAction", self._action_name(name))
+            self.matplotlibplotUiItem().call("removeUserDefinedAction", 
+                                             self._action_name(name))
         del self._toolitems[name]
+    
+    def set_message(self, s):
+        """
+        Display a message on the toolbar (here: statusbar).
+    
+        Parameters
+        ----------
+        s : str
+            Message text.
+        """
+        self.statusbar_label["text"] = s
 
 
 class StatusbarItom(StatusbarBase):
+    """
+    
+    This class is deprecated from MPL 3.3 on (since StatusbarBase
+    is deprecated, too).
+    """
     def __init__(self, matplotlibplotUiItem, *args, **kwargs):
         StatusbarBase.__init__(self, *args, **kwargs)
-        self.label = matplotlibplotUiItem.call("statusBar").call("addLabelWidget", "statusbarLabel")
+        self.label = matplotlibplotUiItem.call("statusBar"). \
+            call("addLabelWidget", "statusbarLabel")
 
     def set_message(self, s):
         self.label["text"] = s

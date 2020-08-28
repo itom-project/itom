@@ -82,7 +82,7 @@ This macro is the opposite of NEW_PLUGININSTANCE
 #define REMOVE_PLUGININSTANCE(PluginClass) \
    if (*addInInst) \
       { \
-      delete qobject_cast<PluginClass*>(*addInInst); \
+      (*addInInst)->deleteLater(); \
       m_InstList.removeOne(*addInInst); \
       } 
 

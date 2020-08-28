@@ -110,7 +110,7 @@ class ITOMCOMMON_EXPORT RetVal
         /**
         *   equality operator compares retValue with with retValue of rhs RetVal. For possible constant values see \ref tRetValue
         */
-        inline char operator == (const RetVal &rhs)
+        inline char operator == (const RetVal &rhs) //Todo: make this method const
         {
             return m_retValue == rhs.m_retValue;
         }
@@ -119,7 +119,7 @@ class ITOMCOMMON_EXPORT RetVal
         /**
         *   unequality operator compares retValue with with retValue of rhs RetVal. For possible constant values see \ref tRetValue
         */
-        inline char operator != (const RetVal &rhs)
+        inline char operator != (const RetVal &rhs) //Todo: make this method const
         {
             return !(m_retValue == rhs.m_retValue);
         }
@@ -128,7 +128,7 @@ class ITOMCOMMON_EXPORT RetVal
         /**
         *   equality operator compares retValue with tRetValue constant. For possible constant values see \ref tRetValue
         */
-        inline char operator == (const tRetValue rhs)
+        inline char operator == (const tRetValue rhs) //Todo: make this method const
         {
             return m_retValue == rhs;
         }
@@ -137,7 +137,7 @@ class ITOMCOMMON_EXPORT RetVal
         /**
         *   unequality operator compares retValue with tRetValue constant. For possible constant values see \ref tRetValue
         */
-        inline char operator != (const tRetValue rhs)
+        inline char operator != (const tRetValue rhs) //Todo: make this method const
         {
             return !(m_retValue == rhs);
         }

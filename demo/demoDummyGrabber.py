@@ -3,6 +3,8 @@ from itom import *
 def demo_DummyGraber():
     #start camera (here: DummyGrabber)
     camera = dataIO("DummyGrabber")
+    cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")
+    cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")
 
     #set ROI
     # x: [100,499] -> width: 400 (borders are included!)
@@ -58,6 +60,8 @@ def demo_DummyGraber():
 
     #start a live image
     liveImage(camera)
+    liveImage(cameraGaussian)
+    liveImage(cameraGaussianArray)
 
     # Acquire an image stack of 10 measurements
     camera.startDevice()

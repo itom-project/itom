@@ -714,11 +714,11 @@ void ScriptEditorWidget::menuComment()
 
                 if (i == lineFrom)
                 {
-                    indexFrom++;
+                    indexFrom += 2; // 2 is the length of the inserted text
                 }
                 if (i == lineTo)
                 {
-                    indexTo++;
+                    indexTo += 2; // 2 is the length of the inserted text
                 }
             }
         }
@@ -755,7 +755,7 @@ void ScriptEditorWidget::menuUncomment()
         for (int i = lineFrom; i <= lineTo; i++)
         {
             lineTextFull = lineText(i);
-            lineTextTrimmed = lineTextFull.trimmed();
+            lineTextTrimmed = ito::Utils::lstrip(lineTextFull); // remove whitespaces at the beginning (not at the end of the string)
 
             if (lineTextTrimmed.left(2) == "# ") // delete # with space characters
             {
@@ -764,6 +764,15 @@ void ScriptEditorWidget::menuUncomment()
                 {
                     setSelection(i, searchIndex, i, searchIndex + 2);
                     textCursor().removeSelectedText();
+
+                    if (i == lineFrom && indexFrom >= 2)
+                    {
+                        indexFrom -= 2; // 2 is the length of the removed text
+                    }
+                    if (i == lineTo && indexTo >= 2)
+                    {
+                        indexTo -= 2; // 2 is the length of the removed text
+                    }
                 }
             }
             else if (lineTextTrimmed.left(1) == "#")
@@ -773,6 +782,15 @@ void ScriptEditorWidget::menuUncomment()
                 {
                     setSelection(i, searchIndex, i, searchIndex + 1);
                     textCursor().removeSelectedText();
+
+                    if (i == lineFrom && indexFrom >= 1)
+                    {
+                        indexFrom -= 1; // 1 is the length of the removed text
+                    }
+                    if (i == lineTo && indexTo >= 1)
+                    {
+                        indexTo -= 1; // 1 is the length of the removed text
+                    }
                 }
             }
             

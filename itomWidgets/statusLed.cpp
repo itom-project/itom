@@ -164,7 +164,8 @@ void StatusLed::paintEvent(QPaintEvent * /*event*/)
 
     QPainter p(this);
 
-    p.setPen(QPen(Qt::black));
+    
+    
     p.setRenderHint(QPainter::Antialiasing);
 
     int radius = qMin(rect().width(), rect().height()) / 2 - 2;
@@ -177,6 +178,15 @@ void StatusLed::paintEvent(QPaintEvent * /*event*/)
         g->setRadius(radius);
 
         p.setBrush(*g);
+
+        if (d->m_status)
+        {
+            p.setPen(QPen(d->m_colorsOn->darker(200)));
+        }
+        else
+        {
+            p.setPen(QPen(d->m_colorsOff->darker(200)));
+        }
     }
     else
     {
@@ -188,6 +198,8 @@ void StatusLed::paintEvent(QPaintEvent * /*event*/)
         gradient.setRadius(radius);
 
         p.setBrush(gradient);
+
+        p.setPen(QPen(QColor(Qt::gray).darker(200)));
     }
 
     p.drawEllipse(rect().center(), radius, radius);

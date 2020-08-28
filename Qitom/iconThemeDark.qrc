@@ -9,5 +9,12 @@
     <qresource prefix="/classNavigator">
         <file alias="icons/var.png">icons_dark/var.png</file>
     </qresource>
+     <qresource prefix="/plugins">
+        <file alias="icons/pluginFilter.png">icons_dark/pluginFilter.png</file>
+    </qresource>
+        <qresource prefix="/editor">
+        <file alias="icons/editCut.png">icons_dark/editCut.png</file>
+        <file alias="icons/find.png">icons_dark/find.png</file>
+    </qresource>
 </RCC>
 

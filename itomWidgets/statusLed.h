@@ -30,6 +30,7 @@
 #define STATUSLED_H
 
 #include <QWidget>
+#include <qpen.h>
 
 #include "commonWidgets.h"
 
@@ -58,12 +59,12 @@ public:
 
     virtual QSize sizeHint() const
     { 
-        return QSize(24,24); 
+        return QSize(32,32); 
     }
 
     virtual QSize minimumSizeHint() const
     { 
-        return QSize(12,12); 
+        return QSize(16,16); 
     }
 
     virtual int heightForWidth(int w) const

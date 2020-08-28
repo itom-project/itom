@@ -86,16 +86,22 @@ class MainApplication : public QObject
         QTranslator m_commonQtTranslator;
         QTranslator m_commonPlotTranslator;
         QTranslator m_widgetsTranslator;
+        QTranslator m_addinmanagerTranslator;
 
-        QSplashScreen *m_splashScreen;
+        QSplashScreen *m_pSplashScreen;
+        QColor m_splashScreenTextColor;
 
         QDebugStream *m_pQout;                                /*!< std::cout is redirected to this instance*/
         QDebugStream *m_pQerr;                                /*!< std::cerr is redirected to this instance*/
+
+        QString getSplashScreenFileName() const;
+        QPixmap getSplashScreenPixmap() const;
 
     signals:
         void propertiesChanged();
 
     private slots:
+        void setSplashScreenMessage(const QString &text);
 
     public slots:
         void _propertiesChanged() { emit propertiesChanged(); }
