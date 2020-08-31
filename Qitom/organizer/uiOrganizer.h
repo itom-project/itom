@@ -386,7 +386,7 @@ public:
     QWidget* createWidget(const QString &className, RetVal &retValue, QWidget *parent = NULL, const QString &objectName = QString());
 
     //!< loads a widget from an ui file (including its optional translation) and returns it.
-    QWidget* loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent = NULL, const QString &objectNamePostfix = QString());
+    QWidget* loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent = NULL, const QString &objectNameSuffix = QString());
 
 	QList<TimerContainer> getRegisteredTimers();
 

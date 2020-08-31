@@ -1221,14 +1221,14 @@ ito::RetVal WidgetWrapper::callLayout(QLayout *layout, int methodIndex, void **_
     case 12006: //addItemFromUiFile(QString,QString)
     {
         QString filename = *reinterpret_cast<QString(*)>(_a[1]);
-        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[2]);
+        QString objectNameSuffix = *reinterpret_cast<QString(*)>(_a[2]);
         ito::RetVal retValue;
 
         QWidget *widget = m_pUiOrganizer->loadUiFile(
             filename,
             retValue,
             layout->parentWidget(),
-            objectNamePostfix);
+            objectNameSuffix);
 
         if (!retValue.containsError())
         {
@@ -1686,7 +1686,7 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
     case 14013: //addItemToGridFromUiFile(QString,QString,int,int,int,int) -> uiItem
     {
         QString filename = *reinterpret_cast<QString(*)>(_a[1]);
-        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[2]);
+        QString objectNameSuffix = *reinterpret_cast<QString(*)>(_a[2]);
         int fromRow = *reinterpret_cast<int(*)>(_a[3]);
         int fromCol = *reinterpret_cast<int(*)>(_a[4]);
         int rowSpan = *reinterpret_cast<int(*)>(_a[5]);
@@ -1707,7 +1707,7 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
             filename,
             retValue,
             layout->parentWidget(),
-            objectNamePostfix);
+            objectNameSuffix);
 
         if (!retValue.containsError())
         {
@@ -1839,14 +1839,14 @@ ito::RetVal WidgetWrapper::callBoxLayout(QBoxLayout *layout, int methodIndex, vo
     {
         int index = *reinterpret_cast<int(*)>(_a[1]);
         QString filename = *reinterpret_cast<QString(*)>(_a[2]);
-        QString objectNamePostfix = *reinterpret_cast<QString(*)>(_a[3]);
+        QString objectNameSuffix = *reinterpret_cast<QString(*)>(_a[3]);
         ito::RetVal retValue;
 
         QWidget *widget = m_pUiOrganizer->loadUiFile(
             filename,
             retValue,
             layout->parentWidget(),
-            objectNamePostfix);
+            objectNameSuffix);
 
         if (!retValue.containsError())
         {

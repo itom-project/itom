@@ -2,8 +2,8 @@
 
 .. _toolbar-start:
 
-Customize the menu and toolbars of |itom|
-******************************************
+Customize the menu bar and toolbars of |itom|
+***********************************************
 
 In this section, it is shown how you can add user-defined toolbars and menus to the main window of |itom|. Clicks to these
 execute arbitrary python code or methods. The creation of the toolbars, buttons and menus is done using python code, too.

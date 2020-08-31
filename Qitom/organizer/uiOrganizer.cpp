@@ -661,7 +661,7 @@ RetVal UiOrganizer::getNewPluginWindow(
 }
 
 //-------------------------------------------------------------------------------------
-QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectNamePostfix /*= QString()*/)
+QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectNameSuffix /*= QString()*/)
 {
     QFile file(QDir::cleanPath(filename));
     QWidget *wid = NULL;
@@ -706,7 +706,7 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
 
         m_pUiLoader->setWorkingDirectory(workingDirectory);
 
-        if (objectNamePostfix == "")
+        if (objectNameSuffix == "")
         {
             wid = m_pUiLoader->load(&file, parent);
         }
@@ -725,23 +725,23 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
         }
         else
         {
-            if (objectNamePostfix != "")
+            if (objectNameSuffix != "")
             {
                 QList<QWidget*> childWidgets = wid->findChildren<QWidget*>();
                 QList<QLayout*> childLayouts = wid->findChildren<QLayout*>();
 
                 foreach(QWidget *w, childWidgets)
                 {
-                    w->setObjectName(w->objectName() + objectNamePostfix);
+                    w->setObjectName(w->objectName() + objectNameSuffix);
                 }
 
                 foreach(QLayout *l, childLayouts)
                 {
-                    l->setObjectName(l->objectName() + objectNamePostfix);
+                    l->setObjectName(l->objectName() + objectNameSuffix);
                 }
 
                 // rename the widget itself
-                wid->setObjectName(wid->objectName() + objectNamePostfix);
+                wid->setObjectName(wid->objectName() + objectNameSuffix);
 
                 wid->setParent(parent);
             }  
