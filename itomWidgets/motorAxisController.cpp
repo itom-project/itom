@@ -1089,6 +1089,7 @@ void MotorAxisController::on_btnStart_clicked()
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QVector<int> axes;
         QVector<double> positions;
+
         for (int i = 0; i < d->spinCurrentPos.size(); ++i)
         {
             axes << i;
@@ -1174,6 +1175,13 @@ ito::RetVal MotorAxisController::observeInvocation(ItomSharedSemaphore *waitCond
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const
 {
+    if ((retval.containsWarningOrError()) && d->actuator.isNull())
+    {
+        // it seems that the covered actuator has been deleted in the meantime.
+        // Do not show any messages any more!
+        return;
+    }
+
     if (retval.containsError())
     {
         QMessageBox msgBox;

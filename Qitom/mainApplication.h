@@ -86,6 +86,7 @@ class MainApplication : public QObject
         QTranslator m_commonQtTranslator;
         QTranslator m_commonPlotTranslator;
         QTranslator m_widgetsTranslator;
+        QTranslator m_addinmanagerTranslator;
 
         QSplashScreen *m_pSplashScreen;
         QColor m_splashScreenTextColor;
