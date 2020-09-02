@@ -2299,6 +2299,50 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getLayout(unsigned int objectID, QSharedPointer<unsigned int> layoutObjectID, QSharedPointer<QByteArray> layoutClassName, QSharedPointer<QString> layoutObjectName, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+
+    if (m_objectList.contains(objectID))
+    {
+        QWidget* ptr = qobject_cast<QWidget*>(m_objectList[objectID].data());
+
+        if (ptr)
+        {
+            if (ptr->layout())
+            {
+                QLayout* obj = ptr->layout();
+
+                *layoutObjectID = addObjectToList(obj);
+                *layoutClassName = obj->metaObject()->className();
+                *layoutObjectName = obj->objectName();
+            }
+            else //return reference to dialog or windows itself
+            {
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("This uiItem has no layout.").toLatin1().data());
+            }
+        }
+        else
+        {
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("This uiItem is no widet.").toLatin1().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("This widget is either unknown or does not exist any more.").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal getObjectChildrenInfoRecursive(const QObject *obj, bool recursive, QSharedPointer<QStringList> &objectNames, QSharedPointer<QStringList> &classNames)
 {
     ito::RetVal retval;
