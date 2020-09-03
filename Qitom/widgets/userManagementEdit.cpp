@@ -253,10 +253,13 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
 
                     case userRoleDeveloper:
                         ui.radioButton_roleDevel->setChecked(true);
+                        ui.radioButton_roleAdmin->setEnabled(false);
                     break;
 
                     default:
                         ui.radioButton_roleUser->setChecked(true);
+                        ui.radioButton_roleAdmin->setEnabled(false);
+                        ui.radioButton_roleDevel->setEnabled(false);
                 }
 
                 ui.checkBox_devTools->setChecked(features & featDeveloper);
