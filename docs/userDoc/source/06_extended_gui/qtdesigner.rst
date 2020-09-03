@@ -1551,7 +1551,7 @@ layout::
 
 The result of this dynamic change of the user interface at runtime can be seen here:
 
-.. figure:: images_userGUI/qtdesigner-dynamicboxlayout.png.png
+.. figure:: images_userGUI/qtdesigner-dynamicboxlayout.png
     :scale: 100%
     :align: center
 
