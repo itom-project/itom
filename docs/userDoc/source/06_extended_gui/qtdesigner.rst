@@ -149,7 +149,7 @@ Loading user interface in |itom|
 In this section, an introduction is given how to create and load user interfaces in |itom| depending on different 
 type-attributes.
 
-.. qtdesigner-typedialog:
+.. _qtdesigner-typedialog:
 
 Widget embedded in |itom|-dialog (TYPEDIALOG)
 ---------------------------------------------
@@ -245,7 +245,7 @@ Finally, the call to :py:class:`itom.ui` must be in the following way, in order 
 
 The dialog is closed and deleted if the variable **dialog** is deleted using the command **del**.
 
-.. qtdesigner-typewindow:
+.. _qtdesigner-typewindow:
 
 Main window or dialog (TYPEWINDOW)
 ----------------------------------
@@ -281,7 +281,7 @@ not given in this case, since they are useless in case of *TYPEWINDOW*. If your 
 own icon in the Windows tray bar and does not stay on top of |itom|.
 
 
-.. qtdesigner-typedockwidget:
+.. _qtdesigner-typedockwidget:
 
 Main window or widget as dockable toolbox (TYPEDOCKWIDGET)
 -----------------------------------------------------------
@@ -302,7 +302,7 @@ Possible values for *dockWidgetArea* are:
     * ui.TOPDOCKWIDGETAREA = 4
     * ui.BOTTOMDOCKWIDGETAREA = 8
 
-.. qtdesigner-typecentralwidget:
+.. _qtdesigner-typecentralwidget:
 
 Main window or widget as part of the central widget area of itom (TYPECENTRALWIDGET)
 -------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ weights.
     win = itom.ui("testWindow.ui", ui.TYPECENTRALWIDGET)
     itom.setCentralWidgetsSizes([400,300])  # desired height of 400px for the new widget 'win' and 300px for the command line of itom.
 
-.. qtdesigner-getreference:
+.. _qtdesigner-getreference:
 
 Accessing control elements
 ==========================
@@ -471,7 +471,7 @@ If a property or other arguments in |Qt| require other data types, it is possibl
 only becomes a little bit more difficult for pointers to extended C++ or |Qt| classes. The conversion is mainly done in 
 the |itom| class **PythonQtConversion**.
 
-.. qtdesigner-signals:
+.. _qtdesigner-signals:
 
 Connecting signals
 ==================
@@ -624,233 +624,246 @@ as further parameters to the call.
 
 .. _qtdesigner-wrappedslots:
 
+Special (wrapped) slots
+----------------------------
+
 Unfortunately, there are some methods of important widgets in |Qt|, which are not defined to be a *public slot*. For 
 instance, the methods to add item(s) to a list widget are no slots. However, there are some exceptions defined in |itom| 
 such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These 
-exceptions are contained in the following table:
+exceptions are contained in the list below. Their call syntax is as follows:
 
-.. py:function:: QWidget::resize(int width, int height) -> None
+    myWidget: uiItem = gui.objectNameOfWidget
+    retVal: retType = myWidget.call("name of slot", arg1: arg1Type, arg2: arg2Type, ...)
+    
+    # The return value of the wrapped slot is returned
+    # The first argument of the call method is the method
+    # name of the slot, all other arguments are the arguments
+    # to the method (no keyword based arguments allowed).
+
+The class names in the following list corresponds to the Qt class name of the widget, where the slot can be
+applied to. It is not part of the call statement in |Python|.
+
+.. py:function:: QWidget.resize(width: int, height: int)
 
     resizes the widget to width / height.
 
-.. py:function:: QWidget::setGeometry(int x, int y, int width, int height) -> None
+.. py:function:: QWidget.setGeometry(int x, int y, width: int, height: int)
 
     changes the geometry of the widget.
 
-.. py:function:: QWidget::setCursor(int index) -> None
+.. py:function:: QWidget.setCursor(index: int)
     
     sets the given cursor for this uiItem. The number is a value of the enumeration `Qt::CursorShape 
     <https://doc.qt.io/qt-5/qt.html#CursorShape-enum/>`_. A number < 0 will unset the current cursor.
     
-    *New in itom 3.2
+    *New in itom 3.2*
 
-.. py:function:: QWidget::devicePixelRatioF() -> float
+.. py:function:: QWidget.devicePixelRatioF() -> float
     
     Returns the device pixel ratio for the device as a floating point number. Only if **itom** is compiled against Qt >= 
     5.6, else 1.0 is returned always.
     
-    *New in itom 3.2
+    *New in itom 3.2*
 
-.. py:function:: QListWidget::addItem(str item) -> None
+.. py:function:: QListWidget.addItem(item: str)
     
     adds the item to the list
 
-.. py:function:: QListWidget::addItems(Sequence[str] items) -> None
+.. py:function:: QListWidget.addItems(items: Sequence[str])
     
     adds the given items in the given order to the list.
 
-.. py:function:: QListWidget::selectedRows() -> Tuple[int
-]
+.. py:function:: QListWidget.selectedRows() -> Tuple[int]
     
     returns a tuple of all selected row indices
 
-.. py:function:: QListWidget::selectedTexts() -> Tuple[str]
+.. py:function:: Tuple[str] QListWidget.selectedTexts()
     
     returns a tuple of all selected values
 
-.. py:function:: QListWidget::selectRows(Sequence[int] indices) -> None
+.. py:function:: QListWidget.selectRows(indices: Sequence[int])
     
     select the rows with the given indices (ListWidget must be in multi-selection mode)
 
-.. py:function:: QListWidget::takeItem(int row) -> str
+.. py:function:: QListWidget.takeItem(row: int) -> str
     
     removes and returns the text of the item from the given row in the list widget. Raises an exception if the item does 
     not exist.
 
-.. py:function:: QListWidget::item(int row) -> str
+.. py:function:: QListWidget.item(row: int) -> str
     
     returns the text of the item from the given row or raises an exception if the item does not exist
 
-.. py:function:: QListWidget::setItemText(int row, str text) -> None
+.. py:function:: QListWidget.setItemText(row: int, text: str)
     
     sets the text of the item from the given row or raises an exception if the item does not exist
     
     *New in **itom** > 3.2.1*
 
-.. py:function:: QListWidget::checkState(int row) -> int (Qt::CheckState)
+.. py:function:: QListWidget.checkState(row: int) -> int[Qt.CheckState]
     
     returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an 
     exception if the item does not exist. For possible values of flags, see the enumeration `Qt::ItemFlags 
     <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
 
-.. py:function:: QListWidget::setCheckState(int row, Qt::CheckState state) -> None
+.. py:function:: QListWidget.setCheckState(row: int, state: Qt.CheckState)
     
     set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags 
     properly before changing the state. For possible values of flags, see the enumeration `Qt::ItemFlags 
     <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
 
-.. py:function:: QListWidget::flags(int row) -> int (Qt::ItemFlags)
+.. py:function:: QListWidget.flags(row: int) -> int[Qt.ItemFlags]
     
     returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
     For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
 
-.. py:function:: QListWidget::setFlags(int row, Qt::ItemFlags flags) -> None
+.. py:function:: QListWidget.setFlags(row: int, flags: Qt.ItemFlags)
     
     set the flags of the item in the given row based on the flags bitmask (use an integer). 
     You have to set the flags properly before changing the state.
     For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
 
-.. py:function:: QComboBox::addItem(str item) -> None
+.. py:function:: QComboBox.addItem(item: str)
     
     appends the given item to the combo box
 
-.. py:function:: QComboBox::addItems(Sequence[str] items) -> None
+.. py:function:: QComboBox.addItems(items: Sequence[str])
     
     appends the given items to the combo box
 
-.. py:function:: QComboBox::removeItem(int index) -> None
+.. py:function:: QComboBox.removeItem(index: int)
     
     remove the item in the combo box given by index
 
-.. py:function:: QComboBox::setItemData(int index, variant value) -> None
+.. py:function:: QComboBox.setItemData(index: int, variant value)
     
     sets the displayed text of the item given by index to the given value.
     *value* can be of any type, that can be converted to a string representation (originally: QVariant).
 
-.. py:function:: QComboBox::insertItem(int index , str item) -> None
+.. py:function:: QComboBox.insertItem(index: int , item: str)
     
     Inserts the item at the position in the list given by index.
     
-.. py:function:: QComboBox::itemText(int index) -> str
+.. py:function:: QComboBox.itemText(index: int) -> str
     
     returns the text of the item in the combo box given by index.
 
-.. py:function:: QTabWidget::isTabEnabled(int index) -> bool
+.. py:function:: QTabWidget.isTabEnabled(index: int) -> bool
     
     returns True, if the tab, given by index, is enabled; else False
     
-.. py:function:: QTabWidget::setTabEnabled(int index, bool enabled) -> None
+.. py:function:: QTabWidget.setTabEnabled(index: int, enabled: bool)
     
     sets the enable state of the tab, given by index.
 
-.. py:function:: QMainWindow::statusBar() -> uiItem
+.. py:function:: QMainWindow.statusBar() -> uiItem
     
     returns a reference to the statusbar widget as :py:class:`~itom.uiItem`.
 
-.. py:function:: QMainWindow::centralWidget() -> uiItem 
+.. py:function:: QMainWindow.centralWidget() -> uiItem 
     
     returns a reference to the central widget of the mainWindow as :py:class:`~itom.uiItem`.
 
-.. py:function:: QMainWindow::addToolBar(str name, str objectName) -> uiItem
+.. py:function:: QMainWindow.addToolBar(name: str, objectName: str) -> uiItem
     
     adds a new toolbar with the given name to the main window and returns its reference as :py:class:`~itom.uiItem`.
     If objectName is a nonempty string, it is used as internal object name of the new toolbar.
     
     *New in itom 3.2
 
-.. py:function:: QTableWidget::setHorizontalHeaderLabels(Sequence[str] labels) -> None
+.. py:function:: QTableWidget.setHorizontalHeaderLabels(labels: Sequence[str])
     
     sets the labels of the horizontal header labels
 
-.. py:function:: QTableWidget::setVerticalHeaderLabels(Sequence[str] labels) -> None
+.. py:function:: QTableWidget.setVerticalHeaderLabels(labels: Sequence[str])
     
     sets the labels of the vertical header labels
 
-.. py:function:: QTableWidget::getItem(int row, int column) -> variant (QVariant)
+.. py:function:: QTableWidget.getItem(row: int, column: int) -> variant
     
     returns the value of the item, given by row and column
 
-.. py:function:: QTableWidget::setItem(int row, int column, variant value) -> None
+.. py:function:: QTableWidget.setItem(row: int, column: int, value: variant)
     
     sets the value of the item, given by row and column, to the given value (any type, castable to QVariant).
 
-.. py:function:: QTableWidget::currentColumn() -> int
+.. py:function:: QTableWidget.currentColumn() -> int
     
     returns the index of the currently selected column
 
-.. py:function:: QTableWidget::currentRow() -> int
+.. py:function:: QTableWidget.currentRow() -> int
     
     returns the index of the currently selected row
 
-.. py:function:: QTableWidget::checkState(int row, int column) -> int (Qt::CheckState)
+.. py:function:: QTableWidget.checkState(row: int, column: int) -> int[Qt.CheckState]
     
     returns the check state of the item from the given row and column (0: unchecked, 1: partially 
     checked, 2: checked) or raises an exception if the item does not exist.
 
-.. py:function:: QTableWidget::setCheckState(int row, int column,Qt::CheckState state) -> None
+.. py:function:: QTableWidget.setCheckState(row: int, column: int, state: Qt.CheckState)
     
     set the check state of the item in the given row and column (0: unchecked, 1: partially checked,
     2: checked) - set the flags properly before changing the state.
 
-.. py:function:: QTableWidget::flags(int row, int column) -> int (Qt::ItemFlags)
+.. py:function:: QTableWidget.flags(row: int, column: int) -> int[Qt.ItemFlags]
     
     returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
     For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
 
-.. py:function:: QTableWidget::setFlags(int row, int column, Qt::ItemFlags flags) -> None
+.. py:function:: QTableWidget.setFlags(row: int, column: int, flags: Qt.ItemFlags)
     
     set the flags of the item in the given row and column based on the flags bitmask (use an integer). 
     You have to set the flags properly before changing the state.
     For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
 
-.. py:function:: QTableView::horizontalHeader() -> uiItem
+.. py:function:: QTableView.horizontalHeader() -> uiItem
     
     returns a reference to the horizontal header widget as :py:class:`~itom.uiItem`.
 
-.. py:function:: QTableView::verticalHeader() -> uiItem
+.. py:function:: QTableView.verticalHeader() -> uiItem
     
     returns a reference to the vertical header widget as :py:class:`~itom.uiItem`.
 
-.. py:function:: QSplitter::setStretchFactor(int section, int factor) -> None
+.. py:function:: QSplitter.setStretchFactor(section: int, factor: int)
     
     sets the stretch factor (size policy) for the given section.
 
-.. py:function:: QSplitter::sizes() -> Tuple[int]
+.. py:function:: QSplitter.sizes() -> Tuple[int]
     
     returns the sizes (in pixel) of each section as tuple.
 
-.. py:function:: QSplitter::setSizes(Sequence[int] sizes) -> None
+.. py:function:: QSplitter.setSizes(sizes: Sequence[int])
     
     sets the sizes of all sections (in pixels). Pass sizes as tuple or list of integers.
 
-.. py:function:: QSplitter::isCollapsible(int section) -> bool
+.. py:function:: QSplitter.isCollapsible(section: bool) -> bool
     
     returns True if the given section is collapsible, else False
 
-.. py:function:: QSplitter::setCollapsible(int section, bool value) -> None
+.. py:function:: QSplitter.setCollapsible(section: bool, value: bool)
     
     set if the given section should be collapsible (True) or not (False)
 
-.. py:function:: QStatusBar::addLabelWidget(str objectName) -> uiItem 
+.. py:function:: QStatusBar.addLabelWidget(objectName: str) -> uiItem 
     
     adds an empty label (class: QLabel) to the status bar with the given object name and returns its 
     reference as :py:class:`~itom.uiItem`.
     
     *New in itom 3.2*
 
-.. py:function:: QStatusBar::currentText() -> str 
+.. py:function:: QStatusBar.currentText() -> str 
     
     Returns the temporary message currently shown, or an empty string if there is no such message.
     
     *New in itom 3.2*
 
-.. py:function:: QToolBar::addSeparator() -> uiItem
+.. py:function:: QToolBar.addSeparator() -> uiItem
     
     adds a new separator to the toolbar and returns its reference as :py:class:`~itom.uiItem`.
     
     *New in itom 3.2*
 
-.. py:function:: QToolBar::addAction(str label, str objectName) -> uiItem
+.. py:function:: QToolBar.addAction(label: str, objectName: str) -> uiItem
     
     adds a new action to the toolbar and returns its reference (QAction) as :py:class:`~itom.uiItem`.
     The action has a label text, as well as an optional objectName. No objectName is assigned if it is an empty string.
@@ -865,14 +878,14 @@ exceptions are contained in the following table:
     
     *New in itom 3.2*
 
-.. py:function:: QAction::setIcon(str filename, float scaleFactor) -> None
+.. py:function:: QAction.setIcon(filename: str, scaleFactor: float)
     
     sets the icon of the action to the given filename and optionally defines a certain scaling factor, which
     is the pixel ratio that is applied to the icon (usually: 1.0).
     
     *New in itom 3.2*
 
-.. py:function:: QLayout::itemAt(int index) -> uiItem:
+.. py:function:: QLayout.itemAt(index: int) -> uiItem:
     
     Returns the widget or layout at the given `index` of the layout.
     
@@ -880,13 +893,13 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QLayout::count() -> int:
+.. py:function:: QLayout.count() -> int
     
     Returns the number of items in the layout.
     
     *New in itom 4.1*
 
-.. py:function:: QLayout::removeItemAt(int index):
+.. py:function:: QLayout.removeItemAt(index: int)
     
     Removes the item from the layout, that is at the indicated `index`.
     
@@ -894,13 +907,13 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QLayout::setContentsMargins(int left, int top, int right, int bottom):
+.. py:function:: QLayout.setContentsMargins(left: int, top: int, right: int, bottom: int)
     
     Sets the content margins of the layout to the given values.
     
     *New in itom 4.1*
 
-.. py:function:: QLayout::addItemFromUiFile(str filename, str objectNameSuffix) -> uiItem:
+.. py:function:: QLayout.addItemFromUiFile(filename: str, objectNameSuffix: str) -> uiItem
     
     Adds a widget to the layout, that is loaded from an UI file. Use the QtDesigner
     to define the UI file (Widget type is recommended) and define a small portion of
@@ -916,7 +929,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QLayout::addItem(str className, str objectName) -> uiItem:
+.. py:function:: QLayout.addItem(className: str, objectName: str) -> uiItem
     
     Adds a widget to the layout, where the widget is given by its class name,
     as it is given in the Qt framework (or any other designer plugin class name). 
@@ -928,7 +941,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::removeRow(int rowIndex):
+.. py:function:: QFormLayout.removeRow(rowIndex: int)
     
     Removes an entire row from the form layout.
     
@@ -938,13 +951,13 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::rowCount() -> int:
+.. py:function:: QFormLayout.rowCount() -> int
     
     Returns the number of rows in the form layout.
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::addRow(str label, str fieldClassName, str fieldObjectName) -> uiItem:
+.. py:function:: QFormLayout.addRow(label: str, fieldClassName: str, fieldObjectName: str) -> uiItem
     
     Adds a new row to the form layout, where the first column is a label with the given `label` text.
     The 2nd column (field) is filled with a user defined widget, given by the class name
@@ -955,7 +968,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::insertRow(int rowIndex, str label, str fieldClassName, str fieldObjectName) -> uiItem:
+.. py:function:: QFormLayout.insertRow(rowIndex: int, label: str, fieldClassName: str, fieldObjectName: str) -> uiItem
     
     Inserts a new row at position `rowÌndex` in this form layout. If the `rowIndex` is
     out of bounds, the new row is added at the end.
@@ -968,7 +981,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::setItem(int rowIndex, int role, str className, str objectName) -> uiItem:
+.. py:function:: QFormLayout.setItem(rowIndex: int, role: int, className: str, objectName: str) -> uiItem
     
     Adds or replaces a new widget into a row at position `rowIndex` and a specific `role`.
     
@@ -985,7 +998,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QFormLayout::itemAtPosition(int rowIndex, int role) -> uiItem:
+.. py:function:: QFormLayout.itemAtPosition(rowIndex: int, role: int) -> uiItem
     
     Returns the item (widget or layout) in this form layout in the row, given
     by its `rowIndex` and the specified `role`.
@@ -1000,7 +1013,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::itemAtPosition(int rowIndex, int columnIndex) -> uiItem:
+.. py:function:: QGridLayout.itemAtPosition(rowIndex: int, columnIndex: int) -> uiItem
     
     Returns the item (widget or layout) in this grid layout at the given `rowIndex`
     and `columnIndex`.
@@ -1009,19 +1022,19 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::rowCount() -> int:
+.. py:function:: QGridLayout.rowCount() -> int
     
     Returns the number of rows in this grid layout.
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::columnCount() -> int:
+.. py:function:: QGridLayout.columnCount() -> int
     
     Returns the number of columns in this grid layout.
     
     *New in itom 4.1*
     
-.. py:function:: QGridLayout::columnStretch(int columnIndex) -> int:
+.. py:function:: QGridLayout.columnStretch(columnIndex: int) -> int
     
     Returns the current stretch value for the column at index `columnIndex`.
     The size of all columns are distributed over the available space based
@@ -1034,7 +1047,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
     
-.. py:function:: QGridLayout::setColumnStretch(int columnIndex, int stretch):
+.. py:function:: QGridLayout.setColumnStretch(columnIndex: int, stretch: int)
     
     Sets the stretch value for the column at index `columnIndex` to the value `stretch`.
     The size of all columns are distributed over the available space based
@@ -1047,7 +1060,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
     
-.. py:function:: QGridLayout::rowStretch(int rowIndex) -> int:
+.. py:function:: QGridLayout.rowStretch(rowIndex: int) -> int
     
     Returns the current stretch value for the row at index `rowIndex`.
     The size of all rows are distributed over the available space based
@@ -1060,7 +1073,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::setRowStretch(int rowIndex, int stretch):
+.. py:function:: QGridLayout.setRowStretch(rowIndex: int, stretch: int)
     
     Sets the stretch value for the row at index `rowIndex` to the value `stretch`.
     The size of all rows are distributed over the available space based
@@ -1073,7 +1086,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::columnMinimumWidth(int columnIndex) -> int:
+.. py:function:: QGridLayout.columnMinimumWidth(columnIndex: int) -> int
     
     Returns the minimum width (in px) of the column at position `columnIndex`.
     
@@ -1081,7 +1094,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::setColumnMinimumWidth(int columnIndex, int width):
+.. py:function:: QGridLayout.setColumnMinimumWidth(columnIndex: int, width: int)
     
     Sets the minimum width of the column at position `columnIndex`
     to `width` pixels.
@@ -1090,7 +1103,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::rowMinimumHeight(int rowIndex) -> int:
+.. py:function:: QGridLayout.rowMinimumHeight(rowIndex: int) -> int
     
     Returns the minimum height (in px) of the row at position `rowIndex`.
     
@@ -1098,7 +1111,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::setRowMinimumHeight(int rowIndex, int height):
+.. py:function:: QGridLayout.setRowMinimumHeight(rowIndex: int, height: int)
     
     Sets the minimum height of the row at position `rowIndex`
     to `height` pixels.
@@ -1107,7 +1120,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::addItemToGrid(str className, str objectName, int fromRow, int fromColumn, int rowSpan, int colSpan) -> uiItem:
+.. py:function:: QGridLayout.addItemToGrid(className: str, objectName: str, fromRow: int, fromColumn: int, rowSpan: int, colSpan: int) -> uiItem
     
     Adds a widget to this grid layout. The position of the widget is mainly given
     by a certain row and column index, denoted as `fromRow` and `fromColumn`.
@@ -1122,7 +1135,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::addItemToGridFromUiFile(str filename, str objectNameSuffix, int fromRow, int fromColumn, int rowSpan, int colSpan) -> uiItem:
+.. py:function:: QGridLayout.addItemToGridFromUiFile(filename: str, objectNameSuffix: str, fromRow: int, fromColumn: int, rowSpan: int, colSpan: int) -> uiItem
     
     Adds a widget to this grid layout, that is loaded from an UI file, located
     at the indicated `filename`. Use the QtDesigner
@@ -1145,7 +1158,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QGridLayout::removeItemFromGrid(int rowIndex, int columnIndex):
+.. py:function:: QGridLayout.removeItemFromGrid(rowIndex: int, columnIndex: int)
     
     Removes the widget or layout from this grid layout at position `rowIndex` and
     `columnIndex`.
@@ -1155,7 +1168,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QBoxLayout::stretch(int index) -> int:
+.. py:function:: QBoxLayout.stretch(index: int) -> int
     
     Returns the current stretch value for the item at index `index`.
     The size of all cells are distributed over the available space based
@@ -1168,7 +1181,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QBoxLayout::setStretch(int index, int stretch):
+.. py:function:: QBoxLayout.setStretch(index: int, stretch: int)
     
     Sets the stretch value for the item at index `index` to the value `stretch`.
     The size of all items are distributed over the available space based
@@ -1181,7 +1194,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QBoxLayout::insertItemFromUiFile(int index, str filename, str objectNameSuffix) -> uiItem:
+.. py:function:: QBoxLayout.insertItemFromUiFile(index: int, filename: str, objectNameSuffix: str) -> uiItem
     
     Inserts a widget to this box layout at the given `index` position.
     The widget is loaded from an UI file, located
@@ -1203,7 +1216,7 @@ exceptions are contained in the following table:
     
     *New in itom 4.1*
 
-.. py:function:: QBoxLayout::insertItem(int index, str className, str objectName) -> uiItem:
+.. py:function:: QBoxLayout.insertItem(index: int, className: str, objectName: str) -> uiItem
     
     Inserts a widget to this box layout at the given `index` position.
     The widget is given by its `className` and its objectName property is set to
@@ -1229,7 +1242,7 @@ from *QWidget*.
     
     The special slots defined in the table above are given in the class **WidgetWrapper** of |itom|.
 
-.. qtdesigner-internalsignalslots:
+.. _qtdesigner-internalsignalslots:
 
 Connecting internal signals and slots in **Qt Designer**
 ========================================================
@@ -1337,7 +1350,7 @@ help to see that QStatusBar has the following slots (among others):
 * **showMessage(const QString &message, int timeout)** displays *message* in the status bar and hides it after the *timeout* given in milliseconds.
 
 
-.. qtdesigner-extentlayouts:
+.. _qtdesigner-extentlayouts:
 
 Add or remove widgets from existing layouts in a custom user interface
 ========================================================================
@@ -1508,7 +1521,7 @@ Let us first change some settings of this horizontal layout `horLayout`. It is p
 space for each widget in this layout, by changing their `stretch` values. This can either be done by setting
 the property `layoutStretch` to a comma-separated list with `N` integer values for `N` widgets. The higher a single
 value is, the more space this widget is assigned. In order to change the stretch value of one widget at runtime,
-use the wrapped slot :py:func:`QBoxLayout::setStretch`::
+use the wrapped slot :py:func:`QBoxLayout.setStretch` and :py:func:`QBoxLayout.stretch`::
     
     from itom import ui, uiItem
     
@@ -1523,11 +1536,11 @@ use the wrapped slot :py:func:`QBoxLayout::setStretch`::
 
 The following example shows how to remove the center radio button, then add a new radio button at the end and
 insert a spin box (class **QSpinBox**) with the `objectName` **mySpinBox** as second widget in this horizontal
-layout::
+Layout::
     
     from itom import ui, uiItem
     
-    gui: ui = ui("layoutExample.ui", type=ui.TYPEWINDOW)
+    gui: ui = ui("filename.ui", type=ui.TYPEWINDOW)
     hlayout: uiItem = gui.horLayout  # access the layout item
     
     # remove the 2nd widget at index position 1
@@ -1558,6 +1571,177 @@ The result of this dynamic change of the user interface at runtime can be seen h
 In order to insert or add a widget, you always need to know the class name of this widget. This is either visible 
 at the top of the object inspector in the **Qt Designer** or a list of available class names for widgets can be 
 obtained in |itom| via the command :py:meth:`~itom.ui.availableWidgets`.
+
+As last option, it is also possible to fully insert a custom user interface, defined as **ui** file in the **Qt Designer**
+with base type **widget**, into a layout. For more information about this, see the section 
+:ref:`qtdesigner-layout-insertuifile`.
+
+Form layout
+------------
+
+On the right side of the user interface draft in the image above (section :ref:`qtdesigner-extentlayouts`), there
+is a form layout (`objectName`: *formLayout*). A form layout is similar to a grid layout with two columns and
+a certain number of rows. The widgets in the first column are usually one label per row, the 2nd column is
+denoted as `field` and contains widgets like *line edits*, *spinboxes* etc.
+
+At first, we want to request some things about the current situation::
+    
+    from itom import ui, uiItem
+    
+    gui: ui = ui("filename.ui", type=ui.TYPEWINDOW)
+    flayout: uiItem = gui.formLayout  # access the layout item
+    print("number of rows", flayout.call("rowCount"))
+    
+    # get a reference to the label in the first row:
+    rowIndex: int = 0
+    lblRole: int = 0  # role for the widget in column 0
+    lbl: uiItem = flayout.call("itemAtPosition", rowIndex, lblRole)
+    
+    # get a reference to the spinbox in row 1
+    rowIndex: int = 1
+    fieldRole: int = 1  # role for the field widget (col. 1)
+    spin: uiItem = flayout.call("itemAtPosition", rowIndex, fieldRole)
+
+To remove the entire first row, use::
+    
+    rowIndex: int = 0
+    flayout.call("removeRow", rowIndex)
+    print("number of rows", flayout.call("rowCount"))
+
+It is also possible to change an existing widget. In the following example
+we exchange the label in the first column of the first row by a line edit (Qt class name **QLineEdit**) widget
+and the spin box in the field column by a double spin box (Qt class name *QDoubleSpinBox*)::
+    
+    rowIndex = 0
+    role = 0  # label, 1st column
+    className = "QLineEdit"
+    objectName = "myLineEdit"
+    lineEdit: uiItem = flayout.call("setItem", rowIndex, role, className, objectName)
+    lineEdit["text"] = "hello"
+    
+    role = 1  # field, 2nd column
+    className = "QDoubleSpinBox"
+    objectName = "mySpinBox"
+    spinBox: uiItem = flayout.call("setItem", rowIndex, role, className, objectName)
+    spinBox["value"] = 2.0
+
+To add or insert new rows, see the following example::
+    
+    # add a new row with a label and a spin box
+    lbl = "label string"
+    
+    # the new field widget (spin box) is returned
+    mySpinBox: uiItem = flayout.call("addRow", lbl, "QSpinBox", "mySpinBox")
+    mySpinBox["value"] = 5
+    
+    # insert at the top in row 0 a checkBox
+    flayout.call("insertRow", 0, "first row", "QCheckBox", "objName")
+
+.. _qtdesigner-layout-insertuifile:
+
+Insert a custom user interface from an ui-file into another layout
+-------------------------------------------------------------------
+
+In |itom|, it is also possible (since itom version 4.1) to put the content of one **Qt Designer** **ui file** one
+or multiple times into an existing layout of another loaded **ui** file.
+
+This can for instance be useful, if you want to re-use a layouted custom user interface multiple times within different
+contexts or if you want to add / insert a group of widgets (e.g. also having spacers, horizontal or vertical lines,
+further layouts...) multiple times in a grid, form or any other kind of layout. The inserted ui file is then like
+a template, that is inserted whenever needed.
+
+To do this, create a new **ui** file in **Qt Designer** (recommended is the base template type **Widget**).
+
+The necessary methods (slots) to insert such another ui file into a layout depend on the type of main layout and are:
+
+1. All kind of layouts: :py:func:`QLayout.addItemFromUiFile`
+2. Horizontal or vertical layouts only: :py:func:`QBoxLayout.insertItemFromUiFile`
+3. Grid layout: :py:func:`QGridLayout.addItemToGridFromUiFile`
+4. There is no such a specific functionality for form layouts, yet.
+
+To call these methods, use the method :py:meth:`~itom.uiItem.call` (see section :ref:`qtdesigner-wrappedslots`).
+
+As an example, we want dynamically stack the following template multiple times in a vertical widget:
+
+.. figure:: images_userGUI/qtdesigner-itemUiTemplate.png
+    :scale: 100%
+    :align: center
+
+This template is stored in an **ui** file with the filename **item.ui**. It consists of a horizontal layout with
+a label (`objectName`: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget.
+The checkbox is checked per default an automatic signal-slot connection between the *triggered(bool)* signal of
+the checkbox and the *setEnabled(bool)* slot of the spinbox was added in the **Qt Designer**. The objective is,
+that the spinbox is enabled only if the checkbox is clicked. The *margin* properties of the *horizontalLayout*
+are set to *3* in order to make the layout a little bit more tight.
+
+Now, we create another ui file **mainForm.ui** (based on a main window) with a label and an **empty** vertical 
+layout (`objectName`: *vlayout*). This empty layout should later be filled with a certain number of **item.ui**
+widgets:
+
+.. figure:: images_userGUI/qtdesigner-mainUiTemplate.png
+    :scale: 100%
+    :align: center
+
+The exemplary code is then::
+    
+    from itom import ui, uiItem
+
+    gui: ui = ui("mainForm.ui", type=ui.TYPEWINDOW)
+    vlayout: uiItem = gui.vlayout
+
+    # add 10 items from item.ui
+    for i in range(0, 10):
+        # all object names of the added widget including
+        # its child widgets and layouts are modified by
+        # the following suffix:
+        objNameSuffix: str = f"_{i}"
+        
+        # ctrlItem is the reference to the newly added outer widget
+        ctrlItem: uiItem = vlayout.call("addItemFromUiFile", "item.ui", objNameSuffix)
+        
+        # print the name of all newly added child widgets
+        print(ctrlItem.children())
+        
+        # access the newly added label
+        lbl: uiItem = ctrlItem.getChild("label" + objNameSuffix)
+        lbl["text"] = f"Item {i+1}"
+        
+        # alternate the check state of the LedStatus
+        led: uiItem = ctrlItem.getChild("led" + objNameSuffix)
+        led["checked"] = i % 2
+        
+        # change the checkstate of some checkboxes
+        # the enable state of the corresponding spinboxes
+        # is automatically changed due to the signal/slot 
+        # connection, created in QtDesigner.
+        checkbox: uiItem = ctrlItem.getChild("checkBox" + objNameSuffix)
+        checkbox["checked"] = i % 3
+
+    # show the gui
+    gui.show()
+
+The result looks like this:
+
+.. figure:: images_userGUI/qtdesigner-mainUiTemplate2.png
+    :scale: 100%
+    :align: center
+
+The print-out from the print command above is::
+    
+    {'checkBox_0': 'QCheckBox',
+     'horizontalLayout_0': 'QHBoxLayout',
+     'label_0': 'QLabel',
+     'led_0': 'StatusLed',
+     'spinBox_0': 'QSpinBox'}
+    {'checkBox_1': 'QCheckBox',
+     'horizontalLayout_1': 'QHBoxLayout',
+     'label_1': 'QLabel',
+     'led_1': 'StatusLed',
+     'spinBox_1': 'QSpinBox'}
+    ...
+
+If you do not want to append an ui template to a layout, you can use the other methods, stated above,
+to insert such an ui file at a desired position in a given layout.
 
 Hints and limitations
 ==========================================
