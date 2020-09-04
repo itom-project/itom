@@ -222,6 +222,66 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
     if (m_fileName == "")
     {
         setWindowTitle(tr("User Management - New User"));
+
+        QString username;
+        QString uid;
+        QByteArray password;
+        UserFeatures features;
+        UserRole role;
+		UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
+
+		role = uio->getCurrentUserRole();
+		features = uio->getCurrentUserFeatures();
+
+		switch (role)
+		{
+		case ito::userRoleBasic:
+			ui.radioButton_roleUser->setChecked(true);
+			ui.radioButton_roleAdmin->setEnabled(false);
+			ui.radioButton_roleDevel->setEnabled(false);
+			break;
+		case ito::userRoleAdministrator:
+			ui.radioButton_roleAdmin->setChecked(true);
+			break;
+		case ito::userRoleDeveloper:
+			ui.radioButton_roleDevel->setChecked(true);
+			ui.radioButton_roleAdmin->setEnabled(false);
+			break;
+		default:
+			break;
+		}
+
+		if (role == ito::userRoleAdministrator)
+		{
+			ui.checkBox_devTools->setEnabled(true);
+			ui.checkBox_fileSystem->setEnabled(true);
+			ui.checkBox_userManag->setEnabled(true);
+			ui.checkBox_addInManager->setEnabled(true);
+			ui.checkBox_editProperties->setEnabled(true);
+		}
+		else
+		{
+			ui.checkBox_devTools->setEnabled(features & featDeveloper);
+			ui.checkBox_fileSystem->setEnabled(features & featFileSystem);
+			ui.checkBox_userManag->setEnabled(features & featUserManag);
+			ui.checkBox_addInManager->setEnabled(features & featPlugins);
+			ui.checkBox_editProperties->setEnabled(features & featProperties);
+		}
+
+		if ((features & featConsoleReadWrite))
+		{
+			ui.radioButton_consoleNormal->setChecked(true);
+		}
+		else if (features & featConsoleRead)
+		{
+			ui.radioButton_consoleRO->setChecked(true);
+		}
+		else
+		{
+			ui.radioButton_consoleOff->setChecked(true);
+		}
+               
+
     }
     else
     {
@@ -244,29 +304,45 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 ui.lineEdit_id->setEnabled(false);
                 m_oldPassword = password;
                 ui.lineEdit_password->setText(password);
-                
-                switch (role)
-                {
-                    case userRoleAdministrator:
-                        ui.radioButton_roleAdmin->setChecked(true);
-                    break;
 
-                    case userRoleDeveloper:
-                        ui.radioButton_roleDevel->setChecked(true);
-                        ui.radioButton_roleAdmin->setEnabled(false);
-                    break;
+				role = uio->getCurrentUserRole();
+				features = uio->getCurrentUserFeatures();
 
-                    default:
-                        ui.radioButton_roleUser->setChecked(true);
-                        ui.radioButton_roleAdmin->setEnabled(false);
-                        ui.radioButton_roleDevel->setEnabled(false);
-                }
+				switch (role)
+				{
+				case ito::userRoleBasic:
+					ui.radioButton_roleUser->setChecked(true);
+					ui.radioButton_roleAdmin->setEnabled(false);
+					ui.radioButton_roleDevel->setEnabled(false);
+					break;
+				case ito::userRoleAdministrator:
+					ui.radioButton_roleAdmin->setChecked(true);
+					break;
+				case ito::userRoleDeveloper:
+					ui.radioButton_roleDevel->setChecked(true);
+					ui.radioButton_roleAdmin->setEnabled(false);
+					break;
+				default:
+					break;
+				}
 
-                ui.checkBox_devTools->setChecked(features & featDeveloper);
-                ui.checkBox_fileSystem->setChecked(features & featFileSystem);
-                ui.checkBox_userManag->setChecked(features & featUserManag);
-                ui.checkBox_addInManager->setChecked(features & featPlugins);
-                ui.checkBox_editProperties->setChecked(features & featProperties);
+				if (role == ito::userRoleAdministrator)
+				{
+					ui.checkBox_devTools->setEnabled(true);
+					ui.checkBox_fileSystem->setEnabled(true);
+					ui.checkBox_userManag->setEnabled(true);
+					ui.checkBox_addInManager->setEnabled(true);
+					ui.checkBox_editProperties->setEnabled(true);
+				}
+				else
+				{
+					ui.checkBox_devTools->setEnabled(features & featDeveloper);
+					ui.checkBox_fileSystem->setEnabled(features & featFileSystem);
+					ui.checkBox_userManag->setEnabled(features & featUserManag);
+					ui.checkBox_addInManager->setEnabled(features & featPlugins);
+					ui.checkBox_editProperties->setEnabled(features & featProperties);
+				}
+
 
                 if ((features & featConsoleReadWrite))
                 {
@@ -279,16 +355,6 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 else
                 {
                     ui.radioButton_consoleOff->setChecked(true);
-                }
-                if (isStandardUser)
-                {
-                    ui.groupBox_features->setEnabled(false);
-                    ui.lineEdit_id->setEnabled(false);
-                    ui.lineEdit_name->setEnabled(false);
-                    ui.cmdUseWindowsUser->setEnabled(false);
-                    ui.cmdAutoID->setEnabled(false);
-                    ui.groupBox_2->setEnabled(false);
-
                 }
 
 

@@ -294,9 +294,10 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     }
 
     // 09/02/15 ck changed default role to developer
+    // 04/09/20 ck changed default role to administrator
     QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
     QByteArray tmpArray;
-    UserInfoStruct uis(m_strConstStdUserName, m_strConstStdUserId, itomIniPath, userRoleDeveloper, ~UserFeatures(), tmpArray, true);
+    UserInfoStruct uis(m_strConstStdUserName, m_strConstStdUserId, itomIniPath, userRoleAdministrator, ~UserFeatures(), tmpArray, true);
 
     QFileInfo fi(itomIniPath);
     if (fi.exists())
@@ -338,7 +339,8 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
 
         //user type
         // 09/02/15 ck changed default role to developer
-        QString roleStr = settings.value("role", "developer").toString().toLower();
+        // 04/09/20 ck changed default role to administrator
+        QString roleStr = settings.value("role", "administrator").toString().toLower();
         if (roleStr == "developer")
         {
             role = userRoleDeveloper;
