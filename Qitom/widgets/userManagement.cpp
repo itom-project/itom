@@ -203,6 +203,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
             m_userModel->removeUser(mi);
         }
         loadUserList();
+		readModel(m_userModel->index(m_userModel->rowCount() - 2, 0)); //last is the standard user, new is the one before
     }
 }
 
