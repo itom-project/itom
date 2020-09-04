@@ -99,3 +99,6 @@ The available permissions are divided into three groups:
     
     You can assign a certain role to the user. This is one of the possible roles 'Administrator', 'Developer' or 'User'. These roles have no impact on the basic features of |itom| itself or any kind of visible or non-visible toolboxes or widgets.
     However, it is possible to check for the assigned role using the python methods :py:meth:`itom.userIsUser`, :py:meth:`itom.userIsDeveloper` or :py:meth:`itom.userIsAdmin`.
+
+In order to remove a user, click the button **Delete User** in the **user management** dialog. The standard user cannot
+be deleted. Furthermore a user can only delete users, whose role is equal or lower than the role of the current user.

@@ -59,9 +59,9 @@ void DialogUserManagement::readModel(const QModelIndex &index)
             ui.permissionList->addItem(m_userModel->getFeatureName(featFileSystem));
         }
 
-        if (features & featUserManag)
+        if (features & featUserManagement)
         {
-            ui.permissionList->addItem(m_userModel->getFeatureName(featUserManag));
+            ui.permissionList->addItem(m_userModel->getFeatureName(featUserManagement));
         }
 
         if (features & featPlugins)
@@ -83,10 +83,19 @@ void DialogUserManagement::readModel(const QModelIndex &index)
             ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleRead));
         }
 
-        ui.pushButton_delUser->setEnabled(
-            m_currentUser != ui.lineEdit_name->text() && 
-            m_userModel->data(index, Qt::EditRole).isValid() && 
-            m_userModel->index(index.row(), UserModel::umiIniFile).data().toString().contains("itom_"));
+        UserRole currentUserRole = m_userModel->getUserRole(m_userModel->currentUser());
+
+        if (currentUserRole >= role)
+        {
+            ui.pushButton_delUser->setEnabled(
+                m_currentUserName != ui.lineEdit_name->text() &&
+                m_userModel->data(index, Qt::EditRole).isValid() &&
+                m_userModel->index(index.row(), UserModel::umiIniFile).data().toString().contains("itom_"));
+        }
+        else
+        {
+            ui.pushButton_delUser->setEnabled(false);
+        }
 
         ui.userList->setCurrentIndex(index);
     }
@@ -120,15 +129,15 @@ void DialogUserManagement::loadUserList()
 DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
     QDialog(parent),
     m_userModel(NULL),
-    m_currentUser("")
+    m_currentUserName("")
 {
     ui.setupUi(this);
 
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    m_currentUser = uOrg->getCurrentUserName();
+    m_currentUserName = uOrg->getCurrentUserName();
     m_userModel = uOrg->getUserModel();
     ui.userList->setModel(m_userModel);
-    setWindowTitle(tr("User Management - Current User: ") + m_currentUser);
+    setWindowTitle(tr("User Management - Current User: ") + m_currentUserName);
 
     loadUserList();
 }
@@ -210,7 +219,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
                     .arg(iniFile)
                     .arg(name);
 
-    if (QMessageBox::warning(this, tr("Warning"), msg, QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
+    if (QMessageBox::question(this, tr("Warning"), msg, QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
     {
         QFile file(iniFile);
         if (!file.remove())

@@ -657,7 +657,7 @@ void MainWindow::createActions()
         connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
     }
 
-    if (uOrg->currentUserHasFeature(featUserManag))
+    if (uOrg->currentUserHasFeature(featUserManagement))
     {
         m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
         connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
@@ -830,7 +830,7 @@ void MainWindow::createMenus()
         m_pMenuFile->addAction(m_actions["properties"]);
     }
 
-    if (uOrg->currentUserHasFeature(featUserManag))
+    if (uOrg->currentUserHasFeature(featUserManagement))
     {
         m_pMenuFile->addAction(m_actions["usermanagement"]);
     }

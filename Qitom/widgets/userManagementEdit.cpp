@@ -124,7 +124,7 @@ bool DialogUserManagementEdit::saveUser()
 
         if (ui.checkBox_userManag->isChecked())
         {
-            flags |= featUserManag;
+            flags |= featUserManagement;
         }
 
         if (ui.checkBox_addInManager->isChecked())
@@ -324,7 +324,7 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
     // set the check state of all features
     ui.checkBox_devTools->setChecked(features & featDeveloper);
     ui.checkBox_fileSystem->setChecked(features & featFileSystem);
-    ui.checkBox_userManag->setChecked(features & featUserManag);
+    ui.checkBox_userManag->setChecked(features & featUserManagement);
     ui.checkBox_addInManager->setChecked(features & featPlugins);
     ui.checkBox_editProperties->setChecked(features & featProperties);
 
@@ -403,7 +403,7 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
     {
         ui.checkBox_devTools->setEnabled(currentFeatures & featDeveloper);
         ui.checkBox_fileSystem->setEnabled(currentFeatures & featFileSystem);
-        ui.checkBox_userManag->setEnabled(currentFeatures & featUserManag);
+        ui.checkBox_userManag->setEnabled(currentFeatures & featUserManagement);
         ui.checkBox_addInManager->setEnabled(currentFeatures & featPlugins);
         ui.checkBox_editProperties->setEnabled(currentFeatures & featProperties);
         ui.radioButton_consoleNormal->setEnabled(currentFeatures & (featConsoleReadWrite| featConsoleRead));

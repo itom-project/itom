@@ -47,7 +47,6 @@ UserOrganizer* UserOrganizer::m_pUserOrganizer = NULL;
 //----------------------------------------------------------------------------------------------------------------------------------
 UserOrganizer::UserOrganizer(void) :
     QObject(),
-    m_currentUser(QModelIndex()),
     m_userModel(new UserModel())
 {
     AppManagement::setUserOrganizer(this);
@@ -149,7 +148,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 			{
 				QModelIndex fIdx = m_userModel->index(userIndex.row(), UserModel::umiIniFile);
 				settingsFile = fIdx.data().toString();
-				m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
+				m_userModel->setCurrentUser(getUserIdFromSettingsFilename(settingsFile));
 				qDebug() << "settingsFile path: " << settingsFile;
 			}
 		}
@@ -201,7 +200,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
         }
 
         qDebug() << "settingsFile path: " << settingsFile;
-		m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
+		m_userModel->setCurrentUser(getUserIdFromSettingsFilename(settingsFile));
     }
     else if (userId == "")
     {
@@ -231,7 +230,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 		if (!retval.containsError())
 		{ 
 			qDebug() << "settingsFile path: " << settingsFile;
-            m_currentUser = m_userModel->getUser(getUserIdFromSettingsFilename(settingsFile));
+            m_userModel->setCurrentUser(getUserIdFromSettingsFilename(settingsFile));
 		}
     }
 	else
@@ -246,13 +245,16 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 {
     ito::RetVal retval;
+
+    QString currentUserId = m_userModel->getUserId(m_userModel->currentUser());
+
     m_userModel->removeAllUsers();
 
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
     QSettings::setDefaultFormat(QSettings::IniFormat);
-
     QString settingsFile;
     QDir appDir(QCoreApplication::applicationDirPath());
+
     if (!appDir.cd("itomSettings"))
     {
         appDir.mkdir("itomSettings");
@@ -280,6 +282,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
             UserInfoStruct uis;
             uis.iniFile = absfile;
             uis.standardUser = false;
+
             if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role, uis.password, lastModified) == ito::retOk)
             {
                 if (youngestModificationDate.isNull() || (youngestModificationDate < lastModified))
@@ -294,18 +297,20 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     }
 
     // 09/02/15 ck changed default role to developer
-    // 04/09/20 ck changed default role to administrator
+    // 04/09/20 jk changed default role to administrator
     QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
     QByteArray tmpArray;
     UserInfoStruct uis(m_strConstStdUserName, m_strConstStdUserId, itomIniPath, userRoleAdministrator, ~UserFeatures(), tmpArray, true);
 
     QFileInfo fi(itomIniPath);
+
     if (fi.exists())
     {
         QSettings settings(itomIniPath, QSettings::IniFormat);
         settings.beginGroup("ITOMIniFile");
         uis.password = settings.value("password").toByteArray();
     }
+
     if (fi.exists() && fi.lastModified() > youngestModificationDate)
     {
         youngestModificationDate = fi.lastModified();
@@ -313,12 +318,14 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     }
 
     m_userModel->addUser(uis);
+    m_userModel->setCurrentUser(currentUserId);
 
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
+ito::RetVal UserOrganizer::readUserDataFromFile(
+    const QString &filename, QString &username, QString &uid, UserFeatures &features, 
     UserRole &role, QByteArray &password, QDateTime &lastModified)
 {
     ito::RetVal retval;
@@ -341,13 +348,14 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
         // 09/02/15 ck changed default role to developer
         // 04/09/20 ck changed default role to administrator
         QString roleStr = settings.value("role", "administrator").toString().toLower();
-        if (roleStr == "developer")
-        {
-            role = userRoleDeveloper;
-        }
-        else if (roleStr == "administrator")
+
+        if (roleStr == "administrator")
         {
             role = userRoleAdministrator;
+        }
+        else if (roleStr == "developer")
+        {
+            role = userRoleDeveloper;
         }
         else
         {
@@ -406,7 +414,8 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
+ito::RetVal UserOrganizer::writeUserDataToFile(
+    const QString &username, const QString &uid, const UserFeatures &features, 
     const UserRole &role, const QByteArray &password, const bool& standardUser /*false*/)
 {
     ito::RetVal retval;
@@ -508,7 +517,7 @@ QString UserOrganizer::getUserIdFromSettingsFilename(const QString &iniFile) con
 //!< returns the user name of the current user
 const QString UserOrganizer::getCurrentUserName() const
 {
-	return m_userModel->getUserName(m_currentUser);
+	return m_userModel->getUserName(m_userModel->currentUser());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -518,34 +527,34 @@ The role is only used by the three python methods itom.userIsUser, itom.userIsDe
 */
 ito::UserRole UserOrganizer::getCurrentUserRole() const
 {
-	return m_userModel->getUserRole(m_currentUser);
+	return m_userModel->getUserRole(m_userModel->currentUser());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< returns the unique ID of the current user
 QString UserOrganizer::getCurrentUserId(void) const
 {
-	return m_userModel->getUserId(m_currentUser);
+	return m_userModel->getUserId(m_userModel->currentUser());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< returns the available features for the current user
 UserFeatures UserOrganizer::getCurrentUserFeatures(void) const
 {
-	return m_userModel->getUserFeatures(m_currentUser);
+	return m_userModel->getUserFeatures(m_userModel->currentUser());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool UserOrganizer::currentUserHasFeature(const UserFeature &feature)
 {
-	UserFeatures features = m_userModel->getUserFeatures(m_currentUser);
+	UserFeatures features = m_userModel->getUserFeatures(m_userModel->currentUser());
 	return features.testFlag(feature);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QString UserOrganizer::getCurrentUserSettingsFile() const
 {
-	return m_userModel->getUserSettingsFile(m_currentUser);
+	return m_userModel->getUserSettingsFile(m_userModel->currentUser());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

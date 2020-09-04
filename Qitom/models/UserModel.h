@@ -28,22 +28,25 @@
 namespace ito 
 {
 
+//! Enumeration that defines some user roles
 enum UserRole
 {
     userRoleBasic = 0,         /* basic user with lowest rights */
-    userRoleAdministrator = 1, /* most advanced user with all rights. */
-    userRoleDeveloper = 2      /* developer user with many rights */
+    userRoleDeveloper = 1,     /* developer user with many rights */
+    userRoleAdministrator = 2, /* most advanced user with all rights. */
+    
 };   
 
+//! Enumeration that defines some feature permissions for a user.
 enum UserFeature
 {
-    featDeveloper           =   1,
-    featFileSystem          =   2,
-    featUserManag           =   4,
-    featPlugins             =   8,
-    featConsoleRead         =   16,
-    featConsoleReadWrite    =   32,
-    featProperties          =   64
+    featDeveloper           =   0x01, /* the user has the right to create, open, view or edit python scripts */
+    featFileSystem          =   0x02,
+    featUserManagement      =   0x04,
+    featPlugins             =   0x08,
+    featConsoleRead         =   0x10,
+    featConsoleReadWrite    =   0x20,
+    featProperties          =   0x40
 };
 
 Q_DECLARE_FLAGS(UserFeatures, UserFeature)
@@ -114,11 +117,14 @@ class UserModel : public QAbstractItemModel
 		UserRole getUserRole(const QModelIndex &index) const;
 		UserFeatures getUserFeatures(const QModelIndex &index) const;
 		QString getUserSettingsFile(const QModelIndex &index) const;
+        QModelIndex currentUser() const { return m_currentUser; }
+        bool setCurrentUser(const QString &userId);
 
     private:
         QList<QString> m_headers;               //!<  string list of names of column headers
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
         QList<UserInfoStruct> m_userInfo;       //!<  list with user information
+        QModelIndex m_currentUser;              //!< the model index of the currently logged-in user
 };
 } //end namespace ito
 
