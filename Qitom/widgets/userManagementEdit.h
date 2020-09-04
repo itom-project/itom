@@ -42,6 +42,7 @@ class DialogUserManagementEdit : public QDialog
 
     private:
         void updateScriptButtons();
+		void enableWidgetsByUserRole(UserRole role, UserFeatures features);
 
         UserModel *m_userModel;
         bool saveUser();

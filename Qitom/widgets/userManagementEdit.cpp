@@ -223,65 +223,12 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
     {
         setWindowTitle(tr("User Management - New User"));
 
-        QString username;
-        QString uid;
-        QByteArray password;
         UserFeatures features;
         UserRole role;
 		UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
 
-		role = uio->getCurrentUserRole();
-		features = uio->getCurrentUserFeatures();
-
-		switch (role)
-		{
-		case ito::userRoleBasic:
-			ui.radioButton_roleUser->setChecked(true);
-			ui.radioButton_roleAdmin->setEnabled(false);
-			ui.radioButton_roleDevel->setEnabled(false);
-			break;
-		case ito::userRoleAdministrator:
-			ui.radioButton_roleAdmin->setChecked(true);
-			break;
-		case ito::userRoleDeveloper:
-			ui.radioButton_roleDevel->setChecked(true);
-			ui.radioButton_roleAdmin->setEnabled(false);
-			break;
-		default:
-			break;
-		}
-
-		if (role == ito::userRoleAdministrator)
-		{
-			ui.checkBox_devTools->setEnabled(true);
-			ui.checkBox_fileSystem->setEnabled(true);
-			ui.checkBox_userManag->setEnabled(true);
-			ui.checkBox_addInManager->setEnabled(true);
-			ui.checkBox_editProperties->setEnabled(true);
-		}
-		else
-		{
-			ui.checkBox_devTools->setEnabled(features & featDeveloper);
-			ui.checkBox_fileSystem->setEnabled(features & featFileSystem);
-			ui.checkBox_userManag->setEnabled(features & featUserManag);
-			ui.checkBox_addInManager->setEnabled(features & featPlugins);
-			ui.checkBox_editProperties->setEnabled(features & featProperties);
-		}
-
-		if ((features & featConsoleReadWrite))
-		{
-			ui.radioButton_consoleNormal->setChecked(true);
-		}
-		else if (features & featConsoleRead)
-		{
-			ui.radioButton_consoleRO->setChecked(true);
-		}
-		else
-		{
-			ui.radioButton_consoleOff->setChecked(true);
-		}
-               
-
+		enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures());
+	
     }
     else
     {
@@ -305,58 +252,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 m_oldPassword = password;
                 ui.lineEdit_password->setText(password);
 
-				role = uio->getCurrentUserRole();
-				features = uio->getCurrentUserFeatures();
-
-				switch (role)
-				{
-				case ito::userRoleBasic:
-					ui.radioButton_roleUser->setChecked(true);
-					ui.radioButton_roleAdmin->setEnabled(false);
-					ui.radioButton_roleDevel->setEnabled(false);
-					break;
-				case ito::userRoleAdministrator:
-					ui.radioButton_roleAdmin->setChecked(true);
-					break;
-				case ito::userRoleDeveloper:
-					ui.radioButton_roleDevel->setChecked(true);
-					ui.radioButton_roleAdmin->setEnabled(false);
-					break;
-				default:
-					break;
-				}
-
-				if (role == ito::userRoleAdministrator)
-				{
-					ui.checkBox_devTools->setEnabled(true);
-					ui.checkBox_fileSystem->setEnabled(true);
-					ui.checkBox_userManag->setEnabled(true);
-					ui.checkBox_addInManager->setEnabled(true);
-					ui.checkBox_editProperties->setEnabled(true);
-				}
-				else
-				{
-					ui.checkBox_devTools->setEnabled(features & featDeveloper);
-					ui.checkBox_fileSystem->setEnabled(features & featFileSystem);
-					ui.checkBox_userManag->setEnabled(features & featUserManag);
-					ui.checkBox_addInManager->setEnabled(features & featPlugins);
-					ui.checkBox_editProperties->setEnabled(features & featProperties);
-				}
-
-
-                if ((features & featConsoleReadWrite))
-                {
-                    ui.radioButton_consoleNormal->setChecked(true);
-                }
-                else if (features & featConsoleRead)
-                {
-                    ui.radioButton_consoleRO->setChecked(true);
-                }
-                else
-                {
-                    ui.radioButton_consoleOff->setChecked(true);
-                }
-
+				enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures());
 
                 QSettings settings(filename, QSettings::IniFormat);
                 settings.beginGroup("Python");
@@ -378,6 +274,65 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
 
     QString label = ui.checkAddFileRel->text().arg(QCoreApplication::applicationDirPath());
     ui.checkAddFileRel->setText(label);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagementEdit::enableWidgetsByUserRole(UserRole role, UserFeatures features)
+{
+	switch (role)
+	{
+	case ito::userRoleBasic:
+		ui.radioButton_roleUser->setChecked(true);
+		ui.radioButton_roleAdmin->setEnabled(false);
+		ui.radioButton_roleDevel->setEnabled(false);
+		break;
+	case ito::userRoleAdministrator:
+		ui.radioButton_roleAdmin->setChecked(true);
+		break;
+	case ito::userRoleDeveloper:
+		ui.radioButton_roleDevel->setChecked(true);
+		ui.radioButton_roleAdmin->setEnabled(false);
+		break;
+	default:
+		break;
+	}
+
+	if (role == ito::userRoleAdministrator)
+	{
+		ui.checkBox_devTools->setEnabled(true);
+		ui.checkBox_fileSystem->setEnabled(true);
+		ui.checkBox_userManag->setEnabled(true);
+		ui.checkBox_addInManager->setEnabled(true);
+		ui.checkBox_editProperties->setEnabled(true);
+		ui.radioButton_consoleNormal->setEnabled(true);
+		ui.radioButton_consoleRO->setEnabled(true);
+		ui.radioButton_consoleOff->setEnabled(true);
+	}
+	else
+	{
+		ui.checkBox_devTools->setEnabled(features & featDeveloper);
+		ui.checkBox_fileSystem->setEnabled(features & featFileSystem);
+		ui.checkBox_userManag->setEnabled(features & featUserManag);
+		ui.checkBox_addInManager->setEnabled(features & featPlugins);
+		ui.checkBox_editProperties->setEnabled(features & featProperties);
+		ui.radioButton_consoleNormal->setEnabled(features & featConsoleReadWrite);
+		ui.radioButton_consoleRO->setEnabled(features & featConsoleRead);
+		ui.radioButton_consoleOff->setEnabled(true);
+	}
+
+	if ((features & featConsoleReadWrite))
+	{
+		ui.radioButton_consoleNormal->setChecked(true);
+	}
+	else if (features & featConsoleRead)
+	{
+		ui.radioButton_consoleRO->setChecked(true);
+	}
+	else
+	{
+		ui.radioButton_consoleOff->setChecked(true);
+	}
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

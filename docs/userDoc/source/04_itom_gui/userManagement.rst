@@ -43,13 +43,16 @@ The **Standard user** is the default user, which exists in every |itom| installa
 default settings file **itom.ini** in the folder **itomSettings**. The standard user can be considered to be an administrator with all
 rights. It is not possible to add a password to this standard user.
 
-The overview dialog provides the ability to create a new user, remove an existing user (besides the standard user) or edit any user.
+The overview dialog provides the ability to create a new user, remove an existing user (besides the standard user) or edit any user. 
 If a user is selected, basic properties are displayed on the right side of the dialog, like the name of the user, its unique ID, the
 related settings file (the filename usually is 'itom_' + ID + '.ini') as well as basic permissions. The permissions indicate which
 toolboxes, widgets and functionality the user is granted once itom is opened with its user rights. For instance, an user can only
 open the user management, if the permission 'User Management' is granted to this user.
 
-Click **New User** or **Edit User** to open another dialog, where you can change the specific rights of the existing or new user.
+Click **New User** or **Edit User** to open another dialog, where you can change the specific permission of the existing or new user.
+Depending on the current user role and features permission, new user can only be created (editing existing users also) with the same or less role and permission. 
+The hierarchy is that an admin can create/edit an admin, developer and user. A developer can create/edit a developer and user. 
+A user can create/edit only a user. 
 
 .. figure:: images/userManagement3.png
     :scale: 100%
