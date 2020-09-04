@@ -4970,10 +4970,10 @@ PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleAdministrator)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyCheckIsDeveloper_doc,"userIsDeveloper() -> return True if USER has developer status.\n\
@@ -4997,10 +4997,10 @@ PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleDeveloper)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyCheckIsUser_doc,"userIsUser() -> return True if USER has only user status.\n\
@@ -5024,10 +5024,10 @@ PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleBasic)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

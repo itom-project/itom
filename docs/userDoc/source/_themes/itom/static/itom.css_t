@@ -16,7 +16,7 @@ body {
     margin: auto;
     padding: 0px;
     font-size: 100%;
-    font-family: Helvetica, sans-serif;
+    font-family: sans-serif;
     min-width: 59em;
     max-width: 70em;
     color: #000000;
