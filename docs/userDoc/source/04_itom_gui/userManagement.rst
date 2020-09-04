@@ -41,7 +41,7 @@ The user management can be opened by the menu **File >> User Management...**. At
     
 The **Standard user** is the default user, which exists in every |itom| installation and cannot be removed. This user is related to the
 default settings file **itom.ini** in the folder **itomSettings**. The standard user can be considered to be an administrator with all
-rights. It is not possible to add a password to this standard user.
+rights. 
 
 The overview dialog provides the ability to create a new user, remove an existing user (besides the standard user) or edit any user. 
 If a user is selected, basic properties are displayed on the right side of the dialog, like the name of the user, its unique ID, the
