@@ -223,8 +223,6 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
     {
         setWindowTitle(tr("User Management - New User"));
 
-        UserFeatures features;
-        UserRole role;
 		UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
 
 		enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures());
