@@ -54,7 +54,7 @@ const QString ConsoleWidget::lineBreak = QString("\n");
 const QString ConsoleWidget::longLineWrapPrefix = QString("... ");
 const QString ConsoleWidget::newCommandPrefix = QString(">>");
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
     AbstractCodeEditorWidget(parent),
     m_startLineBeginCmd(-1),
@@ -133,7 +133,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     startNewCommand(true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ConsoleWidget::~ConsoleWidget()
 {
     m_pCmdList->moveLast();
@@ -164,7 +164,7 @@ ConsoleWidget::~ConsoleWidget()
     DELETE_AND_SET_NULL(m_pCmdList);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::initEditor()
 {
     m_lineNumberPanel = QSharedPointer<LineNumberPanel>(new LineNumberPanel("LineNumberPanel"));
@@ -187,7 +187,7 @@ RetVal ConsoleWidget::initEditor()
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -236,7 +236,7 @@ void ConsoleWidget::loadSettings()
     AbstractCodeEditorWidget::loadSettings();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
 {
     processStreamBuffer();
@@ -311,14 +311,14 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::clearEditor()
 {
     startNewCommand(true);
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //!< new command is a new line starting with ">>" (newCommandPrefix)
 RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
 {
@@ -353,7 +353,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::clearAndStartNewCommand()
 {
     if (m_pythonBusy)
@@ -366,7 +366,7 @@ void ConsoleWidget::clearAndStartNewCommand()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::useCmdListCommand(int dir)
 {
     QString cmd("");
@@ -402,7 +402,7 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //!> reimplementation to process the keyReleaseEvent
 bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
 {
@@ -879,7 +879,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
     return forwardEvent;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
 void ConsoleWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     CodeEditor::mouseDoubleClickEvent(e);
@@ -893,7 +893,7 @@ void ConsoleWidget::mouseDoubleClickEvent(QMouseEvent *e)
     textDoubleClicked(column, line, e->modifiers());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 {
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
@@ -968,7 +968,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::clearCommandLine()
 {
     m_receiveStreamBuffer.text = "";
@@ -985,7 +985,7 @@ void ConsoleWidget::clearCommandLine()
     m_startLineBeginCmd = -1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond)
 {
     enableInputTextMode();
@@ -1001,7 +1001,7 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     setFocus();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::enableInputTextMode()
 {
     if (!m_inputTextMode.inputModeEnabled)
@@ -1014,7 +1014,7 @@ void ConsoleWidget::enableInputTextMode()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::disableInputTextMode()
 {
     if (m_inputTextMode.inputModeEnabled)
@@ -1025,7 +1025,7 @@ void ConsoleWidget::disableInputTextMode()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::executeCmdQueue()
 {
     cmdQueueStruct value;
@@ -1091,9 +1091,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         }
         else
         {
-            //emit pythonExecuteString(value.singleLine);
-
-            QObject *pyEngine = AppManagement::getPythonEngine(); //qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+            QObject *pyEngine = AppManagement::getPythonEngine();
             if (pyEngine)
             {
                 QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
@@ -1102,10 +1100,6 @@ RetVal ConsoleWidget::executeCmdQueue()
             {
                 QMessageBox::critical(this, tr("Script Execution"), tr("Python is not available"));
             }
-
-            //connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
-
-            //pyThread->pythonInterruptExecution();
 
             m_pCmdList->add(value.singleLine);
 
@@ -1118,7 +1112,7 @@ RetVal ConsoleWidget::executeCmdQueue()
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 {
     if (endLine < beginLine)
@@ -1163,7 +1157,9 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         QStringList temp;
         QByteArray encoding;
         singleLine = buffer.join("\n");
-        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toLatin1().data(), encoding); //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
+        
+        //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
+        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toLatin1().data(), encoding); 
 
         //if lines is empty, a syntax error occurred in the file and the python error indicator is set.
         //This will be checked in subsequent call of run-string or debug-string method.
@@ -1185,7 +1181,8 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             {
                 temp = buffer.mid(lines[i] - 1, lines[i + 1] - lines[i]);
 
-                //remove empty (besides whitechars) lines at the end of each block, else an error can occur if the block is indented
+                // remove empty (besides whitechars) lines at the end of each block, 
+                // else an error can occur if the block is indented
                 while (temp.size() > 1)
                 {
                     if (temp.last().trimmed() == "")
@@ -1234,7 +1231,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
 {
     QStringList textLines;
@@ -1269,7 +1266,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     return textLines.join(ConsoleWidget::lineBreak);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 {
     if (m_receiveStreamBuffer.msgType != msgType)
@@ -1295,7 +1292,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::processStreamBuffer()
 {
     
@@ -1484,7 +1481,7 @@ void ConsoleWidget::processStreamBuffer()
     repaint();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::moveCursorToEnd()
 {
     if (m_autoWheel)
@@ -1493,13 +1490,13 @@ void ConsoleWidget::moveCursorToEnd()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool ConsoleWidget::canInsertFromMimeData(const QMimeData *source) const
 {
     return source->hasText() || source->hasUrls();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::dropEvent(QDropEvent * event)
 {
     const QMimeData *md = event->mimeData();
@@ -1538,7 +1535,8 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
             //!< check, that selections are only in valid area
             getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-            if ((lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
+            if ((lineFrom < m_startLineBeginCmd || 
+                (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
             {
                 event->setDropAction(Qt::CopyAction);
                 event->accept();
@@ -1551,7 +1549,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     setFocus();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
 {
     const QMimeData *md = event->mimeData();
@@ -1588,7 +1586,7 @@ void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 {
     const QMimeData *md = event->mimeData();
@@ -1616,7 +1614,8 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 
             bool dragFromConsole = (event->source() == this) || (event->source() && event->source()->parent() == this);
 
-            if (dragFromConsole && (lineFrom < m_startLineBeginCmd || (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
+            if (dragFromConsole && (lineFrom < m_startLineBeginCmd || 
+                (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
             {
                 //turn a move action into a copy action if parts of the read-only section should be dragged.
                 event->setDropAction(Qt::CopyAction);
@@ -1632,14 +1631,14 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::wheelEvent(QWheelEvent *event)
 {
     m_autoWheel = false;
     AbstractCodeEditorWidget::wheelEvent(event);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 @return 0: pos invalid, 1: pos valid, 2: pos below last line
 */
@@ -1713,7 +1712,7 @@ int ConsoleWidget::checkValidDropRegion(const QPoint &pos)
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::selChanged()
 {
     if (m_waitForCmdExecutionDone)
@@ -1749,7 +1748,7 @@ void ConsoleWidget::selChanged()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::copy()
 {
     if (m_canCopy)
@@ -1765,28 +1764,32 @@ void ConsoleWidget::copy()
         {
             QClipboard *clipboard = QApplication::clipboard();
 
-            if (clipboard->mimeData()->hasText()) 
+            const QMimeData *mimeData = clipboard->mimeData();
+
+            if (mimeData && mimeData->hasText())
             {
-                clipboard->setText(formatConsoleCodePart(clipboard->text()));
+                QString modifiedText = formatConsoleCodePart(mimeData->text());
+                clipboard->clear(); // mimeData is now invalid!
+                clipboard->setText(modifiedText);
             }
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-    bool formatPastCode = settings.value("formatPastCode", "false").toBool();
+    bool formatPasteCode = settings.value("formatPastCode", "false").toBool();
     settings.endGroup();
 
     QClipboard *clipboard = QApplication::clipboard();
     QString clipboardSave = "";
 
-    if (formatPastCode)
+    if (formatPasteCode)
     {
         if (clipboard->mimeData()->hasText()) 
         {
@@ -1804,7 +1807,7 @@ void ConsoleWidget::paste()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::cut()
 {
     if (m_canCut)
@@ -1813,7 +1816,7 @@ void ConsoleWidget::cut()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::moveCursorToValidRegion()
 {
     m_autoWheel = true;
@@ -1822,6 +1825,7 @@ void ConsoleWidget::moveCursorToValidRegion()
 
     //!< check, that selections are only in valid area
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
     if (lineFrom == -1)
     {
         getCursorPosition(&lineFrom, &indexFrom);
@@ -1841,7 +1845,7 @@ void ConsoleWidget::moveCursorToValidRegion()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::pythonRunSelection(QString selectionText)
 {
     // we have to remove the indent
@@ -1863,7 +1867,7 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     }
 }
 
-//------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::initMenus()
 {
     QMenu *menu = contextMenu();
@@ -1882,7 +1886,7 @@ void ConsoleWidget::initMenus()
 }
 
 
-//------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::contextMenuAboutToShow(int contextMenuLine)
 {
     bool read_only = isReadOnly();
@@ -1917,7 +1921,7 @@ void ConsoleWidget::contextMenuAboutToShow(int contextMenuLine)
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::autoLineDelete()
 {
     const int cutoffLine = 50000;
@@ -1945,15 +1949,15 @@ void ConsoleWidget::autoLineDelete()
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::toggleAutoWheel(bool enable)
 {
     m_autoWheel = enable;
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 DequeCommandList::DequeCommandList(int maxLength)
 {
     m_maxItems = maxLength;
@@ -1962,13 +1966,13 @@ DequeCommandList::DequeCommandList(int maxLength)
     m_rit = m_cmdList.rbegin();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 DequeCommandList::~DequeCommandList()
 {
     m_cmdList.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal DequeCommandList::add(const QString &cmd)
 {
     moveLast();
@@ -1985,14 +1989,14 @@ RetVal DequeCommandList::add(const QString &cmd)
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal DequeCommandList::moveLast()
 {
     m_rit = m_cmdList.rbegin();
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DequeCommandList::getPrevious()
 {
     if (m_cmdList.size() > 1)
@@ -2014,7 +2018,7 @@ QString DequeCommandList::getPrevious()
     return QString();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DequeCommandList::getNext()
 {
     if (m_cmdList.size() > 1 && m_rit > m_cmdList.rbegin())
