@@ -30,9 +30,9 @@ namespace ito
 
 enum UserRole
 {
-    userRoleBasic = 0,
-    userRoleAdministrator = 1,
-    userRoleDeveloper = 2
+    userRoleBasic = 0,         /* basic user with lowest rights */
+    userRoleAdministrator = 1, /* most advanced user with all rights. */
+    userRoleDeveloper = 2      /* developer user with many rights */
 };   
 
 enum UserFeature

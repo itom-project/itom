@@ -42,7 +42,7 @@ class DialogUserManagementEdit : public QDialog
 
     private:
         void updateScriptButtons();
-		void enableWidgetsByUserRole(UserRole role, UserFeatures features);
+		void enableWidgetsByUserRole(const UserRole currentUserRole, const UserFeatures &currentFeatures, const UserRole userRole, const UserFeatures &features);
 
         UserModel *m_userModel;
         bool saveUser();

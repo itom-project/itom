@@ -83,8 +83,10 @@ void DialogUserManagement::readModel(const QModelIndex &index)
             ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleRead));
         }
 
-//        ui.userList->setCurrentIndex(index);
-        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && m_userModel->data(index, Qt::EditRole).isValid() && m_userModel->index(index.row(), UserModel::umiIniFile).data().toString().contains("itom_"));
+        ui.pushButton_delUser->setEnabled(
+            m_currentUser != ui.lineEdit_name->text() && 
+            m_userModel->data(index, Qt::EditRole).isValid() && 
+            m_userModel->index(index.row(), UserModel::umiIniFile).data().toString().contains("itom_"));
 
         ui.userList->setCurrentIndex(index);
     }
@@ -105,13 +107,13 @@ void DialogUserManagement::readModel(const QModelIndex &index)
 void DialogUserManagement::loadUserList()
 {
     QItemSelectionModel *selModel = ui.userList->selectionModel();
-    QObject::disconnect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
-    
+    disconnect(selModel, &QItemSelectionModel::currentChanged, this, &DialogUserManagement::userListCurrentChanged);
+
+    // select the first user
     readModel(m_userModel->index(0, 0));
 
     selModel = ui.userList->selectionModel();
-
-    QObject::connect(selModel, SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+    connect(selModel, &QItemSelectionModel::currentChanged, this, &DialogUserManagement::userListCurrentChanged);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -146,10 +148,18 @@ void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, co
 void DialogUserManagement::on_pushButton_newUser_clicked()
 {
     DialogUserManagementEdit *dlg = new DialogUserManagementEdit("", m_userModel);
+
     if (dlg->exec() == QDialog::Accepted)
     {
         loadUserList();
-        readModel(m_userModel->index(m_userModel->rowCount() - 2, 0)); //last is the standard user, new is the one before
+
+        //last is the standard user, new is the one before
+        QModelIndex newIndex = m_userModel->index(m_userModel->rowCount() - 2, 0);
+
+        if (newIndex.isValid())
+        {
+            readModel(newIndex);
+        }
     }
 
     DELETE_AND_SET_NULL(dlg);
@@ -167,43 +177,61 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
 
     if (uidList.isEmpty())
     {
-        QMessageBox::warning(this, tr("Warning"), tr("User ID not found, aborting!"), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Warning"), 
+            tr("User ID not found, aborting!"), QMessageBox::Ok);
         return;
     }
 
     QString tempPath = QDir::cleanPath(appDir.absoluteFilePath(QString("itomSettings/itom_").append(uid).append(".ini")));
+
     if (iniFile != tempPath)
     {
-        QMessageBox::warning(this, tr("Warning"), tr("User ID and ini file name mismatch, aborting!"), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Warning"), 
+            tr("User ID and ini file name mismatch, aborting!"), QMessageBox::Ok);
         return;
     }
 
     QSettings settings(iniFile, QSettings::IniFormat);
     if (settings.value("ITOMIniFile/name").toString() != name)
     {
-        QMessageBox::warning(this, tr("Warning"), tr("User name and ini file user name mismatch, aborting!"), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Warning"), 
+            tr("User name and ini file user name mismatch, aborting!"), QMessageBox::Ok);
         return;
     }
 
     if (uid == ((ito::UserOrganizer*)AppManagement::getUserOrganizer())->getCurrentUserId())
     {
-        QMessageBox::warning(this, tr("Warning"), tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Warning"), 
+            tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
         return;
     }
 
-    QString msg = QString("Warning the ini file\n").append(iniFile).append("\nfor user ").append(name).append(" will be deleted!\nAre you sure?");
-    if (QMessageBox::warning(this, tr("Warning"), tr(msg.toLatin1().data()), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
+    QString msg = tr("The settings file '%1' for user '%2' will be deleted!\nAre you sure?")
+                    .arg(iniFile)
+                    .arg(name);
+
+    if (QMessageBox::warning(this, tr("Warning"), msg, QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
     {
         QFile file(iniFile);
         if (!file.remove())
-            QMessageBox::warning(this, tr("Warning"), tr((QString("file: \n").append(iniFile).append("\ncould not be deleted!")).toLatin1().data()), QMessageBox::Ok);
+        {
+            QString msg2 = QString("File '%1' could not be deleted!").arg(iniFile);
+            QMessageBox::warning(this, tr("Warning"), msg2, QMessageBox::Ok);
+        }
 
         foreach (const QModelIndex &mi, uidList)
         {
             m_userModel->removeUser(mi);
         }
+
         loadUserList();
-		readModel(m_userModel->index(m_userModel->rowCount() - 2, 0)); //last is the standard user, new is the one before
+		
+        QModelIndex newIndex = m_userModel->index(ui.userList->currentIndex().row(), 0);
+
+        if (newIndex.isValid())
+        {
+            readModel(newIndex);
+        }
     }
 }
 
@@ -219,7 +247,13 @@ void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
 {
     if (index.isValid() && ui.pushButton_editUser->isEnabled())
     {
-        DialogUserManagementEdit *dlg = new DialogUserManagementEdit(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), m_userModel,NULL, 0, !m_userModel->data(index, Qt::EditRole).isValid());
+        DialogUserManagementEdit *dlg = new DialogUserManagementEdit(
+            m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), 
+            m_userModel, 
+            NULL, 
+            0, 
+            !m_userModel->data(index, Qt::EditRole).isValid());
+        
         if (dlg->exec() == QDialog::Accepted)
         {
             loadUserList();
