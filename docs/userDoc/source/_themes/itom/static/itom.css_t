@@ -22,6 +22,7 @@ body {
     color: #000000;
     border-style:double;
     border-width: 0px;
+    line-height: 130%;
 }
 
 /*div.figure {
