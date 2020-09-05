@@ -46,7 +46,7 @@ namespace ito
 {
 // -------------------------------------------------------------------------------------------------------------------------
 //
-//  PyUiItem
+//  pyUiItem
 //
 // -------------------------------------------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_dealloc(PyUiItem* self)
@@ -136,7 +136,8 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     else if(PyErr_Clear(), PyArg_ParseTuple(args, "O!s", &PythonUi::PyUiItemType, &parentObj, &objName))
     {
         UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
-        if(uiOrga == NULL)
+
+        if (uiOrga == NULL)
         {
             PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
             return -1;
@@ -144,7 +145,14 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         parentItem = (PythonUi::PyUiItem*)parentObj;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "getChildObject3", Q_ARG(uint, static_cast<unsigned int>(parentItem->objectID)), Q_ARG(QString, QString(objName)), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, widgetClassNameBA), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(
+            uiOrga,
+            "getChildObject3",
+            Q_ARG(uint, static_cast<unsigned int>(parentItem->objectID)),
+            Q_ARG(QString, QString(objName)),
+            Q_ARG(QSharedPointer<uint>, objectID),
+            Q_ARG(QSharedPointer<QByteArray>, widgetClassNameBA),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         locker.getSemaphore()->wait(-1);
         retValue += locker.getSemaphore()->returnValue;
@@ -1798,7 +1806,8 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
     {
         QByteArray className(self->widgetClassName);
         QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> >::const_iterator it = methodDescriptionListStorage.constFind( className );
-        if(it != methodDescriptionListStorage.constEnd())
+
+        if (it != methodDescriptionListStorage.constEnd())
         {
             self->methodList = it->data();
             return true;
@@ -1820,7 +1829,12 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
             QSharedPointer<MethodDescriptionList> methodList(new MethodDescriptionList);
             ItomSharedSemaphoreLocker locker1(new ItomSharedSemaphore());
 
-            QMetaObject::invokeMethod(uiOrga, "getMethodDescriptions", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<MethodDescriptionList>, methodList), Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(
+                uiOrga, 
+                "getMethodDescriptions", 
+                Q_ARG(uint, self->objectID), 
+                Q_ARG(QSharedPointer<MethodDescriptionList>, methodList), 
+                Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
             if(!locker1.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -1839,10 +1853,14 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 {
-    //UiItem has no __dict__ attribute and this is no widget either, therefore filter it out and raise an exception
+    //UiItem has no __dict__ and __slots__ attribute and this is no widget either, therefore filter it out and raise an exception
+    if (PyUnicode_CompareWithASCIIString(name, "__slots__") == 0)
+    {
+        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '__slots__'.", self->objName);
+    }
     if (PyUnicode_CompareWithASCIIString(name, "__dict__") == 0)
     {
-        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U'.", self->objName, name);
+        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '__dict__'.", self->objName);
     }
 	else if (PyUnicode_CompareWithASCIIString(name, "__getstate__") == 0)
 	{
@@ -1850,18 +1868,19 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 	}
 
     PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name); //new reference
-    if(ret != NULL)
+
+    if (ret != NULL)
     {
         return ret;
     }
     PyErr_Clear(); //genericgetattr throws an error, if attribute is not available, which it isn't for attributes pointing to widgetNames
 
-    //return new instance of PyUiItem
+    //return new instance of pyUiItem
     PyObject *arg2 = Py_BuildValue("OO", self, name);
-    PythonUi::PyUiItem *PyUiItem = (PythonUi::PyUiItem *)PyObject_CallObject((PyObject *)&PythonUi::PyUiItemType, arg2);
+    PythonUi::PyUiItem *pyUiItem = (PythonUi::PyUiItem *)PyObject_CallObject((PyObject *)&PythonUi::PyUiItemType, arg2);
     Py_DECREF(arg2);
 
-    if(PyUiItem == NULL)
+    if (pyUiItem == NULL)
     {
         //check if this uiItem exists:
         PyObject *exists = PyUiItem_exists(self);
@@ -1877,25 +1896,31 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
             Py_XDECREF(exists);
             bool ok;
             QString name_str = PythonQtConversion::PyObjGetString(name, true, ok);
+
             if (ok)
             {
-                return PyErr_Format(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the name '%s'.", name_str.toLatin1().data());
+                return PyErr_Format(
+                    PyExc_AttributeError, 
+                    "This uiItem has neither a child item nor a method defined with the name '%s'.", 
+                    name_str.toLatin1().data());
             }
             else
             {
-                PyErr_SetString(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the given name (string).");
+                PyErr_SetString(
+                    PyExc_AttributeError, 
+                    "This uiItem has neither a child item nor a method defined with the given name (string).");
                 return NULL;
             }
         }
     }
 
-    if(PyErr_Occurred())
+    if (PyErr_Occurred())
     {
-        Py_XDECREF(PyUiItem);
-        PyUiItem = NULL;
+        Py_XDECREF(pyUiItem);
+        pyUiItem = NULL;
     }
 
-    return (PyObject *)PyUiItem;
+    return (PyObject*)pyUiItem;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

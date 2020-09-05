@@ -234,14 +234,17 @@ void UiOrganizer::execGarbageCollection()
 unsigned int UiOrganizer::addObjectToList(QObject* objPtr)
 {
     QHash<unsigned int, QPointer<QObject> >::const_iterator i = m_objectList.constBegin();
+
     while (i != m_objectList.constEnd())
     {
         if (i.value().data() == objPtr)
         {
             return i.key();
         }
+
         ++i;
     }
+
     m_objectList.insert(++UiOrganizer::autoIncObjectCounter, QPointer<QObject>(objPtr));
 
     return UiOrganizer::autoIncObjectCounter;
@@ -2248,7 +2251,12 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, const QString &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getChildObject3(
+    unsigned int parentObjectID,
+    const QString &objectName,
+    QSharedPointer<unsigned int> objectID,
+    QSharedPointer<QByteArray> widgetClassName,
+    ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
