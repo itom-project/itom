@@ -648,7 +648,7 @@ Special (wrapped) slots
 Unfortunately, there are some methods of important widgets in |Qt|, which are not defined to be a *public slot*. For 
 instance, the methods to add item(s) to a list widget are no slots. However, there are some exceptions defined in |itom| 
 such that some *public methods* of widgets can also be called with the method :py:meth:`~itom.uiItem.call`. These 
-exceptions are contained in the list below. Their call syntax is as follows:
+exceptions are contained in the list below. Their call syntax is as follows::
 
     myWidget: uiItem = gui.objectNameOfWidget
     retVal: retType = myWidget.call("name of slot", arg1: arg1Type, arg2: arg2Type, ...)
@@ -905,9 +905,9 @@ applied to. It is not part of the call statement in |Python|.
 
 .. py:function:: QLayout.itemAt(index: int) -> uiItem:
     
-    Returns the widget or layout at the given `index` of the layout.
+    Returns the widget or layout at the given ``index`` of the layout.
     
-    Raises a `RuntimeError` if there is not such an item.
+    Raises a ``RuntimeError`` if there is not such an item.
     
     *New in itom 4.1*
 
@@ -919,9 +919,9 @@ applied to. It is not part of the call statement in |Python|.
 
 .. py:function:: QLayout.removeItemAt(index: int)
     
-    Removes the item from the layout, that is at the indicated `index`.
+    Removes the item from the layout, that is at the indicated ``index``.
     
-    Raises a `RuntimeError` if the `index` exceeds the valid range.
+    Raises a ``RuntimeError`` if the ``index`` exceeds the valid range.
     
     *New in itom 4.1*
 
@@ -939,11 +939,11 @@ applied to. It is not part of the call statement in |Python|.
     this user interface is loaded and added to your layout.
     
     If you want to add the same UI file multiple times, you will probably have multiple
-    widgets with the same objectName. Therefore indicate an `objectNameSuffix`, that is
+    widgets with the same objectName. Therefore indicate an ``objectNameSuffix``, that is
     added to all widgets and layouts (all elements derived from QWidget and QLayout), that
     are recursively found in the loaded UI file.
     
-    Raises a `RuntimeError` if the `filename` is no valid Qt UI file.
+    Raises a ``RuntimeError`` if the ``filename`` is no valid Qt UI file.
     
     *New in itom 4.1*
 
@@ -951,11 +951,11 @@ applied to. It is not part of the call statement in |Python|.
     
     Adds a widget to the layout, where the widget is given by its class name,
     as it is given in the Qt framework (or any other designer plugin class name). 
-    Pass an additional `objectName` to the widget,
+    Pass an additional ``objectName`` to the widget,
     such that it can be referenced later. The added widget is returned as 
     :py:class:`~itom.uiItem`.
     
-    Raises a `RuntimeError` if the `className` does not exist.
+    Raises a ``RuntimeError`` if the ``className`` does not exist.
     
     *New in itom 4.1*
 
@@ -965,7 +965,7 @@ applied to. It is not part of the call statement in |Python|.
     
     **Hint:** This method can only be called if *itom* is compiled with Qt >= 5.8.
     
-    Raises a `RuntimeError` if the row does not exist.
+    Raises a ``RuntimeError`` if the row does not exist.
     
     *New in itom 4.1*
 
@@ -979,64 +979,64 @@ applied to. It is not part of the call statement in |Python|.
     
     Adds a new row to the form layout, where the first column is a label with the given `label` text.
     The 2nd column (field) is filled with a user defined widget, given by the class name
-    `fieldClassName` and the object name `fieldObjectName`. This widget is returned as
+    ``fieldClassName`` and the object name ``fieldObjectName``. This widget is returned as
     :py:class:`~itom.uiItem`.
     
-    Raises a `RuntimeError` if the `fieldClassName` does not exist.
+    Raises a ``RuntimeError`` if the ``fieldClassName`` does not exist.
     
     *New in itom 4.1*
 
 .. py:function:: QFormLayout.insertRow(rowIndex: int, label: str, fieldClassName: str, fieldObjectName: str) -> uiItem
     
-    Inserts a new row at position `rowÌndex` in this form layout. If the `rowIndex` is
+    Inserts a new row at position `rowÌndex` in this form layout. If the ``rowIndex`` is
     out of bounds, the new row is added at the end.
     
     The row consists of a label (text: `label`) and a field widget in the 2nd column.
-    This user defined widget is given by the class name `fieldClassName` and the object
-    name `fieldObjectName`. It is returned as :py:class:`~itom.uiItem`.
+    This user defined widget is given by the class name ``fieldClassName`` and the object
+    name ``fieldObjectName``. It is returned as :py:class:`~itom.uiItem`.
     
-    Raises a `RuntimeError` if the `fieldClassName` does not exist.
+    Raises a ``RuntimeError`` if the ``fieldClassName`` does not exist.
     
     *New in itom 4.1*
 
 .. py:function:: QFormLayout.setItem(rowIndex: int, role: int, className: str, objectName: str) -> uiItem
     
-    Adds or replaces a new widget into a row at position `rowIndex` and a specific `role`.
+    Adds or replaces a new widget into a row at position ``rowIndex`` and a specific ``role``.
     
-    This new widget is given by its Qt class name `className` and its `objectName` property
-    is set to `objectName`. If the desired position is already occupied, it is removed, first.
+    This new widget is given by its Qt class name ``className`` and its ``objectName`` property
+    is set to ``objectName``. If the desired position is already occupied, it is removed, first.
     
-    The `role` can be 
+    The ``role`` can be 
     
     * **0**: The widget is added in the first column (label),
     * **1**: The widget is added in the 2nd column (field),
     * **2**: The widget spans both columns (spanned)
     
-    Raises a `RuntimeError` if the `className` does not exist.
+    Raises a ``RuntimeError`` if the ``className`` does not exist.
     
     *New in itom 4.1*
 
 .. py:function:: QFormLayout.itemAtPosition(rowIndex: int, role: int) -> uiItem
     
     Returns the item (widget or layout) in this form layout in the row, given
-    by its `rowIndex` and the specified `role`.
+    by its ``rowIndex`` and the specified ``role``.
     
-    The `role` can be 
+    The ``role`` can be 
     
     * **0**: The widget is added in the first column (label),
     * **1**: The widget is added in the 2nd column (field),
     * **2**: The widget spans both columns (spanned)
     
-    Raises a `RuntimeError` if the position does not contain a valid widget or layout.
+    Raises a ``RuntimeError`` if the position does not contain a valid widget or layout.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.itemAtPosition(rowIndex: int, columnIndex: int) -> uiItem
     
-    Returns the item (widget or layout) in this grid layout at the given `rowIndex`
-    and `columnIndex`.
+    Returns the item (widget or layout) in this grid layout at the given ``rowIndex``
+    and ``columnIndex``.
     
-    Raises a `RuntimeError` if the position does not contain a valid widget or layout.
+    Raises a ``RuntimeError`` if the position does not contain a valid widget or layout.
     
     *New in itom 4.1*
 
@@ -1054,101 +1054,101 @@ applied to. It is not part of the call statement in |Python|.
     
 .. py:function:: QGridLayout.columnStretch(columnIndex: int) -> int
     
-    Returns the current stretch value for the column at index `columnIndex`.
+    Returns the current stretch value for the column at index ``columnIndex``.
     The size of all columns are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in a column.
     The higher the stretch value, the bigger the column. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `columnIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``columnIndex`` exceeds the valid range.
     
     *New in itom 4.1*
     
 .. py:function:: QGridLayout.setColumnStretch(columnIndex: int, stretch: int)
     
-    Sets the stretch value for the column at index `columnIndex` to the value `stretch`.
+    Sets the stretch value for the column at index ``columnIndex`` to the value ``stretch``.
     The size of all columns are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in a column.
     The higher the stretch value, the bigger the column. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `columnIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``columnIndex`` exceeds the valid range.
     
     *New in itom 4.1*
     
 .. py:function:: QGridLayout.rowStretch(rowIndex: int) -> int
     
-    Returns the current stretch value for the row at index `rowIndex`.
+    Returns the current stretch value for the row at index ``rowIndex``.
     The size of all rows are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in a row.
     The higher the stretch value, the bigger the row. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `rowIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``rowIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.setRowStretch(rowIndex: int, stretch: int)
     
-    Sets the stretch value for the row at index `rowIndex` to the value `stretch`.
+    Sets the stretch value for the row at index ``rowIndex`` to the value ``stretch``.
     The size of all rows are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in a row.
     The higher the stretch value, the bigger the row. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `rowIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``rowIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.columnMinimumWidth(columnIndex: int) -> int
     
-    Returns the minimum width (in px) of the column at position `columnIndex`.
+    Returns the minimum width (in px) of the column at position ``columnIndex``.
     
-    Raises a `RuntimeError` if `columnIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``columnIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.setColumnMinimumWidth(columnIndex: int, width: int)
     
-    Sets the minimum width of the column at position `columnIndex`
+    Sets the minimum width of the column at position ``columnIndex``
     to `width` pixels.
     
-    Raises a `RuntimeError` if `columnIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``columnIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.rowMinimumHeight(rowIndex: int) -> int
     
-    Returns the minimum height (in px) of the row at position `rowIndex`.
+    Returns the minimum height (in px) of the row at position ``rowIndex``.
     
-    Raises a `RuntimeError` if `rowIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``rowIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.setRowMinimumHeight(rowIndex: int, height: int)
     
-    Sets the minimum height of the row at position `rowIndex`
+    Sets the minimum height of the row at position ``rowIndex``
     to `height` pixels.
     
-    Raises a `RuntimeError` if `rowIndex` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``rowIndex`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.addItemToGrid(className: str, objectName: str, fromRow: int, fromColumn: int, rowSpan: int, colSpan: int) -> uiItem
     
     Adds a widget to this grid layout. The position of the widget is mainly given
-    by a certain row and column index, denoted as `fromRow` and `fromColumn`.
-    It can however span a number of rows (`rowSpan`) as well as a number of columns
-    (`colSpan`).
+    by a certain row and column index, denoted as ``fromRow`` and ``fromColumn``.
+    It can however span a number of rows (``rowSpan``) as well as a number of columns
+    (``colSpan``).
     
-    The widget is defined by its `className` and is given the given `objectName`.
+    The widget is defined by its ``className`` and is given the given ``objectName``.
     This new widget is then returned.
     
-    Raises a `RuntimeError` if the widget class name is unknown or if the row or
+    Raises a ``RuntimeError`` if the widget class name is unknown or if the row or
     column indices are invalid.
     
     *New in itom 4.1*
@@ -1156,67 +1156,67 @@ applied to. It is not part of the call statement in |Python|.
 .. py:function:: QGridLayout.addItemToGridFromUiFile(filename: str, objectNameSuffix: str, fromRow: int, fromColumn: int, rowSpan: int, colSpan: int) -> uiItem
     
     Adds a widget to this grid layout, that is loaded from an UI file, located
-    at the indicated `filename`. Use the QtDesigner
+    at the indicated ``filename``. Use the QtDesigner
     to define the UI file (Widget type is recommended) and define a small portion of
     the user interface (e.g. including buddies, signal/slot connections etc.). Then,
     this user interface is loaded and added to your layout.
     
     If you want to add the same UI file multiple times, you will probably have multiple
-    widgets with the same objectName. Therefore indicate an `objectNameSuffix`, that is
+    widgets with the same objectName. Therefore indicate an ``objectNameSuffix``, that is
     added to all widgets and layouts (all elements derived from QWidget and QLayout), that
     are recursively found in the loaded UI file.
     
     The position of the loaded widget is mainly given
-    by a certain row and column index, denoted as `fromRow` and `fromColumn`.
-    It can however span a number of rows (`rowSpan`) as well as a number of columns
-    (`colSpan`). The loaded main widget is returned by this call.
+    by a certain row and column index, denoted as ``fromRow`` and ``fromColumn``.
+    It can however span a number of rows (``rowSpan``) as well as a number of columns
+    (``colSpan``). The loaded main widget is returned by this call.
     
-    Raises a `RuntimeError` if the `filename` is no valid Qt UI file or if the row or
+    Raises a ``RuntimeError`` if the ``filename`` is no valid Qt UI file or if the row or
     column indices are invalid.
     
     *New in itom 4.1*
 
 .. py:function:: QGridLayout.removeItemFromGrid(rowIndex: int, columnIndex: int)
     
-    Removes the widget or layout from this grid layout at position `rowIndex` and
-    `columnIndex`.
+    Removes the widget or layout from this grid layout at position ``rowIndex`` and
+    ``columnIndex``.
     
-    Raises a `RuntimeError` if `rowIndex` or `columnIndex` exceed the valid range or
+    Raises a ``RuntimeError`` if ``rowIndex`` or ``columnIndex`` exceed the valid range or
     if the cell in the grid layout does not contain a widget or layout.
     
     *New in itom 4.1*
 
 .. py:function:: QBoxLayout.stretch(index: int) -> int
     
-    Returns the current stretch value for the item at index `index`.
+    Returns the current stretch value for the item at index ``index``.
     The size of all cells are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in each cell.
     The higher the stretch value, the bigger the cell. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `index` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``index`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QBoxLayout.setStretch(index: int, stretch: int)
     
-    Sets the stretch value for the item at index `index` to the value `stretch`.
+    Sets the stretch value for the item at index ``index`` to the value ``stretch``.
     The size of all items are distributed over the available space based
     on their stretch values (can be considered to be weights) as well as
     on the required size and size policies of the widgets in a cell.
     The higher the stretch value, the bigger the cell. A value of 0
     is the default.
     
-    Raises a `RuntimeError` if `index` exceeds the valid range.
+    Raises a ``RuntimeError`` if ``index`` exceeds the valid range.
     
     *New in itom 4.1*
 
 .. py:function:: QBoxLayout.insertItemFromUiFile(index: int, filename: str, objectNameSuffix: str) -> uiItem
     
-    Inserts a widget to this box layout at the given `index` position.
+    Inserts a widget to this box layout at the given ``index`` position.
     The widget is loaded from an UI file, located
-    at the indicated `filename`. Use the QtDesigner
+    at the indicated ``filename``. Use the QtDesigner
     to define the UI file (Widget type is recommended) and define a small portion of
     the user interface (e.g. including buddies, signal/slot connections etc.). Then,
     this user interface is loaded and added to your layout.
@@ -1224,25 +1224,25 @@ applied to. It is not part of the call statement in |Python|.
     If the index is negative, the widget is added at the end.
     
     If you want to add the same UI file multiple times, you will probably have multiple
-    widgets with the same objectName. Therefore indicate an `objectNameSuffix`, that is
+    widgets with the same objectName. Therefore indicate an ``objectNameSuffix``, that is
     added to all widgets and layouts (all elements derived from QWidget and QLayout), that
     are recursively found in the loaded UI file.
     
     The loaded main widget is returned by this call.
     
-    Raises a `RuntimeError` if the `filename` is no valid Qt UI file.
+    Raises a ``RuntimeError`` if the ``filename`` is no valid Qt UI file.
     
     *New in itom 4.1*
 
 .. py:function:: QBoxLayout.insertItem(index: int, className: str, objectName: str) -> uiItem
     
-    Inserts a widget to this box layout at the given `index` position.
-    The widget is given by its `className` and its objectName property is set to
-    `objectName`. The loaded widget is returned.
+    Inserts a widget to this box layout at the given ``index`` position.
+    The widget is given by its ``className`` and its objectName property is set to
+    ``objectName``. The loaded widget is returned.
     
     If the index is negative, the widget is added at the end.
     
-    Raises a `RuntimeError` if the `className` is invalid.
+    Raises a ``RuntimeError`` if the ``className`` is invalid.
     
     *New in itom 4.1*
 
@@ -1408,8 +1408,8 @@ preview function of the **Qt Designer** in the menu **forms >> preview**.
 This section will now explain, how you can change the content of a layout at runtime via specific |Python| script commands.
 
 For this, at first, we need to get a reference to the desired layout in |Python|. This is obtained in the same way
-than getting a reference to a widget using the widget's `objectName` (see section :ref:`qtdesigner-getreference`).
-The `objectName` of a layout is represented by the property `layoutName` in the property panel of **Qt Designer**.
+than getting a reference to a widget using the widget's ``objectName`` (see section :ref:`qtdesigner-getreference`).
+The ``objectName`` of a layout is represented by the property ``layoutName`` in the property panel of **Qt Designer**.
 
 As an example, the reference to the selected horizontal layout in the GUI displayed in the image above is obtained
 via::
@@ -1449,7 +1449,7 @@ Extended examples can be found in the folder **demo/ui/dynamicLayouts** of the |
 Accessing widgets in a layout
 -------------------------------
 
-Widgets in a layout can always be accessed by means of their `objectName`, like stated in :ref:`the section above 
+Widgets in a layout can always be accessed by means of their ``objectName``, like stated in :ref:`the section above 
 <qtdesigner-getreference>`. However, if there is a need to dynamically access, remove or add widgets to layouts, it 
 would maybe be necessary to also access them with respect to their index or position within a layout.
 
@@ -1464,7 +1464,7 @@ can be added to a custom user interface:
 On the one hand, a layout element can always be dragged&dropped from the widget box panel to the canvas. An example 
 for this is the red, horizontal layout, that contains the three radio buttons. This layout is an independent entry 
 in the object inspector. Its properties are displayed in the properties panels on the right side of the image. Such 
-a layout can easily be accessed by passing it a unique `layoutName`. This `layoutName` is then the `objectName` of 
+a layout can easily be accessed by passing it a unique ``layoutName``. This ``layoutName`` is then the ``objectName`` of 
 this control element, such that it can be accessed using the known mechanisms :ref:`this section 
 <qtdesigner-getreference>`. The layout is then referenced by an instance of the known class 
 :py:class:`~itom.uiItem`::
@@ -1493,7 +1493,7 @@ yet and the icon in the object inspector looks like this: |qtdesigner-nolayout|.
 
 To get the reference to such a layout of a container widget, get a reference to this widget and call the method 
 :py:meth:`~itom.uiItem.getLayout`. It will return the reference to the layout as instance of 
-:py:meth:`~itom.uiItem` or raises a `RuntimeError` if no layout is available::
+:py:meth:`~itom.uiItem` or raises a ``RuntimeError`` if no layout is available::
     
     from itom import ui, uiItem
     
@@ -1504,38 +1504,38 @@ To get the reference to such a layout of a container widget, get a reference to 
     print(groupLayout.getClassName())  # --> returns QGridLayout
     print(groupLayout["objectName"])  # --> returns gridLayout
 
-From the example, you can also see, that the returned layout object also has an `objectName` property, that
-is the `layoutName` as given in the object inspector panel (see again image above).
+From the example, you can also see, that the returned layout object also has an ``objectName`` property, that
+is the ``layoutName`` as given in the object inspector panel (see again image above).
 
 We now know, how get a reference to a layout. Then we can discuss how the widgets (or sub-layouts) of a layout can 
 be accessed. Like stated in section :ref:`qtdesigner-getreference`, it is always possible to get a reference to a 
-certain child widget or layout of a layout by its `objectName`. However, since a layout provided an ordered list or 
+certain child widget or layout of a layout by its ``objectName``. However, since a layout provided an ordered list or 
 grid of items, there are further methods to directly reference an item at a specific index position. As usual every 
 index starts with 0 for the first item.
 
-A **vertical and horizontal (box) layout** always arrange all widgets in one row or column, such that only one `index`
+A **vertical and horizontal (box) layout** always arrange all widgets in one row or column, such that only one ``index``
 value is sufficient to reference a child item.
 
 The **grid layout** always consists of a regular grid with *M* rows and *N* columns. Every cell has then a certain row index
-and column index. There can also be empty cells. If you try to reference such an empty cell, a `RuntimeError`
+and column index. There can also be empty cells. If you try to reference such an empty cell, a ``RuntimeError``
 is usually raised (see detailed explanation of the wrapped methods in :ref:`section <qtdesigner-wrappedslots>`.
 
 The **form layout** mainly consists of rows. Every row contains two widgets, that are aligned in two columns. 
 Usually the widget in the left column is reserved for a label, but can also be another widget. The widget in the 
 right column is denoted as field and can be any kind of widget. There is also the possibility to have a row with 
-one widget, that spans both columns. In many functions of the form layout class, there is a `row index` and a 
-`role` value, that indicates whether you want to access the `label` widget (0), the `field` widget (1) or a 
-`spanned` widget (2).
+one widget, that spans both columns. In many functions of the form layout class, there is a ``row index`` and a 
+``role`` value, that indicates whether you want to access the ``label`` widget (0), the ``field`` widget (1) or a 
+``spanned`` widget (2).
 
 Horizontal or vertical box layout
 ----------------------------------
 
 In the example **layoutExample.ui**, shown above, there is one vertical box layout for the top level widget
-and one horizontal layout `horLayout`, that groups the three radio buttons.
+and one horizontal layout ``horLayout``, that groups the three radio buttons.
 
-Let us first change some settings of this horizontal layout `horLayout`. It is possible to change the available
-space for each widget in this layout, by changing their `stretch` values. This can either be done by setting
-the property `layoutStretch` to a comma-separated list with `N` integer values for `N` widgets. The higher a single
+Let us first change some settings of this horizontal layout ``horLayout``. It is possible to change the available
+space for each widget in this layout, by changing their ``stretch`` values. This can either be done by setting
+the property ``layoutStretch`` to a comma-separated list with `N` integer values for ``N`` widgets. The higher a single
 value is, the more space this widget is assigned. In order to change the stretch value of one widget at runtime,
 use the wrapped slot :py:func:`QBoxLayout.setStretch` and :py:func:`QBoxLayout.stretch`::
     
@@ -1551,7 +1551,7 @@ use the wrapped slot :py:func:`QBoxLayout.setStretch` and :py:func:`QBoxLayout.s
     gui.show()  # show the user interface
 
 The following example shows how to remove the center radio button, then add a new radio button at the end and
-insert a spin box (class **QSpinBox**) with the `objectName` **mySpinBox** as second widget in this horizontal
+insert a spin box (class **QSpinBox**) with the ``objectName`` **mySpinBox** as second widget in this horizontal
 Layout::
     
     from itom import ui, uiItem
@@ -1596,7 +1596,7 @@ Form layout
 ------------
 
 On the right side of the user interface draft in the image above (section :ref:`qtdesigner-extentlayouts`), there
-is a form layout (`objectName`: *formLayout*). A form layout is similar to a grid layout with two columns and
+is a form layout (``objectName``: *formLayout*). A form layout is similar to a grid layout with two columns and
 a certain number of rows. The widgets in the first column are usually one label per row, the 2nd column is
 denoted as `field` and contains widgets like *line edits*, *spinboxes* etc.
 
@@ -1656,7 +1656,7 @@ To add or insert new rows, see the following example::
 Grid layout
 ---------------
 
-A grid layout aligns its widgets in a regular grid with *M* rows and *N* columns.
+A grid layout aligns its widgets in a regular grid with ``M`` rows and ``N`` columns.
 
 For the basic size arrangements of the columns and rows, it is possible to set single stretch factors
 for every row and column by using the slots :py:func:`QGridLayout.setColumnStretch` and
@@ -1680,7 +1680,7 @@ If you want to add a new widget or even content of another ui file (see also the
 :ref:`qtdesigner-layout-insertuifile`) into a grid, you always have to define a certain start row
 and column index as well as the number of columns and rows, that the new widget should span. This
 means, that every widget cannot only occupy one cell in the grid but a range of adjacent cells.
-Usually the `span` values are 1.
+Usually the ``span`` values are 1.
 
 If an added widget occupies a row or column, that is bigger than the current number of rows or columns in 
 the grid layout, the layout is automatically extended to that new required number. The slots to insert 
@@ -1717,14 +1717,14 @@ As an example, we want dynamically stack the following template multiple times i
     :align: center
 
 This template is stored in an **ui** file with the filename **item.ui**. It consists of a horizontal layout with a label 
-(`objectName`: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget. The checkbox 
+(``objectName``: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget. The checkbox 
 is checked per default. An automatic signal-slot connection between the *triggered(bool)* signal of the checkbox and the 
 *setEnabled(bool)* slot of the spinbox was added in the **Qt Designer** (see also 
 :ref:`qtdesigner-internalsignalslots`). The objective is, that the spinbox is enabled only if the checkbox is clicked. 
 The *margin* properties of the *horizontalLayout* are set to *3* in order to make the layout a little bit more tight.
 
 Now, we create another ui file **mainForm.ui** (based on a main window) with a label and an **empty** vertical 
-layout (`objectName`: *vlayout*). This empty layout should later be filled with a certain number of **item.ui**
+layout (``objectName``: *vlayout*). This empty layout should later be filled with a certain number of **item.ui**
 widgets:
 
 .. figure:: images_userGUI/qtdesigner-mainUiTemplate.png
