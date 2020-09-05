@@ -1,15 +1,17 @@
 .. include:: ../include/global.inc
 
+.. |qtdesigner-nolayout| image:: images_userGUI/qtdesigner-nolayout.png
+
 .. _qtdesigner:
 
 Creating customized dialogs, windows and dock widgets
 ******************************************************
 
-With |itom| it is not only possible to add :ref:`menus and toolbar elements <toolbar-start>` to the main GUI of |itom| or to use the default set 
-of input and message boxes, but it is also possible to create own user interfaces. These interfaces are designed by help 
-of a WYSIWYG ("what you see is what you get") design tool (Qt Designer). The logic behind the surfaces is then scripted 
-using |python|. Therefore it is possible to change the appearance of control elements at runtime or to connect a signal, 
-emitted when for instance clicking on a button, with a user-defined python method.
+With |itom| it is not only possible to add :ref:`menus and toolbar elements <toolbar-start>` to the main GUI of |itom| or 
+to use the default set of input and message boxes, but it is also possible to create own user interfaces. These 
+interfaces are designed by help of a WYSIWYG ("what you see is what you get") design tool (Qt Designer). The logic behind 
+the surfaces is then scripted using |python|. Therefore it is possible to change the appearance of control elements at 
+runtime or to connect a signal, emitted when for instance clicking on a button, with a user-defined python method.
 
 In this chapter, the creation of such user interfaces is explained.
 
@@ -60,10 +62,10 @@ of this chapter and are as follows:
 Qt Designer
 ==============
 
-The **Qt Designer** is used to create a custom user interface, that can be displayed within |itom| and
-interact with |itom| and |Python| code. This software is part of the Qt framework, the platform independent
-GUI framework that is also used to run |itom| itself. For general information about the usage
-of the **Qt Designer**, one is referred to the official documentation under http://doc.qt.io/qt-5/qtdesigner-manual.html
+The **Qt Designer** is used to create a custom user interface, that can be displayed within |itom| and interact with 
+|itom| and |Python| code. This software is part of the Qt framework, the platform independent GUI framework that is also 
+used to run |itom| itself. For general information about the usage of the **Qt Designer**, one is referred to the 
+official documentation under http://doc.qt.io/qt-5/qtdesigner-manual.html
 
 In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
 
@@ -86,9 +88,9 @@ Basically you have the choice between three different base layouts:
   own toolbar, menu or status bar. To open and use such a dialog within |itom|, see :ref:`this section <qtdesigner-typewindow>`.
 2. **Main Window**. A main window is a fully equipped main window, which can be minimized, maximized, can have toolbars, 
   menus and a status bar. Therefore it is recommended to use this type of user interface for the main window of your 
-  measurement system. Like a dialog, it is possible to show the main window on top of |itom| (as sub-window of |itom|) or as 
-  independent window, which has its own icon in the windows tray.
-   To open and use such a window within |itom|, see :ref:`this section <qtdesigner-typewindow>`.
+  measurement system. Like a dialog, it is possible to show the main window on top of |itom| (as sub-window of |itom|) or 
+  as independent window, which has its own icon in the windows tray. To open and use such a window within |itom|, see 
+  :ref:`this section <qtdesigner-typewindow>`.
 3. **Widget**. A widget is the base class for all control elements provided by |Qt|. Therefore a widget does not have any 
   title bar or windows frame. Nevertheless there are three use cases where it makes sense to choose this type
   of base layout:
@@ -107,15 +109,23 @@ Basically you have the choice between three different base layouts:
     customized user interface. For more information about this, see :ref:`this section <qtdesigner-extentlayouts>`.
 
 After having chosen one of these base layouts (types), your surface is displayed in the middle of the **Qt Designer** and 
-you can start to drag elements from the widget library on your surface. If the **Qt Designer** is started from |itom| you 
-will even find a section **ITOM Plugins** in the library list, which contains all loadable designer plugins that are 
-provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that 
-are currently available in your installation of |itom|.
+you can start to drag elements from the **widget library panel** onto your surface. If the **Qt Designer** is started 
+from |itom| you will even find the sections **itom plugins** and **itom [widgets]** in the **widget library panel** of 
+the **Qt Designer**. They contain all loadable designer plugins, directly provided by the |itom| software. The general 
+availability of plugins depend on the designer plugins that are currently available in your installation of |itom|.
 
 .. figure:: images_userGUI/qtdesigner1.png
     :scale: 100%
     :align: center
 
+A common set of |itom| specific widgets are displayed here:
+
+.. figure:: images_userGUI/qtdesigner-itomwidgets.png
+    :scale: 100%
+    :align: center
+
+The difference between **itom plugins** and **itom [widgets]** is, that the first are designer plugins (single libraries 
+each) for |itom| and the latter come from one **itomWidget** library, that is part of the core project of |itom|.
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. 
 Every widget has the common property **objectName**. If you assign a unique object name to any of your control elements, 
@@ -128,10 +138,18 @@ with size policies that can be assigned to every widget control the appearance o
 the feature that the dialog can be changed in size whereas all widgets are dynamically repositioned. For more information 
 about layouting your user interface, see http://qt-project.org/doc/qt-5/designer-layouts.html.
 
+.. note::
+    
+    In order to provide an user interface, that can be properly displayed on screens with different sizes and rescaled by the 
+    user, try to **always** set layouts. Make sure, that there is no unassigned layout symbol (|qtdesigner-nolayout|) 
+    somewhere in the **object inspector panel**. If so, make a right click on such an item and select an appropriate layout. 
+    Additionally, avoid to set any minimum or maximum size of any widget. Instead try to solve this by layouts and the 
+    principle of size policies (see https://doc.qt.io/qt-5/qsizepolicy.html).
+
 Finally, save your user interface under a convenient filename with the suffix **.ui**.
 
-Widget Library
----------------
+Widget library panel
+---------------------
 
 In principle, you are allowed to place every widget on your user interface that is available in the widget library (widget 
 box) of **Qt Designer**. Later, you will learn how you can access properties of any widget (read and/or write) and how you 
@@ -139,7 +157,7 @@ can call specific functions provided by any widget. However, you will also learn
 |python| to all functions a widget has and you are not able to sub-class any widget, like you can it using a native 
 **C++** program. Therefore, it is not recommended to place any widget from the group **Item Views (Model-based)** on your 
 user interface since only few functions of these widgets are accessible by a |python| script. If you need a list box, use 
-the item-based list widget. |itom| also provides some widgets (section **ITOM widgets**) that can be placed on your user 
+the item-based list widget. |itom| also provides some widgets (section **itom widgets**) that can be placed on your user 
 interfaces, for instance some plot widgets or the widget for plotting the result of the python module matplotlib (see 
 :ref:`pymod-matplotlib`).
 
@@ -1473,8 +1491,6 @@ of this container appear IF a layout has been applied to the container widget.
 If you don't see the layout properties of a container widget (or top level widget), no layout has been assigned
 yet and the icon in the object inspector looks like this: |qtdesigner-nolayout|.
 
-.. |qtdesigner-nolayout| image:: images_userGUI/qtdesigner-nolayout.png
-
 To get the reference to such a layout of a container widget, get a reference to this widget and call the method 
 :py:meth:`~itom.uiItem.getLayout`. It will return the reference to the layout as instance of 
 :py:meth:`~itom.uiItem` or raises a `RuntimeError` if no layout is available::
@@ -1608,9 +1624,9 @@ To remove the entire first row, use::
     flayout.call("removeRow", rowIndex)
     print("number of rows", flayout.call("rowCount"))
 
-It is also possible to change an existing widget. In the following example
-we exchange the label in the first column of the first row by a line edit (Qt class name **QLineEdit**) widget
-and the spin box in the field column by a double spin box (Qt class name *QDoubleSpinBox*)::
+It is also possible to change an existing widget. In the following example we exchange the label in the 
+first column of the first row by a line edit (Qt class name **QLineEdit**) widget and the spin box in the 
+field column by a double spin box (Qt class name *QDoubleSpinBox*)::
     
     rowIndex = 0
     role = 0  # label, 1st column
@@ -1636,6 +1652,39 @@ To add or insert new rows, see the following example::
     
     # insert at the top in row 0 a checkBox
     flayout.call("insertRow", 0, "first row", "QCheckBox", "objName")
+
+Grid layout
+---------------
+
+A grid layout aligns its widgets in a regular grid with *M* rows and *N* columns.
+
+For the basic size arrangements of the columns and rows, it is possible to set single stretch factors
+for every row and column by using the slots :py:func:`QGridLayout.setColumnStretch` and
+:py:func:`QGridLayout.setRowStretch`. Additionally, you can define a minimum width or height
+of certain columns or rows using the slots: :py:func:`QGridLayout.setColumnMinimumWidth` and
+:py:func:`QGridLayout.setRowMinimumHeight`.
+
+To access the widget in a certain row and column (by means of an instance of :py:class:`~itom.uiItem`,
+use the slot :py:func:`QGridLayout.itemAtPosition`::
+    
+    myGridLayout: uiItem = myGui.nameOfGridLayout
+    rowIdx: int = 0  # first row
+    colIdx: int = 1  # 2nd column
+    myItem: uiItem = myGridLayout.call("itemAtPosition", rowIdx, colIdx)
+
+It is also possible to remove items from a grid layout using the slot 
+:py:func:`QGridLayout.removeItemFromGrid`, however one has to know that the grid layout will never reduce 
+its number of rows and columns by this operation.
+
+If you want to add a new widget or even content of another ui file (see also the next section 
+:ref:`qtdesigner-layout-insertuifile`) into a grid, you always have to define a certain start row
+and column index as well as the number of columns and rows, that the new widget should span. This
+means, that every widget cannot only occupy one cell in the grid but a range of adjacent cells.
+Usually the `span` values are 1.
+
+If an added widget occupies a row or column, that is bigger than the current number of rows or columns in 
+the grid layout, the layout is automatically extended to that new required number. The slots to insert 
+such widgets are :py:func:`QGridLayout.addItemToGrid` and :py:func:`QGridLayout.addItemToGridFromUiFile`.
 
 .. _qtdesigner-layout-insertuifile:
 
@@ -1667,12 +1716,12 @@ As an example, we want dynamically stack the following template multiple times i
     :scale: 100%
     :align: center
 
-This template is stored in an **ui** file with the filename **item.ui**. It consists of a horizontal layout with
-a label (`objectName`: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget.
-The checkbox is checked per default an automatic signal-slot connection between the *triggered(bool)* signal of
-the checkbox and the *setEnabled(bool)* slot of the spinbox was added in the **Qt Designer**. The objective is,
-that the spinbox is enabled only if the checkbox is clicked. The *margin* properties of the *horizontalLayout*
-are set to *3* in order to make the layout a little bit more tight.
+This template is stored in an **ui** file with the filename **item.ui**. It consists of a horizontal layout with a label 
+(`objectName`: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget. The checkbox 
+is checked per default. An automatic signal-slot connection between the *triggered(bool)* signal of the checkbox and the 
+*setEnabled(bool)* slot of the spinbox was added in the **Qt Designer** (see also 
+:ref:`qtdesigner-internalsignalslots`). The objective is, that the spinbox is enabled only if the checkbox is clicked. 
+The *margin* properties of the *horizontalLayout* are set to *3* in order to make the layout a little bit more tight.
 
 Now, we create another ui file **mainForm.ui** (based on a main window) with a label and an **empty** vertical 
 layout (`objectName`: *vlayout*). This empty layout should later be filled with a certain number of **item.ui**

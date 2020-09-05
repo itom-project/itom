@@ -10,7 +10,7 @@ it is possible to design user defined dialog and windows by using the WYSIWYG Qt
 implement complex GUIs with dependecies to other 3rd party libraries within a plugin.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Content
    
    toolbar.rst
