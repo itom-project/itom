@@ -1008,20 +1008,32 @@ void MainApplication::mainWindowCloseRequest()
         msgBox.setIcon(QMessageBox::Question);
 
 #if QT_VERSION >= 0x050200
-		QCheckBox *cb = new QCheckBox();
-		cb->setText(tr("don't ask again (can be reverted in property dialog)"));
-		cb->setChecked(false);
-		msgBox.setCheckBox(cb);
+
+		ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
+		if (!(features & ito::UserFeature::featProperties))
+		{
+			QCheckBox *cb = new QCheckBox();
+			cb->setText(tr("don't ask again (can be reverted in property dialog)"));
+			cb->setToolTip("can be reverted in property dialog");
+			cb->setChecked(false);
+			msgBox.setCheckBox(cb);
+		}
+		
 #endif
 
         int ret = msgBox.exec();
 
 #if QT_VERSION >= 0x050200
-		if (msgBox.checkBox()->isChecked())
+		if (!(features & ito::UserFeature::featProperties))
 		{
-			settings->setValue("askBeforeClose", false);
+			if (msgBox.checkBox()->isChecked())
+			{
+				settings->setValue("askBeforeClose", false);
+			}
 		}
-
+		
 #endif
 
         if (ret == QMessageBox::Cancel)
