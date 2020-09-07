@@ -406,8 +406,8 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
         ui.checkBox_userManag->setEnabled(currentFeatures & featUserManagement);
         ui.checkBox_addInManager->setEnabled(currentFeatures & featPlugins);
         ui.checkBox_editProperties->setEnabled(currentFeatures & featProperties);
-        ui.radioButton_consoleNormal->setEnabled(currentFeatures & (featConsoleReadWrite| featConsoleRead));
-        ui.radioButton_consoleRO->setEnabled(currentFeatures & featConsoleRead);
+        ui.radioButton_consoleNormal->setEnabled(currentFeatures & (featConsoleReadWrite));
+        ui.radioButton_consoleRO->setEnabled(currentFeatures & (featConsoleReadWrite | featConsoleRead));
         ui.radioButton_consoleOff->setEnabled(true);
     }
 
