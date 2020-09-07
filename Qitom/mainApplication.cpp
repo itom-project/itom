@@ -1009,12 +1009,7 @@ void MainApplication::mainWindowCloseRequest()
 
 #if QT_VERSION >= 0x050200
 
-		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
-		const QString userName = userOrg->getCurrentUserName();
-		bool isStandardUser = userName.compare("Standard User") == 0;
-
-		if (!(features & ito::UserFeature::featProperties) || isStandardUser)
+		if (features & ito::UserFeature::featProperties)
 		{
 			QCheckBox *cb = new QCheckBox();
 			cb->setText(tr("Don't ask again."));
