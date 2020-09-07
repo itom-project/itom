@@ -1009,6 +1009,9 @@ void MainApplication::mainWindowCloseRequest()
 
 #if QT_VERSION >= 0x050200
 
+		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
 		if (features & ito::UserFeature::featProperties)
 		{
 			QCheckBox *cb = new QCheckBox();
