@@ -1009,14 +1009,14 @@ void MainApplication::mainWindowCloseRequest()
 
 #if QT_VERSION >= 0x050200
 
-		ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
 		if (!(features & ito::UserFeature::featProperties))
 		{
 			QCheckBox *cb = new QCheckBox();
-			cb->setText(tr("don't ask again (can be reverted in property dialog)"));
-			cb->setToolTip("can be reverted in property dialog");
+			cb->setText(tr("Don't ask again."));
+			cb->setToolTip(tr("This behaviour can be changed again in the property dialog."));
 			cb->setChecked(false);
 			msgBox.setCheckBox(cb);
 		}
@@ -1060,7 +1060,8 @@ void MainApplication::mainWindowCloseRequest()
 
             if (retValue.containsError())
             {
-                //The user was asked how to proceed with unsaved scripts. In this case, the user cancelled this request... do not close itom!
+                // The user was asked how to proceed with unsaved scripts. 
+                // In this case, the user cancelled this request... do not close itom!
                 return;
             }
         }
@@ -1069,6 +1070,7 @@ void MainApplication::mainWindowCloseRequest()
         {
             m_mainWin->hide();
         }
+
         QApplication::instance()->quit();
     }
 }
