@@ -86,7 +86,6 @@ class UserOrganizer : public QObject
         QString m_lastOpenedUserName;
 
         UserModel *m_userModel;
-		QModelIndex m_currentUser; //mode
         
 };
 

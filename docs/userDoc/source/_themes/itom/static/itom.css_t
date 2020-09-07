@@ -16,13 +16,28 @@ body {
     margin: auto;
     padding: 0px;
     font-size: 100%;
-    font-family: sans-serif;
+    font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;;
     min-width: 59em;
     max-width: 70em;
     color: #000000;
     border-style:double;
     border-width: 0px;
     line-height: 130%;
+}
+
+code.docutils.literal {
+    font-weight: bold;
+    color: #E74C3C;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
+    white-space: nowrap;
+    font-size: 90%;
+    padding: 2px 5px;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+}
+
+div.highlight pre {
+    padding: 5px;
 }
 
 /*div.figure {
@@ -402,6 +417,7 @@ div.content h1 {
     -webkit-margin-before: 20px;
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
+    padding-top: 25px;
 }
 
 /*logo*/
@@ -419,6 +435,7 @@ div.content h2 {
     -webkit-margin-before: 20px;
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
+    padding-top: 25px;
 }
 
 div.content h3 {
@@ -429,6 +446,7 @@ div.content h3 {
     -webkit-margin-before: 20px;
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
+    padding-top: 15px;
 }
 
 div.content h4 {
@@ -439,6 +457,7 @@ div.content h4 {
     -webkit-margin-before: 2em;
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
+    padding-top: 10px;
 }
 
 div.content h5 {

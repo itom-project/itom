@@ -115,9 +115,9 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
                 ui.permissionList->addItem(m_userModel->getFeatureName(featFileSystem));
             }
 
-            if (features & featUserManag)
+            if (features & featUserManagement)
             {
-                ui.permissionList->addItem(m_userModel->getFeatureName(featUserManag));
+                ui.permissionList->addItem(m_userModel->getFeatureName(featUserManagement));
             }
 
             if (features & featPlugins)

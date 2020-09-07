@@ -27,18 +27,20 @@
 namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** constructor
 *
 *   contructor, creating column headers for the tree view
 */
 UserModel::UserModel()
 {
-    m_headers << tr("Name") << tr("Id") << tr("role") << tr("iniFile") << tr("features") << tr("password");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
+    m_headers << tr("Name") << tr("Id") << tr("role") 
+              << tr("iniFile") << tr("features") << tr("password");
+    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) 
+                << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** destructor - clean up, clear header and alignment list
 *
 */
@@ -49,7 +51,7 @@ UserModel::~UserModel()
     m_userInfo.clear();
     return;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
 *   @return     the parent element. 
@@ -60,7 +62,7 @@ QModelIndex UserModel::parent(const QModelIndex &index) const
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return number of rows
 *   @param [in] parent parent of current item
 *   @return     returns number of users
@@ -70,7 +72,7 @@ int UserModel::rowCount(const QModelIndex &parent) const
     return m_userInfo.length();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return the header / captions for the tree view model
 *
 */
@@ -87,7 +89,7 @@ QVariant UserModel::headerData(int section, Qt::Orientation orientation, int rol
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
 *   @param [in] role    the current role of the model 
@@ -155,7 +157,7 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return column count
 *   @param [in] parent parent of current item
 *   @return     2 for child elements (instances) and the header size for root elements (plugins)
@@ -166,7 +168,7 @@ int UserModel::columnCount(const QModelIndex & /*parent*/) const
     return m_headers.size();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return current index element
 *   @param [in] row row of current element
 *   @param [in] column column of current element
@@ -185,7 +187,7 @@ QModelIndex UserModel::index(int row, int column, const QModelIndex &parent) con
     return createIndex(row, column);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** Adds a user to the current model
 *   @param newUser Struct containing new User
 *   @return QModelIndex - index of the position in the list where the user was added
@@ -207,28 +209,39 @@ int UserModel::addUser(const UserInfoStruct &newUser)
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool UserModel::removeUser(const QModelIndex &index)
 {
-    if (index.row() >= 0 && index.row() < rowCount())
+    if (index.row() >= 0 && 
+        index.row() < rowCount() && 
+        index.row() != m_currentUser.row())
     {
         beginRemoveRows(parent(index), index.row(), index.row());
         m_userInfo.removeAt(index.row());
+
+        if (index.row() < m_currentUser.row())
+        {
+            m_currentUser = this->index(m_currentUser.row() - 1, 0);
+        }
+
         endRemoveRows();
+
         return true;
     }
+
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void UserModel::removeAllUsers()
 {
     beginResetModel();
     m_userInfo.clear();
+    m_currentUser = QModelIndex();
     endResetModel();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /* Return the model index to the first column of the user with the given userId. 
 Returns an invalid QModelIndex if the user could not be found.
 */
@@ -247,9 +260,10 @@ QModelIndex UserModel::getUser(const QString &userId) const
 	return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
-Returns true if the user with the given index (the column value of this index is ignored) has a password set, else false.
+Returns true if the user with the given index (the column value of this index 
+is ignored) has a password set, else false.
 */
 bool UserModel::hasPassword(const QModelIndex &index) const
 {
@@ -263,7 +277,7 @@ bool UserModel::hasPassword(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool UserModel::checkPassword(const QModelIndex &index, const QString &password) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -285,7 +299,7 @@ bool UserModel::checkPassword(const QModelIndex &index, const QString &password)
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString UserModel::getUserName(const QModelIndex &index) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -298,7 +312,7 @@ QString UserModel::getUserName(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString UserModel::getUserId(const QModelIndex &index) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -311,7 +325,7 @@ QString UserModel::getUserId(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 UserRole UserModel::getUserRole(const QModelIndex &index) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -324,7 +338,7 @@ UserRole UserModel::getUserRole(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -337,7 +351,7 @@ UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString UserModel::getUserSettingsFile(const QModelIndex &index) const
 {
 	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
@@ -350,7 +364,7 @@ QString UserModel::getUserSettingsFile(const QModelIndex &index) const
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString UserModel::getRoleName(const UserRole &role) const
 {
     switch (role)
@@ -364,7 +378,7 @@ QString UserModel::getRoleName(const UserRole &role) const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString UserModel::getFeatureName(const UserFeature &feature) const
 {
     switch(feature)
@@ -373,7 +387,7 @@ QString UserModel::getFeatureName(const UserFeature &feature) const
             return tr("Developer");
         case featFileSystem:
             return tr("File System");
-        case featUserManag:
+        case featUserManagement:
             return tr("User Management");
         case featPlugins:
             return tr("Addin Manager (Plugins)");
@@ -386,6 +400,14 @@ QString UserModel::getFeatureName(const UserFeature &feature) const
     }
 
     return "";
+}
+
+//-------------------------------------------------------------------------------------
+bool UserModel::setCurrentUser(const QString &userId)
+{
+    m_currentUser = getUser(userId);
+
+    return m_currentUser.isValid();
 }
 
 } //end namespace ito
