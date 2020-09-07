@@ -1006,7 +1006,23 @@ void MainApplication::mainWindowCloseRequest()
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Question);
+
+#if QT_VERSION >= 0x050200
+		QCheckBox *cb = new QCheckBox();
+		cb->setText(tr("don't ask again (can be reverted in property dialog)"));
+		cb->setChecked(false);
+		msgBox.setCheckBox(cb);
+#endif
+
         int ret = msgBox.exec();
+
+#if QT_VERSION >= 0x050200
+		if (msgBox.checkBox()->isChecked())
+		{
+			settings->setValue("askBeforeClose", false);
+		}
+
+#endif
 
         if (ret == QMessageBox::Cancel)
         {
