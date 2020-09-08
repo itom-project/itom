@@ -385,7 +385,7 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
 
     if (m_showsStandardUser)
     {
-        rightCmp = -1; // it is not allowed to reduce features of the standard user
+        rightCmp = 1; // it is not allowed to reduce features of the standard user
     }
 
     if (rightCmp != 0)
