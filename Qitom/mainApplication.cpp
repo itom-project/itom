@@ -1012,7 +1012,7 @@ void MainApplication::mainWindowCloseRequest()
 		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
-		if (!(features & ito::UserFeature::featProperties))
+		if (features & ito::UserFeature::featProperties)
 		{
 			QCheckBox *cb = new QCheckBox();
 			cb->setText(tr("Don't ask again."));
