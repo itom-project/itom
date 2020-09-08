@@ -108,20 +108,22 @@ bool PythonQtSignalMapper::addSignalHandler(
     QObject *obj, const char* signal, int sigId, 
     PyObject* callable, IntList &argTypeList, int minRepeatInterval)
 {
-    bool flag = false;
-    if (sigId>=0)
+    bool success = false;
+
+    if (sigId >= 0)
     {
         PythonQtSignalTarget t(argTypeList, m_slotCount, sigId, callable, signal, minRepeatInterval);
-        m_targets.append(t);
 
         // now connect to ourselves with the new slot id
         if (QMetaObject::connect(obj, sigId, this, m_slotCount, Qt::AutoConnection, 0))
         {
             m_slotCount++;
-            flag = true;
+            success = true;
+            m_targets[t.slotId()] = t;
         }
     }
-    return flag;
+
+    return success;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -132,29 +134,34 @@ bool PythonQtSignalMapper::addSignalHandler(
     and the python callable object (as virtual slot)
 
     \param [in] obj is the instance derived from QObject that is the signaling instance
-    \param [in] signal is the signature of the signal (Qt-syntax)
     \param [in] sigId is the Qt-internal ID of the signal (obtained by QMetaObject-system)
     \param [in] callable is a reference to the real python method, that should act as slot. This method can be bounded or unbounded.
     \return true if the connection could be disconnected, else false.
 */
-bool PythonQtSignalMapper::removeSignalHandler(QObject *obj, const char* /*signal*/, int sigId, PyObject* callable)
+bool PythonQtSignalMapper::removeSignalHandler(QObject *obj, int sigId, PyObject* callable)
 {
     bool found = false;
-    if (sigId>=0)
-    {
-        QMutableListIterator<PythonQtSignalTarget> i(m_targets);
 
-        while (i.hasNext())
+    if (sigId >= 0)
+    {
+        TargetMap::iterator it = m_targets.begin();
+
+        while (it != m_targets.end())
         {
-            if (i.next().isSame(sigId, callable))
+            if (it->isSame(sigId, callable))
             {
-                QMetaObject::disconnect(obj, sigId, this, i.value().slotId());
-                i.remove();
+                QMetaObject::disconnect(obj, sigId, this, it->slotId());
+                it = m_targets.erase(it);
                 found = true;
                 break;
             }
+            else
+            {
+                it++;
+            }
         }
     }
+
     return found;
 }
 
@@ -191,17 +198,11 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
         QObject::qt_metacall(c, id, arguments);
     }
 
-    QList<PythonQtSignalTarget>::iterator it = m_targets.begin();
+    TargetMap::iterator it = m_targets.find(id);
 
-    while (it != m_targets.end())
+    if (it != m_targets.end())
     {
-        if (it->slotId() == id)
-        {
-            it->call(arguments);
-            break;
-        }
-
-        ++it;
+        it->call(arguments);
     }
 
     return 0;
@@ -272,34 +273,49 @@ PythonQtSignalTarget::PythonQtSignalTarget(
         m_boundedMethod = false;
         Py_XDECREF(m_boundedInstance);
         Py_XDECREF(m_function);
-        m_function = PyWeakref_NewRef(callable, NULL); //new ref
+        Py_INCREF(callable);
+        m_function = callable; //new ref
     }
 };
 
 //-------------------------------------------------------------------------------------
 //! copy constructor
 PythonQtSignalTarget::PythonQtSignalTarget(const PythonQtSignalTarget &copy) :
-    m_slotId(-1),
-    m_signalId(-1),
-    m_function(NULL),
-    m_boundedInstance(NULL),
-    m_boundedMethod(false),
-    m_signalName(copy.m_signalName)
+    m_slotId(copy.m_slotId),
+    m_signalId(copy.m_signalId),
+    m_argTypeList(copy.m_argTypeList),
+    m_function(copy.m_function),
+    m_boundedInstance(copy.m_boundedInstance),
+    m_boundedMethod(copy.m_boundedMethod),
+    m_signalName(copy.m_signalName),
+    m_minRepeatInterval(copy.m_minRepeatInterval)
+{
+    Py_XINCREF(m_function);
+    Py_XINCREF(m_boundedInstance);
+    m_elapsedTimer.invalidate();
+}
+
+//-------------------------------------------------------------------------------------
+PythonQtSignalTarget& PythonQtSignalTarget::operator=(const PythonQtSignalTarget &rhs)
 {
     Py_XDECREF(m_boundedInstance);
     Py_XDECREF(m_function);
-    m_slotId = copy.slotId();
-    m_signalId = copy.signalId();
-    m_argTypeList = copy.argTypeList();
 
-    m_boundedMethod = copy.m_boundedMethod;
-    m_function = copy.m_function;
+    m_signalName = rhs.m_signalName;
+    m_slotId = rhs.m_slotId;
+    m_signalId = rhs.m_signalId;
+    m_argTypeList = rhs.m_argTypeList;
+
+    m_boundedMethod = rhs.m_boundedMethod;
+    m_function = rhs.m_function;
     Py_XINCREF(m_function);
-    m_boundedInstance = copy.m_boundedInstance;
+    m_boundedInstance = rhs.m_boundedInstance;
     Py_XINCREF(m_boundedInstance);
 
-    m_minRepeatInterval = copy.m_minRepeatInterval;
+    m_minRepeatInterval = rhs.m_minRepeatInterval;
     m_elapsedTimer.invalidate();
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------
@@ -324,13 +340,17 @@ bool PythonQtSignalTarget::isSame(int signalId, PyObject* callable) const
 {
     if (signalId == m_signalId)
     {
+        // bounded, m_function is a weakref
         if (PyMethod_Check(callable))
         {
             return PyMethod_Self(callable) == PyWeakref_GetObject(m_boundedInstance) &&
                 PyMethod_Function(callable) == PyWeakref_GetObject(m_function);
         }
-
-        return callable == PyWeakref_GetObject(m_function);
+        else
+        {
+            //unbounded function, m_function is the function itself.
+            return callable == m_function;
+        }
     }
 
     return false;
@@ -419,24 +439,13 @@ void PythonQtSignalTarget::call(void ** arguments)
     {
         if (m_boundedMethod == false)
         {
-            PyObject *func = PyWeakref_GetObject(m_function);
-
-            if (func != Py_None)
+            if (debug)
             {
-                if (debug)
-                {
-                    pyEngine->pythonDebugFunction(func, argTuple, true);
-                }
-                else
-                {
-                    pyEngine->pythonRunFunction(func, argTuple, true);
-                }
+                pyEngine->pythonDebugFunction(m_function, argTuple, true);
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-                PyErr_PrintEx(0);
-                PyErr_Clear();
+                pyEngine->pythonRunFunction(m_function, argTuple, true);
             }
         }
         else

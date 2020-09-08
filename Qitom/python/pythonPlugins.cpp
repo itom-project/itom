@@ -2311,13 +2311,12 @@ PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyO
         return NULL;
     }
 
-    QByteArray signature(signalSignature);
     const QMetaObject *mo = self->actuatorObj->metaObject();
     signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
     QMetaMethod metaMethod = mo->method(signalIndex);
     if (self->signalMapper)
     {
-        if (!self->signalMapper->removeSignalHandler(self->actuatorObj, signalSignature, signalIndex, callableMethod))
+        if (!self->signalMapper->removeSignalHandler(self->actuatorObj, signalIndex, callableMethod))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;
@@ -4669,13 +4668,12 @@ PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObjec
         return NULL;
     }
 
-    QByteArray signature(signalSignature);
     const QMetaObject *mo = self->dataIOObj->metaObject();
     signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
     QMetaMethod metaMethod = mo->method(signalIndex);
     if (self->signalMapper)
     {
-        if (!self->signalMapper->removeSignalHandler(self->dataIOObj, signalSignature, signalIndex, callableMethod))
+        if (!self->signalMapper->removeSignalHandler(self->dataIOObj, signalIndex, callableMethod))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
             return NULL;

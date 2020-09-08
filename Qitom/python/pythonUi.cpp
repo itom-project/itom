@@ -852,6 +852,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
     }
+
     if(!PyCallable_Check(callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
@@ -881,7 +882,15 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "getSignalIndex", 
+        Q_ARG(uint, self->objectID), 
+        Q_ARG(QByteArray, signature), 
+        Q_ARG(QSharedPointer<int>, sigId), 
+        Q_ARG(QSharedPointer<QObject*>, objPtr), 
+        Q_ARG(QSharedPointer<IntList>, argTypes), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -896,9 +905,10 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
     }
 
     PythonQtSignalMapper *signalMapper = PyUiItem_getTopLevelSignalMapper(self);
+
     if(signalMapper)
     {
-        if(signalMapper->removeSignalHandler(*objPtr, signalSignature, *sigId, callableMethod))
+        if(!signalMapper->removeSignalHandler(*objPtr, *sigId, callableMethod))
         {
             PyErr_SetString(PyExc_RuntimeError, "the connection could not be disconnected.");
             return NULL;
