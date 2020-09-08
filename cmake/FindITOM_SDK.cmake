@@ -98,7 +98,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             PCL_DIR 
             OpenCV_DIR 
             EIGEN_INCLUDE_DIRS 
-            EIGEN_INCLUD_DIR
+            EIGEN_INCLUDE_DIR
             Boost_LIBRARY_DIR 
             Boost_INCLUDE_DIR 
             GIT_EXECUTABLE
