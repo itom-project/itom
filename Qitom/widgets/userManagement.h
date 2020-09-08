@@ -42,7 +42,7 @@ class DialogUserManagement : public QDialog
 
     private:
         UserModel *m_userModel;
-        QString m_currentUser;
+        QString m_currentUserName;
         void readModel(const QModelIndex &index);
         void loadUserList();
 

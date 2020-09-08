@@ -1006,7 +1006,35 @@ void MainApplication::mainWindowCloseRequest()
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Question);
+
+#if QT_VERSION >= 0x050200
+
+		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
+		if (features & ito::UserFeature::featProperties)
+		{
+			QCheckBox *cb = new QCheckBox();
+			cb->setText(tr("Don't ask again."));
+			cb->setToolTip(tr("This behaviour can be changed again in the property dialog."));
+			cb->setChecked(false);
+			msgBox.setCheckBox(cb);
+		}
+		
+#endif
+
         int ret = msgBox.exec();
+
+#if QT_VERSION >= 0x050200
+		if (!(features & ito::UserFeature::featProperties))
+		{
+			if (msgBox.checkBox()->isChecked())
+			{
+				settings->setValue("askBeforeClose", false);
+			}
+		}
+		
+#endif
 
         if (ret == QMessageBox::Cancel)
         {
@@ -1032,7 +1060,8 @@ void MainApplication::mainWindowCloseRequest()
 
             if (retValue.containsError())
             {
-                //The user was asked how to proceed with unsaved scripts. In this case, the user cancelled this request... do not close itom!
+                // The user was asked how to proceed with unsaved scripts. 
+                // In this case, the user cancelled this request... do not close itom!
                 return;
             }
         }
@@ -1041,6 +1070,7 @@ void MainApplication::mainWindowCloseRequest()
         {
             m_mainWin->hide();
         }
+
         QApplication::instance()->quit();
     }
 }

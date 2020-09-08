@@ -2463,7 +2463,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
 */
 PyObject* PythonQtConversion::GetPyBool(bool val)
 {
-    PyObject* r = val?Py_True:Py_False;
+    PyObject* r = val ? Py_True : Py_False;
     Py_INCREF(r);
     return r;
 }

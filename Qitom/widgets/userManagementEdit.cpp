@@ -124,7 +124,7 @@ bool DialogUserManagementEdit::saveUser()
 
         if (ui.checkBox_userManag->isChecked())
         {
-            flags |= featUserManag;
+            flags |= featUserManagement;
         }
 
         if (ui.checkBox_addInManager->isChecked())
@@ -212,6 +212,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
     ui.setupUi(this);
 
     m_osUser = qgetenv("USERNAME");
+
     if (m_osUser.isEmpty())
     {
         m_osUser = qgetenv("USER");
@@ -222,6 +223,12 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
     if (m_fileName == "")
     {
         setWindowTitle(tr("User Management - New User"));
+
+		UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
+
+		enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures(),
+                                uio->getCurrentUserRole(), uio->getCurrentUserFeatures());
+	
     }
     else
     {
@@ -244,50 +251,8 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 ui.lineEdit_id->setEnabled(false);
                 m_oldPassword = password;
                 ui.lineEdit_password->setText(password);
-                
-                switch (role)
-                {
-                    case userRoleAdministrator:
-                        ui.radioButton_roleAdmin->setChecked(true);
-                    break;
 
-                    case userRoleDeveloper:
-                        ui.radioButton_roleDevel->setChecked(true);
-                    break;
-
-                    default:
-                        ui.radioButton_roleUser->setChecked(true);
-                }
-
-                ui.checkBox_devTools->setChecked(features & featDeveloper);
-                ui.checkBox_fileSystem->setChecked(features & featFileSystem);
-                ui.checkBox_userManag->setChecked(features & featUserManag);
-                ui.checkBox_addInManager->setChecked(features & featPlugins);
-                ui.checkBox_editProperties->setChecked(features & featProperties);
-
-                if ((features & featConsoleReadWrite))
-                {
-                    ui.radioButton_consoleNormal->setChecked(true);
-                }
-                else if (features & featConsoleRead)
-                {
-                    ui.radioButton_consoleRO->setChecked(true);
-                }
-                else
-                {
-                    ui.radioButton_consoleOff->setChecked(true);
-                }
-                if (isStandardUser)
-                {
-                    ui.groupBox_features->setEnabled(false);
-                    ui.lineEdit_id->setEnabled(false);
-                    ui.lineEdit_name->setEnabled(false);
-                    ui.cmdUseWindowsUser->setEnabled(false);
-                    ui.cmdAutoID->setEnabled(false);
-                    ui.groupBox_2->setEnabled(false);
-
-                }
-
+				enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures(), role, features);
 
                 QSettings settings(filename, QSettings::IniFormat);
                 settings.beginGroup("Python");
@@ -309,6 +274,149 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
 
     QString label = ui.checkAddFileRel->text().arg(QCoreApplication::applicationDirPath());
     ui.checkAddFileRel->setText(label);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! sets the enabled and check state of many controls depending on the rights of the currently logged user and the user to be edited.
+/*!
+    If the current user has admin privileges, he has the right to edit all controls.
+    If he is a developer, he can only switch the user level of the user to be edited
+    to basic or developer. If he is a basic user, only basic can be chosen for the
+    current user.
+
+    \param currentUserRole is the user role of the currently logged-in user
+    \param currentFeatures is the active feature set of the currently logged-in user
+    \param userRole is the user role of the user, that is edited
+    \param features is the current feature set of the user, that is edited.
+*/
+void DialogUserManagementEdit::enableWidgetsByUserRole(
+    const UserRole currentUserRole, 
+    const UserFeatures &currentFeatures,
+    const UserRole userRole, 
+    const UserFeatures &features)
+{
+    // set the state of the role radio buttons
+    ui.radioButton_roleAdmin->setChecked(userRole == UserRole::userRoleAdministrator);
+    ui.radioButton_roleDevel->setChecked(userRole == UserRole::userRoleDeveloper);
+    ui.radioButton_roleUser->setChecked(userRole == UserRole::userRoleBasic);
+
+    // enable / disable the role radio buttons
+    // depending on the rights of the current user
+    ui.radioButton_roleUser->setEnabled(!m_showsStandardUser);
+
+	switch (currentUserRole)
+	{
+    default:
+	case ito::userRoleBasic:
+		ui.radioButton_roleAdmin->setEnabled(false);
+		ui.radioButton_roleDevel->setEnabled(false);
+		break;
+	case ito::userRoleAdministrator:
+        ui.radioButton_roleAdmin->setEnabled(!m_showsStandardUser);
+        ui.radioButton_roleDevel->setEnabled(!m_showsStandardUser);
+		break;
+	case ito::userRoleDeveloper:
+        ui.radioButton_roleAdmin->setEnabled(false);
+        ui.radioButton_roleDevel->setEnabled(!m_showsStandardUser);
+		break;
+	}
+
+    // set the check state of all features
+    ui.checkBox_devTools->setChecked(features & featDeveloper);
+    ui.checkBox_fileSystem->setChecked(features & featFileSystem);
+    ui.checkBox_userManag->setChecked(features & featUserManagement);
+    ui.checkBox_addInManager->setChecked(features & featPlugins);
+    ui.checkBox_editProperties->setChecked(features & featProperties);
+
+    if (features & featConsoleReadWrite)
+    {
+        ui.radioButton_consoleNormal->setChecked(true);
+    }
+    else if (features & featConsoleRead)
+    {
+        ui.radioButton_consoleRO->setChecked(true);
+    }
+    else
+    {
+        ui.radioButton_consoleOff->setChecked(true);
+    }
+
+    // set the enable state of all features depending on the user role
+    // and the features of the currently logged-in user
+    char rightCmp = 0; 
+    
+    // 1: current user has higher rights than edited user
+    // -1: current user has less rights than edited user (can edit nothing)
+    // 0: both users have the same rights
+    if (currentUserRole == userRoleAdministrator)
+    {
+        rightCmp = 1; //admin can do everything
+    }
+    else if (currentUserRole == userRoleDeveloper)
+    {
+        switch (userRole)
+        {
+        default:
+        case ito::userRoleBasic:
+            rightCmp = 1;
+            break;
+        case ito::userRoleAdministrator:
+            rightCmp = -1;
+            break;
+        case ito::userRoleDeveloper:
+            rightCmp = 0;
+            break;
+        }
+    }
+    else // current user is basic
+    {
+        switch (userRole)
+        {
+        default:
+        case ito::userRoleBasic:
+            rightCmp = 0;
+            break;
+        case ito::userRoleAdministrator:
+        case ito::userRoleDeveloper:
+            rightCmp = -1;
+            break;
+        }
+    }
+
+    if (m_showsStandardUser)
+    {
+        rightCmp = -1; // it is not allowed to reduce features of the standard user
+    }
+
+    if (rightCmp != 0)
+    {
+        ui.checkBox_devTools->setEnabled(rightCmp > 0);
+        ui.checkBox_fileSystem->setEnabled(rightCmp > 0);
+        ui.checkBox_userManag->setEnabled(rightCmp > 0);
+        ui.checkBox_addInManager->setEnabled(rightCmp > 0);
+        ui.checkBox_editProperties->setEnabled(rightCmp > 0);
+        ui.radioButton_consoleNormal->setEnabled(rightCmp > 0);
+        ui.radioButton_consoleRO->setEnabled(rightCmp > 0);
+        ui.radioButton_consoleOff->setEnabled(rightCmp > 0);
+    }
+    else
+    {
+        ui.checkBox_devTools->setEnabled(currentFeatures & featDeveloper);
+        ui.checkBox_fileSystem->setEnabled(currentFeatures & featFileSystem);
+        ui.checkBox_userManag->setEnabled(currentFeatures & featUserManagement);
+        ui.checkBox_addInManager->setEnabled(currentFeatures & featPlugins);
+        ui.checkBox_editProperties->setEnabled(currentFeatures & featProperties);
+        ui.radioButton_consoleNormal->setEnabled(currentFeatures & (featConsoleReadWrite));
+        ui.radioButton_consoleRO->setEnabled(currentFeatures & (featConsoleReadWrite | featConsoleRead));
+        ui.radioButton_consoleOff->setEnabled(true);
+    }
+
+    ui.lineEdit_password->setEnabled(rightCmp >= 0);
+    ui.cmdAutoID->setEnabled(rightCmp >= 0);
+    
+    // the startup scripts can only be edited if the currently logged-in user
+    // has the featProperties
+    ui.groupStartupScripts->setEnabled(currentFeatures & featProperties);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

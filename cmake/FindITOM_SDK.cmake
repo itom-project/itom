@@ -89,6 +89,8 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         #... if they are valid, 
         #... if they exist in the file system and 
         #... if they do not exist or are not valid in this project, yet.
+        #
+        # EIGEN_INCLUDE_DIRS was for PCL 1.9, PCL 1.11 now requires EIGEN_INCLUDE_DIR!
         set(CACHE_VARIABLES 
             VTK_DIR 
             VISUALLEAKDETECTOR_DIR 
@@ -96,6 +98,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             PCL_DIR 
             OpenCV_DIR 
             EIGEN_INCLUDE_DIRS 
+            EIGEN_INCLUDE_DIR
             Boost_LIBRARY_DIR 
             Boost_INCLUDE_DIR 
             GIT_EXECUTABLE
