@@ -383,6 +383,9 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
         }
     }
 
+	ui.lineEdit_password->setEnabled(rightCmp >= 0); // admin has the permission to change the passwort of the standard user
+	ui.cmdAutoID->setEnabled(rightCmp >= 0);
+
     if (m_showsStandardUser)
     {
         rightCmp = -1; // it is not allowed to reduce features of the standard user
@@ -410,9 +413,6 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
         ui.radioButton_consoleRO->setEnabled(currentFeatures & (featConsoleReadWrite | featConsoleRead));
         ui.radioButton_consoleOff->setEnabled(true);
     }
-
-    ui.lineEdit_password->setEnabled(rightCmp >= 0);
-    ui.cmdAutoID->setEnabled(rightCmp >= 0);
     
     // the startup scripts can only be edited if the currently logged-in user
     // has the featProperties
