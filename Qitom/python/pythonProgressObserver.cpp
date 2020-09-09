@@ -217,6 +217,7 @@ int PythonProgressObserver::PyProgressObserver_setProgressValue(PyProgressObserv
     }
     else
     {
+        PyErr_SetString(PyExc_TypeError, "Progress value must be an integer.");
         return -1;
     }
 }
@@ -257,6 +258,7 @@ int PythonProgressObserver::PyProgressObserver_setProgressText(PyProgressObserve
     }
     else
     {
+        PyErr_SetString(PyExc_TypeError, "Error interpreting the progress text as string.");
         return -1;
     }
 }
