@@ -68,8 +68,7 @@ public:
     // general members
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyProgressObserver_repr(PyProgressObserver *self);
-    static PyObject* PyProgressObserver_requestCancellation(PyProgressObserver *self, void *closure);
-    static PyObject* PyProgressObserver_setProgressValue(PyProgressObserver *self, PyObject *args);
+    static PyObject* PyProgressObserver_requestCancellation(PyProgressObserver *self);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
@@ -81,6 +80,7 @@ public:
     static int PyProgressObserver_setProgressMaximum(PyProgressObserver *self, PyObject *value, void *closure);
 
     static PyObject* PyProgressObserver_getProgressValue(PyProgressObserver *self, void *closure);
+    static int PyProgressObserver_setProgressValue(PyProgressObserver *self, PyObject *value, void *closure);
 
     static PyObject* PyProgressObserver_isCancelled(PyProgressObserver *self, void *closure);
 

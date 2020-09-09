@@ -92,7 +92,7 @@ label : {uiItem, optional} \n\
     target algorithm for this observer reports a new progress text. \n\
 progressMinimum : {int, optional} \n\
     Minimum progress value that should be used and reported by the target of this observer. \n\
-progressMaximu : {int, optional} \n\
+progressMaximum : {int, optional} \n\
     Maximum progress value that should be used and reported by the target of this observer. \n\
 \n\
 Notes \n\
@@ -182,7 +182,12 @@ PyObject* PythonProgressObserver::PyProgressObserver_getProgressMaximum(PyProgre
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_getProgressValue_doc, "gets the current progress value");
+PyDoc_STRVAR(progressObserver_progressValue_doc, "the current progress value\n\
+\n\
+This attribute gives access to the current progress value.\n\
+When set, the signal progressValueChanged is emitted. It can for instance be\n\
+connected to a 'setValue' slot of a QProgressBar.\n\
+The value will be clipped to progressMinimum and progressMaximum.");
 PyObject* PythonProgressObserver::PyProgressObserver_getProgressValue(PyProgressObserver *self, void * /*closure*/)
 {
     if (!self || self->progressObserver == NULL)
@@ -192,6 +197,28 @@ PyObject* PythonProgressObserver::PyProgressObserver_getProgressValue(PyProgress
     }
 
     return PyLong_FromLong((*(self->progressObserver))->progressValue());
+}
+
+//-----------------------------------------------------------------------------
+int PythonProgressObserver::PyProgressObserver_setProgressValue(PyProgressObserver *self, PyObject *value, void * /*closure*/)
+{
+    if (!self || self->progressObserver == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    bool ok;
+    int val = PythonQtConversion::PyObjGetInt(value, false, ok);
+    if (ok)
+    {
+        (*(self->progressObserver))->setProgressValue(val);
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +236,7 @@ PyObject* PythonProgressObserver::PyProgressObserver_isCancelled(PyProgressObser
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(progressObserver_requestCancellation_doc, "requestCancellation() -> requests the cancellation of the filter");
-PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgressObserver *self /*self*/, void * /*closure*/)
+PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgressObserver *self /*self*/)
 {
     if (!self || self->progressObserver == NULL)
     {
@@ -221,37 +248,11 @@ PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgr
     Py_RETURN_NONE;
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_setProgressValue_doc, "setProgressValue() -> changes the current value of the progress.\n \
-    \n \
-    This method emits the progressValueChanged signal. It can for instance be connected\n \
-    with a 'setValue' slot of a QProgressBar.\n \
-    \n \
-    The value will be clipped to progressMinimum and progressMaximum.");
-PyObject* PythonProgressObserver::PyProgressObserver_setProgressValue(PyProgressObserver *self /*self*/, PyObject *args)
-{
-    if (!self || self->progressObserver == NULL)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
-        return NULL;
-    }
-
-    int val;
-    if (!PyArg_ParseTuple(args, "i", &val))
-    {
-        PyErr_SetString(PyExc_TypeError, "inputparameters are (int) axisnumber and (double) axis scale");
-        return NULL;
-    }
-
-    (*(self->progressObserver))->setProgressValue(val);
-    Py_RETURN_NONE;
-};
-
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
     {"progressMinimum", (getter)PyProgressObserver_getProgressMinimum,       (setter)NULL, progressObserver_getProgressMinimum_doc, NULL},
     {"progressMaximum", (getter)PyProgressObserver_getProgressMaximum,       (setter)NULL, progressObserver_getProgressMaximum_doc, NULL},
-    {"progressValue",   (getter)PyProgressObserver_getProgressValue,         (setter)NULL, progressObserver_getProgressValue_doc,   NULL},
+    {"progressValue",   (getter)PyProgressObserver_getProgressValue,         (setter)PyProgressObserver_setProgressValue, progressObserver_progressValue_doc, NULL},
     {"isCancelled",     (getter)PyProgressObserver_isCancelled,              (setter)NULL, progressObserver_isCancelled_doc,        NULL},
     {NULL}  /* Sentinel */
 };
@@ -259,7 +260,6 @@ PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
 //-----------------------------------------------------------------------------
 PyMethodDef PythonProgressObserver::PyProgressObserver_methods[] = {
     { "requestCancellation", (PyCFunction)PythonProgressObserver::PyProgressObserver_requestCancellation, METH_NOARGS, progressObserver_requestCancellation_doc },
-    { "setProgressValue",    (PyCFunction)PythonProgressObserver::PyProgressObserver_setProgressValue,    METH_VARARGS, progressObserver_setProgressValue_doc },
     {NULL}  /* Sentinel */
 };
 
