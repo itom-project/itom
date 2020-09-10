@@ -1,21 +1,21 @@
 #FunctionName, h1 {
   font-size: x-large;
-  color: #0c3762;
+  color: $textColorHeading$;
   font-weight: bold;
-  background-color: #efefef;
+  background-color: $backgroundColorHeading$;
 }
 
 
 #Sections, h2 { 
-  background-color: #eeeeee; 
+  background-color: $backgroundColorSection$; 
   font-size: large;
-  color: #dc3c01;
+  color: $textColorSection$;
 }
 
 
-#HiLink {
+#HiLink, a.reference {
   text-decoration:underline;
-  color: #dc3c01;
+  color: $linkColor$;
 }
 
 
@@ -51,11 +51,11 @@ table.borderless td, table.borderless th {
   }
 
 a.toc-backref {
-  text-decoration: none ;
+  text-decoration: none;
   color: black }
 
 blockquote.epigraph {
-  margin: 2em 5em ; }
+  margin: 2em 5em; }
 
 dl.docutils dd {
   margin-bottom: 0.5em }
@@ -73,26 +73,26 @@ div.abstract {
   margin: 2em 5em }
 
 div.abstract p.topic-title {
-  font-weight: bold ;
+  font-weight: bold;
   text-align: center }
 
 div.admonition, div.attention, div.caution, div.danger, div.error,
 div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
+  margin: 2em;
+  border: medium outset;
   padding: 1em }
 
 div.admonition p.admonition-title, div.hint p.admonition-title,
 div.important p.admonition-title, div.note p.admonition-title,
 div.tip p.admonition-title {
-  font-weight: bold ;
+  font-weight: bold;
   font-family: sans-serif }
 
 div.attention p.admonition-title, div.caution p.admonition-title,
 div.danger p.admonition-title, div.error p.admonition-title,
 div.warning p.admonition-title, .code .error {
-  color: red ;
-  font-weight: bold ;
+  color: red;
+  font-weight: bold;
   font-family: sans-serif }
   
 div.meta{
@@ -110,16 +110,16 @@ div.compound .compound-last, div.compound .compound-middle {
 */
 
 div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
+  margin: 2em 5em;
+  text-align: center;
   font-style: italic }
 
 div.dedication p.topic-title {
-  font-weight: bold ;
+  font-weight: bold;
   font-style: normal }
 
 div.figure {
-  margin-left: 2em ;
+  margin-left: 2em;
   margin-right: 2em }
 
 div.footer, div.header {
@@ -127,26 +127,26 @@ div.footer, div.header {
   font-size: smaller }
 
 div.line-block {
-  display: block ;
-  margin-top: 1em ;
+  display: block;
+  margin-top: 1em;
   margin-bottom: 1em }
 
 div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
+  margin-top: 0;
+  margin-bottom: 0;
   margin-left: 1.5em }
 
 div.sidebar {
-  margin: 0 0 0.5em 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
+  margin: 0 0 0.5em 1em;
+  border: medium outset;
+  padding: 1em;
+  background-color: #ffffee;
+  width: 40%;
+  float: right;
   clear: right }
 
 div.sidebar p.rubric {
-  font-family: sans-serif ;
+  font-family: sans-serif;
   font-size: medium }
 
 div.system-messages {
@@ -156,11 +156,11 @@ div.system-messages h1 {
   color: red }
 
 div.system-message {
-  border: medium outset ;
+  border: medium outset;
   padding: 1em }
 
 div.system-message p.system-message-title {
-  color: red ;
+  color: red;
   font-weight: bold }
 
 div.topic {
@@ -180,13 +180,13 @@ hr.docutils {
   width: 75% }
 
 img.align-left, .figure.align-left, object.align-left {
-  clear: left ;
-  float: left ;
+  clear: left;
+  float: left;
   margin-right: 1em }
 
 img.align-right, .figure.align-right, object.align-right {
-  clear: right ;
-  float: right ;
+  clear: right;
+  float: right;
   margin-left: 1em }
 
 img.align-center, .figure.align-center, object.align-center {
@@ -199,7 +199,7 @@ img.align-center, .figure.align-center, object.align-center {
   text-align: left }
 
 .align-center {
-  clear: both ;
+  clear: both;
   text-align: center }
 
 .align-right {
@@ -231,52 +231,52 @@ ol.upperroman {
   list-style: upper-roman }
 
 p.attribution {
-  text-align: right ;
+  text-align: right;
   margin-left: 50% }
 
 p.caption {
   font-style: italic }
 
 p.credits {
-  font-style: italic ;
+  font-style: italic;
   font-size: smaller }
 
 p.label {
   white-space: nowrap }
 
 p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: #0c3762;
-  background-color: #efefef;; 
+  font-weight: bold;
+  font-size: larger;
+  color: $textColorHeading$;
+  background-color: $backgroundColorHeading$; 
 }
 
 p.admonition-title {
-  font-weight: bold ;
-  font-size: larger ;
-  color: #0c3762;
-  background-color: #efefef;; 
+  font-weight: bold;
+  font-size: larger;
+  color: $textColorHeading$;
+  background-color: $backgroundColorHeading$; 
 }
 
 p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
+  font-family: sans-serif;
+  font-weight: bold;
   font-size: larger }
 
 p.sidebar-subtitle {
-  font-family: sans-serif ;
+  font-family: sans-serif;
   font-weight: bold }
 
 p.topic-title {
   font-weight: bold }
 
 pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
+  margin-bottom: 0;
+  margin-top: 0;
   font: inherit }
 
 pre.literal-block, pre.doctest-block, pre.math, pre.code {
-  margin-left: 2em ;
+  margin-left: 2em;
   margin-right: 2em }
 
 pre.code .ln { color: grey; } /* line numbers */
@@ -285,15 +285,15 @@ pre.code .comment, code .comment { color: #5C6576 }
 pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
 pre.code .literal.string, code .literal.string { color: #0C5404 }
 pre.code .name.builtin, code .name.builtin { color: #352B84 }
-pre.code .deleted, code .deleted { background-color: #DEB0A1}
-pre.code .inserted, code .inserted { background-color: #A3D289}
+pre.code .deleted, code .deleted { background-color: #DEB0A1 }
+pre.code .inserted, code .inserted { background-color: #A3D289 }
 
 span.classifier {
-  font-family: sans-serif ;
+  font-family: sans-serif;
   font-style: oblique }
 
 span.classifier-delimiter {
-  font-family: sans-serif ;
+  font-family: sans-serif;
   font-weight: bold }
 
 span.interpreted {
@@ -320,7 +320,7 @@ table.docinfo {
   margin: 2em 0em 2em 1em }
 
 table.docutils {
-  margin-top: 0.5em ;
+  margin-top: 0.5em;
   margin-bottom: 0.5em }
 
 table.footnote {
@@ -329,18 +329,18 @@ table.footnote {
 
 table.docutils td, table.docutils th,
 table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
   vertical-align: top }
 
 table.docutils th.field-name, table.docinfo th.docinfo-name {
   font-weight: bold;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-top: 5 ;
-  padding-left: 5 ;
-  padding-bottom: 10 ;
-  background-color: #dcb8aa ;
+  text-align: left;
+  white-space: nowrap;
+  padding-top: 5;
+  padding-left: 5;
+  padding-bottom: 10;
+  background-color: $backgroundParamName$;
   width: 100px; }
 
 div.smaller {

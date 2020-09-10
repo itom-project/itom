@@ -2365,6 +2365,15 @@ ito--AIManagerWidget {
   qproperty-backgroundColorInstancesWithPythonRef: #FF7700;
 }
 
+ito--HelpTreeDockWidget {
+  qproperty-backgroundColorHeading: #37464F;
+  qproperty-textColorHeading: #FFFFFF;
+  qproperty-linkColor: #FF9800;
+  qproperty-backgroundParamName: #996819;
+  qproperty-textColorSection: #000000;
+  qproperty-backgroundColorSection: #505F69;
+}
+
 ItomQwtDObjFigure {
   qproperty-buttonSet: StyleDark;
   qproperty-backgroundColor: #263137;

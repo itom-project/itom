@@ -24,6 +24,15 @@ class HelpTreeDockWidget : public QWidget
 {
     Q_OBJECT
 
+    // the following properties replace $<name>$ tags in the help_style.css file,
+    // where <name> is the name of the property
+    Q_PROPERTY(QColor backgroundColorHeading READ backgroundColorHeading WRITE setBackgroundColorHeading) // default: #efefef;
+    Q_PROPERTY(QColor textColorHeading READ textColorHeading WRITE setTextColorHeading) // default: #0c3762;
+    Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor); // default: #dc3c01
+    Q_PROPERTY(QColor backgroundParamName READ backgroundParamName WRITE setBackgroundParamName); // default: #dcb8aa
+    Q_PROPERTY(QColor textColorSection READ textColorSection WRITE setTextColorSection); // default: #dc3c01
+    Q_PROPERTY(QColor backgroundColorSection READ backgroundColorSection WRITE setBackgroundColorSection); // default: #eeeeee
+
     Q_FLAGS(State States)
 
 public:
@@ -61,6 +70,25 @@ public:
         stateContentLoaded = 0x02
     };
     Q_DECLARE_FLAGS(States, State)
+
+
+    QColor backgroundColorHeading() const;
+    void setBackgroundColorHeading(const QColor &color);
+
+    QColor textColorHeading() const;
+    void setTextColorHeading(const QColor &color);
+
+    QColor backgroundColorSection() const;
+    void setBackgroundColorSection(const QColor &color);
+
+    QColor textColorSection() const;
+    void setTextColorSection(const QColor &color);
+
+    QColor linkColor() const;
+    void setLinkColor(const QColor &color);
+    
+    QColor backgroundParamName() const;
+    void setBackgroundParamName(const QColor &color);
     
         
 
@@ -101,6 +129,8 @@ private:
     ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);
     QString parseParam(const QString &tmpl, const ito::Param &param);
 
+    void loadAndProcessCssStyleSheet();
+
     // Const
     static const int rolePath = Qt::UserRole + 1;
     static const int roleType = Qt::UserRole + 2;
@@ -136,6 +166,13 @@ private:
     States                   m_state;               /*!< stateIdle if the widget is not visible yet and no content has been loaded, stateVisible if it became visible for the first time, stateContentLoaded if all contents have been loaded.*/
     QString                  m_filterTextPending;
     int                      m_filterTextPendingTimer;
+
+    QColor m_backgroundColorHeading; // default: #efefef;
+    QColor m_textColorHeading; // default: #0c3762;
+    QColor m_linkColor; // default: #dc3c01
+    QColor m_backgroundParamName; // default: #dcb8aa
+    QColor m_textColorSection; // default: #dc3c01
+    QColor m_backgroundColorSection; // default: #eeeeee
 
     QFutureWatcher<ito::RetVal> m_loaderWatcher;
     QMutex m_dbLoaderMutex;
