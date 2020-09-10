@@ -3,11 +3,13 @@
 Plots and Figures
 #################################################
 
-itom contains functionalities to plot the mainly supported data structures like data objects, compatible numpy arrays, point clouds or polygon meshes. Plots can be opened as an individual main window, they can be nested as subplots into one common figure or it is also possible to integrate plots into user-defined widgets and windows (see :ref:`qtdesigner`).
+itom contains functionalities to plot the mainly supported data structures like data objects, compatible numpy arrays, 
+point clouds or polygon meshes. Plots can be opened as an individual main window, they can be nested as subplots into one 
+common figure or it is also possible to integrate plots into user-defined widgets and windows (see :ref:`qtdesigner`).
 
-In order to allow an integration of plots into user interfaces that are created by the external Qt Designer at runtime, every plot is appended by means of 
-a plugin that implements the interface given by Qt Designer plugins. Therefore you can handle every itom plot as any other widget in Qt Designer, if
-this tool is called by itom.
+In order to allow an integration of plots into user interfaces that are created by the external Qt Designer at runtime, 
+every plot is appended by means of a plugin that implements the interface given by Qt Designer plugins. Therefore you can 
+handle every itom plot as any other widget in Qt Designer, if this tool is called by itom.
 
 Usually itom comes with a set of default plots, that can be used for the following plotting tasks:
 

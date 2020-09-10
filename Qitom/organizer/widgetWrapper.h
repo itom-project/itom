@@ -30,13 +30,32 @@
 #include <qmetaobject.h>
 #include "../global.h"
 
+// a bunch of forward declarations
+class QListWidget;
+class QComboBox;
+class QTabWidget;
+class QTableView;
+class QSplitter;
+class QStatusBar;
+class QMainWindow;
+class QWidget;
+class QTableWidget;
+class QToolBar;
+class QAction;
+class QLayout;
+class QFormLayout;
+class QGridLayout;
+class QBoxLayout;
+
 namespace ito
 {
+
+class UiOrganizer; // forward declaration
 
 class WidgetWrapper
 {
 public:
-    WidgetWrapper(); //constructor
+    WidgetWrapper(UiOrganizer *uiOrganizer); //constructor
     ~WidgetWrapper(); //destructor
 
     MethodDescriptionList getMethodList(QObject *object);
@@ -48,8 +67,27 @@ private:
     void initMethodHash();
     MethodDescription buildMethodDescription(QByteArray signature, QString retType, int methodIndex, bool &ok);
 
-    QHash<QString, MethodDescriptionList> methodHash; /*!< Hash-table containing a list of method description for all public methods of a class derived from QObject which should be accessed by the call method of WidgetWrapper at runtime. */
-    bool initialized; /*!< member indicating whether the initMethodHash method already has been executed, which is done in the constructor of WidgetWrapper. */
+    ito::RetVal callListWidget(QListWidget *listWidget, int methodIndex, void **_a);
+    ito::RetVal callComboBox(QComboBox *comboBox, int methodIndex, void **_a);
+    ito::RetVal callTabWidget(QTabWidget *tabWidget, int methodIndex, void **_a);
+    ito::RetVal callTableView(QTableView *tableView, int methodIndex, void **_a);
+    ito::RetVal callSplitter(QSplitter *splitter, int methodIndex, void **_a);
+    ito::RetVal callStatusBar(QStatusBar *statusBar, int methodIndex, void **_a);
+    ito::RetVal callMainWindow(QMainWindow *mainWindow, int methodIndex, void **_a);
+    ito::RetVal callWidget(QWidget *widget, int methodIndex, void **_a);
+    ito::RetVal callTableWidget(QTableWidget *tableWidget, int methodIndex, void **_a);
+    ito::RetVal callToolBar(QToolBar *toolbar, int methodIndex, void **_a);
+    ito::RetVal callAction(QAction *action, int methodIndex, void **_a);
+    ito::RetVal callLayout(QLayout *layout, int methodIndex, void **_a);
+    ito::RetVal callFormLayout(QFormLayout *layout, int methodIndex, void **_a);
+    ito::RetVal callGridLayout(QGridLayout *layout, int methodIndex, void **_a);
+    ito::RetVal callBoxLayout(QBoxLayout *layout, int methodIndex, void **_a);
+
+    QHash<QString, MethodDescriptionList> m_methodHash; /*!< Hash-table containing a list of method description for all public methods of a class derived from QObject which should be accessed by the call method of WidgetWrapper at runtime. */
+    bool m_initialized; /*!< member indicating whether the initMethodHash method already has been executed, which is done in the constructor of WidgetWrapper. */
+    int m_methodIndexNotFound; /*!< RetVal error code if the methodIndex could not be handled by the currently tested widget. */
+
+    UiOrganizer *m_pUiOrganizer;
 };
 
 } //end namespace ito
