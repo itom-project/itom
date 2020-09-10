@@ -42,6 +42,7 @@
 #include <qvariant.h>
 #include <qobject.h>
 #include <qelapsedtimer.h>
+#include <qhash.h>
 
 namespace ito
 {
@@ -51,94 +52,19 @@ class PythonQtSignalTarget
 public:
 
     //! empty constructor
-    PythonQtSignalTarget() :
-        m_slotId(-1),
-        m_signalId(-1),
-        m_function(NULL),
-        m_boundedInstance(NULL),
-        m_boundedMethod(false)
-
-    {
-    };
+    PythonQtSignalTarget();
 
     //! constructor
-    /*!
-        Constructs the virtual slot as target for any signal. If this slot is invoked, the given python method is executed.
-
-        If the python method is a method (hence bounded), both a weak reference of the method and its containing instance is
-        stored. If it is an unbounded function, only the weak reference to the function is saved.
-
-        \param [in] argTypeList is a list of integer-based type number, describing the type of each argument as given by QMetaType
-        \param [in] slotId is the assigned index for this slot (must be unique)
-        \param [in] signalId is the index of the emitting signal
-        \param [in] callabel is a python method or function (bounded or unbounded) that should be called if the slot is invoked
-        \param [in] signal is the signature of the signal (for debugging reasons)
-        \param [in] minRepeatInterval is a minimum amount of time (in ms) which has to be passed until the same signal-slot-connection is accepted again (additional signal emissions are blocked), default: 0 (no timeout)
-    */
-    PythonQtSignalTarget(IntList &argTypeList, int slotId, int signalId, PyObject* callable, const char *signal, int minRepeatInterval) :
-            m_slotId(slotId),
-            m_signalId(signalId),
-            m_function(NULL),
-            m_boundedInstance(NULL),
-            m_boundedMethod(false),
-            m_signalName(signal),
-            m_minRepeatInterval(minRepeatInterval)
-    {
-        m_argTypeList = argTypeList;
-        PyObject *temp = NULL;
-        m_elapsedTimer.invalidate();
-
-        if(PyMethod_Check(callable))
-        {
-            m_boundedMethod = true;
-            Py_XDECREF(m_boundedInstance);
-            Py_XDECREF(m_function);
-            temp = PyMethod_Self(callable); //borrowed
-            m_boundedInstance = PyWeakref_NewRef(temp, NULL); //new ref (weak reference used to avoid cyclic garbage collection)
-            temp = PyMethod_Function(callable); //borrowed
-            m_function = PyWeakref_NewRef(temp, NULL); //new ref
-        }
-        else if(PyFunction_Check(callable))
-        {
-            m_boundedMethod = false;
-            Py_XDECREF(m_boundedInstance);
-            Py_XDECREF(m_function);
-            m_function = PyWeakref_NewRef(callable, NULL); //new ref
-        }
-    };
+    PythonQtSignalTarget(IntList &argTypeList, int slotId, int signalId, PyObject* callable, const char *signal, int minRepeatInterval);
     
     //! copy constructor
-    PythonQtSignalTarget(const PythonQtSignalTarget &copy) :
-        m_slotId(-1),
-        m_signalId(-1),
-        m_function(NULL),
-        m_boundedInstance(NULL),
-        m_boundedMethod(false),
-        m_signalName(copy.m_signalName)
-    {
-        Py_XDECREF(m_boundedInstance);
-        Py_XDECREF(m_function);
-        m_slotId = copy.slotId();
-        m_signalId = copy.signalId();
-        m_argTypeList = copy.argTypeList();
-
-        m_boundedMethod = copy.m_boundedMethod;
-        m_function = copy.m_function;
-        Py_XINCREF(m_function);
-        m_boundedInstance = copy.m_boundedInstance;
-        Py_XINCREF(m_boundedInstance);
-
-        m_minRepeatInterval = copy.m_minRepeatInterval;
-        m_elapsedTimer.invalidate();
-    }
+    PythonQtSignalTarget(const PythonQtSignalTarget &copy);
     
     //! destructor
-    ~PythonQtSignalTarget()
-    {
-        Py_XDECREF(m_boundedInstance);
-        Py_XDECREF(m_function);
-        m_argTypeList.clear();
-    }
+    ~PythonQtSignalTarget();
+
+    //! assignment operator
+    PythonQtSignalTarget &operator=(const PythonQtSignalTarget &rhs);
 
     //! gets the id of the original signal
     inline int signalId() const { return m_signalId; }
@@ -153,35 +79,25 @@ public:
     inline IntList argTypeList() const { return m_argTypeList; };
 
     //! Compares this signal target with given values
-    /*! checks whether the given signal index and the reference to the python method
-        is the same than the values of this instance of PythonQtSignalTarget
-
-        \param [in] signalId is the signal index (source of the signal-slot connection)
-        \param [in] callable is the python slot method (slot, destination of the signal-slot connection)
-        \return true if they are equal, else false.
-    */
-    bool isSame(int signalId, PyObject* callable) const 
-    { 
-        if(signalId == m_signalId)
-        {
-            if(PyMethod_Check(callable))
-            {
-                return PyMethod_Self(callable) == PyWeakref_GetObject(m_boundedInstance) && PyMethod_Function(callable) == PyWeakref_GetObject(m_function);
-            }
-            return callable == PyWeakref_GetObject(m_function);
-        }
-        return false;
-    }
+    bool isSame(int signalId, PyObject* callable) const;
 
 private:
-    int m_slotId;                //!< index of this slot
+    int m_slotId;                  //!< index of this slot
     int m_signalId;                //!< index of the connected signal
-    IntList m_argTypeList;        //!< type id's from QMetaType::type("..."), describing the arguments of the function-call
-    PyObject *m_function;        //!< weak reference to the python-function, that acts as slot
-    PyObject *m_boundedInstance; //!< weak reference to the python-class instance of the function (if the function is bounded) or NULL if the function is unbounded
-    bool m_boundedMethod;        //!< true if the python function is bounded (non-static member of a class), else false
-    QString m_signalName;        //!< signature of the signal (mainly used for debugging reasons)
-    QElapsedTimer m_elapsedTimer;           //!< see m_minRepeatInterval
+    IntList m_argTypeList;         //!< type id's from QMetaType::type("..."), describing the arguments of the function-call
+
+    /* If the target is a bounded method, m_boundedMethod is true and
+    this member holds a Python weak reference to the method, that acts as slot.
+    m_boundedInstance is != NULL then.
+    
+    If the target is an unbounded function, m_boundedMethod is false and
+    this member holds a new reference to the function itself (that acts as slot).
+    m_boundedInstance is NULL then. */
+    PyObject *m_function;          
+    PyObject *m_boundedInstance;   //!< weak reference to the python-class instance of the function (if the function is bounded) or NULL if the function is unbounded
+    bool m_boundedMethod;          //!< true if the python function is bounded (non-static member of a class), else false
+    QString m_signalName;          //!< signature of the signal (mainly used for debugging reasons)
+    QElapsedTimer m_elapsedTimer;  //!< see m_minRepeatInterval
 
     /*
     if > 0, every call of a certain slot by a certain signal with restart m_elapsedTimer. If the same signal-slot-connection is
@@ -244,13 +160,23 @@ public:
     ~PythonQtSignalMapper();
 
     bool addSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable, IntList &argTypeList, int minRepeatInterval);
-    bool removeSignalHandler(QObject *obj, const char* signal, int sigId, PyObject* callable);
+    bool removeSignalHandler(QObject *obj, int sigId, PyObject* callable);
     void removeSignalHandlers();
-    virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
+
+    //! overwrites qt_metacall from PythonQtSignalMapperBase.
+    virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments); 
    
 private:
-    QList<PythonQtSignalTarget> m_targets;    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
-    int m_slotCount;                        //!< index of the last virtual slot managed by this instance (auto-incremented)
+    typedef QMap<int, PythonQtSignalTarget> TargetMap;
+
+    //!< list with all virtual slot targets that are the destination for any registered signal-slot-connection
+    /* This list is generated as map, that maps the slotId of the PythonQtSignalTarget
+    to the target itself (for a faster indexing).
+    */
+    TargetMap m_targets;
+
+    //!< index of the last virtual slot managed by this instance (auto-incremented)
+    int m_slotCount;                           
     
 };
 
