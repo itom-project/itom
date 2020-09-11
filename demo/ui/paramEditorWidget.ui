@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
+    <width>1092</width>
     <height>528</height>
    </rect>
   </property>
@@ -24,21 +24,74 @@
        <attribute name="title">
         <string>Dummy Grabber</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="Itom2dQwtPlot" name="plot"/>
-        </item>
-        <item>
-         <widget class="ParamEditorWidget" name="pewGrabber">
-          <property name="resizeMode">
-           <enum>ParamEditorWidget::Interactive</enum>
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-          <property name="propertiesWithoutValueMarked">
-           <bool>true</bool>
+          <property name="handleWidth">
+           <number>5</number>
           </property>
-          <property name="showDescriptions">
-           <bool>true</bool>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
+          <widget class="Itom2dQwtPlot" name="plot"/>
+          <widget class="QWidget" name="">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="title">
+               <string>Immediately apply parameters after change:</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="ParamEditorWidget" name="pewGrabber">
+                 <property name="indentation">
+                  <number>15</number>
+                 </property>
+                 <property name="resizeMode">
+                  <enum>ParamEditorWidget::Interactive</enum>
+                 </property>
+                 <property name="splitterPosition">
+                  <number>100</number>
+                 </property>
+                 <property name="propertiesWithoutValueMarked">
+                  <bool>true</bool>
+                 </property>
+                 <property name="showDescriptions">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Change after button click:</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="ParamEditorWidget" name="pewGrabber2">
+                 <property name="indentation">
+                  <number>15</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btnApplyChangesGrabber">
+                 <property name="text">
+                  <string>Apply Changes</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -129,7 +182,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>781</width>
+     <width>1092</width>
      <height>21</height>
     </rect>
    </property>
