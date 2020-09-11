@@ -2405,7 +2405,7 @@ RangeSlider {
   selection-color: #FFB13E; /* Palette: Active, Highlighted Text, color of dragged handle*/
   color: #62717B; /* Palette: Active, WindowText + Text, color of handle */
   qproperty-useStyleSheets: true;
-  qproperty-handleBorderradius: 0;
+  qproperty-handleBorderRadius: 0;
 }
 
 RangeSlider:disabled {
