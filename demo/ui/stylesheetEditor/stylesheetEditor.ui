@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1295</width>
-    <height>804</height>
+    <height>847</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -281,30 +281,51 @@
           <number>9</number>
          </property>
          <item>
-          <widget class="QTimeEdit" name="timeEdit_2"/>
-         </item>
-         <item>
-          <widget class="QDateEdit" name="dateEdit">
-           <property name="calendarPopup">
-            <bool>true</bool>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Date, Time</string>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QTimeEdit" name="timeEdit_2"/>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="dateEdit">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDateTimeEdit" name="dateTimeEdit">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
-          <widget class="QDateTimeEdit" name="dateTimeEdit">
-           <property name="calendarPopup">
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Dial Knob</string>
+           </property>
+           <property name="checkable">
             <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDial" name="dial"/>
-         </item>
-         <item>
-          <widget class="QTimeEdit" name="timeEdit">
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDial" name="dial"/>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -375,7 +396,7 @@
               <x>0</x>
               <y>0</y>
               <width>985</width>
-              <height>493</height>
+              <height>529</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout">
@@ -688,7 +709,7 @@
               <x>0</x>
               <y>0</y>
               <width>987</width>
-              <height>368</height>
+              <height>404</height>
              </rect>
             </property>
             <attribute name="label">
@@ -711,8 +732,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>264</width>
-              <height>293</height>
+              <width>287</width>
+              <height>335</height>
              </rect>
             </property>
             <attribute name="label">
@@ -729,8 +750,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
-              <height>119</height>
+              <width>89</width>
+              <height>121</height>
              </rect>
             </property>
             <attribute name="label">
@@ -747,7 +768,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
+              <width>83</width>
               <height>52</height>
              </rect>
             </property>

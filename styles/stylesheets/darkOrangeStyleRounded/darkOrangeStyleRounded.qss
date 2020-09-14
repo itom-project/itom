@@ -2480,3 +2480,39 @@ ito--FoldingPanel:branch:open:has-children:!has-siblings:hover,
 ito--FoldingPanel:branch:open:has-children:has-siblings:hover {
   image: url(":/qss_icons/rc/branch_open_focus.png");
 }
+
+CollapsibleGroupBox {
+  border: 0px;
+  border-top: 1px solid #37464F;
+  padding-top: 5px;
+}
+
+CollapsibleGroupBox::indicator:unchecked {
+  image: url(":/qss_icons/rc/arrow_right.png");
+}
+
+CollapsibleGroupBox::indicator:unchecked:hover,
+CollapsibleGroupBox::indicator:unchecked:focus,
+CollapsibleGroupBox::indicator:unchecked:pressed {
+  border: none;
+  image: url(":/qss_icons/rc/arrow_right_focus.png");
+}
+
+CollapsibleGroupBox::indicator:unchecked:disabled {
+  image: url(":/qss_icons/rc/arrow_right_disabled.png");
+}
+
+CollapsibleGroupBox::indicator:checked {
+  image: url(":/qss_icons/rc/arrow_down.png");
+}
+
+CollapsibleGroupBox::indicator:checked:hover,
+CollapsibleGroupBox::indicator:checked:focus,
+CollapsibleGroupBox::indicator:checked:pressed {
+  border: none;
+  image: url(":/qss_icons/rc/arrow_down_focus.png");
+}
+
+CollapsibleGroupBox::indicator:checked:disabled {
+  image: url(":/qss_icons/rc/arrow_down_disabled.png");
+}
