@@ -123,7 +123,7 @@ ParamIntWidget::ParamIntWidget(QWidget *parent /*= NULL*/) :
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);;
 
     d->m_pCheckBox = new QtBoolEdit(this);
     layout->addWidget(d->m_pCheckBox);

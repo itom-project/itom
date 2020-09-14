@@ -211,7 +211,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     connect(d->m_pBrowser, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(currentItemChanged(QtBrowserItem*)));
 
     QVBoxLayout *vboxLayout = new QVBoxLayout();
-    vboxLayout->setMargin(0);
+    vboxLayout->setContentsMargins(0, 0, 0, 0);
 
     vboxLayout->addWidget(d->m_pBrowser);
     d->m_pBrowser->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
@@ -224,7 +224,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     
     QVBoxLayout *vboxLayout2 = new QVBoxLayout();
     vboxLayout2->addWidget(d->m_pTextEdit);
-    vboxLayout2->setMargin(0);
+    vboxLayout2->setContentsMargins(0, 3, 0, 0);
     d->m_pInfoBox->setLayout(vboxLayout2);
     d->m_pInfoBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     d->m_pInfoBox->sizePolicy().setVerticalStretch(1);
