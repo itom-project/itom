@@ -354,6 +354,7 @@ QWidget *ParamDoublePropertyFactory::createEditor(ParamDoublePropertyManager *ma
     const ito::Param &param = manager->param(property);
     editor->setParam(param, true);
     editor->setKeyboardTracking(false);
+    editor->setPopupSlider(manager->hasPopupSlider());
 
     connect(editor, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
     connect(editor, SIGNAL(destroyed(QObject *)),

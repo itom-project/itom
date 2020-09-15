@@ -369,6 +369,24 @@ void ParamEditorWidget::setReadonly(bool enable)
 }
 
 //-----------------------------------------------------------------------
+bool ParamEditorWidget::popupSlider() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_pDoubleManager->hasPopupSlider();
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setPopupSlider(bool popup)
+{
+    Q_D(ParamEditorWidget);
+
+    if (popup != d_ptr->m_pDoubleManager->hasPopupSlider())
+    {
+        d_ptr->m_pDoubleManager->setPopupSlider(popup);
+    }
+}
+
+//-----------------------------------------------------------------------
 void ParamEditorWidget::setShowDescriptions(bool show)
 {
     Q_D(ParamEditorWidget);
@@ -713,6 +731,7 @@ ito::RetVal ParamEditorWidget::addParamDouble(const ito::Param &param, QtPropert
     d->m_properties[param.getName()] = prop;
     prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
     d->m_pDoubleManager->setParam(prop, param);
+
     if (groupProperty)
     {
         groupProperty->addSubProperty(prop);
@@ -721,6 +740,7 @@ ito::RetVal ParamEditorWidget::addParamDouble(const ito::Param &param, QtPropert
     {
         d->m_pBrowser->addProperty(prop);
     }
+
     d->m_pDoubleManager->blockSignals(false);
     prop->setStatusTip(param.getInfo());
     prop->setToolTip(param.getInfo());

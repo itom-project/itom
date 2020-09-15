@@ -37,7 +37,7 @@
            <bool>false</bool>
           </property>
           <widget class="Itom2dQwtPlot" name="plot"/>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QGroupBox" name="groupBox_3">
@@ -77,6 +77,9 @@
                 <widget class="ParamEditorWidget" name="pewGrabber2">
                  <property name="indentation">
                   <number>15</number>
+                 </property>
+                 <property name="popupSlider">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>

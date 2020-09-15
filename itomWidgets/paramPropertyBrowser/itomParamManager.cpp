@@ -479,7 +479,8 @@ QIcon ParamCharPropertyManager::valueIcon(const QtProperty *property) const
 
 //------------------------------------------------------------------------------
 ParamDoublePropertyManager::ParamDoublePropertyManager(QObject *parent /*= 0*/) :
-    AbstractParamPropertyManager(parent)
+    AbstractParamPropertyManager(parent),
+    m_popupSlider(false)
 {
 }
 
@@ -646,6 +647,18 @@ QIcon ParamDoublePropertyManager::valueIcon(const QtProperty *property) const
     }
 
     return QIcon();
+}
+
+//------------------------------------------------------------------------------
+bool ParamDoublePropertyManager::hasPopupSlider() const
+{
+    return m_popupSlider;
+}
+
+//------------------------------------------------------------------------------
+void ParamDoublePropertyManager::setPopupSlider(bool popup)
+{
+    m_popupSlider = popup;
 }
 
 //------------------------------------------------------------------------------

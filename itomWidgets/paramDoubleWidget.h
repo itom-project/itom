@@ -45,6 +45,7 @@ class ITOMWIDGETS_EXPORT ParamDoubleWidget : public QWidget
     Q_OBJECT
 
     Q_PROPERTY(bool keyboardTracking READ keyboardTracking WRITE setKeyboardTracking);
+    Q_PROPERTY(bool popupSlider READ hasPopupSlider WRITE setPopupSlider);
 
 public:
     explicit ParamDoubleWidget(QWidget *parent = 0);
@@ -52,6 +53,8 @@ public:
 
     ito::Param param() const;
     bool keyboardTracking() const;
+    bool hasPopupSlider() const;
+    void setPopupSlider(bool popup);
     double value() const;
     ito::DoubleMeta meta() const;
 
