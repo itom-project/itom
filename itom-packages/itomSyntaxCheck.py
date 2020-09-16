@@ -400,7 +400,7 @@ if _HAS_FLAKE8:
             """
             
             # error code E999 is a real syntax error
-            if error.code == "E999" or \
+            if error.code == "E999" or error.code == "E902" or\
                list(bfilter(error.code.startswith, self._errorCodes)) != []:
                 errorType = 2  # error
             elif list(bfilter(error.code.startswith, self._warningCodes)) != []:
