@@ -28,7 +28,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -395,8 +395,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>985</width>
-              <height>529</height>
+              <width>945</width>
+              <height>237</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout">
@@ -708,8 +708,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>987</width>
-              <height>404</height>
+              <width>264</width>
+              <height>319</height>
              </rect>
             </property>
             <attribute name="label">
@@ -732,8 +732,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>287</width>
-              <height>335</height>
+              <width>264</width>
+              <height>293</height>
              </rect>
             </property>
             <attribute name="label">
@@ -750,8 +750,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>89</width>
-              <height>121</height>
+              <width>98</width>
+              <height>119</height>
              </rect>
             </property>
             <attribute name="label">
@@ -768,7 +768,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>83</width>
+              <width>98</width>
               <height>52</height>
              </rect>
             </property>
@@ -866,6 +866,23 @@
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="DoubleSpinBox" name="doubleSpinBox_2"/>
+           </item>
+           <item>
+            <widget class="SearchBox" name="SearchBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="showSearchIcon">
+              <bool>true</bool>
+             </property>
+             <property name="clearIcon">
+              <iconset resource="../../../Qitom/qitom.qrc">
+               <normaloff>:/script/icons/stopScript.png</normaloff>:/script/icons/stopScript.png</iconset>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="FontButton" name="FontButton"/>
@@ -1294,6 +1311,11 @@ p, li { white-space: pre-wrap; }
    <class>PathLineEdit</class>
    <extends>QWidget</extends>
    <header>pathLineEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SearchBox</class>
+   <extends>QLineEdit</extends>
+   <header>searchBox.h</header>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>
