@@ -38,7 +38,7 @@
 #include <QLineEdit>
 #include <QStringList>
 #include <QStringListModel>
-#include <QToolButton>s
+#include <QToolButton>
 
 // CTK includes
 #include "helper/completer.h"
