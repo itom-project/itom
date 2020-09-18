@@ -1026,7 +1026,7 @@ void MainApplication::mainWindowCloseRequest()
         int ret = msgBox.exec();
 
 #if QT_VERSION >= 0x050200
-		if (!(features & ito::UserFeature::featProperties))
+		if (features & ito::UserFeature::featProperties)
 		{
 			if (msgBox.checkBox()->isChecked())
 			{
