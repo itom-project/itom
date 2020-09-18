@@ -220,81 +220,30 @@ QIcon SearchBox::clearIcon()const
 // --------------------------------------------------
 void SearchBox::paintEvent(QPaintEvent * event)
 {
-  Q_D(SearchBox);
+    Q_D(SearchBox);
 
-  // Draw the line edit with text.
-  // Text has already been shifted to the right (in resizeEvent()) to leave
-  // space for the search icon.
-  this->Superclass::paintEvent(event);
+    // Draw the line edit with text.
+    // Text has already been shifted to the right (in resizeEvent()) to leave
+    // space for the search icon.
+    this->Superclass::paintEvent(event);
 
-  QPainter p(this);
+    QPainter p(this);
 
-  QRect cRect = d->clearRect();
-  QRect sRect = d->showSearchIcon ? d->searchRect() : QRect();
+    QRect cRect = d->clearRect();
+    QRect sRect = d->showSearchIcon ? d->searchRect() : QRect();
 
-  QRect r = rect();
-  QPalette pal = palette();
-
-  QStyleOptionFrame panel;
-  initStyleOption(&panel);
-  r = this->style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
-  r.setX(r.x() + this->textMargins().left());
-  r.setY(r.y() + this->textMargins().top());
-  r.setRight(r.right() - this->textMargins().right());
-  r.setBottom(r.bottom() - this->textMargins().bottom());
-  p.setClipRect(r);
-
-  QFontMetrics fm = fontMetrics();
-  Qt::Alignment va = QStyle::visualAlignment(this->layoutDirection(),
-                                             QFlag(this->alignment()));
-  int vscroll = 0;
-  const int verticalMargin = 1;
-  const int horizontalMargin = 2;
-  switch (va & Qt::AlignVertical_Mask) {
-   case Qt::AlignBottom:
-       vscroll = r.y() + r.height() - fm.height() - verticalMargin;
-       break;
-   case Qt::AlignTop:
-       vscroll = r.y() + verticalMargin;
-       break;
-   default:
-       //center
-       vscroll = r.y() + (r.height() - fm.height() + 1) / 2;
-       break;
-  }
-  QRect lineRect(r.x() + horizontalMargin, vscroll,
-                 r.width() - 2*horizontalMargin, fm.height());
-
-  int minLB = qMax(0, -fm.minLeftBearing());
-
-  if (this->text().isEmpty())
+    // Draw clearIcon
+    if (!d->hideClearIcon)
     {
-    if (!this->hasFocus() && !this->placeholderText().isEmpty())
-      {
-      QColor col = pal.text().color();
-      col.setAlpha(128);
-      QPen oldpen = p.pen();
-      p.setPen(col);
-      lineRect.adjust(minLB, 0, 0, 0);
-      QString elidedText = fm.elidedText(this->placeholderText(), Qt::ElideRight, lineRect.width());
-      p.drawText(lineRect, va, elidedText);
-      p.setPen(oldpen);
-      }
-    }
-  p.setClipRect(this->rect());
-
-  // Draw clearIcon
-  if (!d->hideClearIcon)
-    {
-    QPixmap closePixmap = d->clearIcon.pixmap(cRect.size(),this->isEnabled() ? QIcon::Normal : QIcon::Disabled);
-    this->style()->drawItemPixmap(&p, cRect, Qt::AlignCenter, closePixmap);
+        QPixmap closePixmap = d->clearIcon.pixmap(cRect.size(), this->isEnabled() ? QIcon::Normal : QIcon::Disabled);
+        this->style()->drawItemPixmap(&p, cRect, Qt::AlignCenter, closePixmap);
     }
 
-  // Draw searchIcon
-  if (d->showSearchIcon)
+    // Draw searchIcon
+    if (d->showSearchIcon)
     {
-    QPixmap searchPixmap = d->searchIcon.pixmap(sRect.size(), this->isEnabled() ? QIcon::Normal : QIcon::Disabled);
-    this->style()->drawItemPixmap(&p, sRect, Qt::AlignCenter, searchPixmap);
+        QPixmap searchPixmap = d->searchIcon.pixmap(sRect.size(), this->isEnabled() ? QIcon::Normal : QIcon::Disabled);
+        this->style()->drawItemPixmap(&p, sRect, Qt::AlignCenter, searchPixmap);
     }
 }
 
