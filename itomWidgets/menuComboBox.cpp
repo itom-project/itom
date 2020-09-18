@@ -38,12 +38,12 @@
 #include <QLineEdit>
 #include <QStringList>
 #include <QStringListModel>
-#include <QToolButton>
+#include <QToolButton>s
 
 // CTK includes
 #include "helper/completer.h"
 #include "searchBox.h"
-#include "MenuComboBox_p.h"
+#include "menuComboBox_p.h"
 
 // -------------------------------------------------------------------------
 MenuComboBoxInternal::MenuComboBoxInternal()
