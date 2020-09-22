@@ -66,6 +66,7 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_PROPERTY(bool immediatelyModifyPluginParamsAfterChange READ immediatelyModifyPluginParamsAfterChange WRITE setImmediatelyModifyPluginParamsAfterChange)
     Q_PROPERTY(int numChangedParameters READ numberOfChangedParameters)
 	Q_PROPERTY(bool collapsed READ collapsed WRITE setCollapsed)
+    Q_PROPERTY(bool popupSlider READ popupSlider WRITE setPopupSlider);
 
     Q_CLASSINFO("prop://plugin", "Actuator or dataIO instance whose parameters are observed and set by this widget.")
     Q_CLASSINFO("prop://indentation", "Indentation level of child items in the tree.")
@@ -81,6 +82,7 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_CLASSINFO("prop://immediatelyModifyPluginParamsAfterChange", "If true (default), changed values in the widget will be immediately sent to the connected plugin, calling its 'setParam' method. Else, changed values will be stored in a temporary list and can be sent later (using applyChangedParameters).")
     Q_CLASSINFO("prop://numChangedParameters", "Number of changed parameters, that have not been applied to the plugin yet.")
 	Q_CLASSINFO("prop://collapsed", "If true, collapse all items in the tree or load new items collapsed, else expand the full tree. (default: false)")
+    Q_CLASSINFO("prop://popupSlider", "If a slider widget (slider + spinbox) is used for corresponding floating point number parameters, the slider is displayed as popup window when hovering the spinbox. If false, the slider is always displayed left to the spinbox.")
 
 public:
     enum ResizeMode
@@ -118,6 +120,9 @@ public:
 
 	bool collapsed() const;
 	void setCollapsed(bool c);
+
+    bool popupSlider() const;
+    void setPopupSlider(bool popup);
 
     bool rootIsDecorated() const;
     void setRootIsDecorated(bool show);

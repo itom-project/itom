@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1295</width>
-    <height>804</height>
+    <height>847</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -281,30 +281,51 @@
           <number>9</number>
          </property>
          <item>
-          <widget class="QTimeEdit" name="timeEdit_2"/>
-         </item>
-         <item>
-          <widget class="QDateEdit" name="dateEdit">
-           <property name="calendarPopup">
-            <bool>true</bool>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Date, Time</string>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QTimeEdit" name="timeEdit_2"/>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="dateEdit">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDateTimeEdit" name="dateTimeEdit">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
-          <widget class="QDateTimeEdit" name="dateTimeEdit">
-           <property name="calendarPopup">
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Dial Knob</string>
+           </property>
+           <property name="checkable">
             <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDial" name="dial"/>
-         </item>
-         <item>
-          <widget class="QTimeEdit" name="timeEdit">
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDial" name="dial"/>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -374,8 +395,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>985</width>
-              <height>493</height>
+              <width>945</width>
+              <height>237</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout">
@@ -687,8 +708,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>987</width>
-              <height>368</height>
+              <width>264</width>
+              <height>319</height>
              </rect>
             </property>
             <attribute name="label">
@@ -845,6 +866,23 @@
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="DoubleSpinBox" name="doubleSpinBox_2"/>
+           </item>
+           <item>
+            <widget class="SearchBox" name="SearchBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="showSearchIcon">
+              <bool>true</bool>
+             </property>
+             <property name="clearIcon">
+              <iconset resource="../../../Qitom/qitom.qrc">
+               <normaloff>:/script/icons/stopScript.png</normaloff>:/script/icons/stopScript.png</iconset>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="FontButton" name="FontButton"/>
@@ -1273,6 +1311,11 @@ p, li { white-space: pre-wrap; }
    <class>PathLineEdit</class>
    <extends>QWidget</extends>
    <header>pathLineEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SearchBox</class>
+   <extends>QLineEdit</extends>
+   <header>searchBox.h</header>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>

@@ -124,7 +124,7 @@ int FunctionCancellationAndObserver::progressMaximum() const
 void FunctionCancellationAndObserver::setProgressValue(int value)
 {
     Q_D(FunctionCancellationAndObserver);
-    d->m_progressValue = qBound(d->m_progressMinimum, value, d->m_progressMinimum);
+    d->m_progressValue = qBound(d->m_progressMinimum, value, d->m_progressMaximum);
     emit progressValueChanged(value);
 }
 

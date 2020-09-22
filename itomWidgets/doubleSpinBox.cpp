@@ -331,6 +331,7 @@ void DoubleSpinBoxPrivate::setValue(double value, int dec)
   if (this->SizeHintPolicy == DoubleSpinBox::SizeHintByValue)
   {
     this->CachedSizeHint = QSize();
+    this->CachedMinimumSizeHint = QSize();
     q->updateGeometry();
   }
 }
@@ -1010,6 +1011,7 @@ void DoubleSpinBox
     }
   d->SizeHintPolicy = newSizeHintPolicy;
   d->CachedSizeHint = QSize();
+  d->CachedMinimumSizeHint = QSize();
   this->updateGeometry();
 }
 
@@ -1082,72 +1084,86 @@ QSize DoubleSpinBox::sizeHint() const
 
   this->ensurePolished(); // ensure we are using the right font
   const QFontMetrics fm(this->fontMetrics());
-  newSizeHint.setWidth(fm.width(s + extraString) + extraWidth);
+#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
+  int width_in_pixels = fm.horizontalAdvance(s + extraString);
+#else
+  int width_in_pixels = fm.width(s + extraString);
+#endif
+  newSizeHint.setWidth(width_in_pixels + extraWidth);
 
   QStyleOptionSpinBox opt;
   d->SpinBox->initStyleOptionSpinBox(&opt);
-
+#if QT_VERSION < QT_VERSION_CHECK(5,1,0)
   QSize extraSize(35, 6);
   opt.rect.setSize(newSizeHint + extraSize);
   extraSize += newSizeHint - this->style()->subControlRect(
-    QStyle::CC_SpinBox, &opt,
-    QStyle::SC_SpinBoxEditField, this).size();
+      QStyle::CC_SpinBox, &opt,
+      QStyle::SC_SpinBoxEditField, this).size();
   // Converging size hint...
   opt.rect.setSize(newSizeHint + extraSize);
   extraSize += newSizeHint - this->style()->subControlRect(
-    QStyle::CC_SpinBox, &opt,
-    QStyle::SC_SpinBoxEditField, this).size();
+      QStyle::CC_SpinBox, &opt,
+      QStyle::SC_SpinBoxEditField, this).size();
   newSizeHint += extraSize;
-
+#endif
   opt.rect = this->rect();
   d->CachedSizeHint = this->style()->sizeFromContents(
-    QStyle::CT_SpinBox, &opt, newSizeHint, this)
-    .expandedTo(QApplication::globalStrut());
+      QStyle::CT_SpinBox, &opt, newSizeHint, this)
+      .expandedTo(QApplication::globalStrut());
   return d->CachedSizeHint;
 }
 
 //----------------------------------------------------------------------------
 QSize DoubleSpinBox::minimumSizeHint() const
 {
-#if QT_VERSION <0x050500 && QT_VERSION >= 0x050000
-    /*this is a workaround for < Qt 5.5. From Qt 5.5 on, minimumSizeHint
-    of QAbstractSpinBox truncates the size of the minimum and maximum values
-    of the spin box to 18 characters. Therefore, a -Inf and +Inf as minimum
-    and maximum value will not dramastically increase the minimum size of the spin box.
-    For older versions, this workaround does a similar truncation.*/
-    QDoubleSpinBox *sb = this->spinBox();
-    QSize hint = sb->minimumSizeHint();
-
-    if (hint.width() > 150)
+    Q_D(const DoubleSpinBox);
+    if (d->SizeHintPolicy == DoubleSpinBox::SizeHintByMinMax)
     {
-        const QFontMetrics fm(sb->fontMetrics());
-        int w = 0;
-
-        QString s;
-        QString fixedContent = sb->prefix() + QLatin1Char(' ');
-        s = QString::number(sb->minimum(), 'f');
-        s.truncate(18);
-        s += fixedContent;
-        w = qMax(w, fm.width(s));
-        s = QString::number(sb->maximum(), 'f');
-        s.truncate(18);
-        s += fixedContent;
-        w = qMax(w, fm.width(s));
-
-        if (sb->specialValueText().size()) {
-            s = sb->specialValueText();
-            w = qMax(w, fm.width(s));
-        }
-        w += 2; // cursor blinking space
-
-        hint.setWidth(w);
+        // For some reasons, Superclass::minimumSizeHint() returns the spinbox
+        // sizeHint()
+        return this->spinBox()->minimumSizeHint();
     }
-    return hint;
+    if (!d->CachedMinimumSizeHint.isEmpty())
+    {
+        return d->CachedMinimumSizeHint;
+    }
+    QSize newSizeHint;
+    newSizeHint.setHeight(this->lineEdit()->minimumSizeHint().height());
+    QString extraString = " "; // give some room
+    QString s = this->text() + extraString;
+    s.truncate(18);
+    int extraWidth = 2; // cursor width
+
+    this->ensurePolished(); // ensure we are using the right font
+    const QFontMetrics fm(this->fontMetrics());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
+    int width_in_pixels = fm.horizontalAdvance(s + extraString);
 #else
-    // For some reasons, Superclass::minimumSizeHint() returns the spinbox
-    // sizeHint()
-    return this->spinBox()->minimumSizeHint();
+    int width_in_pixels = fm.width(s + extraString);
 #endif
+    newSizeHint.setWidth(width_in_pixels + extraWidth);
+
+    QStyleOptionSpinBox opt;
+    d->SpinBox->initStyleOptionSpinBox(&opt);
+#if QT_VERSION < QT_VERSION_CHECK(5,1,0)
+    QSize extraSize(35, 6);
+    opt.rect.setSize(newSizeHint + extraSize);
+    extraSize += newSizeHint - this->style()->subControlRect(
+        QStyle::CC_SpinBox, &opt,
+        QStyle::SC_SpinBoxEditField, this).size();
+    // Converging size hint...
+    opt.rect.setSize(newSizeHint + extraSize);
+    extraSize += newSizeHint - this->style()->subControlRect(
+        QStyle::CC_SpinBox, &opt,
+        QStyle::SC_SpinBoxEditField, this).size();
+    newSizeHint += extraSize;
+#endif
+    opt.rect = this->rect();
+    d->CachedMinimumSizeHint = this->style()->sizeFromContents(
+        QStyle::CT_SpinBox, &opt, newSizeHint, this)
+        .expandedTo(QApplication::globalStrut());
+    return d->CachedMinimumSizeHint;
 }
 
 //-----------------------------------------------------------------------------

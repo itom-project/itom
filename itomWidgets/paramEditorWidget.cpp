@@ -211,7 +211,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     connect(d->m_pBrowser, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(currentItemChanged(QtBrowserItem*)));
 
     QVBoxLayout *vboxLayout = new QVBoxLayout();
-    vboxLayout->setMargin(0);
+    vboxLayout->setContentsMargins(0, 0, 0, 0);
 
     vboxLayout->addWidget(d->m_pBrowser);
     d->m_pBrowser->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
@@ -224,7 +224,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     
     QVBoxLayout *vboxLayout2 = new QVBoxLayout();
     vboxLayout2->addWidget(d->m_pTextEdit);
-    vboxLayout2->setMargin(0);
+    vboxLayout2->setContentsMargins(0, 3, 0, 0);
     d->m_pInfoBox->setLayout(vboxLayout2);
     d->m_pInfoBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     d->m_pInfoBox->sizePolicy().setVerticalStretch(1);
@@ -365,6 +365,24 @@ void ParamEditorWidget::setReadonly(bool enable)
             d->m_pBrowser->setFactoryForManager(d->m_pIntArrayManager->subPropertyManager(), d->m_pIntFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pDoubleArrayManager->subPropertyManager(), d->m_pDoubleFactory);
         }
+    }
+}
+
+//-----------------------------------------------------------------------
+bool ParamEditorWidget::popupSlider() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_pDoubleManager->hasPopupSlider();
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setPopupSlider(bool popup)
+{
+    Q_D(ParamEditorWidget);
+
+    if (popup != d_ptr->m_pDoubleManager->hasPopupSlider())
+    {
+        d_ptr->m_pDoubleManager->setPopupSlider(popup);
     }
 }
 
@@ -713,6 +731,7 @@ ito::RetVal ParamEditorWidget::addParamDouble(const ito::Param &param, QtPropert
     d->m_properties[param.getName()] = prop;
     prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
     d->m_pDoubleManager->setParam(prop, param);
+
     if (groupProperty)
     {
         groupProperty->addSubProperty(prop);
@@ -721,6 +740,7 @@ ito::RetVal ParamEditorWidget::addParamDouble(const ito::Param &param, QtPropert
     {
         d->m_pBrowser->addProperty(prop);
     }
+
     d->m_pDoubleManager->blockSignals(false);
     prop->setStatusTip(param.getInfo());
     prop->setToolTip(param.getInfo());

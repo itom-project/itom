@@ -105,16 +105,25 @@ public:
   Q_ENUM(EditableBehavior)
 #endif
 
-  /// Superclass typedef
-  typedef QWidget Superclass;
+    /// Superclass typedef
+    typedef QWidget Superclass;
 
   ///
   MenuComboBox(QWidget* parent = 0);
   virtual ~MenuComboBox();
 
-  /// Add a menu to the QcomboBox and set a QCompleter
-  void setMenu(QMenu* menu);
-  QMenu* menu()const;
+  /// Set menu to both the QComboBox and the associated Completer.
+  /// \sa setCompleterMenu(), searchCompleter()
+  Q_INVOKABLE void setMenu(QMenu* menu);
+  Q_INVOKABLE QMenu* menu()const;
+
+  /// Set a specific menu to the Completer.
+  ///
+  /// This is useful when the menu displayed with the combobox is only a subset
+  /// of the action that can be searched for.
+  /// \sa setMenu(), searchCompleter()
+  Q_INVOKABLE void setCompleterMenu(QMenu* menu);
+  Q_INVOKABLE QMenu* completerMenu()const;
 
   void setDefaultText(const QString&);
   QString defaultText()const;
@@ -144,30 +153,30 @@ public:
   Completer* searchCompleter() const;
 
 protected:
-  virtual bool eventFilter(QObject* target, QEvent* event);
+    virtual bool eventFilter(QObject* target, QEvent* event);
 
 public Q_SLOTS:
-  void clearActiveAction();
-  void setToolButtonStyle(Qt::ToolButtonStyle style);
+    void clearActiveAction();
+    void setToolButtonStyle(Qt::ToolButtonStyle style);
 
 Q_SIGNALS:
-  void actionChanged(QAction* action);
-  void popupShown();
+    void actionChanged(QAction* action);
+    void popupShown();
 
 protected Q_SLOTS:
-  /// Change the current text/icon on the QComboBox
-  /// And trigger the action.
-  /// action selected from the menu.
-  void onActionSelected(QAction* action);
-  /// action selected from the line edit or the completer.
-  void onEditingFinished();
+    /// Change the current text/icon on the QComboBox
+    /// And trigger the action.
+    /// action selected from the menu.
+    void onActionSelected(QAction* action);
+    /// action selected from the line edit or the completer.
+    void onEditingFinished();
 
 protected:
-  QScopedPointer<MenuComboBoxPrivate> d_ptr;
+    QScopedPointer<MenuComboBoxPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(MenuComboBox);
-  Q_DISABLE_COPY(MenuComboBox);
+    Q_DECLARE_PRIVATE(MenuComboBox);
+    Q_DISABLE_COPY(MenuComboBox);
 };
 
 Q_DECLARE_METATYPE(MenuComboBox::EditableBehavior)

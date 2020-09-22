@@ -92,6 +92,7 @@ public:
     // general members
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyUiItem_repr(PyUiItem *self);
+    static PyObject* PyUiItem_getClassName(PyUiItem *self);
     static PyObject* PyUiItem_call(PyUiItem *self, PyObject* args);
     static PyObject* PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *kwds);
     static PyObject* PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds);
@@ -113,6 +114,7 @@ public:
     static PyObject* PyUiItem_exists(PyUiItem *self);
     static PyObject* PyUiItem_children(PyUiItem *self, PyObject *args, PyObject *kwds);
     static PyObject* PyUiItem_getChild(PyUiItem *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyUiItem_getLayout(PyUiItem *self);
 
     //-------------------------------------------------------------------------------------------------
     // helpers

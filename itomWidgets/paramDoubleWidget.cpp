@@ -120,7 +120,7 @@ ParamDoubleWidget::ParamDoubleWidget(QWidget *parent /*= NULL*/) :
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);;
 
     d->m_pCheckBox = new QtBoolEdit(this);
     layout->addWidget(d->m_pCheckBox);
@@ -133,6 +133,7 @@ ParamDoubleWidget::ParamDoubleWidget(QWidget *parent /*= NULL*/) :
     connect(d->m_pSpinBox, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
 
     d->m_pSliderWidget = new SliderWidget(this);
+    d->m_pSliderWidget->setPopupSlider(true);
     layout->addWidget(d->m_pSliderWidget);
     d->m_pSliderWidget->setVisible(false);
     connect(d->m_pSliderWidget, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
@@ -269,6 +270,20 @@ void ParamDoubleWidget::setKeyboardTracking(bool tracking)
     Q_D(ParamDoubleWidget);
     d->m_pSpinBox->setKeyboardTracking(tracking);
     d->m_pSliderWidget->setTracking(tracking);
+}
+
+//---------------------------------------------------------------------------
+bool ParamDoubleWidget::hasPopupSlider() const
+{
+    Q_D(const ParamDoubleWidget);
+    return d->m_pSliderWidget->hasPopupSlider();
+}
+
+//---------------------------------------------------------------------------
+void ParamDoubleWidget::setPopupSlider(bool popup)
+{
+    Q_D(ParamDoubleWidget);
+    d->m_pSliderWidget->setPopupSlider(popup);
 }
 
 //---------------------------------------------------------------------------

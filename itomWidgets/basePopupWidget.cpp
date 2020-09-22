@@ -89,8 +89,8 @@ QGradient* duplicateGradient(const QGradient* gradient)
 BasePopupWidgetPrivate::BasePopupWidgetPrivate(BasePopupWidget& object)
   :q_ptr(&object)
 {
-  this->Effect = BasePopupWidget::ScrollEffect;
-  this->EffectDuration = 333; // in ms
+  this->Effect = BasePopupWidget::FadeEffect;
+  this->EffectDuration = 30; // in ms
   this->EffectAlpha = 1.;
   this->AlphaAnimation = 0;
   this->ForcedTranslucent = false;
