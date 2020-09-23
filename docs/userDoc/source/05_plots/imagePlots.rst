@@ -235,6 +235,12 @@ Properties
     
     Toggle visibility of marker labels, the label is the set name of the marker.
 
+.. py:attribute:: allowCameraParameterEditor : bool
+    :noindex:
+    
+    If a live camera is connected to this plot, a camera parameter editor can be displayed as 
+    toolbox of the plot. If this property is false, this toolbox is not available (default: true)
+
 .. py:attribute:: unitLabelStyle : ito::AbstractFigure::UnitLabelStyle 
     :noindex:
     

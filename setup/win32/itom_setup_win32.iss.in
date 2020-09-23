@@ -254,6 +254,7 @@ Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\rcc.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Default INI
 Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion
@@ -368,6 +369,8 @@ Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins\ThorlabsISM"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubePA\*.*"; DestDir: "{app}\plugins\ThorlabsKCubePA"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeIM\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeIM"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsFF\*.*"; DestDir: "{app}\plugins\ThorlabsFF"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs
@@ -428,7 +431,9 @@ Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.Benchtop.Piezo.dll"; D
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.DeviceManager.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.IntegratedStepperMotors.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.PositionAligner.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.InertialMotor.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.Quad.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.FilterFlipper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\vrmusbcam2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion

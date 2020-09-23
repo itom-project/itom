@@ -994,13 +994,11 @@ PyObject* PythonDataObject::PyDataObj_GetContinuous(PyDataObject *self, void * /
 
         if (cont)
         {
-            Py_INCREF(Py_True);
-            return Py_True;
+            Py_RETURN_TRUE;
         }
         else
         {
-            Py_INCREF(Py_False);
-            return Py_False;
+            Py_RETURN_FALSE;
         }
     }
 }

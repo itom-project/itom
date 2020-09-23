@@ -143,11 +143,17 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
             mappabledict[label] = mappable
         mappablelabels = sorted(mappabledict, key=cmp_key)
         mappables = []
-        cmaps = [(cmap, name) for name, cmap in sorted(cm.cmap_d.items())]
+        
+        if matplotlib.__version__ < '3.3.0':
+            cm_cmaps = cm.cmap_d
+        else:
+            cm_cmaps = cm._cmap_registry
+        
+        cmaps = [(cmap, name) for name, cmap in sorted(cm_cmaps.items())]
         for label in mappablelabels:
             mappable = mappabledict[label]
             cmap = mappable.get_cmap()
-            if cmap not in cm.cmap_d.values():
+            if cmap not in cm_cmaps.values():
                 cmaps = [(cmap, cmap.name), *cmaps]
             low, high = mappable.get_clim()
             mappabledata = [
@@ -370,7 +376,7 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
                 rgba = mcolors.to_rgba(color)
                 line.set_alpha(None)
                 line.set_color(rgba)
-                if marker is not 'none':
+                if marker is not None:
                     line.set_marker(marker)
                     line.set_markersize(markersize)
                     line.set_markerfacecolor(markerfacecolor)

@@ -27,9 +27,10 @@
 
 #include "addInMgrDefines.h"
 #include "../common/addInInterface.h"
+
 #include <qabstractitemmodel.h>
 #include <qscopedpointer.h>
-
+#include <qcolor.h>
 #include <qicon.h>
 
 namespace ito 
@@ -120,6 +121,10 @@ namespace ito
             bool getIsGrabberInstance(tItemType &itemType, size_t &internalData) const;
 
             QModelIndex getTypeNode(const int type) const;
+
+            //!< returns the background color for instances, that have been created by Python or which have at least one current reference by Python code
+            QColor backgroundColorInstancesWithPythonRef() const;
+            void setBackgroundColorInstancesWithPythonRef(const QColor &bgColor);
 
         protected:
             QVariant getFixedNodeInfo(const QModelIndex &index, const QVariant &name, const tItemType &itemType, const int &role, const QIcon icon) const;

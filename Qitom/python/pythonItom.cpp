@@ -49,6 +49,7 @@
 #include <qcoreapplication.h>
 #include <qdesktopwidget.h>
 #include <qstringlist.h>
+#include <qresource.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -4677,6 +4678,106 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegisterResources_doc, "registerResource(rccFileName: str, mapRoot: str = "") -> Registers the resource with the given rccFileName. \n\
+\n\
+This method opens a given Qt rcc resource file and registers its content at the location \n\
+in the resource tree specified by mapRoot. The mapRoot must usually be a slash separated \n\
+path, starting with a slash. \n\\n\
+\n\
+To generate a rcc file, create an index of all files, that should be added to the resource file, \n\
+in a qrc file and uses the rcc binary from Qt to compile the rcc file. \n\
+\n\
+This method is new in itom > 4.0.0. \n\
+\n\
+Parameters \n\
+----------- \n\
+rccFileName : {str}\n\
+    filepath to the rcc resource file \n\
+mapRoot : {str}, optional \n\
+    root key, where the resources should be registered below (default: empty string) \n\
+\n\
+Returns \n\
+---------- \n\
+True if the file could be successfully opened, else False.\n\
+\n\
+See Also \n\
+--------- \n\
+unregisterResource");
+/*static*/ PyObject* PythonItom::PyRegisterResource(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = { "rccFileName", "mapRoot", NULL };
+    
+    const char* rccFileName = NULL;
+    const char* mapRoot = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|s", const_cast<char**>(kwlist), &rccFileName, &mapRoot))
+    {
+        return NULL;
+    }
+
+    QString _rcc = QLatin1String(rccFileName);
+    QString _mapRoot = mapRoot == NULL ? QString() : QLatin1String(mapRoot);
+
+    bool retVal = QResource::registerResource(_rcc, _mapRoot);
+    
+    if (retVal)
+    {
+        Py_RETURN_TRUE;
+    }
+
+    Py_RETURN_FALSE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUnregisterResources_doc, "unregisterResource(rccFileName: str, mapRoot: str = "") -> Unregisters the resource with the given rccFileName. \n\
+\n\
+This method tries to unload all resources in the given rcc resource file from the location \n\
+in the resource tree specified by `mapRoot`. The mapRoot must usually be a slash separated \n\
+path, starting with a slash. \n\
+\n\
+\n\
+This method is new in itom > 4.0.0. \n\
+\n\
+Parameters \n\
+----------- \n\
+rccFileName : {str}\n\
+    filepath to the rcc resource file \n\
+mapRoot : {str}, optional \n\
+    root key, where the resources should be unloaded from (default: empty string). \n\
+\n\
+Returns \n\
+---------- \n\
+True if the file could be successfully opened, else False.\n\
+\n\
+See Also \n\
+--------- \n\
+registerResource");
+/*static*/ PyObject* PythonItom::PyUnregisterResource(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = { "rccFileName", "mapRoot", NULL };
+
+    const char* rccFileName = NULL;
+    const char* mapRoot = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|s", const_cast<char**>(kwlist), &rccFileName, &mapRoot))
+    {
+        return NULL;
+    }
+
+    QString _rcc = QLatin1String(rccFileName);
+    QString _mapRoot = mapRoot == NULL ? QString() : QLatin1String(mapRoot);
+
+    bool retVal = QResource::unregisterResource(_rcc, _mapRoot);
+
+    if (retVal)
+    {
+        Py_RETURN_TRUE;
+    }
+
+    Py_RETURN_FALSE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor(cursorIndex = -1) -> changes the itom cursor or restores the previously set cursor if -1 \n\
 \n\
 This methods changes the overall cursor icon of itom where cursorIndex corresponds to the Qt enumeration Qt::CursorShape. e.g.:\n\
@@ -4869,10 +4970,10 @@ PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleAdministrator)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyCheckIsDeveloper_doc,"userIsDeveloper() -> return True if USER has developer status.\n\
@@ -4896,10 +4997,10 @@ PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleDeveloper)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyCheckIsUser_doc,"userIsUser() -> return True if USER has only user status.\n\
@@ -4923,10 +5024,10 @@ PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
 
     if (userOrg->getCurrentUserRole() == ito::userRoleBasic)
     {
-        return Py_True;
+        Py_RETURN_TRUE;
     }
 
-    return Py_False;
+    Py_RETURN_FALSE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -5498,7 +5599,9 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS | METH_KEYWORDS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
-    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clears all variables in workspace (holds variables created by any startup skript)"},
+    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clears all variables in workspace (holds variables created by any startup script)"},
+    {"registerResource", (PyCFunction)PythonItom::PyRegisterResource, METH_VARARGS | METH_KEYWORDS, pyRegisterResources_doc},
+    {"unregisterResource", (PyCFunction)PythonItom::PyUnregisterResource, METH_VARARGS | METH_KEYWORDS, pyUnregisterResources_doc},
     {NULL, NULL, 0, NULL}
 };
 

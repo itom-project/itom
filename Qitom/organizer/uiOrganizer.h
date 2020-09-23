@@ -383,6 +383,11 @@ public:
 
     QWidget* loadDesignerPluginWidget(const QString &name, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent = NULL);
 
+    QWidget* createWidget(const QString &className, RetVal &retValue, QWidget *parent = NULL, const QString &objectName = QString());
+
+    //!< loads a widget from an ui file (including its optional translation) and returns it.
+    QWidget* loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent = NULL, const QString &objectNameSuffix = QString());
+
 	QList<TimerContainer> getRegisteredTimers();
 
 protected:
@@ -391,7 +396,10 @@ protected:
 
     void startGarbageCollectorTimer();
 
-    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className);
+    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, 
+                                QSharedPointer<unsigned int>dialogHandle, 
+                                QSharedPointer<unsigned int> objectID, 
+                                QSharedPointer<QByteArray> className);
 
 private:
     void execGarbageCollection();
@@ -467,6 +475,7 @@ public slots:
     RetVal getChildObject(unsigned int uiHandle, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
     RetVal getChildObject2(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
     RetVal getChildObject3(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getLayout(unsigned int objectID, QSharedPointer<unsigned int> layoutObjectID, QSharedPointer<QByteArray> layoutClassName, QSharedPointer<QString> layoutObjectName, ItomSharedSemaphore *semaphore = NULL);
     RetVal getSignalIndex(unsigned int objectID, const QByteArray &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 

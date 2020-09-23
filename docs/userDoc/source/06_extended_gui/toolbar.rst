@@ -2,8 +2,8 @@
 
 .. _toolbar-start:
 
-Customize the menu and toolbars of |itom|
-******************************************
+Customize the menu bar and toolbars of |itom|
+***********************************************
 
 In this section, it is shown how you can add user-defined toolbars and menus to the main window of |itom|. Clicks to these
 execute arbitrary python code or methods. The creation of the toolbars, buttons and menus is done using python code, too.
@@ -161,20 +161,47 @@ The only argument of the command :py:func:`~itom.removeMenu` is only the key of 
 Icons in user-defined toolbars and menus
 ==============================================
 
-Both for toolbar-buttons as well for menu-entries you can assign an arbitrary icon. Usually it is recommended to have an icon file with a size
-of 24x24 Px or below (will be automatically resized) in any image format (*png* recommended, available is *bmp*, *gif*, *jpg*, *tiff*...). The
-argument **icon** of the commands :py:func:`~itom.addButton` and :py:func:`~itom.addMenu` must be a string with the absolute or relative filename
-of the icon-file. The relative filename is always considered to be relative with respect to the current working directory, as it is printed at the
-right bottom side of |itom|'s main window (or use the command :py:func:`~itom.getCurrentPath`). Besides that, you can also pass an absolute path
-to your icon-file. The command :py:func:`~itom.getAppPath` returns the absolute path of the |itom|-application. Additionally you can use methods
-from the |python|-module :py:mod:`os.path` in order to create valid absolute paths.
+Both for toolbar-buttons as well for menu-entries you can assign an arbitrary icon. Usually it is 
+recommended to have an icon file with a size of 24x24 Px or below (will be automatically resized) 
+in any image format (*png* recommended, available is *bmp*, *gif*, *jpg*, *tiff*...). The argument 
+**icon** of the commands :py:func:`~itom.addButton` and :py:func:`~itom.addMenu` must be a string 
+with the absolute or relative filename of the icon-file. The relative filename is always 
+considered to be relative with respect to the current working directory, as it is printed at the 
+right bottom side of |itom|'s main window (or use the command :py:func:`~itom.getCurrentPath`). 
+Besides that, you can also pass an absolute path to your icon-file. The command 
+:py:func:`~itom.getAppPath` returns the absolute path of the |itom|-application. Additionally you 
+can use methods from the |python|-module :py:mod:`os.path` in order to create valid absolute paths.
 
-Besides assigning an external icon-file to the **icon** parameter, |itom| also gives you access to any icons that are compiled as resources within
-the |itom| application. All icons, that are included in these resources are listed in the **icon browser**:
+Besides assigning an external icon-file to the **icon** parameter, |itom| also gives you access to 
+any icons that are compiled as resources within the |itom| application. All icons, that are 
+included in these resources are listed in the **icon browser**:
 
 .. figure:: images/iconBrowser.png
     :scale: 100%
     :align: center
 
-The icon browser is accessible in any script window by its menu **edit >> icon browser** (or Ctrl+B). If you found your desired icon, double click
-on the entry in order to copy the appropriate string to the clipboard and paste it afterwards into your script. Resource locations always start witha colon (:) sign.
+The icon browser is accessible in any script window by its menu **edit >> icon browser** (or 
+Ctrl+B). If you found your desired icon, double click on the entry in order to copy the 
+appropriate string to the clipboard and paste it afterwards into your script. Resource locations 
+always start witha colon (:) sign.
+
+.. _toolbar-icons-resources:
+
+Icons from Resource files (rcc)
+----------------------------------
+
+It is also possible to compile one or multiple icons into a **rcc** resource file. This
+resource file can then be loaded into itom, using the command :py:func:`~itom.registerResource`.
+From this moment, the icons in this file should also be visible in the icon browser (see above)
+and they can be used as icons for buttons (also in user defined UIs). These pathes will always
+start with a colon. 
+
+An rcc resource file can also be unloaded again via :py:func:`~itom.unregisterResource`.
+
+To create such a resource file, one is referred to the official documentation of Qt: https://doc.qt.io/qt-5/resources.html
+
+At first, create a **qrc** text file (xml-like format), where you add the pathes of all
+icons including their desired path (and / or alias).
+
+Then use the Qt tool **rcc.exe** (Windows) to compile the corresponding **rcc** binary file from
+the **qrc** file and the included files.

@@ -134,6 +134,9 @@ public:
     ParamDoublePropertyManager(QObject *parent = 0);
     ~ParamDoublePropertyManager();
 
+    bool hasPopupSlider() const;
+    void setPopupSlider(bool popup);
+
 protected:
     QString valueText(const QtProperty *property) const;
     QIcon valueIcon(const QtProperty *property) const;
@@ -149,6 +152,8 @@ public Q_SLOTS:
 
 private:
     Q_DISABLE_COPY(ParamDoublePropertyManager)
+
+    bool m_popupSlider;
 };
 
 

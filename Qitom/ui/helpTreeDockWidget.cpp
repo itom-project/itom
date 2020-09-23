@@ -41,7 +41,13 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_pParent(dock),
     m_internalCall(false),
     m_doingExpandAll(false),
-    m_state(stateIdle)
+    m_state(stateIdle),
+    m_backgroundColorHeading("#efefef"),
+    m_textColorHeading("#0c3762"),
+    m_linkColor("#dc3c01"),
+    m_backgroundParamName("#dcb8aa"),
+    m_textColorSection("#dc3c01"),
+    m_backgroundColorSection("#eeeeee")
 {
     ui.setupUi(this);
 
@@ -327,14 +333,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     const QHash  <QString, ito::AddInAlgo::FilterDef     *> *filterHashTable = aim->getFilterList();
     const QHash  <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
     ui.helpTreeContent->clear();
-    QFile file(":/helpTreeDockWidget/help_style");
 
-    if (file.open(QIODevice::ReadOnly))
-    {
-        QByteArray cssData = file.readAll();
-        ui.helpTreeContent->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
-        file.close();
-    }
+    loadAndProcessCssStyleSheet();
 
     QString docString = "";
     QString filter = filterpath.split(".").last();
@@ -827,13 +827,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     else
     {
         ui.helpTreeContent->clear();
-        QFile file(":/helpTreeDockWidget/help_style");
-        if (file.open(QIODevice::ReadOnly))
-        {
-            QByteArray cssData = file.readAll();
-            file.close();
-            ui.helpTreeContent->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
-        }
+        loadAndProcessCssStyleSheet();
 
         if (filter == tr("Algorithms"))
         {
@@ -1720,15 +1714,10 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
     }
     else
     {
-        QFile file(":/helpTreeDockWidget/help_style");
-        if (file.open(QIODevice::ReadOnly))
-        {
-            QByteArray cssData = file.readAll();
-            document->addResource(QTextDocument::StyleSheetResource, QUrl("itom_help_style.css"), QString(cssData));
-            file.close();
-        }
+        loadAndProcessCssStyleSheet();
 
         QMap<QString, QImage>::const_iterator it = images.constBegin();
+
         while (it != images.constEnd())
         {
             document->addResource(QTextDocument::ImageResource, it.key(), it.value());
@@ -2180,6 +2169,123 @@ void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
     if (!m_doingExpandAll)
     {
         ui.treeView->resizeColumnToContents(0);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::backgroundColorHeading() const
+{
+    return m_backgroundColorHeading;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setBackgroundColorHeading(const QColor &color)
+{
+    if (color != m_backgroundColorHeading)
+    {
+        m_backgroundColorHeading = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::textColorHeading() const
+{
+    return m_textColorHeading;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setTextColorHeading(const QColor &color)
+{
+    if (color != m_textColorHeading)
+    {
+        m_textColorHeading = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::linkColor() const
+{
+    return m_linkColor;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setLinkColor(const QColor &color)
+{
+    if (color != m_linkColor)
+    {
+        m_linkColor = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::backgroundParamName() const
+{
+    return m_backgroundParamName;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setBackgroundParamName(const QColor &color)
+{
+    if (color != m_backgroundParamName)
+    {
+        m_backgroundParamName = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::backgroundColorSection() const
+{
+    return m_backgroundColorSection;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setBackgroundColorSection(const QColor &color)
+{
+    if (color != m_backgroundColorSection)
+    {
+        m_backgroundColorSection = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QColor HelpTreeDockWidget::textColorSection() const
+{
+    return m_textColorSection;
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::setTextColorSection(const QColor &color)
+{
+    if (color != m_textColorSection)
+    {
+        m_textColorSection = color;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void HelpTreeDockWidget::loadAndProcessCssStyleSheet()
+{
+    QFile file(":/helpTreeDockWidget/help_style");
+
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QString cssData = QLatin1String(file.readAll());
+
+        // replace some colors
+        cssData.replace("$backgroundColorHeading$", m_backgroundColorHeading.name());
+        cssData.replace("$textColorHeading$", m_textColorHeading.name());
+        cssData.replace("$linkColor$", m_linkColor.name());
+        cssData.replace("$backgroundParamName$", m_backgroundParamName.name());
+        cssData.replace("$textColorSection$", m_textColorSection.name());
+        cssData.replace("$backgroundColorSection$", m_backgroundColorSection.name());
+
+        ui.helpTreeContent->document()->addResource(
+            QTextDocument::StyleSheetResource, 
+            QUrl("help_style.css"), 
+            cssData
+        );
+
+        file.close();
     }
 }
 

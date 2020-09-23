@@ -123,7 +123,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     m_dialogList.clear();
     m_objectList.clear();
 
-    m_widgetWrapper = new WidgetWrapper();
+    m_widgetWrapper = new WidgetWrapper(this);
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
@@ -234,14 +234,17 @@ void UiOrganizer::execGarbageCollection()
 unsigned int UiOrganizer::addObjectToList(QObject* objPtr)
 {
     QHash<unsigned int, QPointer<QObject> >::const_iterator i = m_objectList.constBegin();
+
     while (i != m_objectList.constEnd())
     {
         if (i.value().data() == objPtr)
         {
             return i.key();
         }
+
         ++i;
     }
+
     m_objectList.insert(++UiOrganizer::autoIncObjectCounter, QPointer<QObject>(objPtr));
 
     return UiOrganizer::autoIncObjectCounter;
@@ -660,6 +663,102 @@ RetVal UiOrganizer::getNewPluginWindow(
     return retValue;
 }
 
+//-------------------------------------------------------------------------------------
+QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectNameSuffix /*= QString()*/)
+{
+    QFile file(QDir::cleanPath(filename));
+    QWidget *wid = NULL;
+
+    if (file.exists())
+    {
+        // set the working directory if QLoader to the directory where the ui-file is stored. 
+        // Then icons, assigned to the user-interface may be properly loaded, since their 
+        // path is always saved relatively to the ui-file,too.
+        file.open(QFile::ReadOnly);
+        QFileInfo fileinfo(filename);
+        QDir workingDirectory = fileinfo.absoluteDir();
+
+        // try to load translation file with the same basename than the ui-file and the suffix .qm. 
+        // After the basename the location string can be added using _ as delimiter.
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+        settings.beginGroup("Language");
+        QString language = settings.value("language", "en").toString();
+        settings.endGroup();
+
+        QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+
+        QTranslator *qtrans = new QTranslator();
+        bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
+        if (couldLoad)
+        {
+            QString canonicalFilePath = fileinfo.canonicalFilePath();
+            if (m_transFiles.contains(canonicalFilePath))
+            {
+                delete m_transFiles.value(canonicalFilePath);
+                m_transFiles.remove(canonicalFilePath);
+            }
+
+            QCoreApplication::instance()->installTranslator(qtrans);
+            m_transFiles.insert(canonicalFilePath, qtrans);
+        }
+        else
+        {
+            DELETE_AND_SET_NULL(qtrans);
+        }
+
+        m_pUiLoader->setWorkingDirectory(workingDirectory);
+
+        if (objectNameSuffix == "")
+        {
+            wid = m_pUiLoader->load(&file, parent);
+        }
+        else
+        {
+            wid = m_pUiLoader->load(&file, NULL);
+        }
+
+        file.close();
+
+        if (wid == NULL)
+        {
+            QString err = m_pUiLoader->errorString();
+            retValue += RetVal(retError, 1007,
+                tr("ui-file '%1' could not be loaded. Reason: %2.").arg(filename).arg(err).toLatin1().data());
+        }
+        else
+        {
+            if (objectNameSuffix != "")
+            {
+                QList<QWidget*> childWidgets = wid->findChildren<QWidget*>();
+                QList<QLayout*> childLayouts = wid->findChildren<QLayout*>();
+
+                foreach(QWidget *w, childWidgets)
+                {
+                    w->setObjectName(w->objectName() + objectNameSuffix);
+                }
+
+                foreach(QLayout *l, childLayouts)
+                {
+                    l->setObjectName(l->objectName() + objectNameSuffix);
+                }
+
+                // rename the widget itself
+                wid->setObjectName(wid->objectName() + objectNameSuffix);
+
+                wid->setParent(parent);
+            }  
+        }
+    }
+    else
+    {
+        wid = NULL;
+        retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toLatin1().data());
+    }
+
+    return wid;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::createNewDialog(
         const QString &filename,
@@ -677,7 +776,9 @@ RetVal UiOrganizer::createNewDialog(
 
     if (filename.indexOf("itom://") == 0)
     {
-        if (filename.toLower() == "itom://matplotlib" || filename.toLower() == "itom://matplotlibfigure" || filename.toLower() == "itom://matplotlibplot")
+        if (filename.toLower() == "itom://matplotlib" || 
+            filename.toLower() == "itom://matplotlibfigure" || 
+            filename.toLower() == "itom://matplotlibplot")
         {
             pluginClassName = "MatplotlibPlot";
 
@@ -719,7 +820,8 @@ RetVal UiOrganizer::createNewDialog(
                     }
                     else
                     {
-                        retValue += RetVal::format(retError, 0, tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
+                        retValue += RetVal::format(retError, 0, 
+                            tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
                     }
                 }
                 else
@@ -736,61 +838,12 @@ RetVal UiOrganizer::createNewDialog(
     }
     else
     {
-        QFile file(QDir::cleanPath(filename));
-        if (file.exists())
-        {
-            bool childOfMainWindow;
-            UiOrganizer::parseUiDescription(uiDescription, NULL, NULL, &childOfMainWindow, NULL, NULL);
-            QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
+        bool childOfMainWindow;
+        UiOrganizer::parseUiDescription(uiDescription, NULL, NULL, &childOfMainWindow, NULL, NULL);
+        QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
-            //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
-            file.open(QFile::ReadOnly);
-            QFileInfo fileinfo(filename);
-            QDir workingDirectory = fileinfo.absoluteDir();
-
-            //try to load translation file with the same basename than the ui-file and the suffix .qm. After the basename the location string can be added using _ as delimiter.
-            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-
-            settings.beginGroup("Language");
-            QString language = settings.value("language", "en").toString();
-            settings.endGroup();
-
-            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
-
-            QTranslator *qtrans = new QTranslator();
-            bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
-            if (couldLoad)
-            {
-                QString canonicalFilePath = fileinfo.canonicalFilePath();
-                if (m_transFiles.contains(canonicalFilePath))
-                {
-                    delete m_transFiles.value(canonicalFilePath);
-                    m_transFiles.remove(canonicalFilePath);
-                }
-
-                QCoreApplication::instance()->installTranslator(qtrans);
-                m_transFiles.insert(canonicalFilePath, qtrans);
-            }
-            else
-            {
-                delete qtrans;
-            }
-
-            m_pUiLoader->setWorkingDirectory(workingDirectory);
-            wid = m_pUiLoader->load(&file, mainWin);
-            file.close();
-
-            if (wid == NULL)
-            {
-                retValue += RetVal(retError, 1007, tr("ui-file '%1' could not be correctly parsed.").arg(filename).toLatin1().data());
-            }
-        }
-        else
-        {
-            wid = NULL;
-            retValue += RetVal(retError, 1006, tr("filename '%1' does not exist").arg(filename).toLatin1().data());
-        }
-
+        wid = loadUiFile(filename, retValue, mainWin, "");
+        
         if (!retValue.containsError())
         {
             retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, objectID, className);
@@ -932,6 +985,34 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(
         retValue += RetVal::format(retError, 0, tr("No designer plugin with className '%s' could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder").toLatin1().data(),className.toLatin1().data());
     }
     return widget;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/* creates a widget with a given className (case insensitive) and returns it. */
+QWidget* UiOrganizer::createWidget(const QString &className, RetVal &retValue, QWidget *parent /*= NULL*/, const QString &objectName /*= QString()*/)
+{
+    QStringList availableWidgets = m_pUiLoader->availableWidgets();
+
+    QString className_;
+
+    foreach(const QString &availableWidget, availableWidgets)
+    {
+        if (className.compare(availableWidget, Qt::CaseInsensitive) == 0)
+        {
+            className_ = availableWidget;
+            break;
+        }
+    }
+
+    if (className_ == "")
+    {
+        retValue += ito::RetVal::format(ito::retError, 0, tr("Cannot find a widget with class name '%1'").arg(className).toLatin1().data());
+        return NULL;
+    }
+
+    QWidget *w = m_pUiLoader->createWidget(className, parent, objectName);
+
+    return w;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2170,7 +2251,12 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, const QString &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &objectName, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getChildObject3(
+    unsigned int parentObjectID,
+    const QString &objectName,
+    QSharedPointer<unsigned int> objectID,
+    QSharedPointer<QByteArray> widgetClassName,
+    ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
@@ -2208,6 +2294,50 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
     else
     {
         retValue += RetVal(retError, errorUiHandleInvalid, tr("The parent widget is either unknown or does not exist any more.").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getLayout(unsigned int objectID, QSharedPointer<unsigned int> layoutObjectID, QSharedPointer<QByteArray> layoutClassName, QSharedPointer<QString> layoutObjectName, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+
+    if (m_objectList.contains(objectID))
+    {
+        QWidget* ptr = qobject_cast<QWidget*>(m_objectList[objectID].data());
+
+        if (ptr)
+        {
+            if (ptr->layout())
+            {
+                QLayout* obj = ptr->layout();
+
+                *layoutObjectID = addObjectToList(obj);
+                *layoutClassName = obj->metaObject()->className();
+                *layoutObjectName = obj->objectName();
+            }
+            else //return reference to dialog or windows itself
+            {
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("This uiItem has no layout.").toLatin1().data());
+            }
+        }
+        else
+        {
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("This uiItem is no widet.").toLatin1().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("This widget is either unknown or does not exist any more.").toLatin1().data());
     }
 
     if (semaphore)

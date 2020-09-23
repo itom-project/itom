@@ -114,7 +114,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_uiOrganizer(NULL),
     m_designerWidgetOrganizer(NULL),
     m_processOrganizer(NULL),
-    m_splashScreen(NULL),
+    m_pSplashScreen(NULL),
+    m_splashScreenTextColor(Qt::white),
     m_pQout(NULL),
     m_pQerr(NULL)
 {
@@ -157,7 +158,16 @@ void MainApplication::registerMetaObjects()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString getSplashScreenFileName()
+void MainApplication::setSplashScreenMessage(const QString &text)
+{
+    if (m_pSplashScreen)
+    {
+        m_pSplashScreen->showMessage(text, Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString MainApplication::getSplashScreenFileName() const
 {
     QString fileName;
 
@@ -221,6 +231,97 @@ QString getSplashScreenFileName()
     return fileName;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+QPixmap MainApplication::getSplashScreenPixmap() const
+{
+#ifdef USEGIMMICKS
+    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+#else
+    QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
+#endif // USEUSEGIMMICKS
+
+    QPixmap pixmap(spashScreenFileName);
+    QString versionText;
+    QString buildText;
+    QString bitTextShort;
+    QString bitTextLong;
+    QString revisionText = "";
+    QString editionText = "";
+    
+
+    QPainter p;
+    p.begin(&pixmap);
+    p.setPen(m_splashScreenTextColor);
+
+    versionText = QString(tr("Version %1")).arg(ITOM_VERSION_STR);
+
+    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    {
+        bitTextShort = tr("64 bit");
+        bitTextLong = bitTextShort + QString(" (x64)");
+    }
+    else
+    {
+        bitTextShort = tr("32 bit");
+        bitTextLong = bitTextShort + QString(" (x86)");
+    }
+
+#if USING_GIT == 1
+    revisionText = QString("Rev. %1").arg(GIT_HASHTAG_ABBREV);
+#endif
+
+    editionText = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
+
+    if (editionText != "")
+    {
+        if (revisionText != "")
+        {
+            buildText = QString("%1\n%2, %3").arg(editionText, bitTextShort, revisionText);
+        }
+        else
+        {
+            buildText = QString("%1\n%2").arg(editionText, bitTextLong);
+        } 
+    }
+    else
+    {
+        if (revisionText != "")
+        {
+            buildText = QString("%1\n%2").arg(bitTextLong, revisionText);
+        }
+        else
+        {
+            buildText = bitTextLong;
+        }
+    }
+
+    QRectF rectVersion(244 /*311*/, 219 /*115*/, 200, 100); //position of the version text within the image
+    QFont fontVersion;
+    fontVersion.setPixelSize(15);
+    p.setFont(fontVersion);
+    p.drawText(rectVersion, Qt::AlignLeft, versionText);
+
+    QRectF rectBuild(244, 240, 200, 100);
+    QFont fontBuild;
+    fontBuild.setPixelSize(12);
+    p.setFont(fontBuild);
+    p.drawText(rectBuild, Qt::AlignLeft, buildText);
+
+    /*QString editionText = QString("%1").arg(ITOM_ADDITIONAL_EDITION_NAME);
+    QRectF rectEdition(380, 16, 534, 67);
+
+    QFont font;
+    font.setPixelSize(20);
+    p.setFont(font);
+    p.setPen(Qt::white);
+
+    p.drawText(rectEdition, Qt::AlignLeft, editionText);*/
+
+
+    p.end();
+
+    return pixmap;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
@@ -239,38 +340,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     registerMetaObjects();
 
-#ifdef USEGIMMICKS
-    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
-#else
-    QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
-#endif // USEUSEGIMMICKS
+    QPixmap pixmap = getSplashScreenPixmap();
 
-    QPixmap pixmap(spashScreenFileName);
+    m_pSplashScreen = new QSplashScreen(pixmap);
 
-    QString text;
-
-    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
-    {
-        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
-    }
-    else
-    {
-        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
-    }
-
-#if USING_GIT == 1
-    text.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));
-#endif
-    QPainter p;
-    p.begin(&pixmap);
-    p.setPen(Qt::black);
-    QRectF rect(250 /*311*/,217 /*115*/,200,100); //position of the version text within the image
-    p.drawText(rect, Qt::AlignLeft, text);
-    p.end();
-
-    m_splashScreen = new QSplashScreen(pixmap);
-
-    m_splashScreen->show();
+    m_pSplashScreen->show();
     QCoreApplication::processEvents();
 
     //load std::cout and std::cerr stream redirections
@@ -366,7 +440,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
     //load translation files
-    m_splashScreen->showMessage(tr("load translations..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("load translations..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
@@ -391,8 +465,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
-    m_widgetsTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
-    QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
+    m_addinmanagerTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
 
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
@@ -418,7 +492,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage(tr("load themes and styles..."), Qt::AlignRight | Qt::AlignBottom);
+        m_pSplashScreen->showMessage(tr("load themes and styles..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         //set styles (if available)
@@ -522,7 +596,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 	/*seed is set*/
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
-    m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_processOrganizer = new ProcessOrganizer();
@@ -531,7 +605,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug("MainApplication::setupApplication");
 
     // starting AddInManager
-    m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     //AddInManager *AIM = NULL;
@@ -539,12 +613,13 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
     AppManagement::setAddInManager(AIM);
     AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
-    connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
+
+    connect(AIM, &AddInManager::splashLoadMessage, this, &MainApplication::setSplashScreenMessage);
     retValue += AIM->scanAddInDir("");
 
     qDebug("..plugins loaded");
 
-    m_splashScreen->showMessage(tr("start python..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("start python..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_pyEngine = new PythonEngine();
@@ -576,7 +651,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage(tr("load main window..."), Qt::AlignRight | Qt::AlignBottom);
+        m_pSplashScreen->showMessage(tr("load main window..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_mainWin = new MainWindow();
@@ -592,7 +667,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
-        m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);
+        m_pSplashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
@@ -602,11 +677,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
         if (incompatibleDesignerPlugins.size() > 0)
         {
-            QMessageBox::critical(m_splashScreen, tr("Incompatible designer plugins"), \
+            QMessageBox::critical(m_pSplashScreen, tr("Incompatible designer plugins"), \
                 tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n\n")));
         }
 
-        m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
+        m_pSplashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer(retValue);
@@ -629,7 +704,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     qDebug("..palette organizer started");
 
-    m_splashScreen->showMessage(tr("load script editor organizer..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("load script editor organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != NULL);
@@ -715,7 +790,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 //#endif
 
     //try to execute startup-python scripts
-    m_splashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     settings->beginGroup("Python");
@@ -759,7 +834,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
     DELETE_AND_SET_NULL(settings);
 
-    m_splashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom);
+    m_pSplashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     //force python to scan and run files in autostart folder in itom-packages folder
@@ -801,11 +876,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_mainWin)
     {
-        m_splashScreen->finish(m_mainWin);
+        m_pSplashScreen->finish(m_mainWin);
     }
     else
     {
-        m_splashScreen->close();
+        m_pSplashScreen->close();
     }
 }
 
@@ -819,7 +894,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 */
 void MainApplication::finalizeApplication()
 {
-    DELETE_AND_SET_NULL(m_splashScreen);
+    DELETE_AND_SET_NULL(m_pSplashScreen);
 
     DELETE_AND_SET_NULL(m_scriptEditorOrganizer);
     AppManagement::setScriptEditorOrganizer(NULL);
@@ -931,7 +1006,35 @@ void MainApplication::mainWindowCloseRequest()
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Question);
+
+#if QT_VERSION >= 0x050200
+
+		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
+		if (features & ito::UserFeature::featProperties)
+		{
+			QCheckBox *cb = new QCheckBox();
+			cb->setText(tr("Don't ask again."));
+			cb->setToolTip(tr("This behaviour can be changed again in the property dialog."));
+			cb->setChecked(false);
+			msgBox.setCheckBox(cb);
+		}
+		
+#endif
+
         int ret = msgBox.exec();
+
+#if QT_VERSION >= 0x050200
+		if (features & ito::UserFeature::featProperties)
+		{
+			if (msgBox.checkBox()->isChecked())
+			{
+				settings->setValue("askBeforeClose", false);
+			}
+		}
+		
+#endif
 
         if (ret == QMessageBox::Cancel)
         {
@@ -957,7 +1060,8 @@ void MainApplication::mainWindowCloseRequest()
 
             if (retValue.containsError())
             {
-                //The user was asked how to proceed with unsaved scripts. In this case, the user cancelled this request... do not close itom!
+                // The user was asked how to proceed with unsaved scripts. 
+                // In this case, the user cancelled this request... do not close itom!
                 return;
             }
         }
@@ -966,6 +1070,7 @@ void MainApplication::mainWindowCloseRequest()
         {
             m_mainWin->hide();
         }
+
         QApplication::instance()->quit();
     }
 }

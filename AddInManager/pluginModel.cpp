@@ -32,7 +32,7 @@ namespace ito
     class PlugInModelPrivate
     {
     public:
-        PlugInModelPrivate() : m_pAIM(NULL) {};
+        PlugInModelPrivate() : m_pAIM(NULL), m_bgColorItemsWithPythonRef(QColor(255, 255, 175)) {};
         ~PlugInModelPrivate() {};
 
     public:
@@ -51,6 +51,8 @@ namespace ito
         QIcon m_iconAlgo;
         QIcon m_iconWidget;
         QIcon m_iconPlots;
+
+        QColor m_bgColorItemsWithPythonRef;
 
         ito::AddInManager *m_pAIM;
     };
@@ -508,6 +510,27 @@ QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int r
         return QVariant();
     }
     return QVariant();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QColor PlugInModel::backgroundColorInstancesWithPythonRef() const
+{
+    Q_D(const PlugInModel);
+
+    return d->m_bgColorItemsWithPythonRef;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PlugInModel::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor)
+{
+    Q_D(PlugInModel);
+
+    if (d->m_bgColorItemsWithPythonRef != bgColor)
+    {
+        beginResetModel();
+        d->m_bgColorItemsWithPythonRef = bgColor;
+        endResetModel();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1010,7 +1033,7 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
         {
             if (ais->createdByGUI() == 0 || ais->getRefCount() > 0)
             {
-                return QColor(255, 255, 175);
+                return d->m_bgColorItemsWithPythonRef;
             }
         }
         else
@@ -1539,8 +1562,11 @@ bool PlugInModel::resetModel(bool beginOperation)
     {
         endResetModel();
     }
+
     return true;
 }
+
+//-------------------------------------------------------------------------------------
 QString PlugInModel::getInitCommand(const QModelIndex &item) const
 {
     Q_D(const PlugInModel);

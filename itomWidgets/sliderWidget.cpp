@@ -652,7 +652,7 @@ void SliderWidget::setPopupSlider(bool popup)
     d->SliderPopup->setObjectName("DoubleSliderPopup");
 
     QHBoxLayout* layout = new QHBoxLayout(d->SliderPopup);
-    layout->setContentsMargins(0,0,0,0);
+    layout->setContentsMargins(3, 1, 3, 1);
     /// If the Slider has already been created, it will try to keep its
     /// size.
     layout->addWidget(d->Slider);

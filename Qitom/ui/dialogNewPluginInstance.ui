@@ -128,7 +128,7 @@
             <x>0</x>
             <y>0</y>
             <width>423</width>
-            <height>260</height>
+            <height>254</height>
            </rect>
           </property>
          </widget>
@@ -207,16 +207,16 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <property name="leftMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
       <property name="topMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
       <property name="rightMargin">
        <number>3</number>
       </property>
       <property name="bottomMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
       <item>
        <widget class="QLabel" name="lblImage">

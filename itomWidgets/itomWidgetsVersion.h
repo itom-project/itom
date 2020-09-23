@@ -26,10 +26,10 @@
 *********************************************************************** */
 
 #define ITOM_WIDGETS_VERSION_MAJOR 1
-#define ITOM_WIDGETS_VERSION_MINOR 8
-#define ITOM_WIDGETS_VERSION_PATCH 5
+#define ITOM_WIDGETS_VERSION_MINOR 10
+#define ITOM_WIDGETS_VERSION_PATCH 2
 #define ITOM_WIDGETS_VERSION_REVISION 0
-#define ITOM_WIDGETS_VERSION_STRING "1.8.5.0"
+#define ITOM_WIDGETS_VERSION_STRING "1.10.2.0"
 #define ITOM_WIDGETS_COMPANY        "Institut fuer Technische Optik, University of Stuttgart"
-#define ITOM_WIDGETS_COPYRIGHT      "(C) 2019, ITO, University of Stuttgart"
+#define ITOM_WIDGETS_COPYRIGHT      "(C) 2020, ITO, University of Stuttgart"
 #define ITOM_WIDGETS_NAME           "itomWidgets"

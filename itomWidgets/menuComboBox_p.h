@@ -41,65 +41,67 @@ class Completer;
 class QToolButton;
 
 /// \ingroup Widgets
-class MenuComboBoxInternal: public QComboBox
+class MenuComboBoxInternal : public QComboBox
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  /// Superclass typedef
-  typedef QComboBox Superclass;
+    /// Superclass typedef
+    typedef QComboBox Superclass;
 
-  MenuComboBoxInternal();
-  virtual ~MenuComboBoxInternal();
-  virtual void showPopup();
+    MenuComboBoxInternal();
+    virtual ~MenuComboBoxInternal();
+    virtual void showPopup();
 
-  virtual QSize minimumSizeHint()const;
+    virtual QSize minimumSizeHint()const;
 Q_SIGNALS:
-  void popupShown();
+    void popupShown();
 public:
-  QPointer<QMenu>  Menu;
+    QPointer<QMenu>  Menu;
 };
 
 // -------------------------------------------------------------------------
 /// \ingroup Widgets
-class MenuComboBoxPrivate: public QObject
+class MenuComboBoxPrivate : public QObject
 {
-  Q_OBJECT
-  Q_DECLARE_PUBLIC(MenuComboBox);
+    Q_OBJECT
+    Q_DECLARE_PUBLIC(MenuComboBox);
+
 protected:
-  MenuComboBox* const q_ptr;
+    MenuComboBox* const q_ptr;
 public:
-  MenuComboBoxPrivate(MenuComboBox& object);
-  void init();
-  QAction* actionByTitle(const QString& text, const QMenu* parentMenu);
-  void setCurrentText(const QString& newCurrentText);
-  QString currentText()const;
+    MenuComboBoxPrivate(MenuComboBox& object);
+    void init();
+    QAction* actionByTitle(const QString& text, const QMenu* parentMenu);
+    void setCurrentText(const QString& newCurrentText);
+    QString currentText()const;
 
-  void setCurrentIcon(const QIcon& newCurrentIcon);
-  QIcon currentIcon()const;
+    void setCurrentIcon(const QIcon& newCurrentIcon);
+    QIcon currentIcon()const;
 
-  void addAction(QAction* action);
-  void addMenuToCompleter(QMenu* menu);
-  void addActionToCompleter(QAction* action);
+    void addAction(QAction* action);
+    void addMenuToCompleter(QMenu* menu);
+    void addActionToCompleter(QAction* action);
 
-  void removeActionToCompleter(QAction* action);
+    void removeAction(QAction* action);
+    void removeMenuFromCompleter(QMenu* menu);
+    void removeActionFromCompleter(QAction* action);
 
 public Q_SLOTS:
-  void setComboBoxEditable(bool editable = true);
-  void onCompletion(const QString& text);
+    void setComboBoxEditable(bool editable = true);
+    void onCompletion(const QString& text);
 
 protected:
-  QIcon         DefaultIcon;
-  QString       DefaultText;
-  bool          IsDefaultTextCurrent;
-  bool          IsDefaultIconCurrent;
+    QIcon         DefaultIcon;
+    QString       DefaultText;
+    bool          IsDefaultTextCurrent;
+    bool          IsDefaultIconCurrent;
 
-  MenuComboBox::EditableBehavior EditBehavior;
+    MenuComboBox::EditableBehavior EditBehavior;
 
-  MenuComboBoxInternal*    MenuComboBoxIntern;
-  Completer*               SearchCompleter;
-  QPointer<QMenu>             Menu;
-  QToolButton*                SearchButton;
+    MenuComboBoxInternal*    mMenuComboBox;
+    Completer*               SearchCompleter;
+    QPointer<QMenu>          CompleterMenu;
+    QToolButton*             SearchButton;
 };
 
 #endif
-

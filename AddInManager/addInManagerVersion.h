@@ -26,9 +26,9 @@
 *********************************************************************** */
 
 #define ADDINMANAGER_VERSION_MAJOR 1
-#define ADDINMANAGER_VERSION_MINOR 2
+#define ADDINMANAGER_VERSION_MINOR 3
 #define ADDINMANAGER_VERSION_PATCH 0
 #define ADDINMANAGER_VERSION_REVISION 0
-#define ADDINMANAGER_VERSION_STRING  "1.2.0.0"
+#define ADDINMANAGER_VERSION_STRING  "1.3.0.0"
 
 

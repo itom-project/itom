@@ -78,7 +78,7 @@ ParamStringWidget::ParamStringWidget(QWidget *parent /*= NULL*/) :
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);;
 
     d->m_pComboBox = new QComboBox(this);
     layout->addWidget(d->m_pComboBox);
