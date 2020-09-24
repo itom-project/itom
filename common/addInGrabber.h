@@ -59,6 +59,14 @@ namespace ito
         AddInAbstractGrabberPrivate *dd;        
 
     protected:
+		enum pixelFormat
+		{
+			mono8 = ito::tUInt8,
+			mono10 = ito::tUInt16,
+			mono12 = ito::tUInt16,
+			mono16 = ito::tUInt16,
+			rgb32 = ito::tRGBA32,
+		};
         void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
 
 
@@ -152,6 +160,7 @@ namespace ito
 			ChannelContainer() {};
 			ChannelContainer(ito::Param sizex, ito::Param sizey, ito::Param bpp)
 			{
+
 				m_channelParam.insert("sizex",sizex);
 				m_channelParam.insert("sizey",sizey);
 				m_channelParam.insert("bpp", bpp);
@@ -162,6 +171,7 @@ namespace ito
 		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
 		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
 		void addChannel(QString name, ito::Param sizex, ito::Param sizey, ito::Param bpp);
+		
 	public:
 		AddInMultiChannelGrabber();
 		~AddInMultiChannelGrabber();
