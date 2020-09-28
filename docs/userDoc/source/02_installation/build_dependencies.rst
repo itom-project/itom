@@ -16,7 +16,7 @@ Software packages
 **Required Software-Packages**
 
 - IDE, Compiler (e.g. Visual Studio 2015 Professional, QtCreator...)
-- CMake (recommended 2.8.9 or higher)
+- CMake (recommended 3.1 or higher)
 - Qt-framework (>= 5.6 recommended)
 - OpenCV 3.2 or higher (3.x recommended)
 - Python 3.2 or higher
@@ -55,7 +55,7 @@ It is also possible to use the free express edition of Visual Studio.
 
 Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it. 
 Or just download it and use that. no need to install.
-If possible use any version higher than 2.8.8. CMake reads the platform-independent 
+If possible use any version higher than 3.1. CMake reads the platform-independent 
 project files of |itom| (CMakeList.txt) and generates the corresponding project 
 files for your compiler, IDE and platform.
 
@@ -163,7 +163,7 @@ requires that you have the **.NET framework 2.0 SP 1** installed on your PC.
 
 .. _install-depend-opencv:
 
-**OpenCV** (mandatory, 2.3 or higher, 2.4.x recommended, 3.x working as well)
+**OpenCV** (mandatory, 2.3 or higher, 3.x recommended, 4.x is also possible)
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 You have different possibilities in order to get the binaries from OpenCV:
@@ -173,7 +173,7 @@ You have different possibilities in order to get the binaries from OpenCV:
    The superpack contains pre-compiled binaries for VS2008, VS2010, MinGW in 32bit and 64bit. 
    (Later map the CMake variable **OpenCV_DIR** to the **build** subdirectory of the
    extracted archive).
-2. Download the current setup (version 2.4 or higher, recommended) from http://opencv.org/ 
+2. Download the current setup (version 2.4 or higher recommended) from http://opencv.org/ 
    and install it. This installation also contains pre-compiled binaries for VS2008, VS2010 and MinGW.
    In this case map **OpenCV_DIR** to the **opencv/build** subdirectory.
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. 
@@ -225,8 +225,8 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 :ref:`build_dependencies_vtk`
 
-**Python** (mandatory, 3.2 or higher)
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+**Python** (mandatory, 3.2 or higher, 3.4 or higher recommended)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in 
 version 3.2 or higher. You can simultaneously run different versions of python.
