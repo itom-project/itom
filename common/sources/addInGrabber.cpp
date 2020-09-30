@@ -29,6 +29,8 @@
 
 #include <qmetatype.h>
 #include <qcoreapplication.h>
+#include <qmetaobject.h>
+
 
 namespace ito
 {
@@ -72,7 +74,58 @@ namespace ito
     {
         DELETE_AND_SET_NULL(dd);
     }
-    //----------------------------------------------------------------------------------------------------------------------------------
+
+	//----------------------------------------------------------------------------------------------------------------------------------
+	//! this method returns the size of a pixel for a given pixelFormat.
+	int AddInAbstractGrabber::pixelFormatStringToBpp(char* val)
+	{
+		bool ok;
+		int format = pixelFormatStringToEnum(val, &ok);
+		if (ok)
+		{
+			if (format == mono8)
+			{
+				return 8;
+			}
+			else if (format == mono10 || format == mono12 || format == mono16)
+			{
+				return 16;
+			}
+			else if(format == rgb32)
+			{
+				return 40;
+			}
+			else
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
+		
+	}
+	//----------------------------------------------------------------------------------------------------------------------------------
+	/*!
+	\class AddInAbstractGrabber
+	\brief This method maps a string to a value of pixelFormat.
+
+	This function maps a string to a pixel format by using QMetaType.
+	*/
+
+	int AddInAbstractGrabber::pixelFormatStringToEnum(char* val, bool* ok)
+	{
+#if QT_VERSION >= 0x050500
+		const QMetaObject mo = staticMetaObject;
+#else
+		const QMetaObject mo = StaticQtMetaObject::get();
+#endif
+		QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("PixelFormat"));
+		int pixelFormat = me.keyToValue(val, ok);
+		return pixelFormat;
+	}
+	//----------------------------------------------------------------------------------------------------------------------------------
     //! if any live image has been connected to this camera, this event will be regularly fired.
     /*!
         This event is continoulsy fired if auto grabbing is enabled. At first, the image is acquired (method acquire). Then
@@ -292,6 +345,35 @@ namespace ito
 		AddInAbstractGrabber()
 	{
 		dd = new AddInMultiChannelGrabberPrivate();
+
+		ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMultiChannelGrabber", "GrabberName");
+		paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
+		m_params.insert(paramVal.getName(), paramVal);
+
+		int roi[] = { 0, 0, 2048, 2048 };
+		paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+		ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
+		paramVal.setMeta(rm, true);
+		m_params.insert(paramVal.getName(), paramVal);
+
+		paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
+		paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
+		m_params.insert(paramVal.getName(), paramVal);
+
+		paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
+		paramVal.getMetaT<ito::IntMeta>()->setCategory("ImageFormatControl");
+		m_params.insert(paramVal.getName(), paramVal);
+
+		ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "mono8");
+		m->addItem("mono10");
+		m->addItem("mono12");
+		m->addItem("mono16");
+		paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", tr("bitdepth of images: mono8, mono10, mono12, mono16, rgb32").toLatin1().data());
+		paramVal.setMeta(m, true);
+		m_params.insert(paramVal.getName(), paramVal);
+
+		paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
+		m_params.insert(paramVal.getName(), paramVal);
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------------------
@@ -368,33 +450,30 @@ namespace ito
 
 	ito::RetVal ito::AddInMultiChannelGrabber::checkData(ito::DataObject *externalDataObject)
 	{
-		unsigned int futureType, bpp;
+		ito::RetVal retVal(ito::retOk);
+		bool ok;
+		unsigned int futureType;
+		PixelFormat format;
 		if (!externalDataObject)
 		{
 
 			QMutableMapIterator<QString, ChannelContainer> i(m_data);
 			while (i.hasNext()) {
 				i.next();
-				bpp = i.value().m_channelParam["bpp"].getVal<int>();
-				if (bpp <= 8)
+				futureType = pixelFormatStringToEnum(i.value().m_channelParam["pixelFormat"].getVal<char*>(),&ok);
+				if (ok)
 				{
-					futureType = ito::tUInt8;
-				}
-				else if (bpp <= 16)
-				{
-					futureType = ito::tUInt16;
-				}
-				else if (bpp <= 32)
-				{
-					futureType = ito::tInt32;
+					int* roi = i.value().m_channelParam["roi"].getVal<int*>();
+					int height = roi[3] - roi[2];
+					int width = roi[1] - roi[0];
+					if (i.value().data.getDims() < 2 || i.value().data.getSize(0) != height || i.value().data.getSize(1) != width || i.value().data.getType() != futureType)
+					{
+						i.value().data = ito::DataObject(height, width, futureType);
+					}
 				}
 				else
 				{
-					futureType = ito::tFloat64;
-				}
-				if (i.value().data.getDims() < 2 || i.value().data.getSize(0) != (unsigned int)i.value().m_channelParam["sizey"].getVal<int>() || i.value().data.getSize(1) != (unsigned int)i.value().m_channelParam["sizex"].getVal<int>() || i.value().data.getType() != futureType)
-				{
-					i.value().data = ito::DataObject(i.value().m_channelParam["sizey"].getVal<int>(), i.value().m_channelParam["sizex"].getVal<int>(), futureType);
+					retVal += ito::RetVal(ito::retError, 0, tr("invalid pixel format").toLatin1().data());
 				}
 					
 			}
@@ -404,46 +483,52 @@ namespace ito
 			char* channel = m_params["defaultChannel"].getVal<char*>();
 			if (m_data.contains(channel))
 			{
-				bpp = m_data[channel].m_channelParam["bpp"].getVal<int>();
-				if (bpp <= 8)
+				futureType = pixelFormatStringToEnum(m_data[channel].m_channelParam["pixelFormat"].getVal<char*>(), &ok);
+				if (ok)
 				{
-					futureType = ito::tUInt8;
-				}
-				else if (bpp <= 16)
-				{
-					futureType = ito::tUInt16;
-				}
-				else if (bpp <= 32)
-				{
-					futureType = ito::tInt32;
+					int* roi = m_data[channel].m_channelParam["roi"].getVal<int*>();
+					int width = roi[1] - roi[0];
+					int height = roi[3] - roi[2];
+					if (externalDataObject->getDims() == 0)
+					{
+						*externalDataObject = ito::DataObject(height, width, futureType);
+					}
+					else if (externalDataObject->calcNumMats() != 1)
+					{
+						return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
+					}
+					else if (externalDataObject->getSize(externalDataObject->getDims() - 2) != height || externalDataObject->getSize(externalDataObject->getDims() - 1) != width || externalDataObject->getType() != futureType)
+					{
+						return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+					}
 				}
 				else
 				{
-					futureType = ito::tFloat64;
-				}
-				if (externalDataObject->getDims() == 0)
-				{
-					*externalDataObject = ito::DataObject(m_data[channel].m_channelParam["sizey"].getVal<int>(), m_data[channel].m_channelParam["sizex"].getVal<int>(), futureType);
-				}
-				else if (externalDataObject->calcNumMats() != 1)
-				{
-					return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());
-				}
-				else if (externalDataObject->getSize(externalDataObject->getDims() - 2) != (unsigned int)m_data[channel].m_channelParam["sizey"].getVal<int>() || externalDataObject->getSize(externalDataObject->getDims() - 1) != (unsigned int)m_data[channel].m_channelParam["sizex"].getVal<int>() || externalDataObject->getType() != futureType)
-				{
-					return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
+					retVal += ito::RetVal(ito::retError, 0, tr("invalid pixel format").toLatin1().data());
 				}
 			}
 		}
-		return ito::retOk;
+		return retVal;
 	}
 	
-	void AddInMultiChannelGrabber::addChannel(QString name, ito::Param sizex, ito::Param sizey, ito::Param bpp)
+	void AddInMultiChannelGrabber::addChannel(QString name)
 	{
-		ChannelContainer a(sizex, sizey, bpp);
+		ChannelContainer a(m_params["roi"], m_params["pixelFormat"], m_params["sizex"], m_params["sizey"]);
 		m_data[name] = a;
 
 	}
+
+	ito::RetVal ito::AddInMultiChannelGrabber::setBaseParam(ito::Param param, bool & ok)
+	{
+		QString paramName(param.getName());
+		bool ok = paramName.compare("roi") || paramName.compare("pixelFormat") || paramName.compare("defaultChannel");
+		if (ok)
+		{
+dfsfdsf
+		}
+		return ito::retOk;
+	}
+
 	ito::RetVal AddInMultiChannelGrabber::adaptDefaultChannelParams()
 	{
 		ito::RetVal retVal(ito::retOk);

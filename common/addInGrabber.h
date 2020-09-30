@@ -45,7 +45,21 @@ namespace ito
     class ITOMCOMMONQT_EXPORT AddInAbstractGrabber : public ito::AddInDataIO
     {
         Q_OBJECT
-
+	public:
+		enum PixelFormat
+		{
+			mono8 = ito::tUInt8,
+			mono10 = ito::tUInt16,
+			mono12 = ito::tUInt16,
+			mono16 = ito::tUInt16,
+			rgb32 = ito::tRGBA32,
+		};
+#if QT_VERSION < 0x050500
+		//for >= Qt 5.5.0 see Q_ENUM definition below
+		Q_ENUMS(PixelFormat)
+#else
+		Q_ENUM(PixelFormat)
+#endif
     private:
         //! counter indicating how many times startDevice has been called
         /*!
@@ -59,14 +73,10 @@ namespace ito
         AddInAbstractGrabberPrivate *dd;        
 
     protected:
-		enum pixelFormat
-		{
-			mono8 = ito::tUInt8,
-			mono10 = ito::tUInt16,
-			mono12 = ito::tUInt16,
-			mono16 = ito::tUInt16,
-			rgb32 = ito::tRGBA32,
-		};
+
+		int pixelFormatStringToBpp(char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
+		int pixelFormatStringToEnum(char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
+
         void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
 
 
@@ -116,6 +126,7 @@ namespace ito
         AddInAbstractGrabber();
         ~AddInAbstractGrabber();
 
+
     };
 
 	class ITOMCOMMONQT_EXPORT AddInGrabber : public AddInAbstractGrabber
@@ -158,19 +169,21 @@ namespace ito
 			ito::DataObject data;
 			QMap<QString, ito::Param> m_channelParam;
 			ChannelContainer() {};
-			ChannelContainer(ito::Param sizex, ito::Param sizey, ito::Param bpp)
+			ChannelContainer(ito::Param roi, ito::Param pixelFormat, ito::Param sizex, ito::Param sizey)
 			{
-
-				m_channelParam.insert("sizex",sizex);
-				m_channelParam.insert("sizey",sizey);
-				m_channelParam.insert("bpp", bpp);
+				m_channelParam.insert("pixelFormat",pixelFormat);
+				m_channelParam.insert("roi", roi);
+				m_channelParam.insert("sizex", sizex);
+				m_channelParam.insert("sizey", sizey);
+				
 			}
 		};
 		QMap<QString, ChannelContainer> m_data; /*!< Map for recently grabbed images of various channels*/
 		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
 		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
-		void addChannel(QString name, ito::Param sizex, ito::Param sizey, ito::Param bpp);
+		void addChannel(QString name);
+		ito::RetVal setBaseParam(ito::Param param,bool &ok); /*!< sets and updates all related base params. ok is set to true if param was set and all related params are updated sucessfully. */
 		
 	public:
 		AddInMultiChannelGrabber();
