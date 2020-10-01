@@ -41,8 +41,8 @@ class ItomUiClassDemo(ItomUi):
         call the constructor of the base class with the same arguments than
         ``itom.ui``. The ui object is then accessible by the member ``self.gui``.
         
-        Use the constructor to further initialize the user interface."""
-        
+        Use the constructor to further initialize the user interface.
+        """
         ItomUi.__init__(
             self, "itomUiClassDemo.ui", type=ui.TYPEWINDOW, deleteOnClose=True)
         
@@ -79,7 +79,6 @@ class ItomUiClassDemo(ItomUi):
         Afterwards, both properties are reverted to their original state
         (dependent on the current enabled state of the group box).
         """
-        
         # the following items will be disabled (enabled=False) during with statement
         disableItems = [self.gui.groupBox, self.gui.checkEnabled, self.gui.btnStart]
         
@@ -98,7 +97,7 @@ class ItomUiClassDemo(ItomUi):
                 hideItems=hideItems,
                 enableItems=enableItems,
                 revertToInitialStateOnExit=True,
-                showWaitCursor=True):
+                showWaitCursor=self.gui.checkWaitCursor["checked"]):
             # long going operation within the with statement
             time.sleep(3)
     
@@ -116,7 +115,6 @@ class ItomUiClassDemo(ItomUi):
         state. This is a feature of the ``disableGui`` factory function for
         a with statement.
         """
-        
         # the following items will be disabled (enabled=False) during with statement
         disableItems = [self.gui.groupBox, self.gui.checkEnabled, self.gui.btnStartException]
         
@@ -135,12 +133,13 @@ class ItomUiClassDemo(ItomUi):
                 hideItems=hideItems,
                 enableItems=enableItems,
                 revertToInitialStateOnExit=True,
-                showWaitCursor=True):
+                showWaitCursor=self.gui.checkWaitCursor["checked"]):
             # long going operation within the with statement
             time.sleep(3)
             
             raise RuntimeError("an unhandled exception occurred, but the "
                                "GUI is turned into the original state though")
+
 
 if __name__ == "__main__":
     win = ItomUiClassDemo()
