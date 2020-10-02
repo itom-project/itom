@@ -232,7 +232,7 @@ Download the installer from http://www.python.org/download/ and install python i
 version 3.2 or higher. You can simultaneously run different versions of python.
 
 **NumPy** (mandatory)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+''''''''''''''''''''''''''
 
 Get a version of NumPy that fits to your python version and install it. 
 On Windows, binaries for many python packages can be found under 
@@ -240,7 +240,7 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/. But you can also find them more easi
 on pypi and you can then install them using pip directly.
 
 **pip** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''
 
 **Pip** is the new package installation tool for |python| packages. If you don't 
 have **pip** already installed (already included in Python >= 3.4) use the following 
@@ -256,7 +256,7 @@ Assuming that Python is located under **C:\\Python32**, execute the following co
 **pip** is installed and you can use the **pip** tool (see **Sphinx** installation above).
 
 **Sphinx** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+''''''''''''''''''''''''''''
 
 The Python package **Sphinx** is used for generating the user documentation of |itom|. 
 You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However,
@@ -273,7 +273,7 @@ For upgrading **sphinx**, type::
     pip install sphinx --upgrade
     
 **frosted** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''''''''
 
 The Python package **frosted** can be installed in order to enable a code syntax 
 checker in |itom|. If installed, your scripts are automatically checked for syntax 
@@ -285,7 +285,7 @@ of the bug symbol. Use pip to install this package::
 
 
 **Other python packages** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''''''''''''''''''''''
 
 You can always check the website http://www.lfd.uci.edu/~gohlke/pythonlibs/ for 
 appropriate binaries of your desired python package.

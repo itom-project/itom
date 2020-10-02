@@ -7,7 +7,7 @@ Currently, there are both a *32bit* and a *64bit* setup version of |itom| availa
 The use of the setup version is recommended for users that mainly want to work with |itom| without developing new algorithms or plugins. The setup
 can be downloaded from https://bitbucket.org/itom/itom/downloads. The setup intalls the core application, a number of useful hardware plugins and the designer plugins which provide plotting functionalities to |itom|.
 
-For your convenience you can download an installer package for Microsoft Windows from `<https://bitbucket.org/itom/itom/downloads>`.
+For your convenience you can download an installer package for Microsoft Windows from https://bitbucket.org/itom/itom/downloads.
 There are several different types of setups available:
 
 * Windows, 32bit, |itom|, Python (sub directory of itom, optional) + Packages: numpy, scipy, matplotlib, PIL (optional)
