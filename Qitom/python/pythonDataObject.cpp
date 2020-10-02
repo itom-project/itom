@@ -7016,7 +7016,7 @@ Notes \n\
 ----- \n\
 Adding or changing values to / in the dictionary does not change the meta information of the dataObject. \
 Use the corresponding setters like setTag... instead.");
-PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /*clousure*/)
+PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /*closure*/)
 {
     PyObject *item = NULL;
 
@@ -7110,6 +7110,124 @@ PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /
     Py_DECREF(item);
 
     return dict;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *value, void * /*closure*/)
+{
+    void* closure = NULL;
+
+    if (self == NULL)
+    {
+        PyErr_SetString(PyExc_ValueError, "dataObject is NULL");
+        return NULL;
+    }
+
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_ValueError, "content of dataObject is NULL");
+        return NULL;
+    }
+
+    if (!PyDict_Check(value))
+    {
+        PyErr_SetString(PyExc_TypeError, "The input value must be a dictionary");
+        return -1;
+    }
+
+    if (PyDict_Size(value) < 7)  // dict must be greater than 7 due to 7 metaInfos of a dataObject
+    {
+        PyErr_SetString(PyExc_ValueError, "The size of the input dictionary must be greater or equal to 7.");
+        return -1;
+    }  
+    
+    PyObject *tags = PyDict_GetItemString(value, "tags");
+    if (!PyDict_Check(tags))
+    {
+        PyErr_SetString(PyExc_TypeError, "tags must be a dictionary");
+        return -1;
+    }
+
+    PyObject *axisScales = PyDict_GetItemString(value, "axisScales");
+    if (!PySequence_Check(axisScales))
+    {
+        PyErr_SetString(PyExc_TypeError, "axisScales must be a sequence");
+        return -1;
+    }
+
+    PyObject *axisOffsets = PyDict_GetItemString(value, "axisOffsets");
+    if (!PySequence_Check(axisOffsets))
+    {
+        PyErr_SetString(PyExc_TypeError, "axisOffsets must be a sequence");
+        return -1;
+    }
+
+    PyObject *axisDescriptions = PyDict_GetItemString(value, "axisDescriptions");
+    if (!PySequence_Check(axisDescriptions))
+    {
+        PyErr_SetString(PyExc_TypeError, "axisDescriptions must be a sequence");
+        return -1;
+    }
+
+    PyObject *axisUnits = PyDict_GetItemString(value, "axisUnits");
+    if (!PySequence_Check(axisUnits))
+    {
+        PyErr_SetString(PyExc_TypeError, "axisUnits must be a sequence");
+        return -1;
+    }
+
+    PyObject *valueUnit = PyDict_GetItemString(value, "valueUnit");
+    if (!PySequence_Check(valueUnit))
+    {
+        PyErr_SetString(PyExc_TypeError, "valueUnit must be a string");
+        return -1;
+    }
+
+    PyObject *valueDescription = PyDict_GetItemString(value, "valueDescription");
+    if (!PySequence_Check(valueDescription))
+    {
+        PyErr_SetString(PyExc_TypeError, "valueDescription must be a string");
+        return -1;
+    }
+
+    self->dataObject->deleteAllTags();
+
+    if (PyDataObject_setTags(self, tags, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setAxisScales(self, axisScales, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setAxisOffsets(self, axisOffsets, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setAxisDescriptions(self, axisDescriptions, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setAxisUnits(self, axisUnits, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setValueUnit(self, valueUnit, closure))
+    {
+        return -1;
+    }
+
+    if (PyDataObject_setValueDescription(self, valueDescription, closure))
+    {
+        return -1;
+    }
+    
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -9184,7 +9302,7 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
     {"dtype", (getter)PyDataObj_GetType, NULL, dataObjectAttrType_doc, NULL},
     {"shape", (getter)PyDataObj_GetShape, NULL, dataObjectAttrShape_doc, NULL},
     {"continuous", (getter)PyDataObj_GetContinuous, NULL, dataObjectAttrContinuous_doc, NULL},
-    {"metaDict", (getter)PyDataObject_getTagDict, NULL, dataObjectAttrTagDict_doc, NULL},
+    {"metaDict", (getter)PyDataObject_getTagDict, (setter)PyDataObject_setTagDict, dataObjectAttrTagDict_doc, NULL},
 
     {"tags", (getter)PyDataObject_getTags, (setter)PyDataObject_setTags, dataObjectAttrTags_doc, NULL},
     {"axisScales", (getter)PyDataObject_getAxisScales, (setter)PyDataObject_setAxisScales, dataObjectAttrAxisScales_doc, NULL},
