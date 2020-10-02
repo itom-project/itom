@@ -26,10 +26,10 @@
 *********************************************************************** */
 
 #define DATAOBJ_VERSION_MAJOR 1
-#define DATAOBJ_VERSION_MINOR 9
-#define DATAOBJ_VERSION_PATCH 0
+#define DATAOBJ_VERSION_MINOR 8
+#define DATAOBJ_VERSION_PATCH 1
 #define DATAOBJ_VERSION_REVISION 0
-#define DATAOBJ_VERSION_STRING "1.9.0.0"
+#define DATAOBJ_VERSION_STRING "1.8.1.0"
 
 
 
