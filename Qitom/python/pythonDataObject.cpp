@@ -7141,49 +7141,49 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
         return -1;
     }  
     
-    PyObject *tags = PyDict_GetItemString(value, "tags");
+    PyObject *tags = PyDict_GetItemString(value, "tags"); //borrowed
     if (!PyDict_Check(tags))
     {
         PyErr_SetString(PyExc_TypeError, "tags must be a dictionary");
         return -1;
     }
 
-    PyObject *axisScales = PyDict_GetItemString(value, "axisScales");
+    PyObject *axisScales = PyDict_GetItemString(value, "axisScales"); //borrowed
     if (!PySequence_Check(axisScales))
     {
         PyErr_SetString(PyExc_TypeError, "axisScales must be a sequence");
         return -1;
     }
 
-    PyObject *axisOffsets = PyDict_GetItemString(value, "axisOffsets");
+    PyObject *axisOffsets = PyDict_GetItemString(value, "axisOffsets"); //borrowed
     if (!PySequence_Check(axisOffsets))
     {
         PyErr_SetString(PyExc_TypeError, "axisOffsets must be a sequence");
         return -1;
     }
 
-    PyObject *axisDescriptions = PyDict_GetItemString(value, "axisDescriptions");
+    PyObject *axisDescriptions = PyDict_GetItemString(value, "axisDescriptions"); //borrowed
     if (!PySequence_Check(axisDescriptions))
     {
         PyErr_SetString(PyExc_TypeError, "axisDescriptions must be a sequence");
         return -1;
     }
 
-    PyObject *axisUnits = PyDict_GetItemString(value, "axisUnits");
+    PyObject *axisUnits = PyDict_GetItemString(value, "axisUnits"); //borrowed
     if (!PySequence_Check(axisUnits))
     {
         PyErr_SetString(PyExc_TypeError, "axisUnits must be a sequence");
         return -1;
     }
 
-    PyObject *valueUnit = PyDict_GetItemString(value, "valueUnit");
+    PyObject *valueUnit = PyDict_GetItemString(value, "valueUnit"); //borrowed
     if (!PySequence_Check(valueUnit))
     {
         PyErr_SetString(PyExc_TypeError, "valueUnit must be a string");
         return -1;
     }
 
-    PyObject *valueDescription = PyDict_GetItemString(value, "valueDescription");
+    PyObject *valueDescription = PyDict_GetItemString(value, "valueDescription"); //borrowed
     if (!PySequence_Check(valueDescription))
     {
         PyErr_SetString(PyExc_TypeError, "valueDescription must be a string");
