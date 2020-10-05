@@ -178,16 +178,20 @@ namespace ito
 				
 			}
 		};
-		QMap<QString, ChannelContainer> m_data; /*!< Map for recently grabbed images of various channels*/
+		QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
 		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
 		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
 		void addChannel(QString name);
-		ito::RetVal setBaseParam(ito::Param param,bool &ok); /*!< sets and updates all related base params. ok is set to true if param was set and all related params are updated sucessfully. */
-		
+		virtual ito::RetVal syncWithChannelParams(QString previousChannel);/*!< synchronizes the parameters from the defaultChannel with m_params */
+		virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
+
 	public:
 		AddInMultiChannelGrabber();
 		~AddInMultiChannelGrabber();
+	public slots:
+		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) final;
+		
 	};
 
 

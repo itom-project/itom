@@ -30,6 +30,8 @@
 #include <qmetatype.h>
 #include <qcoreapplication.h>
 #include <qmetaobject.h>
+#include <qmap.h>
+#include "common/helperCommon.h"
 
 
 namespace ito
@@ -397,13 +399,13 @@ namespace ito
 		//        int i=0;
 		int size = m_autoGrabbingListeners.size();
 		char* defChannel = m_params["defaultChannel"].getVal<char*>();
-		if (m_data.contains(defChannel))
+		if (m_channels.contains(defChannel))
 		{
 			if (waitMS == 0)
 			{
 				foreach(obj, m_autoGrabbingListeners)
 				{
-					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data[defChannel].data))), Q_ARG(ItomSharedSemaphore*, NULL)))
+					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[defChannel].data))), Q_ARG(ItomSharedSemaphore*, NULL)))
 					{
 						retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
 					}
@@ -418,7 +420,7 @@ namespace ito
 				{
 					waitConds[i] = new ItomSharedSemaphore();
 					// \todo On Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
-					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data[defChannel].data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
+					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[defChannel].data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
 					{
 						retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
 					}
@@ -457,7 +459,7 @@ namespace ito
 		if (!externalDataObject)
 		{
 
-			QMutableMapIterator<QString, ChannelContainer> i(m_data);
+			QMutableMapIterator<QString, ChannelContainer> i(m_channels);
 			while (i.hasNext()) {
 				i.next();
 				futureType = pixelFormatStringToEnum(i.value().m_channelParam["pixelFormat"].getVal<char*>(),&ok);
@@ -481,12 +483,12 @@ namespace ito
 		else
 		{
 			char* channel = m_params["defaultChannel"].getVal<char*>();
-			if (m_data.contains(channel))
+			if (m_channels.contains(channel))
 			{
-				futureType = pixelFormatStringToEnum(m_data[channel].m_channelParam["pixelFormat"].getVal<char*>(), &ok);
+				futureType = pixelFormatStringToEnum(m_channels[channel].m_channelParam["pixelFormat"].getVal<char*>(), &ok);
 				if (ok)
 				{
-					int* roi = m_data[channel].m_channelParam["roi"].getVal<int*>();
+					int* roi = m_channels[channel].m_channelParam["roi"].getVal<int*>();
 					int width = roi[1] - roi[0];
 					int height = roi[3] - roi[2];
 					if (externalDataObject->getDims() == 0)
@@ -514,19 +516,8 @@ namespace ito
 	void AddInMultiChannelGrabber::addChannel(QString name)
 	{
 		ChannelContainer a(m_params["roi"], m_params["pixelFormat"], m_params["sizex"], m_params["sizey"]);
-		m_data[name] = a;
+		m_channels[name] = a;
 
-	}
-
-	ito::RetVal ito::AddInMultiChannelGrabber::setBaseParam(ito::Param param, bool & ok)
-	{
-		QString paramName(param.getName());
-		bool ok = paramName.compare("roi") || paramName.compare("pixelFormat") || paramName.compare("defaultChannel");
-		if (ok)
-		{
-dfsfdsf
-		}
-		return ito::retOk;
 	}
 
 	ito::RetVal AddInMultiChannelGrabber::adaptDefaultChannelParams()
@@ -538,5 +529,105 @@ dfsfdsf
 
 	}
 
+	ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond/* = NULL*/)
+	{
+		ItomSharedSemaphoreLocker locker(waitCond);
+		ito::RetVal retValue;
+		bool hasIndex, ok;
+		int index;
+		QString suffix, key;
+		ParamMapIterator it;
+		retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
+		if (!retValue.containsError())
+		{
+			retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+		}
+		if (!retValue.containsError())
+		{
+			retValue += apiValidateParam(*it, *val, false, true);
+		}
+		if (!retValue.containsError())
+		{
+			
+			retValue += setParameter(val, it, suffix, key, index, hasIndex, ok);
+			if (!retValue.containsError() && !ok)
+			{
+				if (key == "defaultChannel")
+				{
+					QString previousChannel = m_params["defaultChannel"].getVal<char*>();
+					retValue += it->copyValueFrom(&(*val));
+					if (m_channels.find(it->getVal<char*>()) != m_channels.end())
+					{
+						m_params["defaultChannel"].setVal<char*>(it->getVal<char*>());
+						retValue += syncWithChannelParams(previousChannel);
+					}
+					else
+					{
+						retValue += ito::RetVal(ito::retError, 0, tr("Unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
+					}
+				}
+			}
+		}
+		if (!retValue.containsError())
+		{
+			emit parametersChanged(m_params);
+		}
+
+		if (waitCond)
+		{
+			waitCond->returnValue = retValue;
+			waitCond->release();
+		}
+
+		return retValue;
+	}
+	////----------------------------------------------------------------------------------------------------------------------------------
+	////! synchronizes the parameters from the defaultChannel with m_params
+	///*!
+	//This method synchronizes the parameters from the current selected channel container with m_params. Parameters which are not available for the current default channel are set to readonly
+
+	//\param [in] previousChannel indicates the name of the previous default channel. This is needed to check whether a parameter is no longer contained in the current channel, which was contained in the previous one.
+	//\return retOk if everything was ok, else retError
+	//*/
+	ito::RetVal AddInMultiChannelGrabber::syncWithChannelParams(QString previousChannel)
+	{
+		ito::RetVal retVal(ito::retOk);
+		unsigned int flag = 0;
+		QMapIterator<QString, ito::Param> itChannelParams(m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam);
+		bool channelDiffer = false;
+		//Check if the previous channel had the same parameters
+		QStringList defaulKeyList = m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam.keys();
+		qSort(defaulKeyList);
+		QStringList previousKeyList = m_channels[previousChannel].m_channelParam.keys();
+		qSort(previousKeyList);
+		if (defaulKeyList != previousKeyList)
+		{
+			QStringList::ConstIterator itPreviousChannel;
+			for (itPreviousChannel = previousKeyList.constBegin(); itPreviousChannel != previousKeyList.constEnd(); ++itPreviousChannel)
+			{
+				if (!defaulKeyList.contains(*itPreviousChannel))//if param from previous channel is not included in current channel, set param in m_params to readonly.
+				{
+					flag = m_params[*itPreviousChannel].getFlags();
+					flag |= ito::ParamBase::Readonly;
+					m_params[*itPreviousChannel].setFlags(flag);
+					//if a param is in the current channel include which was not in the previous one, the readonly flag will be removed when copying the param from the channel container to m_params
+				}
+			}
+		}
+		while (itChannelParams.hasNext())
+		{
+			itChannelParams.next();
+			if (m_params.contains(itChannelParams.key()))
+			{
+				m_params[itChannelParams.key()] = itChannelParams.value(); //copy param
+			}
+			else
+			{
+				retVal += ito::RetVal(ito::retError, 0, QString("channel parameter %1 not found in m_params").arg(itChannelParams.key()).toLatin1().data());
+			}
+
+		}		
+		return retVal;
+	}
 } //end namespace ito
 
