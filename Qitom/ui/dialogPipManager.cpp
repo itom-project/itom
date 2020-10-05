@@ -285,7 +285,7 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
 {
     outputReceived(text, true);
 
-    m_outputSilent = false;
+    m_outputSilent = outputSilent;
 
     ui.btnInstall->setEnabled(false);
     ui.btnUpdate->setEnabled(false);
