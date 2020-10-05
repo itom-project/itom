@@ -6997,10 +6997,10 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(PyArrayObject *npNdA
     return retVal;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrTagDict_doc,"return dictionary with all meta information of this dataObject \n\
+//---------------------------------------Get / Set metaDict ----------------------------------------------------------
+PyDoc_STRVAR(dataObjectAttrTagDict_doc,"dictionary with all meta information of this dataObject \n\
 \n\
-Returns a new dictionary with the following meta information: \n\
+Attribute to read or write the following meta information: \n\
 \n\
 * axisOffsets : List with offsets of each axis \n\
 * axisScales : List with the scales of each axis \n\
@@ -7012,10 +7012,16 @@ Returns a new dictionary with the following meta information: \n\
 * valueDescription : Description of the values \n\
 * valueUnit : The unit string of the values \n\
 \n\
+Returns \n\
+-------- \n\
+metaDict : {\"tags\": str, \"axisScales\": tuple, \"axisOffsets\": tuple, \"axisDescriptions\": tuple, \"axisUnits\": tuple, \"valueUnit\": str, \"valueDescription\": str} \n\
+    dictionary with the meta information of the dataObject\n\
+\n\
 Notes \n\
 ----- \n\
-Adding or changing values to / in the dictionary does not change the meta information of the dataObject. \
-Use the corresponding setters like setTag... instead.");
+It is also possible to use the corresponding setters like setTag/ setAxisScales. \
+Or define all meta information in a corresponding dictionary to use the setter of this attribute. \
+This attribute is of type read / write with itom version 4.1.");
 PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /*closure*/)
 {
     PyObject *item = NULL;
@@ -7134,12 +7140,6 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
         PyErr_SetString(PyExc_TypeError, "The input value must be a dictionary");
         return -1;
     }
-
-    if (PyDict_Size(value) < 7)  // dict must be greater than 7 due to 7 metaInfos of a dataObject
-    {
-        PyErr_SetString(PyExc_ValueError, "The size of the input dictionary must be greater or equal to 7.");
-        return -1;
-    }  
     
     PyObject *tags = PyDict_GetItemString(value, "tags"); //borrowed
     if (!PyDict_Check(tags))
