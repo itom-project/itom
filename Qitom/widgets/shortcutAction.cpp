@@ -78,7 +78,7 @@ ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text,
 }
 
 //----------------------------------------------------------------
-//!< Action with text, icon and shortcut (dífferent contexts for docked and undocked state)
+//!< Action with text, icon and shortcut (different contexts for docked and undocked state)
 ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent,
     const QKeySequence &key, Qt::ShortcutContext dockedContext,
     Qt::ShortcutContext undockedContext) : 

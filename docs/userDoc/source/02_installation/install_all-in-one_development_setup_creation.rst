@@ -226,13 +226,13 @@ Check in the function **generateCMakeDict** the version of Visual Studio and the
 paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull**.
 
 .. figure:: images/all-in-one-create/Setup_packages_versions.PNG
-   :scale: 100%
+   :width: 100%
    :align: center
    
 Check in the function **installNumpy**, if the numpy whl file names are right. 
 
 .. figure:: images/all-in-one-create/Setup_numpy_file.PNG
-   :scale: 100%
+   :width: 100%
    :align: center
 
 Check in the function **upgradePip**, **installPyflakes**, **installJedi** the filenames of the whl-files. 
