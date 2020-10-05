@@ -226,7 +226,7 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 {
     if (text != "")
     {
-        QString text_html = text;
+        QString text_html = text.toHtmlEscaped();
         text_html.replace("\n", "<br>");
 
         if (success)
@@ -285,7 +285,7 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
 {
     outputReceived(text, true);
 
-    m_outputSilent = outputSilent;
+    m_outputSilent = false;
 
     ui.btnInstall->setEnabled(false);
     ui.btnUpdate->setEnabled(false);
