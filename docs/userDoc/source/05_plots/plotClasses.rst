@@ -18,7 +18,7 @@ A list of all available plot plugins can be found in the section **Plots and Fig
 of itom.
 
 .. figure:: images/plotClasses.png
-    :scale: 100%
+    :width: 100%
     :align: center
     
 The list **Installed Figure and Plot Plugins** list all plot plugins (library files within the folder **designer** of the itom build or

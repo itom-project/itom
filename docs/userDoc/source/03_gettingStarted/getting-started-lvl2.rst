@@ -13,7 +13,7 @@ The GUI
 If you open |itom| for the first time, the main graphical user interface will look like the following screenshot:
 
 .. figure:: images/itom_layout.png
-    :scale: 100%
+    :width: 100%
     :align: center
     
 The main components are highlighted with different colors and numbers. These components are:
@@ -39,7 +39,7 @@ Connect to a hardware plugin using the GUI
 In the following example, we will connect to such a virtual actuator, move single axes and finally close the actuator. This is all done by the graphical user interface of |itom|. Later we will learn, how to do this by the help of script commands. For this example, you need to have the hardware plugin **DummyMotor** which should be listed in the plugin toolbox as child of the **actuators** group.
 
 .. figure:: images/openDummyMotor1.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 Every entry in this toolbox corresponds to one library file (Windows: \*.dll, Linux: \*.so), located in any subfolder of the **plugins** subfolder of your |itom| installation path. If the library could be loaded, you can connect to one or multiple instances of its represented hardware (e.g. you can connect to various motors of the same type that are connected to the computer). If you don't find the desired library in the :ref:`plugins toolbox <gui-plugins>`, you either don't have the library in the plugins subfolder or the library could not be loaded. This can have various reasons. See the **loaded plugins...** dialog in the menu **file** to check why the plugin could not be loaded.

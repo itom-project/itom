@@ -24,7 +24,7 @@ The plot functionality can be accessed by three different ways. The first way is
 The red X ("clear button") will delete all geometric elements within the plot either drawn by hand or by script.
 
 .. figure:: images/drawInto2DToolbarIcons.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 At the moment "itom" supports the following shapes:
@@ -40,7 +40,7 @@ During the design mode, a green line indicates the current position and size of 
 is finished and its color turns to the corresponding inverse color of the current color palette. 
     
 .. figure:: images/drawInto2D.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 By clicking the **tools >> clear marker** menu, all current shapes are deleted. After creation the geometric elements can be edited by left-clicking one of the element handles which becomes high-lighted (squares) and moving the mouse.

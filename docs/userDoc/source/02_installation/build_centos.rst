@@ -24,7 +24,7 @@ Please execute the following commands in the command line to get the dependencie
     sudo yum install qt5-qtsvg qt5-qtsvg-devel qt5-designer qt5-qttools-static qt5-qttools-devel
     
 These dependencies does not include support for point cloud libraries. To enable this support, you have to 
-get further packages. Please sett :ref:`build on fedora <build-fedora>` for more hints.
+get further packages. Please see :ref:`build on fedora <build-fedora>` for more hints.
 
 Now, change to the base directory, where the sources and builds of itom and its plugins should be placed. The following commands are not executed
 with super-user rights; prepend *sudo* if this is required. In comparison to building *itom* under Debian based Linux versions, the CMake

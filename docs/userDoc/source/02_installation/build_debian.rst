@@ -7,7 +7,8 @@ Build on Ubuntu/Debian/Raspi
 
 This section describes how |itom| and its plugins are built on a Ubuntu/Debianbased 
 Systems(as Raspberry Pi) with the Raspbian operating system (raspbian).
-Steps are as usual: 
+Steps are as usual:
+
 *  obtain dependencies
 *  obtain sources
 *  configure projects
@@ -54,7 +55,7 @@ Recommended folder structure
 
 Similar to Windows, the following folder structure is recommended:
 
-.. code-block:: python
+.. code-block:: bash
     
     ./sources
         ./itom    # cloned repository of core
@@ -85,6 +86,13 @@ Similar to Windows, the following folder structure is recommended:
         ...
         
         
+Copy code to make folder structure:
+
+.. code-block:: bash
+
+	sudo mkdir -p itom/{sources,build_debug,build_release}/{itom,plugins,designerPlugins}
+	
+
 
 Obtain the Dependencies
 -------------------------------------------------------------------------------
@@ -99,12 +107,12 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt update
     sudo apt install cmake cmake-gui git
     sudo apt install python3 python3-dev python3-numpy python3-pip
-    sudo apt install python3-numpy-db python3-apt-dbg
+    sudo apt install python3-numpy-dbg python3-apt-dbg
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
     sudo apt install libqt5webenginewidgets5 libqt5webengine5 qtwebengine5-dev
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt update && sudo apt-get install build-essential
-    sudo apt install libopencv-dev python-opencv #make sure opencv and pythonbindings are consistent. 
+    sudo apt install libopencv-dev python3-opencv #make sure opencv and pythonbindings are consistent. 
     sudo apt install libv4l-dev #this is optional to get the video for linux drivers
     sudo apt install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
     
@@ -140,13 +148,13 @@ Obtain the sources
     mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
     cd itom/build/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../../sources/itom #If PCL-support should be enabled, replace OFF by ON
-    make
+    make -j4
     cd ../designerPlugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins #If PCL-support should be enabled, replace OFF by ON
-    make
+    make -j4
     cd ../plugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
-    make
+    make -j4
     
     
     
@@ -244,7 +252,7 @@ Run the file **qitom** in the *build/itom* directory. Please give itom the right
 to write files in the directory, e.g. the settings.ini file.
 
 .. figure:: images/screenshot_raspberry_pi.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 Camera of Raspberry Pi

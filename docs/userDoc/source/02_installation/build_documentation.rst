@@ -9,7 +9,7 @@ Necessary tools
 -----------------
 
 In order to be able to build the documentation, you need to have some tools 
-´installed on your computer:
+installed on your computer:
 
 1. Doxygen
     
