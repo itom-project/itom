@@ -144,28 +144,39 @@ class PythonDataObject
         static PyObject* PyDataObj_GetShape(PyDataObject *self, void *closure);
         static PyObject* PyDataObj_GetContinuous(PyDataObject *self, void *closure);
 
-        static PyObject* PyDataObject_getTagDict(PyDataObject *self, void *clousure);
+        static PyObject* PyDataObject_getTagDict(PyDataObject *self, void *closure);
+        static int PyDataObject_setTagDict(PyDataObject *self, PyObject *value, void *closure);
 
         static PyObject* PyDataObject_getTags(PyDataObject *self, void *closure);
         static int PyDataObject_setTags(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getAxisScales(PyDataObject *self, void *closure);
         static int PyDataObject_setAxisScales(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getAxisOffsets(PyDataObject *self, void *closure);
         static int PyDataObject_setAxisOffsets(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getAxisDescriptions(PyDataObject *self, void *closure);
         static int PyDataObject_setAxisDescriptions(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getAxisUnits(PyDataObject *self, void *closure);
         static int PyDataObject_setAxisUnits(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getValueUnit(PyDataObject *self, void *closure);
         static int PyDataObject_setValueUnit(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getValueDescription(PyDataObject *self, void *closure);
         static int PyDataObject_setValueDescription(PyDataObject *self, PyObject *value, void *closure);
+
         static PyObject* PyDataObject_getValueScale(PyDataObject *self, void *closure);
         static PyObject* PyDataObject_getValueOffset(PyDataObject *self, void *closure);
+
 		static PyObject* PyDataObject_getReal(PyDataObject *self, void *closure);
 		static int PyDataObject_setReal(PyDataObject *self, PyObject *value, void *closure);
+
 		static PyObject* PyDataObject_getImag(PyDataObject *self, void *closure);
 		static int PyDataObject_setImag(PyDataObject *self, PyObject *value, void *closure);
+
 		static PyObject* PyDataObject_abs(PyDataObject *self, void *closure);
 		static PyObject* PyDataObject_arg(PyDataObject *self, void *closure);
         
@@ -177,8 +188,7 @@ class PythonDataObject
 
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
-        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
-        
+        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);        
 
         static PyObject* PyDataObject_real(PyDataObject *self);
         static PyObject* PyDataObject_imag(PyDataObject *self);
