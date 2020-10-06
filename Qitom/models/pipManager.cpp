@@ -45,7 +45,8 @@ namespace ito
         m_currentTask(taskNo),
         m_pipAvailable(false),
         m_pipVersion(0x000000),
-        m_pUserDefinedPythonHome(NULL)
+        m_pUserDefinedPythonHome(NULL),
+        m_pipCallMode(PipMode::pipModeDirect)
     {
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
@@ -134,6 +135,11 @@ namespace ito
                 m_pipProcess.setProcessEnvironment(env);
             }
             
+        }
+        
+        if (!retval.containsError())
+        {
+            checkCallMode();
         }
     }
 
@@ -278,6 +284,55 @@ ito::RetVal PipManager::initPythonIfStandalone()
     return retval;
 }
 
+//-------------------------------------------------------------------------------------
+/* There are some packages, whose meta information contain special characters.
+It turned out, that QProcess uses the default Windows encoding cp1252 under Windows
+to communicate via std::cout and std::cerr with the called process.
+This encoding can for instance not decode the latin letter L with Stroke (unicode 141).
+Then pip raises an UnicodeEncodeError.
+
+This problem seems only exist under Windows. If a Python script is called via QProcess
+the sys.stdout.encoding and sys.stderr.encoding is usually set to 'cp1252', however
+we wish to have 'utf8' as encoding. Therefore we have an alternative approach to
+indirectly call pip via the itom module itom-packages/pipProcess/runPipUtf8.
+
+This module at first reconfigures the encoding of cout and cerr streams to 'utf8' and
+then calls pip via a non-official approach, documented in pip/_internal/cli/main.py,
+using runpy. Since this approach might change for different pip versions, this
+method silently checks this call using a simple example. If it succeeds, runPipUtf8.py
+is used for all calls to pip, else the direct call is used.
+*/
+ito::RetVal PipManager::checkCallMode()
+{
+
+
+#ifdef WIN32
+    QProcess process;
+
+    QStringList args;
+    QDir pipProcessDir = QCoreApplication::applicationDirPath();
+    pipProcessDir.cd("itom-packages");
+    pipProcessDir.cd("pipProcess");
+
+    QFileInfo runPipUtf8(pipProcessDir, "runPipUtf8.py");
+    
+    if (runPipUtf8.exists())
+    {
+        m_runPipUtf8Path = runPipUtf8.absoluteFilePath();
+        args << m_runPipUtf8Path << "pip" << "-V";  // get version
+        int exitCode = QProcess::execute(m_pythonPath, args); // 0: ok, 1: any error
+        
+        if (exitCode == 0)
+        {
+            m_pipCallMode = PipMode::pipModeRunPipUtf8;
+        }
+    }
+
+#endif
+
+    return ito::retOk;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
@@ -413,6 +468,23 @@ bool PipManager::isPipStarted() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::startProcess(const QStringList &arguments)
+{
+    if (m_pipCallMode == PipMode::pipModeDirect)
+    {
+        QStringList args;
+        args << "-m" << arguments;
+        m_pipProcess.start(m_pythonPath, args);
+    }
+    else
+    {
+        QStringList args;
+        args << m_runPipUtf8Path << arguments;
+        m_pipProcess.start(m_pythonPath, args);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -446,7 +518,7 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
         QStringList arguments;
         arguments << "-m" << "pip" << "-V";
         arguments << parseGeneralOptions(options, true);
-        m_pipProcess.start(m_pythonPath, arguments);
+        m_pipProcess.start(m_pythonPath, arguments); // always use the direct call to pip here
     }
 }
 
@@ -477,7 +549,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         m_generalOptionsCache = options;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "list"; //here the pip version check is done
+        arguments << "pip" << "list"; //here the pip version check is done
 
         if (m_pipVersion >= 0x120000) // >= 18.0
         {
@@ -488,7 +560,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 			arguments << "--format=legacy";
 		}
         arguments << parseGeneralOptions(options, false, true);
-        m_pipProcess.start(m_pythonPath, arguments);
+        startProcess(arguments);
     }
 }
 
@@ -517,9 +589,9 @@ void PipManager::listAvailablePackages2(const QStringList &names)
         m_currentTask = taskListPackages2;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "show" << names;
+        arguments << "pip" << "show" << names;
         arguments << parseGeneralOptions(m_generalOptionsCache, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
-        m_pipProcess.start(m_pythonPath, arguments);
+        startProcess(arguments);
     }
 }
 
@@ -545,7 +617,8 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         m_currentTask = taskCheckUpdates;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
+        
         if (m_pipVersion >= 0x120000) // >= 18.0
         {
             arguments << "--format=columns";
@@ -554,8 +627,9 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         {
             arguments << "--format=legacy";
         }
+
         arguments << parseGeneralOptions(options, false, true);
-        m_pipProcess.start(m_pythonPath, arguments);
+        startProcess(arguments);
     }
 }
 
@@ -581,9 +655,9 @@ void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /
         m_currentTask = taskVerifyInstalledPackages;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "check"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << "pip" << "check"; //version has already been checked in listAvailablePackages. This is sufficient.
         arguments << parseGeneralOptions(options, false, true);
-        m_pipProcess.start(m_pythonPath, arguments);
+        startProcess(arguments);
     }
 }
 
@@ -609,7 +683,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         m_currentTask = taskInstall;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "install";
+        arguments << "pip" << "install";
 
         if (installSettings.type != PipInstall::typeRequirements)
         {
@@ -669,12 +743,13 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
 
         if (installSettings.runAsSudo)
         {
+            arguments.push_front("-m");
             arguments.push_front(m_pythonPath);
             m_pipProcess.start("pkexec", arguments);
         }
         else
         {
-            m_pipProcess.start(m_pythonPath, arguments);
+            startProcess(arguments);
         }
     }
 }
@@ -701,7 +776,7 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
         m_currentTask = taskUninstall;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "uninstall" << "--yes"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << "pip" << "uninstall" << "--yes"; //version has already been checked in listAvailablePackages. This is sufficient.
 
         arguments << parseGeneralOptions(options, false, true);
 
@@ -709,12 +784,13 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
 
         if (runAsSudo)
         {
+            arguments.push_front("-m");
             arguments.push_front(m_pythonPath);
             m_pipProcess.start("pkexec", arguments);
         }
         else
         {
-            m_pipProcess.start(m_pythonPath, arguments);
+            startProcess(arguments);
         }
     }
 }
@@ -862,9 +938,9 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     for (int idx = 2; idx < packages.size(); ++idx)
                     {
                         QStringList items = packages[idx].split(" ");
-                        if (items.size() > 0)
+                        if (items.size() > 0 && items[0].trimmed() != "")
                         {
-                            packages_out.append(items[0]);
+                            packages_out.append(items[0].trimmed());
                         }
                     }
                 }

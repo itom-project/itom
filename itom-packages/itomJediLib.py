@@ -29,7 +29,7 @@ import jedi
 import sys
 
 # avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
-maxreclimit = 1600
+maxreclimit = 1100
 if sys.getrecursionlimit() > maxreclimit:
     sys.setrecursionlimit(maxreclimit)
 

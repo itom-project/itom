@@ -2,11 +2,13 @@
 
 .. _build-debian:
 
-Build on Ubuntu/Debian/Raspi
+Build on Ubuntu/Debian/Raspberry Pi
 ================================================================================
 
-This section describes how |itom| and its plugins are built on a Ubuntu/Debianbased 
-Systems(as Raspberry Pi) with the Raspbian operating system (raspbian).
+This section describes how |itom| and its plugins are built on a Debian-based
+operating system, like Debian itself, Ubuntu or any of its derivates or even
+the Raspberry Pi (Raspbian) operation system.
+
 Steps are as usual:
 
 *  obtain dependencies
@@ -34,8 +36,8 @@ Required:
 Recommended (optional):
 
 * The IDE **QtCreator** (qtcreator)
-* **PointCloudLibrary** (if exists version 1.6 or better 1.7, else see http://pointclouds.org/downloads/linux.html 
-  or build it on your own, the point cloud library is optional!)
+* **PointCloudLibrary** (minimum version 1.6, >= 1.8 recommended.
+  see http://pointclouds.org/downloads. The PCL is an optional dependency.)
 * **Scipy** (python3-scipy, python3-scipy-dbg), 
 * **Sphinx** (python3-sphinx), 
 * **Matplotlib**
@@ -46,8 +48,6 @@ Recommended (optional):
 * python-opencv python bindings for opencv. Make sure to install them with the 
   same version/from the same source as opencv itself. use sudo apt install opencv-python 
   instead of pip3 if you installed opencv using apt.
-
-
 
 
 Recommended folder structure
@@ -89,13 +89,13 @@ Similar to Windows, the following folder structure is recommended:
 Copy code to make folder structure:
 
 .. code-block:: bash
-
-	sudo mkdir -p itom/{sources,build_debug,build_release}/{itom,plugins,designerPlugins}
-	
+    
+    sudo mkdir -p itom/{sources,build_debug,build_release}/{itom,plugins,designerPlugins}
 
 
 Obtain the Dependencies
 -------------------------------------------------------------------------------
+
 In the following, all required steps are indicated to get the dependencies, get 
 the sources and compile itom by the command line.
 
@@ -109,7 +109,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt install python3 python3-dev python3-numpy python3-pip
     sudo apt install python3-numpy-dbg python3-apt-dbg
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5
-    sudo apt install libqt5webenginewidgets5 libqt5webengine5 qtwebengine5-dev
+    sudo apt install libqt5webenginewidgets5 libqt5webengine5 qtwebengine5-dev # not possible on raspbian
     sudo apt install qttools5-dev-tools qttools5-dev
     sudo apt update && sudo apt-get install build-essential
     sudo apt install libopencv-dev python3-opencv #make sure opencv and pythonbindings are consistent. 
@@ -123,6 +123,16 @@ In almost one line, the packages above are equal to:
     sudo apt update
     sudo apt install build-essential cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
     sudo apt install libopencv-dev libv4l-dev xsdcxx libxerces-c-dev
+
+Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Raspbian buster or older),
+you cannot get the webengine libraries. Therfore the update commands look like this:
+
+.. code-block:: bash
+    
+    sudo apt update
+    sudo apt install build-essential cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
+    sudo apt install libopencv-dev libv4l-dev xsdcxx libxerces-c-dev
+    sudo apt install freeglut3-dev  # if the itomIsoGlWidget (designerplugin) should be compiled
 
 The packages *xsdcxx* and *libxerces-c-dev* are only required for building the optional plugin *x3p*. Usually, *libxerces-c-dev*
 should install its runtime package *libxerces-c3.2* (or similar).
@@ -140,11 +150,13 @@ with super-user rights; prepend *sudo* if this is required:
 
 Obtain the sources
 -------------------------------------------------------------------------------
+
 .. code-block:: bash
     
     git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
     git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
     git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
+    
     mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
     cd itom/build/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../../sources/itom #If PCL-support should be enabled, replace OFF by ON
@@ -156,7 +168,14 @@ Obtain the sources
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
     make -j4
     
+If you want to compile **itom** under **Raspbian** add **BUILD_WITH_HELPVIEWER=OFF** to the **cmake**
+command of the itom project (necessary due to unavailable webengine package of Qt):
+
+.. code-block:: bash
     
+    cd itom/build/itom
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DBUILD_WITH_HELPVIEWER=OFF ../../sources/itom
+    make -j4
     
 Configuration process
 -------------------------------------------------------------------------------
@@ -175,7 +194,6 @@ If this step fails, use ccmake or cmake-gui toi manually fix errors.
     * **CMAKE_BUILD_TYPE** to either **Debug** or **Release**
     * **BUILD_TARGET64** to ON if you want to build a 64bit version.
       (actually not needed, forces void* size to differ from the selected generator's one)
-    * **BUILD_UNICODE** to ON if you want to build with unicode support (recommended)
     * **BUILD_WITH_PCL** to ON if you have the point cloud library available on your 
       computer and want to compile |itom| with support for point clouds and polygon meshes.
     
@@ -231,6 +249,7 @@ This can be fixed by generating a sybolic link to any vtk .so file as followed:
 
 QtCreator
 -------------------------------------------------------------------------------
+
 Qtcreator may create its projects from CMakelists.txt files and use the given generator/toolchain
 you already specified in the **CMake** generation process. On the lower left side there are project properties.
 You can specify an executable that should be started using the current project.
