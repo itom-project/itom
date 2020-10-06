@@ -7177,14 +7177,14 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
     }
 
     PyObject *valueUnit = PyDict_GetItemString(value, "valueUnit"); //borrowed
-    if (!PySequence_Check(valueUnit))
+    if (!PyBytes_Check(valueUnit) && !PyUnicode_Check(valueUnit))
     {
         PyErr_SetString(PyExc_TypeError, "valueUnit must be a string");
         return -1;
     }
 
     PyObject *valueDescription = PyDict_GetItemString(value, "valueDescription"); //borrowed
-    if (!PySequence_Check(valueDescription))
+    if (!PyBytes_Check(valueDescription) && !PyUnicode_Check(valueDescription))
     {
         PyErr_SetString(PyExc_TypeError, "valueDescription must be a string");
         return -1;
