@@ -28,7 +28,6 @@
 #include "../global.h"
 
 #include "pythonCommon.h"
-#include "pythonNpDataObject.h"
 #include "pythonRgba.h"
 #include "pythonShape.h"
 #include "../common/shapeDObject.h"
