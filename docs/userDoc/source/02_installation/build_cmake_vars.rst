@@ -13,19 +13,19 @@ doc provided by it.
 .. |cmakelist_boost_dir| replace:: set this to the boost base folder you want to compile 
    into itom. This folder contains folders "boost" and "lib64-msvc-xxx". If you 
    set the right one here the boost libraries will get autopoulated... 
-    If not, this entry gets cleared again...
+   If not, this entry gets cleared again...
 
 .. |cmakelist_boost_includedir| replace:: from FindBoost.cmake:
-   "preferred include directory e.g. <prefix>/include"
-    create this entry if you have multiple boost versions installed and point it to the 
-    include directory(the folder containing **headers**) of the right version.
-    Note the all-caps spelling.
+   "preferred include directory e.g. .../include"
+   create this entry if you have multiple boost versions installed and point it to the 
+   include directory(the folder containing **headers**) of the right version.
+   Note the all-caps spelling.
 
 .. |cmakelist_boost_librarydir| replace:: from FindBoost.cmake:
-    "Preferred library directory e.g. <prefix>/lib"
-    create this entry and point it to the folder containing the 
-    **compiled** boost libraries(*.dll, *.lib, *.a *.so ...)
-    Note the all-caps spelling.
+   "Preferred library directory e.g. .../lib"
+   create this entry and point it to the folder containing the 
+   **compiled** boost libraries(\*.dll, \*.lib, \*.a, \*.so ...)
+   Note the all-caps spelling.
 
 .. |cmakelist_build_type| replace:: sets the output build type. only relevant for 
    single configuration builds, as makefiles. not relevant for high-end IDEs like 
@@ -67,12 +67,12 @@ doc provided by it.
    which lives in a directory side-by-side with "bin" and "lib" folders.
    
 .. |cmakelist_vld_dir| replace:: you can only set this value if compiling itom
-    with Visual Studio in Debug mode. Point it to the directory similar to
-    *D:\\itom\trunk\\Visual Leak Detector*. This folder must contain subfolders
-    named bin, include and lib. Click **VISUALLEAKDETECTOR_ENABLED** in order to
-    enable the memory leak detector in Visual Studio. Please make sure, that you
-    add the correct subfolder of its bin directory to the windows environment variables
-    or copy the content to the executable directory of itom (where qitom.exe is finally located).
+   with Visual Studio in Debug mode. Point it to the directory similar to
+   *D:\\itom\trunk\\Visual Leak Detector*. This folder must contain subfolders
+   named bin, include and lib. Click **VISUALLEAKDETECTOR_ENABLED** in order to
+   enable the memory leak detector in Visual Studio. Please make sure, that you
+   add the correct subfolder of its bin directory to the windows environment variables
+   or copy the content to the executable directory of itom (where qitom.exe is finally located).
 
 Liste
 ---------

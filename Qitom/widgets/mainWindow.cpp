@@ -130,7 +130,7 @@ MainWindow::MainWindow() :
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     //content
-	m_contentLayout = new QVBoxLayout(this);;
+	m_contentLayout = new QVBoxLayout();
 	m_contentSplitter = new QSplitter(this);
 	m_contentSplitter->setOrientation(Qt::Vertical);
 	m_contentLayout->addWidget(m_contentSplitter);

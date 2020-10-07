@@ -28,9 +28,8 @@
 #include "node.h"
 
 #include "../global.h"
-#include "pythonNpDataObject.h"
-#include "pythonStream.h"
 
+#include "pythonStream.h"
 #include "pythonItom.h"
 #include "pythonUi.h"
 #include "pythonFigure.h"

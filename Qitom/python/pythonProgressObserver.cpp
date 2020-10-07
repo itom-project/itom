@@ -205,7 +205,7 @@ int PythonProgressObserver::PyProgressObserver_setProgressValue(PyProgressObserv
     if (!self || self->progressObserver == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
-        return NULL;
+        return -1;
     }
 
     bool ok;
@@ -246,7 +246,7 @@ int PythonProgressObserver::PyProgressObserver_setProgressText(PyProgressObserve
     if (!self || self->progressObserver == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
-        return NULL;
+        return -1;
     }
 
     bool ok;

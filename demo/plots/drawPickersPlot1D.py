@@ -26,7 +26,7 @@ from itom import plot, dataObject
 def pickerChangedSlot(pickerIdx, posX, posY, curveIdx):
     print("picker %i changed. New pos: (%.2f, %.2f), curve: %i" % (pickerIdx, posX, posY, curveIdx))
 
-def userdemo_drawPcikersPlot1D():
+def userdemo_drawPickersPlot1D():
     #create demo data
     #1d sine
     sine = np.sin(np.arange(0, 10 * np.pi, (1/20) * np.pi))
@@ -51,4 +51,4 @@ def userdemo_drawPcikersPlot1D():
     h.call("appendPicker", (40, 80, 120, 160, 200), 1, False)
 
 if __name__ == "__main__":
-    userdemo_drawPcikersPlot1D()
+    userdemo_drawPickersPlot1D()

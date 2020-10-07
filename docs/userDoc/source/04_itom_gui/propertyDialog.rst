@@ -231,7 +231,7 @@ options in this property page:
   `pyflakes <https://github.com/PyCQA/pyflakes>`_. Using this package general 
   code errors and syntax errors are checked.
 * **Extended code checks**: This requires the python package 
-  `flake8 <https://flake8.pycqa.org/en/latest/>_. **Flake8** depends on 
+  `flake8 <https://flake8.pycqa.org/en/latest/>`_. **Flake8** depends on 
   **pyflakes**, **pycodestyle** and **mccabe**. However it can be extended by further
   plugins, like for instance **flake8-docstrings**. Therefore **flake8** can 
   check for various things whichextends the features of **pyflakes**. For 
@@ -302,8 +302,7 @@ can be an ini configuration file (tox.ini, .flake8 or setup.cfg) in the user
 directory of your operating system, or such an ini configuration file in the 
 directory of your project (e.g. the directory, where the scripts are located or 
 one of its parent directories, stopped if for instance a .git folder is detected). 
-For more information see the 
-:ref:`documentation of flake8 <https://flake8.pycqa.org/en/latest/user/configuration.html>`_.
+For more information see the `documentation of flake8 <https://flake8.pycqa.org/en/latest/user/configuration.html>`_.
 
 When flake8 is used within itom, the ranking of these configuration files are:
 
@@ -362,7 +361,7 @@ Within itom you can set the following options:
    as info.
 9. **Further options**: You can indicate here further options, that should be 
    passed to flake8. Every option must be on a separate line. See 
-   :ref:`the flake8 documentation <https://flake8.pycqa.org/en/latest/user/options.html>`_
+   `the flake8 documentation <https://flake8.pycqa.org/en/latest/user/options.html>`_
    for a list of options. Further plugins can append more options. Indicate 
    here the option (without the -- characters), optionally followed by an equal 
    sign and the value. If no value is given, True is assumed. Examples are:
@@ -405,7 +404,7 @@ calltips is started once the opening brace "(" is entered. If the checkbox is
 disabled, no check for calltips is executed.
 
 .. figure:: images/propEditorCalltips.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 The highlighted argument of a calltip indicates the argument, that corresponds 
@@ -480,7 +479,7 @@ are parsed by a syntax highlighter, that visualizes the
 components of the code with different styles.
 
 .. figure:: images/propEditorStyles.png
-    :scale: 100%
+    :width: 100%
     :align: center
 
 This property page is divided into the following parts:
@@ -584,11 +583,11 @@ font. If a setting is not provided by any plot type the setting will be ignored.
 The figures below are showing some examples of the different settings. 
 
 .. figure:: images/generalPlotSettings.png
-    :scale: 80%
+    :width: 100%
     :align: center
 
 .. figure:: images/1dLineElements.png
-    :scale: 80%
+    :width: 100%
     :align: center
 
 Palette Settings
@@ -602,7 +601,7 @@ These palettes can also be exported and / or imported, such that a backup of
 user-defined palettes is possible. 
 
 .. figure:: images/propEditorColorPalette.png
-    :scale: 80%
+    :width: 100%
     :align: center
 
 An |itom| color palette is defined by an array of 256 colors, which are mainly 

@@ -16,7 +16,7 @@ Software packages
 **Required Software-Packages**
 
 - IDE, Compiler (e.g. Visual Studio 2015 Professional, QtCreator...)
-- CMake (recommended 2.8.9 or higher)
+- CMake (recommended 3.1 or higher)
 - Qt-framework (>= 5.6 recommended)
 - OpenCV 3.2 or higher (3.x recommended)
 - Python 3.2 or higher
@@ -55,7 +55,7 @@ It is also possible to use the free express edition of Visual Studio.
 
 Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it. 
 Or just download it and use that. no need to install.
-If possible use any version higher than 2.8.8. CMake reads the platform-independent 
+If possible use any version higher than 3.1. CMake reads the platform-independent 
 project files of |itom| (CMakeList.txt) and generates the corresponding project 
 files for your compiler, IDE and platform.
 
@@ -163,7 +163,7 @@ requires that you have the **.NET framework 2.0 SP 1** installed on your PC.
 
 .. _install-depend-opencv:
 
-**OpenCV** (mandatory, 2.3 or higher, 2.4.x recommended, 3.x working as well)
+**OpenCV** (mandatory, 2.3 or higher, 3.x recommended, 4.x is also possible)
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 You have different possibilities in order to get the binaries from OpenCV:
@@ -173,7 +173,7 @@ You have different possibilities in order to get the binaries from OpenCV:
    The superpack contains pre-compiled binaries for VS2008, VS2010, MinGW in 32bit and 64bit. 
    (Later map the CMake variable **OpenCV_DIR** to the **build** subdirectory of the
    extracted archive).
-2. Download the current setup (version 2.4 or higher, recommended) from http://opencv.org/ 
+2. Download the current setup (version 2.4 or higher recommended) from http://opencv.org/ 
    and install it. This installation also contains pre-compiled binaries for VS2008, VS2010 and MinGW.
    In this case map **OpenCV_DIR** to the **opencv/build** subdirectory.
 3. Get the sources from OpenCV and use CMake to generate project files and build the binaries by yourself. 
@@ -225,14 +225,14 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 :ref:`build_dependencies_vtk`
 
-**Python** (mandatory, 3.2 or higher)
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+**Python** (mandatory, 3.2 or higher, 3.4 or higher recommended)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in 
 version 3.2 or higher. You can simultaneously run different versions of python.
 
 **NumPy** (mandatory)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+''''''''''''''''''''''''''
 
 Get a version of NumPy that fits to your python version and install it. 
 On Windows, binaries for many python packages can be found under 
@@ -240,7 +240,7 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/. But you can also find them more easi
 on pypi and you can then install them using pip directly.
 
 **pip** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''
 
 **Pip** is the new package installation tool for |python| packages. If you don't 
 have **pip** already installed (already included in Python >= 3.4) use the following 
@@ -256,7 +256,7 @@ Assuming that Python is located under **C:\\Python32**, execute the following co
 **pip** is installed and you can use the **pip** tool (see **Sphinx** installation above).
 
 **Sphinx** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+''''''''''''''''''''''''''''
 
 The Python package **Sphinx** is used for generating the user documentation of |itom|. 
 You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However,
@@ -273,7 +273,7 @@ For upgrading **sphinx**, type::
     pip install sphinx --upgrade
     
 **frosted** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''''''''
 
 The Python package **frosted** can be installed in order to enable a code syntax 
 checker in |itom|. If installed, your scripts are automatically checked for syntax 
@@ -285,7 +285,7 @@ of the bug symbol. Use pip to install this package::
 
 
 **Other python packages** (optional)
-´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+'''''''''''''''''''''''''''''''''''''''''
 
 You can always check the website http://www.lfd.uci.edu/~gohlke/pythonlibs/ for 
 appropriate binaries of your desired python package.

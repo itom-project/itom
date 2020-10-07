@@ -16,7 +16,7 @@ can be configured independently (for more information see the example **demo/plo
 
 
 .. figure:: images/vtk3dvisualizer.png
-    :scale: 100%
+    :width: 100%
     :align: center
     
 Examples about the Vtk3dVisualizer plot can be found in the folder **demo/plot**.

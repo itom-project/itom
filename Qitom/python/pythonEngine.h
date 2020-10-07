@@ -55,7 +55,6 @@
 
 /* includes */
 
-#include "pythonNpDataObject.h"
 #include "pythonItom.h"
 #include "pythonProxy.h"
 #include "pythonStream.h"

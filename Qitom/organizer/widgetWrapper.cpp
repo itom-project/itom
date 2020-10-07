@@ -929,11 +929,21 @@ ito::RetVal WidgetWrapper::callTableWidget(QTableWidget *tableWidget, int method
     {
         int row = (*reinterpret_cast<const int(*)>(_a[1]));
         int col = (*reinterpret_cast<const int(*)>(_a[2]));
-        if (row < 0 || row >= tableWidget->rowCount()) return false;
-        if (col < 0 || col >= tableWidget->columnCount()) return false;
+        
+        if (row < 0 || row >= tableWidget->rowCount())
+        {
+            return ito::RetVal(ito::retError, 0, "row index if out of range.");
+        }
+
+        if (col < 0 || col >= tableWidget->columnCount())
+        {
+            return ito::RetVal(ito::retError, 0, "column index is out of range.");
+        }
+
         QTableWidgetItem *item = new QTableWidgetItem();
-        tableWidget->setItem(row, col, item);
         item->setData(Qt::DisplayRole, (*reinterpret_cast<const QVariant(*)>(_a[3])));
+        tableWidget->setItem(row, col, item);
+        
         return ito::retOk;
     }
     case 6005: //currentColumn
