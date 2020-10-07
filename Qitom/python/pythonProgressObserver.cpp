@@ -28,6 +28,7 @@
 #include "../organizer/uiOrganizer.h"
 #include "../AppManagement.h"
 #include "pythonQtConversion.h"
+#include "pythonQtSignalMapper.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -44,6 +45,8 @@ void PythonProgressObserver::PyProgressObserver_addTpDict(PyObject * tp_dict)
 void PythonProgressObserver::PyProgressObserver_dealloc(PyProgressObserver* self)
 {
     DELETE_AND_SET_NULL(self->progressObserver);
+    DELETE_AND_SET_NULL(self->signalMapper);
+
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
@@ -54,13 +57,14 @@ PyObject* PythonProgressObserver::PyProgressObserver_new(PyTypeObject *type, PyO
     if (self != NULL)
     {
         self->progressObserver = NULL;
+        self->signalMapper = NULL;
     }
 
     return (PyObject *)self;
 };
 
 //------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyProgressObserver_doc,"progressObserver(progressBar : uiItem = None, label : uiItem = None, progressMinimum : int = 0, progressMaximum : int = 100) -> creates a progressObserver object. \n\
 \n\
 A 'progressObserver' object can be passed to functions, that might need some time to be finished, \n\
@@ -139,6 +143,9 @@ int PythonProgressObserver::PyProgressObserver_init(PyProgressObserver *self, Py
     {
         return -1;
     }
+
+    DELETE_AND_SET_NULL(self->signalMapper);
+    self->signalMapper = new PythonQtSignalMapper();
 
     return 0;
 };
@@ -277,7 +284,9 @@ PyObject* PythonProgressObserver::PyProgressObserver_isCancelled(PyProgressObser
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_requestCancellation_doc, "requestCancellation() -> requests the cancellation of the filter");
+PyDoc_STRVAR(progressObserver_requestCancellation_doc, "requestCancellation() -> requests the cancellation of the filter.\n\
+\n\
+Emits the ``cancellationRequested()`` signal.");
 PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgressObserver *self /*self*/)
 {
     if (!self || self->progressObserver == NULL)
@@ -291,7 +300,11 @@ PyObject* PythonProgressObserver::PyProgressObserver_requestCancellation(PyProgr
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_reset_doc, "reset() -> resets this object (e.g. emptys the current progress text, set the progress value to its minimum and resets the cancellation request)");
+PyDoc_STRVAR(progressObserver_reset_doc, "reset() -> resets this object \n\
+\n\
+Resets this object and empties the current progress text, resets the current \n\
+progress value to its minimum and resets the cancellation request. \n\
+Emits the ``resetDone`` signal.");
 PyObject* PythonProgressObserver::PyProgressObserver_reset(PyProgressObserver *self)
 {
     if (!self || self->progressObserver == NULL)
@@ -303,6 +316,161 @@ PyObject* PythonProgressObserver::PyProgressObserver_reset(PyProgressObserver *s
     (*(self->progressObserver))->reset();
     Py_RETURN_NONE;
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_connect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
+\n\
+This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
+Every Actuator can send various signals. Use this method to connect any signal to any \n\
+callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
+signal definition must be convertable into a python object. \n\
+\n\
+New in itom 4.1. \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature. Possible signatures are: ``progressTextChanged(QString)`` or ``progressValueChanged(int)``\n\
+callableMethod : {python method or function} \n\
+    Valid method or function that is called if the signal is emitted. The method must provide one parameter for the string or number argument of the signal. \n\
+minRepeatInterval : {int}, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
+\n\
+See Also \n\
+--------- \n\
+disconnect");
+PyObject* PythonProgressObserver::PyProgressObserver_connect(PyProgressObserver *self, PyObject* args, PyObject *kwds)
+{
+    const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
+    const char* signalSignature;
+    PyObject *callableMethod;
+    int signalIndex;
+    int tempType;
+    IntList argTypes;
+    int minRepeatInterval = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO|i", const_cast<char**>(kwlist), &signalSignature, &callableMethod, &minRepeatInterval))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return NULL;
+    }
+
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+
+    if (!self || self->progressObserver == NULL || self->progressObserver->isNull())
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    ito::FunctionCancellationAndObserver *fcao = self->progressObserver->data();
+
+    QByteArray signature(signalSignature);
+    const QMetaObject *mo = fcao->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    QList<QByteArray> names = metaMethod.parameterTypes();
+
+    foreach(const QByteArray& name, names)
+    {
+        tempType = QMetaType::type(name.constData());
+
+        if (tempType > 0)
+        {
+            argTypes.append(tempType);
+        }
+        else
+        {
+            QString msg = QString("parameter type %1 is unknown").arg(name.constData());
+            PyErr_SetString(PyExc_RuntimeError, msg.toLatin1().data());
+            signalIndex = -1;
+            return NULL;
+        }
+    }
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->addSignalHandler(fcao, signalSignature, signalIndex, callableMethod, argTypes, minRepeatInterval))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this progressObserver could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_disconnect_doc, "disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+\n\
+New in itom 4.1. \n\
+\n\
+Parameters \n\
+----------- \n\
+signalSignature : {str} \n\
+    This must be the valid signature (``progressTextChanged(QString)`` or ``progressValueChanged(int)``)\n\
+callableMethod : {python method or function} \n\
+    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+\n\
+See Also \n\
+--------- \n\
+connect \n\
+");
+PyObject* PythonProgressObserver::PyProgressObserver_disconnect(PyProgressObserver *self, PyObject* args, PyObject* kwds)
+{
+    const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
+    int signalIndex;
+    const char* signalSignature;
+    PyObject *callableMethod;
+    IntList argTypes;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sO", const_cast<char**>(kwlist), &signalSignature, &callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
+        return
+            NULL;
+    }
+    if (!PyCallable_Check(callableMethod))
+    {
+        PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
+        return NULL;
+    }
+    
+    if (!self || self->progressObserver == NULL || self->progressObserver->isNull())
+    {
+        PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
+        return NULL;
+    }
+
+    ito::FunctionCancellationAndObserver *fcao = self->progressObserver->data();
+
+    const QMetaObject *mo = fcao->metaObject();
+    signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature));
+    QMetaMethod metaMethod = mo->method(signalIndex);
+    if (self->signalMapper)
+    {
+        if (!self->signalMapper->removeSignalHandler(fcao, signalIndex, callableMethod))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "the connection could not be established.");
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No signalMapper for this progressObserver could be found");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
@@ -318,6 +486,8 @@ PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
 PyMethodDef PythonProgressObserver::PyProgressObserver_methods[] = {
     { "requestCancellation",    (PyCFunction)PythonProgressObserver::PyProgressObserver_requestCancellation, METH_NOARGS, progressObserver_requestCancellation_doc },
     { "reset",                  (PyCFunction)PythonProgressObserver::PyProgressObserver_reset, METH_NOARGS, progressObserver_reset_doc },
+    {"connect",                 (PyCFunction)PythonProgressObserver::PyProgressObserver_connect, METH_VARARGS | METH_KEYWORDS, progressObserver_connect_doc },
+   {"disconnect",               (PyCFunction)PythonProgressObserver::PyProgressObserver_disconnect, METH_VARARGS | METH_KEYWORDS, progressObserver_disconnect_doc},
     {NULL}  /* Sentinel */
 };
 
