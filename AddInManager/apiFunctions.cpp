@@ -77,6 +77,7 @@ namespace ito
         (void*)&ApiFunctions::mfilterVersion,             /* [35] */
         (void*)&ApiFunctions::mfilterAuthor,              /* [36] */
         (void*)&ApiFunctions::mfilterPluginName,          /* [37] */
+        (void*)&ApiFunctions::mfilterCallExt,             /* [38] */
         NULL
     };
 
@@ -268,8 +269,12 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     return ito::retOk;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal ApiFunctions::mfilterCall(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+//-------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterCall(
+    const QString &name,
+    QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt,
+    QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -281,13 +286,59 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+
     if (cfit == flist->end())
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data() );
+        return ito::RetVal::format(
+            ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data() );
     }
 
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
     retval += (*(fFunc->m_filterFunc))(paramsMand, paramsOpt, paramsOut);
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterCallExt(
+    const QString &name,
+    QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt,
+    QVector<ito::ParamBase> *paramsOut,
+    QSharedPointer<ito::FunctionCancellationAndObserver> observer)
+{
+    ito::RetVal retval(ito::retOk);
+
+    if (name.length() < 1)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManager::instance();
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+
+    if (cfit == flist->end())
+    {
+        return ito::RetVal::format(
+            ito::retError, 0, QObject::tr("Filter '%s' not found").toLatin1().data(), name.toLatin1().data());
+    }
+
+    ito::AddInAlgo::FilterDef * fFunc = cfit.value();
+    
+    //try to cast cfit to FilterDefExt
+    ito::AddInAlgo::FilterDefExt *fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
+
+    if (fFuncExt == NULL)
+    {
+        return ito::RetVal::format(
+            ito::retError, 
+            0, 
+            QObject::tr("Filter '%s' has no progress observer and cancellation interface").toLatin1().data(),
+            name.toLatin1().data());
+    }
+    
+    retval += (*(fFuncExt->m_filterFuncExt))(paramsMand, paramsOpt, paramsOut, observer);
 
     return retval;
 }
