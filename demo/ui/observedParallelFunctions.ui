@@ -187,6 +187,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QProgressBar" name="progressAll">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnStart">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">

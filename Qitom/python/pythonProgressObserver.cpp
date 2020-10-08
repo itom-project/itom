@@ -318,12 +318,19 @@ PyObject* PythonProgressObserver::PyProgressObserver_reset(PyProgressObserver *s
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_connect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the actuator with the given callable python method \n\
+PyDoc_STRVAR(progressObserver_connect_doc, "connect(signalSignature, callableMethod, minRepeatInterval=0) -> connects the signal of the progressObserver with the given callable python method \n\
 \n\
-This instance of *actuator* wraps a actuator, that is defined by a C++-class, that is finally derived from *QObject*. \n\
-Every Actuator can send various signals. Use this method to connect any signal to any \n\
+This object of ``progressObserver`` wraps an underlying object of the C++ class ``ito::FunctionCancellationAndObserver``. \n\
+This wrapped object can send various signals. Use this method to connect any signal to any \n\
 callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
 signal definition must be convertable into a python object. \n\
+\n\
+Possible signals are (among others): \n\
+\n\
+* progressTextChanged(QString) -> emitted when the observed function reports a new progress text, \n\
+* progressValueChanged(int) -> emitted whenever the observed function reports a new progress value, \n\
+* cancellationRequested() -> emitted if a cancellation of the observed function has been requested, \n\
+* resetDone() -> emitted if the progressObserver has been reset. \n\
 \n\
 New in itom 4.1. \n\
 \n\
@@ -474,20 +481,20 @@ PyObject* PythonProgressObserver::PyProgressObserver_disconnect(PyProgressObserv
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
-    {"progressMinimum", (getter)PyProgressObserver_getProgressMinimum,       (setter)NULL, progressObserver_getProgressMinimum_doc, NULL},
-    {"progressMaximum", (getter)PyProgressObserver_getProgressMaximum,       (setter)NULL, progressObserver_getProgressMaximum_doc, NULL},
-    {"progressValue",   (getter)PyProgressObserver_getProgressValue,         (setter)PyProgressObserver_setProgressValue, progressObserver_progressValue_doc, NULL},
-    {"progressText",    (getter)PyProgressObserver_getProgressText,          (setter)PyProgressObserver_setProgressText , progressObserver_progressText_doc, NULL },
-    {"isCancelled",     (getter)PyProgressObserver_isCancelled,              (setter)NULL, progressObserver_isCancelled_doc,        NULL},
+    {"progressMinimum", (getter)PyProgressObserver_getProgressMinimum,  (setter)NULL, progressObserver_getProgressMinimum_doc, NULL},
+    {"progressMaximum", (getter)PyProgressObserver_getProgressMaximum,  (setter)NULL, progressObserver_getProgressMaximum_doc, NULL},
+    {"progressValue",   (getter)PyProgressObserver_getProgressValue,    (setter)PyProgressObserver_setProgressValue, progressObserver_progressValue_doc, NULL},
+    {"progressText",    (getter)PyProgressObserver_getProgressText,     (setter)PyProgressObserver_setProgressText , progressObserver_progressText_doc, NULL },
+    {"isCancelled",     (getter)PyProgressObserver_isCancelled,         (setter)NULL, progressObserver_isCancelled_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
 //-----------------------------------------------------------------------------
 PyMethodDef PythonProgressObserver::PyProgressObserver_methods[] = {
-    { "requestCancellation",    (PyCFunction)PythonProgressObserver::PyProgressObserver_requestCancellation, METH_NOARGS, progressObserver_requestCancellation_doc },
-    { "reset",                  (PyCFunction)PythonProgressObserver::PyProgressObserver_reset, METH_NOARGS, progressObserver_reset_doc },
-    {"connect",                 (PyCFunction)PythonProgressObserver::PyProgressObserver_connect, METH_VARARGS | METH_KEYWORDS, progressObserver_connect_doc },
-   {"disconnect",               (PyCFunction)PythonProgressObserver::PyProgressObserver_disconnect, METH_VARARGS | METH_KEYWORDS, progressObserver_disconnect_doc},
+    {"requestCancellation", (PyCFunction)PythonProgressObserver::PyProgressObserver_requestCancellation, METH_NOARGS, progressObserver_requestCancellation_doc },
+    {"reset",               (PyCFunction)PythonProgressObserver::PyProgressObserver_reset, METH_NOARGS, progressObserver_reset_doc },
+    {"connect",             (PyCFunction)PythonProgressObserver::PyProgressObserver_connect, METH_VARARGS | METH_KEYWORDS, progressObserver_connect_doc },
+    {"disconnect",          (PyCFunction)PythonProgressObserver::PyProgressObserver_disconnect, METH_VARARGS | METH_KEYWORDS, progressObserver_disconnect_doc},
     {NULL}  /* Sentinel */
 };
 
