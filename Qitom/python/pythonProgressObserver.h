@@ -76,6 +76,7 @@ public:
 
     static PyObject* PyProgressObserver_connect(PyProgressObserver *self, PyObject* args, PyObject *kwds);
     static PyObject* PyProgressObserver_disconnect(PyProgressObserver *self, PyObject* args, PyObject *kwds);
+    static PyObject* PythonProgressObserver::PyProgressObserver_info(PyProgressObserver* self, PyObject* args);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter

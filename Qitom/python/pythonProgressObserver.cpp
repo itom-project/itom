@@ -479,6 +479,92 @@ PyObject* PythonProgressObserver::PyProgressObserver_disconnect(PyProgressObserv
     Py_RETURN_NONE;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(progressObserver_info_doc, "info(verbose = 0) -> returns information about possible signals.\n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only signals from the plugin class are printed (default) \n\
+    1: all signals from all inherited classes are printed\n\
+");
+PyObject* PythonProgressObserver::PyProgressObserver_info(PyProgressObserver* self, PyObject* args)
+{
+    int showAll = 0;
+
+    if (!PyArg_ParseTuple(args, "|i", &showAll))
+    {
+        return NULL;
+    }
+    if (!self->progressObserver || self->progressObserver->isNull())
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid instance of progressObserver available");
+        return NULL;
+    }
+    //QList<QByteArray> signalSignatureList, slotSignatureList;
+    QStringList signalSignatureList;
+    const QMetaObject *mo = self->progressObserver->data()->metaObject();
+    QMetaMethod metaFunc;
+    bool again = true;
+    int methodIdx;
+
+    if (showAll == 0 || showAll == 1)
+    {
+        while (again)
+        {
+            for (methodIdx = mo->methodOffset(); methodIdx < mo->methodCount(); ++methodIdx)
+            {
+                metaFunc = mo->method(methodIdx);
+
+                if (metaFunc.methodType() == QMetaMethod::Signal)
+                {
+                    signalSignatureList.append(metaFunc.methodSignature());
+
+                }
+            }
+
+            if (showAll == 1)
+            {
+                mo = mo->superClass();
+
+                if (mo)
+                {
+                    again = true;
+                    continue;
+                }
+            }
+
+            again = false;
+
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid verbose level. Use level 0 to display all signals defined by the progressObserver itself. Level 1 also displays all inherited signals.");
+        return NULL;
+    }
+    signalSignatureList.sort();
+    
+    if (signalSignatureList.length() > 0)
+    {
+        //QByteArray val;
+        QString val;
+        QString previous;
+        std::cout << "Signals: \n";
+
+        foreach(val, signalSignatureList)
+        {
+            if (val != previous)
+            {
+                std::cout << "\t" << QString(val).toLatin1().data() << "\n";
+            }
+            previous = val;
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonProgressObserver::PyProgressObserver_getseters[] = {
     {"progressMinimum", (getter)PyProgressObserver_getProgressMinimum,  (setter)NULL, progressObserver_getProgressMinimum_doc, NULL},
@@ -495,6 +581,7 @@ PyMethodDef PythonProgressObserver::PyProgressObserver_methods[] = {
     {"reset",               (PyCFunction)PythonProgressObserver::PyProgressObserver_reset, METH_NOARGS, progressObserver_reset_doc },
     {"connect",             (PyCFunction)PythonProgressObserver::PyProgressObserver_connect, METH_VARARGS | METH_KEYWORDS, progressObserver_connect_doc },
     {"disconnect",          (PyCFunction)PythonProgressObserver::PyProgressObserver_disconnect, METH_VARARGS | METH_KEYWORDS, progressObserver_disconnect_doc},
+    {"info",                (PyCFunction)PythonProgressObserver::PyProgressObserver_info, METH_VARARGS, progressObserver_info_doc},
     {NULL}  /* Sentinel */
 };
 
