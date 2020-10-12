@@ -60,7 +60,8 @@ namespace ito
     //! looks for a given filter (algorithm) defined in any algo plugin.
     /*!
         \param name is the name of the desired filter or algorithm
-        \param filterDef reference to a ito::AddInAlgo::FilterDef struct pointer. If the filter is found, this reference points to the struct defined by the plugin.
+        \param filterDef reference to a ito::AddInAlgo::FilterDef struct pointer. 
+               If the filter is found, this reference points to the struct defined by the plugin.
         \return ito::RetVal (ito::retOk if filter has been found, else ito::retError)
         \sa apiFilterCall, apiFilterParam
     */
@@ -79,16 +80,43 @@ namespace ito
         \param paramsOpt is a pointer to a vector of type ParamBase containing all optional parameters.
         \param paramsOut is a pointer to a vector of type ParamBase containing all output parameters.
         \return ito::RetVal (ito::retOk if filter has been found, else ito::retError)
-        \sa apiFilterParamBase
+        \sa apiFilterParamBase, apiFilterCallExt
     */
     #define apiFilterCall \
-        (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[1])
+        (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, \
+        QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[1])
+
+    //! calls a filter (algorithm) with an extended interface defined in any algo plugin.
+    /*!
+        This api method calls another filter given by its specific name in any other plugin.
+        The call is executed in the calling thread. You need to make sure, that all parameters that
+        you provide as vectors to this function fully correspond to the number and type of the desired
+        parameters. You can get the default vectors using the api method apiFilterParamBase.
+
+        Filters, that are called by this method, must implement the FilterDefExt interface, that
+        has an additional observer parameter for the progress observation and possible cancellation
+        of the filter call.
+
+        \param name is the name of the desired filter or algorithm
+        \param paramsMand is a pointer to a vector of type ParamBase containing all mandatory parameters.
+        \param paramsOpt is a pointer to a vector of type ParamBase containing all optional parameters.
+        \param paramsOut is a pointer to a vector of type ParamBase containing all output parameters.
+        \param observer is the initialized observer of class ito::FunctionCancellationAndObserver.
+        \return ito::RetVal (ito::retOk if filter has been found, else ito::retError)
+        \sa apiFilterParamBase, apiFilterCall
+    */
+    #define apiFilterCallExt \
+        (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, \
+        QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, \
+        QSharedPointer<ito::FunctionCancellationAndObserver> observer)) ito::ITOM_API_FUNCS[38])
 
     #define apiFilterParam \
-        (*(ito::RetVal (*)(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)) ito::ITOM_API_FUNCS[2])
+        (*(ito::RetVal (*)(const QString &name, QVector<ito::Param> *paramsMand, \
+        QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)) ito::ITOM_API_FUNCS[2])
 
     #define apiFilterParamBase \
-        (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[3])
+        (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, \
+        QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[3])
 
     #define apiFilterVersion \
         (*(ito::RetVal (*)(const QString &name, int &version)) ito::ITOM_API_FUNCS[35])
@@ -107,11 +135,14 @@ namespace ito
         \param name is the plugin name
         \param pluginType is the base type of the plugin (ito::tPluginType, e.g. ito::typeDataIO, ito::typeActuator...)
         \param pluginIdx is the index of the found plugin that can be passed apiAddInOpenDataIO, apiAddInActuator
-        \param paramsMand are the templates for the mandatory parameters for initializing the plugin. Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
-        \param paramsOpt are the templates for the optional parameters for initializing the plugin. Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
+        \param paramsMand are the templates for the mandatory parameters for initializing the plugin. 
+               Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
+        \param paramsOpt are the templates for the optional parameters for initializing the plugin. 
+               Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
     */
     #define apiAddInGetInitParams \
-        (*(ito::RetVal (*)(const QString &pluginName, const int pluginType, int *pluginIdx, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)) ito::ITOM_API_FUNCS[4])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginType, int *pluginIdx, \
+        QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)) ito::ITOM_API_FUNCS[4])
 
     //! opens an instance of specific actuator plugin.
     /*!
@@ -128,7 +159,9 @@ namespace ito
         If you want to have a thread-safe and easier approach to other plugins, consider to use the helper class ActuatorThreadCtrl.
     */
     #define apiAddInOpenActuator \
-        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&instance)) ito::ITOM_API_FUNCS[5])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, \
+        QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, \
+        ito::AddInActuator *&instance)) ito::ITOM_API_FUNCS[5])
 
     //! opens an instance of specific dataIO plugin.
     /*!
@@ -145,7 +178,9 @@ namespace ito
         If you want to have a thread-safe and easier approach to other plugins, consider to use the helper class DataIOThreadCtrl.
     */
     #define apiAddInOpenDataIO \
-        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&instance)) ito::ITOM_API_FUNCS[6])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, \
+        QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, \
+        ito::AddInDataIO *&instance)) ito::ITOM_API_FUNCS[6])
 
     //! decrements reference of given plugin instance. If the reference drops to zero, the instance is savely closed and deleted.
     /*!

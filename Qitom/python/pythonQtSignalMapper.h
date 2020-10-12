@@ -86,6 +86,20 @@ private:
     int m_signalId;                //!< index of the connected signal
     IntList m_argTypeList;         //!< type id's from QMetaType::type("..."), describing the arguments of the function-call
 
+    enum CallableType
+    {
+        Callable_Invalid, //!< the callable is invalid
+
+        //!< class method (written in python), the function is stored in m_function, the self object is stored in m_boundedInstance
+        Callable_Method,
+
+        //!< unbounded python method, the function is stored in m_function, m_boundedInstance is NULL
+        Callable_Function,
+
+        //!< function, written in C, stored in m_function. m_boundedInstance is NULL, since the potential self object is also contained in the CFunction object
+        Callable_CFunction
+    };
+
     /* If the target is a bounded method, m_boundedMethod is true and
     this member holds a Python weak reference to the method, that acts as slot.
     m_boundedInstance is != NULL then.
@@ -95,7 +109,7 @@ private:
     m_boundedInstance is NULL then. */
     PyObject *m_function;          
     PyObject *m_boundedInstance;   //!< weak reference to the python-class instance of the function (if the function is bounded) or NULL if the function is unbounded
-    bool m_boundedMethod;          //!< true if the python function is bounded (non-static member of a class), else false
+    CallableType m_callableType;   //!< type of the python callable (see CallableType)
     QString m_signalName;          //!< signature of the signal (mainly used for debugging reasons)
     QElapsedTimer m_elapsedTimer;  //!< see m_minRepeatInterval
 

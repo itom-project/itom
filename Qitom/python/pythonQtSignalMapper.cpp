@@ -110,6 +110,13 @@ bool PythonQtSignalMapper::addSignalHandler(
 {
     bool success = false;
 
+    if (!PyMethod_Check(callable) &&
+        !PyFunction_Check(callable) &&
+        !PyCFunction_Check(callable))
+    {
+        return success;
+    }
+
     if (sigId >= 0)
     {
         PythonQtSignalTarget t(argTypeList, m_slotCount, sigId, callable, signal, minRepeatInterval);
@@ -216,7 +223,7 @@ PythonQtSignalTarget::PythonQtSignalTarget() :
     m_signalId(-1),
     m_function(NULL),
     m_boundedInstance(NULL),
-    m_boundedMethod(false)
+    m_callableType(Callable_Invalid)
 
 {
 };
@@ -250,29 +257,30 @@ PythonQtSignalTarget::PythonQtSignalTarget(
         m_signalId(signalId),
         m_function(NULL),
         m_boundedInstance(NULL),
-        m_boundedMethod(false),
+        m_callableType(Callable_Invalid),
         m_signalName(signal),
-        m_minRepeatInterval(minRepeatInterval)
+        m_minRepeatInterval(minRepeatInterval),
+        m_argTypeList(argTypeList)
 {
-    m_argTypeList = argTypeList;
-    PyObject *temp = NULL;
     m_elapsedTimer.invalidate();
 
     if (PyMethod_Check(callable))
     {
-        m_boundedMethod = true;
-        Py_XDECREF(m_boundedInstance);
-        Py_XDECREF(m_function);
-        temp = PyMethod_Self(callable); //borrowed
+        m_callableType = Callable_Method;
+        PyObject *temp = PyMethod_Self(callable); //borrowed
         m_boundedInstance = PyWeakref_NewRef(temp, NULL); //new ref (weak reference used to avoid cyclic garbage collection)
         temp = PyMethod_Function(callable); //borrowed
         m_function = PyWeakref_NewRef(temp, NULL); //new ref
     }
     else if (PyFunction_Check(callable))
     {
-        m_boundedMethod = false;
-        Py_XDECREF(m_boundedInstance);
-        Py_XDECREF(m_function);
+        m_callableType = Callable_Function;
+        Py_INCREF(callable);
+        m_function = callable; //new ref
+    }
+    else if (PyCFunction_Check(callable))
+    {
+        m_callableType = Callable_CFunction;
         Py_INCREF(callable);
         m_function = callable; //new ref
     }
@@ -286,7 +294,7 @@ PythonQtSignalTarget::PythonQtSignalTarget(const PythonQtSignalTarget &copy) :
     m_argTypeList(copy.m_argTypeList),
     m_function(copy.m_function),
     m_boundedInstance(copy.m_boundedInstance),
-    m_boundedMethod(copy.m_boundedMethod),
+    m_callableType(copy.m_callableType),
     m_signalName(copy.m_signalName),
     m_minRepeatInterval(copy.m_minRepeatInterval)
 {
@@ -306,7 +314,7 @@ PythonQtSignalTarget& PythonQtSignalTarget::operator=(const PythonQtSignalTarget
     m_signalId = rhs.m_signalId;
     m_argTypeList = rhs.m_argTypeList;
 
-    m_boundedMethod = rhs.m_boundedMethod;
+    m_callableType = rhs.m_callableType;
     m_function = rhs.m_function;
     Py_XINCREF(m_function);
     m_boundedInstance = rhs.m_boundedInstance;
@@ -346,7 +354,7 @@ bool PythonQtSignalTarget::isSame(int signalId, PyObject* callable) const
             return PyMethod_Self(callable) == PyWeakref_GetObject(m_boundedInstance) &&
                 PyMethod_Function(callable) == PyWeakref_GetObject(m_function);
         }
-        else
+        else //function or cfunction
         {
             //unbounded function, m_function is the function itself.
             return callable == m_function;
@@ -403,6 +411,12 @@ void PythonQtSignalTarget::call(void ** arguments)
         return;
     }
 
+    if (m_function == NULL)
+    {
+        qDebug("invalid callable slot.");
+        return;
+    }
+
     PyGILState_STATE state = PyGILState_Ensure();
 
     bool debug = false;
@@ -437,7 +451,7 @@ void PythonQtSignalTarget::call(void ** arguments)
 
     if (!argParsingError)
     {
-        if (m_boundedMethod == false)
+        if (m_callableType == Callable_Function)
         {
             if (debug)
             {
@@ -448,7 +462,7 @@ void PythonQtSignalTarget::call(void ** arguments)
                 pyEngine->pythonRunFunction(m_function, argTuple, true);
             }
         }
-        else
+        else if (m_callableType == Callable_Method)
         {
             PyObject *func = PyWeakref_GetObject(m_function);
             PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
@@ -474,6 +488,29 @@ void PythonQtSignalTarget::call(void ** arguments)
 
                 Py_XDECREF(method);
             }
+        }
+        else if (m_callableType == Callable_CFunction)
+        {
+            PyCFunctionObject* cfunc = (PyCFunctionObject*)m_function;
+            PyObject *method = PyCFunction_NewEx(cfunc->m_ml, cfunc->m_self, NULL);
+
+            if (method)
+            {
+                if (debug)
+                {
+                    pyEngine->pythonDebugFunction(method, argTuple, true);
+                }
+                else
+                {
+                    pyEngine->pythonRunFunction(method, argTuple, true);
+                }
+            }
+
+            Py_XDECREF(method);
+        }
+        else
+        {
+            qDebug("invalid m_callableType.");
         }
     }
 

@@ -90,6 +90,8 @@ void FunctionCancellationAndObserver::requestCancellation(CancellationReason rea
     Q_D(FunctionCancellationAndObserver);
     d->m_cancellation = 1;
     d->m_reason = reason;
+
+    emit cancellationRequested();
 }
 
 //--------------------------------------------------------------------
@@ -104,6 +106,7 @@ void FunctionCancellationAndObserver::reset()
 
     emit progressTextChanged(d->m_progressText);
     emit progressValueChanged(d->m_progressValue);
+    emit resetDone();
 }
 
 //--------------------------------------------------------------------
