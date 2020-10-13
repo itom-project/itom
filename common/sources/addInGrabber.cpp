@@ -548,8 +548,8 @@ namespace ito
 		}
 		if (!retValue.containsError())
 		{
-			
-			retValue += setParameter(val, it, suffix, key, index, hasIndex, ok);
+			QStringList list;
+			retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, list);
 			if (!retValue.containsError() && !ok)
 			{
 				if (key == "defaultChannel")
@@ -566,39 +566,39 @@ namespace ito
 						retValue += ito::RetVal(ito::retError, 0, tr("Unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
 					}
 				}
-
-			}
-			else if(!retValue.containsError())
-			{
-				retValue += it->copyValueFrom(&(*val)); // it seems that the plugin does not process the param therefore it is copied here
-			}
-			if (key == "roi") //if key is roi sizex and sizey must be adapted
-			{
-				if (!hasIndex)
+				if (key == "roi")
 				{
-					const int* roi = m_params["roi"].getVal<const int*>();
-					int height = roi[3];
-					int width = roi[2];
-					m_params["sizex"].setVal<int>(width);
-					m_params["sizey"].setVal<int>(height);
+					if (!hasIndex)
+					{
+						retValue += it->copyValueFrom(&(*val));
+						list << "roi";
+					}
+					else
+					{
+						it->getVal<int*>()[index] = val->getVal<int>();						
+						list << "roi";
+					}
 				}
 				else
 				{
-					it->getVal<int*>()[index] = val->getVal<int>();
-					const int* roi = m_params["roi"].getVal<const int*>();
-					int height = roi[3];
-					int width = roi[2];
-					m_params["sizex"].setVal<int>(width);
-					m_params["sizey"].setVal<int>(height);
+					retValue += it->copyValueFrom(&(*val)); // it seems that the plugin does not process the param therefore it is copied here
+					if (m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam.contains(key))
+					{
+						list << key;
+					}
 				}
 			}
-			applyParamsToChannelParams(QStringList(key));
+			if (list.contains("roi")) //if key is roi sizex and sizey must be adapted
+			{
+				updateSizeXY();
+			}
+			applyParamsToChannelParams(list);
 		}
 		if (!retValue.containsError())
 		{
 			emit parametersChanged(m_params);
 		}
-		if (cntStartedDevices != grabberStartedCount())
+		if (cntStartedDevices < grabberStartedCount())
 		{
 			if (cntStartedDevices != 0)
 			{
@@ -716,6 +716,24 @@ namespace ito
 			}
 		}
 		return retVal;
+	}
+
+	////----------------------------------------------------------------------------------------------------------------------------------
+	////! updates sizex and sizey
+	///*!
+	//Call this function to update sizex and sizey. If the roi is changed via setParam this function will be call automatically.
+	//Do not forget to apply the changes to the channel parameters by calling applyParamsToChannelParams after calling this function.
+
+	//\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
+	//\return retOk if everything was ok, else retError
+	//*/
+	void AddInMultiChannelGrabber::updateSizeXY()
+	{
+		const int* roi = m_params["roi"].getVal<const int*>();
+		int height = roi[3];
+		int width = roi[2];
+		m_params["sizex"].setVal<int>(width);
+		m_params["sizey"].setVal<int>(height);
 	}
 } //end namespace ito
 

@@ -185,7 +185,23 @@ namespace ito
 		void addChannel(QString name);
 		virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
 		virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
-		virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
+
+		////! Specific function to set the parameters in the respective plugin class
+		///*!
+		//This function is a specific implementation of setParam. Overload this function to process parameters individually in the plugin class. This function is called by setParam after the parameter has been parsed and checked .
+
+		//\param [in] val parameter to be processed
+		//\param [in] it ParamMapIterator iterator to the parameter in m_params
+		//\param [in] suffix possible suffix of the parameter
+		//\param [in] key of the parameter
+		//\param [in] index of the parameter
+		//\param [in] hasIndex is set to true if parameter has an index
+		//\param [in] set ok to true if parameter was processed
+		//\param [in] add key of changed channel specific parameters to pendingUpdate. 
+		//\return retOk if everything was ok, else retError
+		//*/
+		virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
+		void updateSizeXY(); /*!< updates sizex und sizey*/
 
 	public:
 		AddInMultiChannelGrabber();
