@@ -47,7 +47,6 @@ namespace ito
 	};
 	class AddInMultiChannelGrabberPrivate
 	{
-
 	};
 
     /*!
@@ -466,8 +465,8 @@ namespace ito
 				if (ok)
 				{
 					int* roi = i.value().m_channelParam["roi"].getVal<int*>();
-					int height = roi[3] - roi[2];
-					int width = roi[1] - roi[0];
+					int height = roi[3];
+					int width = roi[2];
 					if (i.value().data.getDims() < 2 || i.value().data.getSize(0) != height || i.value().data.getSize(1) != width || i.value().data.getType() != futureType)
 					{
 						i.value().data = ito::DataObject(height, width, futureType);
@@ -489,8 +488,8 @@ namespace ito
 				if (ok)
 				{
 					int* roi = m_channels[channel].m_channelParam["roi"].getVal<int*>();
-					int width = roi[1] - roi[0];
-					int height = roi[3] - roi[2];
+					int width = roi[2];
+					int height = roi[3];
 					if (externalDataObject->getDims() == 0)
 					{
 						*externalDataObject = ito::DataObject(height, width, futureType);
@@ -538,6 +537,7 @@ namespace ito
 		QString suffix, key;
 		ParamMapIterator it;
 		retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
+		int cntStartedDevices = grabberStartedCount();
 		if (!retValue.containsError())
 		{
 			retValue += apiGetParamFromMapByKey(m_params, key, it, true);
@@ -559,37 +559,69 @@ namespace ito
 					if (m_channels.find(it->getVal<char*>()) != m_channels.end())
 					{
 						m_params["defaultChannel"].setVal<char*>(it->getVal<char*>());
-						retValue += syncWithChannelParams(previousChannel);
+						retValue += synchronizeParamswithChannelParams(previousChannel);
 					}
 					else
 					{
 						retValue += ito::RetVal(ito::retError, 0, tr("Unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
 					}
 				}
+
 			}
+			else if(!retValue.containsError())
+			{
+				retValue += it->copyValueFrom(&(*val)); // it seems that the plugin does not process the param therefore it is copied here
+			}
+			if (key == "roi") //if key is roi sizex and sizey must be adapted
+			{
+				if (!hasIndex)
+				{
+					const int* roi = m_params["roi"].getVal<const int*>();
+					int height = roi[3];
+					int width = roi[2];
+					m_params["sizex"].setVal<int>(width);
+					m_params["sizey"].setVal<int>(height);
+				}
+				else
+				{
+					it->getVal<int*>()[index] = val->getVal<int>();
+					const int* roi = m_params["roi"].getVal<const int*>();
+					int height = roi[3];
+					int width = roi[2];
+					m_params["sizex"].setVal<int>(width);
+					m_params["sizey"].setVal<int>(height);
+				}
+			}
+			applyParamsToChannelParams(QStringList(key));
 		}
 		if (!retValue.containsError())
 		{
 			emit parametersChanged(m_params);
 		}
-
+		if (cntStartedDevices != grabberStartedCount())
+		{
+			if (cntStartedDevices != 0)
+			{
+				retValue += startDevice(NULL);
+				setGrabberStarted(cntStartedDevices);
+			}
+		}
 		if (waitCond)
 		{
 			waitCond->returnValue = retValue;
 			waitCond->release();
 		}
-
 		return retValue;
 	}
 	////----------------------------------------------------------------------------------------------------------------------------------
-	////! synchronizes the parameters from the defaultChannel with m_params
+	////! synchronizes m_params with the params of default channel container
 	///*!
-	//This method synchronizes the parameters from the current selected channel container with m_params. Parameters which are not available for the current default channel are set to readonly
+	//This method synchronizes the parameters from the current selected channel container with m_params. Call this function after changing the default parameter.Parameters which are not available for the current default channel are set to readonly
 
 	//\param [in] previousChannel indicates the name of the previous default channel. This is needed to check whether a parameter is no longer contained in the current channel, which was contained in the previous one.
 	//\return retOk if everything was ok, else retError
 	//*/
-	ito::RetVal AddInMultiChannelGrabber::syncWithChannelParams(QString previousChannel)
+	ito::RetVal AddInMultiChannelGrabber::synchronizeParamswithChannelParams(QString previousChannel)
 	{
 		ito::RetVal retVal(ito::retOk);
 		unsigned int flag = 0;
@@ -627,6 +659,62 @@ namespace ito
 			}
 
 		}		
+		return retVal;
+	}
+	////----------------------------------------------------------------------------------------------------------------------------------
+	////! copies value m_params to the channel params of the current default channel 
+	///*!
+	//This method copies params of m_params to the params of the channel container. This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container. 
+	//If a parameter is not found in the channel container nothing happens. This function updates also sizex and sizey if roi or nothing is passed as key.
+
+	//\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
+	//\return retOk if everything was ok, else retError
+	//*/
+	ito::RetVal AddInMultiChannelGrabber::applyParamsToChannelParams(QStringList keyList )
+	{
+		ito::RetVal retVal(ito::retOk);
+		QString currentChannel = m_params["defaultChannel"].getVal<char*>();
+		if (!keyList.isEmpty())
+		{
+			if (m_channels.contains(currentChannel))
+			{
+				QString tmp;
+				foreach(tmp, keyList)
+				{
+					if (m_channels[currentChannel].m_channelParam.contains(tmp))
+					{
+						if (m_params.contains(tmp))
+						{
+							m_channels[currentChannel].m_channelParam[tmp] = m_params[tmp];
+							if (tmp == "roi")
+							{
+								m_channels[currentChannel].m_channelParam["sizex"] = m_params["sizex"];
+								m_channels[currentChannel].m_channelParam["sizey"] = m_params["sizey"];
+							}
+						}
+						else
+						{
+							retVal = ito::RetVal(ito::retError, 0, tr("Unknown parameter %1 in m_params").arg(tmp).toLatin1().data());
+						}
+					}
+				}
+			}
+
+			else
+			{
+				retVal = ito::RetVal(ito::retError, 0, tr("Unknown channel %1").arg(currentChannel).toLatin1().data());
+			}
+		}
+		else
+		{
+			QMapIterator<QString, ito::Param> it(m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam);
+			while (it.hasNext())
+			{
+				it.next();
+				const_cast<ito::Param&>(it.value()) = m_params[it.key()];
+				
+			}
+		}
 		return retVal;
 	}
 } //end namespace ito

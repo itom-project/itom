@@ -183,7 +183,8 @@ namespace ito
 		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
 		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
 		void addChannel(QString name);
-		virtual ito::RetVal syncWithChannelParams(QString previousChannel);/*!< synchronizes the parameters from the defaultChannel with m_params */
+		virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
+		virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
 		virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
 
 	public:
