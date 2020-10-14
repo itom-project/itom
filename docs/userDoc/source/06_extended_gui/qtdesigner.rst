@@ -1296,52 +1296,295 @@ This example has also shown, that not only slots defined in the slot-section can
 setter-method of any property can be called like every slot. However, in this case it is more convenient the property 
 like described in section :ref:`qtdesigner-getsetprops`.
 
+Object-oriented user interface classes
+=======================================
 
-Auto-connecting signals using python decorators
-===============================================
+Usually a fully working custom user interface consists of the **ui** file, designed in the **QtDesigner** as well as
+of a python script, that contains further parameterizations of items in the user interface, of callback functions
+(slots), that are called if a specific signal of an item has been emitted...
 
-|itom| provides an optional approach to directly connect methods with a specific signal of a widget. An example for this 
-approach is for instance given in the demo script **autoConnectDemo.py** in the **demo/ui** subfolder of the itom 
-installation.
+In order to provide a modern, clean and re-usable structure of all this Python code, |itom| provides an object-oriented,
+hence class based approach. This allows creating one class, that contains all GUI-related code for one **ui** file 
+including slots, that are automatically connected to a specific signal of an :py:class:`~itom.uiItem` once an instance
+of this class is created. It is even possible to create multiple instances of this class in parallel, such that the
+same custom user interface can be independently opened multiple times in parallel.
 
-The concept is as follows:
+An example for this approach is given in several scripts in the **demo/ui** folder of the itom installation or one of
+its subfolders. However let us start with a very simple example. Let us assume that we want to display a custom user
+interface with a button. Whenever the button is clicked, a counter value, that is displayed in a label next to
+the button, is incremented. The button has the objectName ``btnCount`` and the label has the objectName ``lblCount``.
+We create the **ui** file in the **QtDesigner** and save it under **counter.ui**.
 
-1. import the class **ItomUi** from the module **itomUi** (located in the subfolder **itom_packages** that is part of 
-   the Python search path::
+In the ordinary script approach, the task would look like this::
+    
+    from itom import ui
+    
+    # create an instance of ui for the ui file
+    gui = ui("counter.ui", type=ui.TYPEWINDOW)
+    
+    count: int = 0  # counter variable
+    gui.lblCount["text"] = "Counter value: %i" % count  # set the current counter text
+    gui.btnCount["text"] = "Increment"  # set the caption of the button
+    
+    # create a callback function, connected to the clicked signal of the button
+    def onButtonClicked():
+        global gui  # we need to access the GUI
+        global count  # we need to access the current count value
+        count += 1
+        gui.lblCount["text"] = "Counter value: %i" % count
+    
+    # connect the signal with the callback function (slot)
+    gui.btnCount.connect("clicked()", onButtonClicked)
+    
+    # show the gui
+    gui.show()
+
+This script works, however it has several disavantages:
+
+* There are many global variables (``gui``, ``count``) that also need to be accessed in the slot
+* It is difficult to open the same GUI multiple times in parallel with its own counter
+* It is not possible to keep the internal part of the GUI *private*, such that it cannot be badly
+  influenced by other surrounding code.
+
+To overcome these disadvantages, the following object oriented approach can be used. The script, that
+parametrizes and controls the GUI is put inside of a class, that is derived by the class ``ItomUi`` of
+the module ``itomUi.py`` (located in the subfolder ``itom_packages`` of itom, that is always included
+in the Python path variable (``sys.path``). This alternative approach looks like this::
     
     from itomUi import ItomUi
+    from itom import ui
     
-2. Create a class that is derived from **ItomUi**
-3. In the constructor (method __init__) of your class call the constructor of the base class **ItomUi**. This 
-   constructor has the same arguments than the class :py:class:`itom.ui`. This is where you create the GUI from the ui file.
-4. The :py:class:`~itom.ui` is accessible via the member variable **gui** of your class, hence, within a member method 
-   write **self.gui** to access the user interface and its widgets.
-5. You can now connect one or multiple signals from one widget to one member method of your class.
-6. The name of the member method must be::
+    class CounterClass(ItomUi):
+        
+        def __init__(self):
+            """Constructor.
+            
+            This constructor internally calls the constructor
+            of its super-class, which has the same parameters than
+            the known itom.ui class. The ItomUi class then creates
+            the ``ui`` object. It is accessible via the member ``self.gui``.
+            """
+            ItomUi.__init__("counter.ui", type=ui.TYPEWINDOW)
+            
+            self.count: int = 0  # counter variable
+            self.setCount()
+            
+            self.gui.btnCount["text"] = "Increment"]
+            
+            # makes the signal/slot connection.
+            # Hint: The callback is now the bounded method self.setCount.
+            # Indicate it in the connect method without rounded brackets ()
+            self.gui.btnCount.connect("clicked()", self.onButtonClicked)
+        
+        def setCount(self):
+            """writes the current count value to the label."""
+            self.gui.lblCount["text"] = "Counter value: %i" % self.count
+        
+        def onButtonClicked(self):
+            """slot called if button is clicked."""
+            self.count += 1
+            self.setCount()
     
-    def on_ObjectNameOfWidget_SignalName(self, [arg1, arg2, ...]):
+    myGui = CounterClass()  # create a new instance
+    myGui.show()  # show the gui
+    
+    # create a 2nd gui
+    myGui2 = CounterClass()
+    myGui2.show()
+
+In this example, the entire GUI is now wrapped by one global variable ``myGui``. The slot connected
+with the ``clicked()`` signal of the button is a bounded member method of the class, such that member
+variables can be accessed from this slot without problems. It is even possible to create a 2nd gui.
+
+
+Auto-connecting signals using python decorators
+------------------------------------------------
+
+In the object-oriented approach above, we have seen that a :py:meth:`itom.uiItem.connect` method is used to
+connect a signal of a :py:class:`~itom.uiItem` with a member callback method, denoted as slot, of the GUI class.
+
+This connection can also be automated by using a special Python **decorator**. This is not only simpler, but
+you will see that both the decorator as well as the name pattern of the slot method provide a clear
+programming style, where you can directly see that a certain method is a slot, connected to a specific signal
+of an item of the GUI.
+
+To achieve this, get the signal signature of the signal, that you want to connect to. Such a signature
+consists of the signal name and the (C++) datatypes of the signal. Of course only signals can be connected, whose
+original C++ datatypes can be converted to Python (see :ref:`qtdesigner-datatypes`).
+
+Examples for such signatures are:
+
+* ``clicked()`` -> This is a clicked signal of a button without further arguments
+* ``currentIndexChanged(int)`` -> If another item of a list widget has been selected. The argument is the index of the current item.
+* ``textChanged(QString)`` -> If the text of a line edit widget changed. The string is a ``QString`` class in Qt and will be converted to :py:class:`str`.
+
+As 2nd information, the ``objectName`` of the sender widget (:py:class:`~itom.uiItem`) is important.
+Both this objectName and the signal name of the signature are used as method name of the member method,
+that should become the slot::
+    
+    @ItomUi.autoslot("datatypes")
+    def on_<objectName>_<signalName>(self, arg1, ...):
         pass
+
+This member method must have the first ``self`` argument, like all member methods of a class, followed by
+further arguments, whose number must correspond to the number of arguments of the signal.
+
+On top of the method, the automatic connection is triggered by defining the decorator ``ItomUi.autoslot``.
+This decorator must have one string argument, which is a comma-separated list of all original C++ datatypes of the signal.
+
+One example: If we want to connect the ``textChanged(QString)`` signal of a label with **objectName** ``lineEdit``, 
+the slot method has to be defined by::
     
-7. The argument is **self** (like it is always the case in object-oriented Python programming) followed by a series of 
-   arguments. The number of these arguments must correspond to the number of arguments the signal has.
-8. Write one or multiple decorators above the method signature, to establish the connection. The decorator looks like 
-   this::
+    @ItomUi.autoslot("QString")
+    def on_lineEdit_textChanged(self, text: str):
+        print("new text:", text)
+
+If the signal would be ``demoSignal(int,double,QString)``, the slot would look like this::
     
-    @ItomUi.autoslot("args")
+    @ItomUi.autoslot("int,double,QString")
+    def on_senderName_demoSignal(self, arg1: int, arg2: float, arg3: str):
+        pass
+
+Using these autoslot-connections, the counter demo class above can be changed to this::
     
-    Hereby, *args* corresponds to a comma separated list of all type names (in C++) the Qt signal is emitting.
+    from itomUi import ItomUi
+    from itom import ui
     
-As an example, we want to connect the **valueChanged** signal of a spin box (object-name: spinTestBox, argument obtained 
-from Qt  help: one **int**)::
+    class CounterClass(ItomUi):
+        
+        def __init__(self):
+            """Constructor.
+            
+            This constructor internally calls the constructor
+            of its super-class, which has the same parameters than
+            the known itom.ui class. The ItomUi class then creates
+            the ``ui`` object. It is accessible via the member ``self.gui``.
+            """
+            ItomUi.__init__("counter.ui", type=ui.TYPEWINDOW)
+            
+            self.count: int = 0  # counter variable
+            self.setCount()
+            
+            self.gui.btnCount["text"] = "Increment"]
+        
+        def setCount(self):
+            """writes the current count value to the label."""
+            self.gui.lblCount["text"] = "Counter value: %i" % self.count
+        
+        @ItomUi.autoslot("")
+        def on_btnCount_clicked(self):
+            """slot called if button is clicked."""
+            self.count += 1
+            self.setCount()
     
-    @ItomUi.autoslot("int")
-    def on_spinTestBox_valueChanged(self, value):
-        print("The value of the spin box changed to", value)
+    myGui = CounterClass()  # create a new instance
+    myGui.show()  # show the gui
+    
+    # create a 2nd gui
+    myGui2 = CounterClass()
+    myGui2.show()
+
+
+Temporarily disable parts of the GUI and change the cursor during a long operation
+--------------------------------------------------------------------------------------
+
+**New in itom 4.1**
+
+Whenever a signal of any item of your GUI triggers an operation, that would
+potentially last for a couple of time (e.g. loading a big file, connecting to
+a server...), it could be necessary to temporarily disable parts of the GUI,
+show a progress bar, hide so items among others. If the operation is done, 
+the GUI should be set back to the state it was before. To show the user that
+an operation is going on, it might also be good to for instance temporarily
+change the cursor to an hourglass.
+
+Of course all this can be done by the following snippet::
+    
+    import itom
+    
+    def on_myButton_clicked(self):
+        # change the cursor to an hourglass
+        itom.setApplicationCursor(16)
+        
+        # disable, hide, ... all GUI items
+        self.gui.group1["enabled"] = False # just an example
+        
+        # start the long operation
+        with open("text.txt", "rt") as fp:
+            fp.readall()
+        
+        # reset the GUI
+        self.gui.group1["enabled"] = True
+        
+        # reset the cursor
+        itom.setApplicationCursor(-1)
+
+This approach will work, however it has two drawbacks: On the one hand, you have to
+write quite a lot of code multiple times and, on the other hand, the GUI will still
+be disabled if an exception might be raise during the long operation. To overcome the
+2nd drawback, a **try...except...finally** statement should be added around the long
+operation.
+
+In order to simplify this process, the **itomUi.ItomUi** provides a member method
+``disableGui``. This method can be used as context function in a ``with`` statement.
+This ``with`` statement should wrap the long operation. If the block is entered,
+given parts of the GUI are disabled, hidden, shown or enabled (and the cursor is changed)
+and if the block is finished, the state changes are reverted. The good thing is,
+that the revert step is done even if the wrapped long operation raises an unhandled exception.
+
+The definition of this method is:
+
+.. py:function:: ItomUi.disableGui(disableItems: List[itom.uiItem] = [], \
+                                   showItems: List[itom.uiItem] = [], \
+                                   hideItems: List[itom.uiItem] = [], \
+                                   enableItems: List[itom.uiItem] = [], \
+                                   revertToInitialStateOnExit: bool = True, \
+                                   showWaitCursor: bool = True)
+    
+    Context function to temporarily disable the GUI, used in a with block,
+    that wraps a long operation.
+    
+    :param disableItems: list of :class:`itom.uiItem`, that
+        should be disabled on entering the with block and reverted 
+        (enabled) on exiting it.
+    :param showItems: list of :class:`itom.uiItem`, that
+        should be shown on entering the with block and reverted (hidden)
+        on exiting it.
+    :param hideItems: list of :class:`itom.uiItem`, that
+        should be hidden on entering the with block and reverted 
+        (shown) on exiting it.
+    :param enableItems: list of :class:`itom.uiItem`, that
+        should be enabled on entering the with block and reverted 
+        (disabled) on exiting it.
+    :param revertToInitialStateOnExit: If True (default), all items
+        are always reverted on exiting the with block to the state,
+        they hade before (default). Else: they are always forced to
+        be reverted to the opposite of the desired state on entering
+        the with block.
+    :param showWaitCursor: If True (default), the wait cursor is
+        shown during the execution of the with block and reverted
+        to the previous value on exit.
+
+An exemplary call of this context function is::
+    
+    disableItems = [self.gui.myItem1, self.gui.myItem2]
+    showItems = []
+    hideItems = [self.gui.myItem3, ]
+    enableItems = []
+    
+    with self.disableGui(
+            disableItems,
+            showItems,
+            hideItems,
+            enableItems,
+            revertToInitialStateOnExit=True,
+            showWaitCursor=True):
+        doSomethingLong()
 
 Debugging user interfaces and slot-methods
 ==========================================
 
-If you established a signal-slot-connection between an element of the GUI and a |python|-method, you probably want to 
+If you established a signal-slot-connection between an element of the GUI and a |python| callback method (slot), you probably want to 
 debug this method once the signal has been emitted. This is obtained by setting any breakpoint into the specific line 
 and toggling the button *Run python code in debug mode* in the menu **Script** of |itom|.
 
