@@ -2333,14 +2333,22 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows initialized UI-Dialog \n\
+PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows the window or dialog. \n\
 \n\
 Parameters \n\
 ----------- \n\
 modal : {int}, optional \n\
-    * 0: non-modal (default)\n\
+    * 0: non-modal, the opened GUI does not block other windows of itom (default)\n\
     * 1: modal (python waits until dialog is hidden)\n\
     * 2: modal (python returns immediately)\n\
+\n\
+Returns \n\
+---------- \n\
+Usually the value -1 is returned. Only if a dialog is shown with ``modal=1``, \n\
+the exit code of the shown dialog is returned, once this dialog is closed again. \n\
+This code is: 1 if the dialog has been accepted (e.g. by closing it by an OK button \n\
+or 0 if the dialog has been rejected (Cancel button or directly closing the dialog \n\
+via the close icon in its title bar. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2373,7 +2381,14 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     *retCodeIfModal = -1;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showDialog", 
+        Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , 
+        Q_ARG(int,modalLevel), 
+        Q_ARG(QSharedPointer<int>, retCodeIfModal), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
     
     if(modalLevel == 1)
     {
@@ -2408,6 +2423,8 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized user interface \n\
 \n\
+A hidden window or dialog can be shown again via the method :py:meth:`~itom.ui.show`.\n\
+\n\
 See Also \n\
 --------- \n\
 show(modal)");
@@ -2429,7 +2446,12 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "hideDialog", 
+        Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2444,7 +2466,7 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns true if dialog is still visible\n\
+PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns True if dialog is still visible\n\
 \n\
 Returns \n\
 ------- \n\

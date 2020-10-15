@@ -1049,6 +1049,7 @@ RetVal UiOrganizer::showDialog(
         ItomSharedSemaphore *semaphore)
 {
     RetVal retValue;
+    *retCodeIfModal = -1;
 
     UiContainer *ptr = getUiDialogByHandle(handle);
     if (ptr)
@@ -1069,13 +1070,11 @@ RetVal UiOrganizer::showDialog(
                     else if (modalLevel == 0) //non-modal
                     {
                         dlg->setModal(false);
-                        *retCodeIfModal = -1;
                         dlg->show();
                     }
                     else //non-blocking modal
                     {
                         dlg->setModal(true);
-                        *retCodeIfModal = -1;
                         dlg->show();
                     }
                 }
