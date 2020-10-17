@@ -3664,7 +3664,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     
     PyErr_Clear();
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase;
-    ito::RetVal retVal = 0;
+    ito::RetVal retVal = ito::retOk;
     PyObject *pnameObj = NULL;
     PyObject *params = NULL;
     QString algoWidgetName;

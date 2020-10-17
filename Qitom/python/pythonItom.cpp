@@ -1139,7 +1139,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
 
     PyErr_Clear();
 
-    ito::RetVal retval = 0;
+    ito::RetVal retval = ito::retOk;
     PyObject *result = NULL;
     PyObject *resultmand = NULL;
     PyObject *resultopt = NULL;
@@ -2245,7 +2245,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     QVector<ito::Param> *paramsMand = NULL;
     QVector<ito::Param> *paramsOpt = NULL;
 
-    ito::RetVal retval = 0;
+    ito::RetVal retval = ito::retOk;
     int pluginNum = -1;
     int plugtype = -1;
     int version = -1;
