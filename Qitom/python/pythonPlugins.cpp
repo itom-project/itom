@@ -1349,7 +1349,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
     QVector<ito::Param> *paramsMand = NULL;
     QVector<ito::Param> *paramsOpt = NULL;
-    ito::RetVal retval = 0;
+    ito::RetVal retval = ito::retOk;
     int pluginNum = -1;
     PyObject *pnameObj = NULL;
     PyObject *params = NULL;
@@ -3152,7 +3152,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     PyErr_Clear();
     QVector<ito::Param> *paramsMand = NULL;
     QVector<ito::Param> *paramsOpt = NULL;
-    ito::RetVal retval = 0;
+    ito::RetVal retval = ito::retOk;
     int pluginNum = -1;
     PyObject *pnameObj = NULL;
     PyObject *params = NULL;

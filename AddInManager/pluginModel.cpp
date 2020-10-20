@@ -1582,29 +1582,33 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
         {
             QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
             QStringList listParam;
+
             foreach(ito::Param item, *mandParam)
             {
                 listParam.append(item.getName());
             }
+
             if (listParam.length() > 0)
             {
                 listParam[0].prepend(", ");
             }
-            command = tr("dataIO(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+            command = QString("dataIO(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
         }
         else if (aiibType & d->m_treeFixNodes[1]) //actuator
         {
             QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
             QStringList listParam;
+
             foreach(ito::Param item, *mandParam)
             {
                 listParam.append(item.getName());
             }
+
             if (listParam.length() > 0)
             {
                 listParam[0].prepend(", ");
             }
-            command = tr("actuator(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+            command = QString("actuator(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
         }
     }
     else if(type & itemFilter)
@@ -1622,11 +1626,12 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
             {
                 listParam.append(item.getName());
             }
+
             if (listParam.length() > 0)
             {
                 listParam[0].prepend(", ");
             }
-            command = tr("filter(\"%1\"%2)").arg(fd->m_name, listParam.join(", ")).toLatin1().data();
+            command = QString("filter(\"%1\"%2)").arg(fd->m_name, listParam.join(", ")).toLatin1().data();
     }
     else if (type & itemWidget)
     {
@@ -1637,18 +1642,22 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
         QVector<ito::Param> optParams;
         QVector<ito::Param> outParams;
         paramFunc(&mandParams, &optParams, &outParams);
+
         foreach(ito::Param item, mandParams)
         {
             listParam.append(item.getName());
         }
+
         if (listParam.length() > 0)
         {
             listParam[0].prepend(", ");
         }
-        command = tr("ui.createNewPluginWidget(\"%1%2\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
+        command = QString("ui.createNewPluginWidget(\"%1%2\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
     }
     return command;
 }
+
+//-------------------------------------------------------------------------------------
 QMimeData* PlugInModel::mimeData(const QModelIndexList &indexes) const
 {
     QMimeData *mimeData = QAbstractItemModel::mimeData(indexes);
