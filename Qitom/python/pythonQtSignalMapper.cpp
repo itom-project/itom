@@ -110,9 +110,7 @@ bool PythonQtSignalMapper::addSignalHandler(
 {
     bool success = false;
 
-    if (!PyMethod_Check(callable) &&
-        !PyFunction_Check(callable) &&
-        !PyCFunction_Check(callable))
+    if (!PyCallable_Check(callable))
     {
         return success;
     }
@@ -272,15 +270,16 @@ PythonQtSignalTarget::PythonQtSignalTarget(
         temp = PyMethod_Function(callable); //borrowed
         m_function = PyWeakref_NewRef(temp, NULL); //new ref
     }
-    else if (PyFunction_Check(callable))
-    {
-        m_callableType = Callable_Function;
-        Py_INCREF(callable);
-        m_function = callable; //new ref
-    }
     else if (PyCFunction_Check(callable))
     {
         m_callableType = Callable_CFunction;
+        Py_INCREF(callable);
+        m_function = callable; //new ref
+    }
+    else if (PyCallable_Check(callable))
+    {
+        // any other callable, especially PyFunction, but also functools.partial etc.
+        m_callableType = Callable_Function;
         Py_INCREF(callable);
         m_function = callable; //new ref
     }
