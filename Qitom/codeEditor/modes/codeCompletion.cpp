@@ -590,6 +590,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
 {
     m_lastRequestId = requestId;
+
     if (line == m_lastCursorLine && \
             col == m_lastCursorColumn)
     {
@@ -600,6 +601,7 @@ void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int 
     }
     else
     {
+        qDebug() << "outdated request" << requestId << ": dropping.";
         //debug('outdated request, dropping')
     }
 }
@@ -626,6 +628,7 @@ bool CodeCompletionMode::requestCompletion()
     int line = editor()->currentLineNumber();
     int col = editor()->currentColumnNumber() - m_completionPrefix.size();
     bool sameContext = (line == m_lastCursorLine && col == m_lastCursorColumn);
+
     if (sameContext)
     {
         if (m_requestId - 1 == m_lastRequestId)
@@ -640,14 +643,11 @@ bool CodeCompletionMode::requestCompletion()
         {
             // same context but result not yet available
         }
+
         return true;
     }
     else
     {
-        //debug('requesting completion')
-        
-
-
         PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
         if (pyEng)
         {
@@ -667,7 +667,8 @@ bool CodeCompletionMode::requestCompletion()
             
             if (pyEng->tryToLoadJediIfNotYetDone())
             {
-                QString code = editor()->codeText(line, col); // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
+                // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
+                QString code = editor()->codeText(line, col);
 
                 ito::JediCompletionRequest request;
                 request.m_source = code;
@@ -681,10 +682,8 @@ bool CodeCompletionMode::requestCompletion()
 
                 pyEng->enqueueJediCompletionRequest(request);
 
-                //debug('request sent: %r', data)
                 m_lastCursorColumn = col;
                 m_lastCursorLine = line;
-
                 m_requestId += 1;
 
                 if (m_requestId == INT_MAX)
