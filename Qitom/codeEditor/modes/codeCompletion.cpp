@@ -601,8 +601,7 @@ void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int 
     }
     else
     {
-        qDebug() << "outdated request" << requestId << ": dropping.";
-        //debug('outdated request, dropping')
+        //qDebug() << "outdated request" << requestId << ": dropping.";
     }
 }
 
