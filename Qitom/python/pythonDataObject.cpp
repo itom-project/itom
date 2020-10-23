@@ -7125,13 +7125,13 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
     if (self == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "dataObject is NULL");
-        return NULL;
+        return -1;
     }
 
     if (self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "content of dataObject is NULL");
-        return NULL;
+        return -1;
     }
 
     if (!PyDict_Check(value))
