@@ -72,10 +72,6 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     connect(this, SIGNAL(wordClicked(QTextCursor)), this, SLOT(onWordClicked(QTextCursor)));
 
     m_pPythonEngine = AppManagement::getPythonEngine();
-    if (m_pPythonEngine)
-    {
-        connect(this, &PyGotoAssignmentMode::jediAssignmentRequested, qobject_cast<PythonEngine*>(m_pPythonEngine), &PythonEngine::jediAssignmentRequested);
-    }
 
     m_pActionGotoDefinition = new QAction(tr("Go To Definition"), this);
     m_pActionGotoDefinition->setShortcut(QKeySequence(Qt::Key_F12));
@@ -294,16 +290,19 @@ Request a go to assignment.
 void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, int mode)
 {
     QTextCursor tc = cursor;
+
     if (tc.isNull())
     {
         tc = editor()->wordUnderCursor(false);
     }
 
-    PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(m_pPythonEngine);
+
     if (pyEng)
     {
         ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
         QString filename;
+
         if (sew)
         {
             filename = sew->getFilename();
@@ -329,7 +328,16 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
             //store current position as go back navigation point before jumping to another position
             editor()->reportPositionAsGoBackNavigationItem(tc, "goto");
 
-            emit jediAssignmentRequested(editor()->toPlainText(), tc.blockNumber(), tc.columnNumber(), filename, mode, "onJediAssignmentResultsAvailable");
+            JediAssignmentRequest request;
+            request.m_sender = this;
+            request.m_callbackFctName = "onJediAssignmentResultsAvailable";
+            request.m_col = tc.columnNumber();
+            request.m_line = tc.blockNumber();
+            request.m_mode = mode;
+            request.m_path = filename;
+            request.m_source = editor()->toPlainText();
+
+            pyEng->enqueueGoToAssignmentRequest(request);
         }
         else
         {

@@ -202,7 +202,7 @@ private:
     int m_lastCursorColumn;
     int m_lastCursorLine;
     Qt::Key m_triggerKey;
-    int m_requestId;
+    int m_requestId; //!< auto-incremented number for the last enqueued completion request.
     int m_lastRequestId;
     QString m_currentCompletion;
     QStringList m_triggerSymbols;

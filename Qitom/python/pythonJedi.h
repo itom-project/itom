@@ -89,6 +89,18 @@ namespace ito
     };
 
     //--------------------------------------------------------------------------------------
+    struct JediAssignmentRequest
+    {
+        QString m_source;
+        int m_line;
+        int m_col;
+        QString m_path;
+        int m_mode;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
     struct JediAssignment
     {
         JediAssignment() {};
