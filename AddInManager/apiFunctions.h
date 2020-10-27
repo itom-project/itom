@@ -48,7 +48,7 @@ namespace ito
                 QVector<ito::ParamBase> *paramsOut);
 
             //! function called by apiFilterCallExt
-            static ito::RetVal ApiFunctions::mfilterCallExt(
+            static ito::RetVal mfilterCallExt(
                 const QString &name,
                 QVector<ito::ParamBase> *paramsMand,
                 QVector<ito::ParamBase> *paramsOpt,

@@ -59,6 +59,7 @@
 #include "pythonProxy.h"
 #include "pythonStream.h"
 #include "pythonCommon.h"
+#include "pythonJediRunner.h"
 
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
@@ -139,17 +140,25 @@ public:
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
-    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request); //directly call this method from another thread
-    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request); //directly call this method from another thread
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi completion request
+    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request);
+
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
+    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request);
+
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
+    void enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request);
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 
-    void addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer); //add a new function cancellation / observer. Each valid observer on the list will be requested to be cancelled if a script executed is interrupted
-    void removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer = NULL); //will remove the given observer from the list of function cancellations and observers. Even if observer is NULL, the list of current observers will be cleanup from deleted instances
+    //!< add a new function cancellation / observer. Each valid observer on the list will be requested to be cancelled if a script executed is interrupted
+    void addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer);
+
+    //!< will remove the given observer from the list of function cancellations and observers. Even if observer is NULL, the list of current observers will be cleanup from deleted instances
+    void removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer = NULL); 
 
 protected:
-    //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
     ito::RetVal debugFile(const QString &pythonFileName);         // debug file pythonFileName
     ito::RetVal runString(const QString &command);          // run string command
@@ -220,10 +229,6 @@ private:
     QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
-
-    QMutex m_jediRequestMutex;
-    QQueue<ito::JediCompletionRequest> m_queuedJediCompletionRequests;
-    QQueue<ito::JediCalltipRequest> m_queuedJediCalltipRequests;
     
     ito::tPythonState m_pythonState;
     
@@ -241,8 +246,8 @@ private:
     PyObject *m_pyModCodeChecker;
 	bool m_pyModCodeCheckerHasPyFlakes; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax check feature (package: pyflakes)
 	bool m_pyModCodeCheckerHasFlake8; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax and style check feature (package: flake8)
-    PyObject *m_pyModJedi;         //!< Python package Jedi for auto completion and calltips (Jedi is tried to be loaded as late as possible)
-    bool     m_pyModJediChecked;   //!< defines, if it is already checked if Jedi could be loaded on this computer.
+    
+    QSharedPointer<PythonJediRunner> m_jediRunner;
 
     Qt::HANDLE m_pythonThreadId;
 
@@ -259,9 +264,11 @@ private:
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
 
-    // decides if itom is automatically included in every source file before it is handed to the syntax checker
+    //!< decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItomImportBeforeCodeAnalysis;
-    QString m_includeItomImportString; //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeCodeAnalysis is true)
+
+    //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeCodeAnalysis is true)
+    QString m_includeItomImportString; 
 
     wchar_t *m_pUserDefinedPythonHome;
 
@@ -333,12 +340,7 @@ public slots:
     void readSettings();
     void propertiesChanged();
 
-
     void pythonCodeCheck(const QString &code, const QString &filename, bool fileSaved, QPointer<QObject> sender, QByteArray callbackFctName);
-
-    void jediAssignmentRequested(const QString &source, int line, int col, const QString &path, int mode, QByteArray callbackFctName);
-
-    void pythonGenericSlot(PyObject* callable, PyObject *argumentTuple);
 
     //!< these slots are only connected if python in debug-mode; while waiting these slots will be treated due to progressEvents-call in PythonEngine::PyDbgCommandLoop
     void breakPointAdded(BreakPointItem bp, int row);
@@ -370,10 +372,6 @@ public slots:
 
     ito::RetVal pythonGetClearAllValues();
     ito::RetVal pythonClearAll();
-
-private slots:
-    void jediCompletionRequestEnqueued(); //this slot is invoked whenever a new jedi completion request has been enqueued using the direct, thread-safe method call enqueueJediCompletionRequest(...)
-    void jediCalltipRequestEnqueued(); //this slot is invoked whenever a new jedi calltip request has been enqueued using the direct, thread-safe method call enqueueJediCalltipRequest(...)
 
 };
 

@@ -422,8 +422,10 @@ QString any(const QString &name, const QStringList &alternates)
 }
 
 
-//----------------------------------------------------------------
-/*static*/ QList<PythonSyntaxHighlighter::NamedRegExp> PythonSyntaxHighlighter::makePythonPatterns(const QStringList &additionalKeywords, const QStringList &additionalBuiltins)
+//-------------------------------------------------------------------------------------
+/*static*/ QList<PythonSyntaxHighlighter::NamedRegExp> PythonSyntaxHighlighter::makePythonPatterns(
+    const QStringList &additionalKeywords,
+    const QStringList &additionalBuiltins)
 {
     QList<NamedRegExp> regExpressions;
 
@@ -436,8 +438,14 @@ QString any(const QString &name, const QStringList &alternates)
     QStringList wordopList = QStringList() << "and" << "or" << "not" << "in" << "is";
 
     //Strongly inspired from idlelib.ColorDelegator.make_pat
+
+    // a keyword is one of the given lists, bounded by a word boundary on both sides
     QString kw = "\\b" + any("keyword", kwlist + additionalKeywords) + "\\b";
+
+    // the same holds for namespace keywords
     QString kw_namespace = "\\b" + any("namespace", kwNamespaceList) + "\\b";
+
+    // ... and for text operators
     QString word_operators = "\\b" + any("operator_word", wordopList) + "\\b";
     
     //TODO: obtain the following list by the following python script:
@@ -446,64 +454,83 @@ QString any(const QString &name, const QStringList &alternates)
     text = ["\"%s\"" % str(name) for name in dir(builtins) if not name.startswith('_')]
     print("QStringList() << " + " << ".join(text) + ";")
     */
-    //The following builtins are based on Python 3.4
+    //The following builtins are based on Python 3.7
     QStringList builtinlist = QStringList() << "ArithmeticError" << "AssertionError" << "AttributeError" << \
-        "BaseException" << "BlockingIOError" << "BrokenPipeError" << "BufferError" << "BytesWarning" << \
+        "BaseException" << "BlockingIOError" << "BrokenPipeError" << "BufferError" << "BytesWarning" << 
         "ChildProcessError" << "ConnectionAbortedError" << "ConnectionError" << "ConnectionRefusedError" << \
         "ConnectionResetError" << "DeprecationWarning" << "EOFError" << "Ellipsis" << "EnvironmentError" << \
         "Exception" << "False" << "FileExistsError" << "FileNotFoundError" << "FloatingPointError" << "FutureWarning" << \
         "GeneratorExit" << "IOError" << "ImportError" << "ImportWarning" << "IndentationError" << "IndexError" << \
         "InterruptedError" << "IsADirectoryError" << "KeyError" << "KeyboardInterrupt" << "LookupError" << "MemoryError" << \
-        "NameError" << "None" << "NotADirectoryError" << "NotImplemented" << "NotImplementedError" << "OSError" << "OverflowError" << \
-        "PendingDeprecationWarning" << "PermissionError" << "ProcessLookupError" << "ReferenceError" << "ResourceWarning" << "RuntimeError" << \
-        "RuntimeWarning" << "StopIteration" << "SyntaxError" << "SyntaxWarning" << "SystemError" << "SystemExit" << "TabError" << \
+        "ModuleNotFoundError" << "NameError" << "None" << "NotADirectoryError" << "NotImplemented" << "NotImplementedError" << "OSError" << "OverflowError" << \
+        "PendingDeprecationWarning" << "PermissionError" << "ProcessLookupError" << "RecursionError" << "ReferenceError" << "ResourceWarning" << "RuntimeError" << \
+        "RuntimeWarning" << "StopAsyncIteration" << "StopIteration" << "SyntaxError" << "SyntaxWarning" << "SystemError" << "SystemExit" << "TabError" << \
         "TimeoutError" << "True" << "TypeError" << "UnboundLocalError" << "UnicodeDecodeError" << "UnicodeEncodeError" << "UnicodeError" << \
         "UnicodeTranslateError" << "UnicodeWarning" << "UserWarning" << "ValueError" << "Warning" << "WindowsError" << "ZeroDivisionError" << \
-        "abs" << "all" << "any" << "ascii" << "bin" << "bool" << "bytearray" << "bytes" << "callable" << "chr" << "classmethod" << \
+        "abs" << "all" << "any" << "ascii" << "bin" << "bool" << "breakpoint" << "bytearray" << "bytes" << "callable" << "chr" << "classmethod" << \
         "compile" << "complex" << "copyright" << "credits" << "delattr" << "dict" << "dir" << "divmod" << "enumerate" << "eval" << \
         "exec" << "exit" << "filter" << "float" << "format" << "frozenset" << "getattr" << "globals" << "hasattr" << "hash" << "help" << \
         "hex" << "id" << "input" << "int" << "isinstance" << "issubclass" << "iter" << "len" << "license" << "list" << "locals" << "map" << \
         "max" << "memoryview" << "min" << "next" << "object" << "oct" << "open" << "ord" << "pow" << "print" << "property" << "quit" << \
         "range" << "repr" << "reversed" << "round" << "set" << "setattr" << "slice" << "sorted" << "staticmethod" << "str" << "sum" << \
         "super" << "tuple" << "type" << "vars" << "zip";
+
     builtinlist << additionalBuiltins;
+
+    // None, True and False should be a keyword, not a builtin, remove them...
     builtinlist.removeAll("None");
     builtinlist.removeAll("True");
     builtinlist.removeAll("False");
+
     QString builtin = "([^.'\"\\#]\\b|^)" + any("builtin", builtinlist) + "\\b";
     QString builtin_fct = any("builtin_fct", QStringList("_{2}[a-zA-Z0-9_]*_{2}"));
-    QString comment = any("comment", QStringList("#[^\\n]*"));
-    QString instance = any("instance", QStringList("\\bself\\b") << "\\bcls\\b");
-    QString decorator = any("decorator",  QStringList("@\\w*") << ".setter");
 
-    /*QString number = any("number", QStringList() << \
-        "\\b[+-]?[0-9]+[lLjJ]?\\b" <<
-        "\\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\\b" <<
-        "\\b[+-]?0[oO][0-7]+[lL]?\\b" <<
-        "\\b[+-]?0[bB][01]+[lL]?\\b" <<
-        "\\b[+-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b");*/ //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
+    // a comment is a hash (#) followed by any character but a newline (^\\n negates the newline)
+    QString comment = any("comment", QStringList("#[^\\n]*"));
+
+    // the instance keyword is either self or cls (word boundary on both sides)
+    QString instance = any("instance", QStringList("\\bself\\b") << "\\bcls\\b");
+
+    /* decorators:
+    
+    - each decorator is in its own line
+    - there can be an arbitrary number of spaces (or tabs) at the beginning
+    - then the @ (at) sign follows
+    - then there must be an identifier.
+
+    An identifier is defined by the expression in the rounded brackets.
+
+    Officially, it is also allowed to have spaces / tabs between @ and
+    identifier, however we don't allow this here in order to reserve
+    this for the @ operator (like +, -, /, *...).
+    */
+    QString decorator = any("decorator", QStringList("^[\\s]*@([a-zA-Z_][\\w\\.]*)?"));
 
     //some fixes: 1. numbers with postfix l or L does not exist any more in python 3;
     // 2. the order of the following number entries is relevant
     // 3. if dots are included in the regex, no \\b can be used, since the dot is also a word boundary
 #if QT_VERSION > MIN_QT_REGULAREXPRESSION_VERSION
     //using lookbehind
-    QString number = any("number", QStringList() <<  
-                "\\b0[xX][0-9A-Fa-f]+\\b" <<
-                "\\b0[oO][0-7]+\\b" <<
-                "\\b0[bB][01]+\\b" <<
-                "(?<![a-zA-Z\\)\\]\\}\\.0-9_])\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
-                "(?<![a-zA-Z\\)\\]\\}\\.0-9_])[\\+\\-]\\.?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?"); 
+    // trailing +/- is not part of the number
+    QString number = any("number", QStringList() <<
+            "(?<![a-zA-Z\\)\\]\\}\\.0-9_])\\.?([0-9](_?[0-9])*)(?:\\.([0-9]?(_?[0-9])*))?(?:[eE][+-]?([0-9](_?[0-9])*))?[jJ]?" << // float + complex
+            "\\b0[xX](?:_?[0-9A-Fa-f])+" << // hex integer
+            "\\b0[oO](?:_?[0-7])+" <<       // oct integer
+            "\\b0[bB](?:_?[01])+" <<        // bin integer
+            "\\b[1-9](?:_?[0-9])*" <<       // decimal integer (non-zero)
+            "\\b0(?:_?0)*")                 // decimal integer (zero)
+        + "\\b";
+                
     //hint: maybe, the first 0-9 range in the lookbehind of the next-to-last expression is not 'necessary' for  Qt < 5.9. 
     //test it by typing a2000 in python. The correct version should identify the entire string as string, not number (even not the zeros as number)
 #else
     QString number = any("number", QStringList() << \
-            "\\b0[xX][0-9A-Fa-f]+\\b" <<
-            "\\b0[oO][0-7]+\\b" <<
-            "\\b0[bB][01]+\\b" <<
-            "[\\+\\-]0[xX][0-9A-Fa-f]+\\b" <<
-            "[\\+\\-]0[oO][0-7]+\\b" <<
-            "[\\+\\-]0[bB][01]+\\b" <<
+            "\\b0[xX][0-9A-Fa-f_]+\\b" <<
+            "\\b0[oO][0-7_]+\\b" <<
+            "\\b0[bB][01_]+\\b" <<
+            "[\\+\\-]0[xX][0-9A-Fa-f_]+\\b" <<
+            "[\\+\\-]0[oO][0-7_]+\\b" <<
+            "[\\+\\-]0[bB][01_]+\\b" <<
             "[\\+\\-]?\\.[0-9]+(?:[eE][+-]?[0-9]+)?[jJ]?" <<
             "[\\+\\-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
             "[0-9]+[jJ]?\\b" <<
