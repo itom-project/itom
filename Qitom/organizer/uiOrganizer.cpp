@@ -2568,7 +2568,12 @@ RetVal UiOrganizer::connectProgressObserverInterrupt(unsigned int objectID, cons
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::callSlotOrMethod(
+    bool slotNotMethod, 
+    unsigned int objectID, 
+    int slotOrMethodIndex, 
+    QSharedPointer<FctCallParamContainer> args, 
+    ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
     QObject *obj = getWeakObjectReference(objectID);
@@ -2591,14 +2596,17 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
         else
         {
             // ck 07.03.17
-            // changed call of widgetWrapper to already return ito::RetVal with more detailed information about the failure reason
+            // changed call of widgetWrapper to already return ito::RetVal with 
+            // more detailed information about the failure reason
             retValue += m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
         }
 
-        //check if arguments have to be marshalled (e.g. QObject* must be transformed to objectID before passed to python in other thread)
+        //check if arguments have to be marshalled (e.g. QObject* must be transformed to objectID 
+        //before passed to python in other thread)
         if (args->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
         {
-            //add m_object to weakObject-List and pass its ID to python. TODO: right now, we do not check if the object is a child of obj
+            //add m_object to weakObject-List and pass its ID to python. TODO: right now, 
+            //we do not check if the object is a child of obj
             ito::PythonQObjectMarshal* m = (ito::PythonQObjectMarshal*)args->args()[0];
             if (m->m_object)
             {
@@ -2634,7 +2642,10 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, 
+    QSharedPointer<MethodDescriptionList> methodList, 
+    ItomSharedSemaphore *semaphore
+)
 {
     RetVal retValue(retOk);
     QObject *obj = getWeakObjectReference(objectID);
