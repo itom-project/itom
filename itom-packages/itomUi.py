@@ -37,36 +37,47 @@ class ItomUi:
     user-interface. This class provides possibilites for auto-connecting
     decorated methods in your implementation with certain signals of widgets
     in the user interface.
-    
+
     Example:
     - User interface contains a button 'pushButton'
-    - Write a method which should be connected to the 
+    - Write a method which should be connected to the
       buttons clicked(bool)-signal:
-    
+
         @ItomUi.autoslot("bool")
         def on_pushButton_clicked(self,arg):
             # this method is auto-connected in the constructor of ItomUi
             pass
-    
+
     - This step is the same than typing:
         self.ui.pushButton.connect("clicked(bool)", self.on_pushButton_clicked)
     """
-    
-    def __init__(self, filename, *args, **kwds):
+
+    def __init__(
+        self,
+        filename,
+        type=ui.TYPEWINDOW,
+        dialogButtonBar=ui.BUTTONBAR_NO,
+        dialogButtons={},
+        childOfMainWindow=True,
+        deleteOnClose=False,
+        dockWidgetArea=ui.TOPDOCKWIDGETAREA,
+        *args,
+        **kwds
+    ):
         """Constructor.
-        
+
         Call this constructor from a derived class like you would
         directly call the constructor of the class ``itom.ui``.
-        
+
         Args:
             filename (str): the path to the user interface file (*.ui)
             args (unnamed parameters): further parameters, that are
                 passed to the constructor of ``itom.ui``.
             kwds (keyword-based parameters): further parameters, that are
                 passed to the constructor of ``itom.ui``.
-        
+
         Possible named or unnamed parameters can be:
-        
+
         * type (int): ui.TYPEDIALOG, ui.TYPEWINDOW, ui.TYPEDOCKWIDGET,
           ui.TYPECENTRALWIDGET
         * childOfMainWindow (bool): only valid for ui.TYPEDIALOG or
@@ -76,12 +87,22 @@ class ItomUi:
           closed by the user (you can connect to the ``destroyed`` signal.
           If False (default), the GUI is only hidden and can be shown again.
         """
-        self.gui = ui(filename, *args, **kwds)
+        self.gui = ui(
+            filename,
+            type,
+            dialogButtonBar,
+            dialogButtons,
+            childOfMainWindow,
+            deleteOnClose,
+            dockWidgetArea,
+        )
+        # this is to have s cooperative multi-inheritance structure enabled.
+        super().__init__(*args, **kwds)
         self.autoconnect()
 
     def show(self, modal=0):
         """Show the gui in a model or non-modal way.
-        
+
         Args:
             modal (int): 0 if gui should be shown in non-modal way (default),
                          1 if the gui should be shown modally and this method
@@ -89,25 +110,25 @@ class ItomUi:
                          code of the gui (1: accepted, 0: rejected), or
                          2 if it should be shown modally, but this method should
                          return immediately.
-        
+
         Returns:
             None if ``modal`` is 0 or 2, else ``0`` if the modally
             shown dialog has been rejected, or ``1`` if it was accepted.
-        
+
         See Also:
             itom.ui.show
         """
         return self.gui.show(modal)
-    
+
     def hide(self):
         """Hides the GUI.
-        
+
         New in version 2.2 of this module."""
         self.gui.hide()
 
     def autoconnect(self):
         """Executes auto-connection between signals of widgets and methods in this class.
-        
+
         Checks all methods of your class and if they have the decorator @autoslot,
         connect them with the widget's signal, if the name of the method fits to the
         requirements (see doc of autoslot-decorator)
@@ -140,7 +161,7 @@ class ItomUi:
 
     def autoslot(*attr):
         """Decorator to mark methods in derived classes to be a slot for a widget signal.
-        
+
         For auto-connecting your method with a signal of a widget in the
         user interface, your method must have as name 'on_WIDGETNAME_SIGNALNAME' and
         you have to decorate your method with the decorator '@autoslot('parameters').
@@ -176,35 +197,35 @@ class ItomUi:
         hideItems=[],
         enableItems=[],
         revertToInitialStateOnExit=True,
-        showWaitCursor=True
+        showWaitCursor=True,
     ):
         """Factory function for with statement to disable parts of the GUI.
-        
+
         This function can be called in a with statement to wrap a long going
         operation. If the with block is entered, given items of the GUI are
         switched to a disable state (hidden, disabled, shown...) and if the
         block is exited, the states will be reverted to the original or
         opposite value.
-        
+
         The advantage of using this context function instead of "manually"
         disable and enabling the GUI during one operation is, that this
         approach will even revert to GUI to an enabled state, if the operation
         within the ``with`` block raises an unhandled exception.
-        
+
         New in version 2.2 of this module.
-        
+
         Args:
             disableItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
-                should be disabled on entering the with block and reverted 
+                should be disabled on entering the with block and reverted
                 (enabled) on exiting it.
             showItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
                 should be shown on entering the with block and reverted (hidden)
                 on exiting it.
             hideItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
-                should be hidden on entering the with block and reverted 
+                should be hidden on entering the with block and reverted
                 (shown) on exiting it.
             enableItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
-                should be enabled on entering the with block and reverted 
+                should be enabled on entering the with block and reverted
                 (disabled) on exiting it.
             revertToInitialStateOnExit (bool): If True (default), all items
                 are always reverted on exiting the with block to the state,
@@ -214,14 +235,14 @@ class ItomUi:
             showWaitCursor (bool): If True (default), the wait cursor is
                 shown during the execution of the with block and reverted
                 to the previous value on exit.
-        
+
         An exemplary call of this context function is::
-            
+
             disableItems = [self.gui.myItem1, self.gui.myItem2]
             showItems = []
             hideItems = [self.gui.myItem3, ]
             enableItems = []
-            
+
             with self.disableGui(
                     disableItems,
                     showItems,
@@ -235,60 +256,60 @@ class ItomUi:
             # enter block
             if showWaitCursor:
                 itom.setApplicationCursor(16)
-            
+
             revertItems = []
-            
+
             for item in disableItems:
                 if revertToInitialStateOnExit:
                     val = item["enabled"]
                 else:
                     val = True
-                
+
                 if val:
                     revertItems.append([item, "enabled", val])
-                
+
                 item["enabled"] = False
-            
+
             for item in showItems:
                 if revertToInitialStateOnExit:
                     val = item["visible"]
                 else:
                     val = False
-                
+
                 if not val:
                     revertItems.append([item, "visible", val])
-                
+
                 item["visible"] = True
-            
+
             for item in enableItems:
                 if revertToInitialStateOnExit:
                     val = item["enabled"]
                 else:
                     val = False
-                
+
                 if not val:
                     revertItems.append([item, "enabled", val])
-                
+
                 item["enabled"] = True
-            
+
             for item in hideItems:
                 if revertToInitialStateOnExit:
                     val = item["visible"]
                 else:
                     val = True
-                
+
                 if val:
                     revertItems.append([item, "visible", val])
-                
+
                 item["visible"] = False
-            
+
             yield  # this statement starts the long operation in the with block
-            
+
         finally:
             # exit block
             if showWaitCursor:
                 itom.setApplicationCursor(-1)
-            
+
             for item, prop, value in revertItems:
                 item[prop] = value
 
