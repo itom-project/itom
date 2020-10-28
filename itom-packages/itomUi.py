@@ -97,7 +97,10 @@ class ItomUi:
             dockWidgetArea,
         )
         # this is to have s cooperative multi-inheritance structure enabled.
-        super().__init__(*args, **kwds)
+        # check www.realpython.com/python-super
+        # check www.code.activestate.com/recipes/(577720-how-to-use-super-effectively
+        # check www.rhettinger.wordpress.com/2011/05/26/super-considered-super/
+        super().__init__(**kwds)
         self.autoconnect()
 
     def show(self, modal=0):
