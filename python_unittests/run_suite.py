@@ -4,6 +4,7 @@ import dataobject_static_constructors
 import dataobject_constructors
 import dataobject_comparison
 import dataobject_mapping
+import dataobject_multiplication
 import dataobject_np_conversion
 import dataobject_makecontinuous
 import dataobject_scale_offset
@@ -17,6 +18,7 @@ def suite():
     suite.addTest (unittest.makeSuite(dataobject_constructors.DataObjectConstructors))
     suite.addTest (unittest.makeSuite(dataobject_comparison.DataObjectComparison))
     suite.addTest (unittest.makeSuite(dataobject_mapping.DataObjectMapping))
+    suite.addTest (unittest.makeSuite(dataobject_multiplication.DataObjectMultiplication))
     suite.addTest (unittest.makeSuite(dataobject_np_conversion.DataObjectNpConversion))
     suite.addTest (unittest.makeSuite(dataobject_makecontinuous.DataObjectMakeContinuous))
     suite.addTest (unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))

@@ -3181,7 +3181,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         try
         {
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));
         }
         catch(cv::Exception &exc)
         {
@@ -3205,7 +3206,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
             try
             {
-                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+                //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);
             }
             catch(cv::Exception &exc)
             {
@@ -3215,6 +3217,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
             }
 
             char buf[PROTOCOL_STR_LENGTH] = {0};
+
             if (factor.imag() > 0)
             {
                 sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g+i%g.", factor.real(), factor.imag());
@@ -3241,7 +3244,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
             try
             {
-                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+                //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  
             }
             catch(cv::Exception &exc)
             {
@@ -3272,7 +3276,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         try
         {
-            retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);
         }
         catch(cv::Exception &exc)
         {
@@ -3289,6 +3294,44 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         return (PyObject*)retObj;
     }
     return NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonDataObject::PyDataObj_nbMatrixMultiply(PyObject* o1, PyObject* o2)
+{
+    if (o1 == NULL || o2 == NULL)
+    {
+        return NULL;
+    }
+
+    if (!checkPyDataObject(2, o1, o2))
+    {
+        return NULL;
+    }
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    try
+    {
+        //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));
+    }
+    catch (cv::Exception &exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    if (retObj)
+    {
+        retObj->dataObject->addToProtocol("Matrix multiplication of two dataObjects.");
+    }
+
+    return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3992,6 +4035,38 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
             dobj1->dataObject->addToProtocol(buf);
         }
     }
+
+    Py_INCREF(o1);
+    return (PyObject*)o1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonDataObject::PyDataObj_nbInplaceMatrixMultiply(PyObject* o1, PyObject* o2)
+{
+    if (o1 == NULL || o2 == NULL)
+    {
+        return NULL;
+    }
+
+    if (!checkPyDataObject(2, o1, o2))
+    {
+        return NULL;
+    }
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+    PyDataObject *dobj2 = (PyDataObject*)(o2);
+
+    try
+    {
+        *(dobj1->dataObject) *= *(dobj2->dataObject);
+    }
+    catch (cv::Exception &exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+    
+    dobj1->dataObject->addToProtocol("Inplace matrix multiplication of two dataObjects");
 
     Py_INCREF(o1);
     return (PyObject*)o1;
@@ -9400,6 +9475,12 @@ PyNumberMethods PythonDataObject::PyDataObject_numberProtocol = {
     (binaryfunc)PyDataObj_nbDivide,                /* nb_true_divide */
     0,                                             /* nb_inplace_floor_divide */
     (binaryfunc)PyDataObj_nbInplaceTrueDivide      /* nb_inplace_true_divide */
+
+#if PY_VERSION_HEX >= 0x03050000
+    ,0,                                            /* np_index */
+    (binaryfunc)PyDataObj_nbMatrixMultiply,        /* nb_matrix_multiply */
+    (binaryfunc)PyDataObj_nbInplaceMatrixMultiply  /* nb_inplace_matrix_multiply */
+#endif
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
