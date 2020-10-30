@@ -192,6 +192,12 @@ QHullxxxx.x
       or check with 
       :ref:`build_dependencies_flann_qhull`
 
+VTKx.x.x
+>>>>>>>>>>>>>>>>>>
+    * Copy the output of the compilation process to this folder
+      :ref:`build_dependencies_vtk`
+
+
 PCLx.x.x
 >>>>>>>>>>>>>>>>>>>
     * Copy the output of the compilation process to this folder
@@ -199,10 +205,7 @@ PCLx.x.x
 
 
 
-VTKx.x.x
->>>>>>>>>>>>>>>>>>
-    * Copy the output of the compilation process to this folder
-      :ref:`build_dependencies_vtk`
+
 
 
 
