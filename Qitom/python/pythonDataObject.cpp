@@ -7230,10 +7230,11 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectArray_StructGet_doc,"__array_struct__ -> general python-array interface (do not call this directly) \n\
-                                           This interface makes the data object compatible to every array structure in python \n\
-                                           which does equally implement the array interface (e.g. NumPy). This method is \n\
-                                           therefore a helper method for the array interface.");
+PyDoc_STRVAR(dataObjectArray_StructGet_doc, 
+"__array_struct__ -> general python-array interface (do not call this directly) \n\
+This interface makes the data object compatible to every array structure in python \n\
+which does equally implement the array interface (e.g. NumPy). This method is \n\
+therefore a helper method for the array interface.");
 PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 {
     PyArrayInterface *inter;
@@ -7248,18 +7249,19 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     if (selfDO->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
+        // For Numpy >= 1.18 it seems, that an exception set will
+        // change the behaviour. We want, that if this method
+        // fails, numpy tries to call __array__(). This is only done
+        // for Numpy >= 1.18 if no exception is set here!
+
+        /*PyErr_SetString(
+            PyExc_RuntimeError, 
+            "the dataObject cannot be directly converted into a numpy array since"
+            "it is not continuous (call dataObject.makeContinuous() for conversion first)."
+        );*/
+
         return NULL;
     }
-
-    /*if (selfDO->isT())
-    {
-        selfDO->unlock();
-        selfDO->lockWrite();
-        selfDO->evaluateTransposeFlag();
-        selfDO->unlock();
-        selfDO->lockRead();
-    }*/
 
     inter = new PyArrayInterface;
     if (inter==NULL) {
@@ -7333,9 +7335,10 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectArray_Interface_doc,"__array_interface__ -> general python-array interface (do not call this directly) \n\
-                                           This interface makes the data object compatible to every array structure in python \n\
-                                           which does equally implement the array interface (e.g. NumPy).");
+PyDoc_STRVAR(dataObjectArray_Interface_doc, 
+"__array_interface__ -> general python-array interface (do not call this directly) \n\
+This interface makes the data object compatible to every array structure in python \n\
+which does equally implement the array interface (e.g. NumPy).");
 PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -7345,7 +7348,17 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     }
     else if (self->dataObject->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
+        // For Numpy >= 1.18 it seems, that an exception set will
+        // change the behaviour. We want, that if this method
+        // fails, numpy tries to call __array__(). This is only done
+        // for Numpy >= 1.18 if no exception is set here!
+
+        /*PyErr_SetString(
+            PyExc_RuntimeError,
+            "the dataObject cannot be directly converted into a numpy array since"
+            "it is not continuous (call dataObject.makeContinuous() for conversion first)."
+        );*/
+
         return NULL;
     }
 
@@ -7355,23 +7368,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     int itemsize;
     char typekind;
     char typekind2[] = "a\0";
-
-    //inter = new PyArrayInterface;
-    //if (inter==NULL) {
-    //    selfDO->unlock();
-    //    return PyErr_NoMemory();
-    //}
-
-    //inter->two = 2;
-    //inter->nd = selfDO->getDims();
-
-    //if (inter->nd == 0)
-    //{
-    //    PyErr_SetString(PyExc_TypeError, "data object is empty.");
-    //    delete inter;
-    //    selfDO->unlock();
-    //    return NULL;
-    //}
 
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
@@ -7461,15 +7457,17 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         Py_XDECREF(strides);
     }
 
-    //don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will increment the refcount of then PyDataObject SELF by itself.
+    // don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) 
+    // will increment the refcount of then PyDataObject SELF by itself.
     return retDict;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObject_Array__doc,"__array__([dtype]) -> returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
-                                   If no desired dtype is given and if the this dataObject is continuous, a ndarray sharing its memory with this dataObject is returned. \n\
-                                   If the desired dtype does not fit to the type of this dataObject, a casted deep copy is returned. This is also the case if \n\
-                                   this dataObject is not continuous. Then a continuous dataObject is created that is the base object of the returned ndarray.");
+PyDoc_STRVAR(dataObject_Array__doc, 
+"__array__([dtype]) -> returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
+If no desired dtype is given and if the this dataObject is continuous, a ndarray sharing its memory with this dataObject is returned. \n\
+If the desired dtype does not fit to the type of this dataObject, a casted deep copy is returned. This is also the case if \n\
+this dataObject is not continuous. Then a continuous dataObject is created that is the base object of the returned ndarray.");
 PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 {
     if (self->dataObject == NULL)
