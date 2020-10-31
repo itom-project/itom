@@ -2862,7 +2862,7 @@ RuntimeError : \n\
 \n\
 See Also \n\
 --------- \n\
-removeButton()");
+removeButton");
 PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *kwds)
 {
     //int type = 0; //BUTTON (default)
@@ -2970,7 +2970,7 @@ RuntimeError : \n\
 \n\
 See Also \n\
 --------- \n\
-addButton()");
+addButton");
 PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* toolbarName = NULL;
@@ -4608,7 +4608,7 @@ success : {bool} \n\
 \n\
 See Also \n\
 --------- \n\
-getCurrentPath()");
+getCurrentPath");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     PyObject *pyObj = NULL;

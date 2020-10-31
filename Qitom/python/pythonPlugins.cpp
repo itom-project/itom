@@ -3394,7 +3394,7 @@ count : {int}, optional \n\
 \n\
 See Also \n\
 --------- \n\
-stopDevice()");
+stopDevice");
 /** start a dataIO device, i.e. prepare it for recording data
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    should be empty
@@ -3482,7 +3482,7 @@ counts : {None or int} \n\
 \n\
 See Also \n\
 --------- \n\
-startDevice()");
+startDevice");
 
 /** stop a dataIO device
 *   @param [in] self    the dataIO object (python)QString
@@ -3666,7 +3666,7 @@ acquisition job of a AD-converter plugin. \n\
 \n\
 See also\n\
 ---------\n\
-acquire()");
+acquire");
 
 /** stop continuous acquisiiton with a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -3745,7 +3745,7 @@ out : {None or int} \n\
 \n\
 See Also \n\
 --------- \n\
-copyVal()");
+copyVal");
 
 /** get values from a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -3883,7 +3883,7 @@ RuntimeError \n\
 \n\
 See Also \n\
 --------- \n\
-getVal()");
+getVal");
 /** copy values from a dataIO device to an existing dataObject
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    input buffer
@@ -4219,7 +4219,7 @@ This method enables the auto grabbing flag. \n\
 \n\
 See Also \n\
 --------- \n\
-setAutoGrabbing(on), disableAutoGrabbing(), getAutoGrabbing()");
+setAutoGrabbing, disableAutoGrabbing, getAutoGrabbing");
                
 /** enable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -4279,7 +4279,7 @@ This method disables the auto grabbing flag. \n\
 \n\
 See Also \n\
 --------- \n\
-setAutoGrabbing(on), disableAutoGrabbing(), getAutoGrabbing()");                                                  
+setAutoGrabbing, disableAutoGrabbing, getAutoGrabbing");                                                  
 /** disable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    empty
@@ -4347,7 +4347,7 @@ on : {bool}\n\
 \n\
 See Also \n\
 --------- \n\
-enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing()");
+enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing");
 PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, PyObject * args)
 {
     ito::RetVal ret = ito::retOk;
@@ -4419,7 +4419,7 @@ auto grabbing flag : {bool}\n\
 \n\
 See Also \n\
 --------- \n\
-enableAutoGrabbing(), disableAutoGrabbing(), setAutoGrabbing(bool)");
+enableAutoGrabbing, disableAutoGrabbing, setAutoGrabbing");
 
 /** return the status of the autograbbing
 *   @param [in] self    the dataIO object (python)
@@ -4452,7 +4452,7 @@ interval : {int}\n\
 \n\
 See Also \n\
 --------- \n\
-enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing(), setAutoGrabbing(), getAutoGrabbingInterval()");
+enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbing, getAutoGrabbingInterval");
 PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *self, PyObject *args)
 {
     ito::RetVal ret;
@@ -4511,7 +4511,7 @@ is in an idle state. Hence, the interval is considered to be a minimum value. \n
 \n\
 See Also \n\
 --------- \n\
-enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing(), setAutoGrabbing(), setAutoGrabbingInterval()");
+enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbing, setAutoGrabbingInterval");
 PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self)
 {
     ito::RetVal ret;

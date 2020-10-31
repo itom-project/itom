@@ -434,7 +434,7 @@ If you want to know all possible slots of a specific widget, see the Qt help or 
 \n\
 See Also \n\
 --------- \n\
-info()");
+info");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
     int argsSize = PyTuple_Size(args);
@@ -2352,7 +2352,7 @@ via the close icon in its title bar. \n\
 \n\
 See Also \n\
 --------- \n\
-hide()");
+hide");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
     int modalLevel = 0;
@@ -2427,7 +2427,7 @@ A hidden window or dialog can be shown again via the method :py:meth:`~itom.ui.s
 \n\
 See Also \n\
 --------- \n\
-show(modal)");
+show");
 PyObject* PythonUi::PyUi_hide(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
