@@ -220,6 +220,7 @@ class PythonDataObject
         static PyObject* PyDataObj_nbAdd(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbSubtract(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbMultiply(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbMatrixMultiply(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbDivide(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbRemainder(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbDivmod(PyObject* o1, PyObject* o2);
@@ -245,6 +246,7 @@ class PythonDataObject
         static PyObject* PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject* o2);
+        static PyObject* PyDataObj_nbInplaceMatrixMultiply(PyObject* o1, PyObject* o2);
 
         //-------------------------------------------------------------------------------------------------
         // iterator protocol
