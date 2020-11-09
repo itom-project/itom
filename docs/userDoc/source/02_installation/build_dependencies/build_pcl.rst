@@ -31,6 +31,11 @@ otherwise the new entries will not be added.
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.9.1
 
 .. note::
+
+    For PCL version 1.11 OpenNI2 is needed. Download it from `OpenNI 2.2 <https://structure.io/openni>`_ (OpenNI2.2).
+    Add it to the 3rdPartyPCL folder. 
+
+.. note::
     
     The created *exe*-files are not needed to run |itom|. Delete all exe-files 
     in the *${MAINDIR}/3rdPartyPCL/pcl1.9.1/bin* folder. 
