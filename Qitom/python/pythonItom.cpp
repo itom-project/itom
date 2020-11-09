@@ -5599,7 +5599,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS | METH_KEYWORDS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
-    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clears all variables in workspace (holds variables created by any startup script)"},
+    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clearAll() -> clears all variables in workspace (holds variables created by any startup script)"},
     {"registerResource", (PyCFunction)PythonItom::PyRegisterResource, METH_VARARGS | METH_KEYWORDS, pyRegisterResources_doc},
     {"unregisterResource", (PyCFunction)PythonItom::PyUnregisterResource, METH_VARARGS | METH_KEYWORDS, pyUnregisterResources_doc},
     {NULL, NULL, 0, NULL}
