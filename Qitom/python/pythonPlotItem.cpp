@@ -303,7 +303,7 @@ elementType : {int} \n\
 maxNrElements: {int}, optional \n\
     let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc. \n\
 \n\
-Return \n\
+Returns \n\
 -------- \n\
 Tuple of class itom.shape for all created geometric shapes.");
 /*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds)

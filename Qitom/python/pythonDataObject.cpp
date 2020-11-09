@@ -161,11 +161,11 @@ the new data object will be a type-casted (and / or continuous) copy of 'anyArra
 \n\
 See Also \n\
 ---------- \n\
-ones() : Static method to construct a data object filled with ones. \n\
-zeros() : Static method to construct a data object filled with zeros. \n\
-nans() : Static method to construct a data object (float or complex only) with NaNs. \n\
-rand() : Static method to construct a randomly filled data object (uniform distribution). \n\
-randN() : Static method to construct a randomly filled data object (gaussian distribution).");
+ones : Static method to construct a data object filled with ones. \n\
+zeros : Static method to construct a data object filled with zeros. \n\
+nans : Static method to construct a data object (float or complex only) with NaNs. \n\
+rand : Static method to construct a randomly filled data object (uniform distribution). \n\
+randN : Static method to construct a randomly filled data object (gaussian distribution).");
 int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     Py_ssize_t lengthArgs = args ? PyTuple_Size(args) : 0;
@@ -1012,7 +1012,7 @@ this value (used to 'reshape' the array). Read-only.\n\
 \n\
 See Also \n\
 --------- \n\
-size() : Alternative method to return the size of all or any specific axis");
+size : Alternative method to return the size of all or any specific axis");
 PyObject* PythonDataObject::PyDataObj_GetShape(PyDataObject *self, void * /*closure*/)
 {
     if (self->dataObject == NULL)
@@ -1174,7 +1174,7 @@ read / write\n\
 \n\
 See Also \n\
 --------- \n\
-setAxisScale() : Alternative method to set the scale value of one single axis");
+setAxisScale : Alternative method to set the scale value of one single axis");
 PyObject* PythonDataObject::PyDataObject_getAxisScales(PyDataObject *self, void * /*closure*/)
 {
     Py_ssize_t dims = static_cast<Py_ssize_t>(self->dataObject->getDims());
@@ -1264,7 +1264,7 @@ read / write\n\
 \n\
 See Also \n\
 --------- \n\
-setAxisOffset() : Alternative method to set the offset value of one single axis");
+setAxisOffset : Alternative method to set the offset value of one single axis");
 PyObject* PythonDataObject::PyDataObject_getAxisOffsets(PyDataObject *self, void * /*closure*/)
 {
     Py_ssize_t dims = static_cast<Py_ssize_t>(self->dataObject->getDims());
@@ -4451,7 +4451,7 @@ TypeError : \n\
 \n\
 See Also \n\
 --------- \n\
-conjugate() : does the same operation but returns a complex-conjugated copy of this data object");
+conjugate : does the same operation but returns a complex-conjugated copy of this data object");
 PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -4487,7 +4487,7 @@ TypeError : \n\
 \n\
 See Also \n\
 --------- \n\
-conj() : does the same operation but manipulates this object inline.");
+conj : does the same operation but manipulates this object inline.");
 PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -4531,7 +4531,7 @@ TypeError : \n\
 \n\
 See Also \n\
 --------- \n\
-adjugate() : does the same operation but returns the resulting data object");
+adjugate : does the same operation but returns the resulting data object");
 PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -4575,7 +4575,7 @@ TypeError : \n\
 \n\
 See Also \n\
 --------- \n\
-adj() : does the same operation but manipulates this object inline.");
+adj : does the same operation but manipulates this object inline.");
 PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -5134,7 +5134,7 @@ the second list is a zero-vector. \n\
 \n\
 See Also \n\
 -------- \n\
-adjustROI(offsetList) : method to change the current region of interest");
+adjustROI : method to change the current region of interest");
 PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -5193,7 +5193,7 @@ offsets : {list of integers} \n\
 \n\
 See Also \n\
 --------- \n\
-locateROI() : method to get the borders of the current ROI");
+locateROI : method to get the borders of the current ROI");
 PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject* args, PyObject *kwds)
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.
@@ -7305,10 +7305,11 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectArray_StructGet_doc,"__array_struct__ -> general python-array interface (do not call this directly) \n\
-                                           This interface makes the data object compatible to every array structure in python \n\
-                                           which does equally implement the array interface (e.g. NumPy). This method is \n\
-                                           therefore a helper method for the array interface.");
+PyDoc_STRVAR(dataObjectArray_StructGet_doc, 
+"__array_struct__ -> general python-array interface (do not call this directly) \n\
+This interface makes the data object compatible to every array structure in python \n\
+which does equally implement the array interface (e.g. NumPy). This method is \n\
+therefore a helper method for the array interface.");
 PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 {
     PyArrayInterface *inter;
@@ -7323,18 +7324,19 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     if (selfDO->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
+        // For Numpy >= 1.18 it seems, that an exception set will
+        // change the behaviour. We want, that if this method
+        // fails, numpy tries to call __array__(). This is only done
+        // for Numpy >= 1.18 if no exception is set here!
+
+        /*PyErr_SetString(
+            PyExc_RuntimeError, 
+            "the dataObject cannot be directly converted into a numpy array since"
+            "it is not continuous (call dataObject.makeContinuous() for conversion first)."
+        );*/
+
         return NULL;
     }
-
-    /*if (selfDO->isT())
-    {
-        selfDO->unlock();
-        selfDO->lockWrite();
-        selfDO->evaluateTransposeFlag();
-        selfDO->unlock();
-        selfDO->lockRead();
-    }*/
 
     inter = new PyArrayInterface;
     if (inter==NULL) {
@@ -7408,9 +7410,10 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectArray_Interface_doc,"__array_interface__ -> general python-array interface (do not call this directly) \n\
-                                           This interface makes the data object compatible to every array structure in python \n\
-                                           which does equally implement the array interface (e.g. NumPy).");
+PyDoc_STRVAR(dataObjectArray_Interface_doc, 
+"__array_interface__ -> general python-array interface (do not call this directly) \n\
+This interface makes the data object compatible to every array structure in python \n\
+which does equally implement the array interface (e.g. NumPy).");
 PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -7420,7 +7423,17 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     }
     else if (self->dataObject->getContinuous() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous (call dataObject.makeContinuous() for conversion first).");
+        // For Numpy >= 1.18 it seems, that an exception set will
+        // change the behaviour. We want, that if this method
+        // fails, numpy tries to call __array__(). This is only done
+        // for Numpy >= 1.18 if no exception is set here!
+
+        /*PyErr_SetString(
+            PyExc_RuntimeError,
+            "the dataObject cannot be directly converted into a numpy array since"
+            "it is not continuous (call dataObject.makeContinuous() for conversion first)."
+        );*/
+
         return NULL;
     }
 
@@ -7430,23 +7443,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     int itemsize;
     char typekind;
     char typekind2[] = "a\0";
-
-    //inter = new PyArrayInterface;
-    //if (inter==NULL) {
-    //    selfDO->unlock();
-    //    return PyErr_NoMemory();
-    //}
-
-    //inter->two = 2;
-    //inter->nd = selfDO->getDims();
-
-    //if (inter->nd == 0)
-    //{
-    //    PyErr_SetString(PyExc_TypeError, "data object is empty.");
-    //    delete inter;
-    //    selfDO->unlock();
-    //    return NULL;
-    //}
 
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
@@ -7536,15 +7532,17 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         Py_XDECREF(strides);
     }
 
-    //don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will increment the refcount of then PyDataObject SELF by itself.
+    // don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) 
+    // will increment the refcount of then PyDataObject SELF by itself.
     return retDict;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObject_Array__doc,"__array__([dtype]) -> returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
-                                   If no desired dtype is given and if the this dataObject is continuous, a ndarray sharing its memory with this dataObject is returned. \n\
-                                   If the desired dtype does not fit to the type of this dataObject, a casted deep copy is returned. This is also the case if \n\
-                                   this dataObject is not continuous. Then a continuous dataObject is created that is the base object of the returned ndarray.");
+PyDoc_STRVAR(dataObject_Array__doc, 
+"__array__([dtype]) -> returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
+If no desired dtype is given and if the this dataObject is continuous, a ndarray sharing its memory with this dataObject is returned. \n\
+If the desired dtype does not fit to the type of this dataObject, a casted deep copy is returned. This is also the case if \n\
+this dataObject is not continuous. Then a continuous dataObject is created that is the base object of the returned ndarray.");
 PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 {
     if (self->dataObject == NULL)
@@ -8774,8 +8772,8 @@ I : {dataObject} of shape (size,size)\n\
 \n\
 See Also \n\
 --------- \n\
-eye: method for creating an eye matrix \n\
-ones: method for creating a matrix filled with ones \n\
+eye : method for creating an eye matrix \n\
+ones : method for creating a matrix filled with ones \n\
 \n\
 Notes \n\
 ------ \n\
@@ -8830,8 +8828,8 @@ I : {dataObject} of shape (size,size)\n\
 \n\
 See Also \n\
 --------- \n\
-eye: method for creating an eye matrix \n\
-zeros: method for creating a matrix filled with zeros \n\
+eye : method for creating an eye matrix \n\
+zeros : method for creating a matrix filled with zeros \n\
 \n\
 Notes \n\
 ------ \n\
@@ -8893,9 +8891,9 @@ I : {dataObject} of shape (size,size)\n\
 \n\
 See Also \n\
 --------- \n\
-eye: method for creating an eye matrix \n\
-zeros: method for creating a matrix filled with zeros \n\
-ones: method for creating a matrix filled with ones.");
+eye : method for creating an eye matrix \n\
+zeros : method for creating a matrix filled with zeros \n\
+ones : method for creating a matrix filled with ones.");
 PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
 	int typeno = typeNameToNumber("float32");
@@ -8953,7 +8951,7 @@ out : {dataObject} \n\
 \n\
 See Also \n\
 --------- \n\
-randN: method for creating a matrix filled with gaussian distributed values");
+randN : method for creating a matrix filled with gaussian distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = -1;
@@ -9014,7 +9012,7 @@ out : {dataObject} \n\
 \n\
 See Also \n\
 --------- \n\
-rand: method for creating a matrix filled with unformly distributed values");
+rand : method for creating a matrix filled with unformly distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = -1;
@@ -9071,8 +9069,8 @@ I : {dataObject} of shape (size,size)\n\
 \n\
 See Also \n\
 --------- \n\
-ones: method for creating a matrix filled with ones \n\
-zeros: method for creating a matrix filled with zeros");
+ones : method for creating a matrix filled with ones \n\
+zeros : method for creating a matrix filled with zeros");
 PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *args , PyObject *kwds)
 {
     static const char *kwlist[] = { "size", "dtype", NULL };

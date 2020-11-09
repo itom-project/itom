@@ -30,6 +30,7 @@ otherwise the new entries will not be added.
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.9.1
 
+
 .. note::
     
     The created *exe*-files are not needed to run |itom|. Delete all exe-files 

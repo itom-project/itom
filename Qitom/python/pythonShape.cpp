@@ -295,6 +295,11 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Point.\n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Point, point, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 point : {array-like object} \n\
@@ -306,12 +311,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Point, point, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticPoint(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -352,6 +351,11 @@ This static method is equal to the command:: \n\
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Line.\n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Line, point1, point2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 point1 : {array-like object} \n\
@@ -365,12 +369,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Line, point1, point2, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticLine(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -413,6 +411,11 @@ This static method is equal to the command:: \n\
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Circle.\n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Circle, center, radius, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 center : {array-like object} \n\
@@ -426,12 +429,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Circle, center, radius, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticCircle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -479,6 +476,11 @@ or by the center point (x,y) and the size, as array of (width, height). \n\
 Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
 and corner1.y + height = corner2.y. \n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Ellipse, corner1, corner2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 corner1 : {array-like object}, optional \n\
@@ -496,12 +498,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Ellipse, corner1, corner2, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticEllipse(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -605,6 +601,11 @@ This static method is equal to the command:: \n\
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Square.\n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Square, center, sideLength, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 center : {array-like object} \n\
@@ -618,12 +619,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Square, center, sideLength, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticSquare(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -671,6 +666,11 @@ or by the center point (x,y) and the size, as array of (width, height). \n\
 Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
 and corner1.y + height = corner2.y. \n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Rectangle, corner1, corner2, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 corner1 : {array-like object}, optional \n\
@@ -688,12 +688,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Rectangle, corner1, corner2, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticRectangle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -796,6 +790,11 @@ This static method is equal to the command:: \n\
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Polygon.\n\
 \n\
+This static method is equal to the command:: \n\
+\n\
+    myShape = shape(shape.Polygon, points, index, name)\n\
+    myShape.flags = flags #optional\n\
+\n\
 Parameters \n\
 -----------\n\
 points : {array-like object} \n\
@@ -807,12 +806,6 @@ name : {str}, optional \n\
 flags : {int}, optional \n\
     if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
     then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-\n\
-This static method is equal to the command:: \n\
-\n\
-    myShape = shape(shape.Polygon, points, index, name)\n\
-    myShape.flags = flags #optional\n\
-\n\
 ");
 /*static*/ PyObject* PythonShape::PyShape_StaticPolygon(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -2306,7 +2299,9 @@ rectangle, square, circle or ellipse are not affected by this and are returned a
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_copy_doc, "copy() -> return a deep copy of this shape.");
+PyDoc_STRVAR(shape_copy_doc, "copy() -> shape\n\
+\n\
+Return a deep copy of this shape.");
 /*static*/ PyObject* PythonShape::PyShape_copy(PyShape *self)
 {
     if (!self || self->shape == NULL)

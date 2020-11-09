@@ -39,6 +39,4 @@ and execute than CMake with this two folders.
     
 .. warning:: 
 
-    If VTK returns the warning message: **QVTKWIDGET was deprecated for VTK 8.2 
-    and will be removed in a future version.**, open the vtkSetGet.h file of the 
-    VTK source files and comment the line 910 **vtkGenericWarningMacro**.
+    Disable deprecation warnings by setting the cmake variable: **VTK_LEGACY_SILENT:ON**
