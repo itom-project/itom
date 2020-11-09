@@ -43,10 +43,6 @@ the current availabe software versions.
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
 * `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
-.. note::
-
-    **PCL** version 1.11 needs OpenNI2 
-        - `OpenNI 2.2 <https://structure.io/openni>`_ (OpenNI2.2)   
 
 .. warning::
 

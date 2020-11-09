@@ -44,7 +44,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(Boost_INCLUDE_DIR "" CACHE PATH "include directory of Boost (Windows: usually the root directory of Boost)")
 set(Boost_LIBRARY_DIR "" CACHE PATH "library directory of Boost (Windows: usually a lib subdirectory of Boost)")
 set(EIGEN_INCLUDE_DIR "" CACHE PATH "base directory of header-only library Eigen")
-set(OPENNI2_DIR "" CACHE PATH "base directory of openNI2")
 
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
