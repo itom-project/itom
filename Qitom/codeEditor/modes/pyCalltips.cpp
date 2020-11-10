@@ -217,48 +217,34 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
         return;
     }
 
-    JediCalltip calltip = calltips[0];
+    JediCalltip first_calltip = calltips[0];
 
-    /*
-    int index = args["call.index"].toInt();
-    int col = args["column"].toInt();
+    QString text;
 
-    // create a formatted calltip (current index appear in bold)
-    QString calltip = QString("<p style='white-space:pre'>%1.%2(").arg(args["call.module.name"].toString()).arg(args["call.call_name"].toString());
-    QStringList callParams = args["call.params"].toString().split(";;");
-    for (int i = 0; i < callParams.size(); ++i)
+    if (calltips.size() > 0)
+    {        
+        foreach(const JediCalltip &tip, calltips)
+        {
+            // newline not necessary, since each calltip is in a <p>...</p> block
+            text.append(tip.m_calltipText);
+        }
+    }
+    else
     {
-        QString param = callParams[i];
-        if ((i < callParams.size() - 1) && !param.endsWith(','))
-        {
-            param += ", ";
-        }
-        if (param.endsWith(','))
-        {
-            param += " ";  // pep8 calltip
-        }
-        if (i == index)
-        {
-            calltip += "<b>";
-        }
-        calltip += param;
-        if (i == index)
-        {
-            calltip += "</b>";
-        }
-    calltip += ")</p>";
-    */
+        text = first_calltip.m_calltipText;
+    }
 
     // set tool tip position at the start of the bracket
     int char_width = editor()->fontMetrics().width('A');
-    int w_offset = (calltip.m_column - calltip.m_bracketStartCol) * char_width;
+    int w_offset = (first_calltip.m_column - first_calltip.m_bracketStartCol) * char_width;
     QPoint position(
         editor()->cursorRect().x() - w_offset,
         editor()->cursorRect().y() + char_width +
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
+
     // show tooltip
-    QToolTip::showText(position, calltip.m_calltipText, editor());
+    QToolTip::showText(position, text, editor());
 }
 
 } //end namespace ito
