@@ -105,9 +105,9 @@ public:
     // getter / setter
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyRegion_getEmpty(PyRegion *self, void *closure);
-    static PyObject* PyFigure_getRectCount(PyRegion *self, void *closure);
-    static PyObject* PyFigure_getRects(PyRegion *self, void *closure);
-    static PyObject* PyFigure_getBoundingRect(PyRegion *self, void *closure);
+    static PyObject* PyRegion_getRectCount(PyRegion *self, void *closure);
+    static PyObject* PyRegion_getRects(PyRegion *self, void *closure);
+    static PyObject* PyRegion_getBoundingRect(PyRegion *self, void *closure);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
