@@ -215,6 +215,34 @@ ValueError
         self.assertIsNone(res[3].dtype)
         self.assertEqual(res[3].name, "**kwargs")
         self.assertEqual(res[3].optional, True)
+    
+    def test_property_parser(self):
+        
+        class Test:
+            @property
+            def demo(self):
+                """list of int or None : Returns the bounding rectangle of.
+                
+                The bounding rectangle is given by a list (x, y, width, height)."""
+                pass
+        
+        text = isg._parse_property_docstring(Test.demo, 4)
+        
+        text2 = \
+"""    @property
+    def demo(self) -> Optional[List[int]]:
+        \"\"\"
+        Returns the bounding rectangle of.
+        
+        The bounding rectangle is given by a list (x, y, width, height).
+        \"\"\"
+        pass"""
+        
+        text_ = text.split("\n")
+        text2_ = text2.split("\n")
+        self.assertEqual(len(text_), len(text2_))
+        for t, t2 in zip(text_, text2_):
+            self.assertEqual(t.strip(), t2.strip())
 
 if __name__ == '__main__':
     unittest.main(module='itom_stubs_generator', exit=False)

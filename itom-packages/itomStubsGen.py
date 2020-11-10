@@ -93,6 +93,8 @@ def parse_stubs():
         
         text = "\n\n".join(texts)
         
+        text = "from typing import overload, Tuple, List, Dict, Optional\n\n" + text
+        
         with open(os.path.join(base_folder, stubs_file), 'wt') as fp:
             fp.write(text)
         
@@ -100,10 +102,11 @@ def parse_stubs():
             print(t)
 
 
-def _get_direct_members(obj) -> Tuple[str,object,object]:
+def _get_direct_members(obj) -> Tuple[str, object, object]:
     for itemname in dir(obj):
         if itemname in obj.__dict__:
             yield (itemname, getattr(obj, itemname), obj.__dict__[itemname])
+
 
 def _parse_object(obj, indent: int = 0) -> str:
     
@@ -178,34 +181,22 @@ def _get_class_signature(classobj: type, indent: int) -> str:
     
     if classobj.__doc__ is not None:
         prefix += " " * 4
-        docstrings = classobj.__doc__.split("\n")
         
-        try:
-            signature = _parse_signature_from_first_line(classobj, docstrings[0])
-        except ValueError as ex:
-            print(ex, file=sys.stderr)
-            signature = None
+        signatures, docstrings = _get_signatures_and_docstring(classobj)
         
-        if signature is not None:
-            # remove the first signature line from docstrings
-            docstrings = docstrings[1:]
-            
-            while len(docstrings) > 0 and docstrings[0].strip() == "":
-                del docstrings[0]
-        
-        docstrings2 = [prefix + d for d in docstrings]
-        sig += prefix + "\"\"\"\n"
-        sig += "\n".join(docstrings2)
+        sig += prefix +  "\"\"\"\n"
+        sig += "\n".join([prefix + d for d in docstrings])
         sig += "\n" + prefix + "\"\"\"\n\n"
         
+        overload_text: str = ""
+        if len(signatures) > 1:
+            overload_text: str = prefix + "@overload\n"
+        
         # add the __init__ method here
-        if signature is not None:
+        for signature in signatures:
             text = signature.tostring()
             text = text.replace("def %s" % classobj.__name__, "def __init__")
-            sig += prefix + text + ":\n"+ prefix + "    pass\n"
-        else:
-            sig += prefix + "def __init__(self, *args, **kwds):\n" \
-                       + prefix + "    pass\n"
+            sig += overload_text + prefix + text + ":\n"+ prefix + "    pass\n\n"
     else:
         # add the __init__ method
         sig += prefix + "def __init__(self, *args, **kwds):\n" + prefix + "    pass\n"
@@ -354,7 +345,6 @@ def _parse_npdoc_argsection(doc_str: str, section_name: str) -> Optional[List[Ar
         args[-1].optional = optional
     
     return args
-    
 
 
 def _get_rettype_from_npdocstring(doc_str: str) -> Optional[str]:
@@ -389,9 +379,10 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
     
     # find arrow
     comps = first_line.split("->")
+    
     sig = Signature(obj.__name__, args=[], rettype="")
     
-    if _ismethod(obj):  # bound method
+    if _ismethod(obj) or inspect.isclass(obj):  # bound method
         sig.args += [Arg("self", None, None),]
     
     if len(comps) > 2:
@@ -449,89 +440,129 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
                     if a.dtype is None and a.name in arg_names:
                         a.dtype = np_args[arg_names.index(a.name)].dtype
                         a.optional = np_args[arg_names.index(a.name)].optional
-            
+    
     return sig
+
+
+def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
+    
+    docstring: Optional[str] = obj.__doc__
+    
+    if docstring is None or docstring.strip() == "":
+        print("Docstring missing for method %s" % obj.__qualname__, file=sys.stderr)
+        return ([], "")
+    
+    docstrings = docstring.split("\n")
+    
+    signatures: List[Signature] = []
+    
+    while len(docstrings) > 0:
+        first_line = docstrings[0]
+        docstrings = docstrings[1:]
+        
+        sig = first_line
+        
+        if sig.strip() == "":
+            print("Signature missing in first lines of docstring for method %s" %
+                  obj.__qualname__, file=sys.stderr)
+            break
+        
+        if sig[-1] == "\\":
+            sig = sig[0:-1]
+        
+        try:
+            signature = _parse_signature_from_first_line(obj, sig)
+            signatures.append(signature)
+        except ValueError as ex:
+            if len(signatures) == 0:
+                # add an empty signature
+                if _ismethod(obj):  # bound method
+                    signatures.append(
+                        Signature(
+                            obj.__name__, 
+                            [Arg("self"), Arg("*args"), Arg("**kwds")], 
+                            None
+                        )
+                    )
+                else:
+                    signatures.append(Signature(obj.__name__, [], None))
+            break
+        
+        if first_line[-1] != "\\":  # no backslash at the end, all signatures found
+            break
+    
+    # remove the first empty lines from the remaining docstring
+    while len(docstrings) > 0 and docstrings[0].strip() == "":
+        docstrings = docstrings[1:]
+            
+    return (signatures, docstrings)
 
 
 def _parse_meth_docstring(obj, indent: int):
     prefix = " " * indent
     prefix2 = " " * (indent + 4)
     name = obj.__name__
-    docstring: Optional[str] = obj.__doc__
     
-    if docstring is None:
-        print("Docstring missing for method %s" % obj.__qualname__, file=sys.stderr)
-        if _ismethod(obj):  # bound method
-            return "%sdef %s(self):\n%spass" % (prefix, name, prefix2)
-        else:
-            return "%sdef %s():\n%spass" % (prefix, name, prefix2)
+    signatures, docstrings = _get_signatures_and_docstring(obj)
     
-    docstrings = docstring.split("\n")
-    
-    try:
-        signature = _parse_signature_from_first_line(obj, docstrings[0])
-        text = prefix + signature.tostring() + ":\n"
-        docstrings = docstrings[1:]  # remove the first line
-    except ValueError as ex:
-        print(ex, file=sys.stderr)
-        if _ismethod(obj):  # bound method
-            text = prefix + "def %s(self):\n" % (name,)
-        else:
-            text = prefix + "def %s():\n" % (name,)
-    
-    while len(docstrings) > 0 and docstrings[0].strip() == "":
-        docstrings = docstrings[1:]  # remove the first empty lines
-    
+    # parse dochstring + body
+    docstring = ""
     if len(docstrings) == 1:
-        text += prefix2 + "\"\"\"%s\"\"\"\n" % docstrings[0]
+        docstring += prefix2 + "\"\"\"%s\"\"\"\n" % docstrings[0]
     elif len(docstrings) > 1:
-        text += (prefix2 + "\"\"\"\n" + prefix2 + docstrings[0] + "\n")
+        docstring += (prefix2 + "\"\"\"\n" + prefix2 + docstrings[0] + "\n")
         for d in docstrings[1:-1]:
-            text += (prefix2 + d + "\n")
-        text += (prefix2 + docstrings[-1] + "\n" + prefix2 + "\"\"\"\n")
+            docstring += (prefix2 + d + "\n")
+        docstring += (prefix2 + docstrings[-1] + "\n" + prefix2 + "\"\"\"\n")
     
-    text += prefix2 + "pass"
+    docstring += prefix2 + "pass"
     
-    return text
+    texts: List[str] = []
+    overload_text = ""
+    if len(signatures) > 1:
+        overload_text = prefix + "@overload\n"
+    
+    for signature in signatures:
+        text = overload_text
+        text += prefix + signature.tostring() + ":\n"
+        text += docstring
+        texts.append(text)
+    
+    return "\n\n".join(texts)
 
 
 def _parse_staticmeth_docstring(obj, indent: int):
     prefix = " " * indent
     prefix2 = " " * (indent + 4)
     name = obj.__name__
-    docstring: Optional[str] = obj.__doc__
     
-    if docstring is None:
-        print("Docstring missing for method %s" % obj.__qualname__, file=sys.stderr)
-        return "%s@staticmethod\n%sdef %s():\n%spass" % \
-            (prefix, prefix, name, prefix2)
+    signatures, docstrings = _get_signatures_and_docstring(obj)
     
-    docstrings = docstring.split("\n")
-    
-    try:
-        signature = _parse_signature_from_first_line(obj, docstrings[0])
-        text = prefix + "@staticmethod\n"
-        text += prefix + signature.tostring() + ":\n"
-        docstrings = docstrings[1:]  # remove the first line
-    except ValueError as ex:
-        print(ex, file=sys.stderr)
-        text = prefix + "@staticmethod\n"
-        text += prefix + "def %s():\n%spass" % (name, prefix2)
-    
-    while len(docstrings) > 0 and docstrings[0].strip() == "":
-        docstrings = docstrings[1:]  # remove the first empty lines
-    
+    # parse dochstring + body
+    docstring = ""
     if len(docstrings) == 1:
-        text += prefix2 + "\"\"\"%s\"\"\"\n" % docstrings[0]
+        docstring += prefix2 + "\"\"\"%s\"\"\"\n" % docstrings[0]
     elif len(docstrings) > 1:
-        text += (prefix2 + "\"\"\"\n" + prefix2 + docstrings[0] + "\n")
+        docstring += (prefix2 + "\"\"\"\n" + prefix2 + docstrings[0] + "\n")
         for d in docstrings[1:-1]:
-            text += (prefix2 + d + "\n")
-        text += (prefix2 + docstrings[-1] + "\n" + prefix2 + "\"\"\"\n")
+            docstring += (prefix2 + d + "\n")
+        docstring += (prefix2 + docstrings[-1] + "\n" + prefix2 + "\"\"\"\n")
     
-    text += prefix2 + "pass"
+    docstring += prefix2 + "pass"
     
-    return text
+    texts: List[str] = []
+    overload_text = ""
+    if len(signatures) > 1:
+        overload_text = prefix + "@overload\n"
+    
+    for signature in signatures:
+        text = overload_text
+        text += prefix + "@staticmethod\n"
+        text += prefix + signature.tostring() + ":\n"
+        text += docstring
+        texts.append(text)
+    
+    return "\n\n".join(texts)
 
 
 def _nptype2typing(nptypestr: str) -> str:
@@ -599,7 +630,16 @@ def _nptype2typing(nptypestr: str) -> str:
 def _parse_property_docstring(obj, indent: int):
     prefix = " " * indent
     prefix2 = " " * (indent + 4)
-    name = obj.__name__
+    
+    if type(obj) is property:
+        if obj.fget is not None:
+            name: str = obj.fget.__name__
+        elif obj.fset is not None:
+            name: str = obj.fset.__name__
+        else:
+            name = "unknown"
+    else:
+        name: str = obj.__name__
     docstring: Optional[str] = obj.__doc__
     
     if docstring is None:
@@ -613,7 +653,8 @@ def _parse_property_docstring(obj, indent: int):
     # see https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
     # the return value of a property can be given in the docstring as:
     # str : docstring of the property
-    colon_idx: int = docstrings[0].find(" :")
+    search_str: str = " :"
+    colon_idx: int = docstrings[0].find(search_str)
     
     if colon_idx == -1:
         print("Rettype missing in docstring of property %s" % obj.__qualname__,
@@ -622,7 +663,7 @@ def _parse_property_docstring(obj, indent: int):
     else:
         
         rettype: str = " -> " + _nptype2typing(docstrings[0][0:colon_idx])
-        docstrings[0] = docstrings[0][colon_idx + 1:].strip()
+        docstrings[0] = docstrings[0][colon_idx + len(search_str):].strip()
     
     text = "%s@property\n" % prefix
     text += prefix + "def %s(self)%s:\n" % (name, rettype)

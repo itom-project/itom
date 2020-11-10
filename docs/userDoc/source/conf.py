@@ -131,9 +131,7 @@ pygments_style = 'sphinx'
 
 # Show both class-level docstring and __init__ docstring in class
 # documentation
-autoclass_content = 'both'
-autodoc_member_order = 'groupwise'
-autodoc_docstring_signature = True
+
 
 
 # -- Options for HTML output ---------------------------------------------------
@@ -349,10 +347,24 @@ texinfo_documents = [
 autosummary_generate = True
 
 # -----------------------------------------------------------------------------
+# Autodoc
+# -----------------------------------------------------------------------------
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_docstring_signature = True
+
+# -----------------------------------------------------------------------------
+# Numpydoc
+# -----------------------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_xref_param_type = True
+numpydoc_show_class_members = False
+
+# -----------------------------------------------------------------------------
 # Breathe
 # -----------------------------------------------------------------------------
 doxygenXML_folder = __main__.__dict__["__doxygen__xml"]
-breathe_projects = {"itom": doxygenXML_folder}  # os.path.abspath(".\\..\\..\\xml")}
+breathe_projects = {"itom": doxygenXML_folder} #os.path.abspath(".\\..\\..\\xml")}
 breathe_default_project = "itom"
 
 # -----------------------------------------------------------------------------

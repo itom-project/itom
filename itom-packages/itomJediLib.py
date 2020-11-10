@@ -45,6 +45,8 @@ ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
 ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png')
 
+__version__ = "1.0.1"
+
 
 class StreamHider:
     """A stream class, that emits nothing.
@@ -285,6 +287,22 @@ def completions(code, line, column, path, prefix):
         ['or', 'keyword']
     ]
     
+    def reformat_docstring(docstring):
+        """The signature docstring is usually the signature, followed
+        by one empty line and then the docstring. This method will
+        reformat this, such that the docstring is indented and the empty
+        line is removed.
+        """
+        idx = docstring.find("\n\n")
+        if idx == -1:
+            return docstring
+        else:
+            sig = docstring[0:idx]
+            doc = docstring[idx+2:]
+            doc_lines = doc.split("\n")
+            doc_indent = "\n".join(["  " + d for d in doc_lines])
+            return sig + "\n" + doc_indent
+    
     # disable error stream to avoid import errors of jedi, 
     # which are directly printed to sys.stderr (no exception)
     with StreamHider(('stderr', )) as h:
@@ -293,11 +311,38 @@ def completions(code, line, column, path, prefix):
                 continue
             try:
                 desc = completion.description
+                
+                if jedi.__version__ >= '0.16.0':
+                    signatures = completion.get_signatures()
+                    if len(signatures) == 1:
+                        tooltip = reformat_docstring(completion.docstring())
+                        # workaround: there seems to be a bug in jedi for
+                        # properties that return something with None: NoneType()
+                        # is always returned in doc. However, completion.get_type_hint()
+                        # returns the real rettype hint. Replace it
+                        if tooltip.startswith("NoneType()"):
+                            rettype = completion.get_type_hint()
+                            if rettype != "":
+                                tooltip = rettype + tooltip[len("NoneType()"):]
+                    elif len(signatures) > 1:
+                        tooltip = "\n\n".join(
+                            [reformat_docstring(s.docstring()) for s in signatures]
+                            )
+                    else:
+                        tooltip = completion.docstring()
+                        if tooltip != "":
+                            # if tooltip is empty, use desc as tooltip (done in C++)
+                            type_hint = completion.get_type_hint()
+                            if type_hint != "" and not tooltip.startswith(type_hint):
+                                tooltip = type_hint + " : " + tooltip
+                else:
+                    tooltip = completion.docstring()
+                
                 result.append(
                     (completion.name,
                      desc,
                      icon_from_typename(completion.name, completion.type),
-                     completion.docstring())
+                     tooltip)
                     )
             except Exception:
                 break  # todo, check this further
