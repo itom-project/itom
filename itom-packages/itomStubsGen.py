@@ -652,8 +652,8 @@ def _parse_property_docstring(obj, indent: int):
     
     # see https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
     # the return value of a property can be given in the docstring as:
-    # str : docstring of the property
-    search_str: str = " :"
+    # str: docstring of the property
+    search_str: str = ": "
     colon_idx: int = docstrings[0].find(search_str)
     
     if colon_idx == -1:

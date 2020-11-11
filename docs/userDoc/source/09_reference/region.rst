@@ -6,5 +6,6 @@ region
 .. currentmodule:: itom
 
 .. autoclass:: itom.region
-    :show-inheritance:
+    :member-order: groupwise
     :members:
+    :undoc-members:

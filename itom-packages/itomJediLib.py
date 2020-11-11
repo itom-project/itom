@@ -319,11 +319,13 @@ def completions(code, line, column, path, prefix):
                         # workaround: there seems to be a bug in jedi for
                         # properties that return something with None: NoneType()
                         # is always returned in doc. However, completion.get_type_hint()
-                        # returns the real rettype hint. Replace it
-                        if tooltip.startswith("NoneType()"):
+                        # returns the real rettype hint. Replace it.
+                        # see also: https://github.com/davidhalter/jedi/issues/1695
+                        pattern = "NoneType()\n"
+                        if tooltip.startswith(pattern):
                             rettype = completion.get_type_hint()
                             if rettype != "":
-                                tooltip = rettype + tooltip[len("NoneType()"):]
+                                tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
                     elif len(signatures) > 1:
                         tooltip = "\n\n".join(
                             [reformat_docstring(s.docstring()) for s in signatures]

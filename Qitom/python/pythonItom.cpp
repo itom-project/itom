@@ -74,7 +74,14 @@ namespace ito
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor() -> opens new, empty script editor window (undocked)");
+PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor()\n\
+\n\
+Opens new, empty script editor window (undocked).\n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the current user has no permission to open a new script.");
 PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 {
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -108,9 +115,14 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyNewScript_doc, "newScript() -> opens an empty, new script in the current script window.\n\
+PyDoc_STRVAR(pyNewScript_doc, "newScript()\n\
 \n\
-Creates a new itom script in the latest opened editor window.");
+Opens an empty, new script in the current script window.\n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the current user has no permission to open a new script."); 
 PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 {
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -144,18 +156,28 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) -> open the given script in current script window.\n\
+PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) \n\
 \n\
-Open the python script indicated by *filename* in a new tab in the current, latest opened editor window. \n\
-Filename can be either a string with a relative or absolute filename to the script to open or any object \n\
-with a `__file__` attribute. This attribute is then read and used as path. \n\
+Open the given script in current script window.\n\
+\n\
+Open the python script indicated by *filename* in a new tab in the current, \n\
+latest opened editor window. Filename can be either a string with a relative \n\
+or absolute filename to the script to open or any object with a ``__file__`` \n\
+attribute. This attribute is then read and used as path. \n\
 \n\
 The relative filename is relative with respect to the current directory. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} or {obj} \n\
-    Relative or absolute filename to a python script that is then opened (in the current editor window). Alternatively an object with a `__file__` attribute is allowed.");
+filename : str or obj \n\
+    Relative or absolute filename to a python script that is then opened \n\
+    (in the current editor window). Alternatively an object with a \n\
+    ``__file__`` attribute is allowed. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the current user has no permission to open a script.");
 PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 {
     const char* filename;
@@ -227,15 +249,18 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = '') -> open the user documentation in the help viewer.\n\
+PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = \"\") \n\
 \n\
-The user documentation is shown in an external help viewer. Optionally, it is possible to load a user-defined collection file \n\
-in this help viewer.\n\
+Opens the itom help viewer and displays the itom user documentation or another desired documentation. \n\
+\n\
+The user documentation is shown in the help viewer window. If ``collectionFile`` \n\
+is given, this user-defined collection file is displayed in this help viewer.\n\
 \n\
 Parameters \n\
 ----------- \n\
-collectionFile : {str} \n\
-	If given, the indicated collectionFile will be loaded in the help viewer. Per default, the user documentation is loaded (pass an empty string or nothing).");
+collectionFile : str, optional \n\
+	If given, the indicated Qt collection file (.qch) will be loaded in the help viewer.\n\
+    Per default, the user documentation is loaded (pass an empty string or nothing).");
 PyObject* PythonItom::PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs)
 {
 	const char* collectionFile = NULL;
@@ -260,6 +285,9 @@ PyObject* PythonItom::PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyClearCommandLine_doc, "clc() \n\
+\n\
+Clears the itom command line (if available).");
 PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -272,46 +300,53 @@ PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, className = '', properties = {}) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, className = \"\", properties = {}) -> Tuple[int, plotItem] \n\
 \n\
-Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
-The style of the plot depends on the object dimensions.\n\
+Plots a dataObject, pointCloud or polygonMesh in a new figure window \n\
 \n\
-If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
-of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+Plots an existing :class:`dataObject`, :class:`pointCloud` or :class:`polygonMesh` in a \n\
+dockable, not blocking window. The style of the plot depends on the object dimensions.\n\
+\n\
+If no ``className`` is given, the type of the plot is chosen depending on the type and  \n\
+the size of the object. The defaults for several plot classes can be adjusted in the  \n\
+property dialog of itom. \n\
 \n\
 You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
-If your preffered plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
-or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
-polygonMesh only the alias '2.5D' is valid. \n\
+If your preferred plot is not able to display the given object, a warning is returned and the \n\
+default plot type is used again. For :class:`dataObject`, it is also possible to simply set \n\
+``className`` to ``1D``, ``2D`` or ``2.5D`` in order to choose the default plot type depending \n\
+on these aliases. For :class:`pointCloud` and :class:`polygonMesh` only the alias ``2.5D`` is valid. \n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is \n\
+embedded in a GUI), or by the property toolbox in the plot itself or by using the info() method \n\
+of the corresponding :class:`~itom.uiItem` instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set. \n\
+Use the ``properties`` argument to pass a :obj:`dict` with properties you want to set. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject, PointCloud, PolygonMesh} \n\
+data : dataObject or pointCloud or polygonMesh \n\
     Is the data object, point cloud or polygonal mesh, that will be plotted.\n\
-className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)) \n\
-	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
-	the indicated categories. If nothing is given, the plot category is guessed from 'data'.\n\
-properties : {dict}, optional \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the className can not be found, the default \n\
+    plot will be used (see application settings)). Depending on the object, you can also set ``className`` \n\
+    to ``1D``, ``2D`` or ``2.5D`` for displaying the object in the default plot of \n\
+	the indicated categories. If nothing is given, the plot category is guessed from ``data``.\n\
+properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
-index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the \n\
-    figure window of this plot. The plot can be closed by 'close(index)'. \n\
-plotHandle: {plotItem} \n\
-    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+index : int \n\
+    This index is the figure index of the plot figure that is opened by this command. Use \n\
+    ``figure(index)`` to get a reference to the figure window of this plot. The plot can \n\
+    be closed by ``close(index)``. \n\
+plotHandle: plotItem \n\
+    Handle of the plot. This handle is used to control the properties of the plot, connect to \n\
+    its signals or call slots of the plot. \n\
 \n\
 See Also \n\
----------- \n\
+--------- \n\
 liveImage, plotItem, plot1, plot2, plot25");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
@@ -438,37 +473,44 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = '', properties = {}) -> plots a dataObject as an 1d plot in a new figure \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = \"\", properties = {}) \n\
 \n\
-Plots an existing dataObject in a dockable, not blocking window. \n\
+Plots a :class:`dataObject` as an 1d plot in a new figure window. \n\
 \n\
-If a xData is given, the plot uses this vector for the values of the x axis of the plot.\n\
+This method plots an existing :class:`dataObject` ``data`` in a dockable, not blocking \n\
+window. \n\
 \n\
-The plot type of this function is '1D'.\n\
+If ``xData`` is given, the plot uses this vector for the values of the x axis of the plot.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+The plot type of this function is ``1D`` (see method :meth:`plot`).\n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is \n\
+embedded in a GUI), or by the property toolbox in the plot itself or by using the \n\
+:meth:`~uiItem.info` method of the corresponding :class:`uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject} \n\
-    Is the data object whose region of interest will be plotted.\n\
-xData : {DataObject}, optional \n\
-    Is the data object whose values are used for the axis.\n\
-className : {str}, optional \n\
-    class name of the desired 1D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
+data : dataObject \n\
+    Is the :class:`dataObject` whose region of interest will be plotted.\n\
+xData : {dtaObject, optional \n\
+    Is the :class:`dataObject` whose values are used for the axis.\n\
+className : str, optional \n\
+    class name of the desired 1D plot (if not indicated, the default 1D plot will be used, \n\
+    see application settings) \n\
+properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
-index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* \n\
-    to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
-plotHandle: {plotItem} \n\
-    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+index : int \n\
+    This index is the figure index of the plot figure that is opened by this command. \n\
+    Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
+    plot can be closed by ``close(index)``. \n\
+plotHandle: plotItem \n\
+    Handle of the plot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
@@ -622,34 +664,40 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) -> plots a dataObject in a new figure \n\
+PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) \n\
 \n\
-Plots an existing dataObject in a dockable, not blocking window. \n\
-The style of the plot depends on the object dimensions.\n\
+Plots a :class:`dataObject` in a new figure window.\n\
 \n\
-The plot type of this function is '2D'.\n\
+This method plots an existing :class:`dataObject` in a dockable, not blocking window. \n\
+The style of the plot depends on the object dimensions. The plot type of this function \n\
+is ``2D``.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the \n\
+plot is embedded in a GUI), or by the property toolbox in the plot itself or by using \n\
+the :meth:`~itom.uiItem.info` method of the corresponding :class:`itom.uiItem` instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set \n\
+to certain values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject} \n\
-    Is the data object whose region of interest will be plotted.\n\
-className : {str}, optional \n\
-    class name of the desired 2D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
+data : dataObject \n\
+    Is the :class:`dataObject` whose region of interest will be plotted.\n\
+className : str, optional \n\
+    class name of the desired `2D` plot (if not indicated default plot will be used, \n\
+    see application settings) \n\
+properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
-index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a \n\
-    reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
-plotHandle: {plotItem} \n\
-    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+index : int \n\
+    This index is the figure index of the plot figure that is opened by this command. \n\
+    Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
+    plot can be closed by ``close(index)``. \n\
+plotHandle: plotItem \n\
+    Handle of the plot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
@@ -793,34 +841,39 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = '', properties = {}) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = \"\", properties = {}) \n\
 \n\
-Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
-The style of the plot depends on the object dimensions.\n\
+Plots a :class:`dataObject`, :class:`pointCloud` or :class:`polygonMesh` in a new figure window. \n\
 \n\
-The plot type of this function is '2.5D'.\n\
+This method plots the ``data`` object in a dockable, not blocking window. \n\
+The style of the plot depends on the object dimensions, its plot type is ``2.5D``.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the \n\
+plot is embedded in a GUI), or by the property toolbox in the plot itself or by using \n\
+the :meth:`~itom.uiItem.info` method of the corresponding :class:`itom.uiItem` instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set to  \n\
+desired values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject, PointCloud, PolygonMesh} \n\
-    Is the data object whose region of interest will be plotted.\n\
-className : {str}, optional \n\
-    class name of the desired 2.5D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
+data : dataObject or pointCloud or polygonMesh \n\
+    is the object, that is plotted.\n\
+className : str, optional \n\
+    class name of the desired `2.5D` plot (if not indicated default plot will be used, \n\
+    see application settings) \n\
+properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
 -------- \n\
-index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a \n\
-    reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
-plotHandle: {plotItem} \n\
-    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+index : int \n\
+    This index is the figure index of the plot figure that is opened by this command. \n\
+    Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
+    plot can be closed by ``close(index)``. \n\
+plotHandle: plotItem \n\
+    Handle of the plot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
@@ -965,43 +1018,52 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = '', properties = {}) -> show a camera live image in a new figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = \"\", properties = {}) \n\
 \n\
-Creates a plot-image (2D) and automatically grabs images into this window.\n\
-This function is not blocking.\n\
+Shows a camera live image in a new figure window. \n\
 \n\
-If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
-of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+This method creates a plot-image (2D) and automatically grabs images into this window.\n\
 \n\
-You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
-If your preferred plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D' or '2D' \n\
-in order to choose the default plot type depending on these aliases. \n\
+If no ``className`` is given, the type of the plot is chosen depending on the type \n\
+and the size of the object. The defaults for several plot classes can be adjusted in \n\
+the property dialog of itom. \n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+You can also set a class name of your preferred plot plugin (see also property dialog \n\
+of itom). If your preferred plot is not able to display the given object, a warning is \n\
+returned and the default plot type is used again. For dataObjects, it is also possible \n\
+to simply set ``className`` to `1D` or `2D` in order to choose the default plot type \n\
+depending on these aliases. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the \n\
+plot is embedded in a GUI), or by the property toolbox in the plot itself or by using \n\
+the :meth:`~itom.uiItem.info` method of the corresponding :class:`itom.uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set to \n\
+certain values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-cam : {dataIO-Instance} \n\
+cam : dataIO \n\
     Camera grabber device from which images are acquired.\n\
-className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
-properties : {dict}, optional \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
-------- \n\
-index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this live image plot. The plot can be closed by 'close(index)'. \n\
-plotHandle: {plotItem} \n\
-    Handle of the live image plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+-------- \n\
+index : int \n\
+    This index is the figure index of the plot figure that is opened by this command. \n\
+    Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
+    plot can be closed by ``close(index)``. \n\
+plotHandle: plotItem \n\
+    Handle of the plot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
 --------- \n\
-plot, plotItem");
+plot, plotItem, plot1, plot2, plot25");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"cam", "className", "properties", NULL};
@@ -1412,7 +1474,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
             std::cout << "Complete "<< contextName.toLatin1().data() << "list\n";
         }
 
-        for (int n = 0; n < keyList.size(); n++)    // get the longest name in this list
+        for (int n = 0; n < keyList.size(); n++)    // get the longestKeySize name in this list
         {
             filteredKey = keyList.value(n);
             if (filteredKey.contains(namefilter, Qt::CaseInsensitive))
@@ -1618,28 +1680,37 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp(filterName = '', dictionary = 0, furtherInfos = 0) -> generates an online help for the given filter(s). \n\
+PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp(filterName = \"\", dictionary = 0, furtherInfos = 0) -> Optional[dict] \n\
 \n\
-This method prints information about one specific filter (algorithm) or a list of filters to the console output. If one specific filter, defined \
-in an algorithm plugin can be found that case-sensitively fits the given filterName its full documentation is printed. Else, a list of filters \
-is printed whose name contains the given filterName.\n\
+Print outs an online help for the given filter(s) or return help information as dictionary. \n\
+\n\
+This method prints information about one specific filter (algorithm) or a list of \n\
+filters to the console output. If one specific filter, defined in an algorithm plugin, \n\
+can be found that case-sensitively fits the given ``filterName``, its full documentation \n\
+is printed or returned. Else, a list of filters is printed whose name contains the \n\
+given ``filterName``.\n\
 \n\
 Parameters \n\
 ----------- \n\
-filterName : {str}, optional \n\
-    is the fullname or a part of any filter-name which should be displayed. \n\
-    If filterName is empty or no filter matches filterName (case sensitive) a list with all suitable filters is given. \n\
-dictionary : {dict}, optional \n\
-    if dictionary == 1, a dictionary with all relevant components of the filter's documentation is returned and nothing is printed to the command line [default: 0] \n\
-furtherInfos : {int}, optional \n\
-    Usually, filters or algorithms whose name only contains the given filterName are only listed at the end of the information text. \n\
-    If this parameter is set to 1 [default: 0], the full information for all these filters is printed as well. \n\
+filterName : str, optional \n\
+    is the fullname or a part of any filter name which should be displayed. \n\
+    If ``filterName`` is empty or no filter matches ``filterName`` (case sensitive) \n\
+    a list with all suitable filters is given. \n\
+dictionary : int, optional \n\
+    if ``1``, a dictionary with all relevant information about the documentation of \n\
+    this filter is returned as dictionary and nothing is printed to the command line \n\
+    (default: 0). \n\
+furtherInfos : int, optional \n\
+    Usually, filters or algorithms whose name only contains the given ``filterName`` \n\
+    are only listed at the end of the information text. If this parameter is set \n\
+    to ``1`` (default: ``0``), the full information for all these filters is printed \n\
+    as well. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {None or dict} \n\
-    In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
-    returns a dictionary with the single components of the information text.");
+info : dict \n\
+    This dictionary is only returned, if ``dictionary`` is set to ``1``. Else ``None`` \n\
+    is returned. The dictionary contains relevant information about the desired ``filterName``.");
 
 PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
@@ -1647,47 +1718,59 @@ PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp(filterName = '', dictionary = 0, furtherInfos = 0) -> generates an online help for the given widget(s). \n\
+PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp(widgetName = \"\", dictionary = 0, furtherInfos = 0) -> Optional[dict] \n\
 \n\
-This method prints information about one specific widget or a list of widgets to the console output. If one specific widget, defined \
-in an algorithm plugin can be found that case-sensitively fits the given widgetName its full documentation is printed. Else, a list of widgets \
-is printed whose name contains the given widgetName.\n\
+Print outs an online help for the given widget(s) or return help information as dictionary. \n\
+\n\
+This method prints information about one specific widget (defined in an algorithm plugin) \n\
+or a list of widgets to the console output. If one specific widget \n\
+can be found that case-sensitively fits the given ``widgetName``, its full documentation \n\
+is printed or returned. Else, a list of widgets is printed whose name contains the \n\
+given ``widgetName``.\n\
 \n\
 Parameters \n\
 ----------- \n\
-widgetName : {str}, optional \n\
-    is the fullname or a part of any widget-name which should be displayed. \n\
-    If widgetName is empty or no widget matches widgetName (case sensitive) a list with all suitable widgets is given. \n\
-dictionary : {dict}, optional \n\
-    if dictionary == 1, a dictionary with all relevant components of the widget's documentation is returned and nothing is printed to the command line [default: 0] \n\
-furtherInfos : {int}, optional \n\
-    Usually, widgets whose name only contains the given widgetName are only listed at the end of the information text. \n\
-    If this parameter is set to 1 [default: 0], the full information for all these widgets is printed as well. \n\
+widgetName : str, optional \n\
+    is the fullname or a part of any widget name which should be displayed. \n\
+    If ``widgetName`` is empty or no widget matches ``widgetName`` (case sensitive) \n\
+    a list with all suitable widgets is given. \n\
+dictionary : int, optional \n\
+    if ``1``, a dictionary with all relevant information about the documentation of \n\
+    this widget is returned as dictionary and nothing is printed to the command line \n\
+    (default: 0). \n\
+furtherInfos : int, optional \n\
+    Usually, widgets whose name only contains the given ``widgetName`` \n\
+    are only listed at the end of the information text. If this parameter is set \n\
+    to ``1`` (default: ``0``), the full information for all these widgets is printed \n\
+    as well. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {None or dict} \n\
-    In its default parameterization this method returns None. Depending on the parameter dictionary it is also possible that this method \
-    returns a dictionary with the single components of the information text.");
+info : dict \n\
+    This dictionary is only returned, if ``dictionary`` is set to ``1``. Else ``None`` \n\
+    is returned. The dictionary contains relevant information about the desired ``widgetName``.");
 PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
     return PyWidgetOrFilterHelp(true, pArgs, pKwds);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> check if a certain plugin could be successfully loaded.\n\
+PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> bool \n\
 \n\
-Checks if a specified plugin is loaded and returns the result as a boolean expression. \n\
+Checks if a certain plugin could be successfully loaded.\n\
+\n\
+This method checks if a specified plugin is loaded and returns ``True`` if \n\
+this is the case, otherwise ``False``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-pluginName :  {str} \n\
+pluginName :  str \n\
     The name of a specified plugin as usually displayed in the plugin window.\n\
 \n\
 Returns \n\
 ------- \n\
-result : {bool} \n\
-    True, if the plugin has been loaded and can be used, else False.");
+bool \n\
+    ``True``, if the plugin has been loaded and can be used, else ``False``.");
 PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* pluginName = NULL;
@@ -1719,19 +1802,22 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotLoaded_doc,"plotLoaded(plotName) -> check if a certain plot widget is loaded.\n\
+PyDoc_STRVAR(pyPlotLoaded_doc,"plotLoaded(plotName) -> bool \n\
 \n\
-Checks if a specified plot widget is loaded and returns the result as a boolean expression. \n\
+Checks if a certain plot widget is available and loaded.\n\
+\n\
+This method checks if a specified plot widget is available and loaded and \n\
+returns ``True`` in case of success, otherwise ``False``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-pluginName :  {str} \n\
-    The name of a specified plot widget as displayed in the preferences window.\n\
+plotName :  str \n\
+    The name of a specified plot widget as displayed in the itom property dialog. \n\
 \n\
 Returns \n\
 ------- \n\
-result : {bool} \n\
-    True, if the plot has been loaded and can be used, else False.");
+bool \n\
+    ``True``, if the plot has been loaded and can be used, else ``False``.");
 PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* plotName = NULL;
@@ -1763,21 +1849,33 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName = '', dictionary = False) -> generates an online help for the specified plot.\n\
-Gets (also print to console) the available slots / properties of the plot specified by plotName (str, as specified in the properties window).\n\
+PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName = \"\", dictionary = False) -> Optional[Union[List[str], dict]] \n\
+\n\
+Generates an online help for a desired plot class.\n\
+\n\
+The output of this method depend on the content of the argument ``plotName``: \n\
+\n\
+* If it is empty or a star (``*``), a list of all available and loaded plot classes is print to \n\
+  the command line (``dictionary=False``) or returned as ``List[str]``. \n\
+* If it is a valid plot class name, all relevant information of this plot widget \n\
+  (Qt designer plugin), like supported data types, all properties, signals or slots... \n\
+  are printed to the command line or returned as nested dictionary structure. \n\
 \n\
 Parameters \n\
 ----------- \n\
-plotName : {str} \n\
-    is the fullname of a plot as specified in the properties window (case insensitive).\n\
-    if nothing, '*' or an empty string is given, a list of available widgets is returned.\n\
-dictionary : {bool}, optional \n\
-    if True, this methods returns a dict with plot slots and properties and does not print anything to the console (default: False)\n\
+plotName : str \n\
+    See the description above. This value can either be an empty string or a star (``*``) \n\
+    or the name of a plot designer plugin class. \n\
+dictionary : bool, optional \n\
+    if ``True``, this methods returns its output either as :class:`list` of :class:`str` or \n\
+    a :class:`dict` with information like slots, signals and properties of the desired plot \n\
+    classes (default: ``False``). \n\
 \n\
 Returns \n\
 ------- \n\
-out : {None or dict} \n\
-    Returns None or a dict depending on the value of parameter `dictionary`.");
+None or list of str or dict \n\
+    Returns ``None``, a list of available plot class names or a nested dictionary with various \n\
+    information about the plot class (depending on the arguments).");
 PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"plotName", "dictionary", NULL};
@@ -1882,7 +1980,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
         if (!found)
         {
-            PyErr_SetString(PyExc_RuntimeError, "figure not found");
+            PyErr_SetString(PyExc_RuntimeError, "plotName not found");
             return NULL;
         }
 
@@ -2207,21 +2305,26 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPluginHelp_doc,"pluginHelp(pluginName = '', dictionary = False) -> generates an online help for the specified plugin.\n\
-                              Gets (also print to console) the initialisation parameters of the plugin specified pluginName (str, as specified in the plugin window).\n\
-If `dictionary == True`, a dict with all plugin parameters is returned and nothing is printed to the console.\n\
+PyDoc_STRVAR(pyPluginHelp_doc, "pluginHelp(pluginName, dictionary = False) -> Optional[dict] \n\
+\n\
+Generates an online help for the specific plugin.\n\
+\n\
+Information about an itom plugin library (actuator, dataIO or algorithm), gathered \n\
+by this method, are the name of the plugin, its version, its type, contained filters \n\
+(in case of an algorithm) or the description and initialization parameters (otherwise). \n\
 \n\
 Parameters \n\
 ----------- \n\
-pluginName : {str} \n\
-    is the fullname of a plugin as specified in the plugin window.\n\
-dictionary : {bool}, optional \n\
-    if `dictionary == True`, function returns a dict with plugin parameters and does not print anything to the console (default: False)\n\
+pluginName : str \n\
+    is the fullname of a plugin library as specified in the plugin toolbox.\n\
+dictionary : bool, optional \n\
+    if ``True``, this method returns a :class:`dict` with all gathered information \n\
+    about the plugin. Else (default), this information is printed to the command line. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {None or dict} \n\
-    Returns None or a dict depending on the value of parameter `dictionary`.");
+None or dict \n\
+    Returns None or a dict depending on the value of parameter ``dictionary``.");
 PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"pluginName", "dictionary", NULL};
@@ -2564,84 +2667,85 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAboutInfo_doc,"aboutInfo(pluginName) -> returns the about information for the specified plugin.\n\
+PyDoc_STRVAR(pyAboutInfo_doc,"aboutInfo(pluginName) -> str \n\
+\n\
+Returns the `about` information for the given plugin as string.\n\
 \n\
 Parameters \n\
 ----------- \n\
-pluginName : {str} \n\
-    is the fullname of a plugin as specified in the plugin window.\n\
+pluginName : str \n\
+    is the name of a plugin library as specified in the plugin toolbox.\n\
 \n\
 Returns \n\
 ------- \n\
-out : {None or dict} \n\
-    Returns a string containing the about information.");
-PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs)
+str \n\
+    Returns a string containing the about information. \n\
+\n\
+Raises \n\
+------- \n\
+RuntimeError \n\
+    if ``pluginName`` is an unknown plugin.");
+PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs, PyObject *pKwds)
 {
+    const char *kwlist[] = { "pluginName", NULL };
     const char* pluginName = NULL;
 
-    if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s", const_cast<char**>(kwlist), &pluginName))
     {
         return NULL;
     }
 
-    QVector<ito::Param> *paramsMand = NULL;
-
-    ito::RetVal retval = ito::retOk;
-
-    QString version;
-    PyObject *result = NULL;
-    PyObject *resultmand = NULL;
-    PyObject *resultopt = NULL;
-    PyObject *item = NULL;
-
-
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
         return NULL;
     }
 
-    retval = AIM->getAboutInfo(pluginName, version);
+    QString version;
+    ito::RetVal retval = AIM->getAboutInfo(pluginName, version);
+
     if (!retval.containsError())
     {
         return PythonQtConversion::QStringToPyObject(version);
     }
+
+    // transform retval to exception
+    PythonCommon::transformRetValToPyException(retval);
     return NULL;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyITOMVersion_doc,"version(returnDict = False, addPluginInfos = False) -> retrieve complete information about itom version numbers\n\
+PyDoc_STRVAR(pyItomVersion_doc,"version(dictionary = False, addPluginInfo = False) -> Optional[dict] \n\
+\n\
+Retrieves, prints out or returns complete version information of itom (and optionally plugins). \n\
 \n\
 Parameters \n\
 ----------- \n\
-toggle-output : {bool}, optional\n\
-    default = false\n\
-    if true, output will be written to a dictionary else to console.\n\
-addPluginInfos : {bool}, optional \n\
-    default = false\n\
-    if true, add informations about plugin versions.\n\
+dictionary : bool, optional \n\
+    If ``True``, all information is returned as nested :class:`dict`. \n\
+    Otherwise (default), this information is printed to the command line. \n\
+addPluginInfo : bool, optional \n\
+    If ``True``, version information about all loaded plugins are added, too. \n\
+    Default: ``False``. \n\
 \n\
 Returns \n\
 ------- \n\
-None (display outPut) or PyDictionary with version information.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Retrieve complete version information of itom and if specified version information of loaded plugins\n\
-and print it either to the console or to a PyDictionary.");
-PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
+None or dict \n\
+    version information as nested dict, if ``dictionary`` is ``True``.");
+PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
-    bool toggleOut = false;
-    bool addPlugIns = false;
+    bool returnDict = false;
+    bool addPluginInfo = false;
+    const char *kwlist[] = { "dictionary", "addPluginInfo", NULL };
 
-    if (!PyArg_ParseTuple(pArgs, "|bb", &toggleOut, &addPlugIns))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "|bb", const_cast<char**>(kwlist), &returnDict, &addPluginInfo))
     {
         return NULL;
     }
 
-    PyObject* myDic = PyDict_New();
-    PyObject* myTempDic = PyDict_New();
+    PyObject* myDic = PyDict_New(); // new ref
+    PyObject* myTempDic = PyDict_New(); // new ref
     PyObject* key = NULL;
     PyObject* value = NULL;
 
@@ -2652,27 +2756,28 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         i.next();
 
-        key = PythonQtConversion::QStringToPyObject(i.key());
-        value = PythonQtConversion::QStringToPyObject(i.value());
-        PyDict_SetItem(myTempDic, key, value);
-
+        key = PythonQtConversion::QStringToPyObject(i.key()); // new ref
+        value = PythonQtConversion::QStringToPyObject(i.value()); // new ref
+        PyDict_SetItem(myTempDic, key, value); // does not steal refs from key or value
         Py_DECREF(key);
         Py_DECREF(value);
     }
 
-    PyDict_SetItemString(myDic, "itom", myTempDic);
+    PyDict_SetItemString(myDic, "itom", myTempDic); // does not steal ref from myTempDic
     Py_XDECREF(myTempDic);
 
-    if (addPlugIns)
+    if (addPluginInfo)
     {
         PyObject* myTempDic = PyDict_New();
         char buf[7] = {0};
         ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
+
         if (aim != NULL)
         {
             PyObject* info = NULL;
             PyObject* license = NULL;
+
             for (int i = 0; i < aim->getTotalNumAddIns(); i++)
             {
                 curAddInInterface = reinterpret_cast<ito::AddInInterfaceBase*>(aim->getAddInPtr(i));
@@ -2708,62 +2813,69 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         Py_XDECREF(myTempDic);
     }
 
-    if (toggleOut)
+    if (returnDict)
     {
         return myDic;
     }
     else
     {
-        std::cout << "\n";
-        
-        PyObject* myKeys = PyDict_Keys(myDic);
+
+        PyObject* myKeys = PyDict_Keys(myDic); // new ref
         Py_ssize_t size = PyList_Size(myKeys);
         bool check = true;
 
         for (Py_ssize_t i = 0; i < size; i++)
         {
-            std::cout << "\n ----------------------------------------------------------------------------------------------------------------------------------------\n";
             PyObject* currentKey = PyList_GET_ITEM(myKeys, i);
-            QString key("");
-            key = PythonQtConversion::PyObjGetString(currentKey, true, check);
+            QString key = PythonQtConversion::PyObjGetString(currentKey, true, check);
 
             if (!check)
             {
                 continue;
             }
 
-            std::cout << key.toLatin1().toUpper().data() << ":\n";
-
-            PyObject* currentDict = PyDict_GetItem(myDic, currentKey);
-            
-            PyObject* mySubKeys = PyDict_Keys(currentDict);
-
-            int longest = 0;
-            int compensatorMax = 30; 
-
-            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
-            {      
-                PyObject* currentSubKey = PyList_GET_ITEM(mySubKeys, m);
-                int temp = PyUnicode_GET_SIZE(currentSubKey);
-                longest = temp > longest ? temp : longest;
-            }
-            longest += 3;
-            longest = longest > compensatorMax ? compensatorMax : longest;
-
-            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); m++)
+            if (i > 0)
             {
-                QString subKey("");
-                PyObject* currentSubKey = PyList_GET_ITEM(mySubKeys, m);
-                subKey = PythonQtConversion::PyObjGetString(currentSubKey, true, check);
+                std::cout << "\n";
+            }
+
+            std::cout << "---- " << key.toLatin1().toUpper().data() << " ----\n";
+
+            PyObject* currentDict = PyDict_GetItem(myDic, currentKey); // borrowed
+            PyObject* mySubKeys = PyDict_Keys(currentDict); // new ref
+            int longestKeySize = 0;
+            int maxLengthCol1 = 32;
+            const int maxLengthCol2 = 120 - 32;
+            int temp;
+            PyObject *currentSubKey = NULL;
+
+            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); ++m)
+            {      
+                currentSubKey = PyList_GET_ITEM(mySubKeys, m);
+                temp = PyUnicode_GET_SIZE(currentSubKey);
+                longestKeySize = std::max(temp, longestKeySize);
+            }
+
+            maxLengthCol1 = std::min(longestKeySize + 2, maxLengthCol1); // +2 due to colon and space
+
+            for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); ++m)
+            {
+                currentSubKey = PyList_GET_ITEM(mySubKeys, m);
+                QString subKey = PythonQtConversion::PyObjGetString(currentSubKey, true, check);
+
                 if (!check)
                 {
                     continue;
                 }
 
-                int compensator = longest + (longest - subKey.length())*0.2;
-                subKey = subKey.append(":").leftJustified(compensator);
+                if (subKey.size() > maxLengthCol1 - 2) // -2 due to colon and space
+                {
+                    subKey = subKey.left(maxLengthCol1 - 5) + "...";
+                }
 
-                QString subVal("");
+                subKey = subKey.append(": ").leftJustified(maxLengthCol1, ' ');
+
+                QString subVal;
                 PyObject* currentSubVal = PyDict_GetItem(currentDict, currentSubKey);
 
                 if (PyDict_Check(currentSubVal))
@@ -2779,7 +2891,6 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                         subVal = PythonQtConversion::PyObjGetString(curVal, true, check);
                     }
 
-                    subVal = QString("%1").arg(PythonQtConversion::PyObjGetString(curVal, false,check));
                     subVal.append("\t(license: ");
 
                     curVal = PyDict_GetItemString(currentSubVal, "license");
@@ -2809,8 +2920,52 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     continue;
                 }
 
-                std::cout << subKey.toLatin1().data() <<"\t" << subVal.toLatin1().data() << "\n";
+                if (subVal.size() > maxLengthCol2)
+                {
+                    QStringList parts = subVal.split(" ");
+                    QStringList lines;
+                    QString current;
 
+                    for (int idx = 0; idx < parts.size(); ++idx)
+                    {
+                        if (parts[idx].size() + current.size() + 1 <= maxLengthCol2)
+                        {
+                            current += " " + parts[idx];
+                        }
+                        else
+                        {
+                            if (current != "")
+                            {
+                                lines.append(current.mid(1));
+                            }
+
+                            current = " " + parts[idx];
+                        }
+                    }
+
+                    if (current != "")
+                    {
+                        lines.append(current.mid(1));
+                    }
+
+                    if (lines.size() > 0)
+                    {
+                        std::cout << subKey.toLatin1().data() << lines[0].toLatin1().data() << "\n";
+                        QByteArray empty = QByteArray(maxLengthCol1, ' ');
+
+                        for (int lineIdx = 1; lineIdx < lines.size(); ++lineIdx)
+                        {
+                            std::cout 
+                                << empty.constData()
+                                << lines[lineIdx].toLatin1().data() << "\n";
+                        }
+                    }
+
+                }
+                else
+                {
+                    std::cout << subKey.toLatin1().data() << subVal.toLatin1().data() << "\n";
+                }
             }
 
             Py_XDECREF(mySubKeys);
@@ -2827,37 +2982,45 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code, icon = '', argtuple = []) -> adds a button to a toolbar in the main window \n\
+PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code, icon = '', argtuple = []) -> int \n\
 \n\
-This function adds a button to a toolbar in the main window. If the button is pressed the given code, function or method is executed. \n\
-If the toolbar specified by 'toolbarName' does not exist, it is created. The button will show the optional icon, or if not given or not \n\
-loadable, 'buttonName' is displayed as text. \n\
+Adds a button to a toolbar in the main window of itom. \n\
 \n\
-itom comes with basic icons addressable by ':/../iconname.png', e.g. ':/gui/icons/close.png'. These natively available icons are listed \n\
-in the icon-browser in the menu 'edit >> iconbrowser' of any script window. Furthermore you can give a relative or absolute path to \n\
-any allowed icon file (the preferred file format is png). \n\
+This function adds a button to a toolbar in the main window of itom. If the button is \n\
+pressed the given code, function or method is executed. If the toolbar specified by \n\
+``toolbarName`` does not exist, it is created. The button will display an optional \n\
+icon, or - if not given / not loadable - the ``buttonName`` is displayed as text. \n\
+\n\
+Itom comes with basic icons addressable by ``:/../iconname.png``, e.g.\n\
+``:/gui/icons/close.png``. These natively available icons are listed in the icon \n\
+browser in the menu **edit >> icon browser** of any script window. Furthermore you \n\
+can give a relative or absolute path to any allowed icon file (the preferred file \n\
+format is png). \n\
 \n\
 Parameters \n\
 ----------- \n\
-toolbarName : {str} \n\
+toolbarName : str \n\
     The name of the toolbar.\n\
-buttonName : {str} \n\
+buttonName : str \n\
     The name and identifier of the button to create.\n\
-code : {str, method, function}\n\
-    The code to be executed if the button is pressed.\n\
-icon : {str}, optional \n\
-    The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
-argtuple : {tuple}, optional \n\
-    Arguments, which will be passed to the method (in order to avoid cyclic references try to only use basic element types). \n\
+code : str or callable \n\
+    The code or callable to be executed if the button is pressed.\n\
+icon : str, optional \n\
+    The filename of an icon file. This can also be relative to the application \n\
+    directory of **itom**.\n\
+argtuple : tuple, optional \n\
+    Arguments, which will be passed to the method (in order to avoid cyclic \n\
+    references try to only use basic element types). \n\
 \n\
 Returns \n\
 ------- \n\
-handle : {int} \n\
-    handle to the newly created button (pass it to removeButton to delete exactly this button) \n\
+handle : int \n\
+    handle to the newly created button (pass it to :meth:`removeButton` to delete \n\
+    exactly this button) \n\
 \n\
 Raises \n\
 ------- \n\
-RuntimeError : \n\
+RuntimeError \n\
     if the main window is not available \n\
 \n\
 See Also \n\
@@ -2945,28 +3108,37 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle | toolbarName, buttonName = '') -> removes a button from a given toolbar. \n\
+PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle) \\\n\
+removeButton(toolbarName, buttonName = '') \n\
 \n\
-This method removes an existing button from a toolbar in the main window of 'itom'. This button must have been \n\
-created using `addButton`. If the toolbar is empty after the removal, it is finally deleted. \n\
+Removes a button from a given toolbar in the itom main window. \n\
 \n\
-Pass either the 'handle' parameter of both 'toolbarName' and 'buttonName'. It is more precise to use the handle in order to exactly \n\
-delete the button that has been created by a call to `addButton`. Using the names of the toolbar and the button always delete any \n\
-button that has been created using this data. \n\
+This method removes an existing button from a toolbar in the main window of \n\
+**itom**. This button must have been created by the method :meth:`addButton` before. \n\
+If the toolbar is empty after the removal, it is finally deleted. \n\
+\n\
+A button can be identified by two different ways: \n\
+\n\
+1. Either pass the ``handle`` of the button, as returned by :meth:`addButton`. \n\
+   This can also be used, if multiple buttons should have the same name. \n\
+2. Identify the button by its ``toolbarName`` and ``buttonName``. If more than \n\
+   one button is available in the toolbar with the given ``buttonName``, all \n\
+   matched buttons are removed. \n\
 \n\
 Parameters \n\
 ----------- \n\
-handle : {int} \n\
-    The handle returned by addButton(). \n\
-toolbarName : {str} \n\
+handle : int \n\
+    The handle returned by :meth:`addButton`. \n\
+toolbarName : str \n\
     The name of the toolbar.\n\
-buttonName : {str} \n\
-    The name (str, identifier) of the button to remove (only necessary, if toolbarName is given instead of handle).\n\
+buttonName : str \n\
+    The name (str, identifier) of the button to remove (only necessary, \n\
+    if ``toolbarName`` is given instead of ``handle``.\n\
 \n\
 Raises \n\
 ------- \n\
-RuntimeError : \n\
-    if the main window is not available or the given button could not be found. \n\
+RuntimeError \n\
+    if the main window is not available or the addressed button could not be found. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3056,22 +3228,22 @@ any allowed icon file (the preferred file format is png). \n\
 \n\
 Parameters \n\
 ----------- \n\
-type : {Int}\n\
+type : int \n\
     The type of the menu-element (BUTTON:0 [default], SEPARATOR:1, MENU:2). Use the corresponding constans in module 'itom'.\n\
-key : {str} \n\
+key : str \n\
     A slash-separated string where every sub-element is the key-name for the menu-element in the specific level.\n\
-name : {str}, optional \n\
+name : str, optional \n\
     The text of the menu-element. If not indicated, the last sub-element of key is taken.\n\
-code : {str, Method, Function}, optional \n\
+code : str or callable, optional \n\
     The code to be executed if menu element is pressed.\n\
-icon : {str}, optional \n\
+icon : str, optional \n\
     The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
-argtuple : {tuple}, optional \n\
+argtuple : tuple, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
 \n\
 Returns \n\
 ------- \n\
-handle : {int} \n\
+handle : int \n\
     Handle to the recently added leaf node (action, separator or menu item). Use this handle to delete the item including its child items (for type 'menu'). \n\
 \n\
 Raises \n\
@@ -5550,18 +5722,18 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"plot1", (PyCFunction)PythonItom::PyPlot1d, METH_VARARGS | METH_KEYWORDS, pyPlot1d_doc},
     {"plot2", (PyCFunction)PythonItom::PyPlot2d, METH_VARARGS | METH_KEYWORDS, pyPlot2d_doc},
-    {"plot25", (PyCFunction)PythonItom::PyPlot25d, METH_VARARGS | METH_KEYWORDS, pyPlot2d_doc},
+    {"plot25", (PyCFunction)PythonItom::PyPlot25d, METH_VARARGS | METH_KEYWORDS, pyPlot25d_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
     {"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
     {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS | METH_KEYWORDS, pyFilterHelp_doc},
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS | METH_KEYWORDS, pyWidgetHelp_doc},
     {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
-    {"aboutInfo", (PyCFunction)PythonItom::PyAboutInfo, METH_VARARGS, pyAboutInfo_doc},
+    {"aboutInfo", (PyCFunction)PythonItom::PyAboutInfo, METH_VARARGS | METH_KEYWORDS, pyAboutInfo_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
     {"plotHelp", (PyCFunction)PythonItom::PyPlotHelp, METH_VARARGS | METH_KEYWORDS, pyPlotHelp_doc},
     {"plotLoaded", (PyCFunction)PythonItom::PyPlotLoaded, METH_VARARGS, pyPlotLoaded_doc},
-    {"version", (PyCFunction)PythonItom::PyITOMVersion, METH_VARARGS, pyITOMVersion_doc},
+    {"version", (PyCFunction)PythonItom::PyItomVersion, METH_VARARGS | METH_KEYWORDS, pyItomVersion_doc},
     {"saveDataObject", (PyCFunction)PythonItom::PySaveDataObject, METH_VARARGS | METH_KEYWORDS, pySaveDataObject_doc},
     {"loadDataObject", (PyCFunction)PythonItom::PyLoadDataObject, METH_VARARGS | METH_KEYWORDS, pyLoadDataObject_doc},
 	{"setCentralWidgetsSizes", (PyCFunction)PythonItom::PySetCentralWidgetsSizes, METH_VARARGS | METH_KEYWORDS, pySetCentralWidgetsSizes_doc},
@@ -5595,7 +5767,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
     {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
     {"autoReloader", (PyCFunction)PythonItom::PyAutoReloader, METH_VARARGS | METH_KEYWORDS, autoReloader_doc},
-    {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, "clc() -> clears the itom command line (if available)"},
+    {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, pyClearCommandLine_doc},
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS | METH_KEYWORDS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},

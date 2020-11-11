@@ -192,7 +192,6 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
 
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(pyRegionContains_doc,"contains(x, y, w = -1, h = -1) -> bool \n\
-Returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
 \n\
 This method returns True, if the given point (x,y) or rectangle (x,y,w,h) is fully \n\
 contained in this region. Otherwise returns False.\n\
@@ -211,7 +210,7 @@ h : int, optional \n\
 Returns \n\
 -------- \n\
 bool \n\
-    True if point or rectange is contained in region, otherwise False.");
+    True if point or rectangle is contained in region, otherwise False.");
 /*static*/ PyObject* PythonRegion::PyRegion_contains(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     if(!self || self->r == NULL)
@@ -584,7 +583,7 @@ region \n\
 
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(pyRegion_getEmpty_doc,
-"bool : Returns True if this region is empty, otherwise False");
+"bool: Returns True if this region is empty, otherwise False");
 /*static*/ PyObject* PythonRegion::PyRegion_getEmpty(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
@@ -602,7 +601,7 @@ PyDoc_STRVAR(pyRegion_getEmpty_doc,
 
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(pyRegion_getRectCount_doc,
-"int : Returns the number of rectangles in this region");
+"int: Returns the number of rectangles in this region");
 /*static*/ PyObject* PythonRegion::PyRegion_getRectCount(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
@@ -616,7 +615,7 @@ PyDoc_STRVAR(pyRegion_getRectCount_doc,
 
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(pyRegion_getRects_doc,
-"list of list of int : Returns list of rectangles, whose union defines this region. \n\
+"list of list of int: Returns list of rectangles, whose union defines this region. \n\
 \n\
 Each rectangle is given by a list of (x, y, width, height).");
 /*static*/ PyObject* PythonRegion::PyRegion_getRects(PyRegion *self, void * /*closure*/)
@@ -648,7 +647,7 @@ Each rectangle is given by a list of (x, y, width, height).");
 
 //-----------------------------------------------------------------------------
 PyDoc_STRVAR(pyRegion_getBoundingRect_doc, 
-"list of int or None : Returns the bounding rectangle of this region or None if it is empty. \n\
+"list of int or None: Returns the bounding rectangle of this region or None if it is empty. \n\
 \n\
 The bounding rectangle is given by a list (x, y, width, height).");
 /*static*/ PyObject* PythonRegion::PyRegion_getBoundingRect(PyRegion *self, void * /*closure*/)
