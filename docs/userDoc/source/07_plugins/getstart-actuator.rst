@@ -117,7 +117,7 @@ Most actuator plugins let you control the device's settings through a set of par
     
 Synchronized/ Asynchronized move
 ----------------------------------
-As default the actuators move command waits until the actuator has arrived the target position. With the parameter **async** you can deactivate the option and the itom script will not wait until the end of the movement.  
+As default the actuators move command waits until the actuator has arrived the target position. With the parameter **async** you can deactivate the option and the itom script will not wait until the end of the movement. The next moving command will wait until the previously target is reached.
 
 .. code-block:: python
     :linenos:
