@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "pythonQtConversion.h"
 
 #include <qmetaobject.h>
 #include <qdebug.h>
@@ -228,9 +229,9 @@ void CompletionRunnable::run()
         {
             PyObject *pycompletion = NULL;
             const char* calltip;
-            const char* tooltip;
+            const char* description;
             const char* icon;
-            const char* docstring;
+            PyObject *tooltips = NULL;
 
             for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
             {
@@ -238,14 +239,17 @@ void CompletionRunnable::run()
 
                 if (PyTuple_Check(pycompletion))
                 {
-                    if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                    if (PyArg_ParseTuple(pycompletion, "sssO!", &calltip, &description, &icon, &PyList_Type, &tooltips))
                     {
+                        bool ok;
+                        QStringList tooltipList = PythonQtConversion::PyObjToStringList(tooltips, false, ok);
+
                         completions.append(
                             ito::JediCompletion(
                                 QLatin1String(calltip),
-                                QLatin1String(tooltip),
+                                tooltipList,
                                 QLatin1String(icon),
-                                QLatin1String(docstring))
+                                QLatin1String(description))
                         );
                     }
                     else

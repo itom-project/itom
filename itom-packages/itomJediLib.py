@@ -300,7 +300,7 @@ def completions(code, line, column, path, prefix):
             sig = docstring[0:idx]
             doc = docstring[idx+2:]
             doc_lines = doc.split("\n")
-            doc_indent = "\n".join(["  " + d for d in doc_lines])
+            doc_indent = "\n".join(["    " + d for d in doc_lines])
             return sig + "\n" + doc_indent
     
     # disable error stream to avoid import errors of jedi, 
@@ -315,7 +315,13 @@ def completions(code, line, column, path, prefix):
                 if jedi.__version__ >= '0.16.0':
                     signatures = completion.get_signatures()
                     if len(signatures) == 1:
-                        tooltip = reformat_docstring(completion.docstring())
+                        tooltip = signatures[0].docstring()
+                        # for some properties, signatures[0].docstring() only
+                        # contains the return value, but no description, fall back
+                        # to completion.docstring() then...
+                        if "\n\n" not in tooltip:
+                            tooltip = completion.docstring()
+                        tooltip = reformat_docstring(tooltip)
                         # workaround: there seems to be a bug in jedi for
                         # properties that return something with None: NoneType()
                         # is always returned in doc. However, completion.get_type_hint()
@@ -326,10 +332,10 @@ def completions(code, line, column, path, prefix):
                             rettype = completion.get_type_hint()
                             if rettype != "":
                                 tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                        tooltipList = [tooltip, ]
                     elif len(signatures) > 1:
-                        tooltip = "\n\n".join(
-                            [reformat_docstring(s.docstring()) for s in signatures]
-                            )
+                        tooltipList = [reformat_docstring(s.docstring()) 
+                                        for s in signatures]
                     else:
                         tooltip = completion.docstring()
                         if tooltip != "":
@@ -337,14 +343,17 @@ def completions(code, line, column, path, prefix):
                             type_hint = completion.get_type_hint()
                             if type_hint != "" and not tooltip.startswith(type_hint):
                                 tooltip = type_hint + " : " + tooltip
+                            tooltipList = [tooltip, ]
+                        else:
+                            tooltipList = [desc, ]
                 else:
-                    tooltip = completion.docstring()
+                    tooltipList = [completion.docstring(), ]
                 
                 result.append(
                     (completion.name,
                      desc,
                      icon_from_typename(completion.name, completion.type),
-                     tooltip)
+                     tooltipList)
                     )
             except Exception:
                 break  # todo, check this further
@@ -453,6 +462,9 @@ inception()'''
     print(completions("import numpy as np\nnp.arr", 1, 6, "", ""))
     print(goto_assignments("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
     print(goto_assignments("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
+    result = completions("import itom\nitom.loadID", 1, 9, "", "")
+    result = completions("import itom\nitom.region().bounding", 1, 21, "", "")
+    result = completions("import itom\nitom.region.ELLIPSE", 1, 16, "", "")
 
 #script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None)
 #script = jedi.Script(text,4,5,None)

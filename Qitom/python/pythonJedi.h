@@ -75,17 +75,17 @@ namespace ito
     struct JediCompletion
     {
         JediCompletion() {};
-        JediCompletion(const QString &name, const QString &tooltip, const QString &icon = QString(), const QString &docstring = QString()) :
+        JediCompletion(const QString &name, const QStringList &tooltips, const QString &icon = QString(), const QString &description = QString()) :
             m_name(name),
-            m_tooltip(tooltip),
+            m_tooltips(tooltips),
             m_icon(icon),
-            m_docstring(docstring)
+            m_description(description)
         {}
 
         QString m_name;
-        QString m_tooltip;
+        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
         QString m_icon;
-        QString m_docstring;
+        QString m_description;
     };
 
     //--------------------------------------------------------------------------------------

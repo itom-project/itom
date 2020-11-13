@@ -846,13 +846,37 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
         item = new QStandardItem();
         item->setData(name, Qt::DisplayRole);
 
-        if (completion.m_docstring != "")
+        if (completion.m_tooltips.size() > 0)
         {
-            m_tooltips[name] = completion.m_docstring;
+            QStringList tooltips;
+            QString tooltip;
+
+            foreach(const QString &tt, completion.m_tooltips)
+            {
+                tooltip = Utils::strip(tt);
+
+                if (tooltip.size() > m_tooltipsMaxLength)
+                {
+                    tooltip = tooltip.left(m_tooltipsMaxLength) + tr("...");
+                }
+
+                tooltips << tooltip;
+            }
+            
+            m_tooltips[name] = tooltips.join("\n\n");
         }
-        else if (completion.m_tooltip != "")
+        else if (completion.m_description != "")
         {
-            m_tooltips[name] = completion.m_tooltip;
+            QString tooltip = Utils::strip(completion.m_description);
+
+            if (tooltip.size() > m_tooltipsMaxLength)
+            {
+                m_tooltips[name] = tooltip.left(m_tooltipsMaxLength) + tr("...");
+            }
+            else
+            {
+                m_tooltips[name] = tooltip;
+            }
         }
 
         if (completion.m_icon != "")
@@ -887,16 +911,14 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
     {
         return;
     }
+
     if (!m_tooltips.contains(completion))
     {
         QToolTip::hideText();
         return;
     }
-    QString tooltip = Utils::strip(m_tooltips[completion]);
-    if (tooltip.size() > m_tooltipsMaxLength)
-    {
-        tooltip = tooltip.left(m_tooltipsMaxLength) + tr("...");
-    }
+
+    QString tooltip = m_tooltips[completion];
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
     pos.setY(pos.y() - 15);

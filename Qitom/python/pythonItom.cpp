@@ -61,7 +61,7 @@ namespace ito
 {
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
 //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
@@ -73,7 +73,7 @@ namespace ito
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyOpenEmptyScriptEditor_doc,"scriptEditor()\n\
 \n\
 Opens new, empty script editor window (undocked).\n\
@@ -114,7 +114,7 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyNewScript_doc, "newScript()\n\
 \n\
 Opens an empty, new script in the current script window.\n\
@@ -155,7 +155,7 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyOpenScript_doc,"openScript(filename) \n\
 \n\
 Open the given script in current script window.\n\
@@ -248,7 +248,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = \"\") \n\
 \n\
 Opens the itom help viewer and displays the itom user documentation or another desired documentation. \n\
@@ -284,7 +284,7 @@ PyObject* PythonItom::PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs)
 	Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyClearCommandLine_doc, "clc() \n\
 \n\
 Clears the itom command line (if available).");
@@ -299,7 +299,7 @@ PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotImage_doc,"plot(data, className = \"\", properties = {}) -> Tuple[int, plotItem] \n\
 \n\
 Plots a dataObject, pointCloud or polygonMesh in a new figure window \n\
@@ -472,7 +472,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = \"\", properties = {}) \n\
 \n\
 Plots a :class:`dataObject` as an 1d plot in a new figure window. \n\
@@ -494,7 +494,7 @@ Parameters \n\
 ----------- \n\
 data : dataObject \n\
     Is the :class:`dataObject` whose region of interest will be plotted.\n\
-xData : {dtaObject, optional \n\
+xData : dataObject, optional \n\
     Is the :class:`dataObject` whose values are used for the axis.\n\
 className : str, optional \n\
     class name of the desired 1D plot (if not indicated, the default 1D plot will be used, \n\
@@ -516,7 +516,7 @@ See Also \n\
 ---------- \n\
 liveImage, plotItem, plot, plot2, plot25");
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = { "data", "xData", "className","properties", NULL };
@@ -663,7 +663,7 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) \n\
 \n\
 Plots a :class:`dataObject` in a new figure window.\n\
@@ -703,7 +703,7 @@ See Also \n\
 ---------- \n\
 liveImage, plotItem, plot, plot1, plot25");
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = { "data", "className", "properties", NULL };
@@ -840,7 +840,7 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = \"\", properties = {}) \n\
 \n\
 Plots a :class:`dataObject`, :class:`pointCloud` or :class:`polygonMesh` in a new figure window. \n\
@@ -879,7 +879,7 @@ See Also \n\
 ---------- \n\
 liveImage, plotItem, plot, plot1, plot2");
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = { "data", "className","properties", NULL };
@@ -1017,7 +1017,7 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = \"\", properties = {}) \n\
 \n\
 Shows a camera live image in a new figure window. \n\
@@ -1157,7 +1157,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pKwds)
 {
     const char *kwlistFilter[] = {"filterName", "dictionary", "furtherInfos", NULL};
@@ -1679,7 +1679,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
         Py_RETURN_NONE;
     }
 }
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFilterHelp_doc, "filterHelp(filterName = \"\", dictionary = 0, furtherInfos = 0) -> Optional[dict] \n\
 \n\
 Print outs an online help for the given filter(s) or return help information as dictionary. \n\
@@ -1717,7 +1717,7 @@ PyObject* PythonItom::PyFilterHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     return PyWidgetOrFilterHelp(false, pArgs, pKwds);
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyWidgetHelp_doc,"widgetHelp(widgetName = \"\", dictionary = 0, furtherInfos = 0) -> Optional[dict] \n\
 \n\
 Print outs an online help for the given widget(s) or return help information as dictionary. \n\
@@ -1754,7 +1754,7 @@ PyObject* PythonItom::PyWidgetHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     return PyWidgetOrFilterHelp(true, pArgs, pKwds);
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginLoaded_doc,"pluginLoaded(pluginName) -> bool \n\
 \n\
 Checks if a certain plugin could be successfully loaded.\n\
@@ -1801,7 +1801,7 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
     Py_RETURN_TRUE;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotLoaded_doc,"plotLoaded(plotName) -> bool \n\
 \n\
 Checks if a certain plot widget is available and loaded.\n\
@@ -1848,7 +1848,7 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
     Py_RETURN_FALSE;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName = \"\", dictionary = False) -> Optional[Union[List[str], dict]] \n\
 \n\
 Generates an online help for a desired plot class.\n\
@@ -2304,7 +2304,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     Py_RETURN_NONE;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPluginHelp_doc, "pluginHelp(pluginName, dictionary = False) -> Optional[dict] \n\
 \n\
 Generates an online help for the specific plugin.\n\
@@ -2666,7 +2666,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         Py_RETURN_NONE;
     }
 }
-//---------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyAboutInfo_doc,"aboutInfo(pluginName) -> str \n\
 \n\
 Returns the `about` information for the given plugin as string.\n\
@@ -2715,7 +2715,7 @@ PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     PythonCommon::transformRetValToPyException(retval);
     return NULL;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyItomVersion_doc,"version(dictionary = False, addPluginInfo = False) -> Optional[dict] \n\
 \n\
 Retrieves, prints out or returns complete version information of itom (and optionally plugins). \n\
@@ -2981,8 +2981,8 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code, icon = '', argtuple = []) -> int \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyAddButton_doc,"addButton(toolbarName, buttonName, code, icon = \"\", argtuple = []) -> int \n\
 \n\
 Adds a button to a toolbar in the main window of itom. \n\
 \n\
@@ -2996,6 +2996,8 @@ Itom comes with basic icons addressable by ``:/../iconname.png``, e.g.\n\
 browser in the menu **edit >> icon browser** of any script window. Furthermore you \n\
 can give a relative or absolute path to any allowed icon file (the preferred file \n\
 format is png). \n\
+\n\
+For more information see also the section :ref:`toolbar-addtoolbar` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -3052,8 +3054,6 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         {
             return NULL;
         }
-        //PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
-        //return NULL;
     }
 
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -3070,7 +3070,9 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         funcWeakRef = hashButtonOrMenuCode(code, argtuple, retValue, qcode);
     }
 
-    QSharedPointer<size_t> buttonHandle(new size_t); //this is the handle to the newly created button, this can be used to delete the button afterwards (it corresponds to the pointer address of the corresponding QAction, casted to size_t)
+    // this is the handle to the newly created button, this can be used to delete the button 
+    // afterwards (it corresponds to the pointer address of the corresponding QAction, casted to size_t)
+    QSharedPointer<size_t> buttonHandle(new size_t); 
 
     if (!retValue.containsError())
     {
@@ -3078,7 +3080,15 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         if (mainWindow)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(mainWindow, "addToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, qname), Q_ARG(QString, qicon), Q_ARG(QString, qcode), Q_ARG(QSharedPointer<size_t>, buttonHandle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow, 
+                "addToolbarButton", 
+                Q_ARG(QString, toolbarName), 
+                Q_ARG(QString, qname), 
+                Q_ARG(QString, qicon), 
+                Q_ARG(QString, qcode), 
+                Q_ARG(QSharedPointer<size_t>, buttonHandle), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             if (!locker->wait(2000))
             {
@@ -3107,7 +3117,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     return PyLong_FromSize_t(*buttonHandle);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle) \\\n\
 removeButton(toolbarName, buttonName = '') \n\
 \n\
@@ -3124,6 +3134,8 @@ A button can be identified by two different ways: \n\
 2. Identify the button by its ``toolbarName`` and ``buttonName``. If more than \n\
    one button is available in the toolbar with the given ``buttonName``, all \n\
    matched buttons are removed. \n\
+\n\
+For more information see also the section :ref:`toolbar-addtoolbar` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -3156,7 +3168,9 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
         callByNames = false;
         if (!PyArg_ParseTuple(pArgs, "I", &buttonHandle))
         {
-            PyErr_SetString(PyExc_TypeError, "Wrong length or type of arguments. Type help(removeButton) for more information.");
+            PyErr_SetString(
+                PyExc_TypeError, 
+                "Wrong length or type of arguments. Type help(removeButton) for more information.");
             return NULL;
         }
     }
@@ -3170,11 +3184,23 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 
         if (callByNames)
         {
-            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(QSharedPointer<size_t>, buttonHandle_), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow,
+                "removeToolbarButton", 
+                Q_ARG(QString, toolbarName), 
+                Q_ARG(QString, buttonName), 
+                Q_ARG(QSharedPointer<size_t>, buttonHandle_), 
+                Q_ARG(bool, false), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
         else
         {
-            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(size_t, buttonHandle), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow, 
+                "removeToolbarButton", 
+                Q_ARG(size_t, buttonHandle), 
+                Q_ARG(bool, false), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
 
         if (!locker->wait(2000))
@@ -3210,45 +3236,62 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key, name = <last_section_of_key>, code = '', icon = '', argtuple = []) -> adds an element to the menu bar of itom. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key, name = "", code = \"\", icon = \"\", argtuple = []) -> int \n\
 \n\
 This function adds an element to the main window menu bar. \n\
-The root element of every menu-list must be a MENU-element. Such a MENU-element can contain sub-elements. \n\
-The following sub-elements can be either another MENU, a SEPARATOR or a BUTTON. Only the BUTTON itself \n\
-triggers a signal, which then executes the code, given by a string or a reference to a callable python method \n\
-or function. Remember, that this reference is only stored as a weak pointer. \n\
-If you want to directly add a sub-element, you can give a slash-separated string in the key-parameter. \n\
-Every sub-component of this string then represents the menu-element in its specific level. Only the element in the last \n\
-can be something else than MENU.\n\
 \n\
-itom comes with basic icons addressable by ':/../iconname.png', e.g. ':/gui/icons/close.png'. These natively available icons are listed \n\
-in the icon-browser in the menu 'edit >> iconbrowser' of any script window. Furthermore you can give a relative or absolute path to \n\
-any allowed icon file (the preferred file format is png). \n\
+The root element of every menu list must be of type :attr:`~itom.MENU`. Such a \n\
+:attr:`~itom.MENU` element can contain sub-elements. These sub-elements can be either \n\
+another :attr:`~itom.MENU`, a :attr:`~itom.SEPARATOR` or a :attr:`~itom.BUTTON`. Only \n\
+the :attr:`~itom.BUTTON` itself triggers a signal, which then executes the code, given \n\
+by a string or a reference to a callable python method or function. Remember, that this \n\
+reference is only stored as a weak pointer. \n\
+\n\
+If you want to directly add a sub-element, you can give a slash-separated string as ``key`` \n\
+argument. Every component of this string then represents the menu element in its specific \n\
+level. Only the element in the last can be something else than of type \n\
+:attr:`~itom.MENU`.\n\
+\n\
+Itom comes with basic icons addressable by ``:/../iconname.png``, e.g.\n\
+``:/gui/icons/close.png``. These natively available icons are listed in the icon \n\
+browser in the menu **edit >> icon browser** of any script window. Furthermore you \n\
+can give a relative or absolute path to any allowed icon file (the preferred file \n\
+format is png). \n\
+\n\
+For more information see also the section :ref:`toolbar-createmenu` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
 type : int \n\
-    The type of the menu-element (BUTTON:0 [default], SEPARATOR:1, MENU:2). Use the corresponding constans in module 'itom'.\n\
+    The type of the menu-element (:attr:`~itom.BUTTON` : 0 [default], \n\
+    :attr:`~itom.SEPARATOR` : 1, :attr:`~itom.MENU` : 2). Use the corresponding \n\
+    constans in module :mod:`itom`.\n\
 key : str \n\
-    A slash-separated string where every sub-element is the key-name for the menu-element in the specific level.\n\
+    A slash-separated string where every sub-element is the key-name for the menu-element \n\
+    in the specific level.\n\
 name : str, optional \n\
-    The text of the menu-element. If not indicated, the last sub-element of key is taken.\n\
+    The text of the menu-element. If it is an empty string, the last component of the \n\
+    slash separated ``key`` is used as name. For instance if key is equal to ``item1/item2`` \n\
+    the name will be ``item2``. \n\
 code : str or callable, optional \n\
     The code to be executed if menu element is pressed.\n\
 icon : str, optional \n\
-    The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
+    The filename of an icon-file. This can also be relative to the application directory of \n\
+    **itom**.\n\
 argtuple : tuple, optional \n\
-    Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
+    Arguments, which will be passed to method (in order to avoid cyclic references try \n\
+    to only use basic element types).\n\
 \n\
 Returns \n\
 ------- \n\
 handle : int \n\
-    Handle to the recently added leaf node (action, separator or menu item). Use this handle to delete the item including its child items (for type 'menu'). \n\
+    Handle to the recently added leaf node (action, separator or menu item). Use this \n\
+    handle to delete the item including its child items (for type 'menu'). \n\
 \n\
 Raises \n\
 ------- \n\
-RuntimeError : \n\
+RuntimeError \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
@@ -3287,6 +3330,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     qicon = QString(icon);
 
     QStringList sl = qkey.split("/");
+
     if (qname == "" && sl.size() > 0)
     {
         qname = sl[ sl.size() - 1];
@@ -3298,7 +3342,6 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     }
     else
     {
-
         //check type
         switch(type)
         {
@@ -3306,7 +3349,11 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             {
                 if (!code)
                 {
-                    retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toLatin1().data());
+                    retValue += RetVal(
+                        retError,
+                        0,
+                        QObject::tr("For menu elements of type 'BUTTON' any type of code "
+                                    "(String or callable method or function) must be indicated.").toLatin1().data());
                 }
                 else
                 {
@@ -3355,7 +3402,17 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         if (mainWindow)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(mainWindow, "addMenuElement", Q_ARG(int, type), Q_ARG(QString, qkey), Q_ARG(QString, qname), Q_ARG(QString, qcode), Q_ARG(QString, qicon), Q_ARG(QSharedPointer<size_t>, menuHandle), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow, 
+                "addMenuElement", 
+                Q_ARG(int, type), 
+                Q_ARG(QString, qkey), 
+                Q_ARG(QString, qname), 
+                Q_ARG(QString, qcode), 
+                Q_ARG(QString, qicon), 
+                Q_ARG(QSharedPointer<size_t>, menuHandle), 
+                Q_ARG(bool, false), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             if (!locker->wait(2000))
             {
@@ -3388,25 +3445,35 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     return PyLong_FromSize_t(*menuHandle);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key | menuHandle) -> remove a menu element with the given key or handle. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key) \\\n\
+removeMenu(menuHandle) \n\
 \n\
-This function remove a menu element with the given key or menuHandle. \n\
+Remove a menu element with the given key or handle. \n\
+\n\
+This function remove a menu element with the given ``key`` or ``menuHandle``. \n\
 key is a slash separated list. The sub-components then \n\
 lead the way to the final element, which should be removed. \n\
 \n\
-Alternatively, it is possible to pass the handle obtained by `addMenu`. \n\
+Alternatively, it is possible to pass the handle obtained from :meth:`addMenu`. \n\
+\n\
+For more information see also the section :ref:`toolbar-createmenu` of the \n\
+documentation.\n\
 \n\
 Parameters \n\
 ----------- \n\
-key : {str}, optional\n\
-    The name (str, identifier) of the menu entry to remove.\n\
-handle : {int}, optional \n\
-    The handle of the menu entry that should be removed (including its possible child items). \n\
+key : str\n\
+    The key (can be a slash-separated list) of the menu entry to remove. If it \n\
+    is a slash-separated list, the menu entry is searched down the path, \n\
+    indicated by the components of the list respectively. \n\
+    If the desired menu item has further child items, they are removed, too. \n\
+menuHandle : int \n\
+    The handle of the menu entry that should be removed (including its \n\
+    possible child items). This handle is usually returned by :meth:`addMenu`.\n\
 \n\
 Raises \n\
 ------- \n\
-RuntimeError : \n\
+RuntimeError \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
@@ -3451,11 +3518,23 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 
         if (keyNotHandle)
         {
-            QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(QString, qkey), Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow, 
+                "removeMenuElement", 
+                Q_ARG(QString, qkey), 
+                Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), 
+                Q_ARG(bool, false), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
         else
         {
-            QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(size_t, menuHandle), Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(
+                mainWindow, 
+                "removeMenuElement", 
+                Q_ARG(size_t, menuHandle), 
+                Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), 
+                Q_ARG(bool, false), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
 
         if (!locker->wait(2000))
@@ -3485,8 +3564,21 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dictionary with the set of user-defined toolbars, buttons, menus and actions.");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> dict \n\
+\n\
+Gets all user-defined toolbars, menus and its buttons. \n\
+\n\
+Returns \n\
+-------- \n\
+dict \n\
+    Dictionary with two top-level entries:: \n\
+        \n\
+        {'toolbars': {}, 'menus': []} \n\
+    \n\
+    ``toolbars`` contains a dict of all customized toolbars, where each \n\
+    item contains all buttons (actions) of this toolbar. ``menus`` contains \n\
+    a list of nested dictionaries for each top level menu.");
 /*static*/ PyObject* PythonItom::PyDumpMenusAndButtons(PyObject* pSelf)
 {
 	QObject *mainWindow = AppManagement::getMainWindow();
@@ -3495,7 +3587,11 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 		QSharedPointer<QString > dump(new QString());
 		ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-		QMetaObject::invokeMethod(mainWindow, "dumpToolbarsAndButtons", Q_ARG(QSharedPointer<QString>, dump), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+		QMetaObject::invokeMethod(
+            mainWindow, 
+            "dumpToolbarsAndButtons", 
+            Q_ARG(QSharedPointer<QString>, dump), 
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
 		if (!locker->wait(2000))
 		{
@@ -3504,6 +3600,9 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 		}
 		else
 		{
+            // this is a little bit an unconvenient way to parse a python-like string.
+            // The string dump is parsed by the python interpreter and represents a 
+            // dictionary. This dictionary is then returned.
 			PyObject *globals = PyDict_New();
 			QString totalString = QString("# coding=iso-8859-15 \n\ntext = %1").arg(*dump);
 			PyObject *result = PyRun_String(totalString.toLatin1().data(), Py_single_input, globals, NULL);
@@ -3521,27 +3620,53 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckSignals_doc, "checkSignals() -> int \n\
+\n\
+Verifies if a Python interrupt request is currently queued. \n\
+\n\
+Returns \n\
+-------- \n\
+int \n\
+    Returns 1 if an interrupt is currently queued, else 0.");
 /*static */PyObject* PythonItom::PyCheckSignals(PyObject* /*pSelf*/)
 {
-    int result = PythonEngine::isInterruptQueued() ? 1 : 0; //PyErr_CheckSignals();
+    int result = PythonEngine::isInterruptQueued() ? 1 : 0;
     return Py_BuildValue("i", result);
     //Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyProcessEvents_doc, "processEvents() \n\
+\n\
+This method processes posted events for the Python thread. \n\
+\n\
+Please use this method with care.");
 /*static */PyObject* PythonItom::PyProcessEvents(PyObject* /*pSelf*/)
 {
     QCoreApplication::processEvents(QEventLoop::AllEvents);
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+
     if (pyEngine)
     {
-        QCoreApplication::sendPostedEvents(pyEngine,0);
+        QCoreApplication::sendPostedEvents(pyEngine, 0);
     }
+
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGetDebugger_doc, "getDebugger() -> itoDebugger.itoDebugger \n\
+\n\
+Returns the ``itoDebugger`` object of this itom session. \n\
+\n\
+It is usually not recommended and necessary to use this method or the returned \n\
+debugger. This method is available for development and debugging purposes. \n\
+\n\
+Returns \n\
+------- \n\
+debugger : itoDebugger.itoDebugger \n\
+    is the debugger instance of this itom session.");
 /*static */PyObject* PythonItom::PyGetDebugger(PyObject* /*pSelf*/)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -3554,7 +3679,24 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGCStartTracking_doc, "gcStartTracking() \n\
+\n\
+Starts a monitoring session for objects in the garbage collector. \n\
+\n\
+This method makes a snapshot of all objects currently guarded by \n\
+the garbage collector (:mod:`gc`). Before this, ``gc.collect()`` \n\
+was called to clear all unnecessary objects. \n\
+\n\
+Later, call :meth:`gcEndTracking` to get a print out of the \n\
+differences between the snapshot at the end and the beginning \n\
+of the tracking. \n\
+\n\
+This methods are usually available for development purposes. \n\
+\n\
+See Also \n\
+-------- \n\
+gcEndTracking");
 /*static */PyObject* PythonItom::PyGCStartTracking(PyObject * /*pSelf*/)
 {
     PyObject *gc = PyImport_AddModule("gc"); //borrowed ref
@@ -3574,11 +3716,13 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
         }
 
         m_gcTrackerList.clear();
+
         for (Py_ssize_t i = 0; i < PyList_Size(obj_list); i++)
         {
             t = PyList_GET_ITEM(obj_list,i); //borrowed
             m_gcTrackerList[(size_t)t] = QString("%1 [%2]").arg(t->ob_type->tp_name).arg(PythonQtConversion::PyObjGetString(t, false, ok)); //t->ob_type->tp_name;
         }
+
         Py_DECREF(obj_list);
         std::cout << m_gcTrackerList.count() << " elements tracked" << std::endl;
     }
@@ -3590,7 +3734,27 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGCEndTracking_doc, "gcEndTracking() \n\
+\n\
+Finishes a monitoring session for objects in the garbage collector. \n\
+\n\
+This method makes a snapshot of all objects currently guarded by \n\
+the garbage collector (:mod:`gc`) and compares the list of objects\n\
+with the one collected during the last call of :meth:`gcStartTracking`. \n\
+\n\
+The difference of both lists of printed to the command line. \n\
+\n\
+This methods are usually available for development purposes. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+     if :meth:`gcStartTracking` was not called before. \n\
+\n\
+See Also \n\
+-------- \n\
+gcStartTracking");
 /*static */PyObject* PythonItom::PyGCEndTracking(PyObject * /*pSelf*/)
 {
     PyObject *gc = PyImport_AddModule("gc"); //borrowed ref
@@ -3648,27 +3812,32 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> returns a dict
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoReloader_doc,"autoReloader(enabled, checkFileExec = True, checkCmdExec = True, checkFctExec = False) -> dis-/enables the module to automatically reload changed modules \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoReloader_doc,"autoReloader(enabled, checkFileExec = True, checkCmdExec = True, checkFctExec = False) \n\
 \n\
-Use this method to enable or disable (and configure) a tool that automatically tries to reload imported modules and their submodules if they have changed \n\
-since the last run. \n\
+dis-/enables the module to automatically reload changed modules. \n\
+\n\
+Use this method to enable or disable (and configure) a tool that automatically tries to \n\
+reload imported modules and their submodules if they have changed since the last run. \n\
 \n\
 Returns \n\
 ------- \n\
-enable : {bool} \n\
+enable : bool \n\
     The auto-reload tool is loaded if it is enabled for the first time. If it is disabled, \n\
     it does not check changes of any imported modules. \n\
-checkFileExec : {bool} \n\
-    If True (default) and auto-reload enabled, a check for modifications is executed whenever a script is executed \n\
-checkCmdExec : {bool} \n\
-    If True (default) and auto-reload enabled, a check for modifications is executed whenever a command in the command line is executed \n\
-checkFctExec : {bool} \n\
-    If True and auto-reload enabled, a check for modifications is executed whenever a function or method is run (e.g. by an event or button click) (default: False)\n\
+checkFileExec : bool \n\
+    If ``True`` (default) and auto-reload enabled, a check for modifications is executed \n\
+    whenever a script is executed \n\
+checkCmdExec : bool \n\
+    If ``True`` (default) and auto-reload enabled, a check for modifications is executed \n\
+    whenever a command in the command line is executed \n\
+checkFctExec : bool \n\
+    If ``True`` and auto-reload enabled, a check for modifications is executed whenever a \n\
+    function or method is run (e.g. by an event or button click) (default: ``False``)\n\
 \n\
 Notes \n\
 ------- \n\
-This tool is inspired by and based on the IPython extension 'autoreload'. \n\
+This tool is inspired by and based on the IPython extension `autoreload`. \n\
 \n\
 Reloading Python modules in a reliable way is in general difficult, \n\
 and unexpected things may occur. ``autoReloader`` tries to work around \n\
@@ -3716,19 +3885,23 @@ Some of the known remaining caveats are: \n\
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> returns dictionary with information about all available screens. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> Dict[str, obj] \n\
 \n\
-This method returns a dictionary with information about the current screen configuration of this computer. \n\
+Returns dictionary with information about all available screens. \n\
+\n\
+This method returns a dictionary with information about the current screen \n\
+configuration of this computer. \n\
 \n\
 Returns \n\
 ------- \n\
-screenInfo : {dict} \n\
+dict \n\
     dictionary with the following content is returned: \n\
     \n\
     * screenCount (int): number of available screens \n\
     * primaryScreen (int): index (0-based) of primary screen \n\
-    * geometry (tuple): tuple with dictionaries for each screen containing data for width (w), height (h) and its top-left-position (x, y)");
+    * geometry (tuple): tuple with dictionaries for each screen containing data for \n\
+      width (w), height (h) and its top-left-position (x, y)");
 PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -3779,31 +3952,52 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values, matrixName = 'matrix') -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values, matrixName = \"matrix\") \n\
 \n\
-Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`...) to a Matlab *mat* file. \n\
-There are the following possibilites for saving: \n\
+Save strings, numbers, arrays or combinations into a Matlab mat file. \n\
 \n\
-* One given value is saved under one given 'matrixName' or 'matrix' if 'matrixName' is not given. \n\
-* A list or tuple of objects is given. If no 'matrixName' is given, the items get the names 'matrix1', 'matrix2'... Else, 'matrixName' must be a sequence of value names with the same length than 'values'. \n\
-* A dictionary is given, such that each value is stored under its corresponding key. \n\
+Save one or multiple objects (strings, numbers, arrays, :class:`dataObject`, \n\
+:class:`numpy.ndarray`...) to a Matlab *mat* file. There are the following \n\
+possibilites for saving, depending on the type of ``values``: \n\
+\n\
+* ``values`` is a :class:`dict`: All values in the dictionary are stored under their \n\
+  corresponding key. \n\
+* If ``values`` contains one item only, it is saved under the given ``matrixName``. \n\
+* If ``value`` is a :class:`list` or :class:`tuple` of objects, ``matrixName`` must \n\
+  either be a sequence with the same length than ``value``. Then, each item in ``values`` \n\
+  is stored with the respective name in ``matrixName``. Or ``matrixName`` can be omitted. \n\
+  Then, the items are stored under the self-incremented keys ``matrix1``, ``matrix2``, ... \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
+filename : str \n\
     Filename under which the file should be saved (.mat will be appended if not available)\n\
-values : {dictionary, list, tuple, variant} \n\
-    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray...)\n\
-matrix-name : {str, list, tuple}, optional \n\
-    if 'values' is a single value, this parameter must be one single str, if 'values' is a sequence it must be a sequence of strings with the same length, if 'values' is a dictionary this argument is ignored. \n\
+values : dict or list or tuple or obj \n\
+    The value(s) to be stored. Can be either a single object (number, string, \n\
+    :class:`dataObject`, :class:`numpy.ndarray` among others, or a :class:`list`, \n\
+    :class:`tuple` or :class:`dict` of these single objects. \n\
+matrixName : str or list or tuple, optional \n\
+    If ``values`` is a single value, this parameter must be one single :class:`str`. \n\
+    Else if ``values`` is a sequence it must be a sequence of strings with the same \n\
+    length or it can be omitted. If ``values`` is a dictionary, this argument is ignored. \n\
+\n\
+Raises \n\
+------ \n\
+ImportError \n\
+     if :mod:`scipy` and its module :mod:`scipy.io` could not be imported. \n\
+\n\
+Notes \n\
+----- \n\
+This method requires the package :mod:`scipy` and its module :mod:`scipy.io`. \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 loadMatlabMat");
 PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 {
-    //if any arguments are changed in this method, consider to also change PythonEngine::saveMatlabVariables and PythonEngine::saveMatlabSingleParam.
+    // if any arguments are changed in this method, consider to also change 
+    // PythonEngine::saveMatlabVariables and PythonEngine::saveMatlabSingleParam.
 
     PyObject* scipyIoModule = PyImport_ImportModule("scipy.io"); // new reference
 
@@ -3855,6 +4049,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             else
             {
                 matrixNamesTuple = PyTuple_Pack(1, matrixNames);
+
                 if (!PyArg_ParseTuple(matrixNamesTuple, "s", &tempName))
                 {
                     Py_XDECREF(scipyIoModule);
@@ -3946,7 +4141,10 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 	PyObject *nameobj = PyUnicode_FromString("savemat");
 	PyObject *fiveobj = PyUnicode_FromString("5");
 	PyObject *rowobj = PyUnicode_FromString("row");
-    PyObject *res = PyObject_CallMethodObjArgs(scipyIoModule, nameobj, filename, saveDict, Py_True, fiveobj, Py_True, Py_False, rowobj, NULL); //new reference
+    PyObject *res = PyObject_CallMethodObjArgs(
+        scipyIoModule, nameobj, filename, saveDict, 
+        Py_True, fiveobj, Py_True, Py_False, rowobj, NULL); //new reference
+
     Py_XDECREF(nameobj);
     Py_XDECREF(fiveobj);
     Py_XDECREF(rowobj);
@@ -3964,7 +4162,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns new reference to element and extracts tags, if possible
 /*!
     If element is of type npDataObject or dataObject, the following new reference is returned:
@@ -4015,20 +4213,29 @@ PyObject* PythonItom::PyMatlabMatDataObjectConverter(PyObject *element)
 
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadMatlabMat_doc,"loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLoadMatlabMat_doc,"loadMatlabMat(filename) -> dict \n\
 \n\
-This function loads matlab mat-file by using scipy methods and returns the loaded dictionary. \n\
+Loads Matlab mat-file by using :mod:`scipy` methods and returns the loaded dictionary. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
+filename : str \n\
     Filename from which the data will be imported (.mat will be added if not available)\n\
 \n\
 Returns \n\
 ------- \n\
-mat : {dict} \n\
+mat : dict \n\
     dictionary with content of file \n\
+\n\
+Raises \n\
+------ \n\
+ImportError \n\
+     if :mod:`scipy` and its module :mod:`scipy.io` could not be imported. \n\
+\n\
+Notes \n\
+----- \n\
+This method requires the package :mod:`scipy` and its module :mod:`scipy.io`. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -4152,31 +4359,47 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     return resultLoadMat;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, **kwds, _observer : progressObserver = None) -> invoke a filter (or algorithm) function from an algorithm-plugin. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, **kwds, _observer = None) -> obj \n\
 \n\
-This function is used to invoke itom filter-functions or algorithms, declared within itom-algorithm plugins.\n\
-The parameters (arguments) depends on the specific filter function (see filterHelp(name)),\n\
-By filterHelp() a list of available filter functions is retrieved. \n\
+Invokes a filter (or algorithm) function from an algorithm-plugin. \n\
+\n\
+This function is used to invoke itom filter-functions or algorithms, declared within \n\
+itom-algorithm plugins. The parameters (arguments) depends on the specific filter \n\
+function. Call :meth:`filterHelp` to get a list of available filter functions.\n\
+\n\
+Pass all mandatory or optional arguments of the filter as positional or keyword-based \n\
+parameters. Some filters, that implement the additional observer interface, can accept \n\
+another :class:`progressObserver` object, that allows monitoring the progress of the \n\
+filter and / or interrupting the execution. If such an observer is given, you have to \n\
+pass it as keyword-based argument ``_observer``!. \n\
+\n\
+During the execution of the filter, the python GIL (general interpreter lock) is \n\
+released (e.g. for further asynchronous processes. \n\
 \n\
 Parameters \n\
 ----------- \n\
-name : {str} \n\
+name : str \n\
     The name of the filter\n\
-*args : {variant} \n\
+*args : obj \n\
     positional arguments for the specific filter-method \n\
-**kwds : {variant} \n\
-    keyword-based arguments for the specific filter-method. The argument name 'observer' is reserved for special use. \n\
-_observer : {progressObserver, optional} \n\
-    if the called filter implements the extended interface with progress and status information, an optional itom.progressObserver \n\
-    object can be given (only as keyword-based parameter) which is then used as observer for the current progress of the filter \n\
-    execution. It is then also possible to interrupt the execution earlier (depending on the implementation of the filter). \n\
-    The observer object is reset() before passed to the called filter function (using the slot reset()). \n\
+**kwds : obj \n\
+    keyword-based arguments for the specific filter-method. The argument name \n\
+    ``_observer`` is reserved for special use. \n\
+_observer : progressObserver, optional \n\
+    if the called filter implements the extended interface with progress and status \n\
+    information, an optional :class:`progressObserver` object can be given (only as \n\
+    keyword-based parameter) which is then used as observer for the current progress of \n\
+    the filter execution. It is then also possible to interrupt the execution earlier \n\
+    (depending on the implementation of the filter). The observer object is \n\
+    reset before passed to the called filter function (using the slot \n\
+    :meth:`~progressObserver.reset`). \n\
 \n\
 Returns \n\
 -------- \n\
-out : {variant} \n\
-    The returned values depend on the definition of each filter. In general it is a tuple of all output parameters that are defined by the filter function.\n\
+out : obj \n\
+    The returned values depend on the definition of each filter. In general it is a \n\
+    tuple of all output parameters that are defined by the filter function.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4275,7 +4498,8 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         }
     }
 
-    //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
+    // parses python-parameters with respect to the default values given py (*it).paramsMand 
+    // and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
     ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), positionalArgs, kwdsArgs, paramsMandBase, paramsOptBase);
 
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
@@ -4429,25 +4653,31 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject, tagsAsBinary = False) -> save a dataObject to harddrive in a xml-based file format. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySaveDataObject_doc,"saveDataObject(filename, dataObject, tagsAsBinary = False) \n\
 \n\
-This method writes a `dataObject` into the file specified by 'filename'. The data is stored in a binary format within a xml-based structure. \n\
-All string-tags of the dataObject are encoded in order to avoid xml-errors, the value of numerical tags are converted to string with \n\
-15 significant digits (>32bit, tagsAsBinary = False [default]) or in a binary format (tagsAsBinary = True). \n\
+Saves a dataObject to the harddrive in a xml-based file format (ido). \n\
+\n\
+This method writes a :class:`dataObject` into the file specified by ``filename``. \n\
+The data is stored in a binary format within a xml-based structure. \n\
+All string-tags of the dataObject are encoded in order to avoid xml-errors, \n\
+the value of numerical tags are either converted to strings with 15 significant digits \n\
+(>32bit) or stored as base64 encoded values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
-    Filename and Path of the destination (.ido will be added if no .*-ending is available)\n\
-dataObject : {DataObject} \n\
-    An allocated dataObject of n-Dimensions.\n\
-tagsAsBinary : {bool}, optional \n\
-    Optional tag to toggle if numeric-tags should be saved (metaData) as binary or by default as string.\n\
+filename : str \n\
+    absolute or relative file path to the destination file (.ido will be added if \n\
+    no valid suffix is given)\n\
+dataObject : dataObject \n\
+    The `n`-dimensional dataObject to be serialized to the file.\n\
+tagsAsBinary : bool, optional \n\
+    If ``True`` all number tags are stored as base64 encoded number values in the `ido` \n\
+    file. Else (default), they are stored as readable strings. \n\
 \n\
 Notes \n\
 ----- \n\
-Tagnames which contains special characters leads to XML-conflics. \n\
+Tagnames which contains special characters might lead to XML-conflics. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -4459,16 +4689,16 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
     const char *kwlist[] = {"filename", "dataObject", "tagsAsBinary", NULL};
     const char* folderfilename;
     PyObject *pyDataObject = NULL;
-    int pyBool = 0;
+    int tagsAsBinary = 0;
     bool tagAsBin = false; // defaults metaData as string (false)
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|i", const_cast<char**>(kwlist), &folderfilename, &PythonDataObject::PyDataObjectType, &pyDataObject, &pyBool))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|i", const_cast<char**>(kwlist), &folderfilename, &PythonDataObject::PyDataObjectType, &pyDataObject, &tagsAsBinary))
     {
         return NULL;
     }
 
     PythonDataObject::PyDataObject* elem = (PythonDataObject::PyDataObject*)pyDataObject;
-    tagAsBin = pyBool > 0; 
+    tagAsBin = tagsAsBinary > 0; 
 
     ret += ito::saveDOBJ2XML(elem->dataObject, folderfilename, false, tagAsBin);
 
@@ -4480,26 +4710,29 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
     Py_RETURN_NONE;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject, doNotAppendIDO = False) -> load a dataObject from the harddrive. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLoadDataObject_doc,"loadDataObject(filename, dataObject, doNotAppendIDO = False) \n\
+\n\
+Loads a dataObject from an IDO file. \n\
 \n\
 This function reads a `dataObject` from the file specified by filename. \n\
 MetaData saveType (string, binary) are extracted from the file and restored within the object.\n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
-    Filename and Path of the destination (.ido will be added if not available)\n\
-dataObject : {`dataObject`} \n\
-    A pre-allocated `dataObject` (empty dataObject is allowed).\n\
-doNotAppendIDO : {bool}, optional \n\
-    False[default]: file suffix *.ido* will not be appended to filename, True: it will be added.\n\
+filename : str \n\
+    absolute or relative ido file path to the target file \n\
+dataObject : dataObject \n\
+    an allocated, e.g. empty :class:`dataObject`, that is filled with the loaded \n\
+    object afterwards. \n\
+doNotAppendIDO : bool, optional \n\
+    If ``True`` (default: ``False``), the file suffix **ido** is appended to ``filename``. \n\
 \n\
 Notes \n\
 ----- \n\
 \n\
-The value of string-Tags must be encoded to avoid XML-conflics.\n\
-Tagnames which contains special characters leads to XML-conflics.");
+The value of string tags must be encoded to avoid XML-conflics.\n\
+Tag names which contains special characters might lead to XML-conflics.");
 PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
     ito::RetVal ret(ito::retOk);
@@ -4530,25 +4763,28 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 }
 
 
-//---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySetCentralWidgetsSizes_doc, "setCentralWidgetsSizes(sizes) -> set the sizes of the central widgets of itom (including command line) from top to bottom. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySetCentralWidgetsSizes_doc, "setCentralWidgetsSizes(sizes) \n\
 \n\
-This method can be important if at least one widget has been added from itom.ui, type ui.TYPECENTRALWIDGET. \n\
-These user defined widgets are then added on top of the central area of itom and stacked above the command line. \n\
-The list of sizes indicates the desired heights of all widgets in the center in pixel (from top to bottom). \n\
+Sets the sizes of the central widgets of itom (including command line) from top to bottom. \n\
 \n\
-If the list contains too much items, all extra values are ignored. If the list contains too few values, the result \n\
-is undefined, but the program will still be well-behaved. \n\
+This method can be important if at least one widget has been added from :class:`itom.ui`, \n\
+type :attr:`ui.TYPECENTRALWIDGET`. These user defined widgets are then added on top \n\
+of the central area of itom and stacked above the command line. The list of sizes \n\
+indicates the desired heights of all widgets in the center in pixel (from top to bottom). \n\
 \n\
-The overall size of the central area will not be affected. Instead, any additional/missing space is distributed amongst the \n\
-widgets according to the relative weight of the sizes. \n\
+If the list contains too much items, all extra values are ignored. If the list contains \n\
+too few values, the result is undefined, but the program will still be well-behaved. \n\
 \n\
-If you speciy a size of 0, the widget will be invisible and can be made visible again using this method or by increasing its \n\
-size again with the mouse. \n\
+The overall size of the central area will not be affected. Instead, any additional/missing \n\
+space is distributed amongst the widgets according to the relative weight of the sizes. \n\
+\n\
+If you speciy a size of 0, the widget will be invisible and can be made visible again \n\
+using this method or by increasing its size again with the mouse. \n\
 \n\
 Parameters \n\
 ----------- \n\
-sizes : {seq. of int} \n\
+sizes : sequence of int \n\
     Sizes in pixel for each central widget from top to bottom (including the command line). \n\
 ");
 PyObject* PythonItom::PySetCentralWidgetsSizes(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
@@ -4586,14 +4822,17 @@ PyObject* PythonItom::PySetCentralWidgetsSizes(PyObject* /*pSelf*/, PyObject* pA
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getDefaultScaleableUnits_doc,"getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getDefaultScaleableUnits_doc,"getDefaultScaleableUnits() -> List[str] \n\
 \n\
-The unit strings returned as a list by this method can be transformed into each other using `scaleValueAndUnit`. \n\
+Gets a list with the strings of the standard scalable units. \n\
+\n\
+The unit strings returned as a list by this method can be transformed into each \n\
+other using :meth:`scaleValueAndUnit`. \n\
 \n\
 Returns \n\
 ------- \n\
-units : {list} \n\
+units : list of str \n\
     List with strings containing all scaleable units \n\
 \n\
 See Also \n\
@@ -4630,26 +4869,41 @@ PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
     return myList;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(scaleValueAndUnit_doc,"ScaleValueAndUnit(scaleableUnits, value, valueUnit) -> Scale a value and its unit and returns [value, 'Unit'] \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(scaleValueAndUnit_doc, "scaleValueAndUnit(scaleableUnits, value, valueUnit) -> Tuple[float, str] \n\
+\n\
+Rescales a ``value`` and its unit to the next matching SI unit. \n\
+\n\
+At first, it is checked if the given ''valueUnit'' is contained in the list \n\
+of the base units ``scaleableUnits``. If this is the case, \n\
+the given ``value`` is scaled such that the returned value is greater or equal \n\
+than 1. The scaled value and the new unit is returned then. \n\
+\n\
+Use the method :meth:`getDefaultScaleableUnits` to obtain a suitable list of SI \\n\
+base units. \n\
 \n\
 Parameters \n\
 ----------- \n\
-scaleableUnits : {PyList of Strings} \n\
-    A string list with all scaleable units\n\
-value : {double} \n\
+scaleableUnits : list of str \n\
+    A list of str with all base units that should be considered for scaling. \n\
+    If the given ''valueUnit'' is not contained in this list of base units, \n\
+    no scaling is done and the returned values are equal to ``[value, valueUnit]``. \n\
+value : float \n\
     The value to be scaled\n\
-valueUnit : {str} \n\
+valueUnit : str \n\
     The value unit to be scaled\n\
 \n\
 Returns \n\
 ------- \n\
-PyTuple with scaled value and scaled unit\n\
+tuple \n\
+    The returned tuple has the format ``[newValue, newUnit]``, where ``newValue`` is \n\
+    a float and ``newUnit`` is a string. \n\
 \n\
-Notes \n\
------ \n\
-\n\
-Rescale a value with SI-unit (e.g. 0.01 mm to 10 micrometer). Used together with itom.getDefaultScaleableUnits()");
+Examples \n\
+------- -\n\
+>>> baseUnits = getDefaultScaleableUnits() \n\
+>>> print(scaleValueAndUnit(baseUnits, 0.001, 'm')) \n\
+[1, 'mm']");
 PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     QStringList myQlist;
@@ -4689,39 +4943,42 @@ PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, P
     return Py_BuildValue("dN", valueOut, PythonQtConversion::QStringToPyObject(unitOut)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getAppPath_doc,"getAppPath() -> returns absolute path of application base directory.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getAppPath_doc,"getAppPath() -> str\n\
 \n\
-This function returns the absolute path of application base directory.\n\
-The return value is independent of the current working directory. \n\
+Returns the absolute path of the base directory of this application.\n\
+\n\
+The returned value is independent of the current working directory. \n\
 \n\
 Returns \n\
 ------- \n\
-path : {str}\n\
+path : str\n\
     absolute path of this application's base directory");
 PyObject* PythonItom::getAppPath(PyObject* /*pSelf*/)
 {
     return PythonQtConversion::QStringToPyObject(QDir::cleanPath(QCoreApplication::applicationDirPath()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getQtToolPath_doc, "getQtToolPath(toolname) -> get the absolute path of the Qt tool \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getQtToolPath_doc, "getQtToolPath(toolname) -> str \n\
+\n\
+Gets the absolute path of the given Qt tool \n\
 \n\
 Parameters \n\
 ----------- \n\
-toolname : {str} \n\
-    The filename of the tool that should be searched (e.g. qcollectiongenerator; suffix is not required)\n\
+toolname : str \n\
+    The filename of the tool that should be searched \n\
+    (e.g. ``qcollectiongenerator``; suffix is not required)\n\
 \n\
 Returns \n\
 ------- \n\
-path : {str} \n\
-    Absolute path to the Qt tool \n\
+path : str \n\
+    Absolute path to the given Qt tool. \n\
 \n\
 Raises \n\
 ------- \n\
-FileExistsError : \n\
-    if the given toolname could not be found \n\
-");
+FileExistsError \n\
+    if the given toolname could not be found");
 PyObject* PythonItom::getQtToolPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     char *toolname = NULL;
@@ -4744,39 +5001,48 @@ PyObject* PythonItom::getQtToolPath(PyObject* /*pSelf*/, PyObject* pArgs)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getCurrentPath_doc,"getCurrentPath() -> returns absolute path of current working directory.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getCurrentPath_doc,"getCurrentPath() -> str \n\
+\n\
+Returns the absolute path of the current working directory.\n\
+\n\
+The current working directory is also displayed on the right side \n\
+of the status bar of the main window of itom. \n\
 \n\
 Returns \n\
 ------- \n\
-Path : {str}\n\
-    absolute path of current working directory \n\
+str\n\
+    the absolute path of the current working directory \n\
 \n\
 See Also \n\
----------- \n\
+--------- \n\
 setCurrentPath");
 PyObject* PythonItom::getCurrentPath(PyObject* /*pSelf*/)
 {
     return PythonQtConversion::QStringToPyObject(QDir::cleanPath(QDir::currentPath()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(setCurrentPath_doc,"setCurrentPath(newPath) -> set current working directory to given absolute newPath \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(setCurrentPath_doc,"setCurrentPath(newPath) -> bool \n\
 \n\
-sets the absolute path of the current working directory to 'newPath'. The current working directory is the base \n\
-directory for all subsequent relative pathes of icon-files, script-files, ui-files, relative import statements... \n\
+Set current working directory to a new absolute path. \n\
 \n\
-The current directory is always indicated in the right corner of the status bar of the main window. \n\
+sets the absolute path of the current working directory to 'newPath'. \n\
+The current working directory is the base directory for all subsequent relative \n\
+pathes of icon-files, script-files, ui-files, relative import statements... \n\
+\n\
+The current directory is always indicated in the right corner of the status \n\
+bar of the main window. \n\
 \n\
 Parameters \n\
 ----------- \n\
-newPath : {str} \n\
-    The new working path of this application\n\
+newPath : str \n\
+    The new path for the current working directory.\n\
 \n\
 Returns \n\
 ------- \n\
-success : {bool} \n\
-    True in case of success else False \n\
+success : bool \n\
+    ``True`` in case of success else ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -4811,7 +5077,30 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCompressData_doc, "compressData(text) -> bytes \n\
+\n\
+Compresses a given string text, using zlib. \n\
+\n\
+The compression is done using the zlib library and the command \n\
+`qCompress` of the Qt framework. \n\
+\n\
+Parameters \n\
+----------- \n\
+text : str \n\
+    The string that should be compressed. \n\
+level : int \n\
+    The compression level: -1 selects the default compression level of `zlib`, else \n\
+    a level in the range [0, 9]. \n\
+\n\
+Returns \n\
+------- \n\
+compressed_text : bytes \n\
+    The compressed version of ``text``. \n\
+\n\
+See Also \n\
+--------- \n\
+uncompressData");
 /*static*/ PyObject* PythonItom::compressData(PyObject* pSelf, PyObject* pArgs)
 {
     int level = -1;
@@ -4834,7 +5123,27 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     return PyBytes_FromStringAndSize(compressed.data(), compressed.size());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUncompressData_doc, "uncompressData(compressed_text) -> bytes \n\
+\n\
+Uncompresses a given compressed text, using zlib. \n\
+\n\
+The uncompression is done using the zlib library and the command \n\
+`qUncompress` of the Qt framework. \n\
+\n\
+Parameters \n\
+----------- \n\
+compressed_text : bytes \n\
+    The compressed bytes string. \n\
+\n\
+Returns \n\
+------- \n\
+uncompressed_text : bytes \n\
+    The uncompressed ``compressed_text``. \n\
+\n\
+See Also \n\
+--------- \n\
+compressData");
 /*static*/ PyObject* PythonItom::uncompressData(PyObject* pSelf, PyObject* pArgs)
 {
     PyObject *byteObj = NULL;
@@ -4849,11 +5158,13 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     return PyBytes_FromStringAndSize(uncompressed.data(), uncompressed.size());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegisterResources_doc, "registerResource(rccFileName: str, mapRoot: str = "") -> Registers the resource with the given rccFileName. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegisterResources_doc, "registerResource(rccFileName, mapRoot = \"\") -> bool \n\
+\n\
+Registers a resource file with the given rccFileName. \n\
 \n\
 This method opens a given Qt rcc resource file and registers its content at the location \n\
-in the resource tree specified by mapRoot. The mapRoot must usually be a slash separated \n\
+in the resource tree specified by ``mapRoot``. This ``mapRoot`` must usually be a slash separated \n\
 path, starting with a slash. \n\\n\
 \n\
 To generate a rcc file, create an index of all files, that should be added to the resource file, \n\
@@ -4863,14 +5174,15 @@ This method is new in itom > 4.0.0. \n\
 \n\
 Parameters \n\
 ----------- \n\
-rccFileName : {str}\n\
+rccFileName : str\n\
     filepath to the rcc resource file \n\
-mapRoot : {str}, optional \n\
+mapRoot : str, optional \n\
     root key, where the resources should be registered below (default: empty string) \n\
 \n\
 Returns \n\
 ---------- \n\
-True if the file could be successfully opened, else False.\n\
+bool \n\
+    ``True`` if the file could be successfully opened, else ``False``.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4900,26 +5212,28 @@ unregisterResource");
     Py_RETURN_FALSE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUnregisterResources_doc, "unregisterResource(rccFileName: str, mapRoot: str = "") -> Unregisters the resource with the given rccFileName. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUnregisterResources_doc, "unregisterResource(rccFileName, mapRoot = \"\") -> bool \n\
+\n\
+Unregisters the resource with the given rccFileName. \n\
 \n\
 This method tries to unload all resources in the given rcc resource file from the location \n\
-in the resource tree specified by `mapRoot`. The mapRoot must usually be a slash separated \n\
+in the resource tree specified by ``mapRoot``. The ``mapRoot`` must usually be a slash separated \n\
 path, starting with a slash. \n\
-\n\
 \n\
 This method is new in itom > 4.0.0. \n\
 \n\
 Parameters \n\
 ----------- \n\
-rccFileName : {str}\n\
+rccFileName : str\n\
     filepath to the rcc resource file \n\
-mapRoot : {str}, optional \n\
+mapRoot : str, optional \n\
     root key, where the resources should be unloaded from (default: empty string). \n\
 \n\
 Returns \n\
 ---------- \n\
-True if the file could be successfully opened, else False.\n\
+bool \n\
+    ``True`` if the file could be successfully opened, else ``False``.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4949,10 +5263,13 @@ registerResource");
     Py_RETURN_FALSE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor(cursorIndex = -1) -> changes the itom cursor or restores the previously set cursor if -1 \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor(cursorIndex = -1) \n\
 \n\
-This methods changes the overall cursor icon of itom where cursorIndex corresponds to the Qt enumeration Qt::CursorShape. e.g.:\n\
+Changes the itom cursor or restores the previously set cursor if -1. \n\
+\n\
+This methods changes the overall cursor icon of itom where ``cursorIndex`` \n\
+corresponds to the Qt enumeration ``Qt::CursorShape``. e.g.:\n\
 \n\
     * 0: Arrow \n\
     * 2: Cross Cursor \n\
@@ -4961,10 +5278,14 @@ This methods changes the overall cursor icon of itom where cursorIndex correspon
     * 14: Forbidden Cursor \n\
     * 16: Busy Cursor \n\
 \n\
+Every change of the cursor is put on a stack. The previous cursor type is \n\
+restored, if ``cursorIndex`` is set to ``-1``. \n\
+\n\
 Parameters \n\
 ----------- \n\
-cursorIndex : {int} optional\n\
-    The cursor enumeration value of the desired cursor shape (Qt::CursorShape) or -1 if the previous cursor should be restored (default)");
+cursorIndex : int, optional\n\
+    The cursor enumeration value of the desired cursor shape (``Qt::CursorShape``) \n\
+    or ``-1`` if the previous cursor should be restored (default)");
 PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 {
     int i = -1;
@@ -4978,8 +5299,8 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
         return PyErr_Format(PyExc_RuntimeError, "Cursor number must be in range [-1,%i]", Qt::LastCursor);
     }
 
-
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
     if (i >= 0 && pyEngine)
     {
         Qt::CursorShape shape = (Qt::CursorShape)i;
@@ -4992,20 +5313,24 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> load a pickled idc-file and return the content as dictionary\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> dict \n\
 \n\
-This methods loads the given idc-file using the method `pickle.load` from the python-buildin module `pickle` and returns the loaded dictionary.\n\
+loads a pickled idc-file and returns the content as dictionary. \n\
+\n\
+This methods loads the given idc file using the method :meth:`pickle.load` from the \n\
+Python buildin module :mod:`pickle` and returns the loaded dictionary. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {String} \n\
-    absolute filename or filename relative to the current directory. \n\
+filename : str \n\
+    Filename to the `idc`-file, that should be loaded. Can be an absolute \n\
+    path, or relative with respect to the current working directory. \n\
 \n\
 Returns \n\
 -------- \n\
-content : {dict} \n\
-    dictionary with loaded content \n\
+content : dict \n\
+    dictionary with loaded content. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -5051,20 +5376,31 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict, overwriteIfExists = True) -> saves the given dictionary as pickled idc-file.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict, overwriteIfExists = True) \n\
 \n\
-This method saves the given dictionary as pickled idc-file using the method dump from the builtin module pickle.\n\
+Saves the given dictionary as pickled idc-file.\n\
+\n\
+This method saves the given dictionary ``dict`` as pickled idc-file using the method \n\
+:meth:`pickle.dump` from the builtin module :mod:`pickle`.\n\
 The file will be saved with the pickle protocol version 3 (default for Python 3).\n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {string} \n\
-    absolute filename or filename relative to the current directory. \n\
-dict : {dict} \n\
-    dictionary which should be pickled. \n\
-overwriteIfExists : {bool}, default: True \n\
-    if True, an existing file will be overwritten. \n\
+filename : str \n\
+    Filename of the destination `idc` file. Can be an absolute filename \n\
+    or relative with respect to the current working directory. \n\
+dict : dict \n\
+    dictionary which should be pickled. All values in the dictionary must be able \n\
+    to be pickled (e.g. all Python base types, dataObjects, numpy.ndarrays...). \n\
+overwriteIfExists : bool, default: True \n\
+    If ``True``, an existing file will be overwritten. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the file cannot be overwritten or if it exists, but ``overwriteIfExists`` \n\
+    is ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -5120,17 +5456,21 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyCheckIsAdmin_doc,"userIsAdmin() -> return True if USER has administrator status.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsAdmin_doc,"userIsAdmin() -> bool \n\
 \n\
-This method returns a boolean expression. If the USER defined by the user managment has administrator status it is true, in other cases it is False. \n\
+Returns ``True`` if the current user has administrator rights.\n\
+\n\
+For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
 ------- \n\
-isRequestedType : {boolean} \n\
-    Boolean return value \n\
-    \n\
-");
+bool \n\
+    ``True`` if current user has administrator rights, otherwise ``False``.\n\
+\n\
+See Also \n\
+-------- \n\
+userIsUser, userIsDeveloper, userGetInfo");
 PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
 {
     UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
@@ -5147,17 +5487,23 @@ PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
 
     Py_RETURN_FALSE;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyCheckIsDeveloper_doc,"userIsDeveloper() -> return True if USER has developer status.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsDeveloper_doc, "userIsDeveloper() -> bool \n\
 \n\
-This method returns a boolean expression. If the USER defined by the user managment has developer status it is true, in other cases it is False. \n\
+Returns ``True`` if the current user has developer rights.\n\
+\n\
+This method only returns ``True``, if the current user has developer rights, not if \n\
+he has higher rights, like adminstrator. \n\
+For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
 ------- \n\
-isRequestedType : {boolean} \n\
-    Boolean return value \n\
-    \n\
-");
+bool \n\
+    ``True`` if current user has developer rights, otherwise ``False``. \n\
+\n\
+See Also \n\
+-------- \n\
+userIsUser, userIsAdministrator, userGetInfo");
 PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
 {
     UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
@@ -5174,17 +5520,23 @@ PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
 
     Py_RETURN_FALSE;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyCheckIsUser_doc,"userIsUser() -> return True if USER has only user status.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCheckIsUser_doc, "userIsUser() -> bool \n\
 \n\
-This method returns a boolean expression. If the USER defined by the user managment has only user status it is true, in other cases it is False. \n\
+Returns ``True`` if the current user has user rights.\n\
+\n\
+This method only returns ``True``, if the current user has user rights, not if \n\
+he has higher rights, like developer or adminstrator. \n\
+For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
 ------- \n\
-isRequestedType : {boolean} \n\
-    Boolean return value \n\
-    \n\
-");
+bool \n\
+    ``True`` if current user has user rights, otherwise ``False``.\n\
+\n\
+See Also \n\
+-------- \n\
+userIsDeveloper, userIsAdministrator, userGetInfo");
 PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
 {
     UserOrganizer* userOrg = ito::UserOrganizer::getInstance();
@@ -5202,20 +5554,20 @@ PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
     Py_RETURN_FALSE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyGetUserInfo_doc,"userGetInfo() -> return a dictionary with the current user management information.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGetUserInfo_doc,"userGetInfo() -> Dict[str, str] \n\
 \n\
-This method returns a dictionary which contains the current user concerning system configuration. \n\
+Returns a dictionary with relevant information about the current user. \n\
 \n\
 Returns \n\
 ------- \n\
-isUser : {dict} \n\
+dict \n\
     dictionary with the following content is returned: \n\
     \n\
-    * Name (string): The name of the current user \n\
-    * Type (string): The user type as string [user, administrator, developer] \n\
-    * ID (string): The user ID as a string \n\
-    * File (string): The location and name of the corresponding initialization file.");
+    * Name: The name of the current user \n\
+    * Type: The user right type of the current user [user, administrator, developer] \n\
+    * ID: The user ID \n\
+    * File: The location and name of the corresponding setting file (ini).");
 PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
 {
 
@@ -5268,49 +5620,76 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     return returnDict;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle) \\\n\
+close(\"all\") \n\
 \n\
-This method closes and deletes any specific figure (given by handle) or all opened figures. This method always calls the static method \n\
-`figure.close`.\n\
+Closes a specific or all opened figures. \n\
+\n\
+This method closes and deletes either one specific figure (if ``handle`` is given \n\
+and valid), or all opened figures (if the string argument ``\"all\"`` is given). \n\
+All figure can only be closed, if no other figure references this figure (e.g. \n\
+line cut of an image plot (2D). \n\
+\n\
+This method is a redirect of the staticmethod :meth:`figure.close`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-handle : {`dataIO`, str} \n\
-    any figure handle (>0) or 'all' in order to close all opened figures \n\
+handle : int \n\
+    a valid figure handle, whose reference figure should be closed. \n\
+    This figure handle is for instance obtained by the first value of the \n\
+    returned tuple of :meth:`plot`, :meth:`plot1`, :meth:`plot2` among others. \n\
+all : {\"all\"} \n\
+    Pass the string ``\"all\"``  if all closeable opened figures should be closed. \n\
 \n\
 Notes \n\
 ------- \n\
-If any instance of class 'figure' still keeps a reference to any figure, it is only closed and will be deleted after that the last referencing instance has been deleted. \n\
+If a :class:`figure` instance still keeps a reference to any figure, it is only closed \n\
+and will be deleted after that the last referencing instance has been deleted. \n\
 \n\
 See Also \n\
 --------- \n\
 figure.close");
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(setPalette_doc,"setPalette(name, entries) -> set the palette for color bars defined by name.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(setPalette_doc,"setPalette(name, colorStops, inverseColor1, inverseColor2, invalidColor) \n\
 \n\
-This methods sets a palette defined by entries within the palette organizer. If the palette does not exist, a new one is created.\n\
-If the palette already exists and is not write protected, the palette is overwritten. If any of the optional values \n\
-is not given, default values (from the 'gray' color palette) are used or, if the color palette already exists, these values are left unchanged\n\
+Changes a given color palette or creates a new one with the given arguments. \n\
 \n\
-If a palette is available in terms of a dictionary, returned by itom.getPalette, the use the star-operator, to unpack this\n\
-dictionary as keyword-arguments, used as parameters for this method.\n\
+This methods modifies an existing color palette (if a palette with ``name`` \n\
+already exists) or creates a new color palette with the given ``name``. An existing \n\
+color palette can only be modified, if it has no write protection, which is the case \n\
+for all pre-defined color palettes of itom (see color palette editor in itom property \n\
+editor). If any of the optional values are not given, default values (from the ``gray`` \n\
+color palette) are used, or, if the color palette ``name`` already exists, \n\
+these values are left unchanged\n\
+\n\
+To obtain the parameters of an existing color palette, that can be used as arguments \n\
+of this method, unpack the returned dictionary of :meth:`getPalette`. \n\
+\n\
+It is also possible to modify or create color palettes in the color palette editor of \n\
+the itom property dialog. For more information see :ref:`gui-color-palette-editor`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-name : {str} \n\
-    name of palette \n\
-colorStops : {tuple} \n\
-    tuple with all color stops, each element is another tuple whose first value is the float position [0.0,1.0]\n\
-    and the 2nd value is the color (itom.rgba32). The position of the first color stop has to be 0.0, the one of the last stop 1.0.\n\
+name : str \n\
+    Name of the color palette. \n\
+colorStops : tuple \n\
+    Tuple with all color stops of this color palette. Each item of this tuple is \n\
+    another tuple with two values. The first value is the float position of the \n\
+    color stop in the range [0.0, 1.0]. The 2nd value is the :class:`rgba32` color \n\
+    at this position. Colors between two adjacent color stops are linearly interpolated. \n\
+    \n\
+    The position of the first color stop has to be 0.0, the one of the last stop 1.0.\n\
     There must be at least two colorStops.\n\
-inverseColor1 : {itom.rgba32}, optional \n\
-    first defined inverse color \n\
-inverseColor2 : {itom.rgba32}, optional \n\
-    2nd defined inverse color \n\
-invalidColor : {itom.rgba32}, optional \n\
-    color used for NaN or Inf values \n\
+inverseColor1 : rgba, optional \n\
+    First inverse color, used for instance for line cuts, markers etc. of a 2D plot. \n\
+inverseColor2 ( rgba, optional \n\
+    second inverse color, used for instance for line cuts, markers etc. of a 2D plot. \n\
+invalidColor : rgba, optional \n\
+    color used for ``NaN`` or ``Inf`` values in plots. If the invalid color is not given \n\
+    and an existing color palette also has no invalid color, the color of the first color \n\
+    stop is taken. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -5346,7 +5725,12 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-    QMetaObject::invokeMethod(paletteOrganizer, "getColorBarThreaded", Q_ARG(QString,QLatin1String(name)), Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        paletteOrganizer, 
+        "getColorBarThreaded", 
+        Q_ARG(QString,QLatin1String(name)), 
+        Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette), 
+        Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -5362,7 +5746,12 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
 
         ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
 
-        QMetaObject::invokeMethod(paletteOrganizer, "getColorBarThreaded", Q_ARG(QString,QLatin1String("gray")), Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette2), Q_ARG(ItomSharedSemaphore*,locker2.getSemaphore()));
+        QMetaObject::invokeMethod(
+            paletteOrganizer, 
+            "getColorBarThreaded", 
+            Q_ARG(QString,QLatin1String("gray")),
+            Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette2), 
+            Q_ARG(ItomSharedSemaphore*,locker2.getSemaphore()));
 
         if (!locker2.getSemaphore()->wait(60000))
         {
@@ -5379,7 +5768,10 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
     {
         if (sharedPalette->isWriteProtected())
         {
-            return PyErr_Format(PyExc_RuntimeError, "The color palette '%s' is readonly and cannot be changed", name);
+            return PyErr_Format(
+                PyExc_RuntimeError, 
+                "The color palette '%s' is readonly and cannot be changed", 
+                name);
         }
         else
         {
@@ -5408,13 +5800,13 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
     }
 
     QVector<QPair<qreal, QColor> > stops;
-
-
     int length = PyTuple_Size(colorStops);
     PyObject *subtuple;
+
     for (int i = 0; i < length; ++i)
     {
         subtuple = PyTuple_GetItem(colorStops, i); //borrowed
+
         if (PyTuple_Check(subtuple))
         {
             double pos;
@@ -5422,7 +5814,10 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
             bool found;
             if (!PyArg_ParseTuple(subtuple, "dO!", &pos, &PythonRgba::PyRgbaType, &color))
             {
-                return PyErr_Format(PyExc_RuntimeError, "The %i. item of colorStops must be a tuple with a real value, followed by a color of type itom.rgba32.", i);
+                return PyErr_Format(
+                    PyExc_RuntimeError, 
+                    "The %i. item of colorStops must be a tuple with a real value, followed by a itom.rgba color.", 
+                    i);
             }
             ito::Rgba32 rgba = ((ito::PythonRgba::PyRgba*)color)->rgba;
 
@@ -5490,7 +5885,12 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
 
     ItomSharedSemaphoreLocker locker3(new ItomSharedSemaphore());
 
-    QMetaObject::invokeMethod(paletteOrganizer, "setColorBarThreaded", Q_ARG(QString,QString(name)), Q_ARG(ito::ItomPaletteBase, newPalette), Q_ARG(ItomSharedSemaphore*,locker3.getSemaphore()));
+    QMetaObject::invokeMethod(
+        paletteOrganizer, 
+        "setColorBarThreaded", 
+        Q_ARG(QString,QString(name)), 
+        Q_ARG(ito::ItomPaletteBase, newPalette), 
+        Q_ARG(ItomSharedSemaphore*,locker3.getSemaphore()));
 
     if (!locker3.getSemaphore()->wait(60000))
     {
@@ -5506,38 +5906,42 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getPalette_doc,"getPalette(name) -> get the color palette used in color bars defined by name.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getPalette_doc, "getPalette(name) -> dict \n\
 \n\
-If a color palette with this name is given, a tuple is returned whose length corresponds \n\
-to the number of color stops. Every item is a tuple with two elements, where the first element \n\
-denotes the normalized index position of the color stop [0,1] and the second element is of type itom.rgba32 \n\
-and indicates the color at the stop position. \n\
+Returns all relevant data of an existing color palette. \n\
+\n\
+If a color palette with this ``name`` exists, its relevant data is returned \n\
+as dictionary. The values in this dictionary can also be used to call the \n\
+method :meth:`setPalette`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-name : {string} \n\
+name : str \n\
     name of the new palette. \n\
 \n\
 Returns \n\
 -------- \n\
-palette : {dict} \n\
+palette : dict \n\
     Dictionary with the following entries: \n\
     \n\
-    name : {str} \n\
-        name of palette \n\
-    colorStops : {tuple} \n\
-        tuple with all color stops, each element is another tuple whose first value is the float position [0.0,1.0]  and the 2nd value is the color (itom.rgba32) \n\
-    inverseColor1 : {itom.rgba32} \n\
-        first defined inverse color \n\
-    inverseColor2 : {itom.rgba32} \n\
-        2nd defined inverse color \n\
-    invalidColor : {itom.rgba32} \n\
-        color used for NaN or Inf values \n\
+    name : str \n\
+        name of the color palette. \n\
+    colorStops : tuple \n\
+        tuple with all color stops, each element is another tuple whose first value is \n\
+        the float position of the stop in the range [0.0, 1.0]. The 2nd value is the \n\
+        corresponding :class:`rgba` color. The first color stop is always at \n\
+        position 0.0, the last one at position 1.0. \n\
+    inverseColor1 : rgba \n\
+        first inverse color. \n\
+    inverseColor2 : rgba \n\
+        2nd inverse color. \n\
+    invalidColor : rgba \n\
+        color used for ``NaN`` or ``Inf`` values. \n\
 \n\
 Raises \n\
 ----------- \n\
-RuntimeError : \n\
+RuntimeError \n\
     if no color palette with the given name is available. \n\
 \n\
 See Also \n\
@@ -5569,7 +5973,12 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-    QMetaObject::invokeMethod(paletteOrganizer, "getColorBarThreaded", Q_ARG(QString,QString(name)), Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        paletteOrganizer, 
+        "getColorBarThreaded", 
+        Q_ARG(QString,QString(name)), 
+        Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette), 
+        Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -5587,11 +5996,14 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
     for(int elem = 0; elem < sharedPalette->getNumColorStops(); elem++)
     {
         subtuple = PyTuple_New(2); //new ref
-        ito::PythonRgba::PyRgba* rgb = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
-        rgb->rgba.a = sharedPalette->getColor(elem).alpha();
-        rgb->rgba.r = sharedPalette->getColor(elem).red();
-        rgb->rgba.g = sharedPalette->getColor(elem).green();
-        rgb->rgba.b = sharedPalette->getColor(elem).blue();
+        ito::PythonRgba::PyRgba* rgb = \
+            (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(
+                &ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+        const QColor &c = sharedPalette->getColor(elem);
+        rgb->rgba.a = c.alpha();
+        rgb->rgba.r = c.red();
+        rgb->rgba.g = c.green();
+        rgb->rgba.b = c.blue();
         PyTuple_SetItem(subtuple, 0, PyFloat_FromDouble(sharedPalette->getPos(elem))); //steals a reference
         PyTuple_SetItem(subtuple, 1, (PyObject*)rgb); //steals a reference
         PyTuple_SetItem(colorStops, elem, subtuple); //steals a reference
@@ -5605,40 +6017,55 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
     PyDict_SetItemString(dict, "colorStops", colorStops);
     Py_DECREF(colorStops);
 
-    ito::PythonRgba::PyRgba* inverseColor1 = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
-    inverseColor1->rgba.a = sharedPalette->getInverseColorOne().alpha();
-    inverseColor1->rgba.r = sharedPalette->getInverseColorOne().red();
-    inverseColor1->rgba.g = sharedPalette->getInverseColorOne().green();
-    inverseColor1->rgba.b = sharedPalette->getInverseColorOne().blue();
+    ito::PythonRgba::PyRgba* inverseColor1 = \
+        (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(
+            &ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    const QColor &invColor1 = sharedPalette->getInverseColorOne();
+    inverseColor1->rgba.a = invColor1.alpha();
+    inverseColor1->rgba.r = invColor1.red();
+    inverseColor1->rgba.g = invColor1.green();
+    inverseColor1->rgba.b = invColor1.blue();
     PyDict_SetItemString(dict, "inverseColor1", (PyObject*)inverseColor1);
     Py_DECREF(inverseColor1);
 
-    ito::PythonRgba::PyRgba* inverseColor2 = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
-    inverseColor2->rgba.a = sharedPalette->getInverseColorTwo().alpha();
-    inverseColor2->rgba.r = sharedPalette->getInverseColorTwo().red();
-    inverseColor2->rgba.g = sharedPalette->getInverseColorTwo().green();
-    inverseColor2->rgba.b = sharedPalette->getInverseColorTwo().blue();
+    ito::PythonRgba::PyRgba* inverseColor2 = \
+        (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(
+            &ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    const QColor &invColor2 = sharedPalette->getInverseColorTwo();
+    inverseColor2->rgba.a = invColor2.alpha();
+    inverseColor2->rgba.r = invColor2.red();
+    inverseColor2->rgba.g = invColor2.green();
+    inverseColor2->rgba.b = invColor2.blue();
     PyDict_SetItemString(dict, "inverseColor2", (PyObject*)inverseColor2);
     Py_DECREF(inverseColor2);
 
-    ito::PythonRgba::PyRgba* invalidColor = (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
-    invalidColor->rgba.a = sharedPalette->getInvalidColor().alpha();
-    invalidColor->rgba.r = sharedPalette->getInvalidColor().red();
-    invalidColor->rgba.g = sharedPalette->getInvalidColor().green();
-    invalidColor->rgba.b = sharedPalette->getInvalidColor().blue();
+    ito::PythonRgba::PyRgba* invalidColor = \
+        (ito::PythonRgba::PyRgba*)ito::PythonRgba::PyRgba_new(
+            &ito::PythonRgba::PyRgbaType, NULL, NULL ); //new ref
+    const QColor &invColor = sharedPalette->getInvalidColor();
+    invalidColor->rgba.a = invColor.alpha();
+    invalidColor->rgba.r = invColor.red();
+    invalidColor->rgba.g = invColor.green();
+    invalidColor->rgba.b = invColor.blue();
     PyDict_SetItemString(dict, "invalidColor", (PyObject*)invalidColor);
     Py_DECREF(invalidColor);
 
     return dict;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getPaletteList_doc,"getPaletteList(typefilter = 0) -> returns a tuple of all currently available names of color palettes.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(getPaletteList_doc,"getPaletteList(type = 0) -> Tuple[str] \n\
 \n\
+Returns a tuple with the names of all currently available color palettes. \n\
 \n\
 Parameters \n\
 ----------- \n\
-typefilter : {int} \n\
-    currently unused parameter \n\
+type : int, optional \n\
+    Unused parameter. \n\
+\n\
+Returns \n\
+------- \n\
+tuple of str \n\
+    Tuple with the names of all available color palettes. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -5669,7 +6096,11 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-    QMetaObject::invokeMethod(paletteOrganizer, "getColorBarListThreaded", Q_ARG(int,typefilter), Q_ARG(QSharedPointer<QStringList>, sharedPalettes), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        paletteOrganizer, 
+        "getColorBarListThreaded", 
+        Q_ARG(QSharedPointer<QStringList>, sharedPalettes), 
+        Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -5693,15 +6124,25 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     return tuple;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyClearAll_doc, "clearAll() \n\
+\n\
+Clears all variables in the global workspace. \n\
+\n\
+This method clears all variables in the global workspace, that have been \n\
+added after the startup process of itom. This only affects variables, that \n\
+are also displayed in the workspace toolbox. Variables, like methods, functions, \n\
+classes etc. are filtered out, and will therefore not be deleted.\n\
+\n\
+Variables, that have been created by any startup script will also not be deleted.");
 PyObject* PythonItom::PyClearAll(PyObject* pSelf)
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     pyEngine->pythonClearAll();
     Py_RETURN_NONE;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
 //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
@@ -5712,7 +6153,7 @@ PyObject* PythonItom::PyClearAll(PyObject* pSelf)
 //                                                                                                              //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonItom::PythonMethodItom[] = {
     // "Python name", C Ffunction Code, Argument Flags, __doc__ description
     {"scriptEditor", (PyCFunction)PythonItom::PyOpenEmptyScriptEditor, METH_NOARGS, pyOpenEmptyScriptEditor_doc},
@@ -5750,18 +6191,17 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getQtToolPath", (PyCFunction)PythonItom::getQtToolPath, METH_VARARGS, getQtToolPath_doc },
     {"getCurrentPath", (PyCFunction)PythonItom::getCurrentPath, METH_NOARGS, getCurrentPath_doc},
     {"setCurrentPath", (PyCFunction)PythonItom::setCurrentPath, METH_VARARGS, setCurrentPath_doc},
-    {"checkSignals", (PyCFunction)PythonItom::PyCheckSignals, METH_NOARGS, NULL},
-    {"processEvents", (PyCFunction)PythonItom::PyProcessEvents, METH_NOARGS, NULL},
-    {"getDebugger", (PyCFunction)PythonItom::PyGetDebugger, METH_NOARGS, "getDebugger() -> returns new reference to debugger instance"},
-    {"gcStartTracking", (PyCFunction)PythonItom::PyGCStartTracking, METH_NOARGS, "gcStartTracking() -> stores the current object list of the garbage collector."},
-    {"gcEndTracking", (PyCFunction)PythonItom::PyGCEndTracking, METH_NOARGS, "gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list."},
-    //{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
+    {"checkSignals", (PyCFunction)PythonItom::PyCheckSignals, METH_NOARGS, pyCheckSignals_doc},
+    {"processEvents", (PyCFunction)PythonItom::PyProcessEvents, METH_NOARGS, pyProcessEvents_doc},
+    {"getDebugger", (PyCFunction)PythonItom::PyGetDebugger, METH_NOARGS, pyGetDebugger_doc},
+    {"gcStartTracking", (PyCFunction)PythonItom::PyGCStartTracking, METH_NOARGS, pyGCStartTracking_doc},
+    {"gcEndTracking", (PyCFunction)PythonItom::PyGCEndTracking, METH_NOARGS, pyGCEndTracking_doc},
     {"getScreenInfo", (PyCFunction)PythonItom::PyGetScreenInfo, METH_NOARGS, getScreenInfo_doc},
     {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, setApplicationCursor_doc},
     {"loadIDC", (PyCFunction)PythonItom::PyLoadIDC, METH_VARARGS | METH_KEYWORDS, pyLoadIDC_doc},
     {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
-    {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compressData(str) -> compresses the given string using the method qCompress"},
-    {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompressData(str) -> uncompresses the given string using the method qUncompress"},
+    {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, pyCompressData_doc},
+    {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, pyUncompressData_doc},
     {"userIsAdmin", (PyCFunction)PythonItom::userCheckIsAdmin, METH_NOARGS, pyCheckIsAdmin_doc},
     {"userIsDeveloper", (PyCFunction)PythonItom::userCheckIsDeveloper, METH_NOARGS, pyCheckIsDeveloper_doc},
     {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
@@ -5771,7 +6211,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS | METH_KEYWORDS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
-    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, "clearAll() -> clears all variables in workspace (holds variables created by any startup script)"},
+    {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, pyClearAll_doc},
     {"registerResource", (PyCFunction)PythonItom::PyRegisterResource, METH_VARARGS | METH_KEYWORDS, pyRegisterResources_doc},
     {"unregisterResource", (PyCFunction)PythonItom::PyUnregisterResource, METH_VARARGS | METH_KEYWORDS, pyUnregisterResources_doc},
     {NULL, NULL, 0, NULL}
@@ -5782,7 +6222,7 @@ PyModuleDef PythonItom::PythonModuleItom = {
     NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonItom::PyInitItom(void)
 {
     PyObject *m = PyModule_Create(&PythonModuleItom);
@@ -5803,7 +6243,7 @@ PyObject* PythonItom::PyInitItom(void)
     return m;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ ito::FuncWeakRef* PythonItom::hashButtonOrMenuCode(PyObject *code, PyObject *argtuple, ito::RetVal &retval, QString &codeString)
 {
     ito::FuncWeakRef *ref = NULL;
@@ -5878,7 +6318,7 @@ PyObject* PythonItom::PyInitItom(void)
     return ref;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //this method removes a possible proxy object to a python method or function including its possible argument tuple
 //from the hash list that has been added there for guarding functions or objects related to toolbar buttons or menu entries.
 /*static*/ ito::RetVal PythonItom::unhashButtonOrMenuCode(const size_t &handle)
@@ -5910,7 +6350,7 @@ PyObject* PythonItom::PyInitItom(void)
     return ito::RetVal(ito::retError, 0, QObject::tr("Python engine is not available").toLatin1().data());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PythonItom::unhashButtonOrMenuCode(const ito::FuncWeakRef *funcWeakRef)
 {
     ito::RetVal retval;
@@ -5944,4 +6384,4 @@ PyObject* PythonItom::PyInitItom(void)
 
 } //end namespace ito
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------

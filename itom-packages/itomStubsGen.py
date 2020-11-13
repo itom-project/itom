@@ -93,7 +93,9 @@ def parse_stubs():
         
         text = "\n\n".join(texts)
         
-        text = "from typing import overload, Tuple, List, Dict, Optional\n\n" + text
+        text = "# coding=iso-8859-15\n\n" + \
+               "from typing import overload, Tuple, List, Dict, Optional\n\n" + \
+               text
         
         with open(os.path.join(base_folder, stubs_file), 'wt') as fp:
             fp.write(text)
@@ -446,7 +448,10 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
 
 def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
     
-    docstring: Optional[str] = obj.__doc__
+    try:
+        docstring: Optional[str] = obj.__doc__
+    except UnicodeDecodeError as ex:
+        raise ex
     
     if docstring is None or docstring.strip() == "":
         print("Docstring missing for method %s" % obj.__qualname__, file=sys.stderr)
