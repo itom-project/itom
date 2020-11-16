@@ -592,6 +592,10 @@ def _nptype2typing(nptypestr: str) -> str:
         if len(comps) == 1:
             # remove any references like :obj:`...` etc.
             type_str: str = removeRefs(comps[0])
+            if len(type_str) > 1 and \
+                    type_str[0] == '{' and \
+                    type_str[-1] == '}':
+                type_str = "Literal[%s]" % type_str[1: -1]
             return type_str
         else:
             comps[1] = parseval(" of ".join(comps[1:]))

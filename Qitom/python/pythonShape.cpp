@@ -35,11 +35,11 @@
 
 
 
-//------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 namespace ito
 {
 
-//------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 void PythonShape::PyShape_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
@@ -89,14 +89,14 @@ void PythonShape::PyShape_addTpDict(PyObject * tp_dict)
     Py_DECREF(value);
 }
 
-//------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 void PythonShape::PyShape_dealloc(PyShape* self)
 {
     DELETE_AND_SET_NULL(self->shape);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-//------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyShape* self = (PyShape *)type->tp_alloc(type, 0);
@@ -108,26 +108,58 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
     return (PyObject *)self;
 }
 
-//------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyShape_doc,"shape(type = shape.Invalid, param1 = None, param2 = None, index = -1, name = '') -> creates a shape object of a specific type. \n\
+//---------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyShape_doc,"shape(type = shape.Invalid, param1 = None, param2 = None, index = -1, name = \"\") -> shape \n\
 \n\
-Depending on the type, the following parameters are allowed: \n\
+Creates a shape object of a specific type. \n\
 \n\
-* shape.Invalid: - \n\
-* shape.Point: point \n\
-* shape.Line: start-point, end-point \n\
-* shape.Rectangle: top left point, bottom right point \n\
-* shape.Square: center point, side-length \n\
-* shape.Ellipse: top left point, bottom right point of bounding box \n\
-* shape.Circle: center point, radius \n\
-* shape.Polygon : 2xM float64 array with M points of polygon \n\
+A shape object is used to describe a vectorized object, that can for instance be displayed \n\
+in plots or might also be passed to different methods, e.g. in order to define a masked \n\
+area etc. A :class:`shape` object can also be converted into a :class:`region` object, \n\
+however the vector information is then projected onto a raster with a given resolution. \n\
 \n\
-parameters point, start-point, ... can be all array-like types (e.g. dataObject, list, tuple, np.array) \n\
-that can be mapped to float64 and have two elements. \n\
+Depending on the ``type``, the following arguments are allowed, where the first \n\
+argument must be given to ``param1`` and the 2nd one to ``param2``: \n\
 \n\
-During construction, all shapes are aligned with respect to the x- and y-axis. Set a 2d transformation (attribute 'transform') to \n\
-rotate and move it.");
+* ``shape.Invalid``: - \n\
+* ``shape.Point``: point \n\
+* ``shape.Line``: start-point, end-point \n\
+* ``shape.Rectangle``: top left point, bottom right point \n\
+* ``shape.Square``: center point, side-length \n\
+* ``shape.Ellipse``: top left point, bottom right point of bounding box \n\
+* ``shape.Circle``: center point, radius \n\
+* ``shape.Polygon``: 2xM float64 array with M points of polygon \n\
+\n\
+The parameters ``point``, ``start-point``, ... can be all array-like types (e.g. :class:`dataObject`,\n\
+:obj:`list`, :obj:`tuple`, :obj:`np.ndarray`) that can be mapped to float64 and have two elements. \n\
+\n\
+Another possibility to create a :class:`shape` object for a certain type is to use \n\
+one of the following static creation functions: \n\
+\n\
+* :meth:``createPoint`` \n\
+* :meth:``createLine`` \n\
+* :meth:``createCircle`` \n\
+* :meth:``createEllipse`` \n\
+* :meth:``createSquare`` \n\
+* :meth:``createRectangle`` \n\
+* :meth:``createPolygon`` \n\
+\n\
+During construction, all shapes are aligned with respect to the x- and y-axis. Set a \n\
+2d transformation (attribute :attr:`transform`) to rotate and move it. \n\
+\n\
+Parameters \n\
+---------- \n\
+type : int \n\
+    Type of the shape (see list above). \n\
+param1 : list of float or tuple of float or dataObject or numpy.ndarray, optional \n\
+    1st initialization argument. This argument is depending on the ``type`` (see list above). \n\
+param2 : list of float or tuple of float or dataObject or numpy.ndarray, optional \n\
+    2nd initialization argument. This argument is depending on the ``type`` (see list above). \n\
+index : int, \n\
+    index of the shape, or ``-1`` if not further specified (default). \n\
+name : str  \n\
+    name of the shape, can for instance be displayed next to shapes in plots \n\
+    (depending on the parameterization of the plot).");
 int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 {
     int type = Shape::Invalid;
@@ -276,7 +308,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
     return 0;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonShape::createPyShape(const Shape &shape)
 {
     PyShape* result = (PyShape*)PyObject_Call((PyObject*)&PyShapeType, NULL, NULL);
@@ -292,26 +324,35 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Point.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticPoint_doc,  "createPoint(point, index = -1, name = '', flags = 0) -> shape \n\
+\n\
+Returns a new shape object of type ``shape.Point``.\n\
 \n\
 This static method is equal to the command:: \n\
 \n\
     myShape = shape(shape.Point, point, index, name)\n\
-    myShape.flags = flags #optional\n\
+    myShape.flags = flags  # optional\n\
 \n\
 Parameters \n\
 -----------\n\
-point : {array-like object} \n\
-    (x,y) coordinate of the point, given as any type that can be interpreted as array with two values \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+point : sequence of float or dataObject or numpy.ndarray \n\
+    (x,y) coordinate of the point, given as any type that can be interpreted as \n\
+    array with two float64 values. \n\
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticPoint(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *point = NULL;
@@ -348,8 +389,10 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Line.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticLine_doc,  "createLine(point1, point2, index = -1, name = \"\", flags = 0) -> shape \n\
+\n\
+Returns a new shape object of type ``shape.Line``.\n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -358,18 +401,26 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-point1 : {array-like object} \n\
-    (x,y) coordinate of the first point, given as any type that can be interpreted as array with two values \n\
-point2 : {array-like object} \n\
-    (x,y) coordinate of the 2nd point, given as any type that can be interpreted as array with two values \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+point1 : sequence of float or dataObject or numpy.ndarray \n\
+    (x,y) coordinate of the first point, given as any type that can be interpreted as \n\
+    array with two values \n\
+point2 : sequence of float or dataObject or numpy.ndarray \n\
+    (x,y) coordinate of the 2nd point, given as any type that can be interpreted as \n\
+    array with two values \n\
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticLine(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *point1 = NULL;
@@ -408,8 +459,10 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Circle.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticCircle_doc,  "createCircle(center, radius, index = -1, name = '', flags = 0) -> shape \n\
+\n\
+Returns a new shape object of type ``shape.Circle``.\n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -418,18 +471,25 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-center : {array-like object} \n\
-    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
-radius : {float} \n\
+center : sequence of float or dataObject or numpy.ndarray \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted \n\
+    as array with two values \n\
+radius : float \n\
     radius of the circle \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticCircle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *center = NULL;
@@ -467,14 +527,17 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticEllipse_doc,  "createEllipse(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Ellipse.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticEllipse_doc,  "createEllipse(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = \"\", flags = 0) -> shape \n\
 \n\
-Basically, there are two different ways to construct the ellipse: Either by the top left and bottom right corner points of the outer bounding box (corner1 and corner2), \n\
-or by the center point (x,y) and the size, as array of (width, height). \n\
+Returns a new shape object of type ``shape.Ellipse``.\n\
 \n\
-Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
-and corner1.y + height = corner2.y. \n\
+Basically, there are two different ways to construct the ellipse: \n\
+Either by the top left and bottom right corner points of the outer bounding box (``corner1`` \n\
+and ``corner2``), or by the ``center`` point (x,y) and the ``size``, as array of (width, height). \n\
+\n\
+Furthermore, you can indicate a ``size`` together with ``corner1`` OR ``corner2``, \n\
+where corner1.x + width = corner2.x and corner1.y + height = corner2.y. \n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -483,22 +546,32 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-corner1 : {array-like object}, optional \n\
-    (x,y) coordinate of the top, left corner point of the bounding box, given as any type that can be interpreted as array with two values \n\
-corner2 : {array-like object}, optional \n\
-    (x,y) coordinate of the bottom, right corner point of the bounding box, given as any type that can be interpreted as array with two values \n\
-center : {array-like object}, optional \n\
-    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
-size : {array-like object}, optional \n\
-    (width, height) of the rectangle, given as any type that can be interpreted as array with two values \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+corner1 : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the top, left corner point of the bounding box, given as \n\
+    any type that can be interpreted as array with two values \n\
+corner2 : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the bottom, right corner point of the bounding box, given as \n\
+    any type that can be interpreted as array with two values \n\
+center : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted \n\
+    as array with two values \n\
+size : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (width, height) of the rectangle, given as any type that can be interpreted as array \n\
+    with two values \n\
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticEllipse(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *corner1 = NULL;
@@ -598,8 +671,10 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Square.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticSquare_doc,  "createSquare(center, sideLength, index = -1, name = \"\", flags = 0) -> shape \n\
+\n\
+Returns a new shape object of type ``shape.Square``.\n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -608,18 +683,25 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-center : {array-like object} \n\
-    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
-sideLength : {float} \n\
+center : sequence of float or dataObject or numpy.ndarray \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted \n\
+    as array with two values \n\
+sideLength : float \n\
     side length of the square \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticSquare(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *center = NULL;
@@ -657,14 +739,17 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticRectangle_doc,  "createRectangle(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Rectangle.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticRectangle_doc,  "createRectangle(corner1 = None, corner2 = None, center = None, size = None, index = -1, name = \"\", flags = 0) -> shape \n\
 \n\
-Basically, there are two different ways to construct a rectangle: Either by the top left and bottom right corner points (corner1 and corner2), \n\
-or by the center point (x,y) and the size, as array of (width, height). \n\
+Returns a new shape object of type ``shape.Rectangle``.\n\
 \n\
-Furthermore, you can indicate a size together with corner1 OR corner2, where corner1.x + width = corner2.x \n\
-and corner1.y + height = corner2.y. \n\
+Basically, there are two different ways to construct a rectangle: \n\
+Either by the top left and bottom right corner points (``corner1`` and ``corner2``), \n\
+or by the ``center`` point (x, y) and the ``size``, as array of (width, height). \n\
+\n\
+Furthermore, you can indicate a ``size`` together with ``corner1`` OR ``corner2``, \n\
+where corner1.x + width = corner2.x and corner1.y + height = corner2.y. \n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -673,22 +758,32 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-corner1 : {array-like object}, optional \n\
-    (x,y) coordinate of the top, left corner point, given as any type that can be interpreted as array with two values \n\
-corner2 : {array-like object}, optional \n\
-    (x,y) coordinate of the bottom, right corner point, given as any type that can be interpreted as array with two values \n\
-center : {array-like object}, optional \n\
-    (x,y) coordinate of the center point, given as any type that can be interpreted as array with two values \n\
-size : {array-like object}, optional \n\
-    (width, height) of the rectangle, given as any type that can be interpreted as array with two values \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+corner1 : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the top, left corner point, given as any type that can be \n\
+    interpreted as array with two values \n\
+corner2 : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the bottom, right corner point, given as any type that can be \n\
+    interpreted as array with two values \n\
+center : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (x,y) coordinate of the center point, given as any type that can be interpreted \n\
+    as array with two values \n\
+size : sequence of float or dataObject or numpy.ndarray, optional \n\
+    (width, height) of the rectangle, given as any type that can be interpreted as array \n\
+    with two values \n\
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticRectangle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *corner1 = NULL;
@@ -787,8 +882,10 @@ flags : {int}, optional \n\
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points, index = -1, name = '', flags = 0) -> returns a new shape object of type shape.Polygon.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_staticPolygon_doc,  "createPolygon(points, index = -1, name = \"\", flags = 0) -> shape \n\
+\n\
+Returns a new shape object of type ``shape.Polygon``.\n\
 \n\
 This static method is equal to the command:: \n\
 \n\
@@ -797,16 +894,29 @@ This static method is equal to the command:: \n\
 \n\
 Parameters \n\
 -----------\n\
-points : {array-like object} \n\
-    2xM, float64 array with the coordinates of M points (order: x,y) \n\
-index : {int}, optional \n\
-    index of this shape, if -1 (default), an automatic index is assigned \n\
-name : {str}, optional \n\
-    optional name of this shape (default: ''). This name can for instance be displayed in a plot \n\
-flags : {int}, optional \n\
-    if the user should not be able to rotate, resize and / or move this shape in any plot canvas, \n\
-    then pass an or-combination of the restricitive flag values shape.ResizeLock, shape.RotateLock or shape.MoveLock \n\
-");
+points : sequence of sequence of float or dataObject or numpy.ndarray \n\
+    An array-like object of shape ``2 x M`` (with M > 2), that can be converted \n\
+    to float64. This object defines ``M`` points for the polygon (order: x, y). \n\
+    If a sequence is given, it must look like this:: \n\
+    \n\
+        points = ((1, 2, 3), (4, 5, 6)) \n\
+    \n\
+    where the first inner tuple defines the x-coordinates, and the 2nd tuple \n\
+    the y-coordinates. \n\
+index : int, optional \n\
+    index of this shape or -1 (default) if not further specified. \n\
+name : str, optional \n\
+    optional name of this shape (default: \"\"). This name can for instance be \n\
+    displayed in a plot. \n\
+flags : int, optional \n\
+    if the user should not be able to rotate, resize and / or move this shape in any \n\
+    plot canvas, then pass an or-combination of the restricitive flag values \n\
+    ``shape.ResizeLock``, ``shape.RotateLock`` or ``shape.MoveLock``. \n\
+\n\
+Returns \n\
+------- \n\
+shape : \n\
+    The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticPolygon(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *points = NULL;
@@ -824,6 +934,7 @@ flags : {int}, optional \n\
     QPolygonF polygon;
     PyObject *arr = PyArray_ContiguousFromAny(points, NPY_DOUBLE, 2, 2); //new reference
     PyArrayObject* npArray = (PyArrayObject*)arr;
+
     if (arr)
     {
         const npy_intp *shape = PyArray_SHAPE(npArray);
@@ -852,6 +963,7 @@ flags : {int}, optional \n\
     Py_XDECREF(arr);
 
     quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+
     if ((flags | allowedFlags) != allowedFlags)
     {
         PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
@@ -871,7 +983,7 @@ flags : {int}, optional \n\
     }            
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonShape::PyShape_repr(PyShape *self)
 {
     PyObject *result;
@@ -888,19 +1000,23 @@ flags : {int}, optional \n\
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat(QString("shape(Point, (%1, %2), index: %3)").arg(base[0].x()).arg(base[0].y()).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Point, (%1, %2), index: %3)").arg(base[0].x()).arg(base[0].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat(QString("shape(Line, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Line, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Square:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
             }
             case Shape::Polygon:
@@ -910,14 +1026,16 @@ flags : {int}, optional \n\
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
             }
             case Shape::Circle:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), r: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Circle, center (%1, %2), r: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
             }
             case Shape::Invalid:
@@ -941,13 +1059,15 @@ flags : {int}, optional \n\
                 result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f), index: %i)", contour[0].x(), contour[0].y(), contour[1].x(), contour[1].y(), self->shape->index());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(contour[0].x()).arg(contour[0].y()).arg(contour[2].x()).arg(contour[2].y()).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(contour[0].x()).arg(contour[0].y()).arg(contour[2].x()).arg(contour[2].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Square:
             {
                 QPointF p = contour[0] + contour[2];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Polygon:
@@ -957,14 +1077,16 @@ flags : {int}, optional \n\
             {
                 QPointF p = contour[0] + contour[2];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Circle:
             {
                 QPointF p = contour[0] + contour[2];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                result = PyUnicode_FromFormat(
+                    QString("shape(Circle, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Invalid:
@@ -979,7 +1101,7 @@ flags : {int}, optional \n\
     return result;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonShape::PyShape_reduce(PyShape *self, PyObject *args)
 {
     PyObject *stateTuple = NULL;
@@ -1005,7 +1127,7 @@ flags : {int}, optional \n\
     return tempOut;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonShape::PyShape_setState(PyShape *self, PyObject *args)
 {
     PyObject *data = NULL;
@@ -1034,8 +1156,18 @@ flags : {int}, optional \n\
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getType_doc,  "Get type of shape, e.g. shape.Line, shape.Point, shape.Rectangle, shape.Ellipse, shape.Circle, shape.Square");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getType_doc,  
+"int : Get the type of this shape. \n\
+\n\
+Possible types are: \n\
+\n\
+* ``shape.Line`` \n\
+* ``shape.Point`` \n\
+* ``shape.Rectangle`` \n\
+* ``shape.Ellipse`` \n\
+* ``shape.Circle`` \n\
+* ``shape.Square``");
 PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -1047,8 +1179,12 @@ PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
     return PyLong_FromLong(self->shape->type());
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getValid_doc,  "Return True if shape is a valid geometric shape, else False");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getValid_doc,  
+"bool : Returns True if this shape is valid, otherwise False. \n\
+\n\
+An invalid shape is the one constructed with the type ``shape.Invalid``. All other \n\
+shapes are valid.");
 PyObject* PythonShape::PyShape_getValid(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -1063,8 +1199,15 @@ PyObject* PythonShape::PyShape_getValid(PyShape *self, void * /*closure*/)
         Py_RETURN_TRUE;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getFlags_doc,  "Get/set bitmask with flags for this shape: shape.MoveLock, shape.RotateLock, shape.ResizeLock");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getFlags_doc,  
+"int : Gets or sets a flag (bitmask) that define denied manipulation of this shape. \n\
+\n\
+It is possible to deny the following manipulations: \n\
+\n\
+* ``shape.MoveLock`` \n\
+* `` shape.RotateLock`` \n\
+* `` shape.ResizeLock``");
 PyObject* PythonShape::PyShape_getFlags(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1104,12 +1247,22 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_point1_doc,  "Get/set first point (of bounding box) \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_point1_doc,
+"tuple of float : Gets or sets the 1st point of the bounding box of this shape. \n\
 \n\
-The first point is the first point (type: point or line) or the upper left \n\
-point of the bounding box (type: rectangle, square, ellipse, circle). \n\
-The point always considers a possible 2D coordinate transformation matrix.");
+The first point is the first point of a ``shape.Point`` or ``shape.Line`` or \n\
+the upper left point of the bounding box of a ``shape.Rectangle``, ``shape.Square`` \n\
+``shape.Ellipse`` or ``shape.Circle``. The point always considers a possible 2D \n\
+coordinate transformation matrix.\n\
+\n\
+For setting this value, it is also possible to pass any other array-like object \n\
+with two elements, that can be converted to float64. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no 2nd point defined.");
 PyObject* PythonShape::PyShape_getPoint1(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1183,12 +1336,22 @@ int PythonShape::PyShape_setPoint1(PyShape *self, PyObject *value, void * /*clos
     return 0;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_point2_doc,  "Get/set second point of bounding box \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_point2_doc, 
+"tuple of float : Gets or sets the second point of the bounding box of this shape. \n\
 \n\
-The second point is the bottom right \n\
-point of the bounding box (type: rectangle, square, ellipse, circle). \n\
-The point always considers a possible 2D coordinate transformation matrix.");
+The second point is the 2nd point of a ``shape.Line`` or the bottom right point of \n\
+the bounding box (types: ``shape.Rectangle``, ``shape.Square``, ``shape.Ellipse`` or \n\
+``shape.Circle``). The point always considers a possible 2D coordinate \n\
+transformation matrix.\n\
+\n\
+For setting this value, it is also possible to pass any other array-like object \n\
+with two elements, that can be converted to float64. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no 2nd point defined.");
 PyObject* PythonShape::PyShape_getPoint2(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1262,11 +1425,20 @@ int PythonShape::PyShape_setPoint2(PyShape *self, PyObject *value, void * /*clos
     return 0;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_center_doc,  "Get/set center point \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_center_doc,  
+"tuple of float : Gets or sets the center point of this shape. \n\
 \n\
-The center point is the point (type: point), or the center of \n\
-the line (type: line) or bounding box of a rectangle, square, ellipse or circle.");
+The center point is defined for all types of shapes, beside ``shape.Polygon``. \n\
+Changing the center point will directly influence the base points of the shape. \n\
+\n\
+If the value is set, it is also possible to pass any other array-like object with \n\
+two values that can be converted to float64. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no center defined.");
 PyObject* PythonShape::PyShape_getCenter(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1352,8 +1524,11 @@ int PythonShape::PyShape_setCenter(PyShape *self, PyObject *value, void * /*clos
     return 0;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_angleDeg_doc,  "Get/set angle of optional rotation matrix in degree (counter-clockwise).");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_angleDeg_doc,
+"float : Gets or sets the current angle of rotation of the transformation matrix in degree. \n\
+\n\
+A rotation is always defined counter-clockwise.");
 PyObject* PythonShape::PyShape_getAngleDeg(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1387,8 +1562,11 @@ int PythonShape::PyShape_setAngleDeg(PyShape *self, PyObject *value, void * /*cl
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_angleRad_doc,  "Get/set angle of optional rotation matrix in radians (counter-clockwise).");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_angleRad_doc,  
+"float : Gets or sets the current angle of rotation of the transformation matrix in Radians. \n\
+\n\
+A rotation is always defined counter-clockwise.");
 PyObject* PythonShape::PyShape_getAngleRad(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1422,11 +1600,19 @@ int PythonShape::PyShape_setAngleRad(PyShape *self, PyObject *value, void * /*cl
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_radius_doc,  "Get/set radius of shape. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_radius_doc,  
+"float or tuple of float : Gets or sets the radius of this shape. \n\
 \n\
-A radius can only be set for a circle (float value) or for an ellipse (a, b) as \n\
-half side-length in x- and y-direction of the base coordinate system. ");
+A radius can only be set for shapes of type ``shape.Circle`` or ``shape.Ellipse``. \n\
+For a circle, the radius is a scalar float value. For an ellipse, a tuple of \n\
+two values ``(a, b)`` define the half side-length in x- and y-direction of \n\
+the base coordinate system.\n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no radius defined.");
 PyObject* PythonShape::PyShape_getRadius(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1525,11 +1711,16 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_width_doc,  "Get/set width of shape. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_width_doc,  "float : Gets or sets the width of this shape. \n\
 \n\
-A width can only be set for a square or for a rectangle and is \n\
-defined with respect to the base coordinate system. ");
+A width can only be set or read for shapes of type ``shape.Square`` and \n\
+``shape.Rectangle``. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no width defined.");
 PyObject* PythonShape::PyShape_getWidth(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1623,11 +1814,16 @@ int PythonShape::PyShape_setWidth(PyShape *self, PyObject *value, void * /*closu
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_height_doc,  "Get/set height of shape. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_height_doc,  "float : Gets or sets the height of this shape. \n\
 \n\
-A height can only be set for a square or for a rectangle and is \n\
-defined with respect to the base coordinate system. ");
+A height can only be set or read for shapes of type ``shape.Square`` and \n\
+``shape.Rectangle``. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError: \n\
+    if this attribute is read or assigned for a type, that has no height defined.");
 PyObject* PythonShape::PyShape_getHeight(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1721,9 +1917,11 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, however if the shape is a \n\
-geometric shape of a plot, an auto-incremented index is assigned once the shape is drawn or set. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getIndex_doc,  "int : Gets or sets the index of this shape. \n\
+\n\
+The default is -1, however if the shape is a geometric shape of a plot, an \n\
+auto-incremented index is assigned once the shape is drawn or set. \n\
 If >= 0 it is possible to modify an existing shape with the same index.");
 PyObject* PythonShape::PyShape_getIndex(PyShape *self, void * /*closure*/)
 {
@@ -1758,8 +1956,8 @@ int PythonShape::PyShape_setIndex(PyShape *self, PyObject *value, void * /*closu
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getName_doc,  "Get/set name (label) of the shape.");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getName_doc,  "str : Gets or sets the name (label) of this shape.");
 PyObject* PythonShape::PyShape_getName(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1793,9 +1991,12 @@ int PythonShape::PyShape_setName(PyShape *self, PyObject *value, void * /*closur
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getColor_doc,  "Get/set color of the shape (default: invalid color (None). \n\
-In this case the default color for shapes is used for visualization.)");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getColor_doc, 
+"None or rgba : Gets or sets color of this shape. \n\
+\n\
+The default color is an invalid color, given by the ``None`` value. \n\
+The color of shapes is for instance be used for visualization purposes in plots.");
 PyObject* PythonShape::PyShape_getColor(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1805,6 +2006,7 @@ PyObject* PythonShape::PyShape_getColor(PyShape *self, void * /*closure*/)
     }
 
 	QColor c = self->shape->color();
+
 	if (c.isValid())
 	{
 		PythonRgba::PyRgba* retRgba = PythonRgba::createEmptyPyRgba();
@@ -1854,8 +2056,13 @@ int PythonShape::PyShape_setColor(PyShape *self, PyObject *value, void * /*closu
     }
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getTransform_doc,  "Get/set the affine, non scaled 2D transformation matrix (2x3, float64, [2x2 Rot, 2x1 trans])");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getTransform_doc, 
+"dataObject : gets or sets the affine, non scaled 2D transformation matrix as dataObject. \n\
+\n\
+The returned matrix is a ``2 x 3``, float64 :class:`dataObject`, where the left \n\
+``2 x 2`` matrix describes a rotation matrix, and the right ``2 x 1`` part is the \n\
+translation vector.");
 PyObject* PythonShape::PyShape_getTransform(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1929,8 +2136,10 @@ int PythonShape::PyShape_setTransform(PyShape *self, PyObject *value, void * /*c
     return 0;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getArea_doc,  "Get area of shape (points and lines have an empty area).");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getArea_doc, "float : Get area of this shape \n\
+\n\
+Shapes of type ``shape.Line`` and ``shape.Point`` will always return 0.0.");
 PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -1942,13 +2151,17 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
     return PyFloat_FromDouble(self->shape->area());
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(angle) -> Rotate shape by given angle in degree around the center point of this shape (counterclockwise). \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(angle) \n\
+\n\
+Rotate shape by given angle in radians around the center point of this shape \n\
+(counterclockwise). This method only affects the :attr:`transform` matrix, not the \n\
+base points themselfs. \n\
 \n\
 Parameters \n\
 ----------- \n\
-angle : {float} \n\
-    is the rotation angle (in degrees) by which the shape is rotated by its center. \n\
+angle : float \n\
+    is the rotation angle (in radians) by which the shape is rotated by its center. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -1972,12 +2185,16 @@ PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(angle) -> Rotate shape by given angle in radians around the center point of this shape (counterclockwise). \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(angle) \n\
+\n\
+Rotate shape by given angle in radians around the center point of this shape \n\
+(counterclockwise). This method only affects the :attr:`transform` matrix, not the \n\
+base points themselfs. \n\
 \n\
 Parameters \n\
 ----------- \n\
-angle : {float} \n\
+angle : float \n\
     is the rotation angle (in radians) by which the shape is rotated by its center. \n\
 \n\
 See Also \n\
@@ -2002,16 +2219,20 @@ PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_translate_doc, "translate(dxy) -> Translate shape by given (dx,dy) value. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_translate_doc, "translate(dxy) \n\
+\n\
+Translate shape by given (dx, dy) value. \n\
 \n\
 Moves the shape by dx and dy along the x- and y-axis of the base coordinate system. \n\
-This means, that dx and dy are added to the existing tx and ty values of the current transformation matrix. \n\
+This means, that dx and dy are added to the existing tx and ty values of the current \n\
+transformation matrix. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dxy : array-like object, 2 elements \n\
-    tuple, np.array or dataObject with two elements, which are the dx and dy components of the translation \n\
+dxy : sequence of float or dataObject or numpy.ndarray \n\
+    array-like object with two elements, that define the desired ``dx`` and ``dy`` \n\
+    component. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2019,6 +2240,7 @@ rotateRad, rotateDeg");
 PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 {
     PyObject *obj = NULL;
+
     if (!PyArg_ParseTuple(args, "O", &obj))
     {
         return NULL;
@@ -2029,12 +2251,15 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
     double dy = 0.0;
     PyObject *arr = PyArray_ContiguousFromAny(obj, NPY_DOUBLE, 1, 2);
     PyArrayObject* npArray = (PyArrayObject*)arr;
+
     if (arr)
     {
         ok = false;
+
         if (PyArray_NDIM(npArray) == 2)
         {
             const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+
             if (PyArray_DIM(npArray, 0) == 2 && PyArray_DIM(npArray, 1) == 1) //2d, two rows, one col
             {
                 dx = ptr1[0];
@@ -2051,6 +2276,7 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
         else
         {
             const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+
             if (PyArray_DIM(npArray, 0) == 2) //1d
             {
                 dx = ptr1[0];
@@ -2065,8 +2291,6 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
         }
     }
 
-    
-
     Py_XDECREF(arr);
 
     if (!ok)
@@ -2074,19 +2298,22 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
         PyErr_SetString(PyExc_RuntimeError, "float64 array with two elements required (dx,dy)");
         return NULL;
     }
+
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_basePoints_doc, "Return base points of this shape: M base points of shape as 2xM float64 dataObject \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_basePoints_doc, 
+"dataObject : base points of this shape, given as ``2 x M``, float64 dataObject. \n\
 \n\
-The base points are untransformed points that describe the shape dependent on its type: \n\
+The ``M`` base points are untransformed points that describe the shape \n\
+dependent on its type: \n\
 \n\
-* shape.Point: one point \n\
-* shape.Line : start point, end point \n\
-* shape.Rectangle, shape.Square : top left point, bottom right point \n\
-* shape.Ellipse, shape.Circle : top left point, bottom right point of bounding box \n\
-* shape.Polygon : points of polygon, the last and first point are connected, too.");
+* ``shape.Point``: one point \n\
+* ``shape.Line`` : start point, end point \n\
+* ``shape.Rectangle``, ``shape.Square`` : top left point, bottom right point \n\
+* ``shape.Ellipse``, ``shape.Circle`` : top left point, bottom right point of bounding box \n\
+* ``shape.Polygon`` : points of polygon, the last and first point are connected, too.");
 PyObject* PythonShape::PyShape_getBasePoints(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -2116,12 +2343,20 @@ PyObject* PythonShape::PyShape_getBasePoints(PyShape *self, void * /*closure*/)
     return (PyObject*)obj;
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_region_doc, "region() -> Return a region object from this shape. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_region_doc, "region() -> region \n\
 \n\
-The region object only contains valid regions if the shape has an area > 0. \n\
+Returns a region object from this shape. \n\
+\n\
+The :class:`region` object only contains valid regions if the shape has an area > 0. \n\
 A region object is an integer based object (pixel raster), therefore the shapes \n\
-are rounded to the nearest fixed-point coordinates.");
+are rounded to the nearest fixed-point coordinate. \n\
+\n\
+Returns \n\
+------- \n\
+region : \n\
+    The region, whose contour approximates this shape. The inner of \n\
+    this shaped is part of the region.");
 PyObject* PythonShape::PyShape_region(PyShape *self)
 {
     if (!self || self->shape == NULL)
@@ -2133,13 +2368,31 @@ PyObject* PythonShape::PyShape_region(PyShape *self)
     return ito::PythonRegion::createPyRegion(self->shape->region());
 }
 
-//-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_contour_doc, "contour(applyTrafo = True, tol = -1.0) -> return contour points as a 2xNumPoints float64 dataObject \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_contour_doc, "contour(applyTrafo = True, tol = -1.0) -> dataObject \n\
 \n\
-If a transformation matrix is set, the base points can be transformed if 'applyTrafo' is True. For point, line and rectangle \n\
-based shapes, the contour is directly given. For ellipses and circles, a polygon is approximated to the form of the ellipse \n\
-and returned as contour. The approximation is done by line segments. Use 'tol' to set the maximum distance between each line segment \n\
-and the real shape. If 'tol' is -1.0, 'tol' is set to 1% of the smallest diameter.");
+Returns the contour points of this shape as ``2 x N``, float64 :class:`dataObject`. \n\
+\n\
+For most shapes, the contour is exactly given by its corner points. However for \n\
+circles or ellipses, the contour has to be approximated by line segments. Use the \n\
+argument ``tol`` to set the maximum distance between each line segment and the \n\
+real contour of the shape. If ``tol`` is set to -1.0, ``tol`` is assumed to be `1 %` \n\
+of the smalles diameter. \n\
+\n\
+Shapes can have a transformation matrix (attribute :attr:`transform`). If ``applyTrafo`` \n\
+is ``True``, the returned contour points correspond to the transformed base shape, else \n\
+the contour with respect to the base points is returned. \n\
+\n\
+Parameters \n\
+----------- \n\
+applyTrafo : bool \n\
+    Define if the transformation matrix (default: unity matrix, attribute :attr:`transform`) \n\
+    should be considered for the returned contour points (``True``) or not (``False``). \n\
+tol : float \n\
+    Maximum tolerance to determine the approximated contour in the case of circular \n\
+    or elliptical shapes. The approximated contour consists of line segments, that \n\
+    can differ from the real contour by a maximum of ``tol``. If -1.0, the tolerance \n\
+    is assumed to be one percent of the smallest diameter.");
 PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds)
 {
     if (!self || self->shape == NULL)
@@ -2160,11 +2413,13 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
 
     QPolygonF contour = self->shape->contour(applyTrafo, tol);
     ito::DataObject cont;
+
     if (contour.size() > 0)
     {
         cont = ito::DataObject(2, contour.size(), ito::tFloat64);
         ito::float64 *ptr_x = cont.rowPtr<ito::float64>(0, 0);
         ito::float64 *ptr_y = cont.rowPtr<ito::float64>(0, 1);
+
         for (int i = 0; i < contour.size(); ++i)
         {
             ptr_x[i] = contour[i].rx();
@@ -2173,29 +2428,39 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
     }
 
     ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+
     if (obj)
+    {
         obj->dataObject = new DataObject(cont);
+    }
 
     return (PyObject*)obj;
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_contains_doc, "contains(points) -> return contour points as a 2xNumPoints float64 dataObject \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_contains_doc, "contains(points) -> Union[bool, dataObject] \n\
 \n\
-Tests one or multiple points if they lie within the contour of the given shape. If the shape has an empty area (e.g. points, line...) \n\
-the test will always fail.\n\
+Checks if one or multiple ``points`` are contained in this shape. \n\
+\n\
+Tests if one or multiple ``points`` lie within the contour of the given shape. If the \n\
+shape has an empty area (e.g. points, line...) the test will always return ``False``.\n\
 \n\
 Parameters  \n\
 ------------\n\
-points : {seq. of two floats or dataObject}\n\
-    Pass one point by a seq. of two floats (x,y) or an numpy.array with two elements.\n\
-    A sequence of points is passed by a 2xN dataObject (1st row: x, 2nd row: y) that is internally converted to float64. \n\
+points : sequence of float or dataObject or numpy.ndarray \n\
+    The coordinates ``(x, y)`` of the point to be tested as sequence or an array-like \n\
+    object (shape ``2 x N``), where the first row contains the x-coordinates and the \n\
+    2nd-row the y-coordinates of ``N`` points to be tested. The array-like object \n\
+    must be convertible to ``float64``, which is internally done before testing. \n\
 \n\
 Returns \n\
 -------- \n\
-result : {bool or uint8 dataObject} \n\
-    If one point is passed, True is returned if this point is within the shape's contour, else False. \n\
-    In the case of multiple points, an 1xN dataObject (uint8) is returned where 255 indicates, that the corresponding point is inside of the shape's contour (else 0)");
+result : bool or dataObject \n\
+    If one point is passed as sequence, ``True`` is returned if this point is within \n\
+    the contour of this shape, otherwise ``False``. If ``points`` is given as array-like \n\
+    object, a ``1 x N`` :class:`dataObject` with dtype ``uint8`` is returned, where \n\
+    the value ``255`` indicates, that the corresponding point is inside of the \n\
+    shape's contour and ``0`` outside.");
 /*static*/ PyObject* PythonShape::PyShape_contains(PyShape *self, PyObject *args, PyObject *kwds)
 {
     if (!self || self->shape == NULL)
@@ -2215,6 +2480,7 @@ result : {bool or uint8 dataObject} \n\
     bool ok;
     ito::RetVal pointsRetVal;
     QVector<double> values = PythonQtConversion::PyObjGetDoubleArray(points, false, ok);
+
     if (ok)
     {
         if (values.size() == 2)
@@ -2240,7 +2506,16 @@ result : {bool or uint8 dataObject} \n\
 
     if (ok)
     {
-        ito::DataObject dataobj_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(dataobj, "points", ito::Range(2, 2), ito::Range::all(), pointsRetVal, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+        ito::DataObject dataobj_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(
+            dataobj, 
+            "points", 
+            ito::Range(2, 2), 
+            ito::Range::all(), 
+            pointsRetVal, 
+            ito::tFloat64, 
+            8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+
+        DELETE_AND_SET_NULL(dataobj);
 
         if (PythonCommon::transformRetValToPyException(pointsRetVal))
         {
@@ -2248,6 +2523,7 @@ result : {bool or uint8 dataObject} \n\
             points_.resize(dataobj_.getSize(1));
             const ito::float64 *row1 = dataobj_.rowPtr<const ito::float64>(0, 0);
             const ito::float64 *row2 = dataobj_.rowPtr<const ito::float64>(0, 1);
+
             for (int i = 0; i < points_.size(); ++i)
             {
                 points_[i].rx() = row1[i];
@@ -2255,15 +2531,16 @@ result : {bool or uint8 dataObject} \n\
             }
 
             QVector<bool> result = self->shape->contains(points_);
-
             ito::DataObject result_(1, points_.size(), ito::tUInt8);
             ito::uint8 *row3 = result_.rowPtr<ito::uint8>(0, 0);
+
             for (int i = 0; i < points_.size(); ++i)
             {
                 row3[i] = (result[i] ? 255 : 0);
             }
 
             ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+
             if (obj)
             {
                 obj->dataObject = new DataObject(result_);
@@ -2277,16 +2554,28 @@ result : {bool or uint8 dataObject} \n\
         }
     }
 
+    DELETE_AND_SET_NULL(dataobj);
+
     PythonCommon::transformRetValToPyException(pointsRetVal);
     return NULL;
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_normalized_doc, "normalized() -> return a normalized shape (this has only an impact on rectangles, squares, ellipses and circles) \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_normalized_doc, "normalized() -> shape \n\
 \n\
-The normalized shape guarantees that the bounding box of the shape never has a non-negative width or height. Therefore, the \n\
-order or position of the two corner points (base points) is switched or changed, if necessary. Shapes different than \n\
-rectangle, square, circle or ellipse are not affected by this and are returned as they are.");
+Returns the normalized version of this shape. \n\
+\n\
+The normalized shape guarantees that the bounding box of the shape never has a \n\
+non-negative width or height. Therefore, the order or position of the two corner points \n\
+(base points) is switched or changed, if necessary. Shapes different than \n\
+rectangles, squares, circles or ellipses are not affected by this such that the \n\
+original shape object is returned as it is. \n\
+\n\
+Returns \n\
+------- \n\
+normalized : shape \n\
+    The normalized shape of this object (for types ``shape.Rectange``, ``shape.Square`` \n\
+    ``shape.Circle`` or ``shape.Ellipse``) or this object (for all other types).");
 /*static*/ PyObject* PythonShape::PyShape_normalized(PyShape *self)
 {
     if (!self || self->shape == NULL)
@@ -2298,10 +2587,15 @@ rectangle, square, circle or ellipse are not affected by this and are returned a
     return createPyShape(self->shape->normalized());
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(shape_copy_doc, "copy() -> shape\n\
 \n\
-Return a deep copy of this shape.");
+Returns a deep copy of this shape. \n\
+\n\
+Returns \n\
+------- \n\
+copy : shape \n\
+    deep copy of this shape.");
 /*static*/ PyObject* PythonShape::PyShape_copy(PyShape *self)
 {
     if (!self || self->shape == NULL)
@@ -2313,7 +2607,7 @@ Return a deep copy of this shape.");
     return createPyShape(ito::Shape(*self->shape));
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonShape::PointF2PyObject(const QPointF &point)
 {
     PyObject *tuple = PyTuple_New(2);
@@ -2322,7 +2616,7 @@ PyObject* PythonShape::PointF2PyObject(const QPointF &point)
     return tuple;
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const char* paramName)
 {
     if (!value)
@@ -2387,7 +2681,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
     return point;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
     {"valid",     (getter)PyShape_getValid,       (setter)NULL,                   shape_getValid_doc, NULL },
     {"type",      (getter)PyShape_getType,        (setter)NULL,                   shape_getType_doc, NULL },
@@ -2409,7 +2703,7 @@ PyGetSetDef PythonShape::PyShape_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonShape::PyShape_methods[] = {
     { "__reduce__", (PyCFunction)PyShape_reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
     { "__setstate__", (PyCFunction)PyShape_setState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
@@ -2432,13 +2726,13 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonShape::PyShapeModule = {
     PyModuleDef_HEAD_INIT, "shape", "Shape (Point, Line, Rectangle, Ellipse, Polygon...)", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonShape::PyShapeType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
     "itom.shape",             /* tp_name */

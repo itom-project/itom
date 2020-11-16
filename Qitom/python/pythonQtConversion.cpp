@@ -1070,6 +1070,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
+
         if (dObj->dataObject && dObj->base == NULL)
         {
             ok = true;
@@ -1079,6 +1080,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         {
             ok = true;
             ito::DataObject *dObj2 = new ito::DataObject();
+
             if (dObj->dataObject->copyTo(*dObj2, true) == ito::retOk)
             {
                 return dObj2;
@@ -1090,6 +1092,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
                 return NULL;
             }
         }
+
         ok = false;
         return NULL;
     }

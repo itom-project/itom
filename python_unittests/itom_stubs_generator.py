@@ -53,6 +53,10 @@ class ItomStubsGenTest(unittest.TestCase):
         conversions["int or None"] = "Optional[int]"
         conversions["float or None or int"] = "Optional[Union[float, int]]"
         
+        conversions["{4}"] = "Literal[4]"
+        conversions["{'test', 'fox'}"] = "Literal['test', 'fox']"
+        conversions["{2, 3, 4} or int"] ="Union[Literal[2, 3, 4], int]"
+        
         for key in conversions:
             self.assertEqual(isg._nptype2typing(key), conversions[key])
     

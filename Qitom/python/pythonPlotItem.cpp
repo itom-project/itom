@@ -41,13 +41,13 @@ namespace ito
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 void PythonPlotItem::PyPlotItem_dealloc(PyPlotItem* self)
 {
     PythonUi::PyUiItemType.tp_dealloc( (PyObject*)self );
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyObject* PythonPlotItem::PyPlotItem_new(PyTypeObject *type, PyObject * args, PyObject * kwds)
 {
     PyPlotItem *self = (PyPlotItem*)PythonUi::PyUiItemType.tp_new(type,args,kwds);
@@ -59,7 +59,7 @@ PyObject* PythonPlotItem::PyPlotItem_new(PyTypeObject *type, PyObject * args, Py
     return (PyObject *)self;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotItemInit_doc,"plotItem(figure, subplotIdx = 0 | figure, objectID = 0 | uiItem) -> instance of the plot or subplot of a figure.\n\
 \n\
 Use can use this constructor to access any plot or subplot (if more than one plot) of a figure. The subplotIndex \n\
@@ -191,13 +191,13 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyObject* PythonPlotItem::PyPlotItem_repr(PyPlotItem *self)
 {
     return PyUnicode_FromFormat("PlotItem(%U)", PythonUi::PyUiItemType.tp_repr((PyObject*)self));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotItem_pickPoints_doc,"pickPoints(points, maxNrPoints = -1) -> method to let the user pick points on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple points (up to maxNrPoints) at the current plot (if the plot supports this).\n\
@@ -291,7 +291,7 @@ maxNrPoints: {int}, optional \n\
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, maxNrElements = -1) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple elements of type (up to maxNrElements) at the current plot (if the plot supports this).\n\
@@ -381,19 +381,19 @@ Tuple of class itom.shape for all created geometric shapes.");
     return tuple;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlotItem::PyPlotItem_methods[] = {
     {"pickPoints", (PyCFunction)PyPlotItem_pickPoints, METH_KEYWORDS | METH_VARARGS, pyPlotItem_pickPoints_doc},
     {"drawAndPickElements", (PyCFunction)PyPlotItem_drawAndPickElement, METH_KEYWORDS | METH_VARARGS, pyPlotItem_drawAndPickElement_doc},
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyMemberDef PythonPlotItem::PyPlotItem_members[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyModuleDef PythonPlotItem::PyPlotItemModule = {
     PyModuleDef_HEAD_INIT,
     "plotItem",
@@ -402,12 +402,12 @@ PyModuleDef PythonPlotItem::PyPlotItemModule = {
     NULL, NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyGetSetDef PythonPlotItem::PyPlotItem_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 PyTypeObject PythonPlotItem::PyPlotItemType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "itom.plotItem",             /* tp_name */
@@ -449,7 +449,7 @@ PyTypeObject PythonPlotItem::PyPlotItemType = {
     PyPlotItem_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
