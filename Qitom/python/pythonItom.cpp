@@ -475,7 +475,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = \"\", properties = {}) \n\
 \n\
-Plots a :class:`dataObject` as an 1d plot in a new figure window. \n\
+Plots a dataObject as an 1d plot in a new figure window. \n\
 \n\
 This method plots an existing :class:`dataObject` ``data`` in a dockable, not blocking \n\
 window. \n\
@@ -666,7 +666,7 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) \n\
 \n\
-Plots a :class:`dataObject` in a new figure window.\n\
+Plots a dataObject in a new figure window.\n\
 \n\
 This method plots an existing :class:`dataObject` in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions. The plot type of this function \n\
@@ -843,7 +843,7 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = \"\", properties = {}) \n\
 \n\
-Plots a :class:`dataObject`, :class:`pointCloud` or :class:`polygonMesh` in a new figure window. \n\
+Plots a dataObject, pointCloud or polygonMesh in a new figure window. \n\
 \n\
 This method plots the ``data`` object in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions, its plot type is ``2.5D``.\n\
@@ -5622,7 +5622,7 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle) \\\n\
-close(\"all\") \n\
+close(all = \"all\") \n\
 \n\
 Closes a specific or all opened figures. \n\
 \n\
