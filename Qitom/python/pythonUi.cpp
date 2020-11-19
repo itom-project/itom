@@ -635,7 +635,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         return NULL;
     }
     //either make this use some of the defaults from itom or significantly smaller!!!
-    if(!wait_for_invokation_end.getSemaphore()->wait(50000))
+    if(!wait_for_invokation_end.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while calling slot");
         return NULL;
