@@ -2583,12 +2583,11 @@ RetVal UiOrganizer::callSlotOrMethod(
         //TODO: parse parameters and check whether there is a type 'ito::PythonQObjectMarshal':
         // if so, get object from objectID, destroy the arg, replace it by QObject*-type and give the object-pointer, casted to void*.
 
-        bool success;
         if (slotNotMethod)
         {
-            success = obj->qt_metacall(QMetaObject::InvokeMetaMethod, slotOrMethodIndex, args->args());
             //if return value is set in qt_metacall, this is available in args->args()[0].
-            if (success == false)
+            //the metacall returns negative if slot has been handled/was found(not some bool...)
+            if (obj->qt_metacall(QMetaObject::InvokeMetaMethod, slotOrMethodIndex, args->args()) > 0)
             {
                 retValue += RetVal(retError, errorSlotDoesNotExist, tr("slot could not be found").toLatin1().data());
             }
@@ -2597,7 +2596,7 @@ RetVal UiOrganizer::callSlotOrMethod(
         {
             // ck 07.03.17
             // changed call of widgetWrapper to already return ito::RetVal with 
-            // more detailed information about the failure reason
+            // calls obj functions without changing threads
             retValue += m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
         }
 

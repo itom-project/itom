@@ -477,6 +477,10 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     Or Hell will come upon you. 
     The Voodoo gods will devour your guts.
     Chtulhu will rise again.
+    No, this was found when examining some bug concerning weirdUI behaviour.
+    But this bug is not reproducible, plus the location where variables are decalared    are
+    not of interest in cpp. But changing these lines made the difference between working or
+    not concerning this bug.
     */
     QSharedPointer<FctCallParamContainer> paramContainer;
     //scan for method
@@ -612,35 +616,25 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     }
 
     ItomSharedSemaphoreLocker wait_for_invokation_end(new ItomSharedSemaphore());
+    qDebug() << "pythonUI Thread ID" << QThread::currentThreadId();
 
-    if(foundMethod->type() == QMetaMethod::Slot)
+    int method_type = foundMethod->type();
+    if (method_type == QMetaMethod::Slot || method_type == QMetaMethod::Method)
     {
-        //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", 
-            Q_ARG(bool,true), //slotNotMethod
+            Q_ARG(bool, method_type == QMetaMethod::Slot), 
             Q_ARG(uint, self->objectID), 
             Q_ARG(int, foundMethod->methodIndex()), 
-            Q_ARG(QSharedPointer<FctCallParamContainer>, paramContainer),
-            Q_ARG(ItomSharedSemaphore*, wait_for_invokation_end.getSemaphore())
-        ); 
+            Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer),
+            //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); 
     }   
-    else if(foundMethod->type() == QMetaMethod::Method)
-    {
-        //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", 
-            Q_ARG(bool,false),  //slotNotMethod
-            Q_ARG(uint, self->objectID), 
-            Q_ARG(int, foundMethod->methodIndex()), 
-            Q_ARG(QSharedPointer<FctCallParamContainer>, paramContainer),
-            Q_ARG(ItomSharedSemaphore*, wait_for_invokation_end.getSemaphore())
-        ); 
-    }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "unknown method type.");
+        PyErr_SetString(PyExc_RuntimeError, (QString("unknown method type: %1").arg(method_type)).toLatin1().data());
         return NULL;
     }
-
+    //either make this use some of the defaults from itom or significantly smaller!!!
     if(!wait_for_invokation_end.getSemaphore()->wait(50000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while calling slot");
@@ -757,7 +751,8 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *k
         Q_ARG(QSharedPointer<int>, sigId),
         Q_ARG(QSharedPointer<QObject*>, objPtr),
         Q_ARG(QSharedPointer<IntList>, argTypes),
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -2424,7 +2419,8 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
         Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , 
         Q_ARG(int,modalLevel), 
         Q_ARG(QSharedPointer<int>, retCodeIfModal), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(modalLevel == 1)
     {
@@ -2487,7 +2483,8 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
         uiOrga, 
         "hideDialog", 
         Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    );
     
     if(!locker.getSemaphore()->wait(-1))
     {
