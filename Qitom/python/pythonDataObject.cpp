@@ -4897,22 +4897,30 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectMul_doc, "mul(obj) -> a.mul(b) returns element wise multiplication of a*b\n\
+PyDoc_STRVAR(pyDataObjectMul_doc, "mul(otherObj) -> dataObject \n\
 \n\
-All meta information (axis scales, offsets, descriptions, units, tags...) of the resulting object \
-are copied from this data object. \n\
+Returns the result of the element-wise multiplication of this dataObject with otherObj. \n\
+\n\
+This :class:`dataObject` and ``otherObj`` must have the same :attr:`shape` and \n\
+:attr:`dtype` for the element-wise multiplication. \n\
+\n\
+All meta information (axis scales, offsets, descriptions, units, tags...) of the \n\
+resulting object are copied from this data object. \n\
 \n\
 Parameters  \n\
 ------------\n\
-obj : {dataObject} \n\
-    dataObject whose values are element-wisely multiplied with the values in this dataObject. \n\
+otherObj : dataObject \n\
+    The returned :class:`dataObject` contains the result of the element-wise \n\
+    multiplication of all values in this object and ``otherObj``. Must have the \n\
+    same shape and data type than this object. \n\
 \n\
 Returns \n\
 -------- \n\
-c : {dataObject} \n\
-    Resulting multiplied data object. \n\
+result : dataObject \n\
+    Resulting multiplied data object. Values, that exceed the range of the current \n\
+    data type, will be set to the ``result modulo max(dtype)``. \n\
 \n\
-For a mathematical multiplication see the *-operator.");
+For a mathematical multiplication see the @-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
 	if (self->dataObject == NULL) return 0;
@@ -4944,20 +4952,33 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectDiv_doc, "div(obj) -> a.div(b) return result of element wise division of a./b \n\
+PyDoc_STRVAR(pyDataObjectDiv_doc, "div(otherObj) -> dataObject \n\
 \n\
-All meta information (axis scales, offsets, descriptions, units, tags...) of the resulting object \
-are copied from this data object. \n\
+Returns the result of the element-wise division of this dataObject by otherObj. \n\
+\n\
+This :class:`dataObject` and ``otherObj`` must have the same :attr:`shape` and \n\
+:attr:`dtype` for the element-wise division. \n\
+\n\
+All meta information (axis scales, offsets, descriptions, units, tags...) of the \n\
+resulting object are copied from this data object. \n\
 \n\
 Parameters  \n\
 ------------\n\
-obj : {dataObject} \n\
-    Every value in this data object is divided by the corresponding value in obj. \n\
+otherObj : dataObject \n\
+    The returned :class:`dataObject` contains the result of the element-wise \n\
+    division of all values in this object by ``otherObj``. Must have the \n\
+    same shape and data type than this object. \n\
 \n\
 Returns \n\
 -------- \n\
-c : {dataObject} \n\
-    Resulting divided data object.");
+result : dataObject \n\
+    Resulting divided data object. Values, that exceed the range of the current \n\
+    data type, will be set to the ``result modulo max(dtype)``. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if a **division by zero** occurs for integer or complex data types.");
 PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 {
     if (self->dataObject == NULL) return 0;
@@ -4974,7 +4995,8 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 
     try
     {
-        retObj->dataObject = new ito::DataObject((*(self->dataObject)).div(*(obj2->dataObject)));//new dataObject should always be the owner of its data, therefore base of resultObject remains None
+        // new dataObject should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject((*(self->dataObject)).div(*(obj2->dataObject)));
     }
     catch(cv::Exception &exc)
     {
@@ -4983,35 +5005,46 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
         return NULL;
     }
 
-    if(retObj) retObj->dataObject->addToProtocol("Created by elementwise division of two dataObjects.");
+    if (retObj)
+    {
+        retObj->dataObject->addToProtocol("Created by elementwise division of two dataObjects.");
+    }
 
     return (PyObject*)retObj;
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(shape) -> return a reshaped shallow copy (if possible) of this dataObject. \n\
+PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(shape) -> dataObject \n\
 \n\
-This method returns a shallow or deep copy if this data object where the type and data is unchanged. The shape \n\
-of the returned object corresponds to the parameter 'newShape'. The number of values must therefore not be changed. \n\
-If the last two dimensions of 'newShape' and this object are the same and if the data is not continously organized, \n\
-a shallow copy can be returned, else a deep \n\
-copy has to be created. Tags and the rotation matrix are copied, the axis tags are only copied for all axes whose \n\
-size will not change beginning from the last axis ('x'). This axis copying is stopped after the first axis with a different \n\
-new size. \n\
+Returns a reshaped (shallow) copy of this dataObject. \n\
+\n\
+Reshaping means, that the shape (and optionally number of dimensions) of a \n\
+:class:`dataObject` might be changed, unless the total number of elements is \n\
+not changed. The reshaped and returned :class:`dataObject` has the same data type and \n\
+data than this :class:`dataObject`. \n\
+\n\
+The shape of the returned object corresponds to the parameter ``shape``.  \n\
+If the last two dimensions of ``shape`` and of this object are equal and if the \n\
+data is not continously organized, a shallow copy can be returned, else a deep \n\
+copy has to be created. \n\
+\n\
+Tags and the rotation matrix are copied. The axis tags are only copied for all axes \n\
+whose size will not change beginning from the last axis (``x``). Copying the axis \n\
+meta information is stopped after the first axis with a differing new size. \n\
 \n\
 Parameters \n\
 ----------- \n\
-shape : {seq. of int} \n\
+shape : sequence of int \n\
     New shape of the returned object. A minimal size of this list or tuple is two. \n\
 \n\
 Returns \n\
 -------- \n\
-reshaped : {dataObject} \n\
+reshaped : dataObject \n\
     The reshaped data object. \n\
 \n\
 Notes \n\
 ----- \n\
-This method is similar to numpy.reshape");
+This method is similar to :meth:`numpy.reshape`.");
 PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     if (self->dataObject == NULL) return NULL;
@@ -5060,25 +5093,25 @@ PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *a
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAstype_doc,"astype(typestring) -> converts this data object to another type\n\
+PyDoc_STRVAR(pyDataObjectAstype_doc,"astype(typestring) -> dataObject \n\
 \n\
-Converts this data object to a new data object with another type, given by the string newTypestring (e.g. 'uint8'). The converted data object \
-is a deep copy of this object if the new type does not correspond to the current type, else a shallow copy of this object is returned. \n\
+Converts this dataObject to another data type.\n\
+\n\
+Converts this :class:`dataObject` to a new dataObject with another data type, given by \n\
+the string ``typestring`` (e.g. 'uint8'). The converted dataObject is a deep copy of \n\
+this object if the new type does not correspond to the current type, else a shallow \n\
+copy of this object is returned. \n\
 \n\
 Parameters \n\
 ----------- \n\
-typestring : {str} \n\
-    Type string indicating the new type ('uint8',...'float32',..,'complex64') \n\
+typestring : str \n\
+    Type string indicating the new type (``uint8``, ..., ``float32``, ..., \n\
+    ``complex128``). \n\
 \n\
 Returns \n\
 -------- \n\
-c : {dataObject} \n\
-    type-converted data object \n\
-\n\
-Notes \n\
------ \n\
-This method mainly uses the method convertTo of OpenCV. \n\
-");
+dataObject \n\
+    The converted :class:`dataObject`.");
 PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* args, PyObject* kwds)
 {
     const char* type;
@@ -5128,24 +5161,48 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectNormalize_doc,"normalize(minValue = 0.0, maxValue = 1.0, typestring = '') -> returns the normalization of this dataObject\n\
+PyDoc_STRVAR(pyDataObjectNormalize_doc,"normalize(minValue = 0.0, maxValue = 1.0, typestring = \"\") -> dataObject \n\
 \n\
-Returns the normalized version of this data object, where the values lie in the range [minValue,maxValue]. Additionally it is also \n\
-possible to convert the resulting data object to another type (given by the parameter typestring). As default no type conversion is executed.\n\
+Returns a normalized version of this dataObject. \n\
+\n\
+All values in the returned :class:`dataObject` are normalized with respect to the given \n\
+range ``[minValue, maxValue]``. Additionally it is also possible to convert the \n\
+resulting data object to another data type (given by the parameter ``typestring``). \n\
+Per default, no such a type conversion is done (empty ``typestring`` argument). \n\
+\n\
+For the normalization, the current minimum and maximum value of this object is \n\
+determined: \n\
+\n\
+.. math:: \n\
+\n\
+    min_{cur} = min(thisObj) \n\
+    max_{cur} = max(thisObj) \n\
+\n\
+Each value `v` is then normalized by: \n\
+\n\
+.. math:: v_{norm} = minValue + (v - min_{cur}) * (maxValue - minValue) / (max_{cur} - min_{cur}) \n\
 \n\
 Parameters \n\
 ----------- \n\
-minValue : {double} \n\
-    minimum value of the normalized range \n\
-maxValue : {double} \n\
-    maximum value of the normalized range \n\
-typestring : {String} \n\
-    Type string indicating the new type ('uint8',...'float32',..,'complex64'), default: '' (no type conversion) \n\
+minValue : float \n\
+    minimum value of the normalized range. \n\
+maxValue : float \n\
+    maximum value of the normalized range. \n\
+typestring : str \n\
+    Data type for an optional type conversion. If an empty :obj:`str` is given, \n\
+    no such a conversion is done. Else possible values are (among others): \n\
+    (``uint8``, ..., ``float32``, ..., ``complex128``). \n\
 \n\
 Returns \n\
 -------- \n\
-normalized : {dataObject} \n\
-    normalized data object");
+normalized : dataObject \n\
+    normalized data object \n\
+\n\
+Notes \n\
+----- \n\
+For complex data types, the current minimum and maximum values are calculated \n\
+based on the absolute value of the complex values. Therefore, the normalization \n\
+can have a different result, than maybe expected.");
 PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject* args, PyObject* kwds)
 {
     const char* type = NULL;
@@ -5185,8 +5242,9 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
 
     double dmin = std::min(minVal, maxVal);
     double dmax = std::max(minVal, maxVal);
-    double scale = (dmax-dmin)*((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./(smax-smin)) : 0.0);
-    double shift = dmin-smin*scale;
+    double scale = (dmax - dmin) * ((smax - smin) > std::numeric_limits<double>::epsilon() ? (1./(smax-smin)) : 0.0);
+    double shift = dmin - smin * scale;
+
     try
     {
         self->dataObject->convertTo(dataObj, typeno, scale, shift);
@@ -5214,16 +5272,60 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> returns information about the current region of interest of this data object\n\
+PyDoc_STRVAR(pyDataObjectLocateROI_doc,"locateROI() -> Tuple[List[int], List[int]] \n\
 \n\
-A region of interest (ROI) of a data object is defined by the two values per axis. The first element always indicates the size between the \n\
-real border of the data object and the region of interest on the left / top ... side and the second value the margin of the right / bottom ... side. \n\
+Returns information about the current region of interest of this dataObject. \n\
 \n\
-This method returns a tuple with two elements: The first is a list with the original sizes of this data object, \
-the second is a list with the offsets from the original data object to the first value in the current region of interest \n\
+In Python, it is common to use slices of other objects, like lists, tuples, \n\
+:class:`numpy.ndarray` among others. This slice represents a subpart of the original \n\
+object, however the values within the slice are still the same than in the original \n\
+object. \n\
 \n\
-If no region of interest is set (hence: full region of interest), the first list corresponds to the one returned by size(), \
-the second list is a zero-vector. \n\
+The same holds for :class:`dataObject`, where a slice will return a shallow \n\
+copy of the original object with a maybe reduced size. This is denoted as region \n\
+of interest (ROI). Here an example:: \n\
+    \n\
+    org = dataObject.ones([100, 200], 'float32') \n\
+    roi = org[10:20, 5:9]  # slicing \n\
+    \n\
+    roi[0, 0] = 100  # change one value in roi \n\
+    print(org[10, 5])  # returns 100 \n\
+\n\
+Although the first value in ``roi`` is changed, its corresponding value in ``org`` \n\
+is changed, too. This is the principle of shallow copies and slicing / region of \n\
+interests. \n\
+\n\
+This method returns information about the exact **position** of the region of \n\
+interest within its original :class:`dataObject`. This is defined by two values \n\
+for each axis. The first value indicates the distance between the left, top, etc. border \n\
+of the original object and the border of this object. If no region of interest is set, \n\
+these values are ``0`` everywhere. \n\
+\n\
+The second values define the distances between the right, bottom, ... margins of this \n\
+object and its original object (or ``0`` everywhere, too). \n\
+\n\
+This method returns a tuple with two elements: The first is a list with the original \n\
+sizes of this data object (if no ROI would have been set), the second is a list with \n\
+the offsets from the original data object to the first value in the current region of \n\
+interest. \n\
+\n\
+If no region of interest is set (hence: full region of interest), the first list \n\
+corresponds to the one returned by :attr:`shape`, the 2nd list contains ``0`` everyhwere. \n\
+\n\
+The output of the example above would be:: \n\
+    \n\
+    print(roi.locateROI()) \n\
+    # >>> ([100, 200], [10, 5]) \n\
+\n\
+Returns \n\
+------- \n\
+orgSize : list of int \n\
+    The original sizes of this object (without ROI). This is equal to :attr:`shape` \n\
+    of the original object. \n\
+offsets : list of int \n\
+    A list with ``N`` values, where ``N`` is the number of dimensions of this object. \n\
+    Each value ``n = 1 .. N`` is the offset of the first value of axis ``n`` in this \n\
+    object with respect to the original object. \n\
 \n\
 See Also \n\
 -------- \n\
@@ -5244,10 +5346,10 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
     PyObject *osize_obj = PyList_New(dims);
     PyObject *offsets_obj = PyList_New(dims);
 
-    for (int i=0;i<dims;i++)
+    for (int i = 0; i < dims; i++)
     {
-        PyList_SetItem(osize_obj, i, Py_BuildValue("i",osize[i]));
-        PyList_SetItem(offsets_obj, i, Py_BuildValue("i",offsets[i]));
+        PyList_SetItem(osize_obj, i, Py_BuildValue("i", osize[i]));
+        PyList_SetItem(offsets_obj, i, Py_BuildValue("i", offsets[i]));
     }
 
     DELETE_AND_SET_NULL_ARRAY(osize);
@@ -5261,28 +5363,65 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsets) -> adjust the size and position of the region of interest of this data object\n\
+PyDoc_STRVAR(pyDataObjectAdjustROI_doc, "adjustROI(offsets) \n\
 \n\
-For every data object, it is possible to define a region of interest such that subsequent commands only refer to this subpart. However, if values within \n\
-the region of interest (ROI) are changed, this also affects the original data object due to the shallow copy principal of python. \n\
-Use this command to adjust the current size and position of this region of interest by passing an offset list, that contains \
-integer numbers with twice the size than the number of dimensions. \n\
+Adjusts the size and position of the region of interest of this object.\n\
+\n\
+In Python, it is common to use slices of other objects, like lists, tuples, \n\
+:class:`numpy.ndarray` among others. This slice represents a subpart of the original \n\
+object, however the values within the slice are still the same than in the original \n\
+object. \n\
+\n\
+The same holds for :class:`dataObject`, where a slice will return a shallow \n\
+copy of the original object with a maybe reduced size. This is denoted as region \n\
+of interest (ROI). Here an example:: \n\
+    \n\
+    org = dataObject.ones([100, 200], 'float32') \n\
+    roi = org[10:20, 5:9]  # slicing \n\
+    \n\
+    roi[0, 0] = 100  # change one value in roi \n\
+    print(org[10, 5])  # returns 100 \n\
+\n\
+Although the first value in ``roi`` is changed, its corresponding value in ``org`` \n\
+is changed, too. This is the principle of shallow copies and slicing / region of \n\
+interests. \n\
+\n\
+This method is used to change to offset and / or size of the current ROI of this \n\
+object. Of course, this ROI can never be bigger than the original array data. \n\
+In order to change the position and / or size of the current region of interest, \n\
+pass a sequence (list or tuple) of integer values. The length of this sequence \n\
+must be ``2 * ndim``, where ``ndim`` is the number of dimensions of this object. \n\
+Always two adjacent values in this sequence refer to one axis, starting with \n\
+the first axis index and ending with the last one. The first value of such a pair \n\
+of two values indicate the offset of the region of interest with respect to one \n\
+border of this axis (e.g. the left or top border), the 2nd value is the offset \n\
+with respect to the other side of this axis (e.g. the right or bottom border). \n\
+Negative values decrease the size of the ROI towards the center, positive values \n\
+will increase its current size. \n\
 \n\
 Example: :: \n\
 \n\
-    d = dataObject([5,4]) \n\
-    droi = d \n\
-    droi.adjustROI([-2,0,-1,-1]) \n\
-    \n\
-Now *droi* is a region of interest of the original data object whose first value is equal to d[2,1] and its size is (3,2) \n\
+    d = dataObject([5, 4]) \n\
+    droi = dataObject(d)  # make a shallow copy \n\
+    droi.adjustROI([-2, 0, -1, -1]) \n\
+\n\
+Now, ``droi`` has a ROI, whose first value is equal to ``d[2, 1]`` and its shape \n\
+is ``(3, 2)``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-offsets : {list of integers} \n\
-    This list must have twice as many values than the number of dimensions of this data object. A pair of numbers indicates the shift of the \
-    current boundaries of the region of interest in every dimension. The first value of each pair is the offset of the 'left' boundary, the \
-    second the shift of the right boundary. A positive value means a growth of the region of interest, a negative one let the region of interest \
-    shrink towards the center. \n\
+offsets : list of int or tuple of int \n\
+    This sequence must have twice as many values than the number of dimensions of \n\
+    this :class:`dataObject`. A pair of numbers indicates the shift of the \n\
+    current boundaries of the region of interest in every dimension. The first value \n\
+    of each pair is the offset of the **left** boundary, the second the shift of the \n\
+    **right** boundary. A positive value means a growth of the region of interest, \n\
+    a negative one let the region of interest shrink towards the center. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if desired, new ROI exceeds the original shape of this :class:`dataObject`. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -5291,9 +5430,7 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 {
     //args is supposed to be a list of offsets for each dimensions on the "left" and "right" side.
     //e.g. 2D-Object [dtop, dbottom, dleft, dright], negative d-value means offset towards the center
-    Py_ssize_t sizeOffsets;
-    int sizeOffsetsInt;
-    PyObject* offsets = NULL;
+    PyObject* offsetsArg = NULL;
 
     if (self->dataObject == NULL)
     {
@@ -5301,64 +5438,46 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         return NULL;
     }
 
-    const char *kwlist[] = { "offsets", NULL };
+    const char *kwlist[] = {"offsets", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PyList_Type, &offsets))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", const_cast<char**>(kwlist), &offsetsArg))
     {
-        PyErr_SetString(PyExc_ValueError, "argument must be a list of offset-values. Its length must be two times the number of matrix-dimensions");
         return NULL;
     }
 
-    sizeOffsets = PyList_Size(offsets);
-
-    if (sizeOffsets >= INT_MAX)
-    {
-        PyErr_SetString(PyExc_ValueError, "length of argument list must be smaller than the maximum integer value");
-        return NULL;
-    }
-
-    sizeOffsetsInt = Py_SAFE_DOWNCAST(sizeOffsets, Py_ssize_t, int);
-
-    if (sizeOffsetsInt != 2*self->dataObject->getDims())
-    {
-        Py_DECREF(offsets);
-        PyErr_SetString(PyExc_ValueError, "argument must be a list of offset-values. Its length must be two times the number of matrix-dimensions");
-        return NULL;
-    }
+    bool ok;
+    QVector<int> offsets = PythonQtConversion::PyObjGetIntArray(offsetsArg, true, ok);
 
     int dims = self->dataObject->getDims();
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "offsets must be a sequence of integer values.");
+        return NULL;
+    }
+    else if (offsets.size() != 2 * dims)
+    {
+        PyErr_SetString(
+            PyExc_ValueError, 
+            "offsets must be a sequence of integer values. "
+            "Its length must be two times the number of dimensions.");
+        return NULL;
+    }
+
     bool error = false;
 
     if (dims > 0)
     {
-        int *offsetVector = new int[2*dims];
-        PyObject *temp;
-        bool ok;
-
-        for (int i = 0; i < 2*dims; i++)
-        {
-            temp = PyList_GetItem(offsets,i); //borrowed
-            offsetVector[i] = PythonQtConversion::PyObjGetInt(temp, true, ok);
-            if (!ok)
-            {
-                PyErr_SetString(PyExc_ValueError, "at least one element in the offset list has no integer type or exceeds the integer range.");
-                break;
-            }
-        }
         try
         {
-            self->dataObject->adjustROI(dims, offsetVector);
+            self->dataObject->adjustROI(dims, offsets.constData());
         }
         catch(cv::Exception &exc)
         {
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            PyErr_SetString(PyExc_RuntimeError, (exc.err).c_str());
             error = true;
         }
-
-        DELETE_AND_SET_NULL_ARRAY(offsetVector);
     }
-
-    Py_DECREF(offsets);
 
     if (error)
     {
@@ -5371,23 +5490,27 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> return a squeezed shallow copy (if possible) of this dataObject. \n\
+PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> dataObject \n\
 \n\
-This method removes every dimension with size equal to 1. A shallow copy is only returned, if the last two dimensions \n\
-(called plane) are not affected by the squeeze operation and if the data block in the dataObject is not continuous. \n\
-Else a deep-copy has to be returned due to a overall re-\n\
-aligment of the matrix. The returned object can never have less then two dimensions. If this is the case, the \n\
-last or second to last dimensions with a size of 1 is not deleted. If squeeze() returns a shallow copy, a change in a \n\
+Returns a squeezed shallow copy (if possible) of this dataObject. \n\
+\n\
+This method removes every dimension with size equal to ``1``. A shallow copy is only \n\
+returned, if the sub-arrays, spanned by the last two dimensions (denoted as planes), \n\
+are not affected by the squeeze operation and if the data block in the \n\
+:class:`dataObject` is not continuous. Else a deep copy has to be returned due to an \n\
+overall re-alignment of the matrix. The returned object can never have less than \n\
+two dimensions. If this is the case, the last or second to last dimensions with a size \n\
+of ``1`` is not deleted. If :this method returns a shallow copy, a change in a \n\
 value will change the same value in the original object, too. \n\
 \n\
 Returns \n\
 -------- \n\
-squeezed : {dataObject} \n\
+squeezed : dataObject \n\
     The squeezed data object. \n\
 \n\
 Notes \n\
 ----- \n\
-This method is similar to numpy.squeeze");
+This method is similar to :meth:`numpy.squeeze`.");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
     if (self->dataObject == NULL) return NULL;
@@ -5419,30 +5542,22 @@ PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrReal_doc, "real -> return a new data object with the real part of the source or set the values of the real part of the data object.\n\
+PyDoc_STRVAR(dataObjectAttrReal_doc, 
+"dataObject : Gets or sets the `real` part of this ``complex64`` or ``complex128`` object. \n\
 \n\
-This method extracts the real part of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+The real part object has the same shape than this :class:`dataObject`. If the data type \n\
+of this object is ``complex64``, the real part object has the data type ``float32``. \n\
+For a ``complex128`` object, the real part is ``float64``. \n\
 \n\
-This method also changes the real part of the complex data object. \n\
-In the case of a complex128 data object type, the input must be float64. \n\
-In the case of a complex64 data object type, the input must be float32. \n\
-The input can be a data object or numpy.array of the same shape as the data object. \n\
-If a scalar of an integer or float datatype is given, all real values will be changed to this value. \n\
+If a real part object is set to this attribute, it can be either a :class:`numpy.ndarray` \n\
+or a :class:`dataObject` with the same shape than this object and the appropriate data type. \n\
+However, it is also possible to pass an :obj:`int` or :obj:`float` value. This value is \n\
+then assigned to the real part of all complex values. \n\
 \n\
-Parameters \n\
------------ \n\
-value : {numpy.array, dataObject, int, float32, float64} \n\
-    Input value ('float32', 'float64') \n\
-\n\
-Returns \n\
------------ \n\
-res : {dataObject} \n\
-    output dataObject of same shape and same type with changed real part of complex object.\n\
-\n\
-Notes \n\
------------ \n\
-read / write");
+Raises \n\
+------ \n\
+TypeError \n\
+    if this :class:`dataObject` has no complex data type.");
 PyObject* PythonDataObject::PyDataObject_getReal(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
@@ -5675,7 +5790,8 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 	{
 		if (dObjDims > valDims && valDims == 2)
 		{
-			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
+			if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) 
+                && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0))) // last 2 dimensions are the same
 			{
                 Py_XDECREF(pyNewValues);
                 pyNewValues = NULL;
@@ -5732,30 +5848,22 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject *self, PyObject *value, 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrImag_doc, "imag -> return a new data object with the imaginary part of the source or set the values of the imaginary part of the data object.\n\
+PyDoc_STRVAR(dataObjectAttrImag_doc, 
+"dataObject : Gets or sets the `imag` part of this ``complex64`` or ``complex128`` object. \n\
 \n\
-This method extracts the imaginary part of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+The imaginary part object has the same shape than this :class:`dataObject`. If the data type \n\
+of this object is ``complex64``, the imag part object has the data type ``float32``. \n\
+For a ``complex128`` object, the imag part is ``float64``. \n\
 \n\
-This method also changes the real part of the complex data object. \n\
-In the case of a complex128 data object type, the input must be float64. \n\
-In the case of a complex64 data object type, the input must be float32. \n\
-The input can be a data object or numpy.array of the same shape as the data object. \n\
-If a scalar of an integer or float datatype is given, all real values will be changed to this value. \n\
+If an imaginary part object is set to this attribute, it can be either a :class:`numpy.ndarray` \n\
+or a :class:`dataObject` with the same shape than this object and the appropriate data type. \n\
+However, it is also possible to pass an :obj:`int` or :obj:`float` value. This value is \n\
+then assigned to the imaginary part of all complex values. \n\
 \n\
-Parameters \n\
------------ \n\
-value : {numpy.array, dataObject, int, float32, float64} \n\
-    Input value ('float32', 'float64') \n\
-\n\
-Returns \n\
------------ \n\
-res : {dataObject} \n\
-    output dataObject of same shape and same type with changed imaginary part of complex object.\n\
-\n\
-Notes \n\
------------ \n\
-read / write");
+Raises \n\
+------ \n\
+TypeError \n\
+    if this :class:`dataObject` has no complex data type.");
 PyObject* PythonDataObject::PyDataObject_getImag(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
@@ -5987,7 +6095,8 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
     {
         if (dObjDims > valDims && valDims == 2)
         {
-            if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0)))//last 2 dimensions are the same
+            if (!(self->dataObject->getSize(self->dataObject->getDims() - 1) == newValues->getSize(1) 
+                && self->dataObject->getSize(self->dataObject->getDims() - 2) == newValues->getSize(0))) // last 2 dimensions are the same
             {
                 Py_XDECREF(pyNewValues);
                 pyNewValues = NULL;
@@ -6044,16 +6153,27 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject *self, PyObject *value, 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAbs_doc, "abs() -> return a new data object with the absolute values of the source\n\
+PyDoc_STRVAR(pyDataObjectAbs_doc, "abs() -> dataObject \n\
 \n\
-This method calculates the abs value of each element in source and writes the result to the output object.\
-In case of floating point or real object, the type of the output will not change. For complex values\
-the type is changes to the corresponding floating type value.\n\
+Returns a new dataObject with the absolute values of this object. \n\
+\n\
+The absolute values in the resulting :class:`dataObject` are determined for \n\
+both real (integer and floating point) and complex data types of this object. \n\
+This method raises a ``TypeError`` for a ``rgba32`` data type. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if this method is called for a dataObject of data type ``rgba32``. \n\
 \n\
 Returns \n\
 ------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type may be changed.");
+absObj : dataObject \n\
+    Array with the same size than this object, that contains the absolute values \n\
+    of this object. If the data type of this object is complex, the returned \n\
+    object has the corresponding floating point data type. Else, the data type \n\
+    is unchanged. If this :class:`dataObject` has an unsigned integer data type, \n\
+    its shallow copy is returned without any changes.");
 PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
@@ -6083,15 +6203,19 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self, void * /*closur
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectArg_doc, "arg() -> return a new data object with the argument values of the source\n\
+PyDoc_STRVAR(pyDataObjectArg_doc, "arg() -> dataObject \n\
 \n\
-This method calculates the argument value of each element in source and writes the result to the output object.\
-This object must be of complex type (complex128 or complex64). The output value will be float type (float64 or float32).\n\
+Returns a new data object with the argument values of this complex type dataObject. \n\
+\n\
+This method calculates the argument value of each element in this :class:`dataObject`\n\
+and returns these values as new dataObject with the same shape than this object. \n\
+This object must be of complex data type (``complex128`` or ``complex64``). \n\
+The output data type will be float then (``float64`` or ``float32``).\n\
 \n\
 Returns \n\
 ------- \n\
-res : {dataObject} \n\
-    output dataObject of same shape but the type is changed.");
+argObj : dataObject \n\
+    is the argument function applied to all values of this dataObject.");
 PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self, void * /*closure*/)
 {
 	if (self->dataObject == NULL)
@@ -6298,6 +6422,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
         else
         {
             PyDataObject *retObj2 = PythonDataObject::createEmptyPyDataObject(); // new reference
+
             try
             {
                 retObj2->dataObject = new ito::DataObject(self->dataObject->at(ranges));
@@ -6431,6 +6556,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             {
                 containsSlices = true;
                 Py_ssize_t start, stop, step, slicelength;
+
                 if (PySlice_GetIndicesEx(elem, axisSize, &start, &stop, &step, &slicelength) == 0)
                 {
                     if (step != 1)
@@ -6483,6 +6609,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             {
                 int overflow;
                 long l = PyLong_AsLongAndOverflow(value, &overflow);
+
                 if (overflow == 0)
                 {
                     dataObj = (ito::int32)l;
@@ -6557,6 +6684,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                             PyErr_Format(PyExc_ValueError, "size of given data does not fit to size of data object");
                             error = true;
                         }
+
                         int c = 0;
 
                         if (!error)
@@ -8375,15 +8503,22 @@ PyObject* PythonDataObject::PyDataObj_ToNumpyColor(PyDataObject *self, PyObject 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> return the data object as a (possibly nested) list\n\
+PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> list \n\
 \n\
-This method returns a nested list with all values of this data object. The recursion level of this nested list \
-corresponds to the number of dimensions. The outer list corresponds to the first dimension. \n\
+Returns a nested list with all values of this dataObject. \n\
+\n\
+An empty :class:`dataObject` with zero dimensions will return an empty list. \n\
+Else, the depth of the nested list corresponds to the number of dimensions \n\
+of this :class:`dataObject`. The innermost level corresponds to one ``row`` \n\
+of this dataObject, or in general, to one set of values along the last \n\
+axis of this object. This innermost list contains all these values. \n\
 \n\
 Returns \n\
 ------- \n\
-y : {list} \n\
-    Nested list with values of data object (int, float or complex depending on type of data object)");
+list \n\
+    Nested list with values of data object. The data types depend on the ``dtype`` \n\
+    of this dataObject and can be :obj:`int`, :obj:`float`, :obj:`complex` or \n\
+    :class:`rgba`.");
 PyObject* PythonDataObject::PyDataObj_ToList(PyDataObject *self)
 {
     if (self->dataObject == NULL)
@@ -8397,6 +8532,7 @@ PyObject* PythonDataObject::PyDataObj_ToList(PyDataObject *self)
     PyObject *result = NULL;
 
     unsigned int *iter = new unsigned int[d->getDims()];
+
     for (int i = 0; i < d->getDims(); i++)
     {
         iter[i] = 0;
@@ -8421,36 +8557,50 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(ito::DataObject *dataObj, 
 
     PyObject *temp = NULL;
 
-    if ((int)iterationIndex == dataObj->getDims() - 1) //last index
+    if (iterationIndex == dataObj->getDims() - 1) //last index
     {
         int len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New(len);
+
         for (int i = 0; i < len; i++)
         {
             currentIdx[iterationIndex] = i;
             temp = PyDataObj_At(dataObj, currentIdx);
-            if (temp == NULL) return NULL;
-            PyList_SetItem(result, i, temp);
+
+            if (temp == NULL) 
+            { 
+                Py_DECREF(result);
+                return NULL; 
+            }
+
+            PyList_SetItem(result, i, temp); //steals a ref
         }
         return result;
     }
-    else if ((int)iterationIndex < dataObj->getDims() - 1) //previous indexes (besides last one)
+    else if (iterationIndex < dataObj->getDims() - 1) //previous indexes (besides last one)
     {
         int len = dataObj->getSize(iterationIndex);
         PyObject *result = PyList_New(len);
+
         for (int i = 0; i < len; i++)
         {
             currentIdx[iterationIndex] = i;
             temp = PyDataObj_ToListRecursive(dataObj, currentIdx, iterationIndex + 1);
-            if (temp == NULL) return NULL;
-            PyList_SetItem(result, i, temp);
+
+            if (temp == NULL)
+            {
+                Py_DECREF(result);
+                return NULL;
+            }
+
+            PyList_SetItem(result, i, temp); //steals a ref
         }
+
         return result;
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "iterationIndex is bigger than dimensions of data object");
-        return NULL;
+        return PyList_New(0);
     }
 }
 
@@ -8569,22 +8719,30 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes, inverse = False) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
+PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes, inverse = False) -> dataObject \n\
 \n\
-The destination data object has the same size than this data object and the real type given by destinationType. The pixel - wise \
-conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
+Returns an ``uint8`` mask dataObject where all pixels of this object that are contained in any shape are masked. \n\
+\n\
+The returned :class:`dataObject` has the same shape than this object and the data type \n\
+``uint8``. All pixels in this object, that are contained in any of the given :class:`shape` \n\
+will be set to ``255`` in the returned array, otherwise ``0``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-shapes : {shape or seq. of shapes} \n\
-    The union of all shapes (polygons, rectangles, squares, circles and ellipes are considered, only) are marked within the mask \n\
+shapes : shape or list of shape or tuple of shape \n\
+    The union of all given shapes (polygons, rectangles, squares, circles and ellipes \n\
+    are considered, only) is used to determine if any pixel should be masked in the \n\
+    returned mask (value ``255``) or not. \n\
 inverse : {bool} \n\
-    If False (default) the shape areas are marked with 255 and the outer areas with 0, if True the behaviour is vice-versa. \n\
+    If ``True``, masked values are set to ``0`` (instead of ``255``) and all other \n\
+    values are set to ``255`` (instead of ``0``). The default is ``False`` (masked = ``255``). \n\
 \n\
 Returns \n\
 ------- \n\
-dataObj : {dataObject} \n\
-    uint8 data object as mask with the same size, scales and offsets than this object. The mask is applied to all planes.");
+mask : dataObject \n\
+    uint8 :class:`dataObject` as mask with the same shape, :attr:`axisScales`, \n\
+    :attr:`axisOffsets`, :attr:`axisDescriptions` and :attr:`axisUnits` than this \n\
+    object.");
 PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds)
 {
     if (self->dataObject == NULL)
@@ -8633,9 +8791,11 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
         for (Py_ssize_t i = 0; i < PySequence_Length(shapeseq); ++i)
         {
             obj = PySequence_Fast_GET_ITEM(shapeseq, i); //borrowed
+
             if (PyShape_Check(obj))
             {
                 shape = (PythonShape::PyShape*)obj;
+
                 if (shape && shape->shape)
                 {
                     shape_vector << *shape->shape;
@@ -8671,25 +8831,33 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
     }
 }
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> return a 3d dataObject with stacked arrays in sequence depth wise (along first axis). \n\
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> dataObject \n\
 \n\
-The given dataObjects must all have the same type as well as the same size of both last axes / dimensions. \n\
-This method then returns a 3d dataObject of the same type, whose size of the two last axes correspond to those of\n\
-the input objects. This 3d dataObject contain a stacked representation of all given input dataObjects depth wise (along first axis). \n\
+Returns a 3D dataObject with the stacked dataObjects in the objects sequence. \n\
 \n\
-If any of the input dataObjects has more than two dimensions, all contained planes (x,y-matrices) are also stacked in the resulting object.\n\
+The given dataObjects must all have the same type as well as the same size of both \n\
+last axes / dimensions. This method then returns a 3d :class:`dataObject` of the same \n\
+type, whose size of the two last axes correspond to those of the input ``objects``. \n\
+The returned 3D :class:`dataObject` contains then a stacked representation of all \n\
+given input dataObjects depth wise (along first axis). \n\
+\n\
+If any of the input dataObjects has more than two dimensions, all contained planes \n\
+(x,y-matrices) are also stacked in the resulting object.\n\
 \n\
 Parameters \n\
 ----------- \n\
-objects : {sequence of dataObjects} \n\
-	Sequence (list) of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have \n\
-    the same shape of planes (last two dimesnions).\
+objects : list of dataObject or tuple of dataObject \n\
+	Sequence (list) of dataObjects containig planes that will be stacked together. \n\
+    All dataObjects must be of the same type and have the same shape of planes \n\
+    (last two dimesnions).\
 \n\
 Returns \n\
 ------- \n\
-dataObj : {dataObject} \n\
-    If objects only contains one array, this array is returned. If objects contains more than one array, \n\
-    these arrays are vertically stacked along the first axis, which is prepended to the existing axes before.");
+stack : dataObject \n\
+    If ``objects`` is an empty list or tuple, an empty :class:`dataObject` is returned. \n\
+    Else if ``objects`` only contains one array, this array is returned. Otherwise, \n\
+    all dataObjects (2D or 3D) in ``objects`` are vertically stacked along the first \n\
+    axis, which is prepended to the existing axes before.");
 PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 {
     PyObject *sequence = NULL;
@@ -8698,15 +8866,12 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
     //if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis)) //currently not implemented in dataObject::stack
     if (!PyArg_ParseTuple(args, "O", &sequence))
     {
-
-		return PyErr_Format(PyExc_RuntimeError, "More than one parameter was given. This method only supports a list or tuple of dataObjects.");
+        return NULL;
     }
 
 	if (PySequence_Check(sequence))
 	{
 		Py_ssize_t len = PySequence_Size(sequence);
-		
-
 		PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
 		if (len > 0)
@@ -8716,6 +8881,7 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 			for (Py_ssize_t i = 0; i < len; ++i)
 			{
 				PyObject *item = PySequence_GetItem(sequence, i); //new reference
+
 				if (!PyDataObject_Check(item))
 				{
 					Py_DECREF(item);
@@ -8726,6 +8892,7 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 				{
 					vector[i] = *(((PyDataObject*)(item))->dataObject);
 				}
+
 				Py_DECREF(item);
 			}
 
@@ -8762,52 +8929,73 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 	}
 }
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectLineCut_doc, "lineCut(coordinates) -> returns a data object of the same type containing a lineCut calculated by the use of a Bresenham algorithm. \n\
+PyDoc_STRVAR(pyDataObjectLineCut_doc, "lineCut(coordinates) -> dataObject \n\
 \n\
-The returned dataObject contains a lineCut across the 2d source dataObject.\n\
+Returns a dataObject with the values of this object along a line with the given coordinates. \n\
+\n\
+This method uses the **Bresenham** algorithm to get the nearest values along \n\
+a line, whose start- and end-point is given by ``coordinates``. These values \n\
+are returned in a new :class:`dataObject` with the same data type than this \n\
+object. \n\
+\n\
+This method can be applied to 2D and 3D dataObjects. In the case of a 3D object, \n\
+the line cut is defined plane-by-plane and the values are put in one row \n\
+for each plane of this object. \n\
 \n\
 Parameters \n\
 ----------- \n\
-obj : {sequence of double} \n\
-	Sequence (list) containing four floating-point values representing the physical coordinates of the start- and endpoint. The values are interpreted as followed: [x0,y0,x1,y1]\n\
+coordinates : list of float or tuple of float \n\
+    A sequence of 4 :class:`float` values, that define the physical coordinates \n\
+    of the start- and end point of the desired line along which the nearest values \n\
+    should be gathered. The values are: ``[x0, y0, x1, y1]``. \n\
 \n\
 Returns \n\
 ------- \n\
-dataObj : {dataObject} \n\
-	one dimensional dataObject of the same type.");
+lineCut : dataObject \n\
+    An array of the same data type than this object and shape ``P x N``, that \n\
+    contains the nearest values along the given line coordinates. If this \n\
+    :class:`dataObject` has two dimensions, ``P = 1``, else ``P`` is equal \n\
+    to the size of the first dimension (``shape[0]``). ``N`` corresponds to \n\
+    the number of points along the line, defined by the used **Bresenham** \n\
+    algorithm. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if this dataObject has more than three dimensions.");
 PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject *self, PyObject *args)
 {
-	if (self->dataObject == NULL) return 0;
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
 
 	PyObject *sequence = NULL;
-	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &sequence))
+
+	if (!PyArg_ParseTuple(args, "O", &sequence))
 	{
-		return PyErr_Format(PyExc_RuntimeError, "the given parameters do not fit. The filter only supports a list of doubles.");
+        return NULL;
 	}
 
-	Py_ssize_t len = PySequence_Size(sequence);
-	if (len != 4)
-	{
-		return PyErr_Format(PyExc_RuntimeError, "a list containig four doubles was expected (%i where given)",len);
-	}
+    bool ok;
+    QVector<double> coordinates = PythonQtConversion::PyObjGetDoubleArray(sequence, true, ok);
 
-	double* coordinates = new double[len];
-	PyObject *temp = NULL;
-	for (int i = 0; i < len; ++i)
-	{
-		temp = PyList_GetItem(sequence, i); //borrowed
-        if (!(PyLong_Check(temp) || PyFloat_Check(temp)))
-		{
-			return PyErr_Format(PyExc_ValueError, "at least one element in the coordinate list has no double type");
-		}
-        coordinates[i] = PyFloat_AsDouble(temp);
-        
-	}
+    if (!ok || coordinates.size() != 4)
+    {
+        return PyErr_Format(
+            PyExc_ValueError,
+            "coordinates must be a sequence of 4 float values.");
+    }
+
 	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 	
 	try
 	{
-		retObj->dataObject = new ito::DataObject(self->dataObject->lineCut(coordinates,len));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
+        // new dataObject should always be the owner of its data, therefore base of resultObject remains None
+		retObj->dataObject = new ito::DataObject(
+            self->dataObject->lineCut(coordinates.constData(), coordinates.size())
+        );
 	}
 	catch (cv::Exception &exc)
 	{
@@ -8815,14 +9003,13 @@ PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject *self, PyObject *args
 		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
 		return NULL;
 	}
+
 	if (retObj)
 	{
 		retObj->dataObject->addToProtocol("Created taking a lineCut across a dataObject.");
 	}
 	
-	DELETE_AND_SET_NULL_ARRAY(coordinates);
 	return (PyObject*)retObj;
-
 }
 
 //-------------------------------------------------------------------------------------
@@ -8845,23 +9032,31 @@ void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
 //}
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticZeros_doc,"zeros(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with zeros.  \n\
+PyDoc_STRVAR(pyDataObjectStaticZeros_doc,"dims, dtype= \"uint8\", continuous = 0) -> dataObject \n\
 \n\
-Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with zeros. \n\
+Creates a dataObject filled with zeros. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dims : {integer list} \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
-continuous : {int}, optional \n\
-    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+dims : tuple of int or list of int \n\
+    ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
+    or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
+    with two rows and three columns. \n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``int8``, ``uint8``, ..., ``int32``, ``float32``, \n\
+    ``float64``, ``complex64``, ``complex128``, ``rgba32``. \n\
+continuous : int, optional \n\
+    This value defines if the planes (each sub-array of the last two dimensions) \n\
+    are continuously allocated in memory (``1``) or distributed in various smaller \n\
+    junks (``0``, default). The latter is recommended for huge, n-dimensional matrices. \n\
+    This argument is only considered for ``len(dims) > 2``. \n\
 \n\
 Returns \n\
 ------- \n\
-I : {dataObject} of shape (size,size)\n\
-    An array where all elements are equal to zero. \n\
+array : dataObject \n\
+    The newly created dataObject of shape ``dims`` and data type ``dtype``, filled with \n\
+    zeros. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -8870,7 +9065,8 @@ ones : method for creating a matrix filled with ones \n\
 \n\
 Notes \n\
 ------ \n\
-For color-types (rgba32) every item / cell will be black and transparent: [r=0 g=0 b=0 a=0].");
+For the color data type ``rgba32``, every value will be black and transparent: \n\
+``(r=0, g=0, b=0, alpha=0)``.");
 PyObject* PythonDataObject::PyDataObj_StaticZeros(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = -1;
@@ -8901,23 +9097,31 @@ PyObject* PythonDataObject::PyDataObj_StaticZeros(PyObject * /*self*/, PyObject 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticOnes_doc,"ones(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with ones.  \n\
+PyDoc_STRVAR(pyDataObjectStaticOnes_doc,"ones(dims, dtype= \"uint8\", continuous = 0) -> dataObject \n\
 \n\
-Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with ones. \n\
+Creates a dataObject filled ones. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dims : {integer list} \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
-continuous : {int}, optional \n\
-    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+dims : tuple of int or list of int \n\
+    ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
+    or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
+    with two rows and three columns. \n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``int8``, ``uint8``, ..., ``int32``, ``float32``, \n\
+    ``float64``, ``complex64``, ``complex128``, ``rgba32``. \n\
+continuous : int, optional \n\
+    This value defines if the planes (each sub-array of the last two dimensions) \n\
+    are continuously allocated in memory (``1``) or distributed in various smaller \n\
+    junks (``0``, default). The latter is recommended for huge, n-dimensional matrices. \n\
+    This argument is only considered for ``len(dims) > 2``. \n\
 \n\
 Returns \n\
 ------- \n\
-I : {dataObject} of shape (size,size)\n\
-    An array where all elements are equal to one. \n\
+array : dataObject \n\
+    The newly created dataObject of shape ``dims`` and data type ``dtype``, filled with \n\
+    ones. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -8926,7 +9130,8 @@ zeros : method for creating a matrix filled with zeros \n\
 \n\
 Notes \n\
 ------ \n\
-For color-types (rgba32) every item / cell will be white: [r=255 g=255 b=255 a=255].");
+For the color data type ``rgba32``, every value will be white: \n\
+``(r=255, g=255, b=255, alpha=255)``.");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = -1;
@@ -8937,9 +9142,10 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
     RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
 
     if (retValue.containsError()) return NULL;
+
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -8949,10 +9155,12 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
     if (selfDO->dataObject != NULL)
     {
         int *sizes2 = new int[sizes.size()];
+
         for (unsigned int i = 0; i < sizes.size(); i++)
         {
             sizes2[i] = sizes[i];
         }
+
         //no lock is necessary since eye is allocating the data block and no other access is possible at this moment
         selfDO->dataObject->ones(sizes.size(), sizes2, typeno, continuous);
         DELETE_AND_SET_NULL_ARRAY(sizes2);
@@ -8964,23 +9172,30 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticNans_doc, "nans(dims, dtype='float32', continuous = 0) -> creates new dataObject filled with NaNs.  \n\
+PyDoc_STRVAR(pyDataObjectStaticNans_doc, "nans(dims, dtype= \"float32\", continuous = 0) -> dataObject \n\
 \n\
-Static method for creating a new n-dimensional itom.dataObject with given number of dimensions and dtype, filled with NaNs. \n\
+Creates a floating-point dataObject filled with ``NaN`` values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dims : {integer list} \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'float32', 'float64', 'complex64', 'complex128'\n\
-continuous : {int}, optional \n\
-    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+dims : tuple of int or list of int \n\
+    ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
+    or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
+    with two rows and three columns. \n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``float32``, ``float64``, ``complex64``, ``complex128``. \n\
+continuous : int, optional \n\
+    This value defines if the planes (each sub-array of the last two dimensions) \n\
+    are continuously allocated in memory (``1``) or distributed in various smaller \n\
+    junks (``0``, default). The latter is recommended for huge, n-dimensional matrices. \n\
+    This argument is only considered for ``len(dims) > 2``. \n\
 \n\
 Returns \n\
 ------- \n\
-I : {dataObject} of shape (size,size)\n\
-    An array where all elements are equal to NaNs. \n\
+array : dataObject \n\
+    The newly created dataObject of shape ``dims`` and data type ``dtype``, filled with \n\
+    ``NaN``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -8997,8 +9212,10 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 	RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
 
 	if (retValue.containsError()) return NULL;
-	if (!(typeno == ito::tFloat32 || typeno == ito::tFloat64 || typeno == ito::tComplex64 || typeno == ito::tComplex128)) //NaN values can only fill arrays float and complex dtypes! 
+
+	if (!(typeno == ito::tFloat32 || typeno == ito::tFloat64 || typeno == ito::tComplex64 || typeno == ito::tComplex128)) 
 	{
+        // NaN values can only fill arrays float and complex dtypes! 
 		PyErr_SetString(PyExc_TypeError, "This function is only supported for float32, float64, complex64 and complex128!");
 		return NULL;
 	}
@@ -9009,8 +9226,12 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 	if (selfDO->dataObject != NULL)
 	{
 		int *sizes2 = new int[sizes.size()];
-		for (unsigned int i = 0; i < sizes.size(); i++)
-			sizes2[i] = sizes[i];
+
+        for (unsigned int i = 0; i < sizes.size(); i++)
+        {
+            sizes2[i] = sizes[i];
+        }
+
 		//no lock is necessary since eye is allocating the data block and no other access is possible at this moment
 		selfDO->dataObject->nans(sizes.size(), sizes2, typeno, continuous);
 		DELETE_AND_SET_NULL_ARRAY(sizes2);
@@ -9022,25 +9243,40 @@ PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject * /*self*/, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand(dims, dtype='uint8', continuous = 0) -> creates new dataObject filled with uniformly distributed random values.  \n\
+PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand(dims, dtype= \"uint8\", continuous = 0) -> dataObject \n\
 \n\
-Static method to create a new itom.dataObject filled with uniformly distributed random numbers.\n\
-In case of an integer type, the uniform noise is from min<ObjectType>(inclusiv) to max<ObjectType>(inclusiv).\n\
-For floating point types, the noise is between 0(inclusiv) and 1(exclusiv). \n\
+Creates a dataObject filled with uniformly distributed random values. \n\
+\n\
+The value range of the random numbers depend on the desired data type ``dtype``: \n\
+\n\
+1. **integer types**: The random values are in the range ``[min(dtype), max(dtype)]``. \n\
+2. **floating point types**: The random values are in the range ``[0, 1)``. \n\
+3. **rgba32**: All colours as well as the alpha value is independently distributed in \n\
+   the range ``[0, 255]``. \n\
+4. **complex types**: Both the real as well as imaginary part is independently \n\
+   distributed in the range ``[0, 1)``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dims : {integer list} \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
-continuous : {int}, optional \n\
-    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+dims : tuple of int or list of int \n\
+    ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
+    or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
+    with two rows and three columns. \n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``int8``, ``uint8``, ..., ``int32``, ``float32``, \n\
+    ``float64``, ``complex64``, ``complex128``, ``rgba32``. \n\
+continuous : int, optional \n\
+    This value defines if the planes (each sub-array of the last two dimensions) \n\
+    are continuously allocated in memory (``1``) or distributed in various smaller \n\
+    junks (``0``, default). The latter is recommended for huge, n-dimensional matrices. \n\
+    This argument is only considered for ``len(dims) > 2``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {dataObject} \n\
-    Array of random numbers with the given dimensions, dtype. \n\
+array : dataObject \n\
+    The newly created dataObject of shape ``dims`` and data type ``dtype``, filled with \n\
+    random numbers. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -9055,9 +9291,10 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
     RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
 
     if (retValue.containsError()) return NULL;
+
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -9067,6 +9304,8 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
     if (selfDO->dataObject != NULL)
     {
         int *sizes2 = new int[sizes.size()];
+
+
         for (unsigned int i = 0; i < sizes.size(); i++)
         {
             sizes2[i] = sizes[i];
@@ -9083,25 +9322,46 @@ PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticRandN_doc,"randN(dims, dtype='uint8', continuous = 0) -> creates dataObject filled with gaussian distributed random values.  \n\
+PyDoc_STRVAR(pyDataObjectStaticRandN_doc,"randN(dims, dtype= \"uint8\", continuous = 0) -> dataObject \n\
 \n\
-Static method to create a new itom.dataObject filled with gaussian distributed random numbers. \n\
-In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the standard deviation is (max-min/)6.0 to max. \n\
-For floating point types, the noise mean value is 0 and the standard deviation is 1.0/3.0. \n\
+Creates a dataObject filled with Gaussian distributed random values. \n\
+\n\
+The value range of the random numbers depend on the desired data type ``dtype``: \n\
+\n\
+1. **integer types**: The random values are in the range ``[min(dtype), max(dtype)]``. \n\
+2. **floating point types**: The random values are in the range ``[0, 1)``. \n\
+3. **rgba32**: All colours as well as the alpha value is independently distributed in \n\
+   the range ``[0, 255]``. \n\
+4. **complex types**: Both the real as well as imaginary part is independently \n\
+   distributed in the range ``[0, 1)``. \n\
+\n\
+The mean ``m`` and standard deviation ``s`` of the Gaussian distribution is as follows: \n\
+\n\
+* For **integer** and **rgba32** types holds: ``m = (min + max) / 2.0`` and \n\
+  ``s = (max - min) / 6.0``. \n\
+* For all **floating point** types holds: ``m = 0.0`` and ``s = 1/3``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dims : {integer list} \n\
-    'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
-continuous : {int}, optional \n\
-    'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
+dims : tuple of int or list of int \n\
+    ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
+    or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
+    with two rows and three columns. \n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``int8``, ``uint8``, ..., ``int32``, ``float32``, \n\
+    ``float64``, ``complex64``, ``complex128``, ``rgba32``. \n\
+continuous : int, optional \n\
+    This value defines if the planes (each sub-array of the last two dimensions) \n\
+    are continuously allocated in memory (``1``) or distributed in various smaller \n\
+    junks (``0``, default). The latter is recommended for huge, n-dimensional matrices. \n\
+    This argument is only considered for ``len(dims) > 2``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {dataObject} \n\
-    Array of random numbers with the given dimensions, dtype. \n\
+array : dataObject \n\
+    The newly created dataObject of shape ``dims`` and data type ``dtype``, filled with \n\
+    random numbers. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -9116,9 +9376,10 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
     RetVal retValue = PyDataObj_ParseCreateArgs(args, kwds, typeno, sizes, continuous);
 
     if (retValue.containsError()) return NULL;
+
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -9128,6 +9389,7 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
     if (selfDO->dataObject != NULL)
     {
         int *sizes2 = new int[sizes.size()];
+
         for (unsigned int i = 0; i < sizes.size(); i++)
         {
             sizes2[i] = sizes[i];
@@ -9144,21 +9406,28 @@ PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticEye_doc,"eye(size, dtype='uint8') -> creates a 2D, square, eye-matrix.\n\
+PyDoc_STRVAR(pyDataObjectStaticEye_doc,"eye(size, dtype= \"uint8\") -> dataObject \n\
 \n\
-Static method for creating a two-dimensional, square, eye-matrix of type itom.dataObject. \n\
+Creates a two-dimensional, squared ``eye`` matrix.\n\
+\n\
+An eye matrix is an array where all elements are equal to zero, except for \n\
+the diagonal values which are set to ``1``. For ``dtype == rgba32``, the \n\
+diagonal values are ``r = 0, g = 0, b = 1, alpha = 0``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-size : {int}, \n\
-    the size of the square matrix (single value)\n\
-dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32' \n\
+size : int, \n\
+    The size of the squared matrix (single integer value).\n\
+dtype : str, optional \n\
+    The desired data type for the elements in the returned :class:`dataObject`. \n\
+    Possible values are: ``int8``, ``uint8``, ..., ``int32``, ``float32``, \n\
+    ``float64``, ``complex64``, ``complex128``, ``rgba32``. \n\
 \n\
 Returns \n\
 ------- \n\
-I : {dataObject} of shape (size,size)\n\
-    An array where all elements are equal to zero, except for the 'k-th diagonal, whose values are equal to one. \n\
+eyeMatrix : dataObject \n\
+    The created eye-matrix as ``size x size`` :class:`dataObject`. \n\
+I : {dataObject} of shape (size,size) \n\
 \n\
 See Also \n\
 --------- \n\
@@ -9180,7 +9449,7 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
 
     if (typeno == ito::tUInt32)
     {
-        PyErr_SetString(PyExc_TypeError, "Type uint32 currently not supported due to incompatibility with OpenCV.");
+        PyErr_SetString(PyExc_TypeError, "Type uint32 not supported due to incompatibility with OpenCV.");
         return NULL;
     }
 
@@ -9210,24 +9479,32 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticFromNumpyColor_doc,"fromNumpyColor(array) -> creates a rgba32 dataObject from a three-dimensional numpy array whose liast dimension has the size 3 or 4.\n\
+PyDoc_STRVAR(pyDataObjectStaticFromNumpyColor_doc,"fromNumpyColor(array) -> dataObject \n\
 \n\
-Static method for creating a two-dimensional dataObject of type 'rgba32' from a three-dimensional numpy.array (uint8 only). \n\
-The size of the dataObject corresponds to the first two dimensions of the numpy.array. The last dimension of \n\
-the numpy.array must have a size of 3 (blue, green, red and alpha = 255) or 4 (blue, green, red, alpha). \n\
+Creates a ``rgba32`` dataObject from a three-dimensional numpy.ndarray. \n\
 \n\
-This method can especially be used to convert numpy.arrays that are obtained by methods from packages like OpenCV (cv2) \n\
-or PIL to dataObjects. \n\
+Static method for creating a 2D ``M x N`` :class:`dataObject` of data type ``rgba32`` \n\
+from a three-dimensional, ``uint8`` :class:`numpy.ndarray``. This ``array`` must have \n\
+the shape ``M x N x 3`` or ``M x N x 4``. Each vector ``array[i, j, :]`` is then \n\
+used to create one ``rgba32`` value in the returned :class:`dataObject`. The meaning \n\
+of this vector is: \n\
+\n\
+1. (blue, green, red) if ``array`` consists of three channels (last dimension). \n\
+   The ``rgba32`` value then gets an alpha value set to 255 everywhere. \n\
+2. (blue, green, red, alpha) if ``array`` consists of four channels (last dimension). \n\
+\n\
+This method can especially be used to convert numpy.arrays that are obtained by methods \n\
+from packages like ``OpenCV (cv2)`` or ``PIL`` to dataObjects. \n\
 \n\
 Parameters \n\
 ----------- \n\
-array : {numpy.array}, \n\
-    [MxNx3] or [MxNx4], uint8 numpy.array\n\
+array : numpy.ndarray \n\
+    ``M x N x 3`` or ``M x N x 4``, uint8 :class:`numpy.ndarray` \n\
 \n\
 Returns \n\
 ------- \n\
-I : {dataObject} of shape (M,N) and type 'rgba32'\n\
-    The last dimension of the numpy.array corresponds to blue, green, red and optional alpha of the rgba32 value.");
+dataObject \n\
+    Coloured dataObject of shape ``M x N`` and data type ``rgba32``.");
 PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds)
 {
     static const char *kwlist[] = { "array", NULL };
@@ -9317,28 +9594,38 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj, copyAxisInfo = True, copyTags = False) -> Copy the meta information of sourceObj. \n\
+PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj, copyAxisInfo = True, copyTags = False) \n\
 \n\
-All meta information(axis scales, offsets, descriptions, units, tags...) of the sourceObj \
-are copied to the dataObject. \n\
+Copies meta information of another dataObject to this object. \n\
+\n\
+This method can be used to copy all or parts of meta information of the \n\
+:class:`dataObject` ``sourceObj`` to this object. The following things \n\
+are copied, depending on the arguments of this method: \n\
+\n\
+Axis meta information: \n\
+\n\
+* axis scaling and offset (see :attr:`axisScales` and :attr:`axisOffsets`) \n\
+* axis descriptions and units (see :attr:`axisDescriptions` and :attr:`axisUnits`) \n\
+\n\
+Tags: \n\
+\n\
+* the entire tag map (string key vs. string or float value), including the protocol \n\
+  string. The existing tag map in this object is deleted first. \n\
 \n\
 Parameters  \n\
 ------------\n\
-sourceObj : {dataObject} \n\
-    whose meta information is copied in this dataObject. \n\
-copyAxisInfo : {bool}, optional\n\
-    If 'copyAxisInfo' is True, the 'axis scales', 'offsets', 'descriptions', 'units' are copied.\n\
-copyTags : {bool}, optional\n\
-    If 'copyTags' is True, the 'tags' are copied.\n\
+sourceObj : dataObject \n\
+    source object, where meta information is copied from. \n\
+copyAxisInfo : bool, optional \n\
+    If ``True``, all axis meta information is copied. \n\
+copyTags : bool, optional \n\
+    If ``True``, the tags of this data object are cleared and then set to a copy \n\
+    of the tags of ``sourceObj``. \n\
 \n\
-Raises \n\
-------- \n\
-RuntimeError : \n\
-    if the given sourceObj is not a dataObject\n\
 \n\
 See Also \n\
 --------- \n\
-metaDict : this attribute can directly be used to print the meta information of a dataObject.");
+metaDict : this attribute can directly be used to print meta information of a dataObject.");
 PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     Py_ssize_t length = 0;
@@ -9354,7 +9641,15 @@ PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject 
     unsigned char copyAxesInfo = 1;
     unsigned char copyTags = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|bb", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &pyObj, &copyAxesInfo, &copyTags)) // obj is a borrowed reference
+    if (!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "O!|bb", 
+        const_cast<char**>(kwlist), 
+        &PythonDataObject::PyDataObjectType, 
+        &pyObj, 
+        &copyAxesInfo, 
+        &copyTags)) // obj is a borrowed reference
     {
         return NULL;
     }
@@ -9383,6 +9678,7 @@ PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject 
     {
         self->dataObject->addToProtocol("Copied meta information from another dataObject.");
     }
+
     Py_RETURN_NONE;
 }
 
