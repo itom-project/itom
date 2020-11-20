@@ -7292,31 +7292,30 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(PyArrayObject *npNdA
     return retVal;
 }
 
-//---------------------------------------Get / Set metaDict ----------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrTagDict_doc,"dictionary with all meta information of this dataObject \n\
+//---------------------------------------Get / Set metaDict ---------------------------
+PyDoc_STRVAR(dataObjectAttrTagDict_doc,
+"dict : Gets or sets a dictionary with all meta information of this dataObject. \n\
 \n\
-Attribute to read or write the following meta information: \n\
+The dictionary contains the following key-value-pairs. If a new dictionary \n\
+is set to this attribute, all these values must be contained in the dict: \n\
 \n\
-* axisOffsets : List with offsets of each axis \n\
-* axisScales : List with the scales of each axis \n\
-* axisUnits : List with the unit strings of each axis \n\
-* axisDescriptions : List with the description strings of each axis \n\
-* tags : Dictionary with all tags including the tag 'protocol' if at least one protocol entry has been added using addToProtocol \n\
-* valueOffset : Offset of each value (0.0) \n\
-* valueScale : Scale of each value (1.0) \n\
-* valueDescription : Description of the values \n\
-* valueUnit : The unit string of the values \n\
+* axisOffsets : List with offsets of each axis. \n\
+* axisScales : List with the scales of each axis. \n\
+* axisUnits : List with the unit strings of each axis. \n\
+* axisDescriptions : List with the description strings of each axis. \n\
+* tags : Dictionary with all tags including the tag **protocol** if at least \n\
+  one protocol entry has been added using :meth:`addToProtocol`. \n\
+* valueOffset : Offset of each value (0.0). \n\
+* valueScale : Scale of each value (1.0). \n\
+* valueDescription : Description of the values. \n\
+* valueUnit : The unit string of the values. \n\
 \n\
-Returns \n\
+This attribute was read-only until itom 4.0. It is settable from itom 4.1 on. \n\
+\n\
+See Also \n\
 -------- \n\
-metaDict : {\"tags\": str, \"axisScales\": tuple, \"axisOffsets\": tuple, \"axisDescriptions\": tuple, \"axisUnits\": tuple, \"valueUnit\": str, \"valueDescription\": str} \n\
-    dictionary with the meta information of the dataObject\n\
-\n\
-Notes \n\
------ \n\
-It is also possible to use the corresponding setters like setTag/ setAxisScales. \
-Or define all meta information in a corresponding dictionary to use the setter of this attribute. \
-This attribute is of type read / write with itom version 4.1.");
+addToProtocol, axisOffsets, axisScales, axisUnits, axisDescriptions, \n\
+valueUnit, valueDescription, tags");
 PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /*closure*/)
 {
     PyObject *item = NULL;
@@ -7344,14 +7343,17 @@ PyObject* PythonDataObject::PyDataObject_getTagDict(PyDataObject *self, void * /
 
     //1. tags (here it is bad to use the tags-getter, since this returns a dict_proxy, which cannot directly be pickled
     PyObject *tempTagDict = PyDict_New();
-    for (int i=0;i<tagSize;i++)
+
+    for (int i = 0; i < tagSize; i++)
     {
-        tempKey = dObj->getTagKey(i,validOp);
+        tempKey = dObj->getTagKey(i, validOp);
+
         if (validOp)
         {
             //tempString = dObj->getTag(tempKey, validOp);
             //if (validOp) PyDict_SetItem(tempTagDict, PyUnicode_FromString(tempKey.data()), PyUnicode_FromString(tempString.data()));
             dObj->getTagByIndex(i, tempKey, tempTag);
+
             if (tempTag.getType() == DataObjectTagType::typeDouble)
             {
                 item = PyFloat_FromDouble(tempTag.getVal_ToDouble());
@@ -7527,8 +7529,11 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectArray_StructGet_doc, 
-"__array_struct__ -> general python-array interface (do not call this directly) \n\
-This interface makes the data object compatible to every array structure in python \n\
+"__array_struct__() -> obj \n\
+\n\
+General python-array interface (do not call this directly) \n\
+\n\
+This interface makes the data object compatible to every array structure in Python \n\
 which does equally implement the array interface (e.g. NumPy). This method is \n\
 therefore a helper method for the array interface.");
 PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
@@ -7632,7 +7637,10 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectArray_Interface_doc, 
-"__array_interface__ -> general python-array interface (do not call this directly) \n\
+"__array_interface__() -> dict \n\
+\n\
+General python-array interface (do not call this directly). \n\
+\n\
 This interface makes the data object compatible to every array structure in python \n\
 which does equally implement the array interface (e.g. NumPy).");
 PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
@@ -7689,19 +7697,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     PyDict_SetItemString(retDict, "typestr", typestr);
     Py_XDECREF(typestr);
 
-    //inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; //NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy should have the same byteorder (Intel: little-endian)
-
-    ////check if size and osize are totally equal, then set continuous flag
-    //if (selfDO->getTotal() == selfDO->getOriginalTotal())
-    //{
-    //    inter->flags |= NPY_C_CONTIGUOUS;
-    //}
-
-    //inter->descr = NULL;
-    //inter->data = NULL;
-    //inter->shape = NULL;
-    //inter->strides = NULL;
-
     if (selfDO->getDims() > 0)
     {
         unsigned int firstMDataIndex = selfDO->seekMat(0);
@@ -7722,30 +7717,25 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         Py_INCREF(Py_False);
         PyTuple_SetItem(data,1, Py_False);
 
-
-        //inter->shape = (npy_intp *)malloc(inter->nd * sizeof(npy_intp));
-        //inter->strides = (npy_intp *)malloc(inter->nd * sizeof(npy_intp));
-
-        //inter->shape[inter->nd - 1] = (npy_intp)selfDO->getSize(inter->nd - 1); //since transpose flag has been evaluated and is false now, everything is ok here
         PyTuple_SetItem(shape, dims-1, PyLong_FromLong(selfDO->getSize(dims-1)));
         strides_iPlus1 = itemsize;
         PyTuple_SetItem(strides, dims-1, PyLong_FromLong(itemsize));
-        //inter->strides[inter->nd - 1] = inter->itemsize;
+        
         for (int i = dims - 2; i >= 0; i--)
         {
-            PyTuple_SetItem(shape, i, PyLong_FromLong(selfDO->getSize(i))); //since transpose flag has been evaluated and is false now, everything is ok here
-            strides_iPlus1 = (strides_iPlus1 * selfDO->getOriginalSize(i+1));
+            // since transpose flag has been evaluated and is false now, everything is ok here
+            PyTuple_SetItem(shape, i, PyLong_FromLong(selfDO->getSize(i)));
+            strides_iPlus1 = (strides_iPlus1 * selfDO->getOriginalSize(i + 1));
             PyTuple_SetItem(strides, i, PyLong_FromLong(strides_iPlus1));
-
-            //inter->shape[i] = (npy_intp)selfDO->getSize(i);
-            //inter->strides[i] = inter->strides[i+1] * selfDO->getOriginalSize(i+1); //since transpose flag has been evaluated and is false now, everything is ok here
         }
 
         PyDict_SetItemString(retDict, "shape", shape);
+
         if (!isFullyContiguous)
         {
             PyDict_SetItemString(retDict, "strides", strides);
         }
+
         PyDict_SetItemString(retDict, "data", data);
 
         Py_XDECREF(shape);
@@ -7760,10 +7750,27 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObject_Array__doc, 
-"__array__([dtype]) -> returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
-If no desired dtype is given and if the this dataObject is continuous, a ndarray sharing its memory with this dataObject is returned. \n\
-If the desired dtype does not fit to the type of this dataObject, a casted deep copy is returned. This is also the case if \n\
-this dataObject is not continuous. Then a continuous dataObject is created that is the base object of the returned ndarray.");
+"__array__(dtype = None) -> numpy.ndarray \n\
+\n\
+Returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
+\n\
+If no ``dtype`` is given and if the this :class:`dataObject` is continuous, \n\
+a :class:`numpy.ndarray` that shares its memory with this dataObject is returned. \n\
+If the desired ``dtype`` does not fit to the type of this :class:`dataObject`, \n\
+a casted deep copy is returned. This is also the case if this dataObject is not \n\
+continuous. Then a continuous dataObject is created that is the base object of \n\
+the returned :class:`numpy.ndarray`. \n\
+\n\
+Parameters \n\
+---------- \n\
+dtype : numpy.dtype, optional \n\
+    A :class:`numpy.dtype` object that describes the data type, data alignment etc. \n\
+    for the returned :class:`numpy.ndarray`. \n\
+\n\
+Returns \n\
+------- \n\
+arr : numpy.ndarray \n\
+    The converted :class:`numpy.ndarray`");
 PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 {
     if (self->dataObject == NULL)
@@ -7785,14 +7792,15 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 
     ito::DataObject* selfDO = self->dataObject;
 
-    if (selfDO->getContinuous()/* == true*/)
+    if (selfDO->getContinuous())
     {
         newArray = (PyArrayObject*)PyArray_FromStructInterface((PyObject*)self);
     }
     else
     {
-        //at first try to make continuous copy of data object and handle possible exceptions before going on
+        // at first try to make continuous copy of data object and handle possible exceptions before going on
         ito::DataObject *continuousObject = NULL;
+
         try
         {
             continuousObject = new ito::DataObject(ito::makeContinuous(*selfDO));
@@ -8310,20 +8318,30 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray(destinationType='uint8') -> returns the rgba32 color data object as a gray-scale object\n\
+PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray(destinationType = \"uint8\") -> dataObject \n\
 \n\
-The destination data object has the same size than this data object and the real type given by destinationType. The pixel-wise \
-conversion is done using the formula: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
+Converts this ``rgba32`` coloured dataObject into a gray-scale dataObject. \n\
+\n\
+The returned :class:`dataObject` has the same size than this :class:`dataObject` \n\
+and the real-value data type, that is given by ``destinationType``. The pixel-wise \n\
+conversion is done using the formula: \n\
+\n\
+.. math: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
 \n\
 Parameters \n\
 ----------- \n\
-destinationType : {str} \n\
-    Type string indicating the new real type ('uint8',...'float32','float64' - no complex) \n\
+destinationType : {\"uint8\", \"int8\", \"uint16\", \"int16\", \"int32\", \"float32\", \"float64\"}, optional \n\
+    Desired data type of the returned dataObject (only real value data types allowed). \n\
 \n\
 Returns \n\
 ------- \n\
-dataObj : {dataObject} \n\
-    converted gray-scale data object of desired type");
+gray : dataObject \n\
+    converted gray-scale data object of desired type. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if this dataObject is no ``rgba32`` object or if the ``destinationType`` is invalid.");
 /*static*/ PyObject* PythonDataObject::PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     const char* type = NULL;
@@ -8369,45 +8387,80 @@ dataObj : {dataObject} \n\
     return (PyObject*)retObj;
 }
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, destinationType='uint8') -> returns a seperated color channel of a rgba32 color data object\n\
+PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, destinationType = \"uint8\") -> dataObject \n\
 \n\
-The destination data object has the same size than this data object if only one color is extracted. The output will have one dimension more if there are more than one colors extracted.\
-Each element of the new dimension corrspomnds to one color. \
-DestinationType defines the type of the output object.\n\
+Splits selected color channels from this coloured ``rgba32`` dataObject. \n\
+\n\
+A ``rgba32`` coloured :class:`dataObject` contains color values for each item. \n\
+Each color value contains a red, green, blue and alpha (transparancy) component (uint8 \n\
+each). This method allows extracting one or several of these components from this \n\
+dataObject. These components are then returned in single slices of a new, first axis \n\
+of the returned dataObject. \n\
+\n\
+The returned :class:`dataObject` has one axis more than this object. This new axis \n\
+is prepended to the existing axes, that have the same shape than this object. The data \n\
+type of the returned object is ``destinationType``. \n\
+\n\
+The size of the first, new axis is equal to the number of letters in ``color``. \n\
+Each letter must be one of the characters ``b``, ``r``, ``g`` or ``a``, that stand \n\
+for the available channels of the color, that can be extracted. \n\
+\n\
+Example: :: \n\
+    \n\
+    color = dataObject.zeros([20, 10], 'rgba32') \n\
+    split_colors = color.splitColor(\"rgb\") \n\
+    print(split_colors.shape, split_colors.dtype) \n\
+    # printout: [3, 20, 10], \"uint8\" \n\
+\n\
+In this example, the :attr:`shape` of ``split_colors`` is ``[3, 20, 10]``, since \n\
+three channels (red, green and blue) should have been splitted, such that \n\
+``split_colors[0, :, :]`` contains the red component, etc. \n\
 \n\
 Parameters \n\
 ----------- \n\
-color : {str} \n\
-    Color string indicating the color(s) to be extracted ('b','r','g','a'). It is possible to combine the colors for ex. 'rgb', \n\
-so that each color corresponds to one elemnt of the first dimension of the output dataObject\n\
-\n\
-destinationType : {str} \n\
-    Type string indicating the new real type ('int8',...'float32','float64' - no complex) \n\
+color : str \n\
+    Desired color string, that indicates the type and order of extracted color \n\
+    components. This string can consist of the following letters: ``('b', 'r', 'g', 'a')``. \n\
+    It is possible to combine different channels, like ``\"arg\"`` which extracts the \n\
+    alpha channel, followed by red and gree. \n\
+destinationType : {\"uint8\", \"int8\", \"uint16\", \"int16\", \"int32\", \"float32\", \"float64\"}, optional \n\
+    Desired data type of the returned dataObject (only real value data types allowed). \n\
 \n\
 Returns \n\
 ------- \n\
-dataObj : {dataObject} \n\
-    containing the selected channel values");
+dataObject \n\
+    containing the selected channel values \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if this :class:`dataObject` is no ``rgba32`` object or if ``destinationType`` \n\
+    is no real data type.");
 /*static*/ PyObject* PythonDataObject::PyDataObj_SplitColor(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     int typeno = ito::tUInt8;
     const char* type = NULL;
     const char* color = NULL;
     const char *kwlist[] = { "color", "destinationType", NULL };
+
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s", const_cast<char**>(kwlist), &color, &type))
     {
         return NULL;
     }
+
     if (type)
     {
         typeno = typeNameToNumber(type);
     }
+
     if (typeno == -1)
     {
         PyErr_Format(PyExc_TypeError, "The given type string '%s' is unknown", type);
         return NULL;
     }
+
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
     try
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->splitColor(color , typeno));
@@ -8418,31 +8471,45 @@ dataObj : {dataObject} \n\
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
     }
+
     if (!retObj->dataObject->getOwnData())
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
+
     if (retObj) retObj->dataObject->addToProtocol("Extracted color data from RGBA32-type dataObject.");
 
     return (PyObject*)retObj;
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor(addAlphaChannel = 0) -> convert a 2D dataObject of type 'rgba32' to a 3D 'uint8' numpy.array whose last dimension is 3 (no alpha channel) or 4.\n\
+PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor(addAlphaChannel = 0) -> np.ndarray \n\
 \n\
-Whereas the class 'dataObject' has a specific type 'rgba32' for colour values (which is internally a uint32 value with 4 times 8bit values for blue, green, red and alpha), \n\
-numpy.arrays don't have this. Therefore, several python packages like cv2 (OpenCV) or PIL store colour values in 3D numpy.arrays whereas the last dimension has a size of 3 \n\
-(without alpha value) or 4. This method returns the coloured version of a numpy.array from the rgba32 dataObject. \n\
+Converts a 2D dataObject of type ``rgba32`` to a 3D numpy.ndarray of type ``uint8``. \n\
 \n\
+Many Python packages, e.g. OpenCV (cv2) or PIL store coloured array such that the color \n\
+components are stored in an additional axis, which is the last axis of all axes. \n\
+Hence, there is no specific ``rgba2`` data type for :class:`numpy.ndarray`, like it \n\
+is the case for :class:`dataObject`. \n\
+\n\
+This method converts a coloured :class:`dataObject` of dtype ``rgba32`` to a compatible \n\
+:class:`numpy.ndarray`, where the color components are stored in an additional last axis. \n\
+The size of this last axis is either ``3`` if ``addAlphaChannel = 0`` or ``4`` otherwise. \n\
+The order of this last axis is ``blue``, ``green``, ``red`` and optional ``alpha``. \n\
+The remaining first axes of the returned object have the same shape than this dataObject. \n\
 Parameters \n\
 ----------- \n\
-addAlphaChannel : {int} \n\
-    If 0, the last dimension of the returned numpy.array has a size of 3 and contains the blue, green and red value, whereas 1 adds the alpha value as fourth value. \n\
+addAlphaChannel : int, optional \n\
+    If ``0``, the last dimension of the returned :class:`numpy.ndarray` has a size of ``3`` \n\
+    and contains the blue, green and red value, whereas ``1`` adds the alpha value as \n\
+    fourth value. \n\
     \n\
 Returns \n\
 ------- \n\
-arr : {numpy.array} \n\
-    converted 2D numpy.array of type 'uint8' that can for instance be used in methods of packages like cv2 (OpenCV) or PIL.");
+arr : numpy.ndarray \n\
+    The 3D :class:`numpy.ndarray` of dtype ``uint8``. The shape is ``[*obj.shape, 3]`` or \n\
+    ``[*obj.shape, 4]``, depending on ``addAlphaChannel``, where ``obj`` is this \n\
+    :class:`dataObject`.");
 PyObject* PythonDataObject::PyDataObj_ToNumpyColor(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     int addAlphaChannel = 0;
@@ -8485,15 +8552,18 @@ PyObject* PythonDataObject::PyDataObj_ToNumpyColor(PyDataObject *self, PyObject 
         {
             srcRow = src->ptr<ito::Rgba32>(r);
             destRow = data + (r * npsteps[0]);
+
             for (int c = 0; c < sizes[1]; ++c)
             {
                 destRow[0] = srcRow[c].b;
                 destRow[npsteps[2]] = srcRow[c].g;
                 destRow[2 * npsteps[2]] = srcRow[c].r;
+
                 if (addAlphaChannel)
                 {
                     destRow[3 * npsteps[2]] = srcRow[c].a;
                 }
+
                 destRow += npsteps[1];
             }
         }

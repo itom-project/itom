@@ -72,7 +72,7 @@ for the direct usage of this constructor: \n\
 \n\
 1. If a reference to a general :class:`uiItem` is available, but the referenced \n\
    widget / item is a plot, the :class:`uiItem` can be cast to :class:`plotItem` \n\
-   such that additional methods like :meth:`pickPoints` or :meth:`drawAndPickElement` \n\
+   such that additional methods like :meth:`pickPoints` or :meth:`drawAndPickElements` \n\
    become available. \n\
 2. If a reference to a :class:`figure` is available, that contains one or more \n\
    plots, the reference to one of these plots can be obtained. The ``subplotIdx`` \n\
@@ -400,7 +400,7 @@ RuntimeError \n\
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, maxNrElements = 1) -> Tuple[shape] \n\
+PyDoc_STRVAR(pyPlotItem_drawAndPickElements_doc,"drawAndPickElements(elementType, maxNrElements = 1) -> Tuple[shape] \n\
 \n\
 This method forces the user to draw specific shapes on the canvas of the plot. \n\
 \n\
@@ -434,7 +434,7 @@ Returns \n\
 -------- \n\
 tuple of shape \n\
     A tuple with all drawn elements, represented as :class:`shape` objects is returned.");
-/*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds)
+/*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElements(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"elementType", "maxNrElements", NULL};
     ito::RetVal retval;
@@ -531,7 +531,7 @@ tuple of shape \n\
 //-------------------------------------------------------------------------------------
 PyMethodDef PythonPlotItem::PyPlotItem_methods[] = {
     {"pickPoints", (PyCFunction)PyPlotItem_pickPoints, METH_KEYWORDS | METH_VARARGS, pyPlotItem_pickPoints_doc},
-    {"drawAndPickElements", (PyCFunction)PyPlotItem_drawAndPickElement, METH_KEYWORDS | METH_VARARGS, pyPlotItem_drawAndPickElement_doc},
+    {"drawAndPickElements", (PyCFunction)PyPlotItem_drawAndPickElements, METH_KEYWORDS | METH_VARARGS, pyPlotItem_drawAndPickElements_doc},
     {NULL}  /* Sentinel */
 };
 

@@ -44,11 +44,11 @@ QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > ito::PythonUi::me
 
 namespace ito
 {
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 //
 //  pyUiItem
 //
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_dealloc(PyUiItem* self)
 {
     Py_XDECREF(self->baseItem);
@@ -65,7 +65,7 @@ void PythonUi::PyUiItem_dealloc(PyUiItem* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PyUiItem* self = (PyUiItem *)type->tp_alloc(type, 0);
@@ -83,32 +83,57 @@ PyObject* PythonUi::PyUiItem_new(PyTypeObject *type, PyObject * /*args*/, PyObje
     return (PyObject *)self;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInit_doc,"uiItem(...) -> base class representing any widget of a graphical user interface \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemInit_doc,"uiItem(objectID, objName, widgetClassName, parentObj = None) -> uiItem \\\n\
+uiItem(parentObj, objName) -> uiItem \n\
 \n\
-This class represents any widget (graphical, interactive element like a button or checkbox) on a graphical user interface. \n\
-An instance of this class provides many functionalities given by the underlying Qt system. For instance, it is posible to \n\
-call a public slot of the corresponding widget, connect signals to specific python methods or functions or change properties \n\
-of the widget represeted by the instance. \n\
+Base class that represents any widget or layout of an user interface. \n\
 \n\
-The overall dialog or window as main element of a graphical user interface itself are instances of the class *ui*. However, \n\
-they are derived from *uiItem*, since dialogs or windows internally are widgets as well. \n\
+This class represents any widget (graphical, interactive element like a button or \n\
+checkbox) on a graphical user interface. An object of this class provides many \n\
+functionalities given by the underlying Qt system. For instance, it is posible to \n\
+call a public slot of the corresponding widget, connect signals to specific python \n\
+methods or functions or change properties of the widget represeted by this object. \n\
 \n\
-Widgets placed at a user interface using the Qt Designer can be referenced by an *uiItem* instance by their specific objectName, \n\
-assigned in the Qt Designer as well. As an example, a simple dialog with one button is created and the text of the button (objectName: btn) \n\
-is set to OK: :: \n\
+The overall dialog or window as main element of a graphical user interface itself are \n\
+instances of the class :class:`ui`. However, they are derived from :class:`uiItem`, \n\
+since dialogs or windows internally are widgets as well. \n\
+\n\
+Widgets, placed at a user interface using the Qt Designer, can be referenced by an \n\
+:class:`uiItem` object by their specific ``objectName``, assigned in the Qt Designer \n\
+as well. As an example, a simple dialog with one button is created and the text of \n\
+the button (objectName: btn) is set to OK: :: \n\
     \n\
     dialog = ui('filename.ui', type=ui.TYPEDIALOG) \n\
     button = dialog.btn #here the reference to the button is obtained \n\
     button[\"text\"] = \"OK\" #set the property text of the button \n\
     \n\
-Information about available properties, signals and slots can be obtained using the method **info()** of *uiItem*. \n\
+Information about available properties, signals and slots can be obtained using the \n\
+method :meth:`uiItem.info`. For more information about creating customized user \n\
+interfaces, reference widgets and layouts etc, see the section :ref:`qtdesigner`. \n\
+\n\
+Parameters \n\
+---------- \n\
+objectID : int \n\
+    is the itom internal identifier number for the widget or layout to be wrapped. \n\
+objName : str \n\
+    is the ``objectName`` property of the wrapped widget or layout. \n\
+widgetClassName : str \n\
+    is the Qt class name of the wrapped widget or layout (see :meth:`getClassName`). \n\
+parentObj : uiItem, optional \n\
+    is the parent :class:`uiItem` of this wrapped widget or layout. \n\
+\n\
+Returns \n\
+------- \n\
+uiItem \n\
+    is the new :class:`uiItem` object that wraps the indicated widget or layout. \n\
 \n\
 Notes \n\
 ------ \n\
-It is not intended to directly instantiate this class. Either create a user interface using the class *ui* or obtain \n\
-a reference to an existing widget (this is then an instance of *uiItem*) using the dot-operator of a \n\
-parent widget or the entire user interface.");
+It is not intended to directly instantiate this class. Either create a user interface \n\
+using the class :class:`ui` or obtain a reference to an existing widget (this is then \n\
+an instance of :class:`uiItem`) using the dot-operator of a parent widget or the entire \n\
+user interface.");
 int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 {
     ito::RetVal retValue = retOk;
@@ -200,7 +225,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     return 0;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_repr(PyUiItem *self)
 {
     if(self->objName && self->widgetClassName)
@@ -213,18 +238,21 @@ PyObject* PythonUi::PyUiItem_repr(PyUiItem *self)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetClassName_doc, "getClassName() -> returns the Qt class name of this uiItem (widget or layout).  \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetClassName_doc, "getClassName() -> str \n\
 \n\
-Every ui item wraps a widget or layout of the user interface. This method returns \n\
-the class name of this item, as it is given by the Qt framework. \n\
+Returns the Qt class name of this uiItem (widget or layout).  \n\
+\n\
+Every :class:`uiItem` wraps a widget or layout of the user interface. \n\
+This method returns the class name of this item, as it is given by the \n\
+Qt framework. \n\
 \n\
 New in itom 4.1. \n\
 \n\
 Returns \n\
 ----------- \n\
-className : {str} \n\
-    The class name of the uiItem.");
+className : str \n\
+    The class name of this :class:`uiItem`.");
 PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
 {
     if (self->widgetClassName)
@@ -243,11 +271,13 @@ PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
 int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return 0;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -296,25 +326,29 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
     return *propertiesCount; //nr of properties in the corresponding QMetaObject
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
 {
     QStringList propNames;
     bool ok = false;
-    QString propName = PythonQtConversion::PyObjGetString(key,false,ok);
+    QString propName = PythonQtConversion::PyObjGetString(key, false, ok);
+
     if(!ok)
     {
         PyErr_SetString(PyExc_RuntimeError, "property name string could not be parsed.");
         return NULL;
     }
+
     propNames << propName;
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return NULL;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -325,6 +359,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     ito::RetVal retValue = retOk;
 
     QSharedPointer<QVariantMap> retPropMap(new QVariantMap());
+
     for(int i = 0 ; i < propNames.count() ; i++)
     {
         (*retPropMap)[propNames.at(i)] = QVariant();
@@ -344,12 +379,13 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     }
 
     retValue += locker.getSemaphore()->returnValue;
+
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
     return PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames[0]));
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* value)
 {
     QString keyString;
@@ -366,6 +402,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     }
 
     valueV = PythonQtConversion::PyObjToQVariant(value);
+
     if(valueV.isValid())
     {
         propMap[keyString] = valueV;
@@ -377,11 +414,13 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     } 
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return -1;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -405,12 +444,13 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     }
 
     retValue += locker.getSemaphore()->returnValue;
+
     if(!PythonCommon::transformRetValToPyException(retValue)) return -1;
 
     return 0;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod, *args) -> calls any public slot of this widget or any accessible public method.  \n\
 \n\
 This method invokes (calls) a method of the underlying widget that is marked as public slot. Besides slots there are some public methods of specific \n\
@@ -646,7 +686,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the widget with the given callable python method \n\
 \n\
 This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
@@ -753,7 +793,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *k
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal. \n\
 \n\
 Parameters \n\
@@ -811,7 +851,7 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature : str, observer : itom.progressObserver) -> connects the given signal with a slot immediately setting the cancellation flag of the given progressObserver. \n\
 \n\
 This method immediately calls the 'requestCancellation' slot of the given observer if the given signal is emitted (independent on \n\
@@ -882,7 +922,7 @@ PyObject* PythonUi::PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, Py
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemDisconnect_doc,"disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
 \n\
 Parameters \n\
@@ -978,7 +1018,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName) -> returns tuple of requested properties (single property or tuple of properties)\n\
 \n\
 Use this method or the operator [] in order to get the value of one specific property of this widget or of multiple properties. \n\
@@ -1088,7 +1128,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.\n\
 \n\
 Parameters \n\
@@ -1170,7 +1210,7 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo(propertyName = None) -> returns information about the property 'propertyName' of this widget or all properties, if None or no name indicated.\n\
 \n\
 Parameters \n\
@@ -1282,7 +1322,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.\n\
 \n\
 Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
@@ -1354,7 +1394,7 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.\n\
 \n\
 Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
@@ -1417,7 +1457,7 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) -> set window flags of corresponding widget.\n\
 \n\
 The window flags are used to set the type of a widget, dialog or window including further hints to the window system. \n\
@@ -1489,7 +1529,7 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetWindowFlags_doc,"getWindowFlags(flags) -> gets window flags of corresponding widget. \n\
 \n\
 The flags-value is an or-combination of the enumeration Qt::WindowType. See Qt documentation for more information. \n\
@@ -1535,7 +1575,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     return Py_BuildValue("i", *value);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
 \n\
 Parameters \n\
@@ -1604,7 +1644,7 @@ verbose : {int} \n\
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists, else false.");
 /*static*/ PyObject* PythonUi::PyUiItem_exists(PyUiItem *self)
 {
@@ -1645,7 +1685,7 @@ PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemChildren_doc,"children(recursive = False) -> returns dict with widget-based child items of this uiItem. \n\
 \n\
 Each key -> value pair is object-name -> class-name). Objects with no object-name are omitted. \n\
@@ -1715,7 +1755,7 @@ recursive : {bool} \n\
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetChild_doc, "getChild(widgetName) -> returns the uiItem of the child widget with the given widgetName. \n\
 \n\
 This call is equal to self.__attributes__[widgetName] or self.widgetName \n\
@@ -1738,7 +1778,7 @@ widgetName : {str} \n\
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemGetLayout_doc, "getLayout() -> returns the uiItem of the layout item of this widget (or None). \n\
 \n\
 Container widgets, like group boxes, tab widgets etc. as well as top level widgets of a custom user interface \n\
@@ -1809,7 +1849,7 @@ If this uiItem has such a layout, its reference is returned as uiItem, too. Else
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
     if(self->methodList == NULL)
@@ -1860,7 +1900,7 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
     return true;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 {
     //UiItem has no __dict__ and __slots__ attribute and this is no widget either, therefore filter it out and raise an exception
@@ -1933,7 +1973,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
     return (PyObject*)pyUiItem;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 {
     return PyObject_GenericSetAttr( (PyObject*)self, name, value );
@@ -1958,7 +1998,7 @@ int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
     return NULL;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"call", (PyCFunction)PyUiItem_call, METH_VARARGS, PyUiItemCall_doc},
         {"connect", (PyCFunction)PyUiItem_connect, METH_KEYWORDS | METH_VARARGS, PyUiItemConnect_doc},
@@ -1981,12 +2021,12 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonUi::PyUiItem_members[] = {
         {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonUi::PyUiItemModule = {
         PyModuleDef_HEAD_INIT,
         "uiItem",
@@ -1995,12 +2035,12 @@ PyModuleDef PythonUi::PyUiItemModule = {
         NULL, NULL, NULL, NULL, NULL
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonUi::PyUiItem_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonUi::PyUiItemType = {
         PyVarObject_HEAD_INIT(NULL, 0)
         "itom.uiItem",             /* tp_name */
@@ -2042,14 +2082,14 @@ PyTypeObject PythonUi::PyUiItemType = {
         PyUiItem_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMappingMethods PythonUi::PyUiItem_mappingProtocol = {
     (lenfunc)PyUiItem_mappingLength,
     (binaryfunc)PyUiItem_mappingGetElem,
     (objobjargproc)PyUiItem_mappingSetElem
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_addTpDict(PyObject * /*tp_dict*/)
 {
     //nothing
@@ -2059,7 +2099,7 @@ void PythonUi::PyUiItem_addTpDict(PyObject * /*tp_dict*/)
 
 
 
-//-----------------------------------------------------------------------------------------------------------------OK
+//-------------------------------------------------------------------------------------OK
 void PythonUi::PyUi_dealloc(PyUi* self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -2084,7 +2124,7 @@ void PythonUi::PyUi_dealloc(PyUi* self)
     PyUiItemType.tp_dealloc( (PyObject*)self );
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwds)
 {
     PyUi *self = (PyUi*)PyUiItemType.tp_new(type,args,kwds);
@@ -2110,7 +2150,7 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
     return (PyObject *)self;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface \n\
 \n\
 The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
@@ -2261,7 +2301,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     return result;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_repr(PyUi *self)
 {
     PyObject *result;
@@ -2332,7 +2372,7 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
     return result;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows the window or dialog. \n\
 \n\
 Parameters \n\
@@ -2420,7 +2460,7 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized user interface \n\
 \n\
 A hidden window or dialog can be shown again via the method :py:meth:`~itom.ui.show`.\n\
@@ -2465,7 +2505,7 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     Py_RETURN_NONE;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns True if dialog is still visible\n\
 \n\
 Returns \n\
@@ -2553,7 +2593,7 @@ int PyUiItem_Converter(PyObject *object, PythonUi::PyUiItem **address)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3, parent]) -> shows a dialog to get a double value from the user\n\
 \n\
 Parameters \n\
@@ -2670,7 +2710,7 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step=1, parent]) -> shows a dialog to get an integer value from the user\n\
 \n\
 Parameters \n\
@@ -2785,7 +2825,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex=0, editable=True, parent]) -> shows a dialog to let the user select an item from a string list\n\
 \n\
 Parameters \n\
@@ -2925,7 +2965,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString [,parent]) -> opens a dialog in order to ask the user for a string \n\
 Parameters \n\
 ----------- \n\
@@ -3036,7 +3076,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgInformation_doc,"msgInformation(title, text [, buttons, defaultButton, parent]) -> opens an information message box \n\
 \n\
 Parameters \n\
@@ -3060,7 +3100,7 @@ PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kw
     return PyUi_msgGeneral(self,args,kwds,1);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgQuestion_doc,"msgQuestion(title, text [, buttons, defaultButton, parent]) -> opens a question message box \n\
 \n\
 Parameters \n\
@@ -3084,7 +3124,7 @@ PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,2);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgWarning_doc,"msgWarning(title, text [, buttons, defaultButton, parent]) -> opens a warning message box \n\
 \n\
 Parameters \n\
@@ -3108,7 +3148,7 @@ PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,3);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiMsgCritical_doc,"msgCritical(title, text [, buttons, defaultButton, parent]) -> opens a critical message box \n\
 \n\
 Parameters \n\
@@ -3132,7 +3172,7 @@ PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,4);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *kwds, int type)
 {
     const char *kwlist[] = {"title", "text", "buttons", "defaultButton", "parent", NULL};
@@ -3212,7 +3252,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     return Py_BuildValue("iN", *retButton, PythonQtConversion::QStringToPyObject(*retButtonText)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory [, options, parent]) -> opens a dialog to choose an existing directory \n\
 \n\
 Parameters \n\
@@ -3303,7 +3343,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileNames_doc, "getOpenFileNames([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing existing files. \n\
 \n\
 Parameters \n\
@@ -3406,7 +3446,7 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileName_doc,"getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file. \n\
 \n\
 Parameters \n\
@@ -3510,7 +3550,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetSaveFileName_doc,"getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save. \n\
 \n\
 This method creates a modal file dialog to let the user select a file name used for saving a file. \n\
@@ -3616,7 +3656,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiCreateNewPluginWidget_doc, "createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
 \n\
 This static class method initializes an instance of class ui from a widget, window, dialog or dockWidget that is implemented in an algorithm plugin. \n\
@@ -3780,7 +3820,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiCreateNewPluginWidget2_doc, "createNewPluginWidget2(widgetName [, paramsArgs, paramsDict, type = -1, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
 \n\
 Parameters \n\
@@ -3980,7 +4020,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiAvailableWidgets_doc, "availableWidgets() -> return a list of currently available widgets (that can be directly loaded in ui-files at runtime)");
 PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
 {
@@ -4007,7 +4047,7 @@ PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
 }
 
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUi_methods[] = {
         {"show", (PyCFunction)PyUi_show,     METH_VARARGS, pyUiShow_doc},
         {"hide", (PyCFunction)PyUi_hide, METH_NOARGS, pyUiHide_doc},
@@ -4031,12 +4071,12 @@ PyMethodDef PythonUi::PyUi_methods[] = {
         {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonUi::PyUi_members[] = {
         {NULL}  /* Sentinel */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonUi::PyUiModule = {
         PyModuleDef_HEAD_INIT,
         "ui",
@@ -4045,7 +4085,7 @@ PyModuleDef PythonUi::PyUiModule = {
         NULL, NULL, NULL, NULL, NULL
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonUi::PyUi_getseters[] = {
     {NULL}  /* Sentinel */
 };
@@ -4091,7 +4131,7 @@ PyTypeObject PythonUi::PyUiType = {
         PyUi_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;

@@ -30,14 +30,14 @@
 namespace ito
 {
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonAutoInterval::PyAutoInterval_dealloc(PyAutoInterval* self)
 {
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PyAutoInterval* self = (PyAutoInterval *)type->tp_alloc(type, 0);
@@ -52,28 +52,32 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
 };
 
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval(min=-inf, max=inf, auto=true) -> creates a new auto interval object.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval(min = -math.inf, max = math.inf, auto = True) -> autoInterval \n\
 \n\
-Parameters \n\
------------ \n\
-min : {float} \n\
-    minimum value of interval (default: -infinity) \n\
-max : {float}, \n\
-    maximum value of interval (default: +infinity) \n\
-auto : {bool} \n\
-    false if interval is fixed, true if the interval can be scaled automatically (default) \n\
+Creates a new (auto) interval object.\n\
 \n\
-Properties and slots of uiItems (e.g. plots) sometimes have parameters of type 'autoInterval'. It is either \n\
-possible to pass then an 'autoInterval' instance, the string 'auto' or a list or tuple with the two values [min, max] \n\
+\n\
+Properties and slots of :class:`uiItem` objects (e.g. plots) sometimes have parameters \n\
+of type :class:`autoInterval`. It is either possible to pass an :class:`autoInterval` \n\
+instance, the string ``auto`` or a list or tuple with the two limit values ``[min, max]``. \n\
 \n\
 Example:: \n\
 \n\
-    [i,h] = plot(dataObject.randN([100,100], 'int8'))\n\
+    [i,h] = plot(dataObject.randN([100, 100], 'int8'))\n\
     h['xAxisInterval'] = autoInterval(20, 80)\n\
     h['yAxisInterval'] = 'auto' \n\
-    h['zAxisInterval'] = [-90,90] \n\
-");
+    h['zAxisInterval'] = [-90, 90] \n\
+\n\
+Parameters \n\
+----------- \n\
+min : float, optional \n\
+    minimum value of interval (default: -:obj:`math.inf`). \n\
+max : float, optional \n\
+    maximum value of interval (default: :obj:`math.inf`). \n\
+auto : bool, optional \n\
+    ``False`` if interval is fixed, ``True`` if the interval can be scaled \n\
+    automatically (default).");
 int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"min", "max", "auto", NULL};
@@ -100,7 +104,7 @@ int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args
 }
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PythonAutoInterval::PyAutoInterval* PythonAutoInterval::createEmptyPyAutoInterval()
 {
     PyAutoInterval* result = (PyAutoInterval*)PyObject_Call((PyObject*)&PyAutoIntervalType, NULL, NULL);
@@ -115,7 +119,15 @@ PythonAutoInterval::PyAutoInterval* PythonAutoInterval::createEmptyPyAutoInterva
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_name_doc, "name() -> str \n\
+\n\
+Returns the name of this object. \n\
+\n\
+Returns \n\
+------- \n\
+str \n\
+    name of this object ``autoInterval``.");
 PyObject* PythonAutoInterval::PyAutoInterval_name(PyAutoInterval* /*self*/)
 {
     PyObject *result;
@@ -123,7 +135,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_name(PyAutoInterval* /*self*/)
     return result;
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
 {
     QString str;
@@ -151,7 +163,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
     return result;
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObject * /*args*/)
 {
     //method to pickle (save to IDC) autoInterval objects
@@ -184,14 +196,14 @@ PyObject* PythonAutoInterval::PyAutoInterval_Reduce(PyAutoInterval *self, PyObje
     return tempOut;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_SetState(PyAutoInterval *self, PyObject *args)
 {
     /*documentation see method above*/
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonAutoInterval::PyAutoInterval_RichCompare(PyAutoInterval *self, PyObject *other, int cmp_op)
 {
     if(other == NULL)
@@ -226,8 +238,9 @@ PyObject* PythonAutoInterval::PyAutoInterval_RichCompare(PyAutoInterval *self, P
     }
 }
 
-//--------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoInterval_min_doc, "get/set absolute minimum value of interval");
+//---------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_min_doc, 
+"float : Gets or sets the minimum value of the interval.");
 
 PyObject* PythonAutoInterval::PyAutoInterval_getMin(PyAutoInterval *self, void *closure)
 {
@@ -249,8 +262,9 @@ int PythonAutoInterval::PyAutoInterval_setMin(PyAutoInterval *self, PyObject *va
 	return -1;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoInterval_max_doc, "get/set absolute maximum value of interval");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_max_doc,
+"float : Gets or sets the maximum value of the interval.");
 
 PyObject* PythonAutoInterval::PyAutoInterval_getMax(PyAutoInterval *self, void *closure)
 {
@@ -272,8 +286,9 @@ int PythonAutoInterval::PyAutoInterval_setMax(PyAutoInterval *self, PyObject *va
 	return -1;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoInterval_auto_doc, "get/set auto flag value of interval");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(autoInterval_auto_doc, 
+"bool : Gets or sets if this interval has an automatic range.");
 
 PyObject* PythonAutoInterval::PyAutoInterval_getAuto(PyAutoInterval *self, void *closure)
 {
@@ -296,9 +311,9 @@ int PythonAutoInterval::PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *v
 }
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
-        {"name", (PyCFunction)PythonAutoInterval::PyAutoInterval_name, METH_NOARGS, ""},
+        {"name", (PyCFunction)PythonAutoInterval::PyAutoInterval_name, METH_NOARGS, autoInterval_name_doc},
         
         {"__reduce__", (PyCFunction)PythonAutoInterval::PyAutoInterval_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonAutoInterval::PyAutoInterval_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
