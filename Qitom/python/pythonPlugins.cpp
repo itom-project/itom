@@ -1873,7 +1873,7 @@ Defines the current position of the given axes to have the value ``0``. \n\
 \n\
 The current positions of all indicated axes (``axisIndex1``, ``*args``) are considered \n\
 to be ``0`` such that future positioning commands are relative with respect to this \n\
- current position. \n\
+current position. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1887,7 +1887,6 @@ Raises \n\
 ---------- \n\
 NotImplemented \n\
     if actuator does not support this feature");
-
 /** set the origin of axi(e)s
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the axi(e)s
@@ -4942,7 +4941,7 @@ too. In case of a bounded method, the ``self`` argument must be given in any cas
 \n\
 If the signal should have further arguments with specific datatypes, they are transformed \n\
 into corresponding Python data types. A table of supported conversions is given in section \n\
- :ref:`supported-data-types`. In general, a ``callableMethod`` must be a method or \n\
+:ref:`supported-data-types`. In general, a ``callableMethod`` must be a method or \n\
 function with the same number of parameters than the signal has (besides the \n\
 ``self`` argument). \n\
 \n\

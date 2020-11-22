@@ -464,7 +464,7 @@ Parameters \n\
 family : str \n\
     The name of the font family that should be checked \n\
 \n\
-Return \n\
+Returns \n\
 --------- \n\
 installed : bool \n\
     ``True`` if family is installed, else ``False``.");

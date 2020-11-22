@@ -94,7 +94,7 @@ def parse_stubs():
         text = "\n\n".join(texts)
         
         text = "# coding=iso-8859-15\n\n" + \
-               "from typing import overload, Tuple, List, Dict, Optional\n\n" + \
+               "from typing import overload, Tuple, List, Dict, Optional, Any, Literal\n\n" + \
                text
         
         with open(os.path.join(base_folder, stubs_file), 'wt') as fp:

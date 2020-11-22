@@ -166,7 +166,7 @@ singleShot: bool, optional \n\
     Defines if this timer only fires one time after its start (``True``) or \n\
     continuously (``False``, default). \n\
 \n\
-Example \n\
+Examples \n\
 -------- \n\
 >>> import time \n\
 ... \n\

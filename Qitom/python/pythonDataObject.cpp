@@ -2065,8 +2065,8 @@ The conversion between physical and pixel units is: \n\
 \n\
 ``physical_value = (pixel_value - axisOffset) * axisScale`` \n\
 \n\
-Parameters  \n\
-------------\n\
+Parameters \n\
+----------\n\
 axisNum : int\n\
     The axis index in the range [0, n), where ``n`` is the dimension of this dataObject. \n\
 axisScale : float\n\
@@ -2079,7 +2079,7 @@ RuntimeError \n\
 \n\
 See Also \n\
 --------- \n\
-axisScales this attribute can directly be used to get or set the axis scale(s) of single or all axes");
+axisScales : this attribute can directly be used to get or set the axis scale(s) of single or all axes");
 PyObject* PythonDataObject::PyDataObj_SetAxisScale(PyDataObject *self, PyObject *args)
 {
     int axisnum;
@@ -8497,13 +8497,14 @@ This method converts a coloured :class:`dataObject` of dtype ``rgba32`` to a com
 The size of this last axis is either ``3`` if ``addAlphaChannel = 0`` or ``4`` otherwise. \n\
 The order of this last axis is ``blue``, ``green``, ``red`` and optional ``alpha``. \n\
 The remaining first axes of the returned object have the same shape than this dataObject. \n\
+\n\
 Parameters \n\
 ----------- \n\
 addAlphaChannel : int, optional \n\
     If ``0``, the last dimension of the returned :class:`numpy.ndarray` has a size of ``3`` \n\
     and contains the blue, green and red value, whereas ``1`` adds the alpha value as \n\
     fourth value. \n\
-    \n\
+\n\
 Returns \n\
 ------- \n\
 arr : numpy.ndarray \n\
@@ -8917,9 +8918,9 @@ If any of the input dataObjects has more than two dimensions, all contained plan
 Parameters \n\
 ----------- \n\
 objects : list of dataObject or tuple of dataObject \n\
-	Sequence (list) of dataObjects containig planes that will be stacked together. \n\
+	Sequence (list) of dataObjects containing planes that will be stacked together. \n\
     All dataObjects must be of the same type and have the same shape of planes \n\
-    (last two dimesnions).\
+    (last two dimensions).\n\
 \n\
 Returns \n\
 ------- \n\
