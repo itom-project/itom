@@ -451,6 +451,7 @@ def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
     try:
         docstring: Optional[str] = obj.__doc__
     except UnicodeDecodeError as ex:
+        print(str(obj))
         raise ex
     
     if docstring is None or docstring.strip() == "":

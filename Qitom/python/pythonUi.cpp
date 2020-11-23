@@ -2939,7 +2939,6 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals,&PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (double), min (double, optional), max (double, optional), decimals (int, optional), parent(uiItem or derived classes, optional)");
         return NULL;
     }
 
@@ -3061,7 +3060,6 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOi|iiiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &step, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (int), min (int, optional), max (int, optional), step (int, optional), parent(uiItem or derived calasses, optional)");
         return NULL;
     }
 
@@ -3355,7 +3353,6 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|O&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultObj, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default string (string)[,parent(uiItem or derived calss]");
         return NULL;
     }
 
@@ -3468,7 +3465,7 @@ defaultButton : int, optional \n\
     is the button constant (see ``buttons``, that should be set as default. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3506,7 +3503,7 @@ defaultButton : int, optional \n\
     is the button constant (see ``buttons``, that should be set as default. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3544,7 +3541,7 @@ defaultButton : int, optional \n\
     is the button constant (see ``buttons``, that should be set as default. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3582,7 +3579,7 @@ defaultButton : int, optional \n\
     is the button constant (see ``buttons``, that should be set as default. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3613,9 +3610,6 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO&", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(
-            PyExc_TypeError, 
-            "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of type uiItem or derived types)");
         return NULL;
     }
 
@@ -3701,7 +3695,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory [, options, parent]) -> Optional[str] \n\
+PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory, options = 0, parent = None) -> Optional[str] \n\
 \n\
 Opens a dialog to choose an existing directory. \n\
 \n\
@@ -3722,7 +3716,7 @@ options : int, optional\n\
     \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3837,7 +3831,7 @@ options : int, optional\n\
     This corresponds to the Qt flag ``QFileDialog::Options``. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -3975,7 +3969,7 @@ options : int, optional\n\
     This corresponds to the Qt flag ``QFileDialog::Options``. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -4113,7 +4107,7 @@ options : int, optional\n\
     This corresponds to the Qt flag ``QFileDialog::Options``. \n\
 parent : uiItem, optional \n\
     If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
-    Else, it is modal with respect to the main window of `ìtom`. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\

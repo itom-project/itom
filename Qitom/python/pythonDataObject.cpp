@@ -7529,9 +7529,7 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectArray_StructGet_doc, 
-"__array_struct__() -> obj \n\
-\n\
-General python-array interface (do not call this directly) \n\
+"obj : General python-array interface (do not call this directly) \n\
 \n\
 This interface makes the data object compatible to every array structure in Python \n\
 which does equally implement the array interface (e.g. NumPy). This method is \n\
@@ -7637,9 +7635,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectArray_Interface_doc, 
-"__array_interface__() -> dict \n\
-\n\
-General python-array interface (do not call this directly). \n\
+"dict : General python-array interface (do not call this directly). \n\
 \n\
 This interface makes the data object compatible to every array structure in python \n\
 which does equally implement the array interface (e.g. NumPy).");
