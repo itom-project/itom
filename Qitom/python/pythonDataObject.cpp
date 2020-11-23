@@ -8800,7 +8800,7 @@ shapes : shape or list of shape or tuple of shape \n\
     The union of all given shapes (polygons, rectangles, squares, circles and ellipes \n\
     are considered, only) is used to determine if any pixel should be masked in the \n\
     returned mask (value ``255``) or not. \n\
-inverse : {bool} \n\
+inverse : bool \n\
     If ``True``, masked values are set to ``0`` (instead of ``255``) and all other \n\
     values are set to ``255`` (instead of ``0``). The default is ``False`` (masked = ``255``). \n\
 \n\

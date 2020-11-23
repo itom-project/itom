@@ -4044,12 +4044,12 @@ buffer : {`dataObject`, `bytearray`, `bytes` or `str`} \n\
     Therefore its content may change if a new image is being acquired by the camera. Consider taking a deep copy if the image (`dataObject.copy`) or use the method `copyVal`. \n\
     * other IO-devices (AD-converters): The buffer must be an object of type `dataObject`, bytearray, bytes or unicode string. The length parameter is then set to the size of the buffers. The effective \
     size of the used memory in buffer is returned. \n\
-length : {int}, optional \n\
+length : int, optional \n\
     size of the given buffer. This value is usually automatically determined and must not be given. \n\
 \n\
 Returns \n\
 -------- \n\
-out : {None or int} \n\
+out : None or int \n\
     None or size of used buffer if buffer is no `dataObject` \n\
 \n\
 See Also \n\

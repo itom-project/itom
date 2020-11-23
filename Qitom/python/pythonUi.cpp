@@ -2438,9 +2438,9 @@ dialogButtonBar :  {int}, optional \n\
         * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
 dialogButtons : {dict}, optional \n\
     every dictionary-entry is one button. key is the role, value is the button text \n\
-childOfMainWindow :  {bool}, optional \n\
+childOfMainWindow :  bool, optional \n\
     for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
-deleteOnClose : {bool}, optional \n\
+deleteOnClose : bool, optional \n\
     Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
 dockWidgetArea : {int}, optional \n\
     Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\

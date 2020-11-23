@@ -783,11 +783,11 @@ Moves the x, y and z components of every point by the given offsets. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {float}, optional \n\
+x : float, optional \n\
     offset value for the ``x``-component \n\
-y : {float}, optional \n\
+y : float, optional \n\
     offset value for the ``y``-component \n\
-z : {float}, optional \n\
+z : float, optional \n\
     offset value for the ``z``-component");
 PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
@@ -2454,7 +2454,7 @@ The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` are recommended to have the
 converted to `float32`. \n\
 \n\
 Returns \n\
------- - \n\
+------- \n\
 pointCloud \n\
     The newly created point cloud of the type ``point.PointXYZRGBA``.");
 /*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZRGBA(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
@@ -3864,7 +3864,7 @@ PyDoc_STRVAR(pyPointCurvature_doc,
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support a curvature value.");
 PyObject* PythonPCL::PyPoint_GetCurvature(PyPoint *self, void * /*closure*/)
 {
