@@ -157,12 +157,12 @@ Parameters \n\
 ----------- \n\
 interval : int \n\
     Time out interval in ms. \n\
-callbackFunc: callable \n\
+callbackFunc : callable \n\
     Python method (bounded) or function (unbounded) that should be called whenever \n\
     the timer event raises. \n\
-argTuple: tuple, optional \n\
+argTuple : tuple, optional \n\
     Tuple of parameters passed as arguments to the callback function. \n\
-singleShot: bool, optional \n\
+singleShot : bool, optional \n\
     Defines if this timer only fires one time after its start (``True``) or \n\
     continuously (``False``, default). \n\
 \n\

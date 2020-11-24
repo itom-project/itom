@@ -136,13 +136,13 @@ The parameters ``point``, ``start-point``, ... can be all array-like types (e.g.
 Another possibility to create a :class:`shape` object for a certain type is to use \n\
 one of the following static creation functions: \n\
 \n\
-* :meth:``createPoint`` \n\
-* :meth:``createLine`` \n\
-* :meth:``createCircle`` \n\
-* :meth:``createEllipse`` \n\
-* :meth:``createSquare`` \n\
-* :meth:``createRectangle`` \n\
-* :meth:``createPolygon`` \n\
+* :meth:`createPoint` \n\
+* :meth:`createLine` \n\
+* :meth:`createCircle` \n\
+* :meth:`createEllipse` \n\
+* :meth:`createSquare` \n\
+* :meth:`createRectangle` \n\
+* :meth:`createPolygon` \n\
 \n\
 During construction, all shapes are aligned with respect to the x- and y-axis. Set a \n\
 2d transformation (attribute :attr:`transform`) to rotate and move it. \n\
@@ -155,7 +155,7 @@ param1 : list of float or tuple of float or dataObject or numpy.ndarray, optiona
     1st initialization argument. This argument is depending on the ``type`` (see list above). \n\
 param2 : list of float or tuple of float or dataObject or numpy.ndarray, optional \n\
     2nd initialization argument. This argument is depending on the ``type`` (see list above). \n\
-index : int, \n\
+index : int \n\
     index of the shape, or ``-1`` if not further specified (default). \n\
 name : str  \n\
     name of the shape, can for instance be displayed next to shapes in plots \n\
@@ -351,7 +351,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticPoint(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -419,7 +419,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticLine(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -488,7 +488,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticCircle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -570,7 +570,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticEllipse(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -700,7 +700,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticSquare(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -782,7 +782,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticRectangle(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -915,7 +915,7 @@ flags : int, optional \n\
 \n\
 Returns \n\
 ------- \n\
-shape : \n\
+shape \n\
     The new shape object.");
 /*static*/ PyObject* PythonShape::PyShape_StaticPolygon(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -2354,7 +2354,7 @@ are rounded to the nearest fixed-point coordinate. \n\
 \n\
 Returns \n\
 ------- \n\
-region : \n\
+region \n\
     The region, whose contour approximates this shape. The inner of \n\
     this shaped is part of the region.");
 PyObject* PythonShape::PyShape_region(PyShape *self)

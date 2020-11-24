@@ -3118,8 +3118,8 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle) \\\n\
-removeButton(toolbarName, buttonName = '') \n\
+PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle) -> None \\\n\
+removeButton(toolbarName, buttonName = '') -> None \n\
 \n\
 Removes a button from a given toolbar in the itom main window. \n\
 \n\
@@ -3446,8 +3446,8 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key) \\\n\
-removeMenu(menuHandle) \n\
+PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key) -> None \\\n\
+removeMenu(menuHandle) -> None \n\
 \n\
 Remove a menu element with the given key or handle. \n\
 \n\
@@ -4900,7 +4900,7 @@ tuple \n\
     a float and ``newUnit`` is a string. \n\
 \n\
 Examples \n\
-------- -\n\
+--------- \n\
 >>> baseUnits = getDefaultScaleableUnits() \n\
 >>> print(scaleValueAndUnit(baseUnits, 0.001, 'm')) \n\
 [1, 'mm']");
@@ -5393,7 +5393,7 @@ filename : str \n\
 dict : dict \n\
     dictionary which should be pickled. All values in the dictionary must be able \n\
     to be pickled (e.g. all Python base types, dataObjects, numpy.ndarrays...). \n\
-overwriteIfExists : bool, default: True \n\
+overwriteIfExists : bool, optional \n\
     If ``True``, an existing file will be overwritten. \n\
 \n\
 Raises \n\
@@ -5621,8 +5621,8 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle) \\\n\
-close(all = \"all\") \n\
+PyDoc_STRVAR(pyItom_FigureClose_doc,"close(handle) -> None \\\n\
+close(all = \"all\") -> None \n\
 \n\
 Closes a specific or all opened figures. \n\
 \n\
@@ -5684,7 +5684,7 @@ colorStops : tuple \n\
     There must be at least two colorStops.\n\
 inverseColor1 : rgba, optional \n\
     First inverse color, used for instance for line cuts, markers etc. of a 2D plot. \n\
-inverseColor2 ( rgba, optional \n\
+inverseColor2 : rgba, optional \n\
     second inverse color, used for instance for line cuts, markers etc. of a 2D plot. \n\
 invalidColor : rgba, optional \n\
     color used for ``NaN`` or ``Inf`` values in plots. If the invalid color is not given \n\

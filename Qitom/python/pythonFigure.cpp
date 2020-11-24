@@ -287,7 +287,7 @@ Parameters\n\
 -----------\n\
 data : dataObject or pointCloud or polygonMesh \n\
     Is the data object whose region of interest will be plotted.\n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -444,7 +444,7 @@ xData : dataObject, optional \n\
     1D plots can optionally accept this :class:`dataObject`. If given, the \n\
     values are not displayed on an equally distributed x-scale but with \n\
     the values given by ``xData``. \n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -618,7 +618,7 @@ data : dataObject \n\
     is the data, that should be plotted. If a ``className`` it must support dataObjects \n\
     as accepted data type. Else, the default ``className`` for 2D :class:`dataObject` \n\
     is chosen (see itom application settings for default plot types. \n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -783,7 +783,7 @@ data : dataObject or pointCloud or polygonMesh \n\
     type of data, supported by this class, can be displayed. Else, the default \n\
     ``className`` for the kind of data is chosen (see itom application settings \n\
     for default plot types. \n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -950,7 +950,7 @@ Parameters\n\
 -----------\n\
 cam : dataIO \n\
     Camera grabber device from which images are acquired.\n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -1092,7 +1092,7 @@ matplotlib and is internally used by the itom backend of matplotlib. \n\
 \n\
 Parameters\n\
 -----------\n\
-areaIndex: int, optional \n\
+areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
@@ -1467,8 +1467,8 @@ figure is integrated into the main window of itom, else it is a independent wind
 //-------------------------------------------------------------------------------------
 //   static
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigure_Close_doc,"close(handle) \\\n\
-close(all = \"all\") \n\
+PyDoc_STRVAR(pyFigure_Close_doc,"close(handle) -> None \\\n\
+close(all = \"all\") -> None \n\
 \n\
 Closes a specific or all opened figures. \n\
 \n\

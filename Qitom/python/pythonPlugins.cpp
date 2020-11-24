@@ -1217,7 +1217,7 @@ param2 : any, optional \n\
 \n\
 Returns \n\
 ------- \n\
-any or tuple of any.\n\
+any or tuple of any \n\
     The returned values depend on the function itself.\n\
 \n\
 See Also \n\
@@ -2003,7 +2003,7 @@ Moving flags: \n\
 \n\
 * actuatorUnknown     = 0x0001 : unknown current moving status \n\
 * actuatorInterrupted = 0x0002 : movement has been interrupted by the user or another \n\
-                                 error during the movement occurred \n\
+  error during the movement occurred \n\
 * actuatorMoving      = 0x0004 : axis is currently moving \n\
 * actuatorAtTarget    = 0x0008 : axis reached the target position \n\
 * actuatorTimeout     = 0x0010 : timout during movement. Unknown status of the movement \n\
@@ -2011,16 +2011,16 @@ Moving flags: \n\
 Switches flags: \n\
 \n\
 * actuatorEndSwitch   = 0x0100 : axis reached any end switch (e.g. if only one end switch \n\
-                                 is available) \n\
+  is available) \n\
 * actuatorEndSwitch1  = 0x0200 : axis reached the specified left end switch (if set, also \n\
-                                 set actuatorEndSwitch)\n\
+  set actuatorEndSwitch)\n\
 * actuatorEndSwitch2  = 0x0400 : axis reached the specified left end switch (if set, also \n\
-                                 set actuatorEndSwitch)\n\
+  set actuatorEndSwitch)\n\
 * actuatorRefSwitch   = 0x0800 : axis reached any reference switch (e.g. for calibration...) \n\
 * actuatorRefSwitch1  = 0x1000 : axis reached the specified right reference switch \n\
-                                 (if set, also set actuatorRefSwitch)\n\
+  (if set, also set actuatorRefSwitch)\n\
 * actuatorRefSwitch2  = 0x2000 : axis reached the specified right reference switch \n\
-                                 (if set, also set actuatorRefSwitch)\n\
+  (if set, also set actuatorRefSwitch)\n\
 \n\
 Status flags: \n\
 \n\
@@ -2413,10 +2413,10 @@ be connected to a callback function, that accepts one argument (in case of a bou
 the ``self`` argument must be an additional first parameter. \n\
 \n\
 The C++ datatype ``QVector<double>`` will be transformed to ``tuple of float``, for \n\
-more type conversions see the table in section :ref:`supported-data-types`. In general, \n\
+more type conversions see the table in section :ref:`qtdesigner-datatypes`. In general, \n\
 a ``callableMethod`` must be a method or function with the same number of parameters than \n\
 the signal has (besides the ``self`` argument). The types are converted based on the itom \n\
-C++ <-> Python conversion table (:ref:`supported-data-types`). \n\
+C++ <-> Python conversion table (:ref:`qtdesigner-datatypes`). \n\
 \n\
 If a signal is emitted very often, it can be necessary to limit the call of the callback \n\
 function to a certain minimum time interval. This can be given by the ``minRepeatInterval`` \n\
@@ -3766,7 +3766,7 @@ at start of the live acquisition and :meth:`stopDevice` at shutdown. \n\
 Parameters \n\
 ----------- \n\
 count : int, optional\n\
-    if ''count'' > 1, :meth:`stopDevice` is executed ``count`` times, in order to \n\
+    if ``count`` > 1, :meth:`stopDevice` is executed ``count`` times, in order to \n\
     decrement the grabber internal start counter. You can also set ``count = -1``, \n\
     then :meth:`stopDevice` is called in a loop until the internal start counter \n\
     drops to 0. The number of effective counts is then returned.\n\
@@ -4022,35 +4022,49 @@ PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(buffer=`dataObject`|`bytearray`|`bytes` , length = maxlength) -> returns shallow copy of internal camera image if `dataObject`-buffer is provided. Else values from plugin are copied to given byte or byte-array buffer. \n\
+PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(dataObj) -> None \\\n\
+getVal(buffer, length = INT_MAX) -> int \n\
 \n\
-Returns a reference (shallow copy) of the recently acquired image (located in the internal memory if the plugin) if the plugin is a grabber or camera and the buffer is a `dataObject`. \n\
-Please consider that the values of the `dataObject` might change if a new image is acquired since it is only a reference. Therefore consider copying the `dataObject` or directly use \n\
-`copyVal`. \n\
+Gets shallow copy of internal camera image if `dataObj` is provided. Else values from the plugins are copied to given buffer. \n\
 \n\
-If no acquisition has been triggered, this method raises a RuntimeError. If the acquisition is not finished yet, this method \n\
-blocks and waits until the end of the acquisition. \n\
+Returns a reference (shallow copy) of the recently acquired image (located in the \n\
+internal memory if the plugin) if the plugin is a grabber or camera and the buffer is a \n\
+:class:`dataObject`. Please consider that the values of the :class:`dataObject` might \n\
+change if a new image is acquired since it is only a reference. Therefore consider copying \n\
+the :class:`dataObject` or directly use :meth:`copyVal`. \n\
 \n\
-If the plugin is another type than a grabber or camera (e.g. serialIO), this method requires any buffer-object that is preallocated with a reasonable size. Then, the currently available \n\
-data is copied into this buffer object and the size of the copied data is returned. If the buffer is too small, only the data that fits into the buffer is copied. Another call to \n\
-`getVal` will copy the rest. \n\
+If no acquisition has been triggered, this method raises a :obj`RuntimeError`. If the \n\
+acquisition is not finished yet, this method blocks and waits until the end of the \n\
+acquisition. \n\
+\n\
+If the plugin is another type than a grabber or camera (e.g. serialIO), this method \n\
+requires any :obj:`buffer` object that is preallocated with a reasonable size (e.g. \n\
+:obj:`bytearray`, :obj:`bytes` or unicode :obj:`str`. Then, the currently available \n\
+data is copied into this buffer object and the size of the copied data is returned. If \n\
+the buffer is too small, only the data that fits into the buffer is copied. Another \n\
+call to :meth:`getVal` will copy the rest. \n\
 \n\
 Parameters \n\
 ----------- \n\
-buffer : {`dataObject`, `bytearray`, `bytes` or `str`} \n\
-    this parameter depends on the type of dataIO-instance: \n\
-    \n\
-    * cameras, grabber: the buffer must be a `dataObject` (no length parameter): A reference (shallow copy) to the internal memory of the camera plugin is set to the given data object. \
-    Therefore its content may change if a new image is being acquired by the camera. Consider taking a deep copy if the image (`dataObject.copy`) or use the method `copyVal`. \n\
-    * other IO-devices (AD-converters): The buffer must be an object of type `dataObject`, bytearray, bytes or unicode string. The length parameter is then set to the size of the buffers. The effective \
-    size of the used memory in buffer is returned. \n\
+dataObj : dataObject \n\
+    Usually for cameras and grabber: A reference (shallow copy) to the internal memory \n\
+    of the camera plugin is set to the given data object. Therefore its content may \n\
+    change if a new image is being acquired by the camera. Consider taking a deep copy \n\
+    if the image (:meth:`dataObject.copy`) or use the method :meth:`copyVal`. \n\
+buffer : bytearray or bytes or str \n\
+    Usually for all other IO devices or AD-converters: The buffer must be an object \n\
+    of type :obj:`bytearray`, :obj:`bytes` or unicode :obj:`str`. The ``length`` \n\
+    parameter is then set to the size of the allocated buffer. This buffer is then \n\
+    filled with data and the filled size is returned (max: ``length``). \n\
 length : int, optional \n\
-    size of the given buffer. This value is usually automatically determined and must not be given. \n\
+    Size of the given buffer. This value is usually automatically determined and \n\
+    must not be given. \n\
 \n\
 Returns \n\
 -------- \n\
-out : None or int \n\
-    None or size of used buffer if buffer is no `dataObject` \n\
+None or int \n\
+    ``None`` if ``dataObj`` is given, else the size of the values filled into the given \n\
+    ``buffer``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -4069,8 +4083,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     ito::RetVal ret = ito::retOk;
     PyObject* bufferObj = NULL;
     PythonDataObject::PyDataObject* bufferDataObj = NULL;
-    ito::DataObject *dObj = NULL;
-    Py_ssize_t length = -1;
+    Py_ssize_t length = std::numeric_limits<Py_ssize_t>::max();
     ItomSharedSemaphoreLocker locker;
     unsigned int invokeMethod = -1;
     QSharedPointer<int> maxLength(new int);
@@ -4081,16 +4094,21 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     //check whether object is a data object
     if (PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &bufferDataObj))
     {
-        dObj = ((PythonDataObject::PyDataObject *)bufferDataObj)->dataObject;
-
-        if (dObj == NULL)
+        if (bufferDataObj->dataObject == NULL)
         {
             PyErr_SetString(PyExc_RuntimeError, "given data object is empty (internal dataObject-pointer is NULL)");
             return NULL;
         }
 
         locker = (new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(void*, (void*)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        QMetaObject::invokeMethod(
+            self->dataIOObj, 
+            "getVal", 
+            Q_ARG(void*, (void*)(bufferDataObj->dataObject)),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+        );
+
         invokeMethod = 1;
     }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
@@ -4115,7 +4133,11 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "arguments of method must be a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) - in the case that a length value is provided");
+            PyErr_SetString(
+                PyExc_RuntimeError, 
+                "arguments of method must be a byte array, byte object or unicode "
+                "object (only if unicode corresponds to a 8bit char) - in the case "
+                "that a length value is provided");
             return NULL;
         }
 
@@ -4126,17 +4148,30 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         }
 
         locker = (new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(self->dataIOObj, "getVal", Q_ARG(QSharedPointer<char>, sharedBuffer), Q_ARG(QSharedPointer<int>, maxLength), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        QMetaObject::invokeMethod(
+            self->dataIOObj, 
+            "getVal", 
+            Q_ARG(QSharedPointer<char>, sharedBuffer), 
+            Q_ARG(QSharedPointer<int>, maxLength), 
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+        );
+
         invokeMethod = 2;
     }
     else
     {
         PyErr_Clear();
-        PyErr_SetString(PyExc_RuntimeError, "arguments of method must be either one data object or a byte array, byte object or unicode object (only if unicode corresponds to a 8bit char) followed by an optional maximum length.");
+        PyErr_SetString(
+            PyExc_RuntimeError, 
+            "arguments of method must be either one data object or a byte array, "
+            "byte object or unicode object (only if unicode corresponds to a 8bit "
+            "char) followed by an optional maximum length.");
         return NULL;
     }
 
     bool timeout = false;
+
     while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
     {
         if (!self->dataIOObj->isAlive())
@@ -4168,21 +4203,28 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_copyVal_doc,"copyVal(destObject) -> gets deep copy of data of this plugin, stored in the given data object. \n\
+PyDoc_STRVAR(PyDataIOPlugin_copyVal_doc,"copyVal(destObject) \n\
 \n\
-Returns a deep copy of the recently acquired data (for grabber and ADDA only) of the camera or AD-converter device. \n\
-The deep copy sometimes requires one copy operation more than the similar command `getVal`. However, `getVal` only returns \n\
-a reference to the plugin internal data structure whose values might be changed if another data acquisition is started. \n\
+Gets deep copy of data of this plugin, stored in the given data object. \n\
 \n\
-If no acquisition has been triggered, this method raises a RuntimeError. If the acquisition is not finished yet, this method \n\
-blocks and waits until the end of the acquisition. \n\
+Returns a deep copy of the recently acquired data (for grabber and ADDA only) of the \n\
+camera or AD-converter device. The deep copy sometimes requires one copy operation \n\
+more than the similar command :meth:`getVal`. However, :meth:`getVal` only returns \n\
+a reference to the plugin internal data structure whose values might be changed if \n\
+another data acquisition is started. \n\
+\n\
+If no acquisition has been triggered, this method raises a RuntimeError. If the \n\
+acquisition is not finished yet, this method blocks and waits until the end of the \n\
+acquisition. \n\
 \n\
 Parameters \n\
 ----------- \n\
-destObject : {dataObject}\n\
-    `dataObject` where the plugin data is copied to. Either provide an empty `dataObject` or a `dataObject` whose size (or region of interest) \n\
-    exactly has the same size than the available data of the plugin. Therefore you can allocate a 3D data object, set a region of interest \n\
-    to one plane such that the data from the plugin is copied into this plane. \n\
+destObject : dataObject\n\
+    `dataObject` where the plugin data is copied to. Either provide an empty \n\
+    :class:`dataObject` or a :class:`dataObject` whose shape exactly fits to the \n\
+    shape of the available data of the plugin. Therefore you can allocate a \n\
+    3D data object, set a region of interest to one plane such that the data from \n\
+    the plugin is copied into this plane. \n\
 \n\
 Raises \n\
 ------- \n\
@@ -4315,22 +4357,33 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyDataIOPlugin_setVal_doc,"setVal(dataObjectOrBuffer [, length=1]) -> transfer given `dataObject` to ADDA plugin or further buffer to other dataIO plugin.\n\
+PyDoc_STRVAR(PyDataIOPlugin_setVal_doc, "setVal(dataObj) -> None \\\n\
+setVal(buffer, length = 1) -> None \n\
 \n\
-If the dataIO plugin has the subtype ADDA, this method is used to send data to one or more analog outputs of the device. \n\
-In this case a `dataObject` must be given as first argument and the second argument `length` must be 1. \n\
+Transfers a dataObject to an ADDA plugin for write, or a bytearray to other dataIO plugins for general purposes. \n\
 \n\
-For other dataIO plugins, the first argument must be any buffer object, like `bytearray`, `bytes` or `unicode string`. The length is then extracted \n\
-from this value. However it is also possible to define a user-defined size using the 'length' argument. \n\
+If the :class:`dataIO` plugin has the subtype ``ADDA`` (analog-digital converter), \n\
+this method is used to send data to one or more analog outputs of the device. \n\
+In this case a :class:`dataObject` must be given as first and only argument. \n\
+and the second argument ``length`` must be 1. \n\
+\n\
+For other dataIO plugins, the first argument must be any buffer object, like \n\
+a :obj:`bytearray`, :obj:`bytes` or unicode :obj:`str`. The ``length`` is then extracted \n\
+from this value. However it is also possible to define a user-defined size using the \n\
+``length`` argument. \n\
 \n\
 Parameters \n\
 ----------- \n\
-dataObjectOrBuffer : {`dataObject`, `bytearray`, `bytes`, `str`}\n\
-    value to send to plugin. For an ADDA plugin, a `dataObject` is required whose content is sent to the analogous outputs of the device. For other dataIO \n\
-    plugins buffer values like `bytearray`, `bytes` or `unicode string` are required. \n\
-length : {int}, optional \n\
-    usually this value is not required, since the length of the buffer is automatically extracted from the given objects and 1 for a `dataObject`");
-
+dataObj : dataObject \n\
+    The array, that should be transmitted to the output of an analog-digital converter. \n\
+    Usually, the shape of this array is ``M x N``, where ``M`` channels will obtain up \n\
+    to ``N`` new values. This argument is used for ``ADDA`` :class:`dataIO` devices.\n\
+buffer : bytearray or bytes or str \n\
+    Other :class:`dataIO` devices than ``ADDA`` need to pass a buffer object, \n\
+    like a :obj:`bytearray`, :obj:`bytes` or unicode :obj:`str`. \n\
+length : int, optional \n\
+    Usually, this value is not required, since the length of the ``buffer`` is \n\
+    automatically extracted from the given object.");
 /** write values to a dataIO device
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    output buffer
@@ -4339,42 +4392,28 @@ length : {int}, optional \n\
 *   Analog to the \ref getVal method this method writes data to a dataIO device (e.g. a DA converter or serial port).The
 *   data passed in the output buffer is written to the device according to its current parameters.
 */
-PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *args)
+PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
-    int length = PyTuple_Size(args);
-    PyObject *tempObj = NULL;
-    PyObject *tempObj1 = NULL;
     ito::RetVal ret = ito::retOk;
-
-    if (length == 0 || length > 2)
-    {
-        PyErr_SetString(PyExc_ValueError, "invalid number of parameters (1 or 2 arguments requested)");
-        return NULL;
-    }
 
     if (self->dataIOObj->getBasePlugin()->getType() & ito::typeADDA)
     {
-        ito::DataObject *dObj = NULL;
-        int datalen = 0;
-        tempObj = PyTuple_GetItem(args, 0);
-        if (length > 1)
-        {
-            tempObj1 = PyTuple_GetItem(args, 1);
-            datalen = PyLong_AsLong(tempObj1);
-            if (datalen != 1)
-            {
-                PyErr_SetString(PyExc_ValueError, "only one dataobject can be passed");
-                return NULL;
-            }
-        }
+        PythonDataObject::PyDataObject* dObj = NULL;
+        const char *kwlist[] = { "dataObj", NULL };
 
-        if ((Py_TYPE(tempObj) == &PythonDataObject::PyDataObjectType))
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &dObj))
         {
-            dObj = ((PythonDataObject::PyDataObject *)tempObj)->dataObject;
+            return NULL;
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)dObj), Q_ARG(int, 1), Q_ARG(ItomSharedSemaphore*, waitCond)))
+
+        if (QMetaObject::invokeMethod(
+            self->dataIOObj, 
+            "setVal", 
+            Q_ARG(const char *, (const char *)(dObj->dataObject)), 
+            Q_ARG(int, 1), 
+            Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             bool timeout = false;
 
@@ -4395,7 +4434,11 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            ret += ito::RetVal(
+                ito::retError, 
+                0, 
+                QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data()
+            );
         }
 
         waitCond->deleteSemaphore();
@@ -4403,61 +4446,68 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
     }
     else
     {
-        const char *buf = NULL;
-        tempObj = PyTuple_GetItem(args, 0);
+        const char *kwlist[] = { "buffer", "length", NULL };
+        int datalen = -1;
+        int datalen_temp = 0;
+        PyObject *bufferObj = NULL;
 
-        if (length >= 2)
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", const_cast<char**>(kwlist), &bufferObj, &datalen))
         {
-            tempObj1 = PyTuple_GetItem(args, 1);
+            return NULL;
         }
 
         QString tempString;
         QByteArray ba;
-        int datalen = 0;
+        const char* buf;
 
-        if (PyByteArray_Check(tempObj))
+        if (PyByteArray_Check(bufferObj))
         {
-            buf = PyByteArray_AsString(tempObj);
-            datalen = PyByteArray_Size(tempObj);
+            buf = PyByteArray_AsString(bufferObj);
+            datalen_temp = PyByteArray_Size(bufferObj);
         }
-        else if (PyBytes_Check(tempObj))
+        else if (PyBytes_Check(bufferObj))
         {
-            buf = PyBytes_AsString(tempObj);
-            datalen = PyBytes_Size(tempObj);
+            buf = PyBytes_AsString(bufferObj);
+            datalen_temp = PyBytes_Size(bufferObj);
         }
-        else if (PyUnicode_Check(tempObj))
+        else if (PyUnicode_Check(bufferObj))
         {
             //Py_ssize_t stringLengthByte = PyUnicode_GET_DATA_SIZE(tempObj);
             if (sizeof(Py_UNICODE) == sizeof(wchar_t))
             {
-                tempString = QString::fromWCharArray((wchar_t*)PyUnicode_AS_DATA(tempObj));
+                tempString = QString::fromWCharArray((wchar_t*)PyUnicode_AS_DATA(bufferObj));
                 ba = tempString.toLatin1();
                 buf = ba.data();
-                datalen = ba.length();
+                datalen_temp = ba.length();
             }
             else if (sizeof(Py_UNICODE) == 1)
             {
-                buf = PyUnicode_AS_DATA(tempObj);
-                datalen = (int)strlen(buf);
+                buf = PyUnicode_AS_DATA(bufferObj);
+                datalen_temp = (int)strlen(buf);
             }
             else if (sizeof(Py_UNICODE) == 2)
             {
-                tempString = QString::fromUtf16((ushort*)PyUnicode_AS_DATA(tempObj));
+                tempString = QString::fromUtf16((ushort*)PyUnicode_AS_DATA(bufferObj));
                 ba = tempString.toLatin1();
                 buf = ba.data();
-                datalen = ba.length();
+                datalen_temp = ba.length();
             }
             else if (sizeof(Py_UNICODE) == 4)
             {
-                tempString = QString::fromUcs4((uint*)PyUnicode_AS_DATA(tempObj));
+                tempString = QString::fromUcs4((uint*)PyUnicode_AS_DATA(bufferObj));
                 ba = tempString.toLatin1();
                 buf = ba.data();
-                datalen = ba.length();
+                datalen_temp = ba.length();
             }
             else
             {
                 PyErr_Format(PyExc_TypeError, "given unicode must have an element size of 1,2 or 4 bytes. Given is %i.", sizeof(Py_UNICODE));
                 return NULL;
+            }
+
+            if (datalen == -1)
+            {
+                datalen = datalen_temp;
             }
         }
         else
@@ -4466,24 +4516,17 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
             return NULL;
         }
 
-        if (length == 2)
-        {
-            if (PyLong_Check(tempObj1))
-            {
-                datalen = PyLong_AsLong(tempObj1);
-            }
-            else
-            {
-                PyErr_SetString(PyExc_RuntimeError, "given length parameter must be a fixed-point number");
-                return NULL;
-            }
-        }
-
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
         
-        if (QMetaObject::invokeMethod(self->dataIOObj, "setVal", Q_ARG(const char *, (const char *)buf), Q_ARG(int, datalen), Q_ARG(ItomSharedSemaphore*, waitCond)))
+        if (QMetaObject::invokeMethod(
+            self->dataIOObj, 
+            "setVal", 
+            Q_ARG(const char *, (const char *)buf), 
+            Q_ARG(int, datalen), 
+            Q_ARG(ItomSharedSemaphore*, waitCond)))
         {        
             bool timeout = false;
+
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
             {
                 if (!self->dataIOObj->isAlive())
@@ -4501,7 +4544,11 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            ret += ito::RetVal(
+                ito::retError, 
+                0, 
+                QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data()
+            );
         }
 
         waitCond->deleteSemaphore();
@@ -4941,7 +4988,7 @@ too. In case of a bounded method, the ``self`` argument must be given in any cas
 \n\
 If the signal should have further arguments with specific datatypes, they are transformed \n\
 into corresponding Python data types. A table of supported conversions is given in section \n\
-:ref:`supported-data-types`. In general, a ``callableMethod`` must be a method or \n\
+:ref:`qtdesigner-datatypes`. In general, a ``callableMethod`` must be a method or \n\
 function with the same number of parameters than the signal has (besides the \n\
 ``self`` argument). \n\
 \n\
@@ -4978,11 +5025,13 @@ PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *
         PyErr_SetString(PyExc_TypeError, "Arguments must be a signal signature and a callable method reference");
         return NULL;
     }
+
     if (!PyCallable_Check(callableMethod))
     {
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         return NULL;
     }
+
     if (!self->dataIOObj)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
@@ -5306,7 +5355,7 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"stop", (PyCFunction)PythonPlugins::PyDataIOPlugin_stop, METH_NOARGS, PyDataIOPlugin_stop_doc},
    {"getVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_getVal, METH_VARARGS, PyDataIOPlugin_getVal_doc},
    {"copyVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_copyVal, METH_VARARGS, PyDataIOPlugin_copyVal_doc},
-   {"setVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_setVal, METH_VARARGS, PyDataIOPlugin_setVal_doc},
+   {"setVal", (PyCFunction)PythonPlugins::PyDataIOPlugin_setVal, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_setVal_doc},
    {"enableAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_enableAutoGrabbing, METH_NOARGS, PyDataIOPlugin_enableAutoGrabbing_doc},
    {"disableAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_disableAutoGrabbing, METH_NOARGS, PyDataIOPlugin_disableAutoGrabbing_doc},
    {"setAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_setAutoGrabbing, METH_VARARGS, PyDataIOPlugin_setAutoGrabbing_doc},

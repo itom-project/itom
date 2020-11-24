@@ -280,7 +280,7 @@ points : dataObject \n\
     This object will be a ``2 x nrOfSelectedPoints`` :class:`dataObject` of dtype \n\
     ``float64`` after the successful call of this method. The first row contains \n\
     the ``x`` coordinates of the selected points, the 2nd row the ``y`` coordinates. \n\
-maxNrPoints: int, optional \n\
+maxNrPoints : int, optional \n\
     Let the user select up to this number of points. The selection \n\
     can be stopped by pressing Space or Esc. ``maxNrPoints`` must be -1 \n\
     for an unlimited number of picked points (default) or a number >= 1. \n\
@@ -425,7 +425,7 @@ elementType : int \n\
     * ``plotItem.PrimitiveCircle`` \n\
     * ``plotItem.PrimitivePolygon`` \n\
     \n\
-maxNrElements: int, optional \n\
+maxNrElements : int, optional \n\
     Number of elements of the given type, the user has to draw. \n\
     The operation can be aborted by clicking the ``Esc`` key. If this is the \n\
     case, a ``RuntimeError`` is raised. \n\

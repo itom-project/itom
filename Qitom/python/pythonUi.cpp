@@ -731,7 +731,7 @@ In case of a bounded method, the ``self`` argument must be given in any case. \n
 \n\
 If the signal should have further arguments with specific datatypes, they are transformed \n\
 into corresponding Python data types. A table of supported conversions is given in section \n\
-:ref:`supported-data-types`. In general, a ``callableMethod`` must be a method or \n\
+:ref:`qtdesigner-datatypes`. In general, a ``callableMethod`` must be a method or \n\
 function with the same number of parameters than the signal has (besides the \n\
 ``self`` argument). \n\
 \n\
@@ -864,7 +864,7 @@ Parameters \n\
 ----------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
-     (e.g. 'clicked(bool)') \n\
+    (e.g. 'clicked(bool)') \n\
 \n\
 See Also \n\
 --------- \n\
@@ -920,7 +920,9 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature, observer) -> connects the given signal with a slot immediately setting the cancellation flag of the given progressObserver. \n\
+PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature, observer) \n\
+\n\
+Connects the given signal to a slot immediately setting the cancellation flag of this object. \n\
 \n\
 This method immediately calls the ``requestCancellation`` slot of the given observer \n\
 if the signal with the ``signalSignature`` is emitted (independent on the current \n\
@@ -1546,7 +1548,7 @@ enable or disable the requested widget attribute, given by its ``attributeNumber
 Important attributes are: \n\
 \n\
 * Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is \n\
-    only hidden [default]. \n\
+  only hidden [default]. \n\
 * Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled. \n\
 \n\
 Parameters \n\
@@ -2411,44 +2413,92 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface \n\
+PyDoc_STRVAR(pyUiInit_doc,"ui(filename, type = ui.TYPEDIALOG, dialogButtonBar = ui.BUTTONBAR_NO, dialogButtons = {}, childOfMainWindow = True, deleteOnClose = False, dockWidgetArea = ui.TOPDOCKWIDGETAREA) -> ui \n\
 \n\
-The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
-chose *ui.TYPEWINDOW* as type, if the user interface is a widget (simplest case), chose *ui.TYPEDIALOG* and your widget \n\
-will be embedded in a dialog, provided by *itom*. This dialog can be equiped with a button bar, whose buttons are already \n\
-connected to *itom* internal methods. If you then show your dialog in a modal mode, *itom* knows which button has been \n\
-clicked in order to accept or reject the dialog. \n\
+Loads a user interface file (`ui`) and references this loaded interface by the new ui object. \n\
+\n\
+If the ui file is created in the `QtDesigner`, you can choose from which base type \n\
+you would like to create the user interface (e.g. from a dialog, a window or a widget). \n\
+This together with the argument ``type`` will mainly define the kind of user interface \n\
+that is actually displayed in `itom`. \n\
+\n\
+If you want to add a customized user interface as toolbox or into the central part of \n\
+the main window of `itom`, it is either recommended to design the interface from a \n\
+widget or a main window. The latter has the advantage, that an individual menu or toolbar \n\
+can be added. \n\
+\n\
+If you want to create a standalone window, it is recommended to already design the \n\
+user interface from a main window, such that menus, toolbars as well as access to \n\
+the statusbar is possible (if desired). \n\
+\n\
+For the creation of (modal) dialogs, where the user should configure settings or pass \n\
+some inputs, it is recommended to either design the interface from a dialog on, or \n\
+it is also possible to create a simple widget. In the latter case, itom will put \n\
+this interface into a dialog (for ``type = ui.TYPEDIALOG``) and add optional buttons \n\
+(like the ``OK`` and ``Cancel`` button). These buttons are then already configured \n\
+to work. If you design a dialog from a dialog as base element, you have to connect \n\
+buttons for instance with the ``accept()`` or ``reject()`` slot of the dialog by hand. \n\
+\n\
+For more information see also the section :ref:`qtdesigner` of the user documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
-    path to user interface file (*.ui), absolute or relative to current directory \n\
-type : {int}, optional \n\
-    display type: \n\
+filename : str \n\
+    path to the user interface file (*.ui), absolute or relative to current directory. \n\
+type : int, optional \n\
+    This ``type`` defines how the loaded user interface is displayed: \n\
     \n\
-        * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
-        * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
-        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area, \n\
-        * 3 (ui.TYPECENTRALWIDGET): ui-file must be a widget or mainWindow and is included in the central area of itom, above the command line \n\
-dialogButtonBar :  {int}, optional \n\
-    Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    * ``ui.TYPEDIALOG`` (0): The ui-file is the content of a dialog window or, if the \n\
+      file already defines a `QDialog`, this dialog is shown as it is. \n\
+      This is recommended for the creation of modal dialogs, like settings... \n\
+    * ``ui.TYPEWINDOW`` (1): The ui-file must be a `QMainWindow` or its outer widget \n\
+      is turned into a main window. This window is then shown. This is recommended \n\
+      for \"standalone\" windows, that should be able to be minimized, maximized, contain \n\
+      menus or toolbars etc. \n\
+    * ``ui.TYPEDOCKWIDGET`` (2): The loaded widget is the content of a dock widget (toolbox) \n\
+      and is added to the indicated ``dockWidgetArea`` of the main window of `itom`. \n\
+    * ``ui.TYPECENTRALWIDGET`` (3): The loaded ui-file must define a `QWidget` or \n\
+      `QMainWindow` and is then added to the central area of `itom`, above the command line. \n\
+      It is not allowed to choose this type if the user interface is created from \n\
+      a `QDialog`. \n\
     \n\
-        * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
-        * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
-        * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
-dialogButtons : {dict}, optional \n\
-    every dictionary-entry is one button. key is the role, value is the button text \n\
-childOfMainWindow :  bool, optional \n\
-    for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
+dialogButtonBar : int, optional \n\
+    This argument is only used if ``type == ui.TYPEDIALOG`` and defines if a button bar \n\
+    with buttons, given by ``dialogButtons`` should be automatically added to the dialog. \n\
+    If this is the case, the role of the buttons is considered, such that clicking the \n\
+    ``OK`` or ``Cancel`` button  will automatically close the dialog and return the \n\
+    role to the :meth:`show` method (if the dialog is displayed modal). Allowed values: \n\
+    \n\
+    * ``ui.BUTTONBAR_NO`` (0): do not add any button bar and buttons (default), \n\
+    * ``ui.BUTTONBAR_HORIZONTAL`` (1): add a horizontal button bar at the bottom, \n\
+    * ``ui.BUTTONBAR_VERTICAL`` (2): add vertical button bar on the right side. \n\
+    \n\
+dialogButtons : dict, optional \n\
+    Only relevant if ``dialogButtonBar`` is not ``ui.BUTTONBAR_NO``: This dictionary \n\
+    contains all buttons, that should be added to the button bar. For every entry, \n\
+    the key is the role name of the button (enum ``QDialogButtonBox::ButtonRole``, \n\
+    e.g. 'AcceptRole', 'RejectRole', 'ApplyRole', 'YesRole', 'NoRole'). The value is \n\
+    the text of the button. \n\
+childOfMainWindow : bool, optional \n\
+    For type ``ui.TYPEDIALOG`` and ``ui.TYPEWINDOW`` only: Indicates if the window \n\
+    should be a child of the itom main window. If ``False``, this window has its own \n\
+    icon in the taskbar of the operating system. \n\
 deleteOnClose : bool, optional \n\
-    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
-dockWidgetArea : {int}, optional \n\
-    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+    Indicates if the widget / window / dialog should be deleted if the user closes it \n\
+    or if it is hidden. If it is hidden, it can be shown again using :meth:`show`. \n\
+dockWidgetArea : int, optional \n\
+    Only for ``type == ui.TYPEDOCKWIDGET (2)``. Indicates the position where the \n\
+    dock widget should be placed: \n\
     \n\
-        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
-        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
-        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
-        * 8 (ui.BOTTOMDOCKWIDGETAREA)");
+    * 1 : ``ui.LEFTDOCKWIDGETAREA`` \n\
+    * 2 : ``ui.RIGHTDOCKWIDGETAREA`` \n\
+    * 4 : ``ui.TOPDOCKWIDGETAREA`` \n\
+    * 8 : ``ui.BOTTOMDOCKWIDGETAREA`` \n\
+\n\
+Returns \n\
+------- \n\
+window : ui \n\
+    A :class:`ui` object, that references the loaded ui-file.");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL};
@@ -2464,7 +2514,17 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         return 0;
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bbi", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose, &dockWidgetArea))
+    if(!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "O&|iiO!bbi", 
+        const_cast<char**>(kwlist), 
+        &PyUnicode_FSConverter, &bytesFilename, 
+        &self->winType, 
+        &self->buttonBarType, 
+        &PyDict_Type, &dialogButtons, 
+        &self->childOfMainWindow, 
+        &self->deleteOnClose, &dockWidgetArea))
     {
         return -1;
     }
@@ -2472,14 +2532,18 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     //check values:
     if(self->winType < 0 || self->winType > 3)
     {
-        PyErr_SetString(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1), TYPEDOCKWIDGET (2) or TYPECENTRALWIDGET (3)");
+        PyErr_SetString(
+            PyExc_ValueError,
+            "Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1), TYPEDOCKWIDGET (2) or TYPECENTRALWIDGET (3)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
 
     if(self->buttonBarType < 0 || self->buttonBarType > 2)
      {
-        PyErr_SetString(PyExc_ValueError,"Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
+        PyErr_SetString(
+            PyExc_ValueError,
+            "Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
@@ -3019,15 +3083,15 @@ For more information, see also the section :ref:`msgInputBoxes` of the documenta
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
+title : str\n\
     is the title of the dialog. \n\
-label : {str}\n\
+label : str\n\
     is the label above the input box. \n\
-defaultValue : {int}, optional\n\
+defaultValue : int, optional\n\
     is the default value in the input box. \n\
 min : int, optional\n\
     is the allowed minimal value. \n\
-max : {int}, optional\n\
+max : int, optional\n\
     is the allowed maximal value. \n\
 step : int, optional\n\
     is the step size if user presses the up/down arrow. \n\
@@ -3806,7 +3870,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileNames_doc, 
-"getOpenFileNames(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None]) -> Optional[List[str]] \n\
+"getOpenFileNames(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[List[str]] \n\
 \n\
 Shows a dialog for chosing one or multiple file names. The selected file(s) must exist. \n\
 \n\
@@ -4263,10 +4327,11 @@ widgetName : str \n\
 \n\
 Returns \n\
 ------- \n\
-:class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
-the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
-a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
-all other cases a dialog is created. \n\
+ui \n\
+    :class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
+    the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
+    a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
+    all other cases a dialog is created. \n\
 \n\
 Notes \n\
 ----- \n\
@@ -4461,20 +4526,22 @@ type : int, optional \n\
     Desired type of the newly created widget (a widget can also be a standalone dialog, \n\
     dockwidget or window): \n\
     \n\
-        * 255 (default) : the type is derived from the original type of the widget, \n\
-        * 0 (``ui.TYPEDIALOG``): the ui-file is embedded in auto-created dialog, \n\
-        * 1 (``ui.TYPEWINDOW``): the ui-file is handled as main window, \n\
-        * 2 (``ui.TYPEDOCKWIDGET``): the ui-file is handled as dock-widget and appended \n\
-          to the main-window dock area, \n\
-        * 3 (``ui.TYPECENTRALWIDGET``): the ui-file must be a widget or main window \n\
-          and is included in the central area of itom, above the command line. \n\
+    * 255 (default) : the type is derived from the original type of the widget, \n\
+    * 0 (``ui.TYPEDIALOG``): the ui-file is embedded in auto-created dialog, \n\
+    * 1 (``ui.TYPEWINDOW``): the ui-file is handled as main window, \n\
+    * 2 (``ui.TYPEDOCKWIDGET``): the ui-file is handled as dock-widget and appended \n\
+        to the main-window dock area, \n\
+    * 3 (``ui.TYPECENTRALWIDGET``): the ui-file must be a widget or main window \n\
+        and is included in the central area of itom, above the command line. \n\
+    \n\
 dialogButtonBar : int, optional \n\
     Only for ``type`` ``ui.TYPEDIALOG (0)``: Indicates if buttons should be automatically \n\
     added to the dialog: \n\
     \n\
-        * 0 (``ui.BUTTONBAR_NO``): do not add any buttons (default), \n\
-        * 1 (``ui.BUTTONBAR_HORIZONTAL``): add a horizontal button bar, \n\
-        * 2 (``ui.BUTTONBAR_VERTICAL``): add a vertical button bar. \n\
+    * 0 (``ui.BUTTONBAR_NO``): do not add any buttons (default), \n\
+    * 1 (``ui.BUTTONBAR_HORIZONTAL``): add a horizontal button bar, \n\
+    * 2 (``ui.BUTTONBAR_VERTICAL``): add a vertical button bar. \n\
+    \n\
 dialogButtons : dict, optional \n\
     Only relevant if ``dialogButtonBar`` is not ``ui.BUTTONBAR_NO``: This dictionary \n\
     contains all buttons, that should be added to the button bar. For every entry, \n\
@@ -4492,17 +4559,18 @@ dockWidgetArea : int, optional \n\
     Only for ``type`` ``ui.TYPEDOCKWIDGET (2)``. Indicates the position where the \n\
     dock widget should be placed: \n\
     \n\
-        * 1 : ``ui.LEFTDOCKWIDGETAREA`` \n\
-        * 2 : ``ui.RIGHTDOCKWIDGETAREA`` \n\
-        * 4 : ``ui.TOPDOCKWIDGETAREA`` \n\
-        * 8 : ``ui.BOTTOMDOCKWIDGETAREA`` \n\
+    * 1 : ``ui.LEFTDOCKWIDGETAREA`` \n\
+    * 2 : ``ui.RIGHTDOCKWIDGETAREA`` \n\
+    * 4 : ``ui.TOPDOCKWIDGETAREA`` \n\
+    * 8 : ``ui.BOTTOMDOCKWIDGETAREA`` \n\
 \n\
 Returns \n\
 ------- \n\
-:class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
-the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
-a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
-all other cases a dialog is created. \n\
+ui \n\
+    :class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
+    the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
+    a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
+    all other cases a dialog is created. \n\
 \n\
 Notes \n\
 ----- \n\

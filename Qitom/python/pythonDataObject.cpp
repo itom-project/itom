@@ -1181,7 +1181,7 @@ a :class:`tuple` of :class:`float` values. The i-th value in the tuple correspon
 to the scaling factor of the i-th axis. Either assign a new tuple with the same \n\
 length than the number of dimensions or change single values using tuple indexing. \n\
 \n\
-Definition: Physical unit = (px-Coordinate - offset)* scale\n\
+Definition: ``Physical unit = (px-Coordinate - offset)* scale`` \n\
 \n\
 If the data object is plot with scalings != 1, the scaled (physical) units are \n\
 displayed in the plot. \n\
@@ -1270,7 +1270,7 @@ a :class:`tuple` of :class:`float` values. The i-th value in the tuple correspon
 to the pixel-offset of the i-th axis. Either assign a new tuple with the same length \n\
 than the number of dimensions or change single values using tuple indexing. \n\
 \n\
-Definition: Physical unit = (px-Coordinate - offset)* scale\n\
+Definition: ``Physical unit = (px-Coordinate - offset)* scale`` \n\
 \n\
 If the data object is plot with offsets != 0, the scaled (physical) units are \n\
 displayed in the plot. \n\
@@ -2254,7 +2254,7 @@ ValueError \n\
     if the given axes is out of range \n\
 RuntimeWarning \n\
     if requested physical unit is outside of the range of the requested axis. \n\
-     The returned pixel value is clipped to the closest boundary value.");
+    The returned pixel value is clipped to the closest boundary value.");
 PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     static const char *kwlist[] = {"values", "axes", NULL};
@@ -2664,7 +2664,7 @@ key : str\n\
 \n\
 Returns \n\
 -------- \n\
-success : bool: \n\
+success : bool \n\
     ``True`` if tag with given key existed and could be deleted, otherwise ``False``.");
 PyObject* PythonDataObject::PyDataObj_DeleteTag(PyDataObject *self, PyObject *args)
 {
@@ -4427,7 +4427,14 @@ PyObject* PythonDataObject::PyDataObj_getiter(PyDataObject* self)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectName_doc,"name() -> returns the name of this object (dataObject)");
+PyDoc_STRVAR(pyDataObjectName_doc,"name() -> str \n\
+\n\
+Returns the name of this object \n\
+\n\
+Returns \n\
+------- \n\
+str \n\
+    the name of this object (``dataObject``)");
 PyObject* PythonDataObject::PyDataObject_name(PyDataObject* /*self*/)
 {
     PyObject *result;
@@ -4920,6 +4927,8 @@ result : dataObject \n\
     Resulting multiplied data object. Values, that exceed the range of the current \n\
     data type, will be set to the ``result modulo max(dtype)``. \n\
 \n\
+Notes \n\
+------ \n\
 For a mathematical multiplication see the @-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
@@ -9483,7 +9492,7 @@ diagonal values are ``r = 0, g = 0, b = 1, alpha = 0``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-size : int, \n\
+size : int \n\
     The size of the squared matrix (single integer value).\n\
 dtype : str, optional \n\
     The desired data type for the elements in the returned :class:`dataObject`. \n\
@@ -9494,7 +9503,6 @@ Returns \n\
 ------- \n\
 eyeMatrix : dataObject \n\
     The created eye-matrix as ``size x size`` :class:`dataObject`. \n\
-I : {dataObject} of shape (size,size) \n\
 \n\
 See Also \n\
 --------- \n\

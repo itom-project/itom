@@ -135,6 +135,11 @@ of the first signature lines (all signature lines beside the last one).
 Please be aware, that this backslash must be written in the C-code by two
 backslashes.
 
+.. note::
+    
+    If overloaded methods are added, every signature needs to have a return type.
+    This is maybe a bug in Sphinx, however with Sphinx 3.3 this was the case.
+
 Use the ``Parameters`` section to explain all arguments, even if they are
 only used in one of the signatures.
 

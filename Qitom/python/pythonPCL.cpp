@@ -814,14 +814,14 @@ PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, Py
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudAppend_doc,"append(pointCloud) \\\n\
-append(point) \\\n\
-append(xyz) \\\n\
-append(xyzi) \\\n\
-append(xyz, rgba) \\\n\
-append(xyz_normal_curvature) \\\n\
-append(xyz_i_normal_curvature) \\\n\
-append(xyz_normal_curvature, rgba) \n\
+PyDoc_STRVAR(pyPointCloudAppend_doc,"append(pointCloud) -> None \\\n\
+append(point) -> None \\\n\
+append(xyz) -> None \\\n\
+append(xyzi) -> None \\\n\
+append(xyz, rgba) -> None \\\n\
+append(xyz_normal_curvature) -> None \\\n\
+append(xyz_i_normal_curvature) -> None \\\n\
+append(xyz_normal_curvature, rgba) -> None \n\
 \n\
 Appends another point cloud or a point, e.g. given by its coordinates etc., to this cloud. \n\
 \n\
@@ -3024,7 +3024,7 @@ xyz : tuple of float \n\
 intensity : float, optional \n\
     is only allowed for  ``type = point.PointXYZI`` and ``type = point.PointXYZINormal``. \n\
     It is the float intensity value. \n\
-rgba, tuple of int, optional \n\
+rgba : tuple of int, optional \n\
     is only allowed for ``type = point.PointXYZRBA`` or ``type = point.PointXYZRGBNormal``. \n\
     It must be a tuple of four integer values ``(R, G, B, A)``, all in the range ``[0, 255]``. \n\
 normal : tuple of float, optional \n\
