@@ -75,7 +75,7 @@ PyObject* PythonDataObject::PyDataObject_new(PyTypeObject *type, PyObject * /*ar
     \return description
     \sa (see also) keywords (comma-separated)
 */
-PyDoc_STRVAR(dataObjectInit_doc,"dataObject(dims, dtype = \"uint8\", continuous = 0, data = None) -> dataObject \n\
+PyDoc_STRVAR(dataObjectInit_doc,"dataObject(dims = [], dtype = \"uint8\", continuous = 0, data = None) -> dataObject \n\
 \n\
 Creates a new n-dimensional dataObject array. \n\
 \n\
@@ -100,8 +100,10 @@ dims : sequence of int, optional \n\
     of this sequence defines the dimension of this dataObject. As an example, \n\
     ``dims = [2, 3]`` creates a two-dimensional dataObject with two rows and three columns. \n\
     If ``dims`` is not given, an empty data object is created. \n\
-dtype : {'int8', 'uint8', 'int16', 'uint16', 'int32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'}, optional \n\
-    Data type of each element in the array.\n\
+dtype : str, optional \n\
+    Data type of each element in the array. Possible values are: \n\
+    'int8', 'uint8', 'int16', 'uint16', 'int32', 'float32', 'float64', 'complex64', \n\
+    'complex128', 'rgba32'. \n\
 continuous : int, optional \n\
     The last two dimensions of a dataObject are always stored as continuous junk of memory, \n\
     denoted as plane. If ``continuous`` is set to ``1``, even a dataObject with a dimension \n\
@@ -111,7 +113,7 @@ continuous : int, optional \n\
     are referenced by means of an index vector. This is recommended for large arrays, since \n\
     the operating system might get trouble allocated one very big continuous junk of memory, \n\
     instead of multiple smaller ones. \n\
-data : int, or float or complex or rgba or sequence of int or sequence of float or sequence of complex or dataObject or numpy.ndarray, optional \n\
+data : int or float or complex or rgba or sequence of int or sequence of float or sequence of complex or dataObject or numpy.ndarray, optional \n\
     If ``data`` is a single value, all values in the dataObject are set to this single value. \n\
     Else, the sequence or array-like object must have the same number of values than \n\
     the data object. These values will then be assigned to the new data object (filled row by row).\n\

@@ -4360,7 +4360,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, **kwds, _observer = None) -> obj \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, _observer = None, **kwds) -> obj \n\
 \n\
 Invokes a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
@@ -4383,9 +4383,6 @@ name : str \n\
     The name of the filter\n\
 *args : obj \n\
     positional arguments for the specific filter-method \n\
-**kwds : obj \n\
-    keyword-based arguments for the specific filter-method. The argument name \n\
-    ``_observer`` is reserved for special use. \n\
 _observer : progressObserver, optional \n\
     if the called filter implements the extended interface with progress and status \n\
     information, an optional :class:`progressObserver` object can be given (only as \n\
@@ -4394,6 +4391,9 @@ _observer : progressObserver, optional \n\
     (depending on the implementation of the filter). The observer object is \n\
     reset before passed to the called filter function (using the slot \n\
     :meth:`~progressObserver.reset`). \n\
+**kwds : obj \n\
+    keyword-based arguments for the specific filter-method. The argument name \n\
+    ``_observer`` is reserved for special use. \n\
 \n\
 Returns \n\
 -------- \n\

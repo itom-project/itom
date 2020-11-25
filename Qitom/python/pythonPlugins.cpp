@@ -1418,7 +1418,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name, param1, param2, ...) -> actuator \n\
+PyDoc_STRVAR(pyActuatorInit_doc, "actuator(name, *args, **kwds) -> actuator \n\
 \n\
 Creates a new instance of the actuator plugin ``name``. \n\
 \n\
@@ -1436,13 +1436,14 @@ Parameters \n\
 ----------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`actuator`-plugin. \n\
-param1 : Any, optional \n\
-    The first argument of the plugin initialisation. First, all mandatory arguments \n\
-    must be given, followed by the optional ones. This parameter ``param1`` is \n\
-    just an example. The real name depends on the initialization parameters of the \n\
-    specific plugin. \n\
-param2 : Any, optional \n\
-    2nd, exemplary plugin initialization parameter. \n\
+*args : Any \n\
+    Every ``actuator`` plugin defines a list of mandatory and optional initialization \n\
+    parameters. Pass these arguments either as positional (``*args``) or keyword \n\
+    based (``**kwds``) arguments, where the mandatory parameters must be given first, \n\
+    followed by the optional ones. Not every optional initialization argument must be \n\
+    given, else its default value is used. \n\
+**kwds : Any \n\
+    Further keyword based parameters. See also ``*args``. \n\
 \n\
 Returns \n\
 -------- \n\
@@ -3359,7 +3360,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name, param1, param2, ...) -> dataIO \n\
+PyDoc_STRVAR(pyDataIOInit_doc, "dataIO(name, *args, **kwds) -> dataIO \n\
 \n\
 Creates a new instance of the dataIO plugin ``name``. \n\
 \n\
@@ -3377,13 +3378,14 @@ Parameters \n\
 ----------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`dataIO`-plugin. \n\
-param1 : Any, optional \n\
-    The first argument of the plugin initialisation. First, all mandatory arguments \n\
-    must be given, followed by the optional ones. This parameter ``param1`` is \n\
-    just an example. The real name depends on the initialization parameters of the \n\
-    specific plugin. \n\
-param2 : Any, optional \n\
-    2nd, exemplary plugin initialization parameter. \n\
+*args : Any \n\
+    Every ``actuator`` plugin defines a list of mandatory and optional initialization \n\
+    parameters. Pass these arguments either as positional (``*args``) or keyword \n\
+    based (``**kwds``) arguments, where the mandatory parameters must be given first, \n\
+    followed by the optional ones. Not every optional initialization argument must be \n\
+    given, else its default value is used. \n\
+**kwds : Any \n\
+    Further keyword based parameters. See also ``*args``. \n\
 \n\
 Returns \n\
 -------- \n\
