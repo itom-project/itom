@@ -75,10 +75,11 @@ def parse_stubs():
     sys_version = sys.version_info
     py_version: str = "%i.%i" % (sys_version.major, sys_version.minor)
     
-    base_folder: str = os.path.dirname(os.path.abspath(
-        inspect.getfile(inspect.currentframe())))
+    base_folder: str = os.path.abspath(itom.getAppPath())
+    base_folder = os.path.join(base_folder, "itom-packages")
+    base_folder = os.path.join(base_folder, "itom-stubs")
     
-    stubs_file: str = 'itom-stubs' + os.path.sep + '__init__.pyi'
+    stubs_file: str = os.path.join(base_folder, "__init__.pyi")
     
     if py_version < "3.5":
         # Python < 3.5 does not know the typing module.
@@ -123,11 +124,14 @@ def parse_stubs():
                "from typing import overload, Tuple, List, Dict, Optional, Any, Literal\n\n" + \
                text
         
-        with open(os.path.join(base_folder, stubs_file), 'wt') as fp:
-            fp.write(text)
-        
-        #for t in text.split("\n"):
-        #    print(t)
+        try:
+            if not os.path.exists(base_folder):
+                os.makedirs(base_folder)
+            
+            with open(stubs_file, 'wt') as fp:
+                fp.write(text)
+        except Exception as ex:
+            warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)
 
 
 def _get_direct_members(obj) -> Tuple[str, object, object]:

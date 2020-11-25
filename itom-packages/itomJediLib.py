@@ -28,6 +28,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 import jedi
 import sys
 import itomStubsGen
+import warnings
 
 # avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
 maxreclimit = 1100
@@ -49,7 +50,9 @@ ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png')
 __version__ = "1.0.1"
 
 # parses the stubs file for the itom module (if not up-to-date)
-itomStubsGen.parse_stubs()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    itomStubsGen.parse_stubs()
 
 class StreamHider:
     """A stream class, that emits nothing.
