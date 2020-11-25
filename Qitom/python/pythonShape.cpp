@@ -1261,7 +1261,7 @@ with two elements, that can be converted to float64. \n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no 2nd point defined.");
 PyObject* PythonShape::PyShape_getPoint1(PyShape *self, void * /*closure*/)
 {
@@ -1350,7 +1350,7 @@ with two elements, that can be converted to float64. \n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no 2nd point defined.");
 PyObject* PythonShape::PyShape_getPoint2(PyShape *self, void * /*closure*/)
 {
@@ -1437,7 +1437,7 @@ two values that can be converted to float64. \n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no center defined.");
 PyObject* PythonShape::PyShape_getCenter(PyShape *self, void * /*closure*/)
 {
@@ -1611,7 +1611,7 @@ the base coordinate system.\n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no radius defined.");
 PyObject* PythonShape::PyShape_getRadius(PyShape *self, void * /*closure*/)
 {
@@ -1719,7 +1719,7 @@ A width can only be set or read for shapes of type ``shape.Square`` and \n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no width defined.");
 PyObject* PythonShape::PyShape_getWidth(PyShape *self, void * /*closure*/)
 {
@@ -1822,7 +1822,7 @@ A height can only be set or read for shapes of type ``shape.Square`` and \n\
 \n\
 Raises \n\
 ------ \n\
-TypeError: \n\
+TypeError \n\
     if this attribute is read or assigned for a type, that has no height defined.");
 PyObject* PythonShape::PyShape_getHeight(PyShape *self, void * /*closure*/)
 {

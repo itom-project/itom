@@ -1,6 +1,7 @@
 import itomStubsGen as isg
 import unittest
 from typing import Tuple, Dict, List, Optional
+import warnings
 
 
 class ItomStubsGenTest(unittest.TestCase):
@@ -247,6 +248,260 @@ ValueError
         self.assertEqual(len(text_), len(text2_))
         for t, t2 in zip(text_, text2_):
             self.assertEqual(t.strip(), t2.strip())
+    
+    def test_get_direct_members(self):
+        
+        # some demo classes
+        class A:
+            def __init__(self):
+                pass
+            
+            def meth1(self):
+                pass
+            
+            def meth2(self):
+                pass
+            
+            @staticmethod
+            def meth3(self):
+                pass
+        
+        class B(A):
+            def __init_(self):
+                pass
+            
+            def meth1(self):
+                pass
+            
+            def meth4(self):
+                pass
+        
+        membersA = [m for m in isg._get_direct_members(A)]
+        membersA_name = [m[0] for m in membersA]
+        
+        for m in membersA:
+            self.assertIs(type(m[0]), str)
+            self.assertEqual(len(m), 3)
+        
+        self.assertIn("meth1", membersA_name)
+        self.assertIn("meth2", membersA_name)
+        self.assertIn("meth3", membersA_name)
+        
+        membersB = [m for m in isg._get_direct_members(B)]
+        membersB_name = [m[0] for m in membersB]
+        
+        for m in membersA:
+            self.assertIs(type(m[0]), str)
+            self.assertEqual(len(m), 3)
+        
+        self.assertIn("meth1", membersB_name)
+        self.assertIn("meth4", membersB_name)
+        self.assertNotIn("meth2", membersB_name)
+        self.assertNotIn("meth3", membersB_name)
+    
+    def test_parse_npdoc_argsection(self):
+        demo1 = """lorem ipsum
 
+lorem ipsum
+lorem ipsum
+
+Returns
+lorem ipsum"""
+        args = isg._parse_npdoc_argsection(demo1, "Yields")
+        self.assertIsNone(args)
+        
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            args = isg._parse_npdoc_argsection(demo1, "Returns")
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
+            self.assertIsNone(args)
+        
+        demo2 = """Lorem ipsum
+
+Lorem ipsum
+Lorem ipsum
+
+Parameters
+----------
+arg1 : int, optional
+    text of arg1
+arg2
+    text of arg2
+arg3 : int
+    text of arg3
+*args : list of float or tuple of int
+    text of args
+
+Returns
+-------
+a : float
+    text
+int
+    value without name
+"""
+        for args in [
+                isg._parse_npdoc_argsection(demo2, "Parameters"),
+                isg._get_parameters_from_npdocstring(demo2)]:
+            self.assertEqual(len(args), 4)
+            
+            # arg 1
+            self.assertEqual(args[0].name, "arg1")
+            self.assertEqual(args[0].dtype, "int")
+            self.assertTrue(args[0].optional)
+            
+            # arg 2
+            self.assertEqual(args[1].name, "arg2")
+            self.assertIsNone(args[1].dtype)
+            self.assertFalse(args[1].optional)
+            
+            # arg 3
+            self.assertEqual(args[2].name, "arg3")
+            self.assertEqual(args[2].dtype, "int")
+            self.assertFalse(args[2].optional)
+            
+            # arg 4
+            self.assertEqual(args[3].name, "*args")
+            self.assertEqual(args[3].dtype, "Union[List[float], Tuple[int]]")
+            self.assertTrue(args[3].optional)
+        
+        args = isg._parse_npdoc_argsection(demo2, "Returns")
+        
+        self.assertEqual(len(args), 2)
+        
+        # arg 1
+        self.assertEqual(args[0].name, "a")
+        self.assertEqual(args[0].dtype, "float")
+        self.assertFalse(args[0].optional)
+        
+        # arg 2
+        self.assertEqual(args[1].name, "")
+        self.assertEqual(args[1].dtype, "int")
+        self.assertFalse(args[1].optional)
+    
+    def test_parse_signature_from_first_line(self):
+        
+        class Demo:
+            def meth1(self):
+                """this method does nothing"""
+                pass
+            
+            def meth2(self):
+                """"""
+                pass
+            
+            @staticmethod
+            def meth3():
+                """def meth3(arg1 -> no"""
+            
+            def meth4(self):
+                """meth4(a, b, c) -> Optional[int]
+                
+                Parameters
+                ----------
+                a : int
+                    text
+                b : float, optional
+                    value
+                c
+                    no type
+                """
+            
+            def meth5(self):
+                """myFunc() -> int"""
+        
+        wrong_signatures = [Demo.meth1, Demo.meth2, Demo.meth3]
+        
+        for ws in wrong_signatures:
+            line1 = ws.__doc__.split("\n")[0]
+            with self.assertRaises(ValueError, msg=ws.__qualname__):
+                isg._parse_signature_from_first_line(ws, line1)
+        
+        meth4 = Demo.meth4
+        sig_meth4 = meth4.__doc__.split("\n")[0]
+        sig = isg._parse_signature_from_first_line(meth4, sig_meth4)
+        self.assertEqual(sig.name, "meth4")
+        self.assertEqual(sig.rettype, "Optional[int]")
+        self.assertEqual(len(sig.args), 3)
+        
+        meth5 = Demo.meth5
+        sig_meth5 = meth5.__doc__.split("\n")[0]
+        
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            sig = isg._parse_signature_from_first_line(meth5, sig_meth5)
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
+            self.assertEqual(sig.name, "meth5")
+            self.assertEqual(sig.rettype, "int")
+        
+    def test_parse_property_docstring(self):
+        
+        class Demo:
+            @property
+            def prop1(self):
+                pass
+            
+            @property
+            def prop2(self):
+                """int : text of property."""
+            
+            @property
+            def prop3(self):
+                """text of property."""
+        
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            text1 = isg._parse_property_docstring(Demo.prop1, 0)
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
+            self.assertEqual(text1, "@property\ndef prop1(self):\n    pass")
+        
+        text2 = isg._parse_property_docstring(Demo.prop2, 4)
+        self.assertEqual(text2, "    @property\n    def prop2(self) -> int:\n        \"\"\"text of property.\"\"\"\n        pass")
+        
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            text3 = isg._parse_property_docstring(Demo.prop3, 0)
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
+            self.assertEqual(text3, "@property\ndef prop3(self):\n    \"\"\"text of property.\"\"\"\n    pass")
+    
+    def test_parse_args_string(self):
+        args = isg._parse_args_string("a, b = None, c = Optional[Union[int, float]]")
+        
+        self.assertEqual(len(args), 3)
+        
+        # arg 1
+        self.assertEqual(args[0].name, "a")
+        self.assertFalse(args[0].optional)
+        self.assertIsNone(args[0].dtype)
+        self.assertIsNone(args[0].default)
+        
+        # arg 2
+        self.assertEqual(args[1].name, "b")
+        self.assertTrue(args[1].optional)
+        self.assertIsNone(args[1].dtype)
+        self.assertEqual(args[1].default, "None")
+        
+        # arg 3
+        self.assertEqual(args[2].name, "c")
+        self.assertTrue(args[2].optional)
+        self.assertIsNone(args[2].dtype)
+        self.assertEqual(args[2].default, "Optional[Union[int, float]]")
+    
+    
 if __name__ == '__main__':
     unittest.main(module='itom_stubs_generator', exit=False)

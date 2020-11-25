@@ -1210,9 +1210,9 @@ Parameters \n\
 ----------- \n\
 funcName : str \n\
     The name of the additional function.\n\
-param1 : any, optional \n\
+param1 : Any, optional \n\
     1st mandatory or optional argument of the called function. \n\
-param2 : any, optional \n\
+param2 : Any, optional \n\
     2nd mandatory or optional argument of the called function. \n\
 \n\
 Returns \n\
@@ -1436,12 +1436,12 @@ Parameters \n\
 ----------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`actuator`-plugin. \n\
-param1 : any, optional \n\
+param1 : Any, optional \n\
     The first argument of the plugin initialisation. First, all mandatory arguments \n\
     must be given, followed by the optional ones. This parameter ``param1`` is \n\
     just an example. The real name depends on the initialization parameters of the \n\
     specific plugin. \n\
-param2 : any, optional \n\
+param2 : Any, optional \n\
     2nd, exemplary plugin initialization parameter. \n\
 \n\
 Returns \n\
@@ -3377,12 +3377,12 @@ Parameters \n\
 ----------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`dataIO`-plugin. \n\
-param1 : any, optional \n\
+param1 : Any, optional \n\
     The first argument of the plugin initialisation. First, all mandatory arguments \n\
     must be given, followed by the optional ones. This parameter ``param1`` is \n\
     just an example. The real name depends on the initialization parameters of the \n\
     specific plugin. \n\
-param2 : any, optional \n\
+param2 : Any, optional \n\
     2nd, exemplary plugin initialization parameter. \n\
 \n\
 Returns \n\

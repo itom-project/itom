@@ -10,9 +10,10 @@ calltips etc.
 import sys
 import os
 import inspect
-from typing import List, Optional, Sequence, Tuple
+from typing import List, Optional, Tuple
 import itom
 import re
+import warnings
 
 __version__ = "1.0.0"
 
@@ -40,7 +41,7 @@ class Arg:
             text += ": " + self.dtype
         if self.default:
             text += " = " + self.default
-        elif self.optional:
+        elif self.optional and not self.name.startswith("*"):
             text += " = \"???\""
         return text
 
@@ -85,6 +86,30 @@ def parse_stubs():
         if os.path.exists(stubs_file):
             os.remove(stubs_file)
     else:
+        itom_compile_date = itom.version(dictionary=True)["itom"]["itom_compileDate"]
+        
+        # check if stubs file exists. If so, load the first lines and
+        # see if there is a compile_date comment. If the compile data is
+        # unchanged, quit. The stubs file is up-to-date.
+        uptodate = False
+        prefix = "# compile_date = "
+        
+        if os.path.exists(stubs_file):
+            with open(stubs_file, "rt") as fp:
+                count = 0
+                for line in fp:
+                    if line.startswith(prefix):
+                        line = line[len(prefix):-1]  # there is a \n at the end
+                        if line == itom_compile_date:
+                            uptodate = True
+                            break
+                        
+                    count += 1
+                    if count > 5:
+                        break
+        
+        if uptodate:
+            return
         
         texts = [i for i in _parse_object(itom, indent=0)]
         
@@ -94,23 +119,49 @@ def parse_stubs():
         text = "\n\n".join(texts)
         
         text = "# coding=iso-8859-15\n\n" + \
+               prefix + itom_compile_date + "\n\n" + \
                "from typing import overload, Tuple, List, Dict, Optional, Any, Literal\n\n" + \
                text
         
         with open(os.path.join(base_folder, stubs_file), 'wt') as fp:
             fp.write(text)
         
-        for t in text.split("\n"):
-            print(t)
+        #for t in text.split("\n"):
+        #    print(t)
 
 
 def _get_direct_members(obj) -> Tuple[str, object, object]:
+    """Generator for all direct members of `obj`.
+    
+    This generator returns one tuple for each direct member of the given `obj`.
+    A direct member is one, that is defined in the given obj and not in potential
+    base classes.
+    
+    Args:
+        obj: is the parent object
+    
+    Yields:
+        a tuple with the name, the object and again the object.
+        The first returned object is obtained by ``getattr(obj, itemname)``,
+        the 2nd by ``obj.__dict__[itemname]``. There seems to be a different
+        e.g. for static class methods. isinstance(object, staticmethod)
+        only returns True if the 2nd object is given.
+    """
     for itemname in dir(obj):
         if itemname in obj.__dict__:
             yield (itemname, getattr(obj, itemname), obj.__dict__[itemname])
 
 
 def _parse_object(obj, indent: int = 0) -> str:
+    """Parses one object and its children and returns the stubs docstring.
+    
+    Args:
+        obj: is the parent object to parse
+        indent: is the base identation level for the entire object and its children.
+    
+    Returns:
+        the stubs docstring for this entire object and its children.
+    """
     
     itom_excludes: List[str] = []
     prefix: str = " " * indent
@@ -123,7 +174,11 @@ def _parse_object(obj, indent: int = 0) -> str:
                 "autoReloader",
                 "getDebugger",
                 "proxy",
-                "pythonStream"]
+                "pythonStream",
+                "__doc__",
+                "__name__",
+                "__package__",
+                "__spec__"]
     except Exception:
         pass
     
@@ -166,7 +221,15 @@ def _parse_object(obj, indent: int = 0) -> str:
 
 
 def _get_class_signature(classobj: type, indent: int) -> str:
-    """
+    """Parses the docstring of a class object and its __init__ method.
+    
+    Args:
+        classobj: is the class object
+        indent: is the base indentation level.
+    
+    Returns:
+        The entire signature, including inheritance, docstring and __init__ 
+        signature for the given classobj.
     """
     if not inspect.isclass(classobj):
         raise RuntimeError("%s must be a class object" % str(classobj))
@@ -207,6 +270,17 @@ def _get_class_signature(classobj: type, indent: int) -> str:
 
 
 def _parse_args_string(argstring: str) -> List[Arg]:
+    """Parses the argstring from a signature. 
+    
+    The argstring is the string within the top-level rounded brackets of
+    a method in its signature string. It must not contain any type hints.
+    
+    Returns:
+        the parsed arguments as list of ``Arg``.
+    
+    Raises:
+        RuntimeWarning: if the argstring has no proper format.
+    """
     
     # 1. search comma separated first-level sections
     opened_brackets: List[str] = []
@@ -256,18 +330,40 @@ def _parse_args_string(argstring: str) -> List[Arg]:
             result.append(Arg(name.strip(), dtype, default))
     
     if len(opened_brackets) > 0:
-        print("invalid argument string: %s" % argstring, file=sys.stderr)
+        warnings.warn("invalid argument string: %s" % argstring, RuntimeWarning)
     
     return result
 
 
-def _ismethod(obj):
+def _ismethod(obj) -> bool:
+    """Returns True if ``obj`` is a method, otherwise ``False``.
+    
+    inspect.ismethod only returns True for methods, defined in a Python script,
+    whereas methods in C-modules are ``methoddescriptors``.
+    """
     return inspect.ismethod(obj) or \
         inspect.ismethoddescriptor(obj)
 
 
 def _parse_npdoc_argsection(doc_str: str, section_name: str) -> Optional[List[Arg]]:
-    """."""
+    """Searchs and parses a given doc_str for a numpydoc section.
+    
+    This method searchs a doc_str for one of the numpydoc sections ``Parameters``,
+    ``Returns`` or ``Yields``. If the desired section is found, parses its content
+    and extracts all found arguments as list of Arg.
+    
+    Args:
+        doc_str: is the doc string of the entire method
+        section_name: is the desired section name, must be one of 
+            [Parameters, Returns, Yields]
+    
+    Returns:
+        an optional list of Arg, that contains all parsed arguments of the section.
+    
+    Raises:
+        RuntimeWarning: if the section title without underline in the next line
+            is available.
+    """
     assert(section_name in ["Parameters", "Returns", "Yields"])
     
     doc_lines = [line.rstrip() for line in doc_str.split("\n")]
@@ -280,7 +376,9 @@ def _parse_npdoc_argsection(doc_str: str, section_name: str) -> Optional[List[Ar
     
     if not doc_lines[first_idx + 1].startswith("-" * len(section_name)):
         # there is no ---------------- line after the section title.
-        print("The section title in the docstring is not followed by --------")
+        warnings.warn(
+            "The section title in the docstring is not followed by --------", 
+            RuntimeWarning)
         return None
     
     lines: List[str] = []
@@ -374,11 +472,35 @@ def _get_rettype_from_npdocstring(doc_str: str) -> Optional[str]:
 
 
 def _get_parameters_from_npdocstring(doc_str: str) -> Optional[List[Arg]]:
+    """Parses a Parameters section from a numpydoc string.
+    
+    This is equal to _parse_npdoc_argsection(doc_str, "Parameters").
+    """
     return _parse_npdoc_argsection(doc_str, "Parameters")
 
 
 def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
+    """Parses the entire signature from the first line of a docstring.
     
+    A signature must look like:
+    
+    * methname(arg1: type1, arg2, arg3: type3, *args) -> return type:
+    
+    The ``self`` argument of bound methods must not be included in the
+    string signature. It will be automatically added in the returned Signature.
+    
+    Args:
+        obj: is the method, function etc.
+        first_line: is the signature line of its docstring.
+    
+    Returns:
+        the signature as ``Signature`` object.
+    
+    Raises:
+        RuntimeWarning: if the ``methname`` in the string signature does
+            not correspond to the qualified name of the given ``obj``.
+        ValueError: if ``first_line`` is no valid signature.
+    """
     # find arrow
     comps = first_line.split("->")
     
@@ -414,9 +536,8 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
         else:
             g = m.groups()
             if g[0] != obj.__name__:
-                print("name in signature of obj. %s does not match: %s" % 
-                      (obj.__qualname__, comps[0]),
-                      file=sys.stderr)
+                warnings.warn("name in signature of obj. %s does not match: %s" % 
+                      (obj.__qualname__, comps[0]), RuntimeWarning)
             
             args = g[1]
             sig.args += _parse_args_string(args)
@@ -447,7 +568,11 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
 
 
 def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
-    
+    """
+    Raises:
+        RuntimeWarning: if the ``obj`` has no docstring or an empty first 
+            signature line.
+    """
     try:
         docstring: Optional[str] = obj.__doc__
     except UnicodeDecodeError as ex:
@@ -455,7 +580,7 @@ def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
         raise ex
     
     if docstring is None or docstring.strip() == "":
-        print("Docstring missing for method %s" % obj.__qualname__, file=sys.stderr)
+        warnings.warn("Docstring missing for method %s" % obj.__qualname__, RuntimeWarning)
         return ([], "")
     
     docstrings = docstring.split("\n")
@@ -469,8 +594,8 @@ def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
         sig = first_line
         
         if sig.strip() == "":
-            print("Signature missing in first lines of docstring for method %s" %
-                  obj.__qualname__, file=sys.stderr)
+            warnings.warn("Signature missing in first lines of docstring for method %s" %
+                  obj.__qualname__, RuntimeWarning)
             break
         
         if sig[-1] == "\\":
@@ -637,7 +762,19 @@ def _nptype2typing(nptypestr: str) -> str:
     return nptypestr
 
 
-def _parse_property_docstring(obj, indent: int):
+def _parse_property_docstring(obj, indent: int) -> str:
+    """Parses the docstring of a property and returns the full text for the stubs file.
+    
+    Args:
+        obj: is the property object to parse
+        indent: is the base indentation level
+    
+    Returns:
+        full property for stubs file including body, decorator and docstring
+    
+    Raises:
+        RuntimeWarning: if not docstring is given.
+    """
     prefix = " " * indent
     prefix2 = " " * (indent + 4)
     
@@ -650,10 +787,12 @@ def _parse_property_docstring(obj, indent: int):
             name = "unknown"
     else:
         name: str = obj.__name__
+    
     docstring: Optional[str] = obj.__doc__
     
     if docstring is None:
-        print("Docstring missing for property %s" % obj.__qualname__, file=sys.stderr)
+        warnings.warn("Docstring missing for property %s" % name,
+                      RuntimeWarning)
         text = "%s@property\n" % prefix
         text += "%sdef %s(self):\n%s    pass" % (prefix, name, prefix)
         return text
@@ -667,8 +806,8 @@ def _parse_property_docstring(obj, indent: int):
     colon_idx: int = docstrings[0].find(search_str)
     
     if colon_idx == -1:
-        print("Rettype missing in docstring of property %s" % obj.__qualname__,
-              file=sys.stderr)
+        warnings.warn("Rettype missing in docstring of property %s" % name,
+                      RuntimeWarning)
         rettype: str = ""
     else:
         

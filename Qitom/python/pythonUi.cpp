@@ -472,7 +472,7 @@ Parameters \n\
 ----------- \n\
 publicSlotName : str \n\
     name of the public slot or a specially wrapped slot of the widget or layout. \n\
-*args : any, optional\n\
+*args : Any, optional\n\
     Variable length argument list, that is passed to the called slot. The type of each \n\
     value must be convertible to the requested C++ based argument type of the slot \n\
     (see section :ref:`qtdesigner-datatypes`).\n\
@@ -1122,7 +1122,7 @@ propertyName : str or list of str or tuple of str \n\
 \n\
 Returns \n\
 ------- \n\
-value : any or list of any \n\
+value : Any or list of Any \n\
     the value of one single property of a list of values, if a sequence of ``propertyNames`` \n\
     is given as parameter. \n\
 \n\
@@ -4009,7 +4009,7 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileName_doc,
-"getOpenFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None]) -> Optional[str] \n\
+"getOpenFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
 \n\
 Shows a dialog for chosing a file name. The selected file must exist. \n\
 \n\
@@ -4147,7 +4147,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetSaveFileName_doc,
-"getSaveFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None]) -> Optional[str] \n\
+"getSaveFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
 \n\
 Shows a dialog for chosing a file name. The selected file must not exist. \n\
 \n\

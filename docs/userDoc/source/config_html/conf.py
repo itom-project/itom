@@ -51,7 +51,8 @@ else:
 if sphinx.__version__ <= "1.4.3":
     extensions.append('sphinx.ext.pngmath')
 else:
-    extensions.append('sphinx.ext.imgmath')
+    extensions.append('sphinx.ext.mathjax')
+    # extensions.append('sphinx.ext.imgmath')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
