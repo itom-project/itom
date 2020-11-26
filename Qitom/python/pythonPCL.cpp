@@ -94,7 +94,7 @@ PyObject* PythonPCL::PyPointCloud_new(PyTypeObject *type, PyObject* /*args*/, Py
 PyDoc_STRVAR(pointCloudInit_doc,"pointCloud(type = point.PointInvalid) -> pointCloud \\\n\
 pointCloud(pointCloud, indices = None) -> pointCloud \\\n\
 pointCloud(width, height, point = None) -> pointCloud \\\n\
-pointCloud(point) -> pointCloud  \n\
+pointCloud(singlePoint) -> pointCloud  \n\
 \n\
 Creates new point cloud. \n\
 \n\
@@ -125,6 +125,9 @@ point : point, optional \n\
     overload with one ``point`` argument is used, this cloud only consists of this \n\
     one point. If no ``point`` is given, by a ``width`` and ``height``, an invalid \n\
     cloud type will be initialized. \n\
+singlePoint : point \n\
+    Creates a point cloud with this ``singlePoint``. The type is also derived \n\
+    from the type of the ``singlePoint``. \n\
 \n\
 Returns \n\
 -------\n\
@@ -141,7 +144,8 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *k
 
     static const char *kwlist1[] = { "type", NULL };
     static const char *kwlist2[] = { "pointCloud", "indices", NULL };
-    static const char *kwlist3[] = { "point", NULL };
+    static const char *kwlist3[] = { "singlePoint", NULL };
+    static const char *kwlist3depr[] = { "point", NULL };
     static const char *kwlist4[] = { "width", "height", "point", NULL };
 
     //0. check for args == NULL
@@ -367,7 +371,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *k
         }
     }
 
-    //4. check for single point
+    //4. check for single point (with keyword "singlePoint", since itom 4.1)
     PyErr_Clear();
 
     if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char **>(kwlist3), &PythonPCL::PyPointType, &singlePoint))
@@ -393,6 +397,39 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *k
             return -1;
         }
         catch(...)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+            return -1;
+        }
+    }
+
+    //5. check for single point (with deprecated keyword "point", itom <= 4.0)
+    PyErr_Clear();
+
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char **>(kwlist3depr), &PythonPCL::PyPointType, &singlePoint))
+    {
+        ito::PCLPoint point;
+
+        if (singlePoint != NULL)
+        {
+            PyPoint *pyPoint = (PyPoint*)singlePoint;
+            point = *(pyPoint->point);
+        }
+
+        done = true;
+
+        try
+        {
+            self->data = new ito::PCLPointCloud(1, 1, point.getType(), point);
+        }
+        catch (std::bad_alloc &/*ba*/)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+            return -1;
+        }
+        catch (...)
         {
             self->data = NULL;
             PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");

@@ -340,8 +340,14 @@ def completions(code, line, column, path, prefix):
                                 tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
                         tooltipList = [tooltip, ]
                     elif len(signatures) > 1:
-                        tooltipList = [reformat_docstring(s.docstring()) 
-                                        for s in signatures]
+                        # only use unique signatures
+                        docstrings = [signatures[0].docstring(),]
+                        for s in signatures[1:]:
+                            d = s.docstring()
+                            if d != docstrings[0]:
+                                docstrings.append(d)
+                        tooltipList = [reformat_docstring(d) 
+                                        for d in docstrings]
                     else:
                         tooltip = completion.docstring()
                         if tooltip != "":
@@ -471,18 +477,5 @@ inception()'''
     result = completions("import itom\nitom.loadID", 1, 9, "", "")
     result = completions("import itom\nitom.region().bounding", 1, 21, "", "")
     result = completions("import itom\nitom.region.ELLIPSE", 1, 16, "", "")
-
-#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None)
-#script = jedi.Script(text,4,5,None)
-#script = jedi.Script(text2, 3, 12,None)
-#sigs = script.call_signatures()
-#for sig in sigs:
-    #print("Signature (%s)\n-----------------" % str(sig))
-    #print(sig.full_name)
-    #print("Current param:", sig.index)
-    #print("brackets starts in line %i, column %i" % (sig.bracket_start))
-    #for p in sig.params:
-        #print(p.description, p.is_keyword)
-    ##sig.docstring()
-                    
+    result = completions("import itom\nitom.pointCloud(", 1, 12, "", "")
 

@@ -120,7 +120,7 @@ objName : str \n\
     is the ``objectName`` property of the wrapped widget or layout. \n\
 widgetClassName : str \n\
     is the Qt class name of the wrapped widget or layout (see :meth:`getClassName`). \n\
-parentObj : uiItem, optional \n\
+parentObj : uiItem \n\
     is the parent :class:`uiItem` of this wrapped widget or layout. \n\
 \n\
 Returns \n\
@@ -134,7 +134,7 @@ It is not intended to directly instantiate this class. Either create a user inte
 using the class :class:`ui` or obtain a reference to an existing widget (this is then \n\
 an instance of :class:`uiItem`) using the dot-operator of a parent widget or the entire \n\
 user interface.");
-int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
+int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject *kwds)
 {
     ito::RetVal retValue = retOk;
     QSharedPointer<unsigned int> objectID(new unsigned int());
@@ -145,20 +145,23 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     PyObject *parentObj = NULL;
     PythonUi::PyUiItem *parentItem = NULL;
 
-    if(PyArg_ParseTuple(args,"Iss|O!",&(*objectID),&objName,&widgetClassName,&PythonUi::PyUiItemType,&parentObj))
+    const char *kwlist1[] = { "objectID", "objName", "widgetClassName", "parentObj", NULL };
+    const char *kwlist2[] = { "parentObj", "objName" , NULL };
+
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "Iss|O!", const_cast<char**>(kwlist1), &(*objectID), &objName, &widgetClassName, &PythonUi::PyUiItemType, &parentObj))
     {
         self->baseItem = parentObj;
         Py_XINCREF(self->baseItem); //if parent available increment its reference
         DELETE_AND_SET_NULL_ARRAY(self->objName);
-        self->objName = new char[strlen(objName)+1];
-        strcpy_s(self->objName, strlen(objName)+1, objName);
+        self->objName = new char[strlen(objName) + 1];
+        strcpy_s(self->objName, strlen(objName) + 1, objName);
         DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
         self->widgetClassName = new char[strlen(widgetClassName)+1];
         strcpy_s(self->widgetClassName, strlen(widgetClassName)+1, widgetClassName);
         self->objectID = *objectID;
         *widgetClassNameBA = widgetClassName;
     }
-    else if(PyErr_Clear(), PyArg_ParseTuple(args, "O!s", &PythonUi::PyUiItemType, &parentObj, &objName))
+    else if(PyErr_Clear(), PyArg_ParseTupleAndKeywords(args, kwds, "O!s", const_cast<char**>(kwlist2), &PythonUi::PyUiItemType, &parentObj, &objName))
     {
         UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
@@ -170,6 +173,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         parentItem = (PythonUi::PyUiItem*)parentObj;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
         QMetaObject::invokeMethod(
             uiOrga,
             "getChildObject3",
@@ -2966,7 +2970,7 @@ title : str\n\
     is the title of the dialog. \n\
 label : str \n\
     is the label above the input box. \n\
-defaultValue : float, optional \n\
+defaultValue : float \n\
     is the default value in the input box. \n\
 min : float, optional \n\
     is the allowed minimal value. \n\
@@ -3001,7 +3005,7 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     int decimals = 1;
 	PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals,&PyUiItem_Converter, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals, &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
@@ -3087,7 +3091,7 @@ title : str\n\
     is the title of the dialog. \n\
 label : str\n\
     is the label above the input box. \n\
-defaultValue : int, optional\n\
+defaultValue : int\n\
     is the default value in the input box. \n\
 min : int, optional\n\
     is the allowed minimal value. \n\

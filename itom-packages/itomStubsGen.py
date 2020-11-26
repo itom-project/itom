@@ -15,6 +15,12 @@ import itom
 import re
 import warnings
 
+try:
+    from typing import Literal  # only available from Python 3.8 on
+    hasLiteral: bool = True
+except ImportError:
+    hasLiteral: bool = False
+
 __version__ = "1.0.0"
 
 
@@ -70,7 +76,7 @@ class Signature:
         return sig
 
 
-def parse_stubs():
+def parse_stubs(overwrite: bool = False):
     """entry point method."""
     sys_version = sys.version_info
     py_version: str = "%i.%i" % (sys_version.major, sys_version.minor)
@@ -109,7 +115,7 @@ def parse_stubs():
                     if count > 5:
                         break
         
-        if uptodate:
+        if uptodate and not overwrite:
             return
         
         texts = [i for i in _parse_object(itom, indent=0)]
@@ -117,12 +123,17 @@ def parse_stubs():
         # remove empty entries
         texts = [t for t in texts if t != ""]
         
-        text = "\n\n".join(texts)
-        
         text = "# coding=iso-8859-15\n\n" + \
-               prefix + itom_compile_date + "\n\n" + \
-               "from typing import overload, Tuple, List, Dict, Optional, Any, Literal\n\n" + \
-               text
+               prefix + itom_compile_date + "\n\n"
+        
+        text += "import math\n"
+        
+        if hasLiteral:
+            text += "from typing import overload, Tuple, List, Dict, Optional, Union, Any, Literal\n\n"
+        else:
+            text += "from typing import overload, Tuple, List, Dict, Optional, Union, Any\n\n"
+        
+        text += "\n\n".join(texts)
         
         try:
             if not os.path.exists(base_folder):
@@ -219,7 +230,7 @@ def _parse_object(obj, indent: int = 0) -> str:
                 # property
                 yield _parse_property_docstring(child, indent)
             else:
-                # contant or something else
+                # constant or something else
                 yield "%s#: constant %s value.\n%s%s" % \
                     (prefix, type(child), prefix, childname)
 
@@ -546,6 +557,12 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
             args = g[1]
             sig.args += _parse_args_string(args)
     
+    # sometimes `self` is already contained in docstring. If so, remove the
+    # artifically added `self` argument
+    if len(sig.args) >= 2:
+        if sig.args[0].name == "self" and sig.args[1].name == "self":
+            del sig.args[0]
+    
     if obj.__doc__ is not None:
         doc_str = obj.__doc__
         
@@ -725,7 +742,11 @@ def _nptype2typing(nptypestr: str) -> str:
             if len(type_str) > 1 and \
                     type_str[0] == '{' and \
                     type_str[-1] == '}':
-                type_str = "Literal[%s]" % type_str[1: -1]
+                if hasLiteral:
+                    type_str = "Literal[%s]" % type_str[1: -1]
+                else:
+                    # Literal not possible since Python < 3.8
+                    type_str = "Any"
             return type_str
         else:
             comps[1] = parseval(" of ".join(comps[1:]))
@@ -838,4 +859,4 @@ def _parse_property_docstring(obj, indent: int) -> str:
 
 
 if __name__ == "__main__":
-    parse_stubs()
+    parse_stubs(overwrite=True)

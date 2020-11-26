@@ -1156,7 +1156,7 @@ RuntimeError \n\
     if this plugin does not provide a configuration dialog.");
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo(funcName = "", detailLevel = 0) -> Optional[dict] \n\
+PyDoc_STRVAR(pyPlugInGetExecFuncsInfo_doc, "getExecFuncsInfo(funcName = \"\", detailLevel = 0) -> Optional[dict] \n\
 \n\
 Lists all available additional functions of this plugin or gives a detailed description of one specific ``funcName``. \n\
 \n\
@@ -1189,7 +1189,7 @@ See Also \n\
 exec");
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyPlugin_execFunc_doc, "exec(funcName, param1, param2, ...) -> Union[Any, Tuple[Any]] \n\
+PyDoc_STRVAR(PyPlugin_execFunc_doc, "exec(funcName, *args, **kwds) -> Union[Any, Tuple[Any]] \n\
 \n\
 Calls the additional function ``funcName`` of this plugin. \n\
 \n\
@@ -1210,10 +1210,12 @@ Parameters \n\
 ----------- \n\
 funcName : str \n\
     The name of the additional function.\n\
-param1 : Any, optional \n\
-    1st mandatory or optional argument of the called function. \n\
-param2 : Any, optional \n\
-    2nd mandatory or optional argument of the called function. \n\
+*args : Any \n\
+    Further positional arguments, that are assigned first to all mandatory parameters, \n\
+    followed by the optional ones. The mandatory or optional parameters of the called \n\
+    function can also given as keyword arguments (see ``**kwds``). \n\
+**kwds : Any, optional \n\
+    Keyword-based arguments, see ``*args`` above. \n\
 \n\
 Returns \n\
 ------- \n\

@@ -3237,7 +3237,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key, name = "", code = \"\", icon = \"\", argtuple = []) -> int \n\
+PyDoc_STRVAR(pyAddMenu_doc,"addMenu(type, key, name = \"\", code = \"\", icon = \"\", argtuple = []) -> int \n\
 \n\
 This function adds an element to the main window menu bar. \n\
 \n\
@@ -5651,8 +5651,31 @@ See Also \n\
 --------- \n\
 figure.close");
 
+//!< try to convert object to PyRgba or to None.
+int PyRgbaOptional_Converter(PyObject *object, PythonRgba::PyRgba **address)
+{
+    if (object == NULL || object == Py_None)
+    {
+        *address = NULL;
+        return 1;
+    }
+    else if (PyRgba_Check(object))
+    {
+        *address = (PythonRgba::PyRgba*)object;
+        return 1;
+    }
+    else
+    {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "The arguments inverseColor1, inverseColor2 and invalidColor must be of type rgba or None.");
+        *address = NULL;
+        return 0;
+    }
+}
+
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(setPalette_doc,"setPalette(name, colorStops, inverseColor1, inverseColor2, invalidColor) \n\
+PyDoc_STRVAR(setPalette_doc,"setPalette(name, colorStops, inverseColor1 = None, inverseColor2 = None, invalidColor = None) \n\
 \n\
 Changes a given color palette or creates a new one with the given arguments. \n\
 \n\
@@ -5703,8 +5726,8 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *p
     PyObject *inverseColor2 = NULL;
     PyObject *invalidColor = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|O!O!O!", const_cast<char**>(kwlist), &name, &PyTuple_Type, &colorStops, \
-        &PythonRgba::PyRgbaType, &inverseColor1, &PythonRgba::PyRgbaType, &inverseColor2, &PythonRgba::PyRgbaType, &invalidColor))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|O&O&O&", const_cast<char**>(kwlist), &name, &PyTuple_Type, &colorStops, \
+        &PyRgbaOptional_Converter, &inverseColor1, &PyRgbaOptional_Converter, &inverseColor2, &PyRgbaOptional_Converter, &invalidColor))
     {
         return NULL;
     }

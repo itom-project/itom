@@ -188,6 +188,7 @@ protected:
     void showPopup(int index = 0);
     void showCompletions(const QVector<JediCompletion> &completions);
     QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
+    QString parseTooltipDocstring(const QString &docstring) const;
     
     static bool isNavigationKey(QKeyEvent *e);
 

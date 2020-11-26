@@ -825,6 +825,37 @@ void CodeCompletionMode::showCompletions(const QVector<JediCompletion> &completi
 }
 
 //--------------------------------------------------------------------
+QString CodeCompletionMode::parseTooltipDocstring(const QString &docstring) const
+{
+    QStringList lines = Utils::strip(docstring).split("\n");
+    QStringList output;
+
+    int idx = 0;
+
+    for (; idx < lines.size(); ++idx)
+    {
+        output << lines[idx];
+
+        if (lines[idx] == "" || (lines[idx][0] == ' ' && lines[idx].trimmed() == ""))
+        {
+            // empty line or line with spaces only. skip. the real docstring comes now.
+            break;
+        }
+    }
+
+    QString docstr = lines.mid(idx + 1).join("\n");
+
+    if (docstr.size() > m_tooltipsMaxLength)
+    {
+        docstr = docstr.left(m_tooltipsMaxLength) + tr("...");
+    }
+
+    output << docstr;
+
+    return output.join("\n");
+}
+
+//--------------------------------------------------------------------
 /*
 Creates a QStandardModel that holds the suggestion from the completion
 models for the QCompleter
@@ -853,30 +884,14 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
 
             foreach(const QString &tt, completion.m_tooltips)
             {
-                tooltip = Utils::strip(tt);
-
-                if (tooltip.size() > m_tooltipsMaxLength)
-                {
-                    tooltip = tooltip.left(m_tooltipsMaxLength) + tr("...");
-                }
-
-                tooltips << tooltip;
+                tooltips << parseTooltipDocstring(tt);
             }
             
             m_tooltips[name] = tooltips.join("\n\n");
         }
         else if (completion.m_description != "")
         {
-            QString tooltip = Utils::strip(completion.m_description);
-
-            if (tooltip.size() > m_tooltipsMaxLength)
-            {
-                m_tooltips[name] = tooltip.left(m_tooltipsMaxLength) + tr("...");
-            }
-            else
-            {
-                m_tooltips[name] = tooltip;
-            }
+            m_tooltips[name] = parseTooltipDocstring(completion.m_description);
         }
 
         if (completion.m_icon != "")
