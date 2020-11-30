@@ -11,6 +11,7 @@ import dataobject_scale_offset
 import plot_test
 import shape_test
 import itom_stubs_generator
+import itom_jedilib
 
 
 def suite():
@@ -26,7 +27,9 @@ def suite():
     suite.addTest(unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))
     suite.addTest(unittest.makeSuite(plot_test.PlotTest))
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
-    suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))    return suite
+    suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
+    suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
+    return suite
 
 
 if (__name__ == "__main__"):

@@ -6251,7 +6251,7 @@ PyObject* PythonItom::PyInitItom(void)
     PyObject *m = PyModule_Create(&PythonModuleItom);
     if (m != NULL)
     {
-        PyModule_AddObject(m, "numeric", PyModule_Create(&PythonNumeric::PythonModuleItomNumeric));
+        //PyModule_AddObject(m, "numeric", PyModule_Create(&PythonNumeric::PythonModuleItomNumeric));
 
         //constants for addMenu
         PyModule_AddObject(m, "BUTTON",     PyLong_FromLong(0)); //steals reference to value

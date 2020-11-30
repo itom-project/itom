@@ -45,7 +45,7 @@ ICON_FUNC_PROTECTED = ('code-function',
                        ':/classNavigator/icons/method_protected.png')
 ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
-ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png')
+ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/var.png')
 
 __version__ = "1.0.1"
 
@@ -99,6 +99,8 @@ def icon_from_typename(name, icon_type):
         'GLOBALSTMT': ICON_VAR,
         'MODULE': ICON_NAMESPACE,
         'KEYWORD': ICON_KEYWORD,
+        'KEYWORD-PRIV': ICON_KEYWORD,
+        'KEYWORD-PROT': ICON_KEYWORD,
         'PARAM': ICON_VAR,
         'ARRAY': ICON_VAR,
         'INSTANCEELEMENT': ICON_VAR,
@@ -215,48 +217,9 @@ def calltips(code, line, column, path=None):
         else:
             method_name = call_name
         
-        # calculate suitable lines in the calltip, such that every
-        # line is not longer than max_calltip_line_length
-        method_length = len(method_name)
-        param_lengths = [len(p) for p in paramlist]
-        
-        params = []
-        
-        remaining_length = max_calltip_line_length - method_length - 1
-        pidx_start = 0  # start index for the first param in the current line
-        pidx_end = 0
-        line_started = True
-        pidx = 0
-        
-        while pidx < len(paramlist):
-            if ((remaining_length - param_lengths[pidx]) >= 0) or \
-                    (not line_started):
-                # if not line_started: the line is currently empty, but the next 
-                # parameter does not fit to it... however it is necessary to 
-                # get along. Therefore add one parameter in any case
-                pidx_end += 1
-                line_started = True
-                remaining_length -= param_lengths[pidx]
-                pidx += 1
-            else:
-                # finish the current line
-                params.append(", ".join(paramlist[pidx_start: pidx_end]))
-                pidx_start = pidx_end
-                line_started = False
-                remaining_length = max_calltip_line_length
-        
-        # add the last remaining parameters to the last line
-        if pidx_end > pidx_start:
-            params.append(", ".join(paramlist[pidx_start: pidx_end]))
-        
-        indentation = min(16, len(method_name) + 1)  # +1 is the open bracket
-        separator = ",<br>%s" % ("&nbsp;" * indentation)
-        params = separator.join(params)
-        
-        calltip = "<p style='white-space:pre'>%s(%s)</p>" % (method_name, params)
-        
         result.append(
-            (calltip,
+            (method_name,
+             paramlist,
              column,
              sig.bracket_start[0],
              sig.bracket_start[1])
@@ -343,10 +306,24 @@ def completions(code, line, column, path, prefix):
                 else:
                     tooltipList = [completion.docstring(), ]
                 
+                compl_type = completion.type
+                if compl_type and len(tooltipList) > 0:
+                    """Properties, defined in C, are displayed as funtion.
+                    However, if the tooltip starts with 'type : text', it
+                    is likely to be a property"""
+                    text = tooltipList[0]
+                    colon_idx = text.find(":")
+                    bracket_idx = text.find("(")
+                    
+                    if bracket_idx == -1:
+                        compl_type = "keyword"
+                    elif colon_idx >= 0 and colon_idx < bracket_idx:
+                        compl_type = "keyword"
+                
                 result.append(
                     (completion.name,
                      desc,
-                     icon_from_typename(completion.name, completion.type),
+                     icon_from_typename(completion.name, compl_type),
                      tooltipList)
                     )
             except Exception:

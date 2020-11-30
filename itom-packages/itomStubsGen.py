@@ -127,6 +127,7 @@ def parse_stubs(overwrite: bool = False):
                prefix + itom_compile_date + "\n\n"
         
         text += "import math\n"
+        text += "import numpy as np\n"  # required by some itom methods
         
         if hasLiteral:
             text += "from typing import overload, Tuple, List, Dict, Optional, Union, Any, Literal\n\n"

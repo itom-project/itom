@@ -9818,9 +9818,11 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {NULL}  /* Sentinel */
     };
 
+PyDoc_STRVAR(pyDataObject_base_doc, "None or dataObject or np.ndarray : Optional base object, this object shares its memory with (read-only).");
+
 //-------------------------------------------------------------------------------------
 PyMemberDef PythonDataObject::PyDataObject_members[] = {
-        {"base", T_OBJECT, offsetof(PyDataObject, base), READONLY, "base object"}, 
+        {"base", T_OBJECT, offsetof(PyDataObject, base), READONLY, pyDataObject_base_doc},
         {NULL}  /* Sentinel */
     };
 

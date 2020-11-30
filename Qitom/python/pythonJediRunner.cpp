@@ -470,7 +470,8 @@ void CalltipRunnable::run()
     if (result && PyList_Check(result))
     {
         PyObject *pycalltip = NULL;
-        const char* calltip;
+        const char* calltipMethodName;
+        PyObject *pyparams = NULL;
         int column;
         int bracketStartCol;
         int bracketStartLine;
@@ -481,14 +482,26 @@ void CalltipRunnable::run()
 
             if (PyTuple_Check(pycalltip))
             {
-                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                if (PyArg_ParseTuple(pycalltip, "sO!iii", &calltipMethodName, &PyList_Type, &pyparams, &column, &bracketStartLine, &bracketStartCol))
                 {
-                    calltips.append(ito::JediCalltip(
-                        QLatin1String(calltip), 
-                        column, 
-                        bracketStartLine - lineOffset, 
-                        bracketStartCol)
-                    );
+                    bool ok;
+                    QStringList params = PythonQtConversion::PyObjToStringList(pyparams, false, ok);
+
+                    if (ok)
+                    {
+                        calltips.append(ito::JediCalltip(
+                            QLatin1String(calltipMethodName),
+                            params,
+                            column,
+                            bracketStartLine - lineOffset,
+                            bracketStartCol)
+                        );
+                    }
+                    else
+                    {
+                        PyErr_Clear();
+                        std::cerr << "Error in param string list of calltip: invalid format of tuple\n" << std::endl;
+                    }
                 }
                 else
                 {

@@ -45,14 +45,16 @@ namespace ito
     struct JediCalltip
     {
         JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1) {};
-        JediCalltip(const QString &calltip, int column, int bracketStartLine, int bracketStartCol) :
-            m_calltipText(calltip), 
+        JediCalltip(const QString &methodName, const QStringList &params, int column, int bracketStartLine, int bracketStartCol) :
+            m_calltipMethodName(methodName),
+            m_calltipParams(params),
             m_column(column),
             m_bracketStartCol(bracketStartCol),
             m_bracketStartLine(bracketStartLine)
         {}
 
-        QString m_calltipText;
+        QString m_calltipMethodName;
+        QStringList m_calltipParams;
         int m_column;
         int m_bracketStartCol;
         int m_bracketStartLine;

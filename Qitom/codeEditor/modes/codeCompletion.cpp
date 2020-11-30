@@ -224,7 +224,7 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_showTooltips(false),
     m_requestId(0),
     m_lastRequestId(0),
-    m_tooltipsMaxLength(200),
+    m_tooltipsMaxLength(300),
     m_selectWithReturn(true)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
@@ -849,7 +849,18 @@ QString CodeCompletionMode::parseTooltipDocstring(const QString &docstring) cons
 
     if (docstr.size() > m_tooltipsMaxLength)
     {
-        docstr = docstr.left(m_tooltipsMaxLength) + tr("...");
+        int idx = docstr.lastIndexOf(' ', m_tooltipsMaxLength);
+
+        if (idx > 0)
+        {
+            docstr = docstr.left(idx);
+        }
+        else
+        {
+            docstr = docstr.left(m_tooltipsMaxLength);
+        }
+
+        docstr += tr("...");
     }
 
     output << docstr;
@@ -1015,7 +1026,7 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
     }
 
     signatures = signatures.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
-    QStringList s = signatures.split('\n');
+    QStringList s = signatures.split('\n', QString::SkipEmptyParts);
 
     if (s.size() > 0)
     {
