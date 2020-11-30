@@ -42,6 +42,7 @@
 #include "../../python/pythonJedi.h"
 
 #include "../utils/utils.h"
+#include "../toolTip.h"
 #include "../mode.h"
 #include <qevent.h>
 #include <qobject.h>
@@ -51,6 +52,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qregexp.h>
 #include <qcompleter.h>
+#include <qsharedpointer.h>
 
 class QStandardItemModel;
 

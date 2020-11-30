@@ -42,14 +42,13 @@
 #include "../../python/pythonJedi.h"
 
 #include "../utils/utils.h"
+#include "../toolTip.h"
 #include "../mode.h"
 #include <qevent.h>
 #include <qobject.h>
 #include <qpair.h>
 #include <qstring.h>
 #include <qlist.h>
-
-
 
 namespace ito {
 

@@ -747,7 +747,7 @@ void CodeCompletionMode::hidePopup()
     {
         m_pCompleter->popup()->hide();
 
-        QToolTip::hideText();
+        ToolTip::hideText();
     }
 }
 
@@ -791,6 +791,7 @@ void CodeCompletionMode::showPopup(int index /*= 0*/)
     m_pCompleter->setCompletionPrefix(m_completionPrefix);
     int cnt = m_pCompleter->completionCount();
     QString selected = m_pCompleter->currentCompletion();
+
     if ((fullPrefix == selected) && (cnt == 1))
     {
         //debug('user already typed the only completion that we have')
@@ -805,6 +806,7 @@ void CodeCompletionMode::showPopup(int index /*= 0*/)
             {
                 m_pCompleter->setWidget(editor());
             }
+
             m_pCompleter->complete(getPopupRect());
             m_pCompleter->popup()->setCurrentIndex(m_pCompleter->completionModel()->index(index, 0));
             //debug(
@@ -916,6 +918,49 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
     return cc_model;
 }
 
+//--------------------------------------------------------------------
+QString signatureWordWrap(QString text, int width)
+{
+    QString result;
+    int j, i;
+    bool firstWrap = true;
+
+    for (;;) 
+    {
+        i = std::min(width, text.length());
+        j = text.lastIndexOf(", ", i);
+
+        if (j == -1)
+        {
+            j = text.indexOf(", ", i);
+        }
+
+        if (j > 0)
+        {
+            result += text.left(j);
+            result += ",\n    ";
+            text = text.mid(j + 2);
+
+            if (firstWrap)
+            {
+                firstWrap = false;
+                width -= 4;
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if (width >= text.length())
+        {
+            break;
+        }
+    }
+
+    return result + text;
+}
+
 
 //--------------------------------------------------------------------
 /*
@@ -929,15 +974,74 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
 
     if (!m_tooltips.contains(completion))
     {
-        QToolTip::hideText();
+        ToolTip::hideText();
         return;
     }
 
     QString tooltip = m_tooltips[completion];
+
+    /* tasks: convert tooltip to html, check for the first 
+    section with the definitions and wrap after maximum line length.
+    Make a <hr> after the first section
+    */
+    const QString br("<br>");
+    int firstSectionIdx = tooltip.indexOf("\n\n");
+    QString signatures;
+    QString docstring;
+
+    if (firstSectionIdx >= 0)
+    {
+        QStringList defs = tooltip.left(firstSectionIdx).split('\n');
+
+        // the signature is represented as <code> monospace section.
+        // this requires much more space than ordinary letters. 
+        // Therefore reduce the maximum line length to 88/2.
+        int maxLength = 44;
+
+        for (int i = 0; i < defs.size(); ++i)
+        {
+            if (defs[i].size() > maxLength)
+            {
+                defs[i] = signatureWordWrap(defs[i], maxLength);
+            }
+        }
+
+        signatures = defs.join("\n");
+        docstring = tooltip.mid(firstSectionIdx + 2);
+    }
+    else
+    {
+        docstring = tooltip;
+    }
+
+    signatures = signatures.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    QStringList s = signatures.split('\n');
+
+    if (s.size() > 0)
+    {
+        signatures = "<nobr>" + s.join("</nobr><br><nobr>") + "</nobr>";
+    }
+    else
+    {
+        signatures = "";
+    }
+
+    docstring = docstring.toHtmlEscaped();
+    docstring = docstring.replace('\n', br);
+
+    if (signatures != "")
+    {
+        tooltip = QString("<code>%1</code><hr><nobr>%2</nobr>").arg(signatures).arg(docstring);
+    }
+    else
+    {
+        tooltip = QString("<nobr>%1</nobr>").arg(docstring);
+    }
+
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
     pos.setY(pos.y() - 15);
-    QToolTip::showText(pos, tooltip, editor());
+    ToolTip::showText(pos, tooltip, editor());
 }
 
 //--------------------------------------------------------------------

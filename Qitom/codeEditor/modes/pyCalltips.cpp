@@ -144,7 +144,9 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
     }
     else if (m_disablingKeys.contains(e->key())) 
     {
-        QToolTip::hideText();
+        //QToolTip::hideText();
+        ToolTip::hideText();
+        //m_toolTipWidget->hide();
     }
 }
 
@@ -194,6 +196,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
     tc.setPosition(tc.position());
     tc.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
     QString l = tc.selectedText();
+
     if (l.size() > 0)
     {
         QChar lastChar = l[l.size() - 1];
@@ -237,14 +240,17 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     // set tool tip position at the start of the bracket
     int char_width = editor()->fontMetrics().width('A');
     int w_offset = (first_calltip.m_column - first_calltip.m_bracketStartCol) * char_width;
+    QRect cursorRect = editor()->cursorRect();
     QPoint position(
-        editor()->cursorRect().x() - w_offset,
-        editor()->cursorRect().y() + char_width +
+        cursorRect.x() - w_offset + editor()->panels()->marginSize(ito::Panel::Left),
+        cursorRect.y() + char_width + //cursorRect.height() + 
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
 
+    //position = QPoint(0, 0);
+
     // show tooltip
-    QToolTip::showText(position, text, editor());
+    ToolTip::showText(position, text, editor(), QRect());
 }
 
 } //end namespace ito

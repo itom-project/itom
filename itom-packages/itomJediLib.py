@@ -250,7 +250,7 @@ def calltips(code, line, column, path=None):
             params.append(", ".join(paramlist[pidx_start: pidx_end]))
         
         indentation = min(16, len(method_name) + 1)  # +1 is the open bracket
-        separator = ",<br>%s" % (" " * indentation)
+        separator = ",<br>%s" % ("&nbsp;" * indentation)
         params = separator.join(params)
         
         calltip = "<p style='white-space:pre'>%s(%s)</p>" % (method_name, params)
@@ -293,22 +293,6 @@ def completions(code, line, column, path, prefix):
         ['or', 'keyword']
     ]
     
-    def reformat_docstring(docstring):
-        """The signature docstring is usually the signature, followed
-        by one empty line and then the docstring. This method will
-        reformat this, such that the docstring is indented and the empty
-        line is removed.
-        """
-        idx = docstring.find("\n\n")
-        if idx == -1:
-            return docstring
-        else:
-            sig = docstring[0:idx]
-            doc = docstring[idx+2:]
-            doc_lines = doc.split("\n")
-            doc_indent = "\n".join(["    " + d for d in doc_lines])
-            return sig + "\n" + doc_indent
-    
     # disable error stream to avoid import errors of jedi, 
     # which are directly printed to sys.stderr (no exception)
     with StreamHider(('stderr', )) as h:
@@ -327,7 +311,6 @@ def completions(code, line, column, path, prefix):
                         # to completion.docstring() then...
                         if "\n\n" not in tooltip:
                             tooltip = completion.docstring()
-                        tooltip = reformat_docstring(tooltip)
                         # workaround: there seems to be a bug in jedi for
                         # properties that return something with None: NoneType()
                         # is always returned in doc. However, completion.get_type_hint()
@@ -346,8 +329,7 @@ def completions(code, line, column, path, prefix):
                             d = s.docstring()
                             if d != docstrings[0]:
                                 docstrings.append(d)
-                        tooltipList = [reformat_docstring(d) 
-                                        for d in docstrings]
+                        tooltipList = [d for d in docstrings]
                     else:
                         tooltip = completion.docstring()
                         if tooltip != "":
