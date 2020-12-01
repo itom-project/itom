@@ -430,6 +430,11 @@ maxNrElements : int, optional \n\
     The operation can be aborted by clicking the ``Esc`` key. If this is the \n\
     case, a ``RuntimeError`` is raised. \n\
 \n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the user interrupts the selection (by pressing the Esc key). \n\
+\n\
 Returns \n\
 -------- \n\
 tuple of shape \n\
