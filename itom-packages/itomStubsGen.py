@@ -784,8 +784,6 @@ def _nptype2typing(nptypestr: str) -> str:
         if has_none:
             type_str = "Optional[%s]" % type_str
         return type_str
-    
-    return nptypestr
 
 
 def _parse_property_docstring(obj, indent: int) -> str:

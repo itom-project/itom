@@ -3,6 +3,12 @@ import unittest
 from typing import Tuple, Dict, List, Optional
 import warnings
 
+try:
+    from typing import Literal  # only available from Python 3.8 on
+    hasLiteral: bool = True
+except ImportError:
+    hasLiteral: bool = False
+
 
 class ItomStubsGenTest(unittest.TestCase):
     
@@ -54,9 +60,14 @@ class ItomStubsGenTest(unittest.TestCase):
         conversions["int or None"] = "Optional[int]"
         conversions["float or None or int"] = "Optional[Union[float, int]]"
         
-        conversions["{4}"] = "Literal[4]"
-        conversions["{'test', 'fox'}"] = "Literal['test', 'fox']"
-        conversions["{2, 3, 4} or int"] ="Union[Literal[2, 3, 4], int]"
+        if hasLiteral:
+            conversions["{4}"] = "Literal[4]"
+            conversions["{'test', 'fox'}"] = "Literal['test', 'fox']"
+            conversions["{2, 3, 4} or int"] ="Union[Literal[2, 3, 4], int]"
+        else:
+            conversions["{4}"] = "Any"
+            conversions["{'test', 'fox'}"] = "Any"
+            conversions["{2, 3, 4} or int"] ="Union[Any, int]"
         
         for key in conversions:
             self.assertEqual(isg._nptype2typing(key), conversions[key])
