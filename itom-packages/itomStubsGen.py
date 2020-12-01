@@ -129,8 +129,14 @@ def parse_stubs(overwrite: bool = False):
         text += "import math\n"
         text += "import numpy as np\n"  # required by some itom methods
         text += "import numpy\n"  # alternative
-        text += "import types\n"  # also required by some itom methods
-        text += "from typing import *\n"
+        text += "import types\n\n"  # also required by some itom methods
+        
+        text += "from typing import overload, Tuple, List, Dict, Sequence, Iterable, Set\n"
+        
+        if hasLiteral:
+            text += "from typing import Optional, Union, Any, Literal\n\n"
+        else:
+            text += "from typing import Optional, Union, Any\n\n"
         
         text += "\n\n".join(texts)
         
