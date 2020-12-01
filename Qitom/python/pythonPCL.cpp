@@ -113,7 +113,7 @@ type : int, optional \n\
     The type of this point cloud. \n\
 pointCloud : pointCloud \n\
     Creates a point cloud from this ``pointCloud``. \n\
-indices : sequence of int, iterable of int, optional \n\
+indices : sequence of int or iterable of int, optional \n\
     Only the indices of the given ``pointCloud`` are used to create this cloud object. \n\
 width : int \n\
     Width of the new point cloud. \n\
@@ -877,23 +877,23 @@ point : point \n\
     is another :class:`point`, appended to this cloud. If this cloud was uninitialized \n\
     yet (``type`` = ``pointCloud.PointInvalid``), the type of the given ``point`` \n\
     is used. \n\
-xyz : array of float, sequence of float, iterable of float \n\
+xyz : sequence of float or iterable of float \n\
     Only possible if ``type = pointCloud.PointXYZ`` or ``pointCloud.PointXYZRGBA``: \n\
     A point with the given ``(x, y, z)`` tuple, list, sequence, array... is added \n\
     to this point cloud. \n\
-xyzi : array of float, sequence of float, iterable of float \n\
+xyzi : sequence of float or iterable of float \n\
     Only possible if ``type = pointCloud.PointXYZI``: A point with the given \n\
     ``(x, y, z, intensity)`` tuple, list, sequence, array... is added to this point cloud. \n\
-xyz_normal_curvature : array of float, sequence of float, iterable of float \n\
+xyz_normal_curvature : sequence of float or iterable of float \n\
     Only possible if ``type = pointCloud.PointXYZNormal`` or \n\
     ``pointCloud.PointXYZRGBNormal``: A point with the given \n\
     ``(x, y, z, nx, ny, nz, curvature)`` tuple, list, sequence, array... is added to \n\
     this point cloud. \n\
-xyz_i_normal_curvature : array of float, sequence of float, iterable of float \n\
+xyz_i_normal_curvature : sequence of float or iterable of float \n\
     Only possible if ``type = pointCloud.PointXYZINormal``: A point with the given \n\
     ``(x, y, z, intensity, nx, ny, nz, curvature)`` tuple, list, sequence, array... \n\
     is added to this point cloud. \n\
-rgba : array of float, sequence of float, iterable of float \n\
+rgba : sequence of float or iterable of float \n\
     Only possible if ``type = pointCloud.PointXYZRGBA`` or ``pointCloud.PointXYZRGBNormal``: \n\
     The added point gets the color defined by this ``(red, green, blue, alpha)`` tuple...");
 PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyObject *kwds)

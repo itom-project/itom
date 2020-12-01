@@ -3973,7 +3973,7 @@ Parameters \n\
 ----------- \n\
 filename : str \n\
     Filename under which the file should be saved (.mat will be appended if not available)\n\
-values : dict or list or tuple or obj \n\
+values : dict or list or tuple or Any \n\
     The value(s) to be stored. Can be either a single object (number, string, \n\
     :class:`dataObject`, :class:`numpy.ndarray` among others, or a :class:`list`, \n\
     :class:`tuple` or :class:`dict` of these single objects. \n\

@@ -124,6 +124,14 @@ Please consider the following rules for type hints:
   ``str``, ``Union[Tuple[int, str]]`` among others.
 * If you write any type hints in the docstrings section, follow the rules of
   **Numpydoc**. Examples are then: ``int or None``, ``str``, ``tuple of int or None``.
+  Values like ``tuple of int`` will be transformed to a type hint ``Tuple[int]``,
+  hence, the first value before the ``of`` literal will be written with a capital
+  letter, the 2nd argument will be put into square brackets. Several type
+  possibilities, separated by the ``or`` literal in Numpydoc will be transformed
+  to ``Union[a, b]`` if the Numpydoc typehint was ``a or b``. If the Numpydoc
+  typestring ends with ``abc, optional``, its typing equivalent is ``Optional[abc]``.
+  If you want to use the type ``Any`` from typing, you also have to write ``Any``
+  in the Numpydoc section.
 
 Overloaded methods
 ------------------

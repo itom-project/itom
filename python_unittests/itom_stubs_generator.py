@@ -196,6 +196,24 @@ ValueError
 
 """
         
+        docstring4: str = \
+        """This is an example of a module level function.
+
+Parameters
+----------
+param1 : sequence of int or iterable of int, optional
+    The first parameter.
+"""
+        
+        docstring5: str = \
+        """This is an errorneous docstring.
+
+Parameters
+----------
+param1 : sequence of int, iterable of int, optional
+    Union must not be comma-separated.
+"""
+        
         # no Yields section in docstring1
         res = isg._parse_npdoc_argsection(docstring1, "Yields")
         self.assertIsNone(res)
@@ -231,6 +249,20 @@ ValueError
         self.assertIsNone(res[3].dtype)
         self.assertEqual(res[3].name, "**kwargs")
         self.assertEqual(res[3].optional, True)
+        
+        res = isg._get_parameters_from_npdocstring(docstring4)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0].dtype, "Union[Sequence[int], Iterable[int]]")
+        self.assertEqual(res[0].optional, True)
+        
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            res = isg._get_parameters_from_npdocstring(docstring5)
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
     
     def test_property_parser(self):
         

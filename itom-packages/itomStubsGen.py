@@ -130,12 +130,7 @@ def parse_stubs(overwrite: bool = False):
         text += "import numpy as np\n"  # required by some itom methods
         text += "import numpy\n"  # alternative
         text += "import types\n"  # also required by some itom methods
-        text += "from typing import overload, Tuple, List, Dict, Sequence\n"
-        
-        if hasLiteral:
-            text += "from typing import Optional, Union, Any, Literal\n\n"
-        else:
-            text += "from typing import Optional, Union, Any\n\n"
+        text += "from typing import *\n"
         
         text += "\n\n".join(texts)
         
@@ -726,6 +721,9 @@ def _nptype2typing(nptypestr: str) -> str:
     
     E.g. `list of int` should become List[int]."""
     nptypestr = nptypestr.strip()  # trim spaces etc.
+    
+    if "," in nptypestr and "{" not in nptypestr:
+        warnings.warn("Invalid numpydoc typestring: %s" % nptypestr, RuntimeWarning)
     
     # remove any references like :obj:`...` etc.
     def remref(match):
