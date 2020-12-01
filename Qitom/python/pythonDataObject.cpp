@@ -113,7 +113,7 @@ continuous : int, optional \n\
     are referenced by means of an index vector. This is recommended for large arrays, since \n\
     the operating system might get trouble allocated one very big continuous junk of memory, \n\
     instead of multiple smaller ones. \n\
-data : int or float or complex or rgba or sequence of int or sequence of float or sequence of complex or dataObject or numpy.ndarray, optional \n\
+data : int or float or complex or rgba or sequence of int or sequence of float or sequence of complex or dataObject or np.ndarray, optional \n\
     If ``data`` is a single value, all values in the dataObject are set to this single value. \n\
     Else, the sequence or array-like object must have the same number of values than \n\
     the data object. These values will then be assigned to the new data object (filled row by row).\n\
@@ -1056,7 +1056,7 @@ PyObject* PythonDataObject::PyDataObj_GetShape(PyDataObject *self, void * /*clos
 
 //---------------------------------------Get / Set metadata / objecttags---------------
 PyDoc_STRVAR(dataObjectAttrTags_doc,  
-"proxydict : Gets or sets a dictionary with tags of this data object. \n\
+"types.MappingProxyType : Gets or sets a dictionary with tags of this data object. \n\
 \n\
 This attribute returns a :obj:`dict_proxy` object of the tag dictionary of this \n\
 data object. This object is read-only. However you can assign an entire new \n\
@@ -7540,7 +7540,7 @@ int PythonDataObject::PyDataObject_setTagDict(PyDataObject *self, PyObject *valu
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObjectArray_StructGet_doc, 
-"obj : General python-array interface (do not call this directly) \n\
+"Any : General python-array interface (do not call this directly) \n\
 \n\
 This interface makes the data object compatible to every array structure in Python \n\
 which does equally implement the array interface (e.g. NumPy). This method is \n\
@@ -7757,7 +7757,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObject_Array__doc, 
-"__array__(dtype = None) -> numpy.ndarray \n\
+"__array__(dtype = None) -> np.ndarray \n\
 \n\
 Returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
 \n\

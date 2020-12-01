@@ -169,7 +169,7 @@ The relative filename is relative with respect to the current directory. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : str or obj \n\
+filename : str or Any \n\
     Relative or absolute filename to a python script that is then opened \n\
     (in the current editor window). Alternatively an object with a \n\
     ``__file__`` attribute is allowed. \n\
@@ -3886,7 +3886,7 @@ Some of the known remaining caveats are: \n\
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> Dict[str, obj] \n\
+PyDoc_STRVAR(getScreenInfo_doc,"getScreenInfo() -> Dict[str, Any] \n\
 \n\
 Returns dictionary with information about all available screens. \n\
 \n\
@@ -4360,7 +4360,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, _observer = None, **kwds) -> obj \n\
+PyDoc_STRVAR(pyFilter_doc,"filter(name : str, *args, _observer = None, **kwds) -> Any \n\
 \n\
 Invokes a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
@@ -4381,7 +4381,7 @@ Parameters \n\
 ----------- \n\
 name : str \n\
     The name of the filter\n\
-*args : obj \n\
+*args : Any \n\
     positional arguments for the specific filter-method \n\
 _observer : progressObserver, optional \n\
     if the called filter implements the extended interface with progress and status \n\
@@ -4391,7 +4391,7 @@ _observer : progressObserver, optional \n\
     (depending on the implementation of the filter). The observer object is \n\
     reset before passed to the called filter function (using the slot \n\
     :meth:`~progressObserver.reset`). \n\
-**kwds : obj \n\
+**kwds : Any \n\
     keyword-based arguments for the specific filter-method. The argument name \n\
     ``_observer`` is reserved for special use. \n\
 \n\
