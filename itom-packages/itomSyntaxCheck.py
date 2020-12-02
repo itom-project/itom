@@ -31,7 +31,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 import tempfile
 import os
-from typing import List, Optional
 import json
 import re
 import itom
@@ -42,9 +41,9 @@ import logging
 
 try:
     from flake8.api import legacy as flake8legacy
-    _HAS_FLAKE8: bool = True
+    _HAS_FLAKE8 = True
 except ModuleNotFoundError:
-    _HAS_FLAKE8: bool = False
+    _HAS_FLAKE8 = False
 
 if _HAS_FLAKE8:
     import flake8
@@ -60,9 +59,9 @@ if _HAS_FLAKE8:
     log.disabled = True
 try:
     from pyflakes import api as pyflakesapi
-    _HAS_PYFLAKES: bool = True
+    _HAS_PYFLAKES = True
 except ModuleNotFoundError:
-    _HAS_PYFLAKES: bool = False
+    _HAS_PYFLAKES = False
 
 # all public modules, methods and classes of itom
 _PUBLIC_ITOM_MODULES = [item for item in dir(itom) if not item.startswith("__")]
@@ -100,7 +99,7 @@ class TimeIt(object):
             doSomething(...)
     """
     
-    def __init__(self, name: str = ""):
+    def __init__(self, name = ""):
         self.name = name
 
     def __enter__(self):
@@ -114,7 +113,7 @@ class TimeIt(object):
             print('%.4f s elapsed' % (time.time() - self.tstart))
 
 
-def _checkErrorCodeStringList(text: str) -> Optional[str]:
+def _checkErrorCodeStringList(text: str):
     """Checks the given text for a valid code string list format.
     
     Every single code string must be a letter a-z or A-Z
@@ -126,10 +125,10 @@ def _checkErrorCodeStringList(text: str) -> Optional[str]:
     W921, e23,F
     
     Args:
-        text: the given error code string
+        text (str): the given error code string
     
     Returns:
-        corrected: None if the text does not fit or the corrected
+        Optional[str]: None if the text does not fit or the corrected
             text where all letters are turned to capital letters
             and spaces are removed.
     """
@@ -161,16 +160,16 @@ class ItomFlakesReporter():
     read the results from a pyflakes file check.
     """
     
-    def __init__(self, filename: str, lineOffset: int = 0, defaultMsgType: int = 2):
+    def __init__(self, filename, lineOffset = 0, defaultMsgType = 2):
         """Constructor.
         
         Args:
-            filename: the filename that has been checked.
-            lineOffset: if a message is reported, the lineOffset is subtracted to the line
+            filename (str): the filename that has been checked.
+            lineOffset (int): if a message is reported, the lineOffset is subtracted to the line
                 number before passing to itom (used to ignore the additional import
                 statement, that is added if the itom module should automatically be
                 considered to be auto-imported).
-            defaultMsgType: all messages beside syntax errors will obtain this message type.
+            defaultMsgType (int): all messages beside syntax errors will obtain this message type.
                 0: info, 1: warning, 2: error
         """
         self._items = []
@@ -182,18 +181,18 @@ class ItomFlakesReporter():
         """Reset all current message items."""
         self._items = []
     
-    def _addItem(self, msgType: int, filename: str, msgCode: str,
-                 description: str, lineNo: int = -1, column: int = -1):
+    def _addItem(self, msgType, filename, msgCode,
+                 description, lineNo = -1, column = -1):
         """Internal method to add a new item to the list of items.
         
         Args:
-            type: the type of the message (0: info, 1: warning, 2: error)
-            filename: the filename of the message
-            msgCode: the pyflakes message code (usually an empty string)
-            description: the message text
-            lineNo: the line number in the checked file that is the 
+            type (int): the type of the message (0: info, 1: warning, 2: error)
+            filename (str): the filename of the message
+            msgCode (str): the pyflakes message code (usually an empty string)
+            description (str): the message text
+            lineNo (int): the line number in the checked file that is the 
                 reason for the message
-            column: the column index of the start of the error or -1 if unknown
+            column (int): the column index of the start of the error or -1 if unknown
         """
         assert msgType in [0, 1, 2]
         
@@ -206,28 +205,28 @@ class ItomFlakesReporter():
                  column, msgCode, description)
             )
     
-    def unexpectedError(self, filename: str, msg: str):
+    def unexpectedError(self, filename, msg):
         """An unexpected error occurred trying to process C{filename}.
         
         This method is called by pyflakes
         
         Args:
-            filename: The path to a file that we could not process.
-            msg: A message explaining the problem.
+            filename (str): The path to a file that we could not process.
+            msg (str): A message explaining the problem.
         """
         self._addItem(msgType=2, filename=filename, 
                       msgCode="", description=msg, lineNo=-1, column=-1)
     
-    def syntaxError(self, filename: str, msg: str, lineno: int, offset: Optional[int], text: str):
+    def syntaxError(self, filename, msg, lineno, offset, text):
         """
         There was a syntax error in C{filename}.
         
         Args:
-           filename: The path to the file with the syntax error.
-           msg: An explanation of the syntax error.
-           lineno: The line number where the syntax error occurred.
-           offset: The column on which the syntax error occurred, or None.
-           text: The source code containing the syntax error.
+           filename (str): The path to the file with the syntax error.
+           msg (str): An explanation of the syntax error.
+           lineno (int): The line number where the syntax error occurred.
+           offset (Optional[int]): The column on which the syntax error occurred, or None.
+           text (str): The source code containing the syntax error.
         
         This method is called by pyflakes
         """
@@ -296,8 +295,14 @@ if _HAS_FLAKE8:
             self._errorCodes: str = ["F", ]
             self._warningCodes: str = ["E", "C"]
         
-        def _check_categories(self, codes: str, error: bool) -> List[str]:
+        def _check_categories(self, codes, error):
             """
+            Args:
+                codes (str) :
+                error (bool) :
+            
+            Returns:
+                List[str] : 
             """
             codeCorrected = _checkErrorCodeStringList(codes)
             
@@ -313,21 +318,32 @@ if _HAS_FLAKE8:
                 else:
                     return ["E", "C"]
         
-        def set_warn_and_error_categories(self, errorCodes: str, warnCodes: str):
+        def set_warn_and_error_categories(self, errorCodes, warnCodes):
             """
+            Args:
+                errorCodes (str) :
+                warnCodes (str) :
             """
             self._errorCodes = self._check_categories(errorCodes, True)
             self._warningCodes = self._check_categories(warnCodes, False)
         
-        def _addItem(self, errorType: int,
-                     filename: str,
-                     msgCode: str,
-                     description: str,
-                     lineNo: int = -1,
-                     column: int = -1):
+        def _addItem(self, errorType,
+                     filename,
+                     msgCode,
+                     description,
+                     lineNo = -1,
+                     column = -1):
             """
                type: the type of message (0: Info, 1: Warning, 2: Error)
             @ptype type: C{int}
+            
+            Args:
+                errorType (int) :
+                filename (str) :
+                msgCode (str) :
+                description (str) :
+                lineNo (int) :
+                column (int) :
             """
             if lineNo > 0:
                 self._items.append("%i::%s::%i::%i::%s::%s" % 
@@ -546,9 +562,15 @@ if _HAS_FLAKE8:
         return flake8legacy.StyleGuide(application)
     
     
-    def createFlake8OptionsFromProperties(props: dict) -> dict:
+    def createFlake8OptionsFromProperties(props):
         """converts properties, obtained from itom, to a options dict,
         that can be passed to flake8.
+        
+        Args:
+            props (dict) :
+        
+        Returns:
+            dict : 
         """
         options = {}
         errors = []
@@ -638,47 +660,54 @@ if _HAS_FLAKE8:
         return options
 
 else:  # no flake8
-    def createFlake8OptionsFromProperties(props: dict) -> dict:
-        """This is a dummy method if flake8 not available."""
+    def createFlake8OptionsFromProperties(props):
+        """This is a dummy method if flake8 not available.
+        
+        Args:
+            props (dict) :
+        
+        Returns:
+            dict :
+        """
         return {}
 
 
-def hasPyFlakes() -> bool:
+def hasPyFlakes():
     """Return True if the package pyflakes is available, else False."""
     return _HAS_PYFLAKES
 
 
-def hasFlake8() -> bool:
+def hasFlake8():
     """Returns True if the package flake8 is available, else False."""
     return _HAS_FLAKE8
 
 
-def check(codestring: str, 
-          filename: str, 
-          fileSaved: bool,
-          mode: int = 1,
-          autoImportItom: bool = False,
-          furtherPropertiesJson: str = {}) -> List[str]:
+def check(codestring, 
+          filename, 
+          fileSaved,
+          mode = 1,
+          autoImportItom = False,
+          furtherPropertiesJson = {}):
     """Run the test for a single file.
     
     Args:
-        codestring: is the code to be checked. 
+        codestring (str): is the code to be checked. 
             This code can be different from the current code in filename.
-        filename: the filename of the code
+        filename (str): the filename of the code
             (must only exist if fileSaved is True)
-        fileSaved: True if the filename contains the real code
+        fileSaved (bool): True if the filename contains the real code
             to be checked, else False
-        mode: if 0: no code check is executed, if 1: only pyflakes 
+        mode (int): if 0: no code check is executed, if 1: only pyflakes 
             is called, if 2: flake8 is called.
             The mode value must be equal to the enumeration 
             ito::PythonCommon::CodeCheckerMode in the C++ code.
-        autoImportItom: If True, a line 'from itom import dataObject, plot1, ...' is
+        autoImportItom (bool): If True, a line 'from itom import dataObject, plot1, ...' is
             hiddenly added before the first line of the script.
-        furtherPropertiesJson: further properties for the called
+        furtherPropertiesJson (str): further properties for the called
             modules as json string.
     
     Returns:
-        results: This is a list of errors or other observations. 
+        List[str]: This is a list of errors or other observations. 
             Each error has the following format: <type:int>::<filename:str>::
                 <lineNo::int>::<column:int>::<code::str>::<description::str>
             
