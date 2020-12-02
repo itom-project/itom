@@ -42,7 +42,7 @@ import logging
 try:
     from flake8.api import legacy as flake8legacy
     _HAS_FLAKE8 = True
-except ModuleNotFoundError:
+except ImportError:
     _HAS_FLAKE8 = False
 
 if _HAS_FLAKE8:
