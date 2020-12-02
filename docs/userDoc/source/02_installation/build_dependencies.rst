@@ -231,7 +231,7 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 :ref:`build_dependencies_vtk`
 
-**Python** (mandatory, 33.5 or higher, 3.6 or higher is recommended)
+**Python** (mandatory, 3.5 or higher, 3.6 or higher is recommended)
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in 
