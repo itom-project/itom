@@ -292,8 +292,8 @@ if _HAS_FLAKE8:
             """Constructor."""
             super(ItomFlake8Formatter, self).__init__(*args, **kwargs)
             self._items = []
-            self._errorCodes: str = ["F", ]
-            self._warningCodes: str = ["E", "C"]
+            self._errorCodes = ["F", ]
+            self._warningCodes = ["E", "C"]
         
         def _check_categories(self, codes, error):
             """
@@ -723,8 +723,8 @@ def check(codestring,
     global _PUBLIC_ITOM_MODULES
     global _CONFIG_DEFAULTS
     
-    propertiesChanged: bool = False
-    config: dict = {}
+    propertiesChanged = False
+    config = {}
     
     if "importItomString" not in _CHECKER_CACHE:
         _CHECKER_CACHE["importItomString"] = \
