@@ -24,6 +24,9 @@ project(itom)
 
 message(STATUS "--------------- PROJECT itom -----------------")
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
 
