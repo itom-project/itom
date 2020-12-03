@@ -184,7 +184,7 @@ protected:
     
     void handleCompleterEvents(QKeyEvent *e);
     bool isPopupVisible() const;
-    void resetSyncData();
+    void resetSyncDataAndHidePopup();
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
     void showPopup(int index = 0);

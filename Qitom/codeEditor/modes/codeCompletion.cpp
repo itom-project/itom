@@ -324,7 +324,7 @@ void CodeCompletionMode::handleCompleterEvents(QKeyEvent *e)
         (!m_selectWithReturn && (e->key() == Qt::Key_Return)) || \
         (nav_key && ctrl))
     {
-        resetSyncData();
+        resetSyncDataAndHidePopup();
         e->accept();
     }
     // move into list
@@ -361,7 +361,7 @@ void CodeCompletionMode::onKeyPressed(QKeyEvent *e)
     }
     else if (is_shortcut)
     {
-        resetSyncData();
+        resetSyncDataAndHidePopup();
         requestCompletion();
         e->accept();
     }
@@ -393,7 +393,7 @@ void CodeCompletionMode::onKeyReleased(QKeyEvent *e)
             if (isNavigationKey(e) && \
                     (!isPopupVisible() || word == ""))
             {
-                resetSyncData();
+                resetSyncDataAndHidePopup();
                 return;
             }
             if (e->key() == Qt::Key_Return)
@@ -403,10 +403,12 @@ void CodeCompletionMode::onKeyReleased(QKeyEvent *e)
             if (m_triggerSymbols.contains(e->text()))
             {
                 // symbol trigger, force request
-                resetSyncData();
+                resetSyncDataAndHidePopup();
                 requestCompletion();
             }
-            else if (word.size() >= m_triggerLen && !editor()->wordSeparators().contains(e->text()))
+            else if (
+                (word.size() >= m_triggerLen || m_pCompleter->popup()->isVisible())
+                && !editor()->wordSeparators().contains(e->text()))
             {
                 // Length trigger
                 if (e->modifiers() == Qt::NoModifier || e->modifiers() == Qt::ShiftModifier)
@@ -420,7 +422,7 @@ void CodeCompletionMode::onKeyReleased(QKeyEvent *e)
             }
             else
             {
-                resetSyncData();
+                resetSyncDataAndHidePopup();
             }
         }
         else
@@ -434,7 +436,7 @@ void CodeCompletionMode::onKeyReleased(QKeyEvent *e)
                 }
                 else
                 {
-                    resetSyncData();
+                    resetSyncDataAndHidePopup();
                 }
             }
         }
@@ -613,7 +615,7 @@ bool CodeCompletionMode::isPopupVisible() const
 }
 
 //-------------------------------------------------------------------
-void CodeCompletionMode::resetSyncData()
+void CodeCompletionMode::resetSyncDataAndHidePopup()
 {
     //debug('reset sync data and hide popup')
     m_lastCursorLine = -1;
