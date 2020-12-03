@@ -195,6 +195,7 @@ def _parse_object(obj, indent: int = 0) -> str:
                 "getDebugger",
                 "proxy",
                 "pythonStream",
+                "__loader__",  # avoids a class BuiltinImporter
                 "__doc__",
                 "__name__",
                 "__package__",

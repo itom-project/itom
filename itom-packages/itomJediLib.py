@@ -30,6 +30,8 @@ import sys
 import itomStubsGen
 import warnings
 
+jedi.set_debug_function(jedi.debug.print_to_stdout, False, False, False)
+
 # avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
 maxreclimit = 1100
 if sys.getrecursionlimit() > maxreclimit:
@@ -267,7 +269,9 @@ def completions(code, line, column, path, prefix):
                 
                 if jedi.__version__ >= '0.16.0':
                     signatures = completion.get_signatures()
-                    if len(signatures) == 1:
+                    if len(signatures) == 0:
+                        continue
+                    elif len(signatures) == 1:
                         tooltip = signatures[0].docstring()
                         # for some properties, signatures[0].docstring() only
                         # contains the return value, but no description, fall back
@@ -307,7 +311,7 @@ def completions(code, line, column, path, prefix):
                     tooltipList = [completion.docstring(), ]
                 
                 compl_type = completion.type
-                if compl_type and len(tooltipList) > 0:
+                if compl_type == "function" and len(tooltipList) > 0:
                     """Properties, defined in C, are displayed as funtion.
                     However, if the tooltip starts with 'type : text', it
                     is likely to be a property"""
@@ -326,7 +330,7 @@ def completions(code, line, column, path, prefix):
                      icon_from_typename(completion.name, compl_type),
                      tooltipList)
                     )
-            except Exception:
+            except Exception as ex:
                 break  # todo, check this further
     
     return result
