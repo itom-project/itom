@@ -61,7 +61,6 @@ class ItomUi:
         childOfMainWindow=True,
         deleteOnClose=False,
         dockWidgetArea=ui.TOPDOCKWIDGETAREA,
-        *args,
         **kwds
     ):
         """Constructor.
@@ -70,22 +69,65 @@ class ItomUi:
         directly call the constructor of the class ``itom.ui``.
 
         Args:
-            filename (str): the path to the user interface file (*.ui)
-            args (unnamed parameters): further parameters, that are
-                passed to the constructor of ``itom.ui``.
-            kwds (keyword-based parameters): further parameters, that are
-                passed to the constructor of ``itom.ui``.
-
-        Possible named or unnamed parameters can be:
-
-        * type (int): ui.TYPEDIALOG, ui.TYPEWINDOW, ui.TYPEDOCKWIDGET,
-          ui.TYPECENTRALWIDGET
-        * childOfMainWindow (bool): only valid for ui.TYPEDIALOG or
-          ui.TYPEWINDOW. True if gui is a child of the itom main window (default),
-          else False.
-        * deleteOnClose (bool): If True, the GUI is destroyed if it has been
-          closed by the user (you can connect to the ``destroyed`` signal.
-          If False (default), the GUI is only hidden and can be shown again.
+            filename (str): path to the user interface file (*.ui), absolute or relative
+                to current directory.
+            type (int): This ``type`` defines how the loaded user interface is 
+                displayed:
+               
+                * ``ui.TYPEDIALOG`` (0): The ui-file is the content of a dialog window 
+                  or, if the file already defines a `QDialog`, this dialog is shown as 
+                  it is. This is recommended for the creation of modal dialogs, 
+                  like settings...
+                * ``ui.TYPEWINDOW`` (1): The ui-file must be a `QMainWindow` or its 
+                  outer widget is turned into a main window. This window is then shown. 
+                  This is recommended for \"standalone\" windows, that should be able 
+                  to be minimized, maximized, contain menus or toolbars etc.
+                * ``ui.TYPEDOCKWIDGET`` (2): The loaded widget is the content of a dock 
+                  widget (toolbox) and is added to the indicated ``dockWidgetArea`` 
+                  of the main window of `itom`.
+                * ``ui.TYPECENTRALWIDGET`` (3): The loaded ui-file must define a 
+                  `QWidget` or `QMainWindow` and is then added to the central area of 
+                  `itom`, above the command line. It is not allowed to choose this type 
+                  if the user interface is created from a `QDialog`.
+            dialogButtonBar (int): This argument is only used if \
+                ``type == ui.TYPEDIALOG`` and defines if a button bar with buttons,
+                given by ``dialogButtons`` should be automatically added to the dialog.
+                If this is the case, the role of the buttons is considered, such that 
+                clicking the ``OK`` or ``Cancel`` button  will automatically close the 
+                dialog and return the role to the :meth:`show` method (if the dialog 
+                is displayed modal). Allowed values:
+               
+                * ``ui.BUTTONBAR_NO`` (0): do not add any button bar and buttons 
+                  (default),
+                * ``ui.BUTTONBAR_HORIZONTAL`` (1): add a horizontal button bar at the 
+                  bottom,
+                * ``ui.BUTTONBAR_VERTICAL`` (2): add vertical button bar on the right 
+                  side.
+               
+            dialogButtons (dict): Only relevant if ``dialogButtonBar`` is not 
+                ``ui.BUTTONBAR_NO``: This dictionary contains all buttons, that should 
+                be added to the button bar. For every entry, the key is the role name 
+                of the button (enum ``QDialogButtonBox::ButtonRole``, e.g. 'AcceptRole', 
+                'RejectRole', 'ApplyRole', 'YesRole', 'NoRole'). The value is
+                the text of the button.
+            childOfMainWindow (bool): For type ``ui.TYPEDIALOG`` and ``ui.TYPEWINDOW`` 
+                only: Indicates if the window should be a child of the itom main 
+                window. If ``False``, this window has its own icon in the taskbar 
+                of the operating system.
+            deleteOnClose (bool): Indicates if the widget / window / dialog should 
+                be deleted if the user closes it or if it is hidden. If it is hidden,
+                it can be shown again using :meth:`show`.
+            dockWidgetArea (int): Only for ``type == ui.TYPEDOCKWIDGET (2)``. Indicates 
+                the position where the dock widget should be placed:
+               
+                * 1 : ``ui.LEFTDOCKWIDGETAREA``
+                * 2 : ``ui.RIGHTDOCKWIDGETAREA``
+                * 4 : ``ui.TOPDOCKWIDGETAREA``
+                * 8 : ``ui.BOTTOMDOCKWIDGETAREA``
+            **kwds (keyword-based parameters): further parameters, that are passed 
+                to the super constructor of this. This is given, if your class derives
+                from ``ItomUi`` and another class. Then, the ``kwds`` parameters
+                are passed to the other class.
         """
         self.gui = ui(
             filename,
