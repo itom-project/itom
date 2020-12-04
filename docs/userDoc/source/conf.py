@@ -131,9 +131,7 @@ pygments_style = 'sphinx'
 
 # Show both class-level docstring and __init__ docstring in class
 # documentation
-autoclass_content = 'both'
-autodoc_member_order = 'groupwise'
-autodoc_docstring_signature = True
+
 
 
 # -- Options for HTML output ---------------------------------------------------
@@ -349,10 +347,24 @@ texinfo_documents = [
 autosummary_generate = True
 
 # -----------------------------------------------------------------------------
+# Autodoc
+# -----------------------------------------------------------------------------
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_docstring_signature = True
+
+# -----------------------------------------------------------------------------
+# Numpydoc
+# -----------------------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_xref_param_type = True
+numpydoc_show_class_members = False
+
+# -----------------------------------------------------------------------------
 # Breathe
 # -----------------------------------------------------------------------------
 doxygenXML_folder = __main__.__dict__["__doxygen__xml"]
-breathe_projects = {"itom": doxygenXML_folder}  # os.path.abspath(".\\..\\..\\xml")}
+breathe_projects = {"itom": doxygenXML_folder} #os.path.abspath(".\\..\\..\\xml")}
 breathe_default_project = "itom"
 
 # -----------------------------------------------------------------------------
@@ -365,4 +377,5 @@ todo_include_todos = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.7', 'python3.7-inv.txt'),
     'numpy': ('https://docs.scipy.org/doc/numpy', 'numpy1.17-inv.txt'),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference', 'scipy1.4.1-inv.txt')}
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', 'scipy1.4.1-inv.txt'),
+    'matplotlib': ('http://matplotlib.sourceforge.net', 'matplotlib3.3.inv.txt')}

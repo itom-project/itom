@@ -10,7 +10,8 @@ uiItem-Class
  
 .. autoclass:: itom.uiItem
     :member-order: groupwise
-    :members:   
+    :members:
+    :undoc-members:
 
 
 ui-Class
@@ -20,3 +21,4 @@ ui-Class
     :show-inheritance:
     :member-order: groupwise
     :members:
+    :undoc-members:

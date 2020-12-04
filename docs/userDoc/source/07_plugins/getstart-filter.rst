@@ -41,6 +41,8 @@ widget methods are displayed, whose name contains the given string.
     filterHelp('mean')      # list shortened to filters containing 'mean'
     filterHelp('calcMeanZ') # detailed information on 'calcMeanZ'
 
+.. _filter_interruptible:
+
 Interruptible filters and progress information
 ================================================
 

@@ -38,17 +38,19 @@
 
 namespace ito
 {
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 //
 //  PyFigure
 //
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 
 
-//----------------------------------------------------------------------------------------------------------------------------------OK
+//-------------------------------------------------------------------------------------
 void PythonFigure::PyFigure_dealloc(PyFigure* self)
 {
-    self->guardedFigHandle.clear(); //if reference of semaphore drops to zero, the static method threadSafeDeleteUi of UiOrganizer is called that will finally delete the figure
+    // if reference of semaphore drops to zero, the static method threadSafeDeleteUi 
+    // of UiOrganizer is called that will finally delete the figure
+    self->guardedFigHandle.clear(); 
 
     DELETE_AND_SET_NULL(self->signalMapper);
 
@@ -56,7 +58,7 @@ void PythonFigure::PyFigure_dealloc(PyFigure* self)
     PythonUi::PyUiItemType.tp_dealloc((PyObject*)self);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObject * kwds)
 {
     PyFigure *self = (PyFigure*)PythonUi::PyUiItemType.tp_new(type,args,kwds);
@@ -72,40 +74,51 @@ PyObject* PythonFigure::PyFigure_new(PyTypeObject *type, PyObject * args, PyObje
     return (PyObject *)self;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureInit_doc,"figure(handle = -1, rows = 1, cols = 1) -> creates figure window.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureInit_doc,"figure(handle = -1, rows = 1, cols = 1, x0 = -1, y0 = -1, width = -1, height = -1) -> figure \n\
 \n\
-The class itom.figure represents a standalone figure window, that can have various subplots. If an instance of this class \n\
-is created without further parameters a new figure is created and opened having one subplot area (currently empty) and the numeric \n\
-handle to this figure is returned:: \n\
+Creates a new figure window.\n\
+\n\
+The class :class:`figure` represents a standalone figure window, that can have \n\
+various subplots. If an instance of this class is created without further parameters, \n\
+a new figure is created and opened having one subplot area (currently empty) and the \n\
+integer handle to this figure is returned:: \n\
     \n\
-    h = figure() \n\
+    h: int = figure() \n\
 \n\
-Subplots are arranged in a regular grid whose size is defined by the optional parameters 'rows' and 'cols'. If you create a figure \n\
-instance with a given handle, the instance is either a reference to an existing figure that has got this handle or if it does not exist, \n\
-a new figure with the desired handle is opened and the handle is returned, too. \n\
+Subplots are arranged in a regular grid whose size is defined by the optional \n\
+parameters ``rows`` and ``cols``. If you create a figure instance with a given handle, \n\
+the instance is either a reference to an existing figure that has got this handle or if \n\
+it does not exist, a new figure with the desired handle is opened and the handle is \n\
+returned, too. \n\
 \n\
-Using the parameters width and height, it is possible to control the size of the figure. If one of both parameters are not set or <= 0 (default), \n\
-no size adjustment is done at all. \n\
+Using the parameters ``width`` and ``height``, it is possible to control the size of the figure. \n\
+If one of both parameters are not set or <= 0 (default), no size adjustment is done at all. \n\
 \n\
-The size and position control can afterwards done using the property 'geometry' of the figure. \n\
+The size and position control can afterwards done using the property ``geometry`` of \n\
+the figure. \n\
 \n\
 Parameters \n\
 ------------- \n\
-handle : {int} \n\
-    numeric handle of the desired figure. \n\
-rows : {int, default: 1} \n\
+handle : int \n\
+    integer handle of the desired figure. \n\
+rows : int, optional \n\
     number of rows this figure should have (defines the size of the subplot-grid) \n\
-cols : {int, default: 1} \n\
+cols : int, optional \n\
     number of columns this figure should have (defines the size of the subplot-grid) \n\
-x0 : {int, default: -1} \n\
-    horizontal position of figure \n\
-y0 : {int, default: -1} \n\
-    vertical position of figure \n\
-width : {int, default: -1} \n\
-    width of figure or -1 if the width should be unchanged \n\
-height : {int, default: -1} \n\
-    height of figure or -1 if the height should be unchanged");
+x0 : int, optional \n\
+    If ``x0`` is != -1, its left position is set to this value. \n\
+y0 : int, optional \n\
+    If ``y0`` is != -1, its top position is set to this value. \n\
+width : int, optional \n\
+    If ``width`` is != -1, the width of the figure window is set to this value. \n\
+height : int, optional \n\
+    If ``height`` is != -1, the height of the figure window is set to this value. \n\
+\n\
+Returns \n\
+------- \n\
+figure \n\
+    is the reference to the newly created figure object.");
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -154,7 +167,16 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
         offset = QPoint(x0, y0);
     }
 
-    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(QPoint, offset), Q_ARG(QSize, size), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "createFigure",
+        Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(QSharedPointer<int>,rows_), 
+        Q_ARG(QSharedPointer<int>,cols_), 
+        Q_ARG(QPoint, offset), 
+        Q_ARG(QSize, size), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if (!locker.getSemaphore()->wait(60000))
     {
@@ -186,7 +208,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
 {
     PyObject *result;
@@ -207,7 +229,13 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QSharedPointer<bool> exist(new bool);
 
-            QMetaObject::invokeMethod(uiOrga, "handleExist", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, exist), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(
+                uiOrga, 
+                "handleExist", 
+                Q_ARG(uint, *(self->guardedFigHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+                Q_ARG(QSharedPointer<bool>, exist), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()) 
+            ); 
 
             if (!locker.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -230,41 +258,51 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, areaIndex = <currentArea>, className = '', properties = {}) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, areaIndex = currentAreaIndex, className = \"\", properties = {}) -> plotItem \n\
 \n\
-The style of the plot depends on the object dimensions.\n\
+Plots a dataObject, pointCloud or polygonMesh in the current or given area of this figure.\n\
 \n\
-If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
-of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+Plots an existing :class:`dataObject`, :class:`pointCloud` or :class:`polygonMesh` in \n\
+the newly created plot. The style of the plot depends on the object dimensions.\n\
+\n\
+If no ``className`` is given, the type of the plot is chosen depending on the type and  \n\
+the size of the object. The defaults for several plot classes can be adjusted in the  \n\
+property dialog of itom. \n\
 \n\
 You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
-If your preffered plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
-or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
-polygonMesh only the alias '2.5D' is valid. \n\
+If your preferred plot is not able to display the given object, a warning is returned and the \n\
+default plot type is used again. For :class:`dataObject`, it is also possible to simply set \n\
+``className`` to ``1D``, ``2D`` or ``2.5D`` in order to choose the default plot type depending \n\
+on these aliases. For :class:`pointCloud` and :class:`polygonMesh` only the alias ``2.5D`` is valid. \n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the \n\
+plot is embedded in a GUI), or by the property toolbox in the plot itself or by using \n\
+the :meth:`~itom.uiItem.info` method of the corresponding :class:`itom.uiItem` instance. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
-\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set \n\
+to certain values. \n\
 \n\
 Parameters\n\
 -----------\n\
-data : {DataObject} \n\
+data : dataObject or pointCloud or polygonMesh \n\
     Is the data object whose region of interest will be plotted.\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"data", "areaIndex", "className", "properties", NULL};
@@ -380,36 +418,48 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
     return (PyObject*)pyPlotItem;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, xData = None, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 1d plot of an existing dataObject in the current or given area of this figure\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot1_doc, "plot1(data, xData = None, areaIndex = currentAreaIndex, className = \"\", properties = {}) -> plotItem \n\
 \n\
-The plot type of this function is '1D'. \n\
-If the 1D plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again.\n\
+Creates a 1D plot of a dataObject ``data`` in the current or given area of this figure.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+If ``xData`` is given, the plot uses this vector for the values of the ``x-axis`` of \n\
+the plot.\n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+The plot type of this function is ``1D`` (see method :meth:`figure.plot`). If a \n\
+``className`` is given, that does not support the given type of ``data`` (or ``xData``) \n\
+a warning is returned and the default plot class for the given data is used again. \n\
 \n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is \n\
+embedded in a GUI), or by the property toolbox in the plot itself or by using the \n\
+:meth:`~uiItem.info` method of the corresponding :class:`uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
 -----------\n\
-data : {DataObject} \n\
+data : dataObject \n\
     Is the data object whose region of interest will be plotted.\n\
-xData : {DataObject}, optional \n\
-    Is the data object whose values are used for the axis.\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-className : {str}, optional \n\
-    class name of the desired 1D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+xData : dataObject, optional \n\
+    1D plots can optionally accept this :class:`dataObject`. If given, the \n\
+    values are not displayed on an equally distributed x-scale but with \n\
+    the values given by ``xData``. \n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "data", "xData", "areaIndex","className", "properties", NULL };
@@ -544,34 +594,46 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
 
     return (PyObject*)pyPlotItem;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 2d plot of an existing dataObject in the current or given area of this figure\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot2_doc, "plot2(data, areaIndex = currentAreaIndex, className = \"\", properties = {}) -> plotItem \n\
 \n\
-The plot type of this function is '2D'. \n\
-If the 2D plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again.\n\
+Creates a 2D plot of a dataObject ``data`` in the current or given area of this figure.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+This method plots an existing :class:`dataObject` in the new 2D plot. \n\
+The style of the plot depends on the object dimensions. The plot type of this function \n\
+is ``2D`` (see method :meth:`figure.plot`).\n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+If the 2D plot is not able to display the given object, a warning is returned and the \n\
+default plot type is used again.\n\
 \n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is \n\
+embedded in a GUI), or by the property toolbox in the plot itself or by using the \n\
+:meth:`~uiItem.info` method of the corresponding :class:`uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
 -----------\n\
-data : {DataObject} \n\
-    Is the data object whose region of interest will be plotted.\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-className : {str}, optional \n\
-    class name of the desired 2D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+data : dataObject \n\
+    is the data, that should be plotted. If a ``className`` it must support dataObjects \n\
+    as accepted data type. Else, the default ``className`` for 2D :class:`dataObject` \n\
+    is chosen (see itom application settings for default plot types. \n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "data", "areaIndex", "properties", NULL };
@@ -697,34 +759,46 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
 
     return (PyObject*)pyPlotItem;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, areaIndex = <currentArea>, className = '', properties = {}) -> creates an 2.5d plot of an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigurePlot25_doc, "plot25(data, areaIndex = currentAreaIndex, className = \"\", properties = {}) -> plotItem \n\
 \n\
-The plot type of this function is '2.5D'. \n\
-If the 2.5D plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again.\n\
+Creates a 2.5D plot of a dataObject, pointCloud or polygonMesh in the current or given area of this figure.\n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+This method plots ``data`` object in the new plot. The style of the plot depends on \n\
+the object dimensions, its plot type is ``2.5D`` (see method :meth:`figure.plot`).\n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+If the 2.5D plot is not able to display the given object, a warning is returned and \n\
+the default plot type is used again.\n\
 \n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is \n\
+embedded in a GUI), or by the property toolbox in the plot itself or by using the \n\
+:meth:`~uiItem.info` method of the corresponding :class:`uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
 -----------\n\
-data : {DataObject, PointCloud, PolygonMesh} \n\
-    Is the data object whose region of interest will be plotted.\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-className : {str}, optional \n\
-    class name of the desired 2.5D plot (if not indicated default plot will be used, see application settings) \n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+data : dataObject or pointCloud or polygonMesh \n\
+    is the data, that should be plotted. If a ``className`` is given, only the \n\
+    type of data, supported by this class, can be displayed. Else, the default \n\
+    ``className`` for the kind of data is chosen (see itom application settings \n\
+    for default plot types. \n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "data", "areaIndex", "properties", NULL };
@@ -850,39 +924,48 @@ PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject
 
     return (PyObject*)pyPlotItem;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, areaIndex = <currentArea>, className = '', properties = {}) -> shows a camera live image in the current or given area of this figure\n\
-Creates a plot-image (2D) and automatically grabs images into this window.\n\
-This function is not blocking.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, areaIndex = currentAreaIndex, className = \"\", properties = {}) -> plotItem \n\
 \n\
-If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
-of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+Shows a camera live image in the current or given area of this figure. \n\
 \n\
-You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
-If your preferred plot is not able to display the given object, a warning is returned and the default \n\
-plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D' or '2D' \n\
-in order to choose the default plot type depending on these aliases. \n\
+If no ``className`` is given, the type of the plot is chosen depending on the type \n\
+and the size of the object. The defaults for several plot classes can be adjusted in \n\
+the property dialog of itom. \n\
 \n\
-Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
-or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+You can also set a class name of your preferred plot plugin (see also property dialog \n\
+of itom). If your preferred plot is not able to display the given object, a warning is \n\
+returned and the default plot type is used again. For dataObjects, it is also possible \n\
+to simply set ``className`` to `1D` or `2D` in order to choose the default plot type \n\
+depending on these aliases. \n\
 \n\
-Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+Every plot has several properties that can be configured in the Qt Designer (if the \n\
+plot is embedded in a GUI), or by the property toolbox in the plot itself or by using \n\
+the :meth:`~itom.uiItem.info` method of the corresponding :class:`itom.uiItem` instance. \n\
+\n\
+Use the ``properties`` argument to pass a dictionary with properties you want to set to \n\
+certain values. \n\
 \n\
 Parameters\n\
 -----------\n\
-cam : {dataIO-Instance} \n\
+cam : dataIO \n\
     Camera grabber device from which images are acquired.\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+className : str, optional \n\
+    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    the default plot will be used (see application settings) \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, \n\
+    connect signals to it or call slots of the plot.");
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"cam", "areaIndex", "className", "properties", NULL};
@@ -892,14 +975,29 @@ plotHandle: {plotItem} \n\
     PyObject* propDict = NULL;
     bool ok = true;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|isO!", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &areaIndex, &className, &PyDict_Type, &propDict))
+    if (!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "O!|isO!", 
+        const_cast<char**>(kwlist), 
+        &PythonPlugins::PyDataIOPluginType, 
+        &cam, 
+        &areaIndex, 
+        &className, 
+        &PyDict_Type, 
+        &propDict))
     {
         return NULL;
     }
 
     if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
-        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
+        PyErr_Format(
+            PyExc_RuntimeError, 
+            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", 
+            (self->cols * self->rows - 1), 
+            self->rows, 
+            self->cols);
         return NULL;
     }
 
@@ -932,13 +1030,27 @@ plotHandle: {plotItem} \n\
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                PyErr_SetString(
+                    PyExc_RuntimeError, 
+                    "at least one property value could not be parsed to QVariant.");
                 return NULL;
             }
         }
     }
 
-    QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrg, 
+        "figureLiveImage", 
+        Q_ARG(AddInDataIO*, cam->dataIOObj), 
+        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(int, areaRow), 
+        Q_ARG(int, areaCol), 
+        Q_ARG(QString, defaultPlotClassName), 
+        Q_ARG(QVariantMap, properties), 
+        Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())
+    );
+
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image");
@@ -951,11 +1063,12 @@ plotHandle: {plotItem} \n\
     }
     
     //return new instance of PyUiItem
-    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
-    PyObject *kwds2 = PyDict_New();
+    PyObject *args2 = PyTuple_New(0); // new ref
+    PyObject *kwds2 = PyDict_New(); // new ref
     PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
-    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    PythonPlotItem::PyPlotItem *pyPlotItem = \
+        (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
     Py_DECREF(kwds2);
 
@@ -968,24 +1081,30 @@ plotHandle: {plotItem} \n\
     return (PyObject*)pyPlotItem;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure(areaIndex = <currentArea>, properties = {}) -> create matplotlib canvas \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure(areaIndex = currentAreaIndex, properties = {}) -> plotItem \n\
+\n\
+Creates a matplotlib canvas at the given area in the figure. \n\
 \n\
 Creates and returns a matplotlib canvas at the given area or returns an existing one. \n\
-This canvas can be used as canvas argument for pyplot.figure of matplotlib and is internally \n\
-used by the itom backend of matplotlib. \n\
+This canvas can be used as canvas argument for :class:`matplotlib.pyplot.figure` of \n\
+matplotlib and is internally used by the itom backend of matplotlib. \n\
 \n\
 Parameters\n\
 -----------\n\
-areaIndex: {int}, optional \n\
-    Area number where the plot should be put if subplots have been created\n\
-properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.\n\
+areaIndex : int, optional \n\
+    Area index where the plot canvas should be created (if subplots exists). \n\
+    The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
+    only one plot area exists in the figure. \n\
+properties : dict, optional \n\
+    Optional dictionary of properties that will be directly applied to the \n\
+    plot widget.\n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: {plotItem} \n\
-    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
+plotHandle: plotItem \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to \n\
+    its signals or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"areaIndex", "properties", NULL};
@@ -1000,7 +1119,12 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
 
     if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
-        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
+        PyErr_Format(
+            PyExc_RuntimeError, 
+            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", 
+            (self->cols * self->rows - 1), 
+            self->rows, 
+            self->cols);
         return NULL;
     }
 
@@ -1030,7 +1154,9 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                PyErr_SetString(
+                    PyExc_RuntimeError, 
+                    "at least one property value could not be parsed to QVariant.");
                 return NULL;
             }
         }
@@ -1042,7 +1168,18 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
 		return NULL;
 	}
 
-    QMetaObject::invokeMethod(uiOrg, "figureDesignerWidget", Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, "MatplotlibPlot"), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrg, 
+        "figureDesignerWidget", 
+        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(int, areaRow), 
+        Q_ARG(int, areaCol), 
+        Q_ARG(QString, "MatplotlibPlot"), 
+        Q_ARG(QVariantMap, properties), 
+        Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())
+    );
+
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while creating matplotlib canvas.");
@@ -1059,7 +1196,8 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     PyObject *kwds2 = PyDict_New();
     PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
-    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    PythonPlotItem::PyPlotItem *pyPlotItem = \
+        (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
     Py_DECREF(kwds2);
 
@@ -1072,8 +1210,10 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     return (PyObject*)pyPlotItem;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureShow_doc,"show() -> shows figure if it is currently hidden");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureShow_doc,"show() \n\
+\n\
+Shows the figure if it is currently hidden.");
 PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
 {
     int modalLevel = 0; //no modal
@@ -1125,11 +1265,10 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureHide_doc, "hide() -> hides figure without deleting it\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureHide_doc, "hide() \n\
 \n\
-\n\
-");
+Hides the figure, but does not delete it.");
 PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1165,13 +1304,22 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureSubplot_doc,"subplot(index) -> returns plotItem of desired subplot\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureSubplot_doc,"subplot(index) -> plotItem \n\
+\n\
+Returns :class:`plotItem` of desired subplot.\n\
 \n\
 Parameters \n\
 ----------- \n\
-index : {unsigned int} \n\
-    index to desired subplot. The subplot at the top, left position has the index 0 whereas the index is incremented row-wise.");
+index : int \n\
+    index to desired subplot in the range ``[0, n)``, where n is the number of subplots. \n\
+    The subplot at the top, left position has the index 0 and the index is \n\
+    incremented row-wise. \n\
+\n\
+Returns \n\
+------- \n\
+plotItem \n\
+    The plot item of the desired subplot.");
 /*static*/ PyObject* PythonFigure::PyFigure_getSubplot(PyFigure *self, PyObject *args)
 {
     unsigned int index = 0;
@@ -1206,11 +1354,12 @@ index : {unsigned int} \n\
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //   getter / setters
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigure_handle_doc, "int : gets the handle of this figure.");
 PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
 {
     if (self->guardedFigHandle.isNull())
@@ -1218,14 +1367,15 @@ PyObject* PythonFigure::PyFigure_getHandle(PyFigure *self, void * /*closure*/)
         PyErr_SetString(PyExc_RuntimeError,"invalid figure");
         return NULL;
     }
+
     return Py_BuildValue("i", *(self->guardedFigHandle));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigure_docked_doc, "dock status of figure (True|False) \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigure_docked_doc, "bool : gets or sets the docked status of this figure. \n\
 \n\
-this attribute controls the dock appearance of this figure. If it is docked, the figure is integrated into the main window \n\
-of itom, else it is a independent window. \n\
+This attribute controls the dock appearance of this figure. If it is docked, the \n\
+figure is integrated into the main window of itom, else it is a independent window. \n\
 ");
 /*static*/ PyObject* PythonFigure::PyFigure_getDocked(PyFigure *self, void *closure)
 {
@@ -1268,7 +1418,7 @@ of itom, else it is a independent window. \n\
     Py_RETURN_FALSE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ int PythonFigure::PyFigure_setDocked(PyFigure *self, PyObject *value, void *closure)
 {
     bool ok;
@@ -1314,21 +1464,36 @@ of itom, else it is a independent window. \n\
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //   static
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigure_Close_doc,"close(handle|'all') -> static method to close any specific or all open figures (unless any figure-instance still keeps track of them)\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigure_Close_doc,"close(handle) -> None \\\n\
+close(all = \"all\") -> None \n\
 \n\
-This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
+Closes a specific or all opened figures. \n\
+\n\
+This method closes and deletes either one specific figure (if ``handle`` is given \n\
+and valid), or all opened figures (if the string argument ``\"all\"`` is given). \n\
+All figure can only be closed, if no other figure references this figure (e.g. \n\
+line cut of an image plot (2D). \n\
 \n\
 Parameters \n\
 ----------- \n\
-handle : {dataIO-Instance} \n\
-    any figure handle (>0) or 'all' in order to close all opened figures \n\
+handle : int \n\
+    a valid figure handle, whose reference figure should be closed. \n\
+    This figure handle is for instance obtained by the first value of the \n\
+    returned tuple of :meth:`plot`, :meth:`plot1`, :meth:`plot2` among others. \n\
+all : {\"all\"} \n\
+    Pass the string ``\"all\"``  if all closeable opened figures should be closed. \n\
 \n\
 Notes \n\
 ------- \n\
-If any instance of class 'figure' still keeps a reference to any figure, it is only closed and deleted if the last instance is deleted, too.");
+If a :class:`figure` instance still keeps a reference to any figure, it is only closed \n\
+and will be deleted after that the last referencing instance has been deleted. \n\
+\n\
+See Also \n\
+--------- \n\
+itom.close");
 /*static*/ PyObject* PythonFigure::PyFigure_close(PyFigure * /*self*/, PyObject *args)
 {
     PyObject *arg = NULL;
@@ -1384,7 +1549,7 @@ If any instance of class 'figure' still keeps a reference to any figure, it is o
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonFigure::PyFigure_methods[] = {
     {"show", (PyCFunction)PyFigure_show,     METH_VARARGS, pyFigureShow_doc},
     {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
@@ -1399,12 +1564,12 @@ PyMethodDef PythonFigure::PyFigure_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonFigure::PyFigure_members[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonFigure::PyFigureModule = {
     PyModuleDef_HEAD_INIT,
     "figure",
@@ -1413,14 +1578,14 @@ PyModuleDef PythonFigure::PyFigureModule = {
     NULL, NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonFigure::PyFigure_getseters[] = {
-    {"handle", (getter)PyFigure_getHandle, NULL, "returns handle of figure", NULL},
+    {"handle", (getter)PyFigure_getHandle, NULL, pyFigure_handle_doc, NULL},
     {"docked", (getter)PyFigure_getDocked, (setter)PyFigure_setDocked, pyFigure_docked_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonFigure::PyFigureType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "itom.figure",             /* tp_name */
@@ -1462,7 +1627,7 @@ PyTypeObject PythonFigure::PyFigureType = {
     PyFigure_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonFigure::PyFigure_addTpDict(PyObject *tp_dict)
 {
     //PyObject *value;

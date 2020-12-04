@@ -32,14 +32,27 @@ sys.path.append(os.path.abspath('../ext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
+    'sphinx.ext.ifconfig',
+    'numpydoc',
+    'breathe',
+    'sphinx.ext.intersphinx',
+    'itomext.designerplugindoc'
+]
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')
 else:
     extensions.append('autosummary')
     extensions.append('only_directives')
+
+if sphinx.__version__ <= "1.4.3":
+    extensions.append('sphinx.ext.pngmath')
+else:
+    extensions.append('sphinx.ext.mathjax')
+    # extensions.append('sphinx.ext.imgmath')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -330,6 +343,20 @@ texinfo_documents = [
 autosummary_generate = True
 
 # -----------------------------------------------------------------------------
+# Autodoc
+# -----------------------------------------------------------------------------
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_docstring_signature = True
+
+# -----------------------------------------------------------------------------
+# Numpydoc
+# -----------------------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_xref_param_type = True
+numpydoc_show_class_members = False
+
+# -----------------------------------------------------------------------------
 # Breathe
 # -----------------------------------------------------------------------------
 doxygenXML_folder = __main__.__dict__["__doxygen__xml"]
@@ -342,6 +369,8 @@ breathe_default_project = "itom"
 todo_include_todos = True
 
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
-                       'numpy': ('https://docs.scipy.org/doc/numpy', None),
-                       'scipy': ('https://docs.scipy.org/doc/scipy/reference', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.7', 'python3.7-inv.txt'),
+    'numpy': ('https://docs.scipy.org/doc/numpy', 'numpy1.17-inv.txt'),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', 'scipy1.4.1-inv.txt'),
+    'matplotlib': ('http://matplotlib.sourceforge.net', 'matplotlib3.3.inv.txt')}

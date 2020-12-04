@@ -6,5 +6,6 @@ font
 .. currentmodule:: itom
 
 .. autoclass:: itom.font
-    :show-inheritance:
+    :member-order: groupwise
     :members:
+    :undoc-members:

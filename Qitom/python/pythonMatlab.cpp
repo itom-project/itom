@@ -122,7 +122,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
                         mxUNKNOWN_CLASS, /*NPY_CHAR (26)*/
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PythonMatlab::loadLibrary()
 {
     ito::RetVal retVal;
@@ -184,7 +184,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
 }
 
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonMatlab::PyMatlabSessionObject_new(PyTypeObject *type, PyObject *args, PyObject * kwds)
 {
     if (!initialized)
@@ -205,7 +205,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     return (PyObject *) self;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ int PythonMatlab::PyMatlabSessionObject_init(PyMatlabSessionObject *self, PyObject *args, PyObject *kwds)
 {
     int status;
@@ -221,7 +221,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ void PythonMatlab::PyMatlabSessionObject_dealloc(PyMatlabSessionObject *self)
 {
     if(self->ep)
@@ -231,7 +231,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     self->ob_base.ob_type->tp_free((PyObject*)self);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonMatlab::PyMatlabSessionObject_run(PyMatlabSessionObject *self, PyObject *args)
 {
     char * stringarg;
@@ -273,7 +273,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject * PythonMatlab::PyMatlabSessionObject_setValue(PyMatlabSessionObject *self, PyObject *args)
 {
     const char * name;
@@ -416,7 +416,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject * PythonMatlab::PyMatlabSessionObject_setString(PyMatlabSessionObject *self, PyObject *args)
 {
     const char * name, * command_string;
@@ -444,7 +444,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject * PythonMatlab::PyMatlabSessionObject_getString(PyMatlabSessionObject *self, PyObject *args)
 {
     const char * name;
@@ -485,7 +485,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject * PythonMatlab::PyMatlabSessionObject_GetValue(PyMatlabSessionObject * self, PyObject *args)
 {
     const char * variable;
@@ -636,7 +636,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject * PythonMatlab::PyMatlabSessionObject_close(PyMatlabSessionObject * self, PyObject *args)
 {
     if(self->ep)  func_engClose(self->ep);
@@ -647,7 +647,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
 
 PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyMethodDef PythonMatlab::PyMatlabSessionObject_methods[] =
 {
     {"run", (PyCFunction)PyMatlabSessionObject_run, METH_VARARGS, "Launch a command in MATLAB."},
@@ -659,13 +659,13 @@ PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
     {NULL,NULL,0,NULL}
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyMemberDef PythonMatlab::PyMatlabSessionObject_members[] = {
     {NULL},
 };
 
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyTypeObject PythonMatlab::PyMatlabSessionObjectType =
     {
         PyVarObject_HEAD_INIT(NULL,0)
@@ -719,7 +719,7 @@ PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
 };
 
 
-//------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonMatlab::PyInit_matlab(void)
 {
     PyObject *module;

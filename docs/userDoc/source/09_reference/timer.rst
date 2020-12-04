@@ -16,3 +16,4 @@ see a list of all active timer instances. This dialog also allows stopping or re
 .. autoclass:: itom.timer
     :member-order: groupwise
     :members:
+    :undoc-members:

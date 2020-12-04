@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "pythonQtConversion.h"
 
 #include <qmetaobject.h>
 #include <qdebug.h>
@@ -228,9 +229,9 @@ void CompletionRunnable::run()
         {
             PyObject *pycompletion = NULL;
             const char* calltip;
-            const char* tooltip;
+            const char* description;
             const char* icon;
-            const char* docstring;
+            PyObject *tooltips = NULL;
 
             for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
             {
@@ -238,14 +239,17 @@ void CompletionRunnable::run()
 
                 if (PyTuple_Check(pycompletion))
                 {
-                    if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                    if (PyArg_ParseTuple(pycompletion, "sssO!", &calltip, &description, &icon, &PyList_Type, &tooltips))
                     {
+                        bool ok;
+                        QStringList tooltipList = PythonQtConversion::PyObjToStringList(tooltips, false, ok);
+
                         completions.append(
                             ito::JediCompletion(
                                 QLatin1String(calltip),
-                                QLatin1String(tooltip),
+                                tooltipList,
                                 QLatin1String(icon),
-                                QLatin1String(docstring))
+                                QLatin1String(description))
                         );
                     }
                     else
@@ -466,7 +470,8 @@ void CalltipRunnable::run()
     if (result && PyList_Check(result))
     {
         PyObject *pycalltip = NULL;
-        const char* calltip;
+        const char* calltipMethodName;
+        PyObject *pyparams = NULL;
         int column;
         int bracketStartCol;
         int bracketStartLine;
@@ -477,14 +482,26 @@ void CalltipRunnable::run()
 
             if (PyTuple_Check(pycalltip))
             {
-                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                if (PyArg_ParseTuple(pycalltip, "sO!iii", &calltipMethodName, &PyList_Type, &pyparams, &column, &bracketStartLine, &bracketStartCol))
                 {
-                    calltips.append(ito::JediCalltip(
-                        QLatin1String(calltip), 
-                        column, 
-                        bracketStartLine - lineOffset, 
-                        bracketStartCol)
-                    );
+                    bool ok;
+                    QStringList params = PythonQtConversion::PyObjToStringList(pyparams, false, ok);
+
+                    if (ok)
+                    {
+                        calltips.append(ito::JediCalltip(
+                            QLatin1String(calltipMethodName),
+                            params,
+                            column,
+                            bracketStartLine - lineOffset,
+                            bracketStartCol)
+                        );
+                    }
+                    else
+                    {
+                        PyErr_Clear();
+                        std::cerr << "Error in param string list of calltip: invalid format of tuple\n" << std::endl;
+                    }
                 }
                 else
                 {

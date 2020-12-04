@@ -48,6 +48,19 @@ namespace ito
         emit finished();
         return;
     }
+
+    if (maxNrOfPoints < -1 || maxNrOfPoints == 0)
+    {
+        if (m_pSemaphore)
+        {
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("The maximum number of points must be -1 (infinite) or >= 1.").toLatin1().data());
+            m_pSemaphore->release();
+            m_pSemaphore->deleteSemaphore();
+            m_pSemaphore = NULL;
+        }
+        emit finished();
+        return;
+    }
         
     if (!connect(m_pPlotWidget, SIGNAL(userInteractionDone(int, bool, QVector<ito::Shape>)), this, SLOT(userInteractionDone(int, bool, QVector<ito::Shape>))))
     {

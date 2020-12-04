@@ -615,6 +615,7 @@ void CodeEditor::setWhitespacesFlags(bool show)
         options.setFlags(
             options.flags() & ~QTextOption::ShowTabsAndSpaces);
     }
+
     doc->setDefaultTextOption(options);
 
     updateTabStopAndIndentationWidth();

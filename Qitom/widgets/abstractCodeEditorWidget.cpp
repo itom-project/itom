@@ -78,7 +78,7 @@ void AbstractCodeEditorWidget::init()
     m_codeCompletionMode = QSharedPointer<CodeCompletionMode>(new CodeCompletionMode("CodeCompletionMode"));
     modes()->append(Mode::Ptr(m_codeCompletionMode.dynamicCast<Mode>()));
 
-    m_calltipsMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode"));
+    m_calltipsMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode", "", this));
     modes()->append(Mode::Ptr(m_calltipsMode.dynamicCast<Mode>()));
 
     m_pyAutoIndentMode = QSharedPointer<PyAutoIndentMode>(new PyAutoIndentMode("PyAutoIndentMode"));
@@ -141,9 +141,9 @@ void AbstractCodeEditorWidget::loadSettings()
 
     // ------------ auto completion --------------------------------------------------------
     m_codeCompletionMode->setEnabled(settings.value("autoComplEnabled", true).toBool());
-    m_codeCompletionMode->setCaseSensitive(settings.value("autoComplCaseSensitive", true).toBool());
+    m_codeCompletionMode->setCaseSensitive(settings.value("autoComplCaseSensitive", false).toBool());
     m_codeCompletionMode->setTriggerLength(settings.value("autoComplThreshold", 2).toInt());
-    m_codeCompletionMode->setShowTooltips(settings.value("autoComplShowTooltips", false).toBool());
+    m_codeCompletionMode->setShowTooltips(settings.value("autoComplShowTooltips", true).toBool());
     m_codeCompletionMode->setFilterMode((ito::CodeCompletionMode::FilterMode)settings.value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy).toInt());
 
     // --------------- styles ------------------------------------------------------------

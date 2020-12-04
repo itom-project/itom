@@ -14,7 +14,7 @@ FilterDef
 .. _plugin-Algo-FilterDefExt-Ref:
 
 FilterDefExt
-==========
+=============
 
 .. doxygenclass:: ito::AddInAlgo::FilterDefExt
     :project: itom

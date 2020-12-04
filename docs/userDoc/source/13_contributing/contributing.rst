@@ -15,3 +15,4 @@ to provide a common code representation, as well as an introduction to translati
    
     cmake_style_guide.rst
     translations.rst
+    python_docstrings.rst

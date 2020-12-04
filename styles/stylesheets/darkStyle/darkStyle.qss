@@ -2507,3 +2507,13 @@ CollapsibleGroupBox::indicator:checked:pressed {
 CollapsibleGroupBox::indicator:checked:disabled {
   image: url(":/qss_icons/rc/arrow_down_disabled.png");
 }
+
+ToolTipLabel {
+  /* for the tool tip of auto completion and calltips */
+  background-color: #148CD2;
+  border: 1px solid #19232D;
+  color: #19232D;
+  /* Remove padding, for fix combo box tooltip */
+  padding: 0px;
+  /* Remove opacity, fix #174 - may need to use RGBA */
+}
