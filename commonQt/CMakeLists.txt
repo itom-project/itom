@@ -95,7 +95,6 @@ set(ITOMCOMMONQT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/functionCancellationAndObserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractApiWidget.cpp

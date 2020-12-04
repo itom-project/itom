@@ -26,7 +26,7 @@
 *********************************************************************** */
 
 #define COMMON_QT_VERSION_MAJOR 3
-#define COMMON_QT_VERSION_MINOR 1
+#define COMMON_QT_VERSION_MINOR 2
 #define COMMON_QT_VERSION_PATCH 0
 #define COMMON_QT_VERSION_REVISION 0
-#define COMMON_QT_VERSION_STRING  "3.1.0.0"
+#define COMMON_QT_VERSION_STRING  "3.2.0.0"
