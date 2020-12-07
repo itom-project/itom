@@ -52,12 +52,7 @@
 #include <qpluginloader.h>
 #include <QtUiTools/quiloader.h>
 
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
-#include <QtDesigner/QDesignerCustomWidgetInterface>
-#else
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
-#endif
 #include <qsettings.h>
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
@@ -2792,24 +2787,8 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
         }
     }
 
-#if QT_VERSION >= 0x050400
-    return (name + "(" + parameters.join(", ") + ")");
-#else
-    QByteArray p;
-    for (int i = 0; i < parameters.size(); ++i)
-    {
-        if (i == 0)
-        {
-            p += parameters[i];
-        }
-        else
-        {
-            p += (QByteArray(", ") + parameters[i]);
-        }
-    }
 
-    return (name + "(" + p + ")");
-#endif
+    return (name + "(" + parameters.join(", ") + ")");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

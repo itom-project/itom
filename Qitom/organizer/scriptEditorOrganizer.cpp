@@ -464,7 +464,6 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
             msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             msgBox.setDefaultButton(QMessageBox::Save);
 
-#if QT_VERSION >= 0x050200
             if (saveScriptState)
             {
                 QCheckBox *cb = new QCheckBox();
@@ -472,7 +471,6 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
                 cb->setChecked(false);
                 msgBox.setCheckBox(cb);
             }
-#endif
 
             int ret = msgBox.exec();
 
@@ -483,25 +481,21 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
             }
             else if (ret & QMessageBox::Discard)
             {
-#if QT_VERSION >= 0x050200
                 //discard
                 if (saveScriptState && msgBox.checkBox()->isChecked())
                 {
                     *saveScriptState = 2; //not never save for the next time
                 }
-#endif
 
                 return RetVal(retOk);
             }
             else
             {
                 //ok
-#if QT_VERSION >= 0x050200
                 if (saveScriptState && msgBox.checkBox()->isChecked())
                 {
                     *saveScriptState = 1; //always save for the next time
                 }
-#endif
             }
         }
     }

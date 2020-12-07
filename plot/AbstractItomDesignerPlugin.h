@@ -33,11 +33,7 @@
 #include "AbstractFigure.h"
 #include "designerPluginInterfaceVersion.h"
 
-#if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
-#include <QtDesigner/QDesignerCustomWidgetInterface>
-#else
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
-#endif
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONPLOT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
     
