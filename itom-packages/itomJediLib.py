@@ -30,8 +30,6 @@ import sys
 import itomStubsGen
 import warnings
 
-jedi.set_debug_function(jedi.debug.print_to_stdout, False, False, False)
-
 # avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
 maxreclimit = 1100
 if sys.getrecursionlimit() > maxreclimit:
@@ -49,7 +47,7 @@ ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
 ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/var.png')
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 # parses the stubs file for the itom module (if not up-to-date)
 with warnings.catch_warnings():
@@ -270,7 +268,10 @@ def completions(code, line, column, path, prefix):
                 if jedi.__version__ >= '0.16.0':
                     signatures = completion.get_signatures()
                     if len(signatures) == 0:
-                        continue
+                        tooltip = completion.docstring()
+                        if tooltip != "":
+                            tooltip = "%s\n\n%s" % (completion.name, tooltip)
+                        tooltipList = [tooltip, ]
                     elif len(signatures) == 1:
                         tooltip = signatures[0].docstring()
                         # for some properties, signatures[0].docstring() only
@@ -441,4 +442,7 @@ inception()'''
     result = completions("import itom\nitom.region().bounding", 1, 21, "", "")
     result = completions("import itom\nitom.region.ELLIPSE", 1, 16, "", "")
     result = completions("import itom\nitom.pointCloud(", 1, 12, "", "")
+    
+    text = "import itom\nitom."
+    completions(text, 1, 5, "", "")
 
