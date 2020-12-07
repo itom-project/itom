@@ -226,7 +226,7 @@ QString parseCalltip(const ito::JediCalltip &tip)
             paramLength += 2 + p.size();
         }
 
-        if (paramLength + tip.m_calltipMethodName + 2 < 2 * 88)
+        if (paramLength + tip.m_calltipMethodName.size() + 2 < (2 * 88))
         {
             return QString("<p><nobr>%1(%2)</nobr></p>")
                 .arg(tip.m_calltipMethodName)

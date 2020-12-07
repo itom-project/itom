@@ -169,19 +169,7 @@ void ToolTipLabel::timerEvent(QTimerEvent *e)
         || e->timerId() == expireTimer.timerId()) {
         hideTimer.stop();
         expireTimer.stop();
-#if 0 /* Used to be included in Qt4 for Q_WS_MAC */ && QT_CONFIG(effects)
-        if (QApplication::isEffectEnabled(Qt::UI_FadeTooltip)) {
-            // Fade out tip on mac (makes it invisible).
-            // The tip will not be deleted until a new tip is shown.
-                        // DRSWAT - Cocoa
-            macWindowFade(qt_mac_window_for(this));
-            ToolTipLabel::instance->fadingOut = true; // will never be false again.
-        }
-        else
-            hideTipImmediately();
-#else
         hideTipImmediately();
-#endif
     }
 }
 bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)

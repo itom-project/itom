@@ -1,3 +1,9 @@
+import sys
+
+pyversion = "%i.%i" % \
+    (sys.version_info.major, sys.version_info.minor)
+
+
 import unittest
 import dataobject_squeeze_reshape
 import dataobject_static_constructors
@@ -10,8 +16,9 @@ import dataobject_makecontinuous
 import dataobject_scale_offset
 import plot_test
 import shape_test
-import itom_stubs_generator
-import itom_jedilib
+if pyversion >= "3.6":
+    import itom_stubs_generator
+    import itom_jedilib
 
 
 def suite():
@@ -27,8 +34,9 @@ def suite():
     suite.addTest(unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))
     suite.addTest(unittest.makeSuite(plot_test.PlotTest))
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
-    suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
-    suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
+    if pyversion >= "3.6":
+        suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
+        suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
     return suite
 
 

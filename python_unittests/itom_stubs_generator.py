@@ -5,9 +5,9 @@ import warnings
 
 try:
     from typing import Literal  # only available from Python 3.8 on
-    hasLiteral: bool = True
+    hasLiteral = True
 except ImportError:
-    hasLiteral: bool = False
+    hasLiteral = False
 
 
 class ItomStubsGenTest(unittest.TestCase):
@@ -21,7 +21,7 @@ class ItomStubsGenTest(unittest.TestCase):
         """Test the conversion from numpydoc-types to typing type hints."""
         
         # expected conversions
-        singleTypes: Dict[str, str] = {
+        singleTypes = {
             "str": "str",
             "int": "int",
             "dataObject": "dataObject",
@@ -29,7 +29,7 @@ class ItomStubsGenTest(unittest.TestCase):
             "np.ndarray": "np.ndarray",
             "None": "None"}
         
-        newValues: Dict[str, str] = {}
+        newValues = {}
         
         # extend single types by :py:obj:`...` or similar refs
         for key in singleTypes:
@@ -39,7 +39,7 @@ class ItomStubsGenTest(unittest.TestCase):
         
         singleTypes.update(newValues)
         
-        nestedTypes: Dict[str, str] = {}
+        nestedTypes = {}
         
         for key in singleTypes:
             for nestItem in ["List", "Tuple", "Sequence"]:
@@ -75,7 +75,7 @@ class ItomStubsGenTest(unittest.TestCase):
     
     def test_parse_numpydoc_section(self):
         """Test the parser for the parameters, returns or yields section."""
-        docstring1: str = \
+        docstring1 = \
 """Returns device information for each spectrometer that is connected.
 
 Parameters
@@ -98,7 +98,7 @@ Returns
     The information about the devices.
 """
         
-        docstring2: str = \
+        docstring2 = \
 """Exceptions are documented in the same way as classes.
 
 The __init__ method may be documented in either the class level
@@ -136,7 +136,7 @@ bytes
     True if successful, False otherwise.
 """
         
-        docstring3: str = \
+        docstring3 = \
 """This is an example of a module level function.
 
 Function parameters should be documented in the ``Parameters`` section.
@@ -196,7 +196,7 @@ ValueError
 
 """
         
-        docstring4: str = \
+        docstring4 = \
         """This is an example of a module level function.
 
 Parameters
@@ -205,7 +205,7 @@ param1 : sequence of int or iterable of int, optional
     The first parameter.
 """
         
-        docstring5: str = \
+        docstring5 = \
         """This is an errorneous docstring.
 
 Parameters

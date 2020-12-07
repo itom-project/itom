@@ -28,7 +28,7 @@
 #ifndef TOOLTIP_H
 #define TOOLTIP_H
 
-#include <QtWidgets/qtwidgetsglobal.h>
+//#include <QtWidgets/qtwidgetsglobal.h>
 #include <QtWidgets/qwidget.h>
 #include <qlabel.h>
 #include <qbasictimer.h>
