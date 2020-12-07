@@ -41,7 +41,6 @@
 #include <qstring.h>
 #include <qtextedit.h>
 #include <qsyntaxhighlighter.h>
-#include <qregexp.h>
 #include <qpointer.h>
 #include <qmap.h>
 
