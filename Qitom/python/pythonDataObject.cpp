@@ -6799,24 +6799,28 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     {
         void* valuePtr;
         ito::tDataType fromType = ito::tInt8;
+        int32 value1 = 0;
+        float64 value2 = 0.0;
+        complex128 value3 = 0.0;
+        ito::Rgba32 value4;
 
         if (!error)
         {
             if (PyLong_Check(value))
             {
-                int32 value1 = PyLong_AsLong(value);
+                value1 = PyLong_AsLong(value);
                 valuePtr = static_cast<void*>(&value1);
                 fromType = ito::tInt32;
             }
             else if (PyFloat_Check(value))
             {
-                float64 value2 = PyFloat_AsDouble(value);
+                value2 = PyFloat_AsDouble(value);
                 valuePtr = static_cast<void*>(&value2);
                 fromType = ito::tFloat64;
             }
             else if (PyComplex_Check(value))
             {
-                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
                 valuePtr = static_cast<void*>(&value3);
                 fromType = ito::tComplex128;
             }
@@ -6824,7 +6828,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             {
                 ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)(value);
                 fromType = ito::tRGBA32;
-                valuePtr = static_cast<void*>(&rgba->rgba); //will be valid until end of function since this is a direct access to the underlying structure.
+                value4 = rgba->rgba;
+                valuePtr = static_cast<void*>(&value4); //will be valid until end of function since this is a direct access to the underlying structure.
             }
             else
             {
@@ -6892,30 +6897,35 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     {
         void* valuePtr;
         ito::tDataType fromType = ito::tInt8;
+        int32 value1 = 0;
+        float64 value2 = 0.0;
+        complex128 value3 = 0.0;
+        ito::Rgba32 value4;
 
         if (!error)
         {
             if (PyLong_Check(value))
             {
-                int32 value1 = PyLong_AsLong(value);
+                value1 = PyLong_AsLong(value);
                 valuePtr = static_cast<void*>(&value1);
                 fromType = ito::tInt32;
             }
             else if (PyFloat_Check(value))
             {
-                float64 value2 = PyFloat_AsDouble(value);
+                value2 = PyFloat_AsDouble(value);
                 valuePtr = static_cast<void*>(&value2);
                 fromType = ito::tFloat64;
             }
             else if (PyComplex_Check(value))
             {
-                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
                 valuePtr = static_cast<void*>(&value3);
                 fromType = ito::tComplex128;
             }
             else if (Py_TYPE(value) == &PyDataObjectType)
             {
                 fromType = ito::tInt8;
+
                 try
                 {
                     dataObj = self->dataObject->at(ranges); //dataObj in readLock
@@ -6932,7 +6942,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             {
                 ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)(value);
                 fromType = ito::tRGBA32;
-                valuePtr = static_cast<void*>(&rgba->rgba); //will be valid until end of function since this is a direct access to the underlying structure.
+                value4 = rgba->rgba;
+                valuePtr = static_cast<void*>(&value4); //will be valid until end of function since this is a direct access to the underlying structure.
             }
             else
             {
