@@ -9941,12 +9941,9 @@ PyNumberMethods PythonDataObject::PyDataObject_numberProtocol = {
     (binaryfunc)PyDataObj_nbDivide,                /* nb_true_divide */
     0,                                             /* nb_inplace_floor_divide */
     (binaryfunc)PyDataObj_nbInplaceTrueDivide      /* nb_inplace_true_divide */
-
-#if PY_VERSION_HEX >= 0x03050000
     ,0,                                            /* np_index */
     (binaryfunc)PyDataObj_nbMatrixMultiply,        /* nb_matrix_multiply */
     (binaryfunc)PyDataObj_nbInplaceMatrixMultiply  /* nb_inplace_matrix_multiply */
-#endif
 };
 
 //-------------------------------------------------------------------------------------

@@ -233,13 +233,7 @@ ito::RetVal PipManager::initPythonIfStandalone()
 	if (pythonDir != "")
 	{
 		//the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-#if PY_VERSION_HEX < 0x03050000
-		m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonDir.size() + 10) * sizeof(wchar_t));
-		memset(m_pUserDefinedPythonHome, 0, (pythonDir.size() + 10) * sizeof(wchar_t));
-		pythonDir.toWCharArray(m_pUserDefinedPythonHome);
-#else
-		m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
-#endif
+        m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
 		Py_SetPythonHome(m_pUserDefinedPythonHome);
 	}
 
@@ -496,11 +490,7 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
     if (m_currentTask == taskNo)
     {
 #if WIN32
-        if (PY_VERSION_HEX >= 0x03030000 && PY_VERSION_HEX <= 0x03049999)
-        {
-            emit pipRequestStarted(taskCheckAvailable, "For Python 3.3 and 3.4, some packages (e.g. Scipy or OpenCV) might depend on the Microsoft Visual C++ 2010 redistributable package. Please install it if not yet done.\n\nCheck connection to pip and get version...\n");
-        }
-        else if (PY_VERSION_HEX >= 0x03050000)
+        if (PY_VERSION_HEX >= 0x03050000)
         {
             emit pipRequestStarted(taskCheckAvailable, "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) might depend on the Microsoft Visual C++ 2015 redistributable package. Please install it if not yet done.\n\nCheck connection to pip and get version...\n");
         }

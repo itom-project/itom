@@ -1881,21 +1881,12 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     const char *kwlist[] = {"plotName", "dictionary", NULL};
     const char* plotName = NULL;
 
-#if PY_VERSION_HEX < 0x03030000
-    unsigned char retDict = 0;
-
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "|sb", const_cast<char**>(kwlist), &plotName, &retDict))
-    {
-        return NULL;
-    }
-#else //only python 3.3 or higher has the 'p' (bool, int) type string
     int retDict = 0; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "|sp", const_cast<char**>(kwlist), &plotName, &retDict))
     {
         return NULL;
     }
-#endif
 
     ito::RetVal retval;
     int pluginNum = -1;
@@ -2329,21 +2320,12 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
 {
     const char *kwlist[] = {"pluginName", "dictionary", NULL};
     const char* pluginName = NULL;
-#if PY_VERSION_HEX < 0x03030000
-    unsigned char retDict = 0;
-
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &pluginName, &retDict))
-    {
-        return NULL;
-    }
-#else //only python 3.3 or higher has the 'p' (bool, int) type string
     int retDict = 0; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &pluginName, &retDict))
     {
         return NULL;
     }
-#endif
 
     QVector<ito::Param> *paramsMand = NULL;
     QVector<ito::Param> *paramsOpt = NULL;
@@ -5411,21 +5393,12 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
     char* filename = NULL;
     PyObject *dict = NULL;
 
-#if PY_VERSION_HEX < 0x03030000
-    unsigned char overwriteIfExists = 1;
-
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|b", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
-    {
-        return NULL;
-    }
-#else //only python 3.3 or higher has the 'p' (bool, int) type string
     int overwriteIfExists = 1; //this must be int, not bool!!! (else crash)
 
     if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "sO!|p", const_cast<char**>(kwlist), &filename, &PyDict_Type, &dict, &overwriteIfExists)) //all borrowed
     {
         return NULL;
     }
-#endif
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 

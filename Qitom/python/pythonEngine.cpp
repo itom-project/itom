@@ -404,13 +404,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             if (pythonDir != "")
             {
                 //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-#if PY_VERSION_HEX < 0x03050000
-                m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonDir.size() + 10) * sizeof(wchar_t));
-                memset(m_pUserDefinedPythonHome, 0, (pythonDir.size() + 10) * sizeof(wchar_t));
-                pythonDir.toWCharArray(m_pUserDefinedPythonHome);
-#else
                 m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
-#endif
                 Py_SetPythonHome(m_pUserDefinedPythonHome);
             }
 
@@ -3380,14 +3374,13 @@ the tree, beginning from the root level.
 */
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName /*= NULL*/)
 {
-#if defined _DEBUG && (PY_VERSION_HEX >= 0x03040000)
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling getPyObjectByFullName\n" << std::endl;
         return NULL;
     }
 #endif
-
     PyObject *obj = NULL;
     PyObject *current_obj = NULL;
     QStringList items = fullNameSplittedByDelimiter;
@@ -3736,7 +3729,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling emitPythonDictionary\n" << std::endl;
@@ -5899,7 +5892,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filename)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling pickleDictionary\n" << std::endl;
@@ -6111,7 +6104,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling unpickleDictionary\n" << std::endl;
