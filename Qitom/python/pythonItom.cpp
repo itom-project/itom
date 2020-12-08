@@ -331,7 +331,7 @@ className : str, optional \n\
     class name of desired plot (if not indicated or if the className can not be found, the default \n\
     plot will be used (see application settings)). Depending on the object, you can also set ``className`` \n\
     to ``1D``, ``2D`` or ``2.5D`` for displaying the object in the default plot of \n\
-	the indicated categories. If nothing is given, the plot category is guessed from ``data``.\n\
+    the indicated categories. If nothing is given, the plot category is guessed from ``data``.\n\
 properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\

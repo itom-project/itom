@@ -8936,7 +8936,7 @@ If any of the input dataObjects has more than two dimensions, all contained plan
 Parameters \n\
 ----------- \n\
 objects : list of dataObject or tuple of dataObject \n\
-	Sequence (list) of dataObjects containing planes that will be stacked together. \n\
+    Sequence (list) of dataObjects containing planes that will be stacked together. \n\
     All dataObjects must be of the same type and have the same shape of planes \n\
     (last two dimensions).\n\
 \n\

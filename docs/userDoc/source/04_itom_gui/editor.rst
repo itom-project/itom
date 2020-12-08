@@ -289,7 +289,7 @@ to the image above. In the depicted sample, the definition of the call to
 method **calc_diff**. The assignment however is the place, where the 
 variable **myfunc** is introduced for the first time.
 
-*New in |itom| 3.2
+**New in |itom| 3.2**
 
 .. _gui-editor-class-navigator:
 
@@ -328,13 +328,15 @@ and other errors or hints, like the compliance with the Python style guide
 (PEP8) or the style guide for docstrings (PEP257).
 
 Basic checks can already be provided, if the python package 
-`pyflakes <https://pypi.python.org/pypi/pyflakes/>`_ is installed. 
+`pyflakes`_ is installed. 
 
 Style guide checks etc. (denoted as extended checks) 
 are only available if the package `flake8 <https://flake8.pycqa.org/en/latest/>`_, 
-that depends on `pyflakes <https://github.com/pycqa/mccabe>`_, 
+that depends on `pyflakes`_, 
 `pycodestyle <https://pypi.org/project/pycodestyle/>`_ 
 and `mccabe <https://github.com/pycqa/mccabe>`_.
+
+.. _pyflakes: https://pypi.python.org/pypi/pyflakes
 
 You need to have these packages installed in order to benefit from the desired service.
 If the necessary packages could not be found, the service is deactivated and a warning

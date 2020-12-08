@@ -228,8 +228,8 @@ Locates the matrix header within a parent matrix.
     
     cv::Mat::locateROI(Size &wholeSize, cv::Point &ofs) const 
 
-Parameters: * wholeSize - Output parameter that contains the size of the whole matrix containing *this as a part.
-            * ofs - Output parameter that contains an offset of *this inside the whole matrix.
+Parameters: * wholeSize - Output parameter that contains the size of the whole matrix containing *this* as a part.
+            * ofs - Output parameter that contains an offset of *this* inside the whole matrix.
  
 After you extracted a submatrix from a matrix using Mat::row(), Mat::col(), Mat::rowRange(), Mat::colRange() , and others, the resultant submatrix points just to the part of the original big matrix. However, each submatrix contains information (represented by datastart and dataend fields) that helps reconstruct the original matrix size and the position of the extracted submatrix within the original matrix. The method locateROI does exactly that.
 
