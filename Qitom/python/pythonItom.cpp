@@ -341,7 +341,7 @@ index : int \n\
     This index is the figure index of the plot figure that is opened by this command. Use \n\
     ``figure(index)`` to get a reference to the figure window of this plot. The plot can \n\
     be closed by ``close(index)``. \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the plot. This handle is used to control the properties of the plot, connect to \n\
     its signals or call slots of the plot. \n\
 \n\
@@ -508,7 +508,7 @@ index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
     plot can be closed by ``close(index)``. \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the plot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot. \n\
 \n\
@@ -695,7 +695,7 @@ index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
     plot can be closed by ``close(index)``. \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the plot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot. \n\
 \n\
@@ -871,7 +871,7 @@ index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
     plot can be closed by ``close(index)``. \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the plot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot. \n\
 \n\
@@ -1057,7 +1057,7 @@ index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
     plot can be closed by ``close(index)``. \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the plot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot. \n\
 \n\
@@ -3802,8 +3802,8 @@ dis-/enables the module to automatically reload changed modules. \n\
 Use this method to enable or disable (and configure) a tool that automatically tries to \n\
 reload imported modules and their submodules if they have changed since the last run. \n\
 \n\
-Returns \n\
-------- \n\
+Parameters \n\
+---------- \n\
 enable : bool \n\
     The auto-reload tool is loaded if it is enabled for the first time. If it is disabled, \n\
     it does not check changes of any imported modules. \n\
