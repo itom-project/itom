@@ -24,14 +24,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QMetaEnum>
 #include <QDebug>
 
-#if QT_VERSION < 0x050500
-//workaround for qt_getEnumMetaObject
-//see: https://forum.qt.io/topic/644/global-qmetaobject/2
-struct StaticQtMetaObject : public QObject
-{
-    static inline const QMetaObject& get() { return staticQtMetaObject; }
-};
-#endif
 
 BrushCreatorDialog::BrushCreatorDialog(QBrush &inputBrush, QWidget *parent) :
     QDialog(parent),
@@ -42,12 +34,8 @@ BrushCreatorDialog::BrushCreatorDialog(QBrush &inputBrush, QWidget *parent) :
 
     //fill the combo boxes of the gui
 
-#if QT_VERSION >= 0x050500
-    const QMetaObject *mo = qt_getEnumMetaObject(Qt::SolidPattern);//style
-#else
-    const QMetaObject mo_ = StaticQtMetaObject::get();
-    const QMetaObject *mo = &mo_;
-#endif
+    const QMetaObject *mo = qt_getEnumMetaObject(Qt::SolidPattern); //style
+
     QMetaEnum me = mo->enumerator(mo->indexOfEnumerator("BrushStyle"));
 
     int i;

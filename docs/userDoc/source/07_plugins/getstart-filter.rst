@@ -41,6 +41,8 @@ widget methods are displayed, whose name contains the given string.
     filterHelp('mean')      # list shortened to filters containing 'mean'
     filterHelp('calcMeanZ') # detailed information on 'calcMeanZ'
 
+.. _filter_interruptible:
+
 Interruptible filters and progress information
 ================================================
 
@@ -73,6 +75,10 @@ and / or a label widget to this filter (via the class :py:class:`itom.progressOb
 regularily update the integer value of the progress bar (must have a slot **setValue(int)**) and / or the text of
 the label (via a slot **setText(QString)**). The progress will be changed from a user-defined minimum value up to
 a user-defined maximum value (if the algorithm is finished).
+
+For itom 4.1 or younger, it is also possible to connect to different signals of :py:class:`itom.progressObserver`
+via the method :py:meth:`itom.progressObserver.connect`, such that user defined callback methods can be created
+in Python, that are called for instance if the current progress value or progress text have changed.
 
 Usage of filters
 =======================

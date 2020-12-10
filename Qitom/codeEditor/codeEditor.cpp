@@ -615,6 +615,7 @@ void CodeEditor::setWhitespacesFlags(bool show)
         options.setFlags(
             options.flags() & ~QTextOption::ShowTabsAndSpaces);
     }
+
     doc->setDefaultTextOption(options);
 
     updateTabStopAndIndentationWidth();
@@ -654,6 +655,10 @@ void CodeEditor::paintEvent(QPaintEvent *e)
 {
     updateVisibleBlocks(); //_update_visible_blocks
 
+    QTextCursor tc = textCursor();
+    tc.movePosition(QTextCursor::Start);
+    int xoffset = cursorRect(tc).x(); // left offset of first character
+
     switch (m_edgeMode)
     {
     case EdgeNone:
@@ -664,6 +669,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         painter.setPen(m_edgeColor);
 
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+        x += xoffset;
         painter.drawLine(x, 0, x, size().height());
         }
         break;
@@ -674,6 +680,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         painter.setPen(Qt::NoPen);
 
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+        x += xoffset;
         painter.drawRect(x, 0, size().width() - x, size().height());
         }
         break;
@@ -691,17 +698,19 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         int bottom;
         int indentation;
 
-        QTextCursor tc = textCursor();
-        tc.movePosition(QTextCursor::Start);
-        int x = cursorRect(tc).x();
-
         foreach (const VisibleBlock &block, visibleBlocks())
         {
             bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
+
             for (int i = 1; i < indentation; ++i)
             {
-                painter.drawLine(x + m_indentationBarWidth * i, block.topPosition, x + m_indentationBarWidth * i, bottom);
+                painter.drawLine(
+                    xoffset + m_indentationBarWidth * i,
+                    block.topPosition,
+                    xoffset + m_indentationBarWidth * i,
+                    bottom
+                );
             }
         }
     }

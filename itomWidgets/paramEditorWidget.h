@@ -48,10 +48,6 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 {
     Q_OBJECT
 
-#if QT_VERSION < 0x050500
-    //for >= Qt 5.5.0 see Q_ENUM definition below
-    Q_ENUMS(ResizeMode)
-#endif
 	Q_PROPERTY(QPointer<ito::AddInBase> plugin READ plugin WRITE setPlugin)
     Q_PROPERTY(int indentation READ indentation WRITE setIndentation)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
@@ -93,11 +89,9 @@ public:
         ResizeToContents
     };
 
-#if QT_VERSION >= 0x050500
     //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
     //values are always accessible.
     Q_ENUM(ResizeMode)
-#endif
 
     /**
      * \brief Constructor 

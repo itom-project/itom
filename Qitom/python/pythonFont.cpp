@@ -28,12 +28,12 @@
 
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 
 namespace ito
 {
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonFont::PyFont_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
@@ -59,14 +59,14 @@ void PythonFont::PyFont_addTpDict(PyObject * tp_dict)
     Py_DECREF(value);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonFont::PyFont_dealloc(PyFont* self)
 {
     DELETE_AND_SET_NULL(self->font);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonFont::PyFont_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyFont* self = (PyFont *)type->tp_alloc(type, 0);
@@ -78,25 +78,30 @@ PyObject* PythonFont::PyFont_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
     return (PyObject *)self;
 };
 
-//------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyFont_doc,"font(family, pointSize = 0, weight = -1, italic = False) -> creates a font object. \n\
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyFont_doc,"font(family, pointSize = 0, weight = -1, italic = False) -> font \n\
 \n\
-This class is a wrapper for the class QFont of Qt. It provides possibilities for creating a font type. \n\
+Creates a font object. \n\
+\n\
+This class is a wrapper for the class `QFont` of the Qt framework. \n\
+It provides possibilities for creating a font type. \n\
 \n\
 Parameters \n\
 ----------- \n\
-family : {str} \n\
-    The family name may optionally also include a foundry name, e.g. 'Helvetica [Cronyx]'. If the family is available \
-    from more than one foundry and the foundry isn't specified, an arbitrary foundry is chosen. If the family isn't \
-    available a family will be set using a best-matching algorithm. \n\
-pointSize : {int}, optional \n\
-    If pointSize is zero or negative, the point size of the font is set to a system-dependent default value. \
-    Generally, this is 12 points, except on Symbian where it is 7 points. \n\
-weight : {int}, optional \n\
-    Weighting scale from 0 to 99, e.g. font.Light, font.Normal (default), font.DemiBold, font.Bold, font.Black \n\
-italic : {bool}, optional \n\
-    defines if font is italic or not (default)");
+family : str \n\
+    The family name may optionally also include a foundry name, e.g. \"Helvetica [Cronyx]\". \n\
+    If the family is available from more than one foundry and the foundry isn't specified, \n\
+    an arbitrary foundry is chosen. If the family isn't available a family will be set \n\
+    using a best-matching algorithm. \n\
+pointSize : int, optional \n\
+    If pointSize is zero or negative, the point size of the font is set to a \n\
+    system-dependent default value. Generally, this is 12 points. \n\
+weight : int, optional \n\
+    Weighting scale from 0 to 99, e.g. ``font.Light``, ``font.Normal`` (default), \n\
+    ``font.DemiBold``, ``font.Bold``, ``font.Black``. \n\
+italic : bool, optional \n\
+    Defines if font is italic or not (default)");
 int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
 {
     int pointSize = 0;
@@ -148,7 +153,12 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
     }
     else
     {
-        result = PyUnicode_FromFormat("font(%s, %ipt, weight: %i)", self->font->family().toUtf8().data(), self->font->pointSize(), self->font->weight()  );
+        result = PyUnicode_FromFormat(
+            "font(%s, %ipt, weight: %i)", 
+            self->font->family().toUtf8().data(), 
+            self->font->pointSize(), 
+            self->font->weight()  
+        );
     }
     return result;
 }
@@ -170,7 +180,12 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
     }
 
     //the stateTuple is simply a byte array with the stream data of the QRegion.
-    PyObject *tempOut = Py_BuildValue("(O(s)O)", Py_TYPE(self), self->font ? self->font->family().toLatin1().data() : "", stateTuple);
+    PyObject *tempOut = Py_BuildValue(
+        "(O(s)O)", 
+        Py_TYPE(self), 
+        self->font ? self->font->family().toLatin1().data() : "", 
+        stateTuple
+    );
     Py_XDECREF(stateTuple);
 
     return tempOut;
@@ -203,11 +218,13 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getFamily_doc,  "Gets/Sets the family name of the font. The name is case insensitive and may include a foundry name. \n\
+PyDoc_STRVAR(font_getFamily_doc, 
+"str : gets / sets the family name of the font. \n\
 \n\
-The family name may optionally also include a foundry name, e.g. 'Helvetica [Cronyx]'. If the family \
-is available from more than one foundry and the foundry isn't specified, an arbitrary foundry is chosen. \
-If the family isn't available a family will be set using a font matching algorithm.");
+The name is case insensitive. It may optionally also include a foundry name, \n\
+e.g.  \"Helvetica [Cronyx]\". If the family is available from more than one \n\
+foundry and the foundry isn't specified, an arbitrary foundry is chosen. If \n\
+the family isn't available a family will be set using a font matching algorithm.");
 PyObject* PythonFont::PyFont_getFamily(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -239,9 +256,12 @@ int PythonFont::PyFont_setFamily(PyFont *self, PyObject *value, void * /*closure
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getWeight_doc,  "Sets the weight the font to weight. \n\
+PyDoc_STRVAR(font_getWeight_doc,  
+"int : gets or sets the weight of the font. \n\
 \n\
-This should be a value from the font.Light, font.Normal, font.DemiBold, font.Bold, font.Black enumeration or any value in the range [0,99].");
+This should be one of the constant values ``font.Light``, ``font.Normal``, \n\
+``font.DemiBold``, ``font.Bold``, ``font.Black`` enumeration or any value \n\
+in the range [0, 99].");
 PyObject* PythonFont::PyFont_getWeight(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -281,7 +301,8 @@ int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getPointSize_doc,  "Gets/Sets the point size to pointSize. The point size must be greater than zero.");
+PyDoc_STRVAR(font_getPointSize_doc,  
+"int : gets or sets the point size (> 0) of the font.");
 PyObject* PythonFont::PyFont_getPointSize(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -297,6 +318,7 @@ int PythonFont::PyFont_setPointSize(PyFont *self, PyObject *value, void * /*clos
 {
     bool ok;
     quint64 pointSize = PythonQtConversion::PyObjGetULongLong(value, true, ok);
+
     if (ok)
     {
         QFont temp = *self->font;
@@ -313,7 +335,8 @@ int PythonFont::PyFont_setPointSize(PyFont *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getItalic_doc,  "Gets/Sets the italic attribute of the font.");
+PyDoc_STRVAR(font_getItalic_doc,  
+"bool : gets or sets the italic attribute of the font.");
 PyObject* PythonFont::PyFont_getItalic(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -352,7 +375,8 @@ int PythonFont::PyFont_setItalic(PyFont *self, PyObject *value, void * /*closure
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getStrikeOut_doc,  "Gets/Sets the strikeout on or off.");
+PyDoc_STRVAR(font_getStrikeOut_doc,
+"bool : gets or sets the strikeout attribute of the font.");
 PyObject* PythonFont::PyFont_getStrikeOut(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -391,7 +415,8 @@ int PythonFont::PyFont_setStrikeOut(PyFont *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getUnderline_doc,  "Gets/Sets the underline on or off.");
+PyDoc_STRVAR(font_getUnderline_doc,
+"bool : gets or sets the underline attribute of the font.");
 PyObject* PythonFont::PyFont_getUnderline(PyFont *self, void * /*closure*/)
 {
     if(!self || self->font == NULL)
@@ -430,16 +455,19 @@ int PythonFont::PyFont_setUnderline(PyFont *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyFont_isFamilyInstalled_DOC, "isFamilyInstalled(family) -> checks if the given font family is installed on this computer. \n\
+PyDoc_STRVAR(pyFont_isFamilyInstalled_DOC, "isFamilyInstalled(family) -> bool \n\
+\n\
+Checks if the given font family is installed on this computer. \n\
 \n\
 Parameters \n\
 ----------- \n\
-family : {str} \n\
+family : str \n\
     The name of the font family that should be checked \n\
 \n\
-Return \n\
+Returns \n\
 --------- \n\
-True if family is installed, else False.");
+installed : bool \n\
+    ``True`` if family is installed, else ``False``.");
 PyObject* PythonFont::PyFont_isFamilyInstalled(PyFont * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "family", NULL };
@@ -461,7 +489,14 @@ PyObject* PythonFont::PyFont_isFamilyInstalled(PyFont * /*self*/, PyObject *args
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyFont_installedFontFamilies_DOC, "installedFontFamilies() -> return a list of all installed font families.");
+PyDoc_STRVAR(pyFont_installedFontFamilies_DOC, "installedFontFamilies() -> List[str] \n\
+\n\
+Returns a list of all installed font families. \n\
+\n\
+Returns \n\
+------- \n\
+list of str : \n\
+    list of the names of all installed font families");
 PyObject* PythonFont::PyFont_installedFontFamilies(PyFont * /*self*/)
 {
     return PythonQtConversion::QStringListToPyList(QFontDatabase().families());
@@ -492,7 +527,7 @@ PyMethodDef PythonFont::PyFont_methods[] = {
 
 //-----------------------------------------------------------------------------
 PyModuleDef PythonFont::PyFontModule = {
-    PyModuleDef_HEAD_INIT, "font", "Font (wrapper for QFont)", -1,
+    PyModuleDef_HEAD_INIT, "font", "Font object.", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 

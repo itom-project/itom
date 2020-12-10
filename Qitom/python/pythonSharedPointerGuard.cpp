@@ -33,7 +33,6 @@ QHash<void*, PyObject*> PythonSharedPointerGuard::m_hashTable = QHash<void*, PyO
 // the following method is only called by PythonSharedPointerGuard::deleter within a QtConcurrent::run worker thread
 void safeDecrefPyObject2(PyObject *obj)
 {
-#if (PY_VERSION_HEX >= 0x03040000)
     if (PyGILState_Check())
     {
         Py_DECREF(obj);
@@ -44,10 +43,6 @@ void safeDecrefPyObject2(PyObject *obj)
         Py_DECREF(obj);
         PyGILState_Release(gstate);
     }
-#else
-    //we don't know if we need to acquire the GIL here, or not.
-    Py_DECREF(obj);
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -186,6 +186,7 @@ void AbstractDockWidget::init()
     if (m_floatingStyle == floatingWindow && m_dockAvailable) //only show dock-toolbar, if this widget is able to be a full-window in undocked mode
     {
         m_dockToolbar = new QToolBar(tr("Docking Toolbar"), this);
+        m_dockToolbar->setObjectName("toolBarDocking"); // to avoid Qt warnings during saveState / restoreState
 
         QWidget *spacerWidget = new QWidget();
         QHBoxLayout *spacerLayout = new QHBoxLayout();

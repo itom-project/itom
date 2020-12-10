@@ -29,12 +29,12 @@
 #include <qrect.h>
 
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 namespace ito
 {
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
@@ -48,14 +48,14 @@ void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
     Py_DECREF(value);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void PythonRegion::PyRegion_dealloc(PyRegion* self)
 {
     DELETE_AND_SET_NULL(self->r);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 PyObject* PythonRegion::PyRegion_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyRegion* self = (PyRegion *)type->tp_alloc(type, 0);
@@ -67,31 +67,38 @@ PyObject* PythonRegion::PyRegion_new(PyTypeObject *type, PyObject* /*args*/, PyO
     return (PyObject *)self;
 };
 
-//------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegion_doc,"region([x, y, w, h [,type=region.RECTANGLE]]) -> creates a rectangular or elliptical region. \n\
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegion_doc,"region() -> region \\\n\
+region(otherRegion) -> region \\\n\
+region(x, y, w, h, type = region.RECTANGLE) -> region \n\
 \n\
-This class is a wrapper for the class QRegion of Qt. It provides possibilities for creating pixel-based regions. Furtherone you can \n\
-calculate new regions based on the intersection, union or subtraction of other regions. Based on the region it is possible to get \n\
-a uint8 masked dataObject, where every point within the entire region has the value 255 and all other values 0 \n\
+Creates a rectangular or elliptical region. \n\
+\n\
+This class is a wrapper for the class ``QRegion`` of `Qt`. It provides possibilities for \n\
+creating pixel-based regions. Furtherone you can calculate new regions based on the \n\
+intersection, union or subtraction of other regions. Based on the region it is \n\
+possible to get a uint8 masked dataObject, where every point within the entire \n\
+region has the value 255 and all other values 0 \n\
+\n\
+If the constructor is called without argument, an empty region is created. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+otherRegion : region \n\
+    Pass this object of :class:`region` to create a copied object of it. \n\
+x : int\n\
     x-coordinate of the reference corner of the region \n\
-y : {int} \n\
+y : int\n\
     y-coordinate of the reference corner of the region \n\
-w : {int} \n\
+w : int\n\
     width of the region \n\
-h : {int} \n\
+h : int\n\
     height of the region \n\
-type : {int}, optional \n\
-    region.RECTANGLE creates a rectangular region (default). region.ELLIPSE creates an elliptical region, which is placed inside of the \n\
-    given boundaries. \n\
-\n\
-Notes\n\
------ \n\
-It is also possible to create an empty instance of the region.");
+type : int, optional \n\
+    ``region.RECTANGLE`` creates a rectangular region (default). \n\
+    ``region.ELLIPSE`` creates an elliptical region, which is placed inside of the \n\
+    given boundaries.");
 int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
 {
     int x,y,w,h;
@@ -184,24 +191,26 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionContains_doc,"contains(x, y, w = -1, h = -1) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
+PyDoc_STRVAR(pyRegionContains_doc,"contains(x, y, w = -1, h = -1) -> bool \n\
 \n\
-This method returns True, if the given point (x,y) or region (x,y,w,h) is fully contained in this region. Otherwise returns False.\n\
+This method returns True, if the given point (x,y) or rectangle (x,y,w,h) is fully \n\
+contained in this region. Otherwise returns False.\n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of the new rectangular region \n\
-w : {int}, optional \n\
+w : int, optional \n\
     width of the new rectangular region. If not given, point is assumed. \n\
-h : {int}, optional \n\
-    height of the new rectangular region. If not given, point is assumed. \n\
+h : int, optional \n\
+    height of the new rectangular region. If not given, point is assumed.\n\
 \n\
 Returns \n\
-------- \n\
-True or False");
+-------- \n\
+bool \n\
+    True if point or rectangle is contained in region, otherwise False.");
 /*static*/ PyObject* PythonRegion::PyRegion_contains(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     if(!self || self->r == NULL)
@@ -237,31 +246,33 @@ True or False");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionIntersected_doc,"intersected(x,y,w,h | region) -> returns a region which is the intersection of a new region and this region. \n\
+PyDoc_STRVAR(pyRegionIntersected_doc,"intersected(x, y, w, h) -> region \\\n\
+intersected(region) -> region \n\
 \n\
-This method returns a new region, which is the intersection of this region and the given, new region. The intersection only contains points that are \n\
-part of both given regions. \n\
+Returns a new region which is the intersection of the given region and this region. \n\
+\n\
+The intersection only contains points that are part of both regions. \n\
+The given region can either by a :class:`region` object or a rectangular \n\
+region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
+and height ``h``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of the new rectangular region \n\
-w : {int} \n\
+w : int \n\
     width of the new rectangular region \n\
-h : {int} \n\
+h : int \n\
     height of the new rectangular region \n\
-region : {region-object} \n\
+region : region \n\
     another instance of region \n\
 \n\
 Returns \n\
 ------- \n\
-new intersected region. \n\
-\n\
-Notes \n\
------ \n\
-You can either use the parameters 'x','y','w','h' OR 'region'.");
+region \n\
+    new intersected region.");
 /*static*/ PyObject* PythonRegion::PyRegion_intersected(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -287,30 +298,32 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionIntersects_doc,"intersects(x,y,w,h | region) -> returns True if this region intersects with the given region, else False. \n\
+PyDoc_STRVAR(pyRegionIntersects_doc,"intersects(x, y, w, h) -> bool \\\n\
+intersects(region) -> bool \n\
 \n\
-This method returns True, if this region intersects with the new region, otherwise returns False. \n\
+Returns True if this region intersects with the given region, otherwise False. \n\
+\n\
+The given region can either by a :class:`region` object or a rectangular \n\
+region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
+and height ``h``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of the new rectangular region \n\
-w : {int} \n\
+w : int \n\
     width of the new rectangular region \n\
-h : {int} \n\
+h : int \n\
     height of the new rectangular region \n\
-region : {region-object} \n\
+region : region \n\
     another instance of region \n\
 \n\
 Returns \n\
 ------- \n\
-True or False \n\
-\n\
-Notes \n\
------ \n\
-You can either use the parameters 'x','y','w','h' OR 'region'.");
+bool \n\
+    True if both regions intersect, otherwise False.");
 /*static*/ PyObject* PythonRegion::PyRegion_intersects(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -339,30 +352,32 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionSubtracted_doc,"subtracted(x,y,w,h | region) -> returns a region which is the new region subtracted from this region. \n\
+PyDoc_STRVAR(pyRegionSubtracted_doc,"subtracted(x, y, w, h) -> region \\\n\
+subtracted(region) -> region \n\
 \n\
 This method returns a new region, which is the given, new region subtracted from this region. \n\
 \n\
+The given region can either by a :class:`region` object or a rectangular \n\
+region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
+and height ``h``. \n\
+\n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of the new rectangular region \n\
-w : {int} \n\
+w : int \n\
     width of the new rectangular region \n\
-h : {int} \n\
+h : int \n\
     height of the new rectangular region \n\
-region : {region-object} \n\
+region : region \n\
     another instance of region \n\
 \n\
 Returns \n\
 ------- \n\
-new subtracted region. \n\
-\n\
-Notes \n\
------ \n\
-You can either use the parameters 'x','y','w','h' OR 'region'.");
+region \n\
+    new, subtraced region.");
 /*static*/ PyObject* PythonRegion::PyRegion_subtracted(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -388,15 +403,15 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionTranslate_doc,"translate(x,y) -> translateds this region by the given coordinates. \n\
+PyDoc_STRVAR(pyRegionTranslate_doc,"translate(x, y)\n\
 \n\
-This method translates this region by the given coordinates. \n\
+This method translates this region by the given translation values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     translation in x-direction \n\
-y : {int} \n\
+y : int \n\
     translation in y-direction \n\
 \n\
 See Also \n\
@@ -421,20 +436,21 @@ translated");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionTranslated_doc,"translated(x,y) -> returns a region, translated by the given coordinates. \n\
+PyDoc_STRVAR(pyRegionTranslated_doc,"translated(x, y) -> region\n\
 \n\
-This method returns a new region, which is translated by the given coordinates in x and y direction. \n\
+This method returns a new region, which is translated by the given distances in x and y direction. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     translation in x-direction \n\
-y : {int} \n\
+y : int \n\
     translation in y-direction \n\
 \n\
 Returns \n\
 ------- \n\
-new translated region.\n\
+region \n\
+    new translated region.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -457,31 +473,35 @@ translate");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionUnited_doc,"united(x,y,w,h | region) -> returns a region which is the union of the given region with this region. \n\
+PyDoc_STRVAR(pyRegionUnited_doc,"united(x, y, w, h) -> region \\\n\
+united(region) -> region \n\
 \n\
-This method returns a new region, which is the union of this region with the region given as parameters. Union means that all values, that\n\
-are contained in any of both regions is part of the overall region, too. \n\
+returns a region which is the union of the given region with this region. \n\
+\n\
+This method returns a new region, which is the union of this region with the given region. \n\
+The union contains all areas, that are contained in any of both regions. \n\
+\n\
+The given region can either by a :class:`region` object or a rectangular \n\
+region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
+and height ``h``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of a rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of a rectangular region \n\
-w : {int} \n\
+w : int \n\
     width of the new rectangular region \n\
-h : {int} \n\
+h : int \n\
     height of the new rectangular region \n\
-region : {region-object} \n\
+region : region \n\
     another instance of region \n\
 \n\
 Returns \n\
 ------- \n\
-new united region. \n\
-\n\
-Notes \n\
------ \n\
-You can either use the parameters 'x','y','w','h' OR 'region'.");
+region \n\
+    new united region.");
 /*static*/ PyObject* PythonRegion::PyRegion_united(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -507,30 +527,35 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionXored_doc,"xored(x,y,w,h | region) -> returns a region which is an xor combination of the given region with this region. \n\
+PyDoc_STRVAR(pyRegionXored_doc,"xored(x, y, w, h) -> region \\\n\
+xored(region) -> region \n\
 \n\
-This method returns a new region, which is defined by an xor-combination of this region with the region given as parameters. \n\
+returns a region which is an xor combination of the given region with this region. \n\
+\n\
+This method returns a new region, which is defined by an xor-combination of this \n\
+region with the given region. \n\
+\n\
+The given region can either by a :class:`region` object or a rectangular \n\
+region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
+and height ``h``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {int} \n\
+x : int \n\
     x-coordinate of one corner of a rectangular region \n\
-y : {int} \n\
+y : int \n\
     y-coordinate of one corner of a rectangular region \n\
-w : {int} \n\
+w : int \n\
     width of the new rectangular region \n\
-h : {int} \n\
+h : int \n\
     height of the new rectangular region \n\
-region : {region-object} \n\
+region : region \n\
     another instance of region \n\
 \n\
 Returns \n\
 ------- \n\
-new xored region. \n\
-\n\
-Notes \n\
------ \n\
-You can either use the parameters 'x','y','w','h' OR 'region'.");
+region \n\
+    new xored region.");
 /*static*/ PyObject* PythonRegion::PyRegion_xored(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     int x,y,w,h;
@@ -557,6 +582,8 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyRegion_getEmpty_doc,
+"bool: Returns True if this region is empty, otherwise False");
 /*static*/ PyObject* PythonRegion::PyRegion_getEmpty(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
@@ -573,7 +600,9 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonRegion::PyFigure_getRectCount(PyRegion *self, void * /*closure*/)
+PyDoc_STRVAR(pyRegion_getRectCount_doc,
+"int: Returns the number of rectangles in this region");
+/*static*/ PyObject* PythonRegion::PyRegion_getRectCount(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
     {
@@ -585,7 +614,11 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonRegion::PyFigure_getRects(PyRegion *self, void * /*closure*/)
+PyDoc_STRVAR(pyRegion_getRects_doc,
+"list of list of int: Returns list of rectangles, whose union defines this region. \n\
+\n\
+Each rectangle is given by a list of (x, y, width, height).");
+/*static*/ PyObject* PythonRegion::PyRegion_getRects(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
     {
@@ -606,14 +639,18 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
         PyList_SetItem(t,1, PyLong_FromLong(r.y()));
         PyList_SetItem(t,2, PyLong_FromLong(r.width()));
         PyList_SetItem(t,3, PyLong_FromLong(r.height()));
-        PyList_SetItem(ret,i++,t); //steals reference
+        PyList_SetItem(ret, i++, t); //steals reference
     }
 
     return ret;
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonRegion::PyFigure_getBoundingRect(PyRegion *self, void * /*closure*/)
+PyDoc_STRVAR(pyRegion_getBoundingRect_doc, 
+"list of int or None: Returns the bounding rectangle of this region or None if it is empty. \n\
+\n\
+The bounding rectangle is given by a list (x, y, width, height).");
+/*static*/ PyObject* PythonRegion::PyRegion_getBoundingRect(PyRegion *self, void * /*closure*/)
 {
     if(!self || self->r == NULL)
     {
@@ -638,15 +675,26 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask(boundingRegion = None) -> creates mask data object based on this region and the optional boundingRegion. \n\
+PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask(boundingRegion = None) -> dataObject \n\
 \n\
-Returns a uint8-dataObject whose size corresponds to the width and height of the bounding rectangle. \n\
-All pixels contained in the region have a value of 255 while the rest is set to 0. The offset value of \n\
-the dataObject is set such that it fits to the real position of the region, since the first element \n\
+Returns a :class:`~itom.dataObject` with dtype ``uint8`` whose shape corresponds to the \n\
+width and height of the bounding rectangle. All pixels contained in the region have a \n\
+value of ``255`` while the rest is set to ``0``. The offset value of the dataObject is \n\
+set such that it fits to the real position of the region, since the first element \n\
 in the dataObject corresponds to the left upper corner of the bounding rectangle.\n\
 \n\
-Indicate a boundingRegion in order to increase the size of the returned data object. Its size will \n\
-have the size of the union between the boundingRegion and the region.");
+Indicate a ``boundingRegion`` in order to increase the size of the returned data object. \n\
+Its size will have the size of the union between the boundingRegion and the region.\n\
+\n\
+Parameters \n\
+----------- \n\
+boundingRegion : region, optional\n\
+    If a :class:`region` object is given, the shape of the returned :class:`dataObject`\n\
+    is the maximum (union) between this ``boundingRegion`` and this region. \n\
+\n\
+Returns \n\
+------- \n\
+mask : dataObject");
 /*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     if(!self || self->r == NULL)
@@ -834,10 +882,10 @@ have the size of the union between the boundingRegion and the region.");
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonRegion::PyRegion_getseters[] = {
-    {"empty", (getter)PyRegion_getEmpty, NULL, "Returns True if region is empty, else False", NULL},
-    {"rectCount", (getter)PyFigure_getRectCount, NULL, "Returns True if region is empty, else False", NULL},
-    {"rects", (getter)PyFigure_getRects, NULL, "Returns list of rectangles", NULL},
-    {"boundingRect", (getter)PyFigure_getBoundingRect, NULL, "Returns (x,y,w,h) of the bounding rectangle of this region. An empty region returns None.", NULL},
+    {"empty", (getter)PyRegion_getEmpty, NULL, pyRegion_getEmpty_doc, NULL},
+    {"rectCount", (getter)PyRegion_getRectCount, NULL, pyRegion_getRectCount_doc, NULL },
+    {"rects", (getter)PyRegion_getRects, NULL, pyRegion_getRects_doc, NULL },
+    {"boundingRect", (getter)PyRegion_getBoundingRect, NULL, pyRegion_getBoundingRect_doc, NULL },
     {NULL}  /* Sentinel */
 };
 

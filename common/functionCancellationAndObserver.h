@@ -120,6 +120,8 @@ public:
 Q_SIGNALS:
     void progressTextChanged(QString text);
     void progressValueChanged(int value);
+    void cancellationRequested();
+    void resetDone();
 
 public Q_SLOTS:
     //! call this method (from any thread) to signal a cancellation request.
@@ -130,10 +132,15 @@ public Q_SLOTS:
     The reason ReasonKeyboardInterrupt should only be set by the method PythonEngine::pythonInterruptExecutionThreadSafe
     to avoid nested errors. In this case, itom.filter will not set an exception, since the keyboardInterrupt exception
     is automatically raised.
+
+    Emits the cancellationRequested signal.
     */
     void requestCancellation(CancellationReason reason = CancellationReason::ReasonGeneral);
 
     //! resets this object (e.g. emptys the current progress text, set the progress value to its minimum and resets the cancellation request)
+    /*
+    Emits progressTextChanged and progressValueChanged with the new values and then the resetDone signal.
+    */
     void reset();
 
 private:

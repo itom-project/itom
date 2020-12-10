@@ -99,6 +99,15 @@ class PipManager : public QAbstractItemModel
             taskVerifyInstalledPackages
         };
 
+        enum PipMode {
+            //!< directly call pip as process (might cause encoding errors under windows)
+            pipModeDirect,
+
+            //!< call pip via runPipUtf8.py module (uses a non-official interface of pip, 
+            //!< but sets the cout and cerr streams to UTF8; recommended under Windows)
+            pipModeRunPipUtf8 
+        };
+
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
         QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -128,6 +137,8 @@ class PipManager : public QAbstractItemModel
         QStringList parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries = false, bool ignoreVersionCheck = true) const;
         void clearBuffers();
         ito::RetVal initPythonIfStandalone();
+        ito::RetVal checkCallMode(); //!< check if pip can be called via the itom-packages/pipProcess/runPipUtf8.py script or directly
+        void startProcess(const QStringList &arguments); //!< the arguments string list must not contain -m as first entry.
 
         QList<QString> m_headers;               //!<  string list of names of column headers
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
@@ -141,6 +152,8 @@ class PipManager : public QAbstractItemModel
         QString m_pythonPath;
         int m_pipVersion; //form 0x060100 for 6.1.0
         wchar_t *m_pUserDefinedPythonHome; //only used for standalone usage
+        PipMode m_pipCallMode;
+        QString m_runPipUtf8Path; //!< only valid if m_pipCallMode == pipModeRunPipUtf8
     
     private slots:
         void processError(QProcess::ProcessError error);

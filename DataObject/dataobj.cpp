@@ -1342,7 +1342,7 @@ ito::RetVal DataObject::matIdxToNum(const unsigned int *matIdx, int *matNum) con
     *matNum = 0;
     if (m_dims <= 2)
     {
-            return 0;
+            return ito::retOk;
     }
 
     int planeSize = 1;
@@ -1359,7 +1359,7 @@ ito::RetVal DataObject::matIdxToNum(const unsigned int *matIdx, int *matNum) con
             planeSize *= m_osize[n];
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 
@@ -1882,7 +1882,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
             break;
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tCreateFunc)(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps);
@@ -2448,7 +2448,7 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
 {
     if (&lhs == &rhs)
     {
-        return 0;
+        return ito::retOk;
     }
 
     int numMats = 0;
@@ -2903,7 +2903,7 @@ template<typename _Tp> RetVal ZerosFunc(const int sizeY, const int sizeX, uchar 
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::zeros(static_cast<int>(sizeY), static_cast<int>(sizeX));
 
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tZerosFunc)(const int sizeY, const int sizeX, uchar **dstMat);
@@ -2937,7 +2937,7 @@ RetVal DataObject::zeros(const unsigned char dimensions, const int *sizes, const
         fListZerosFunc[type](sizeY, sizeX, &(m_data[matn]));
     }
 
-   return 0;
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3012,7 +3012,7 @@ RetVal DataObject::ones(const int sizeZ, const int sizeY, const int sizeX, const
 template<typename _Tp> RetVal OnesFunc(const int sizeY, const int sizeX, uchar **dstMat)
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::ones(static_cast<int>(sizeY), static_cast<int>(sizeX));
-   return 0;
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3029,7 +3029,7 @@ template<> RetVal OnesFunc<ito::Rgba32>(const int sizeY, const int sizeX, uchar 
 {
    (*((cv::Mat_<ito::Rgba32> *)(*dstMat))) = cv::Mat_<ito::Rgba32>(static_cast<int>(sizeY), static_cast<int>(sizeX));
    memset( (*((cv::Mat*)(*dstMat))).ptr<ito::uint8>(), 255, static_cast<int>(sizeY) * static_cast<int>(sizeX) * sizeof(ito::Rgba32));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tOnesFunc)(const int sizeY, const int sizeX, uchar **dstMat);
@@ -3063,7 +3063,7 @@ RetVal DataObject::ones(const unsigned char dimensions, const int *sizes, const 
         fListOnesFunc[type](sizeY, sizeX, &(m_data[matn]));
     }
 
-   return 0;
+   return ito::retOk;
 }
 
 //###############################
@@ -5476,7 +5476,7 @@ template<typename _Tp> RetVal CmpFuncScalar(const DataObject *src, const float64
 template<> RetVal CmpFuncScalar<ito::complex64>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for compare function of type complex128
@@ -5486,7 +5486,7 @@ template<> RetVal CmpFuncScalar<ito::complex64>(const DataObject * /*src*/, cons
 template<> RetVal CmpFuncScalar<ito::complex128>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tCmpFuncScalar)(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp);
@@ -5631,7 +5631,7 @@ template<typename _Tp> RetVal ShiftLFunc(DataObject *src, const unsigned char sh
 #endif
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 //! template specialisation for shift function of type float32
@@ -5641,7 +5641,7 @@ template<typename _Tp> RetVal ShiftLFunc(DataObject *src, const unsigned char sh
 template<> RetVal ShiftLFunc<ito::float32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type float64
@@ -5651,7 +5651,7 @@ template<> RetVal ShiftLFunc<ito::float32>(DataObject * /*src*/, const unsigned 
 template<> RetVal ShiftLFunc<ito::float64>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type complex64
@@ -5661,7 +5661,7 @@ template<> RetVal ShiftLFunc<ito::float64>(DataObject * /*src*/, const unsigned 
 template<> RetVal ShiftLFunc<ito::complex64>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type complex128
@@ -5671,7 +5671,7 @@ template<> RetVal ShiftLFunc<ito::complex64>(DataObject * /*src*/, const unsigne
 template<> RetVal ShiftLFunc<ito::complex128>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type rgba32
@@ -5681,7 +5681,7 @@ template<> RetVal ShiftLFunc<ito::complex128>(DataObject * /*src*/, const unsign
 template<> RetVal ShiftLFunc<ito::Rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tShiftLFunc)(DataObject *src, const unsigned char shiftbit);
@@ -5770,7 +5770,7 @@ template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char sh
 #endif
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type float32
@@ -5780,7 +5780,7 @@ template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char sh
 template<> RetVal ShiftRFunc<ito::float32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type float64
@@ -5790,7 +5790,7 @@ template<> RetVal ShiftRFunc<ito::float32>(DataObject * /*src*/, const unsigned 
 template<> RetVal ShiftRFunc<ito::float64>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type complex64
@@ -5800,7 +5800,7 @@ template<> RetVal ShiftRFunc<ito::float64>(DataObject * /*src*/, const unsigned 
 template<> RetVal ShiftRFunc<ito::complex64>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type complex128
@@ -5810,7 +5810,7 @@ template<> RetVal ShiftRFunc<ito::complex64>(DataObject * /*src*/, const unsigne
 template<> RetVal ShiftRFunc<ito::complex128>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for shift function of type rgba32
@@ -5820,7 +5820,7 @@ template<> RetVal ShiftRFunc<ito::complex128>(DataObject * /*src*/, const unsign
 template<> RetVal ShiftRFunc<ito::Rgba32>(DataObject * /*src*/, const unsigned char /*shiftbit*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tShiftRFunc)(DataObject *src, const unsigned char shiftbit);
@@ -5896,7 +5896,7 @@ template<typename _Tp> RetVal BitAndFunc(const DataObject *dObj1, const DataObje
       resMatNum = dObjRes->seekMat(nmat, numMats);
       *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) & *(dobj2mats[rhsMatNum]);      
    }
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise and function of type float32
@@ -5906,7 +5906,7 @@ template<typename _Tp> RetVal BitAndFunc(const DataObject *dObj1, const DataObje
 template<> RetVal BitAndFunc<ito::float32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise and function of type float64
@@ -5916,7 +5916,7 @@ template<> RetVal BitAndFunc<ito::float32>(const DataObject * /*dObj1*/, const D
 template<> RetVal BitAndFunc<ito::float64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise and function of type complex64
@@ -5926,7 +5926,7 @@ template<> RetVal BitAndFunc<ito::float64>(const DataObject * /*dObj1*/, const D
 template<> RetVal BitAndFunc<ito::complex64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise and function of type complex128
@@ -5936,7 +5936,7 @@ template<> RetVal BitAndFunc<ito::complex64>(const DataObject * /*dObj1*/, const
 template<> RetVal BitAndFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise and function of type rgba32
@@ -5946,7 +5946,7 @@ template<> RetVal BitAndFunc<ito::complex128>(const DataObject * /*dObj1*/, cons
 template<> RetVal BitAndFunc<ito::Rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tBitAndFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -6028,7 +6028,7 @@ template<typename _Tp> RetVal BitOrFunc(const DataObject *dObj1, const DataObjec
       resMatNum = dObjRes->seekMat(nmat, numMats);
       *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) | *(dobj2mats[rhsMatNum]); 
    }
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise or function of type float32
@@ -6038,7 +6038,7 @@ template<typename _Tp> RetVal BitOrFunc(const DataObject *dObj1, const DataObjec
 template<> RetVal BitOrFunc<ito::float32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise or function of type float64
@@ -6048,7 +6048,7 @@ template<> RetVal BitOrFunc<ito::float32>(const DataObject * /*dObj1*/, const Da
 template<> RetVal BitOrFunc<ito::float64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise or function of type complex64
@@ -6058,7 +6058,7 @@ template<> RetVal BitOrFunc<ito::float64>(const DataObject * /*dObj1*/, const Da
 template<> RetVal BitOrFunc<ito::complex64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise or function of type complex128
@@ -6068,7 +6068,7 @@ template<> RetVal BitOrFunc<ito::complex64>(const DataObject * /*dObj1*/, const 
 template<> RetVal BitOrFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise or function of type rgba32
@@ -6078,7 +6078,7 @@ template<> RetVal BitOrFunc<ito::complex128>(const DataObject * /*dObj1*/, const
 template<> RetVal BitOrFunc<ito::Rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tBitOrFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -6157,7 +6157,7 @@ template<typename _Tp> RetVal BitXorFunc(const DataObject *dObj1, const DataObje
       resMatNum = dObjRes->seekMat(nmat, numMats);
       *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) ^ *(dobj2mats[rhsMatNum]);    
    }
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise xor function of type float32
@@ -6167,7 +6167,7 @@ template<typename _Tp> RetVal BitXorFunc(const DataObject *dObj1, const DataObje
 template<> RetVal BitXorFunc<ito::float32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise xor function of type float64
@@ -6177,7 +6177,7 @@ template<> RetVal BitXorFunc<ito::float32>(const DataObject * /*dObj1*/, const D
 template<> RetVal BitXorFunc<ito::float64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise xor function of type complex64
@@ -6187,7 +6187,7 @@ template<> RetVal BitXorFunc<ito::float64>(const DataObject * /*dObj1*/, const D
 template<> RetVal BitXorFunc<ito::complex64>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise xor function of type complex128
@@ -6197,7 +6197,7 @@ template<> RetVal BitXorFunc<ito::complex64>(const DataObject * /*dObj1*/, const
 template<> RetVal BitXorFunc<ito::complex128>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for bitwise xor function of type complex128
@@ -6207,7 +6207,7 @@ template<> RetVal BitXorFunc<ito::complex128>(const DataObject * /*dObj1*/, cons
 template<> RetVal BitXorFunc<ito::Rgba32>(const DataObject * /*dObj1*/, const DataObject * /*dObj2*/, DataObject * /*dObjRes*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tBitXorFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -6316,7 +6316,7 @@ template<typename _Tp> RetVal GetRangeFunc(DataObject *dObj, const int dtop, con
       }
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //typedef RetVal (*tGetRangeFunc)(const int * SrcMat, const cv::Range rowRange, const cv::Range colRange, int **dstMat);
@@ -6460,7 +6460,7 @@ template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbot
         }
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tAdjustROIFunc)(DataObject *dObj, int dtop, int dbottom, int dleft, int dright);
@@ -6571,7 +6571,7 @@ RetVal DataObject::locateROI(int *wholeSizes, int *offsets) const
        offsets[0] = static_cast<int>(m_roi[0]);
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -6606,7 +6606,7 @@ RetVal DataObject::locateROI(int *lims) const
           lims[1] = static_cast<int>(m_size[0])-static_cast<int>(m_osize[0]);
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -6620,7 +6620,7 @@ template<typename _Tp> RetVal EyeFunc(const int size, uchar **dstMat)
 {
    (*((cv::Mat_<_Tp> *)(*dstMat))) = cv::Mat_<_Tp>::eye(static_cast<int>(size), static_cast<int>(size));
 
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tEyeFunc)(const int size, uchar **dstMat);
@@ -6656,7 +6656,7 @@ RetVal DataObject::eye(const int size, const int type)
 
    fListEyeFunc[m_type](size, &(m_data[0]));
 
-   return RetVal(retOk);
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -6711,63 +6711,63 @@ template<typename _Tp> RetVal ConjFunc(DataObject *dObj)
 template<> RetVal ConjFunc<int8>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type uint8. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<uint8>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type int16. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<int16>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type uint16. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<uint16>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type int32. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<int32>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialization for data object of type uint32. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<uint32>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialization for data object of type float32. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<ito::float32>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<ito::float64>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<ito::Rgba32>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 //! template specialization for data object of type int64. throws cv::Exception, since the data type is not complex.
 template<> RetVal ConjFunc<int64>(DataObject * /*dObj*/)
 {
    cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tConjFunc)(DataObject *dObj);
@@ -6964,7 +6964,7 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
         }
 #endif
    }
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
@@ -7097,7 +7097,7 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
         }
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -7163,7 +7163,7 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
 #endif
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tDivFunc)(const DataObject *src1, const DataObject *src2, DataObject *res);
@@ -9604,7 +9604,7 @@ template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj,
         }
 #endif
     }
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tArgFunc)(const DataObject *dObj, DataObject *resObj);
@@ -9688,7 +9688,7 @@ template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj
         }
 #endif
     }
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tRealFunc)(const DataObject *dObj, DataObject *resObj);
@@ -9843,7 +9843,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetRealFunc(DataObject *dObj, D
 #endif
 		}
 	}
-	return 0;
+	return ito::retOk;
 }
 
 //! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
@@ -9871,7 +9871,7 @@ RetVal DataObject::setReal(DataObject &valuesObj)
 			return ito::retError;
 		}
 
-		return 0;
+		return ito::retOk;
 	}
 	else
 	{
@@ -10004,7 +10004,7 @@ template<typename _CmplxTp, typename _Tp> RetVal SetImagFunc(DataObject *dObj, D
 #endif
 		}
 	}
-	return 0;
+	return ito::retOk;
 }
 
 //! high-level value which calculates the real value of each element of the input source data object and returns the resulting data object
@@ -10095,7 +10095,7 @@ template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj
         }
 #endif
     }
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tImagFunc)(const DataObject *dObj, DataObject *resObj);

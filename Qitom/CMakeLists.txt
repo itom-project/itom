@@ -19,7 +19,7 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-
+ 
 set(target_name qitom) 
 project(${target_name})
 
@@ -28,6 +28,9 @@ message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
@@ -72,10 +75,17 @@ find_package(PythonLibs 3.0 REQUIRED)
 # can be used from 3.12 onwards
 # find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
 # FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+
 find_package(NumPy REQUIRED)
+
+message(STATUS "Detected Python version: ${PYTHONLIBS_VERSION_STRING}")
 message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
 message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
 message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
+
+if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
+    message(FATAL_ERROR "The minimum required Python version is 3.5.0")
+endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 if(BUILD_WITH_PCL)
@@ -278,9 +288,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
@@ -384,6 +394,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.h
@@ -505,8 +516,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
@@ -602,6 +613,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.cpp

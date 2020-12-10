@@ -744,7 +744,7 @@ ito::RetVal PaletteOrganizer::getColorBarThreaded(QString name, QSharedPointer<i
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PaletteOrganizer::getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond)
+ito::RetVal PaletteOrganizer::getColorBarListThreaded(QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;

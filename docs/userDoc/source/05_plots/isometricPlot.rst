@@ -48,7 +48,7 @@ Slots
  
  Set new source object to this plot. Usually invoked by any camera if used as a live image from **internal C++-Code**.  
 
- *source, ito::DataObject *: The new dataObject to display
+ *source, ito::DataObject*: The new dataObject to display
  
  *semaphore, ItomSharedSemaphore*: A semaphore to handle the multi-threading.
 

@@ -42,6 +42,7 @@
 #include "../../python/pythonJedi.h"
 
 #include "../utils/utils.h"
+#include "../toolTip.h"
 #include "../mode.h"
 #include <qevent.h>
 #include <qobject.h>
@@ -51,6 +52,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qregexp.h>
 #include <qcompleter.h>
+#include <qsharedpointer.h>
 
 class QStandardItemModel;
 
@@ -182,12 +184,13 @@ protected:
     
     void handleCompleterEvents(QKeyEvent *e);
     bool isPopupVisible() const;
-    void resetSyncData();
+    void resetSyncDataAndHidePopup();
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
     void showPopup(int index = 0);
     void showCompletions(const QVector<JediCompletion> &completions);
     QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
+    QString parseTooltipDocstring(const QString &docstring) const;
     
     static bool isNavigationKey(QKeyEvent *e);
 
@@ -202,7 +205,7 @@ private:
     int m_lastCursorColumn;
     int m_lastCursorLine;
     Qt::Key m_triggerKey;
-    int m_requestId;
+    int m_requestId; //!< auto-incremented number for the last enqueued completion request.
     int m_lastRequestId;
     QString m_currentCompletion;
     QStringList m_triggerSymbols;

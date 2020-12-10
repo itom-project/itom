@@ -40,12 +40,7 @@
 
 #include "syntaxHighlighterBase.h"
 
-#define MIN_QT_REGULAREXPRESSION_VERSION 0x050100
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
-    #include <qregularexpression.h>
-#endif
-
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qtextformat.h>
 
 namespace ito {
@@ -63,11 +58,7 @@ class PythonSyntaxHighlighter : public SyntaxHighlighterBase
     Q_OBJECT
 public:
 
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
     typedef QRegularExpression QQRegExp;
-#else
-    typedef QRegExp QQRegExp;
-#endif
 
     PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", QSharedPointer<CodeEditorStyle> editorStyle = QSharedPointer<CodeEditorStyle>());
 

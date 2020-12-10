@@ -45,6 +45,8 @@
 namespace ito
 {
 
+class PythonQtSignalMapper; //forward declaration
+
 class PythonProgressObserver
 {
 public:
@@ -52,6 +54,7 @@ public:
     {
         PyObject_HEAD
         QSharedPointer<ito::FunctionCancellationAndObserver> *progressObserver;
+        PythonQtSignalMapper *signalMapper;
     }
     PyProgressObserver;
 
@@ -70,6 +73,10 @@ public:
     static PyObject* PyProgressObserver_repr(PyProgressObserver *self);
     static PyObject* PyProgressObserver_requestCancellation(PyProgressObserver *self);
     static PyObject* PyProgressObserver_reset(PyProgressObserver *self);
+
+    static PyObject* PyProgressObserver_connect(PyProgressObserver *self, PyObject* args, PyObject *kwds);
+    static PyObject* PyProgressObserver_disconnect(PyProgressObserver *self, PyObject* args, PyObject *kwds);
+    static PyObject* PyProgressObserver_info(PyProgressObserver* self, PyObject* args);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter

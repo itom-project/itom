@@ -180,10 +180,10 @@ Configuration process
 
 Use **CMake** to create the necessary makefiles for debug and/or release:
 
-1. Indicate the folder **sources/itom** as source folder
-2. Indicate either the folder **build_debug/itom** or **build_release/itom** as build folder. If the build folder already contains configured makefiles, the last configuration will automatically loaded into the CMake gui.
-2b. Check Advanced to *see* all available options.
-3. Set the following variables:
+1.  Indicate the folder **sources/itom** as source folder
+2.  Indicate either the folder **build_debug/itom** or **build_release/itom** as build folder. If the build folder already contains configured makefiles, the last configuration will automatically loaded into the CMake gui.
+3. Check Advanced to *see* all available options.
+4.  Set the following variables:
 
     * **Itom Parameter**:
         * **BUILD_TARGET64** to ON.
@@ -196,8 +196,8 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
         
         The suffix SDK version might also be different as well as the path.
 
-4. Push the configure button
-5. Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
+5.  Push the configure button
+6.  Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
   
     * **OpenMP**: OpenMP is not available when using the default compiler clang. If your setup includes OpenMP set *-fopenmp* to *OpenMP_CXX_FLAGS* and *OpenMP_C_FLAGS*.
 
@@ -223,8 +223,8 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
     The version 1.7 might also be different. It is also supported to use any other version of the PointCloudLibrary.
 
-6. Push the generate button.
-7. Now you can build |itom| by the **make** or using **Xcode** command:
+7.  Push the generate button.
+8.  Now you can build |itom| by the **make** or using **Xcode** command:
     
     * **make**: Open a command line and switch to the **build_debug/itom** or **build_release/itom** directory. Simply call **make** such that the file **qitom** or **qitomd** (debug) is built. Start this application by calling **./qitom** or **./qitomd** in order to run |itom|.
 

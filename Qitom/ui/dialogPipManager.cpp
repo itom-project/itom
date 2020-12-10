@@ -226,7 +226,7 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 {
     if (text != "")
     {
-        QString text_html = text;
+        QString text_html = text.toHtmlEscaped();
         text_html.replace("\n", "<br>");
 
         if (success)

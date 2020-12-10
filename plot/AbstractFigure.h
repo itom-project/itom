@@ -64,12 +64,6 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 {
     Q_OBJECT
 
-#if QT_VERSION < 0x050500
-    //for >= Qt 5.5.0 see Q_ENUM definition below
-    Q_ENUMS(WindowMode)
-    Q_ENUMS(UnitLabelStyle)
-#endif
-
     Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
     Q_PROPERTY(bool renderLegend READ getLegendRender WRITE setLegendRender DESIGNABLE true)
@@ -96,12 +90,10 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
             UnitLabelSquareBrackets      // x-axis [m]  -> does not correspond to DIN461
         };
 
-#if QT_VERSION >= 0x050500
         //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
         //values are always accessible.
         Q_ENUM(WindowMode)
         Q_ENUM(UnitLabelStyle)
-#endif
 
         struct ToolBarItem {
             ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}

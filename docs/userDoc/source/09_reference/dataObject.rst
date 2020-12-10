@@ -9,4 +9,6 @@ details about the Python interface of the class *dataObject*.
 .. currentmodule:: itom
 
 .. autoclass:: itom.dataObject
+    :member-order: groupwise
     :members:
+    :undoc-members:

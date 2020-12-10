@@ -10,7 +10,7 @@ polygonMesh
     .. autoclass:: itom.polygonMesh
         :member-order: bysource
         :members:
-        :inherited-members: 
+        :undoc-members:
 
 .. only:: NOPCL
     

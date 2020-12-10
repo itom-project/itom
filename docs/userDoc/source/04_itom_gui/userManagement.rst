@@ -46,7 +46,7 @@ be an administrator with all rights.
 
 The overview dialog provides the ability to create a new user, remove an existing user (besides the standard user) or 
 edit any user. If a user is selected, basic properties are displayed on the right side of the dialog, like the name of 
-the user, its unique ID, the related settings file (the filename usually is 'itom_' + ID + '.ini') as well as basic 
+the user, its unique ID, the related settings file (the filename usually is 'itom\_' + ID + '.ini') as well as basic 
 permissions. The permissions indicate which toolboxes, widgets and functionalities the user is granted once itom is 
 opened with its user rights. For instance, an user can only open the user management, if the permission 'User 
 Management' is granted to this user.
@@ -67,7 +67,7 @@ The dialog consists of the following properties:
 * **name**: The desired name of the user. If the user name is equal to the login username of your computer 
   (Windows, Linux or iOS user), it is pre-selected in the user startup dialog.
 * **ID**: The user ID must be a unique id. If you create a new user, the filename of the user's settings 
-  file is 'itom_' + ID + '.ini'. Check the auto button to let itom propose a default ID based on the current user name.
+  file is 'itom\_' + ID + '.ini'. Check the auto button to let itom propose a default ID based on the current user name.
 * **Password**: an optional password, one has to enter if itom should be started with this user. If the current
   user has not enough rights, the password of another user cannot be edited.
 * **Main Application Permissions**: Select any type of permission you would like to give to the user. 

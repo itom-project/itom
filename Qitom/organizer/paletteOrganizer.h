@@ -152,7 +152,7 @@ class PaletteOrganizer : public QObject
     public slots:
         ito::RetVal setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getColorBarListThreaded(QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
 }; 
 } //namespace ito
 #endif

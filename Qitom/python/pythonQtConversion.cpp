@@ -1070,6 +1070,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
+
         if (dObj->dataObject && dObj->base == NULL)
         {
             ok = true;
@@ -1079,6 +1080,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         {
             ok = true;
             ito::DataObject *dObj2 = new ito::DataObject();
+
             if (dObj->dataObject->copyTo(*dObj2, true) == ito::retOk)
             {
                 return dObj2;
@@ -1090,6 +1092,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
                 return NULL;
             }
         }
+
         ok = false;
         return NULL;
     }
@@ -3224,7 +3227,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 // the following method is only called by baseObjectDeleterDataObject within a QtConcurrent::run worker thread
 void safeDecrefPyObject(PyObject *obj)
 {
-#if (PY_VERSION_HEX >= 0x03040000)
     if (PyGILState_Check())
     {
         Py_DECREF(obj);
@@ -3235,10 +3237,6 @@ void safeDecrefPyObject(PyObject *obj)
         Py_DECREF(obj);
         PyGILState_Release(gstate);
     }
-#else
-    //we don't know if we need to acquire the GIL here, or not.
-    Py_DECREF(obj);
-#endif
 }
 
 
@@ -3250,7 +3248,6 @@ void safeDecrefPyObject(PyObject *obj)
     {
         if (i.value())
         {
-#if (PY_VERSION_HEX >= 0x03040000)
             if (PyGILState_Check())
             {
                 Py_DECREF(i.value());
@@ -3263,11 +3260,6 @@ void safeDecrefPyObject(PyObject *obj)
                 //lead to a dead-lock. Therefore, we open a worker thread to finally delete the guarded base object!
                 QtConcurrent::run(safeDecrefPyObject, i.value());
             }
-#else
-            //we don't know if we need to acquire the GIL here, or not.
-            Py_DECREF(i.value());
-#endif
-
         }
 
         m_pyBaseObjectStorage.erase(i);

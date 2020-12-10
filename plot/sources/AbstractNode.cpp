@@ -713,7 +713,7 @@ RetVal AbstractNode::setUpdatePending(QSharedPointer<ito::Channel> singleOutputC
 {
     Q_D(AbstractNode);
 
-    RetVal retval = 0;
+    RetVal retval = ito::retOk;
     if (singleOutputChannel.isNull())
     {
         foreach(QSharedPointer<ito::Channel> channel, d->m_channels)

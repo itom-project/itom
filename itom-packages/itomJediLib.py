@@ -27,9 +27,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 import jedi
 import sys
+import itomStubsGen
+import warnings
 
 # avoid stack overflow in itom (jedi sometimes sets a recursionlimit of 3000):
-maxreclimit = 1600
+maxreclimit = 1100
 if sys.getrecursionlimit() > maxreclimit:
     sys.setrecursionlimit(maxreclimit)
 
@@ -43,8 +45,14 @@ ICON_FUNC_PROTECTED = ('code-function',
                        ':/classNavigator/icons/method_protected.png')
 ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
 ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
-ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/keyword.png')
+ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/var.png')
 
+__version__ = "1.1.0"
+
+# parses the stubs file for the itom module (if not up-to-date)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    itomStubsGen.parse_stubs()
 
 class StreamHider:
     """A stream class, that emits nothing.
@@ -91,6 +99,8 @@ def icon_from_typename(name, icon_type):
         'GLOBALSTMT': ICON_VAR,
         'MODULE': ICON_NAMESPACE,
         'KEYWORD': ICON_KEYWORD,
+        'KEYWORD-PRIV': ICON_KEYWORD,
+        'KEYWORD-PROT': ICON_KEYWORD,
         'PARAM': ICON_VAR,
         'ARRAY': ICON_VAR,
         'INSTANCEELEMENT': ICON_VAR,
@@ -207,48 +217,9 @@ def calltips(code, line, column, path=None):
         else:
             method_name = call_name
         
-        # calculate suitable lines in the calltip, such that every
-        # line is not longer than max_calltip_line_length
-        method_length = len(method_name)
-        param_lengths = [len(p) for p in paramlist]
-        
-        params = []
-        
-        remaining_length = max_calltip_line_length - method_length - 1
-        pidx_start = 0  # start index for the first param in the current line
-        pidx_end = 0
-        line_started = True
-        pidx = 0
-        
-        while pidx < len(paramlist):
-            if ((remaining_length - param_lengths[pidx]) >= 0) or \
-                    (not line_started):
-                # if not line_started: the line is currently empty, but the next 
-                # parameter does not fit to it... however it is necessary to 
-                # get along. Therefore add one parameter in any case
-                pidx_end += 1
-                line_started = True
-                remaining_length -= param_lengths[pidx]
-                pidx += 1
-            else:
-                # finish the current line
-                params.append(", ".join(paramlist[pidx_start: pidx_end]))
-                pidx_start = pidx_end
-                line_started = False
-                remaining_length = max_calltip_line_length
-        
-        # add the last remaining parameters to the last line
-        if pidx_end > pidx_start:
-            params.append(", ".join(paramlist[pidx_start: pidx_end]))
-        
-        indentation = min(16, len(method_name) + 1)  # +1 is the open bracket
-        separator = ",<br>%s" % (" " * indentation)
-        params = separator.join(params)
-        
-        calltip = "<p style='white-space:pre'>%s(%s)</p>" % (method_name, params)
-        
         result.append(
-            (calltip,
+            (method_name,
+             paramlist,
              column,
              sig.bracket_start[0],
              sig.bracket_start[1])
@@ -293,13 +264,74 @@ def completions(code, line, column, path, prefix):
                 continue
             try:
                 desc = completion.description
+                
+                if jedi.__version__ >= '0.16.0':
+                    signatures = completion.get_signatures()
+                    if len(signatures) == 0:
+                        tooltip = completion.docstring()
+                        if tooltip != "":
+                            tooltip = "%s\n\n%s" % (completion.name, tooltip)
+                        tooltipList = [tooltip, ]
+                    elif len(signatures) == 1:
+                        tooltip = signatures[0].docstring()
+                        # for some properties, signatures[0].docstring() only
+                        # contains the return value, but no description, fall back
+                        # to completion.docstring() then...
+                        if "\n\n" not in tooltip:
+                            tooltip = completion.docstring()
+                        # workaround: there seems to be a bug in jedi for
+                        # properties that return something with None: NoneType()
+                        # is always returned in doc. However, completion.get_type_hint()
+                        # returns the real rettype hint. Replace it.
+                        # see also: https://github.com/davidhalter/jedi/issues/1695
+                        pattern = "NoneType()\n"
+                        if tooltip.startswith(pattern):
+                            rettype = completion.get_type_hint()
+                            if rettype != "":
+                                tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                        tooltipList = [tooltip, ]
+                    elif len(signatures) > 1:
+                        # only use unique signatures
+                        docstrings = [signatures[0].docstring(),]
+                        for s in signatures[1:]:
+                            d = s.docstring()
+                            if d != docstrings[0]:
+                                docstrings.append(d)
+                        tooltipList = [d for d in docstrings]
+                    else:
+                        tooltip = completion.docstring()
+                        if tooltip != "":
+                            # if tooltip is empty, use desc as tooltip (done in C++)
+                            type_hint = completion.get_type_hint()
+                            if type_hint != "" and not tooltip.startswith(type_hint):
+                                tooltip = type_hint + " : " + tooltip
+                            tooltipList = [tooltip, ]
+                        else:
+                            tooltipList = [desc, ]
+                else:
+                    tooltipList = [completion.docstring(), ]
+                
+                compl_type = completion.type
+                if compl_type == "function" and len(tooltipList) > 0:
+                    """Properties, defined in C, are displayed as funtion.
+                    However, if the tooltip starts with 'type : text', it
+                    is likely to be a property"""
+                    text = tooltipList[0]
+                    colon_idx = text.find(":")
+                    bracket_idx = text.find("(")
+                    
+                    if bracket_idx == -1:
+                        compl_type = "keyword"
+                    elif colon_idx >= 0 and colon_idx < bracket_idx:
+                        compl_type = "keyword"
+                
                 result.append(
                     (completion.name,
                      desc,
-                     icon_from_typename(completion.name, completion.type),
-                     completion.docstring())
+                     icon_from_typename(completion.name, compl_type),
+                     tooltipList)
                     )
-            except Exception:
+            except Exception as ex:
                 break  # todo, check this further
     
     return result
@@ -406,18 +438,11 @@ inception()'''
     print(completions("import numpy as np\nnp.arr", 1, 6, "", ""))
     print(goto_assignments("import numpy as np\nnp.ones([1,2])", 1, 5, ""))
     print(goto_assignments("def test(a,b):\n    pass\n\ntest(2,3)", 3, 2, ""))
-
-#script = jedi.Script("from itom import dataObject\ndataObject([4,5], 'u",2,17,None)
-#script = jedi.Script(text,4,5,None)
-#script = jedi.Script(text2, 3, 12,None)
-#sigs = script.call_signatures()
-#for sig in sigs:
-    #print("Signature (%s)\n-----------------" % str(sig))
-    #print(sig.full_name)
-    #print("Current param:", sig.index)
-    #print("brackets starts in line %i, column %i" % (sig.bracket_start))
-    #for p in sig.params:
-        #print(p.description, p.is_keyword)
-    ##sig.docstring()
-                    
+    result = completions("import itom\nitom.loadID", 1, 9, "", "")
+    result = completions("import itom\nitom.region().bounding", 1, 21, "", "")
+    result = completions("import itom\nitom.region.ELLIPSE", 1, 16, "", "")
+    result = completions("import itom\nitom.pointCloud(", 1, 12, "", "")
+    
+    text = "import itom\nitom."
+    completions(text, 1, 5, "", "")
 

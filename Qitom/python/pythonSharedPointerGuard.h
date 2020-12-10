@@ -60,7 +60,6 @@ public:
         {
             if (i.value())
             {
-#if (PY_VERSION_HEX >= 0x03040000)
                 if (PyGILState_Check())
                 {
                     Py_DECREF(i.value());
@@ -69,10 +68,6 @@ public:
                 {
                     safeDecrefPyObject2Async(i.value());
                 }
-#else
-                //we don't know if we need to acquire the GIL here, or not.
-                Py_DECREF(i.value());
-#endif
             }
 
             m_hashTable.erase(i);
