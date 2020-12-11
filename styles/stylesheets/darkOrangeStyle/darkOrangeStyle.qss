@@ -2543,3 +2543,8 @@ ToolTip {
   padding: 0px;
   /* Remove opacity, fix #174 - may need to use RGBA */
 }
+
+ito--Panel {
+  /* background of panels of script editor */
+  background: #37464F;
+}
