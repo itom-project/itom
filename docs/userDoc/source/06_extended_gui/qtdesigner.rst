@@ -662,6 +662,19 @@ exceptions are contained in the list below. Their call syntax is as follows::
 The class names in the following list corresponds to the Qt class name of the widget, where the slot can be
 applied to. It is not part of the call statement in |Python|.
 
+.. py:function:: QObject.blockSignals(block: bool)
+
+    defines if the widget / object should emit any signals or not.
+    
+    *New in itom 4.1*
+
+.. py:function:: QObject.signalsBlocked() -> bool
+
+    Returns ``True``, if possible signals of this widget / object are
+    emitted, or blocked (``False``).
+    
+    *New in itom 4.1*
+
 .. py:function:: QWidget.resize(width: int, height: int)
 
     resizes the widget to width / height.
