@@ -103,6 +103,12 @@ void WidgetWrapper::initMethodHash()
     if(!m_initialized)
     {
         bool ok;
+
+        //QObject
+        MethodDescriptionList qObjectList;
+        qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("blockSignals(bool)"), "void", 1, ok);
+        qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("signalsBlocked()"), "bool", 2, ok);
+        m_methodHash["QObject"] = qObjectList;
         
         //QWidget
         MethodDescriptionList qWidgetList;
@@ -365,42 +371,48 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     while( tempMetaObject != NULL )
     {
         className = tempMetaObject->className();
-        if(QString::compare(className, "QListWidget", Qt::CaseInsensitive) == 0)
+
+        if (QString::compare(className, "QObject", Qt::CaseInsensitive) == 0)
+        {
+            QObject *obj = qobject_cast<QObject*>(object);
+            retVal = callObject(obj, methodIndex, _a);
+        }
+        else if (QString::compare(className, "QListWidget", Qt::CaseInsensitive) == 0)
         {
             QListWidget *listWidget = qobject_cast<QListWidget*>(object);
             retVal = callListWidget(listWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QComboBox", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QComboBox", Qt::CaseInsensitive) == 0)
         {
             QComboBox *comboBox = qobject_cast<QComboBox*>(object);
             retVal = callComboBox(comboBox, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTabWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTabWidget", Qt::CaseInsensitive) == 0)
         {
             QTabWidget *tabWidget = qobject_cast<QTabWidget*>(object);
             retVal = callTabWidget(tabWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
         {
             QMainWindow *mainWindow = qobject_cast<QMainWindow*>(object);
             retVal = callMainWindow(mainWindow, methodIndex, _a);
         }
-        else if(QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
         {
             QWidget *widget = qobject_cast<QWidget*>(object);
             retVal = callWidget(widget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
         {
             QTableWidget *tableWidget = qobject_cast<QTableWidget*>(object);
             retVal = callTableWidget(tableWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTableView", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTableView", Qt::CaseInsensitive) == 0)
         {
             QTableView *tableView = qobject_cast<QTableView*>(object);
             retVal = callTableView(tableView, methodIndex, _a);
         }
-		else if(QString::compare(className, "QSplitter", Qt::CaseInsensitive) == 0)
+		else if (QString::compare(className, "QSplitter", Qt::CaseInsensitive) == 0)
         {
             QSplitter *splitter = qobject_cast<QSplitter*>(object);
             retVal = callSplitter(splitter, methodIndex, _a);
@@ -451,6 +463,31 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     }
 
     return retVal;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal WidgetWrapper::callObject(QObject *object, int methodIndex, void **_a)
+{
+    if (object == NULL)
+        return ito::RetVal(ito::retError, 0, QObject::tr("QObject object is null").toLatin1().data());
+
+    switch (methodIndex)
+    {
+    case 1: //blockSignals
+        object->blockSignals((*reinterpret_cast<const bool(*)>(_a[1])));
+        return ito::retOk;
+        break;
+
+    case 2: //signalsBlocked
+    {
+        bool blocked = object->signalsBlocked();
+        (*reinterpret_cast<bool*>(_a[0])) = blocked;
+        return ito::retOk;
+        break;
+    }
+    }
+
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
