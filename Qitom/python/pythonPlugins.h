@@ -111,6 +111,9 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_setPosAbs(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setPosRel(PyActuatorPlugin *self, PyObject *args);
 
+       static PyObject *PyActuatorPlugin_userMutex_tryLock(PyActuatorPlugin* self, PyObject* args, PyObject* kwds);
+       static PyObject *PyActuatorPlugin_userMutex_unlock(PyActuatorPlugin* self);
+
        static PyObject* PyActuatorPlugin_getCurrentStatus(PyActuatorPlugin *self, void *closure);
        static PyObject* PyActuatorPlugin_getCurrentPositions(PyActuatorPlugin *self, void *closure);
        static PyObject* PyActuatorPlugin_getTargetPositions(PyActuatorPlugin *self, void *closure);
@@ -162,6 +165,9 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args);
+
+       static PyObject *PyDataIOPlugin_userMutex_tryLock(PyDataIOPlugin* self, PyObject* args, PyObject* kwds);
+       static PyObject *PyDataIOPlugin_userMutex_unlock(PyDataIOPlugin* self);
        
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];
