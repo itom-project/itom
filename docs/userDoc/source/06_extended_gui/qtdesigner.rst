@@ -709,7 +709,7 @@ applied to. It is not part of the call statement in |Python|.
     
     returns a tuple of all selected row indices
 
-.. py:function:: Tuple[str] QListWidget.selectedTexts()
+.. py:function:: QListWidget.selectedTexts() -> Tuple[str]
     
     returns a tuple of all selected values
 
@@ -730,7 +730,7 @@ applied to. It is not part of the call statement in |Python|.
     
     sets the text of the item from the given row or raises an exception if the item does not exist
     
-    *New in **itom** > 3.2.1*
+    *New in itom > 3.2.1*
 
 .. py:function:: QListWidget.checkState(row: int) -> int[Qt.CheckState]
     
