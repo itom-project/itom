@@ -404,7 +404,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 
 
 //-------------------------------------------------------------------------------------
-PyObject* plugin_userMutext_lock(ito::AddInBase *aib, PyObject* args, PyObject* kwds)
+PyObject* plugin_userMutexLock(ito::AddInBase *aib, PyObject* args, PyObject* kwds, bool &userMutexLocked)
 {
     if (aib->getBasePlugin()->getAddInInterfaceVersion() < 0x040200)
     {
@@ -412,7 +412,7 @@ PyObject* plugin_userMutext_lock(ito::AddInBase *aib, PyObject* args, PyObject* 
     }
 
     const char *kwlist[] = { "timeout",  NULL };
-    int timeout = -1;
+    int timeout = 3000;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", const_cast<char**>(kwlist), &timeout))
     {
@@ -420,6 +420,8 @@ PyObject* plugin_userMutext_lock(ito::AddInBase *aib, PyObject* args, PyObject* 
     }
 
     bool r = aib->getUserMutex().tryLock(timeout);
+
+    userMutexLocked = r;
 
     if (r)
     {
@@ -433,7 +435,7 @@ PyObject* plugin_userMutext_lock(ito::AddInBase *aib, PyObject* args, PyObject* 
 
 
 //-------------------------------------------------------------------------------------
-PyObject* plugin_userMutext_unlock(ito::AddInBase *aib)
+PyObject* plugin_userMutexUnlock(ito::AddInBase *aib, bool &userMutexLocked)
 {
     if (aib->getBasePlugin()->getAddInInterfaceVersion() < 0x040200)
     {
@@ -445,6 +447,8 @@ PyObject* plugin_userMutext_unlock(ito::AddInBase *aib)
     aib->getUserMutex().tryLock(0);
 
     aib->getUserMutex().unlock();
+
+    userMutexLocked = false;
 
     Py_RETURN_NONE;
 }
@@ -1275,7 +1279,7 @@ getExecFuncsInfo");
 
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyPlugin_userMutex_tryLock_doc, "tryLock(timeout = 0) -> bool \n\
+PyDoc_STRVAR(PyPlugin_userMutex_tryLock_doc, "tryLock(timeout = 3000) -> bool \n\
 \n\
 Tries to lock the user mutex of this plugin. \n\
 \n\
@@ -1459,7 +1463,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 {
     if (self->weakreflist != NULL)
     {
-        PyObject_ClearWeakRefs((PyObject *) self);
+        PyObject_ClearWeakRefs((PyObject *)self);
     }
 
     if (self->actuatorObj)
@@ -1476,7 +1480,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            
+
             if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
@@ -1489,11 +1493,20 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 
             waitCond->deleteSemaphore();
             waitCond = NULL;
-            
+
             PythonCommon::transformRetValToPyException(retval);
         }
     }
+
     DELETE_AND_SET_NULL(self->signalMapper);
+
+    if (self->userMutexLocked)
+    {
+        // unlock the user mutex (if it has not been locked by Python yet, this
+        // will be temporarily done in the unlock method)
+        PyActuatorPlugin_userMutex_unlock(self);
+    }
+
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -2787,14 +2800,14 @@ PyObject* PythonPlugins::PyActuatorPlugin_hideToolbox(PyActuatorPlugin* self)
 PyObject* PythonPlugins::PyActuatorPlugin_userMutex_tryLock(PyActuatorPlugin* self, PyObject* args, PyObject* kwds)
 {
     ito::AddInBase *aib = self->actuatorObj;
-    return plugin_userMutext_lock(aib, args, kwds);
+    return plugin_userMutexLock(aib, args, kwds, self->userMutexLocked);
 }
 
 //-------------------------------------------------------------------------------------
 PyObject* PythonPlugins::PyActuatorPlugin_userMutex_unlock(PyActuatorPlugin* self)
 {
     ito::AddInBase *aib = self->actuatorObj;
-    return plugin_userMutext_unlock(aib);
+    return plugin_userMutexUnlock(aib, self->userMutexLocked);
 }
 
 //-------------------------------------------------------------------------------------
@@ -3445,13 +3458,18 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             waitCond = NULL;
 
             PythonCommon::transformRetValToPyException(retval);
-            /*if (retval != ito::retOk)
-            {
-                PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
-            }*/
         }
     }
+
     DELETE_AND_SET_NULL(self->signalMapper);
+
+    if (self->userMutexLocked)
+    {
+        // unlock the user mutex (if it has not been locked by Python yet, this
+        // will be temporarily done in the unlock method)
+        PyDataIOPlugin_userMutex_unlock(self);
+    }
+
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -5459,14 +5477,14 @@ PyObject* PythonPlugins::PyDataIOPlugin_hideToolbox(PyDataIOPlugin* self)
 PyObject* PythonPlugins::PyDataIOPlugin_userMutex_tryLock(PyDataIOPlugin* self, PyObject* args, PyObject* kwds)
 {
     ito::AddInBase *aib = self->dataIOObj;
-    return plugin_userMutext_lock(aib, args, kwds);
+    return plugin_userMutexLock(aib, args, kwds, self->userMutexLocked);
 }
 
 //-------------------------------------------------------------------------------------
 PyObject* PythonPlugins::PyDataIOPlugin_userMutex_unlock(PyDataIOPlugin* self)
 {
     ito::AddInBase *aib = self->dataIOObj;
-    return plugin_userMutext_unlock(aib);
+    return plugin_userMutexUnlock(aib, self->userMutexLocked);
 }
 
 //-------------------------------------------------------------------------------------

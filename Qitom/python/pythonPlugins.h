@@ -66,6 +66,7 @@ class PythonPlugins
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
            PythonQtSignalMapper *signalMapper;
+           bool userMutexLocked; //!< true if the user mutex has been recently locked by Python
        }
        PyActuatorPlugin;
 
@@ -76,6 +77,7 @@ class PythonPlugins
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
            PythonQtSignalMapper *signalMapper;
+           bool userMutexLocked; //!< true if the user mutex has been recently locked by Python
        }
        PyDataIOPlugin;
        
