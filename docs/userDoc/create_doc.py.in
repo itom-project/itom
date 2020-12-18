@@ -33,7 +33,7 @@ aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"
 
 __main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
 
-buildernames = ["html"]  # ["qthelp", "htmlhelp", "latex", "html"]
+buildernames = ["qthelp"]  # ["qthelp", "htmlhelp", "latex", "html"]
 
 def autodoc_process_docstring(app, what, name, obj, options, lines):
     """Turns the return value of an attribute into a xref."""

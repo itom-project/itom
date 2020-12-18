@@ -211,25 +211,32 @@ RetVal BreakPointModel::deleteBreakPoint(const QModelIndex &index)
 {
     if(index.isValid())
     {
-        if (index.internalPointer() != NULL) //>= 0) //delete one single breakpoint, second level item
+        if (index.internalPointer() != NULL) // delete one single breakpoint, second level item
         {
             int breakPointIndex = getBreakPointIndex(index);
+
             if (breakPointIndex >= 0)
             {
                 int row = index.row();
-                QModelIndex parentItem = index.parent();
-                beginRemoveRows(parent(index), row, row);
-                BreakPointItem item = m_breakpoints[breakPointIndex];
+                QModelIndex fileItem = index.parent();
+                int fileIndex = fileItem.row();
+                const BreakPointItem &item = m_breakpoints[breakPointIndex];
+
+                // remove the breakpoint
+                beginRemoveRows(fileItem, row, row);
                 emit(breakPointDeleted(item.filename, item.lineno, item.pythonDbgBpNumber));
                 m_breakpoints.removeAt(breakPointIndex);
                 endRemoveRows();
 
-                if (nrOfBreakpointsInFile(parentItem.row()) <= 0)
-                { // erase the empty parent, too
-                    beginRemoveRows(parent(index), row, row);
-                    m_scriptFiles.removeAt(parentItem.row());
+                if (nrOfBreakpointsInFile(fileIndex) <= 0)
+                { 
+                    // this file has no breakpoints any more. Delete the entire file...
+                    QModelIndex root = fileItem.parent();
+                    beginRemoveRows(root, fileIndex, fileIndex);
+                    m_scriptFiles.removeAt(fileIndex);
                     endRemoveRows();
                 }
+
                 return RetVal(retOk);
             }
         }
