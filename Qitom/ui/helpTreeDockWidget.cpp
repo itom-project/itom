@@ -573,8 +573,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             returnString += returnList.join(", ") + "] = ";
                         }
 
-                        QString newLink = QString("%1filter(\"%2\",%3)").arg(returnString).arg(fd->m_name).arg( paramList.join(", ") );
-                        newLink.replace(",)",")");
+                        QString newLink = QString("%1filter(\"%2\", %3)").arg(returnString).arg(fd->m_name).arg( paramList.join(", ") );
+                        newLink.replace(", )",")");
                         QByteArray a = newLink.toLatin1();
 
                         exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
@@ -790,15 +790,15 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                             if (type == typeDataIO)
                             {
-                                callName = tr("dataIO");
+                                callName = "dataIO"; // do not translate
                             }
                             else
                             {
-                                callName = tr("actuator");
+                                callName = "actuator"; // do not translate
                             }
 
-                            QString newLink = QString("%1(\"%2\",%3)").arg(callName).arg(aib->objectName()).arg( paramList.join(", ") );
-                            newLink.replace(",)",")");
+                            QString newLink = QString("%1(\"%2\", %3)").arg(callName).arg(aib->objectName()).arg( paramList.join(", ") );
+                            newLink.replace(", )", ")");
                             QByteArray a = newLink.toLatin1();
 
                             exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
