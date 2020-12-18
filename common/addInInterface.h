@@ -915,12 +915,6 @@ namespace ito
     {
         Q_OBJECT
 
-#if QT_VERSION < 0x050500
-        //for >= Qt 5.5.0 see Q_ENUM definition below
-        Q_ENUMS(tAlgoCategory)
-        Q_ENUMS(tAlgoInterface)
-#endif
-
     private:
         Q_DISABLE_COPY(AddInAlgo)
 
@@ -955,12 +949,10 @@ namespace ito
             iPlotSingleObject = 0x0040  //!< interface for ploting dataObjects via the GUI
         };
 
-#if QT_VERSION >= 0x050500
         //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
         //values are always accessible.
         Q_ENUM(tAlgoCategory)
         Q_ENUM(tAlgoInterface)
-#endif
 
         //! container for publishing filters provided by any plugin
         class FilterDef

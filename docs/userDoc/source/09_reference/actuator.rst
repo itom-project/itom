@@ -9,4 +9,6 @@ Read the :ref:`overview document <getStartActuator>` for more details about the 
 .. currentmodule:: itom
 
 .. autoclass:: itom.actuator
+    :member-order: groupwise
     :members:
+    :undoc-members:

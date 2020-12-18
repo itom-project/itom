@@ -6,11 +6,17 @@ line plots (1D)
 Plot of an N x M dataObject
 ===========================
 
-In order to plot a 1D line (1 x M or M x 1 DataObject) or multiple lines in a line plot, the designer plugin **Itom1DQwtPlot** is
-the recommended visualization tool. You can either use the :py:meth:`~itom.plot1` command or add this class name (*itom1dqwtplot*) to any :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage` command in order to force the data to be plotted in this plot type. Alternatively set this plugin to be the default plot for 1D static and live plots.
+In order to plot a 1D line (1 x M or M x 1 DataObject) or multiple lines in a 
+line plot, the designer plugin **Itom1DQwtPlot** is the recommended 
+visualization tool. You can either use the :py:meth:`~itom.plot1` command or 
+add this class name (*itom1dqwtplot*) to any :py:meth:`~itom.plot` or 
+:py:meth:`~itom.liveImage` command in order to force the data to be plotted 
+in this plot type. Alternatively set this plugin to be the default plot for 
+1D static and live plots.
 
-The latter can be done in the property dialog or itom, tab **Plots and Figures >> Default Plots**. Set there the *default figure plot* to *Itom1DQwtPlot* for the
-categories
+The latter can be done in the property dialog or itom, tab **Plots and 
+Figures >> Default Plots**. Set there the *default figure plot* to 
+*Itom1DQwtPlot* for the categories
 
 * DObjLiveLine (live 1D visualization of a dataObject)
 * DObjStaticLine (static 1D visualization of a dataObject)
@@ -35,14 +41,18 @@ This plot has been created by the following code snippet:
 Plot of an N x M dataObject with 1 x M x-vector
 ===============================================
 
-It is also possible to set an optional x-vector to the plot. This can only be done by giving a second argument to the :py:meth:`~itom.plot1` function or by setting the property **xData** to an existing plot. 
-To plot an N x M dataObject, the x-vector has to be a 1 x M dataObject. 
+It is also possible to set an optional x-vector to the plot. This can only be 
+done by giving a second argument to the :py:meth:`~itom.plot1` function or by 
+setting the property **xData** to an existing plot. To plot an N x M 
+dataObject, the x-vector has to be a 1 x M dataObject. 
 
 .. figure:: images/spiral.png
     :scale: 100%
     :align: center
 
-This spiral plot has been created by the demo :file:`itom/demo/plots/plotXY.py`. The three methods to create such a plot are listed here:
+This spiral plot has been created by the demo 
+:file:`itom/demo/plots/plotXY.py`. The three methods to create such a plot 
+are listed here:
 
 .. code-block:: python
     
@@ -60,32 +70,51 @@ This spiral plot has been created by the demo :file:`itom/demo/plots/plotXY.py`.
 Itom1dQwtPlot
 ==========================
 
-If you call :py:meth:`~itom.plot1` or choose *itom1dqwtplot* as className for the :py:meth:`~itom.plot` command with a 2D data object as argument,
-is it also possible to plot multiple lines. The plot plugin accepts all available data types, including colors and complex values.
+If you call :py:meth:`~itom.plot1` or choose *itom1dqwtplot* as className for 
+the :py:meth:`~itom.plot` command with a 2D data object as argument, is it 
+also possible to plot multiple lines. The plot plugin accepts all available 
+data types, including colors and complex values.
 
 Data is plotted as follows:
 
-* Real data types: One or multiple lines are plotted where the horizontal axis corresponds to the grid of the data object considering possible scaling and offset values. The line(s) have different colours. The colour of one line can also be adjusted.
-* Complex types: This is the same than for real data types, however you can choose whether the *absolute*, *phase*, *real* or *imaginary* part of the complex values is plotted.
-* color type: Coloured data objects will be represented by either 3 or 4 lines (red, green and blue, alpha optional) that correspond to the three colour channels or by one line representing the converted gray values.
+* Real data types: One or multiple lines are plotted where the horizontal axis 
+  corresponds to the grid of the data object considering possible scaling and 
+  offset values. The line(s) have different colours. The colour of one line 
+  can also be adjusted.
+* Complex types: This is the same than for real data types, however you can 
+  choose whether the *absolute*, *phase*, *real* or *imaginary* part of the 
+  complex values is plotted.
+* color type: Coloured data objects will be represented by either 3 or 4 lines 
+  (red, green and blue, alpha optional) that correspond to the three colour 
+  channels or by one line representing the converted gray values.
 
-Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated in the section Properties below.
+Using Python or the properties toolbox (View >> properties or via right click 
+on the toolbar), it is possible to adjust many properties like stated in the 
+section Properties below.
 
 The plot allows value and min/max-picking via place-able marker.
 
-The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
+The plot supports geometric element and marker interaction via 
+**drawAndPickElements(...)** and **call("userInteractionStart",...)**. See 
+section :ref:`primitives` for a short introduction.
 
-Calling the :py:meth:`~itom.plot1` you can pass also an optional x-vector to plot a xy data set. 
+Calling the :py:meth:`~itom.plot1` you can pass also an optional x-vector to 
+plot a xy data set. 
 
-You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
+You can also use the "matplotlib"-backend to plot slices or xy-coordinates. 
+See section :ref:`pymod-matplotlib` for more information about how to use 
+"matplotlib".
 
-The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
+The plot-canvas can be exported to vector and bitmap-graphics via button or 
+menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
 
 Setting properties
 -------------------------
 
-If you want to modify the lines, ploted in the :ref:`itom1dqwtplot`, individually you can do this with the help of Python or the curve properties widget (View >> curve properties or via right click on the toolbar).
-The following line properties are acessable via Python:
+If you want to modify the lines, ploted in the :ref:`itom1dqwtplot`, 
+individually you can do this with the help of Python or the curve properties 
+widget (View >> curve properties or via right click on the toolbar). The 
+following line properties are acessable via Python:
 
 * **visible**
 * **lineStyle**
@@ -103,10 +132,15 @@ A propertie of a line can be acessed as followed:
     
     plotHandle.call("setCurveProperty", index, property, value) 
 
-with the *index* (int) of the curve, the name of the *property* (str) and the value (various) the property will be set to. For a detailed description of the properties read the section below. In the file :file:`itom/demo/plots/demoPlot1DLineProperties.py` 
-a short demonstration of how to set the properties is given.
+with the *index* (int) of the curve, the name of the *property* (str) and the 
+value (various) the property will be set to. For a detailed description of 
+the properties read the section below. In the file 
+:file:`itom/demo/plots/demoPlot1DLineProperties.py` a short demonstration of 
+how to set the properties is given.
 
-For acessing the propties via the user interface the line properties widget can be used. Additional to the properties listed above the legend name, the legend visibility and the symbol color can be set.  
+For acessing the propties via the user interface the line properties widget 
+can be used. Additional to the properties listed above the legend name, the 
+legend visibility and the symbol color can be set.  
 
 .. figure:: images/curveProperties.png
     :scale: 100%
@@ -114,13 +148,17 @@ For acessing the propties via the user interface the line properties widget can 
 
 This shows the curve Properties widget.
 
-If you want to set a propertie global for all curves you can also use the properties widget (View >> properties or via right click on the toolbar)
+If you want to set a propertie global for all curves you can also use the 
+properties widget (View >> properties or via right click on the toolbar)
     
 Legend title of line plots
 ---------------------------
 
-Legendtitles of a line plot can be activated and modified by the **curve properties** or by the **plot properties**. Per default the legendtitles are defined as *curve 0, curve 1,...* 
-If the dataObject which is plotted has defined tags named **legendTitle0, legendTitle1, ...**, then the tag entries are used as legendTitles. 
+Legendtitles of a line plot can be activated and modified by the **curve 
+properties** or by the **plot properties**. Per default the legendtitles are 
+defined as *curve 0, curve 1,...* If the dataObject which is plotted has 
+defined tags named **legendTitle0, legendTitle1, ...**, then the tag entries 
+are used as legendTitles. 
 
 .. note::
 
@@ -1073,5 +1111,6 @@ Signals
 Deprecated figures
 ==========================
  
-The plot-dll "itom1DQWTFigure"  is deprecated and has been replaced by  "Itom1DQwtPlot".
+The plot-dll "itom1DQWTFigure"  is deprecated and has been replaced by  
+"Itom1DQwtPlot".
 

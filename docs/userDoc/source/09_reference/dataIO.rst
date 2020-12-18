@@ -10,4 +10,6 @@ details about the Python interface of the class *dataIO*.
 .. currentmodule:: itom
 
 .. autoclass:: itom.dataIO
+    :member-order: groupwise
     :members:
+    :undoc-members:

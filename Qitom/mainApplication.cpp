@@ -1007,8 +1007,6 @@ void MainApplication::mainWindowCloseRequest()
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Question);
 
-#if QT_VERSION >= 0x050200
-
 		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
@@ -1020,12 +1018,9 @@ void MainApplication::mainWindowCloseRequest()
 			cb->setChecked(false);
 			msgBox.setCheckBox(cb);
 		}
-		
-#endif
 
         int ret = msgBox.exec();
 
-#if QT_VERSION >= 0x050200
 		if (features & ito::UserFeature::featProperties)
 		{
 			if (msgBox.checkBox()->isChecked())
@@ -1033,8 +1028,6 @@ void MainApplication::mainWindowCloseRequest()
 				settings->setValue("askBeforeClose", false);
 			}
 		}
-		
-#endif
 
         if (ret == QMessageBox::Cancel)
         {

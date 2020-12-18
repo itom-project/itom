@@ -19,7 +19,7 @@ In order to generate the plugin documentation of any plugin, the following requi
 
 2. The file **CMakeLists.txt** of the specific plugin must contain the following line in order to register the rst-file as plugin documentation file::
     
-    PLUGIN_DOCUMENTATION(${target_name} <filenameOfTheRstFile>) #the filename must not contain the suffix .rst.
+    itom_configure_plugin_documentation(${target_name} <filenameOfTheRstFile>) #the filename must not contain the suffix .rst.
 
 3. If the plugin is build, its build folder will get a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
 

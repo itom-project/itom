@@ -99,13 +99,16 @@ You can not only add buttons to the toolbar of |itom|'s main window but also cre
 
 There are three types of menu items, that can be created:
 
-* MENU (constant *itom.MENU* [2]) creates a menu-item, having any possible sub-item. This item cannot be connected to any code. Every menu always starts with an item of this type.
-* BUTTON (constant *itom.BUTTON* [0]) creates a real menu-item as leaf node of the menu item tree. Only a click to these items can execute code.
-* SEPARATOR (constant *itom.SEPARATOR* [1]) creates a separator-item in the menu or submenu. It is also not connected to any code.
+* :py:attr:`~itom.MENU` (integer value 2) creates a menu-item, having any possible sub-item. 
+  This item cannot be connected to any code. Every menu always starts with an item of this type.
+* :py:attr:`~itom.BUTTON` (integer value 0) creates a real menu-item as leaf node of the menu 
+  item tree. Only a click to these items can execute code.
+* :py:attr:`~itom.SEPARATOR` (integer value 1) creates a separator-item in the menu or 
+  submenu. It is also not connected to any code.
 
 Any menu-item is defined by its key. The key is a slash-separated list, where the single items stand for the path one has to walk through the menu-tree in order to access the 
 desired item. If an item with a complex-tree structure is created where some of the parent-nodes do not already
-exist, they are iteratively created (type MENU) in order to finally create the desired node-element.
+exist, they are iteratively created (type :py:attr:`~itom.MENU`) in order to finally create the desired node-element.
 
 The call to :py:func:`~itom.addMenu` is as follows:
 

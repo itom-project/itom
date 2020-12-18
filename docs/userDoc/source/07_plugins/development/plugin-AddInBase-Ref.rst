@@ -10,4 +10,4 @@ AddInBase
 .. doxygenclass:: ito::AddInBase
     :project: itom
     :members:
-    :sections: public*,protected*,signal
+    :protected-members:

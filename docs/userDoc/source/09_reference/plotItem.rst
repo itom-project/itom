@@ -9,3 +9,4 @@ plotItem
     :show-inheritance:
     :member-order: groupwise
     :members:
+    :undoc-members:

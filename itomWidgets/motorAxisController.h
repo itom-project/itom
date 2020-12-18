@@ -51,13 +51,6 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
 {
     Q_OBJECT
 
-#if QT_VERSION < 0x050500
-    //for >= Qt 5.5.0 see Q_ENUM definition below
-    Q_ENUMS(AxisUnit)
-    Q_ENUMS(AxisType)
-    Q_ENUMS(MovementType)
-#endif
-
     Q_PROPERTY(QPointer<ito::AddInActuator> actuator READ actuator WRITE setActuator)
     Q_PROPERTY(int numAxis READ numAxis WRITE setNumAxis)
     Q_PROPERTY(AxisUnit defaultAxisUnit READ defaultAxisUnit WRITE setDefaultAxisUnit)
@@ -115,13 +108,11 @@ public:
         MovementNo = 3
     };
 
-#if QT_VERSION >= 0x050500
     //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
     //values are always accessible.
     Q_ENUM(AxisUnit);
     Q_ENUM(AxisType);
     Q_ENUM(MovementType);
-#endif
 
     MotorAxisController(QWidget *parent = NULL);
     ~MotorAxisController();

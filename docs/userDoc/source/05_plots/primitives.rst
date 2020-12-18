@@ -153,7 +153,7 @@ At the moment only tPoint, tLine, tEllipse and tRectangle are supported.
 
 The cells contain:
 
-1. The unique index of the current primitive, castable to int32 with a maximum up to 16bit index values
+1. The unique index of the current element, castable to int32 with a maximum up to 16bit index values
 
 2. Type flag 0000FFFF and further flags e.g. read&write only FFFF0000
 
@@ -164,7 +164,7 @@ The cells contain:
 5. First coordinate with z value
     
 
-All other values depends on the primitive type and may change between each type.
+All other values depends on the element type and may change between each type.
 
 * A point is defined as idx, flags, centerX0, centerY0, centerZ0
 * A line is defined as idx, flags, x0, y0, z0, x1, y1, z1
@@ -177,7 +177,7 @@ All other values depends on the primitive type and may change between each type.
 .. toctree::
    :hidden:
 
-.. doxygenclass:: ito::PrimitiveContainer
+.. doxygenclass:: ito::Shape::ShapeType
     :project: itom
     :members:
     

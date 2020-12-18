@@ -30,14 +30,14 @@
 namespace ito
 {
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonRgba::PyRgba_dealloc(PyRgba* self)
 {
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PyRgba* self = (PyRgba *)type->tp_alloc(type, 0);
@@ -50,19 +50,28 @@ PyObject* PythonRgba::PyRgba_new(PyTypeObject *type, PyObject * /*args*/, PyObje
 };
 
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(rgbaInit_doc,"rgba(r, g, b, alpha=255) -> creates a new color value from red, green, blue and optional alpha\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(rgbaInit_doc,"rgba(r, g, b, alpha=255) -> rgba \n\
+\n\
+Color value object (RGB + optional alpha channel). \n\
+\n\
+Creates a new color value from red, green, blue and optional alpha. \n\
+If any value > 255 is passed as argument, its modulo with ``256`` is taken instead. \n\
+\n\
+The :class:`rgba` object implements many methods of the number protocol, \n\
+such that it becomes possible to add, subtract, multiply... two colors. In most \n\
+cases these operations are executed for each color component independently. \n\
 \n\
 Parameters \n\
 ----------- \n\
-r : {uint8} \n\
-    red component [0,255] \n\
-g : {uint8}, \n\
-    green component [0,255] \n\
-b : {uint8} \n\
-    blue component [0,255] \n\
-alpha : {uint8}, optional \n\
-    alpha component [0,255], default: 255 (no transparancy) \n\
+r : int \n\
+    red component [0,255]. \n\
+g : int \n\
+    green component [0,255]. \n\
+b : int \n\
+    blue component [0,255]. \n\
+alpha : int, optional \n\
+    alpha component [0,255], default: 255 (opaque). \n\
 \n\
 Notes \n\
 ------ \n\
@@ -87,7 +96,7 @@ int PythonRgba::PyRgba_init(PyRgba *self, PyObject *args, PyObject *kwds)
 }
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PythonRgba::PyRgba* PythonRgba::createEmptyPyRgba()
 {
     PyRgba* result = (PyRgba*)PyObject_Call((PyObject*)&PyRgbaType, NULL, NULL);
@@ -102,7 +111,7 @@ PythonRgba::PyRgba* PythonRgba::createEmptyPyRgba()
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool PythonRgba::checkPyRgba(int number, PyObject* rgba1 /*= NULL*/, PyObject* rgba2 /*= NULL*/, PyObject* rgba3 /*= NULL*/)
 {
     PyObject *temp;
@@ -137,7 +146,7 @@ bool PythonRgba::checkPyRgba(int number, PyObject* rgba1 /*= NULL*/, PyObject* r
     return true;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbAdd(PyObject* o1, PyObject* o2)
 {
     PyRgba *rgba1 = NULL;
@@ -160,7 +169,7 @@ PyObject* PythonRgba::PyRgba_nbAdd(PyObject* o1, PyObject* o2)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbSubtract(PyObject* o1, PyObject* o2)
 {
     PyRgba *rgba1 = NULL;
@@ -183,7 +192,7 @@ PyObject* PythonRgba::PyRgba_nbSubtract(PyObject* o1, PyObject* o2)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbMultiply(PyObject* o1, PyObject* o2)
 {
     if(o1 == NULL || o2 == NULL) return NULL;
@@ -216,7 +225,7 @@ PyObject* PythonRgba::PyRgba_nbMultiply(PyObject* o1, PyObject* o2)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbPositive(PyObject* o1)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -230,7 +239,7 @@ PyObject* PythonRgba::PyRgba_nbPositive(PyObject* o1)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbAbsolute(PyObject* o1)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -244,7 +253,7 @@ PyObject* PythonRgba::PyRgba_nbAbsolute(PyObject* o1)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -271,7 +280,7 @@ PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -298,7 +307,7 @@ PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbAnd(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -312,7 +321,7 @@ PyObject* PythonRgba::PyRgba_nbAnd(PyObject* o1, PyObject* o2)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbXor(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -326,7 +335,7 @@ PyObject* PythonRgba::PyRgba_nbXor(PyObject* o1, PyObject* o2)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbOr(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -340,7 +349,7 @@ PyObject* PythonRgba::PyRgba_nbOr(PyObject* o1, PyObject* o2)
     return (PyObject*)retRgba;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceAdd(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -354,7 +363,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceAdd(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceSubtract(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -368,7 +377,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceSubtract(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceMultiply(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -382,7 +391,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceMultiply(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -409,7 +418,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceRshift(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(1,o1)) return NULL;
@@ -447,7 +456,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceAnd(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceXor(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -459,7 +468,7 @@ PyObject* PythonRgba::PyRgba_nbInplaceXor(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2)
 {
     if(!checkPyRgba(2,o1,o2)) return NULL;
@@ -471,28 +480,37 @@ PyObject* PythonRgba::PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2)
     return (PyObject*)o1;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyRgba_name_doc, "name() -> str \n\
+\n\
+Returns the name of this object (``rgba``).");
 PyObject* PythonRgba::PyRgba_name(PyRgba* /*self*/)
 {
     return PyUnicode_FromString("rgba");
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_repr(PyRgba *self)
 {
     return PyUnicode_FromFormat("rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
 };
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(PyRgba_toGray_doc, "toGray() -> returns the gray value from the color (alpha is not considered) \n\
+PyDoc_STRVAR(PyRgba_toGray_doc, "toGray() -> float \n\
 \n\
-The returned gray value is a float value and calculated by 0.299 * r + 0.587 * g + 0.114 * b");
+returns the gray value from the color (alpha is not considered) \n\
+\n\
+Returns \n\
+------- \n\
+float : \n\
+    The returned gray value is a float value and calculated by \n\
+    ``0.299 * r + 0.587 * g + 0.114 * b`` ");
 PyObject* PythonRgba::PyRgba_toGray(PyRgba *self)
 {
     return PyFloat_FromDouble(self->rgba.gray());
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_Reduce(PyRgba *self, PyObject * /*args*/)
 {
     PyObject *stateTuple = PyTuple_New(0);
@@ -503,13 +521,13 @@ PyObject* PythonRgba::PyRgba_Reduce(PyRgba *self, PyObject * /*args*/)
     return tempOut;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_SetState(PyRgba *self, PyObject *args)
 {
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_op)
 {
     if(other == NULL)
@@ -546,26 +564,32 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
 
 
 PyMethodDef PythonRgba::PyRgba_methods[] = {
-    {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, ""}, 
+    {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, PyRgba_name_doc}, 
     {"__reduce__", (PyCFunction)PythonRgba::PyRgba_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PythonRgba::PyRgba_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-    { "toGray", (PyCFunction)PythonRgba::PyRgba_toGray, METH_NOARGS, PyRgba_toGray_doc },
+    { "toGray", (PyCFunction)PythonRgba::PyRgba_toGray, METH_NOARGS, PyRgba_toGray_doc},
     {NULL}  /* Sentinel */
 };
 
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyRgba_red_doc, "int : red component of this color [0, 255].");
+PyDoc_STRVAR(PyRgba_green_doc, "int : red component of this color [0, 255].");
+PyDoc_STRVAR(PyRgba_blue_doc, "int : blue component of this color [0, 255].");
+PyDoc_STRVAR(PyRgba_alpha_doc, "int : alpha (transparency) component of this color [0, 255].");
+
 PyMemberDef PythonRgba::PyRgba_members[] = {
     //these members did not work under gcc with offsetof(PyRgba, rgba.r). Therefore the sum of two offsets was the tradeof.
-    {"r", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, r), 0, "red"}, 
-    {"g", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, g), 0, "green"}, 
-    {"b", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, b), 0, "blue"}, 
-    {"alpha", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, a), 0, "alpha"}, 
+    {"r", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, r), 0, PyRgba_red_doc},
+    {"g", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, g), 0, PyRgba_green_doc},
+    {"b", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, b), 0, PyRgba_blue_doc},
+    {"alpha", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, a), 0, PyRgba_alpha_doc},
     {NULL}  /* Sentinel */
 };
 
 PyModuleDef PythonRgba::PyRgbaModule = {
     PyModuleDef_HEAD_INIT,
     "rgba",
-    "Itom Rgba color type in python",
+    "RGBA color value",
     -1,
     NULL, NULL, NULL, NULL, NULL
 };

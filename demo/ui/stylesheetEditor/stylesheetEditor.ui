@@ -28,7 +28,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -268,18 +268,6 @@
          <string>Default Widgets 2</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="leftMargin">
-          <number>9</number>
-         </property>
-         <property name="topMargin">
-          <number>9</number>
-         </property>
-         <property name="rightMargin">
-          <number>9</number>
-         </property>
-         <property name="bottomMargin">
-          <number>9</number>
-         </property>
          <item>
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
@@ -336,18 +324,42 @@
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="horizontalSlider">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QScrollBar" name="horizontalScrollBar">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QSlider" name="horizontalSlider">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSlider_2">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QScrollBar" name="horizontalScrollBar">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QScrollBar" name="horizontalScrollBar_2">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <widget class="QLCDNumber" name="lcdNumber">
@@ -709,7 +721,7 @@
               <x>0</x>
               <y>0</y>
               <width>264</width>
-              <height>319</height>
+              <height>321</height>
              </rect>
             </property>
             <attribute name="label">
@@ -732,8 +744,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>264</width>
-              <height>293</height>
+              <width>287</width>
+              <height>335</height>
              </rect>
             </property>
             <attribute name="label">
@@ -750,8 +762,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
-              <height>119</height>
+              <width>89</width>
+              <height>121</height>
              </rect>
             </property>
             <attribute name="label">
@@ -768,7 +780,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
+              <width>83</width>
               <height>52</height>
              </rect>
             </property>

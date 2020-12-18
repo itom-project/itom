@@ -27,13 +27,37 @@ confoverrides = {}
 freshenv = False
 
 basedir = getCurrentPath()
-srcdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"                #basedir + "\\source"
-confdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"               #basedir + "\\source"
-aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"    #basedir + "\\source\\AboutItom"
+srcdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"
+confdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"
+aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"
 
 __main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
 
-buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
+buildernames = ["qthelp"]  # ["qthelp", "htmlhelp", "latex", "html"]
+
+def autodoc_process_docstring(app, what, name, obj, options, lines):
+    """Turns the return value of an attribute into a xref."""
+    if what == "attribute" and len(lines) > 0:
+        # search index of first non-empty line
+        fst_line = 0
+        while len(lines) > fst_line and lines[fst_line].strip() == "":
+            fst_line += 1
+        
+        # the first valid line of a docstring is "type : description".
+        # The type is in numpydoc, e.g. list of int, turn this itno
+        # list of :obj:`int`.
+        colon = lines[fst_line].find(": ")
+        if colon >= 0:
+            arg = lines[fst_line][0:colon].strip()
+            # Check if alternative types are specified with 'or'
+            alternatives = re.split(r"\bor\b", arg)
+            for idx in range(len(alternatives)):
+                comps = re.split(r"\bof\b", alternatives[idx].strip())
+                if ":" not in comps[-1] and comps[-1] != "None":
+                    comps[-1] = ":obj:`%s`" % comps[-1].strip()
+                alternatives[idx] = " of ".join(comps)
+            lines[fst_line] = " or ".join(alternatives) + \
+                " : " + lines[fst_line][colon+1:].strip()
 
 for buildername in buildernames:
     outdir = basedir + "/build/" + buildername
@@ -51,6 +75,8 @@ for buildername in buildernames:
 
     app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
                  confoverrides, sys.stdout, sys.stderr, freshenv)
+    
+    app.connect('autodoc-process-docstring', autodoc_process_docstring)
     
     if("${BUILD_WITH_PCL}" in ("ON", "on", "TRUE", "true")): #the first variable is automatically set by CMake
         app.tags.add('PCL')

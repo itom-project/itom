@@ -94,7 +94,7 @@ class ShapeTest(unittest.TestCase):
     
     def test_create_point(self):
         center = (2.2, -7)
-        pointShape: shape = shape.createPoint(center, index=5, name="test")
+        pointShape = shape.createPoint(center, index=5, name="test")
         
         self.assertAlmostEqual(pointShape.center, center)
         self.assertEqual(pointShape.index, 5)

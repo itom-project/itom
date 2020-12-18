@@ -86,7 +86,7 @@ void PyWorkspaceContainer::clear()
 //Python GIL must be locked when calling this function!
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullNameParentItem)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
@@ -136,7 +136,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+#if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
@@ -515,11 +515,8 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         else if(PyLong_Check(value))
         {
             int overflow;
-#if (PY_VERSION_HEX >= 0x03020000)
             item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLongLongAndOverflow(value, &overflow));
-#else
-            item->m_extendedValue = item->m_value = QString("%1").arg(PyLong_AsLongAndOverflow(value, &overflow));
-#endif
+
             if (overflow)
             {
                 item->m_extendedValue = item->m_value = (overflow > 0 ? "int too big" : "int too small");
@@ -547,6 +544,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                 item->m_value = QString("[String with %1 characters]").arg(length);
                 item->m_extendedValue = "";
             }
+
             item->m_compatibleParamBaseType = ito::ParamBase::String;
         }
         else if(PyArray_Check(value) && PyArray_SIZE( (PyArrayObject*)value ) > 10)

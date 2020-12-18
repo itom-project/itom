@@ -590,6 +590,8 @@ The figures below are showing some examples of the different settings.
     :width: 100%
     :align: center
 
+.. _gui-color-palette-editor:
+
 Palette Settings
 -------------------
 

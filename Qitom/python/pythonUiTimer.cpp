@@ -34,7 +34,7 @@
 namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void TimerCallback::timeout()
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -106,7 +106,7 @@ void TimerCallback::timeout()
     PyGILState_Release(state);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonTimer::PyTimer_dealloc(PyTimer* self)
 {
     if (self->timer)
@@ -121,7 +121,7 @@ void PythonTimer::PyTimer_dealloc(PyTimer* self)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PyTimer* self = (PyTimer *)type->tp_alloc(type, 0);
@@ -133,22 +133,52 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
     return (PyObject *)self;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = [], singleShot = False) -> new callback timer \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = [], singleShot = False) -> timer \n\
 \n\
-Creates a timer object that continuously calls a python callback function or method with a certain interval. The timer is active after construction and \n\
-stops when this instance is destroyed or stop() is called. \n\
+Creates a new timer object for (continously) triggering a callback function \n\
+\n\
+Creates a timer object that (continuously) calls a python callback function or method. \n\
+The timer is active right from the beginning, hence, after creating this object. \n\
+If ``singleShot`` is ``True``, the callback function is triggered once after the \n\
+interval is passed (denoted as timeout). Else, the callback is continuously triggered \n\
+with the given interval. \n\
+\n\
+Please note, that the timer objects may time out later than expected if Python is \n\
+currently busy or the operating system is unable to provide the requested accuracy. \n\
+In such a case of timeout overrun, the callback function is only triggered once, \n\
+even if multiple timeouts have expired, and then will resume the original interval. \n\
+\n\
+An active timer can be stopped by the :meth:`stop` method, or if this object is \n\
+deleted. Furthermore, itom provides the :ref:`gui-timermanager` dialog, where \n\
+all or selected timers can be started or stopped. \n\
 \n\
 Parameters \n\
 ----------- \n\
-interval : {int} \n\
-    time out interval in ms \n\
-callbackFunc: {function, method} \n\
-    Python function that should be called when timer event raises \n\
-argTuple: {tuple}, optional \n\
-    tuple of parameters passed as arguments to the callback function \n\
-singleShot: {bool}, optional \n\
-    defines if this timer only fires one time after its start (True) or continuously (False, default)");
+interval : int \n\
+    Time out interval in ms. \n\
+callbackFunc : callable \n\
+    Python method (bounded) or function (unbounded) that should be called whenever \n\
+    the timer event raises. \n\
+argTuple : tuple, optional \n\
+    Tuple of parameters passed as arguments to the callback function. \n\
+singleShot : bool, optional \n\
+    Defines if this timer only fires one time after its start (``True``) or \n\
+    continuously (``False``, default). \n\
+\n\
+Examples \n\
+-------- \n\
+>>> import time \n\
+... \n\
+... def callbackFunc(startTime: float, a: int): \n\
+...     print(\"%.2f sec elapsed: %i\" % (time.time() - startTime, a)) \n\
+... \n\
+... myTimer = timer(1000, callbackFunc, argTuple = (time.time(), 25)) \n\
+\n\
+1.00 sec elapsed: 25 \n\
+2.01 sec elapsed : 25 \n\
+3.01 sec elapsed : 25 \n\
+4.01 sec elapsed : 25");
 int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"interval", "callbackFunc", "argTuple", "singleShot", NULL};
@@ -180,7 +210,8 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     }
     else
     {
-        self->callbackFunc->m_callbackArgs = PyTuple_New(0); //if the callback function of the timeout event is debugged, it must not get a NULL object but at least an empty tuple!
+        //if the callback function of the timeout event is debugged, it must not get a NULL object but at least an empty tuple!
+        self->callbackFunc->m_callbackArgs = PyTuple_New(0); 
     }
 
     PyObject *temp = NULL;
@@ -225,10 +256,17 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     self->timer->setSingleShot(singleShot > 0); 
     self->timer->start();
+
     if (self->timer->timerId() == 0)
     {
-        if (PyErr_WarnEx(PyExc_RuntimeWarning, "timer object could not be created (e.g. negative interval, timer can only be used in threads started with QThread or timers cannot be started from another thread)", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
+        if (PyErr_WarnEx(
+            PyExc_RuntimeWarning, 
+            "timer object could not be created (e.g. negative interval, timer can only "
+            "be used in threads started with QThread or timers cannot be started "
+            "from another thread)", 
+            1) == -1) 
         {
+            // exception is raised instead of warning (depending on user defined warning levels)
             DELETE_AND_SET_NULL(self->timer);
             Py_XDECREF(self->callbackFunc->m_callbackArgs);
             DELETE_AND_SET_NULL(self->callbackFunc);
@@ -247,7 +285,7 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonTimer::PyTimer_repr(PyTimer *self)
 {
     PyObject *result;
@@ -269,10 +307,17 @@ PyObject* PythonTimer::PyTimer_repr(PyTimer *self)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerStart_doc,"start() -> starts timer\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyTimerStart_doc,"start() \n\
 \n\
-Starts or restarts the timer with its timeout interval. If the timer is already running, it will be stopped and restarted.");
+Starts the timer. \n\
+\n\
+This method starts or restarts the timer with its timeout interval. \n\
+If the timer is already running, it will be stopped and restarted. \n\
+\n\
+See Also \n\
+--------- \n\
+isActive, stop");
 PyObject* PythonTimer::PyTimer_start(PyTimer *self) 
 { 
     if (self->timer) 
@@ -280,8 +325,16 @@ PyObject* PythonTimer::PyTimer_start(PyTimer *self)
     Py_RETURN_NONE; 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerStop_doc,"stop() -> stops timer");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyTimerStop_doc, "stop() \n\
+\n\
+Stops the timer. \n\
+\n\
+This method stop the timer (if currently active). \n\
+\n\
+See Also \n\
+--------- \n\
+isActive, start");
 PyObject* PythonTimer::PyTimer_stop(PyTimer *self) 
 { 
     if (self->timer) 
@@ -289,13 +342,15 @@ PyObject* PythonTimer::PyTimer_stop(PyTimer *self)
     Py_RETURN_NONE; 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerIsActive_doc,"isActive() -> returns timer status\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyTimerIsActive_doc,"isActive() -> bool \n\
+\n\
+Indicates if the timer is currently active. \n\
 \n\
 Returns \n\
 ------- \n\
-status : {bool} \n\
-    True if the timer is running, otherwise False.");
+bool \n\
+    ``True`` if the timer is running, otherwise ``False``.");
 PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
 { 
     if (self->timer) 
@@ -316,15 +371,24 @@ PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerSetInterval_doc,"setInterval(interval) -> sets timer interval in [ms]\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyTimerSetInterval_doc,"setInterval(interval) \n\
 \n\
-This method sets the timeout interval in milliseconds. The timer calls the callback function continuously after this interval (if started) \n\
+Sets the timer interval in ms. \n\
+\n\
+This method sets the timeout interval in milliseconds. If the timer is started, \n\
+the callback function is tried to be continously triggered whenever the interval \n\
+expired. \n\
 \n\
 Parameters \n\
 ----------- \n\
-interval : {int} \n\
-    timeout interval in milliseconds. The callback function is continuously called after this timeout once the timer is started.");
+interval : int \n\
+    Timeout interval in milliseconds. \n\
+\n\
+Notes \n\
+------ \n\
+If Python is currently busy, a timer event can also be triggered at a later time, \n\
+if the same trigger event is not already in the execution queue.");
 PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
 { 
     int timeout; 
@@ -337,7 +401,7 @@ PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonTimer::PyTimer_methods[] = {
         {"start", (PyCFunction)PyTimer_start, METH_NOARGS, PyTimerStart_doc},
         {"stop", (PyCFunction)PyTimer_stop, METH_NOARGS, PyTimerStop_doc},
@@ -346,12 +410,12 @@ PyMethodDef PythonTimer::PyTimer_methods[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonTimer::PyTimer_members[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonTimer::PyTimerModule = {
         PyModuleDef_HEAD_INIT,
         "timer",
@@ -360,12 +424,12 @@ PyModuleDef PythonTimer::PyTimerModule = {
         NULL, NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonTimer::PyTimer_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonTimer::PyTimerType = {
         PyVarObject_HEAD_INIT(NULL, 0)
         "itom.timer",             /* tp_name */
@@ -409,4 +473,4 @@ PyTypeObject PythonTimer::PyTimerType = {
 
 } //end namespace ito
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------

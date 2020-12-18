@@ -171,7 +171,7 @@ Class *ParamBase*
 The class :cpp:class:`ParamBase` consists of the following main elements or member variables, which however are only accessible by
 corresponding getter- or setter-methods:
 
-.. c:member:: m_type
+.. c:member:: uint32 m_type
     
     This variable contains an OR combination of the data type, covered by the parameter container as well as some
     additional flags (read-only, auto-save). Read the section :ref:`plugin-params-typesFlags` for more information about the type.
