@@ -2862,6 +2862,12 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         return (PyObject*)resultObject;
     }
+    // check for comparison of complex to float
+    else if ((self->dataObject->getType() == tComplex64 || self->dataObject->getType() == tComplex128) && !PyComplex_Check(other))
+        {
+            PyErr_SetString(PyExc_TypeError, "can't compare complex to real values.");
+                return NULL;
+        }
     else if (PyFloat_Check(other) || PyLong_Check(other))
     {
         double value = PyFloat_AsDouble(other);
@@ -2880,6 +2886,52 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
                 }
             }
             catch(cv::Exception &exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            resultObject = createEmptyPyDataObject();
+            resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    else if (PyComplex_Check(other))
+    {
+
+        if (!PyErr_Occurred())
+        {
+            try
+            {
+                switch (cmp_op)
+                {
+                    
+                case Py_EQ: 
+                    if (self->dataObject->getType() == tComplex64) {
+                        resDataObj = *(self->dataObject) == ito::complex64(PyComplex_AsCComplex(other).real, PyComplex_AsCComplex(other).imag); break;
+                    }
+                    else {
+                        resDataObj = *(self->dataObject) == ito::complex128(PyComplex_AsCComplex(other).real, PyComplex_AsCComplex(other).imag); break;
+                    }
+                case Py_NE: 
+                    if (self->dataObject->getType() == tComplex64) {
+                        resDataObj = *(self->dataObject) != ito::complex64(PyComplex_AsCComplex(other).real, PyComplex_AsCComplex(other).imag); break;
+                    }
+                    else {
+                        resDataObj = *(self->dataObject) != ito::complex128(PyComplex_AsCComplex(other).real, PyComplex_AsCComplex(other).imag); break;
+                    }
+                    
+                default: 
+                    PyErr_SetString(PyExc_TypeError, "Not a valid operation for complex values (not orderable, use real, imag, or abs).");
+                    return NULL;
+                }
+            
+            }
+            catch (cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;

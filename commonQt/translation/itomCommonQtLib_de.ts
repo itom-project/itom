@@ -4,22 +4,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>Live data source for plot</source>
-        <translation type="obsolete">Live Datenquelle für Plot</translation>
-    </message>
-    <message>
-        <source>Source data for plot</source>
-        <translation type="obsolete">Quelldaten für Plot</translation>
-    </message>
-    <message>
-        <source>Actual output data of plot</source>
-        <translation type="obsolete">Aktuelle Ausgabedaten für Plot</translation>
-    </message>
-    <message>
-        <source>Parameter: does not exist in updateParam</source>
-        <translation type="obsolete">Parameter: Existiert nicht in &apos;updateParam&apos;</translation>
-    </message>
-    <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished">Es wurde versucht eine unskalierbare Einheit zu skalieren</translation>
@@ -834,10 +818,6 @@ Typkonflikt für &apos;%1&apos;</translation>
         <location filename="../../common/sources/addInGrabber.cpp" line="263"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished">Fehler beim überprüfen der Daten. Das externe Datenobjekt ist ungültig. Das Objekt muss die richtige Größe und vom richtigen Typ sein oder ein nicht initialisiertes Image.</translation>
-    </message>
-    <message>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="obsolete">Fehler beim überprüfen der Daten. Das externe Datenobjekt ist ungültig. Das Objekt muss die richtige Größe und vom richtigen Typ sein oder ein nicht initialisiertes Image.</translation>
     </message>
 </context>
 </TS>

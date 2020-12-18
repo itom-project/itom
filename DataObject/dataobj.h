@@ -1063,6 +1063,11 @@ namespace ito {
         DataObject operator >= (const float64 &value);
         DataObject operator == (const float64 &value);
         DataObject operator != (const float64 &value);
+
+        DataObject operator == (const ito::complex64 &value);
+        DataObject operator != (const ito::complex64 &value);
+        DataObject operator == (const ito::complex128 &value);
+        DataObject operator != (const ito::complex128 &value);
         
         // bitshift operators
         DataObject operator << (const unsigned int shiftbit);
