@@ -286,9 +286,13 @@ def completions(code, line, column, path, prefix):
                         # see also: https://github.com/davidhalter/jedi/issues/1695
                         pattern = "NoneType()\n"
                         if tooltip.startswith(pattern):
-                            rettype = completion.get_type_hint()
-                            if rettype != "":
-                                tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                            if jedi.__version__ >= '0.17.0':
+                                rettype = completion.get_type_hint()
+                                if rettype != "":
+                                    tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                            else:
+                                # jedi < 0.17.0 does not have the get_type_hint() method
+                                tooltip = tooltip[len(pattern):].lstrip()
                         tooltipList = [tooltip, ]
                     elif len(signatures) > 1:
                         # only use unique signatures
@@ -302,9 +306,10 @@ def completions(code, line, column, path, prefix):
                         tooltip = completion.docstring()
                         if tooltip != "":
                             # if tooltip is empty, use desc as tooltip (done in C++)
-                            type_hint = completion.get_type_hint()
-                            if type_hint != "" and not tooltip.startswith(type_hint):
-                                tooltip = type_hint + " : " + tooltip
+                            if jedi.__version__ >= '0.17.0':
+                                type_hint = completion.get_type_hint()
+                                if type_hint != "" and not tooltip.startswith(type_hint):
+                                    tooltip = type_hint + " : " + tooltip
                             tooltipList = [tooltip, ]
                         else:
                             tooltipList = [desc, ]

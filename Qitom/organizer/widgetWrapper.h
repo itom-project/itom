@@ -67,6 +67,7 @@ private:
     void initMethodHash();
     MethodDescription buildMethodDescription(QByteArray signature, QString retType, int methodIndex, bool &ok);
 
+    ito::RetVal callObject(QObject *object, int methodIndex, void **_a);
     ito::RetVal callListWidget(QListWidget *listWidget, int methodIndex, void **_a);
     ito::RetVal callComboBox(QComboBox *comboBox, int methodIndex, void **_a);
     ito::RetVal callTabWidget(QTabWidget *tabWidget, int methodIndex, void **_a);

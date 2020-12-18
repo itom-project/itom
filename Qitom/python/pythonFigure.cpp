@@ -300,7 +300,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -457,7 +457,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -631,7 +631,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -796,7 +796,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -963,7 +963,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -1102,7 +1102,7 @@ properties : dict, optional \n\
 \n\
 Returns \n\
 -------- \n\
-plotHandle: plotItem \n\
+plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, connect to \n\
     its signals or call slots of the plot.");
 PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds)

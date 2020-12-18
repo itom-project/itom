@@ -5,13 +5,17 @@
 Markers in plots
 **************************************************
 
-Sometimes, it is required to place marker symbols in a plot canvas with subpixel precision. This can for instance be the case,
-if detected features or calibration marks should be indicated in the plot. Currently, the Qwt-based plot plugins 
-:ref:`plot-line <itom1dqwtplot (1D)>` and :ref:`plot-image <itom2dqwtplot (2D)>` support drawing markers.
+Sometimes, it is required to place marker symbols in a plot canvas with subpixel 
+precision. This can for instance be the case, if detected features or calibration 
+marks should be indicated in the plot. Currently, the Qwt-based plot plugins 
+:ref:`itom1dqwtplot (1D) <plot-line>` and :ref:`itom2dqwtplot <plot-image>` 
+support drawing markers.
 
-It is possible to group one or multiple markers in one set that can be assigned a set name. Afterwards it is possible to also
-delete single sets based on their name or to show the name of the set next to each marker. All markers in one set can have a certain color, shape
-and size (in pixels). These three properties are given by one style-string of the following form:
+It is possible to group one or multiple markers in one set that can be 
+assigned a set name. Afterwards it is possible to also delete single sets 
+based on their name or to show the name of the set next to each marker. All 
+markers in one set can have a certain color, shape and size (in pixels). 
+These three properties are given by one style-string of the following form:
 
 .. code-block:: python
     :linenos:
@@ -49,22 +53,28 @@ Triangle right  >           Triangle left   <
 Triangle up     ^           Triangle down   v
 =============== =========== =============== ===========
 
-To put a set of markers to an existing plot handle, call the slot **plotMarkers** of the Qwt designer plugins:
+To put a set of markers to an existing plot handle, call the slot 
+**plotMarkers** of the Qwt designer plugins:
 
 .. code-block:: python
     
     plotHandle.call("plotMarkers", points, styleString [, setName])
 
-Hereby, *points* is a *2xN*, float32, dataObject where the first row are the x-coordinates of the markers (in physical or scale
-coordinates of the plot), and the second row are the y-coordinates. *setName* is an optional string as name for the added set of points.
+Hereby, *points* is a *2xN*, float32, dataObject where the first row are the 
+x-coordinates of the markers (in physical or scale coordinates of the plot), 
+and the second row are the y-coordinates. *setName* is an optional string as 
+name for the added set of points.
 
 .. note::
     
-    If the origin of the variable *plotHandle* in the examples does not tell you something, just a reminder:
-    The commands :py:meth:`itom.plot` and :py:meth:`itom.liveImage` return a tuple (index, plotHandle), where
-    *index* is the figure index of the opened plot window and *plotHandle* is an instance of :py:class:`itom.plotItem` that
-    is used to set properties of the plot, connect to its signals or call slots of the plot. Dedicated information about the features
-    of a plot can be obtained by typing::
+    If the origin of the variable *plotHandle* in the examples does not tell 
+    you something, just a reminder:     The commands :py:meth:`itom.plot` and 
+    :py:meth:`itom.liveImage` return a tuple (index, plotHandle), where     
+    *index* is the figure index of the opened plot window and *plotHandle* is 
+    an instance of :py:class:`itom.plotItem` that     is used to set 
+    properties of the plot, connect to its signals or call slots of the plot. 
+    Dedicated information about the features     of a plot can be obtained by 
+    typing::
         
         plotHandle.info()
 
@@ -77,7 +87,8 @@ To delete an existing set of markers, use the slot **deleteMarkers**:
     #or
     plotHandle.call("deleteMarkers") #delete all markers
 
-An example with different style strings can be found in the demo script **demo/demoMarkers.py**:
+An example with different style strings can be found in the demo script 
+**demo/demoMarkers.py**:
 
 .. code-block:: python
     :linenos:
@@ -120,7 +131,8 @@ The result is as follows:
     :scale: 100%
     :align: center
 
-If you want to display the set-name next to each marker, set the property **markerLabelsVisible** to True:
+If you want to display the set-name next to each marker, set the property 
+**markerLabelsVisible** to True:
 
 .. code-block:: python
     
