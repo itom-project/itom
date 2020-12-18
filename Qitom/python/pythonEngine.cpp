@@ -48,7 +48,6 @@
 #include "pythonProgressObserver.h"
 
 #include "common/interval.h"
-#include "../helper/sleeper.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -4055,7 +4054,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             //this while loop iterates without a tiny sleep.
             //The subsequent processEvents however is necessary to t(5get
             //the next debug command.
-            Sleeper::msleep(50);
+            QThread::msleep(50);
 
             QCoreApplication::processEvents();
 
