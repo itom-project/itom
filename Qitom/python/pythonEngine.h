@@ -183,7 +183,7 @@ private:
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
-    void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict);
+    void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict, bool lockGIL);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
