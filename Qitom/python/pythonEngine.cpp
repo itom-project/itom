@@ -166,9 +166,9 @@ PythonEngine::PythonEngine() :
     m_pythonState(pyStateIdle),
     bpModel(NULL),
     mainModule(NULL),
-    mainDictionary(NULL),
-    localDictionary(NULL),
-    globalDictionary(NULL),
+    m_pMainDictionary(NULL),
+    m_pLocalDictionary(NULL),
+    m_pGlobalDictionary(NULL),
     itomDbgModule(NULL),
     itomDbgInstance(NULL),
     itomModule(NULL),
@@ -471,13 +471,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
             if (mainModule)
             {
-                mainDictionary = PyModule_GetDict(mainModule); //borrowed
+                m_pMainDictionary = PyModule_GetDict(mainModule); //borrowed
             }
 
-            setGlobalDictionary(mainDictionary);   // reference to string-list of available methods, member-variables... of module.
+            setGlobalDictionary(m_pMainDictionary);   // reference to string-list of available methods, member-variables... of module.
             setLocalDictionary(NULL);
 
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), false);
+            emitPythonDictionary(DictUpdate, DictUpdate, false);
 
             if (_import_array() < 0)
             {
@@ -1168,9 +1168,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
         mainModule = NULL;
-        mainDictionary = NULL;
-        localDictionary = NULL;
-        globalDictionary = NULL;
+        m_pMainDictionary = NULL;
+        m_pLocalDictionary = NULL;
+        m_pGlobalDictionary = NULL;
 
         PythonEngine::instantiated.unlock();
 
@@ -1654,7 +1654,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 }
                 else
                 {
-                    result = PyEval_EvalCode(compile, mainDictionary, NULL);
+                    result = PyEval_EvalCode(compile, m_pMainDictionary, NULL);
 
                     if (result == NULL)
                     {
@@ -2681,32 +2681,20 @@ void PythonEngine::printPythonErrorWithoutTraceback()
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::setGlobalDictionary(PyObject* globalDict)
 {
-    dictChangeMutex.lock();
-    if (globalDict != NULL)
+    if (globalDict != nullptr)
     {
-        globalDictionary = globalDict;
+        m_pGlobalDictionary = globalDict;
     }
     else
     {
-        globalDictionary = mainDictionary;
+        m_pGlobalDictionary = m_pMainDictionary;
     }
-    /*else if (mainModule != NULL)
-    {
-        globalDictionary = PyModule_GetDict(mainModule);
-    }
-    else
-    {
-        globalDictionary = NULL;
-    }*/
-    dictChangeMutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::setLocalDictionary(PyObject* localDict)
 {
-    dictChangeMutex.lock();
-    localDictionary = localDict;
-    dictChangeMutex.unlock();
+    m_pLocalDictionary = localDict;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2725,7 +2713,7 @@ void PythonEngine::pythonRunString(QString cmd)
         pythonStateTransition(pyTransBeginRun);
         runString(cmd);
 
-        emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+        emitPythonDictionary(DictUpdate, DictNoAction, true);
 
         pythonStateTransition(pyTransEndRun);
         }
@@ -2738,7 +2726,7 @@ void PythonEngine::pythonRunString(QString cmd)
     case pyStateDebuggingWaiting:
         pythonStateTransition(pyTransDebugExecCmdBegin);
         runString(cmd);
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), true);
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -2756,6 +2744,7 @@ void PythonEngine::pythonRunFile(QString filename)
         pythonStateTransition(pyTransBeginRun);
 
         list = filename.split(";");
+
         foreach(const QString &filenameTemp, list)
         {
             if (filenameTemp != "")
@@ -2764,7 +2753,7 @@ void PythonEngine::pythonRunFile(QString filename)
             }
         }
 
-        emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+        emitPythonDictionary(DictUpdate, DictNoAction, true);
         
         pythonStateTransition(pyTransEndRun);
         }
@@ -2789,7 +2778,7 @@ void PythonEngine::pythonDebugFile(QString filename)
         pythonStateTransition(pyTransBeginDebug);
         debugFile(filename);
 
-        emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+        emitPythonDictionary(DictUpdate, DictReset, true);
 
         pythonStateTransition(pyTransEndDebug);
         }
@@ -2819,7 +2808,7 @@ void PythonEngine::pythonDebugString(QString cmd)
         pythonStateTransition(pyTransBeginDebug);
         debugString(cmd);
 
-        emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+        emitPythonDictionary(DictUpdate, DictReset, true);
 
         pythonStateTransition(pyTransEndDebug);
         }
@@ -2850,14 +2839,14 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
             pythonStateTransition(pyTransBeginDebug);
             debugString(cmd);
-            emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+            emitPythonDictionary(DictUpdate, DictReset, true);
             pythonStateTransition(pyTransEndDebug);
         }
         else
         {
             pythonStateTransition(pyTransBeginRun);
             runString(cmd);
-            emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, true);
+            emitPythonDictionary(DictUpdate, DictReset, true);
             pythonStateTransition(pyTransEndRun);
         }
         break;
@@ -2870,7 +2859,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
         pythonStateTransition(pyTransDebugExecCmdBegin);
         runString(cmd);
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), true);
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         }
         break;
@@ -2885,7 +2874,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
         debugFunction(callable, argTuple, gilExternal);
-        emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, !gilExternal);
+        emitPythonDictionary(DictUpdate, DictReset, !gilExternal);
         pythonStateTransition(pyTransEndDebug);
         break;
     case pyStateRunning:
@@ -2919,7 +2908,7 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
         case pyStateIdle:
             pythonStateTransition(pyTransBeginRun);
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), nullptr, !gilExternal);
+            emitPythonDictionary(DictUpdate, DictNoAction, !gilExternal);
             pythonStateTransition(pyTransEndRun);
         break;
 
@@ -2930,13 +2919,13 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
             // executed (only possible if another method executing python code is calling 
             // processEvents. processEvents stops until this "runFunction" has been terminated
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), !gilExternal);
+            emitPythonDictionary(DictUpdate, DictUpdate, !gilExternal);
         break;
 
         case pyStateDebuggingWaiting:
             pythonStateTransition(pyTransDebugExecCmdBegin);
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), !gilExternal);
+            emitPythonDictionary(DictUpdate, DictUpdate, !gilExternal);
             pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -3309,7 +3298,7 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
             m_localWorkspaceContainer.insert(container);
         }
 
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary(), true);
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
     }
     else
     {
@@ -3694,7 +3683,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict, bool lockGIL)
+void PythonEngine::emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL)
 {
     PyGILState_STATE gstate;
 
@@ -3714,18 +3703,20 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
     //if localDict is equal to globalDict, the localDict is the current global dict 
     //(currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
-    if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
+    if (globalDict != DictNoAction && m_mainWorkspaceContainer.count() > 0)
     {
-        if (globalDict != NULL)
+        if (globalDict == DictUpdate)
         {
+            PyObject *dict = getGlobalDictionary();
+
             foreach (ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
             {
                 cont->m_accessMutex.lock();
-                cont->loadDictionary(globalDict,"");
+                cont->loadDictionary(dict, "");
                 cont->m_accessMutex.unlock();
             }
         }
-        else
+        else // DictReset
         {
             foreach (ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
             {
@@ -3736,18 +3727,30 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
         }
     }
 
-    if (emitLocal && m_localWorkspaceContainer.count() > 0)
+    if (localDict != DictNoAction && m_localWorkspaceContainer.count() > 0)
     {
-        if (localDict != NULL && localDict != globalDict)
+        if (localDict == DictUpdate)
         {
-            foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
+            PyObject *global = getGlobalDictionary();
+            PyObject *local = getLocalDictionary();
+
+            foreach(ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
                 cont->m_accessMutex.lock();
-                cont->loadDictionary(localDict,"");
+
+                if (global != local)
+                {
+                    cont->loadDictionary(local, "");
+                }
+                else
+                {
+                    cont->clear();
+                }
+                    
                 cont->m_accessMutex.unlock();
             }
         }
-        else
+        else //DictReset
         {
             foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
@@ -4011,11 +4014,11 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         {
             if (localDict != globalDict)
             {
-                pyEngine->emitPythonDictionary(true, true, globalDict, localDict, false);
+                pyEngine->emitPythonDictionary(DictUpdate, DictUpdate, false);
             }
             else
             {
-                pyEngine->emitPythonDictionary(true, true, globalDict, nullptr, false);
+                pyEngine->emitPythonDictionary(DictUpdate, DictReset, false);
             }
         }
 
@@ -4097,12 +4100,12 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         }
     }
 
-    pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
+    pyEngine->setGlobalDictionary(nullptr); //reset to m_pMainDictionary of itom
     Py_CLEAR(globalDict);
 
-    pyEngine->setLocalDictionary(NULL);
+    pyEngine->setLocalDictionary(nullptr);
     Py_XDECREF(localDict);
-    localDict = NULL;
+    localDict = nullptr;
 
     emit (pyEngine->deleteCallStack());
 
@@ -4285,11 +4288,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
 
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, true);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, nullptr, getLocalDictionary(), true);
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
 
         if (oldState == pyStateIdle)
@@ -4434,11 +4437,11 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
 
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, true);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, nullptr, getLocalDictionary(), true);
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
 
         if (oldState == pyStateIdle)
@@ -4808,11 +4811,11 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, true);
+                emitPythonDictionary(DictUpdate, DictNoAction, true);
             }
             else
             {
-                emitPythonDictionary(false, true, nullptr, getLocalDictionary(), true);
+                emitPythonDictionary(DictNoAction, DictUpdate, true);
             }
         }
 
@@ -5138,11 +5141,11 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
 
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, false);
+                emitPythonDictionary(DictUpdate, DictNoAction, false);
             }
             else
             {
-                emitPythonDictionary(false, true, nullptr, getLocalDictionary(), false);
+                emitPythonDictionary(DictNoAction, DictUpdate, false);
             }
 
             PyGILState_Release(gstate);
@@ -5306,7 +5309,7 @@ ito::RetVal PythonEngine::pythonClearAll()
     {
         PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject_CallMethod(itomFunctions, "clearAll", "");
-        emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, false);
+        emitPythonDictionary(DictUpdate, DictNoAction, false);
         PyGILState_Release(gstate);        
     }
     return retVal;
@@ -5430,11 +5433,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
 
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, true);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, nullptr, getLocalDictionary(), true);
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
 
         if (oldState == pyStateIdle)
@@ -6034,11 +6037,11 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), nullptr, true);
+                emitPythonDictionary(DictUpdate, DictNoAction, true);
             }
             else
             {
-                emitPythonDictionary(false, true, nullptr, getLocalDictionary(), true);
+                emitPythonDictionary(DictNoAction, DictUpdate, true);
             }
         }
 

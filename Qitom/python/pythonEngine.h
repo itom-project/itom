@@ -133,7 +133,7 @@ public:
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
-    inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
+    inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
     bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
@@ -173,9 +173,18 @@ protected:
     void connectNotify(const QMetaMethod &signal);
 
 private:
+    enum DictUpdateFlag
+    {
+        DictUpdate,
+        DictReset,
+        DictNoAction
+    };
+
     static PythonEngine *getInstanceInternal();
 
-    inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
+    /*!< returns reference to local dictionary (workspace of method, 
+    which is handled right now). Is NULL if no method is executed right now. */
+    inline PyObject *getLocalDictionary() { return m_pLocalDictionary; } 
 
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
@@ -183,7 +192,7 @@ private:
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
-    void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict, bool lockGIL);
+    void emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
@@ -225,7 +234,6 @@ private:
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
-    QMutex dictChangeMutex;
     QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
@@ -235,9 +243,9 @@ private:
     ito::BreakPointModel *bpModel;
 
     PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
-    PyObject* mainDictionary;      //!< main dictionary of python [borrowed]
-    PyObject* localDictionary;     //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then globalDictionary is equal to the local dictionary of the current frame
-    PyObject* globalDictionary;    //!< global dictionary of python [borrowed], equals to mainDictionary unless if debugger is in "interaction-mode", then globalDictionary is equal to the global dictionary of the current frame
+    PyObject* m_pMainDictionary;   //!< main dictionary of python [borrowed]
+    PyObject* m_pLocalDictionary;  //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the local dictionary of the current frame
+    PyObject* m_pGlobalDictionary; //!< global dictionary of python [borrowed], equals to m_pMainDictionary unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the global dictionary of the current frame
     PyObject *itomDbgModule;       //!< debugger module
     PyObject *itomDbgInstance;     //!< debugger instance
     PyObject *itomModule;          //!< itom module [new ref]

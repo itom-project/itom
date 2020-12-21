@@ -106,7 +106,6 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
     if (pyEngine)
     {
-        connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
     }
 
@@ -157,7 +156,6 @@ ConsoleWidget::~ConsoleWidget()
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
     if (pyEngine)
     {
-        disconnect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
         disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
     }
 
