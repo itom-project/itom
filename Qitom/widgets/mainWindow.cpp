@@ -22,6 +22,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 
 #include "mainWindow.h"
 
@@ -111,6 +112,7 @@ MainWindow::MainWindow() :
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
     // general windows settings
     if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
@@ -259,9 +261,13 @@ MainWindow::MainWindow() :
     }
 
     // connections
-    if (pyEngine != NULL)
+    if (pyEngine)
     {
-        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        if (pyStatePublisher)
+        {
+            connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+                this, &MainWindow::pythonStateChanged);
+        }
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
@@ -272,7 +278,10 @@ MainWindow::MainWindow() :
         if (m_console)
         {
             connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
-            connect(pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)));
+            connect(
+                pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), 
+                m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*))
+            );
         }
     }
     else
@@ -290,7 +299,6 @@ MainWindow::MainWindow() :
 
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
     connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
-//    connect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
 
     // Signalmapper for dynamic lastFile Menu
     m_lastFilesMapper = new QSignalMapper(this);
@@ -355,7 +363,8 @@ MainWindow::MainWindow() :
 
     settings.endGroup();
 
-    //if restore state set some dock widgets inherited from abstractDockWidget to a top level state, it must be converted to a windows style using the following method:
+    // if restore state set some dock widgets inherited from abstractDockWidget 
+    // to a top level state, it must be converted to a windows style using the following method:
     if (m_fileSystemDock)
     {
         m_fileSystemDock->restoreState("itomFileSystemDockWidget");
@@ -425,7 +434,6 @@ MainWindow::~MainWindow()
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
-    //settings->setValue("geometry", saveGeometry());
     
     QByteArray state = saveState();
     settings->setValue("state", state);
@@ -433,13 +441,17 @@ MainWindow::~MainWindow()
 
     delete settings;
 
-    //QByteArray ba = storeDockWidgetStatus();
-
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
-    if (pyEngine != NULL)
+    if (pyEngine)
     {
-        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        if (pyStatePublisher)
+        {
+            disconnect(pyEngine, &PythonEngine::pythonStateChanged,
+                this, &MainWindow::pythonStateChanged);
+        }
+
         disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
 

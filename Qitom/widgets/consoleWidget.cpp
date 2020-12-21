@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 #include "../python/qDebugStream.h"
 #include "consoleWidget.h"
 #include "../global.h"
@@ -102,11 +103,12 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
 	qDebug() << "Streams connected";
 
-    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
-    if (pyEngine)
+    if (pyStatePublisher)
     {
-        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ConsoleWidget::pythonStateChanged);
     }
 
     m_pCmdList = new DequeCommandList(20);
@@ -153,10 +155,12 @@ ConsoleWidget::~ConsoleWidget()
     settings->endGroup();
     delete settings;
 
-    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
-    if (pyEngine)
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+
+    if (pyStatePublisher)
     {
-        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        disconnect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ConsoleWidget::pythonStateChanged);
     }
 
     DELETE_AND_SET_NULL(m_pCmdList);

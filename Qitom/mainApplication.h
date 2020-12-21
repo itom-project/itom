@@ -41,6 +41,8 @@ class QSplashScreen;
 namespace ito
 {
 
+class PythonStatePublisher;
+
 class MainApplication : public QObject
 {
     Q_OBJECT
@@ -70,6 +72,7 @@ class MainApplication : public QObject
 
         QThread* m_pyThread;                                  /*!<  Thread, where python engine is executed */
         PythonEngine* m_pyEngine;                             /*!<  pointer to the python engine */
+        PythonStatePublisher* m_pyStatePublisher;             /*!<  pointer to the python state publisher (executed in main thread) */
 
         ScriptEditorOrganizer* m_scriptEditorOrganizer;       /*!<  pointer to scriptEditorOrganizer, organizing every existing script window or docking widget */
         MainWindow* m_mainWin;                                /*!<  pointer to the main window */
