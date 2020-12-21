@@ -473,7 +473,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = \"\", properties = {}) \n\
+PyDoc_STRVAR(pyPlot1d_doc, "plot1(data, xData = None, className = \"\", properties = {}) -> Tuple[int, plotItem] \n\
 \n\
 Plots a dataObject as an 1d plot in a new figure window. \n\
 \n\
@@ -664,7 +664,7 @@ PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) \n\
+PyDoc_STRVAR(pyPlot2d_doc, "plot2(data, properties = {}) -> Tuple[int, plotItem] \n\
 \n\
 Plots a dataObject in a new figure window.\n\
 \n\
@@ -841,7 +841,7 @@ PyObject* PythonItom::PyPlot2d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = \"\", properties = {}) \n\
+PyDoc_STRVAR(pyPlot25d_doc, "plot25(data, className = \"\", properties = {}) -> Tuple[int, plotItem] \n\
 \n\
 Plots a dataObject, pointCloud or polygonMesh in a new figure window. \n\
 \n\
@@ -1018,7 +1018,7 @@ PyObject* PythonItom::PyPlot25d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = \"\", properties = {}) \n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, className = \"\", properties = {}) -> Tuple[int, plotItem] \n\
 \n\
 Shows a camera live image in a new figure window. \n\
 \n\
