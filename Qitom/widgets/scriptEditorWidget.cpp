@@ -2208,7 +2208,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             {
                 if (lineIndex < count && offset < 30) //more than 30 parameter lines are very unlikely
                 {
-                    line += lineText(lineIndex + offset).trimmed();
+                    line = line + lineText(lineIndex + offset).trimmed() + " ";
                     offset++;
                 }
                 else
