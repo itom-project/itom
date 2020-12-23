@@ -197,13 +197,19 @@ private:
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
 
+    //!< runs the given Python string command
+    void pythonRunString(QString cmd);
+
+    //!< debugs the given Python string command
+    void pythonDebugString(QString cmd);
+
     //methods for debugging
     void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);
     ito::tPythonDbgCmd dequeueDbgCmd();
     bool DbgCommandsAvailable();
     void clearDbgCmdLoop();
 
-    ito::RetVal pythonStateTransition(tPythonTransitions transition);
+    ito::RetVal pythonStateTransition(tPythonTransitions transition, bool immediate = true);
 
     //methods for breakpoint
     ito::RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
@@ -227,7 +233,6 @@ private:
         QByteArray furtherPropertiesJson; //!< these parameters are parsed from a QVariantMap to json and will be passed to itomSyntaxCheck.py
 	};
     
-
     //member variables
     bool m_started;
 	CodeCheckerOptions m_codeCheckerOptions;
@@ -318,7 +323,7 @@ private:
 
 signals:
     void pythonDebugPositionChanged(QString filename, int lineNo);
-    void pythonStateChanged(tPythonTransitions pyTransition);
+    void pythonStateChanged(tPythonTransitions pyTransition, bool immediate);
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
     void pythonCurrentDirChanged();
@@ -332,8 +337,6 @@ signals:
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
 
 public slots:
-    void pythonRunString(QString cmd);
-    void pythonDebugString(QString cmd);
     void pythonExecStringFromCommandLine(QString cmd);
     void pythonRunFile(QString filename);
     void pythonDebugFile(QString filename);

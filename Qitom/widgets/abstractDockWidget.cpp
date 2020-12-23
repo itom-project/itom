@@ -175,7 +175,7 @@ void AbstractDockWidget::init()
     }
     else if (m_floatingStyle == floatingWindow)
     {
-        //nothing
+        // nothing
     }
 
     if (m_movingStyle == movingEnabled)
@@ -185,8 +185,9 @@ void AbstractDockWidget::init()
 
     setFeatures(features);
 
-    if (m_floatingStyle == floatingWindow && m_dockAvailable) //only show dock-toolbar, if this widget is able to be a full-window in undocked mode
+    if (m_floatingStyle == floatingWindow && m_dockAvailable)
     {
+        // only show dock-toolbar, if this widget is able to be a full-window in undocked mode
         m_dockToolbar = new QToolBar(tr("Docking Toolbar"), this);
         m_dockToolbar->setObjectName("toolBarDocking"); // to avoid Qt warnings during saveState / restoreState
 
@@ -210,7 +211,8 @@ void AbstractDockWidget::init()
         m_pWindow->addToolBar(m_dockToolbar);
     }
 
-    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+    const PythonStatePublisher *pyStatePublisher = \
+        qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
     if (pyStatePublisher)
     {

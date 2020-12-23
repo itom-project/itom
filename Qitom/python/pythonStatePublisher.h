@@ -33,6 +33,27 @@ namespace ito
 
 class PythonEngine;
 
+//-------------------------------------------------------------------------------------
+/*!
+    \class PythonStatePublisher
+    \brief One instance of this class is created by MainApplication::setupApplication
+         and runs in the main thread of itom. Its onPythonStateChanged slot is connected
+         to the pythonStateChanged signal of PythonEngine. Other widgets should rather
+         connect to pythonStateChanged of this class than to the direct signal of
+         PythonEngine. This is mainly for one reason: Whenever a short script
+         is run in Python (not debug), it might be that the execution is so short,
+         that it is a waste of computing resources to switch the GUI to a busy state
+         during this short exeuction. Therefore, the transition to the `run` state
+         is signalled by this class with a short delay. Whenever, the 'idle' state
+         is signalled by the PythonEngine before the delay exceeds, nothing is
+         signalled by this class. This only holds for this transition. All other
+         python state transitions are immediately reported to all connected
+         classes.
+    
+    If the PythonEngine emits the signal pythonStateChanged with immediate = true,
+    this transition is directly reported (e.g. necessary for commands, executed
+    in the command line).
+*/
 class PythonStatePublisher : public QObject
 {
     Q_OBJECT
@@ -48,14 +69,15 @@ private:
     struct DelayedTransition
     {
         DelayedTransition() : timerId(-1) {}
-        int timerId;
-        tPythonTransitions transition;
+
+        int timerId; //!< -1 if no timer is currently set, else the timer id
+        tPythonTransitions transition; //!< the scheduled transition
     };
 
     DelayedTransition m_delayedTrans;
 
 private Q_SLOTS:
-    void onPythonStateChanged(tPythonTransitions pyTransition);
+    void onPythonStateChanged(tPythonTransitions pyTransition, bool immediate);
 
 Q_SIGNALS:
     void pythonStateChanged(tPythonTransitions pyTransition);

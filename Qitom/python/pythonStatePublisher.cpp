@@ -29,7 +29,8 @@ namespace ito
 //-------------------------------------------------------------------------------------
 PythonStatePublisher::PythonStatePublisher(const PythonEngine *engine)
 {
-    connect(engine, &PythonEngine::pythonStateChanged, this, &PythonStatePublisher::onPythonStateChanged);
+    connect(engine, &PythonEngine::pythonStateChanged, 
+            this, &PythonStatePublisher::onPythonStateChanged);
 }
 
 //-------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ PythonStatePublisher::~PythonStatePublisher()
 }
 
 //-------------------------------------------------------------------------------------
-void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition)
+void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition, bool immediate)
 {
     switch (pyTransition)
     {
@@ -82,8 +83,16 @@ void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition)
             killTimer(m_delayedTrans.timerId);
         }
 
-        m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(100));
-        m_delayedTrans.transition = pyTransition;
+        if (immediate)
+        {
+            emit pythonStateChanged(pyTransition);
+        }
+        else
+        {
+            m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(100));
+            m_delayedTrans.transition = pyTransition;
+        }
+        
         break;
     }
 }

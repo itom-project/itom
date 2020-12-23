@@ -35,7 +35,6 @@
 
 #include <qtranslator.h>
 
-//using namespace ito;
 class QSplashScreen;
 
 namespace ito
