@@ -42,7 +42,7 @@
 #include "../utils/utils.h"
 
 #include <qbrush.h>
-//#include <qdebug.h>
+#include <qdebug.h>
 
 namespace ito {
 
@@ -89,7 +89,7 @@ void LineBackgroundMarkerMode::setBackground(const QColor &color)
 */
 void LineBackgroundMarkerMode::addMarker(int line)
 {
-    //qDebug() << "add marker in line" << line << m_color;
+    qDebug() << "add marker in line" << line << m_color;
     TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, line, line, 101,"", true));
     deco->setBackground(QBrush(m_color));
     editor()->decorations()->append(deco);
@@ -101,7 +101,7 @@ void LineBackgroundMarkerMode::addMarker(int line)
 */
 void LineBackgroundMarkerMode::addMarker(int fromLine, int toLine)
 {
-    //qDebug() << "add marker in lines <<" << fromLine << ":" << toLine << "->" << m_color;
+    qDebug() << "add marker in lines <<" << fromLine << ":" << toLine << "->" << m_color;
     TextDecoration::Ptr deco = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, fromLine, toLine, 101, "", true));
     deco->setBackground(QBrush(m_color));
     editor()->decorations()->append(deco);
@@ -123,6 +123,7 @@ void LineBackgroundMarkerMode::clearAllMarkers()
 {
     foreach (TextDecoration::Ptr deco, m_decorations)
     {
+        qDebug() << "remove marker " << deco->format.background().color();
         editor()->decorations()->remove(deco);
     }
 
