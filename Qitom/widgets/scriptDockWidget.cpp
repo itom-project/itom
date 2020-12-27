@@ -133,23 +133,24 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pVBox->setContentsMargins(0, 0, 0, 0);
     m_pVBox->setSpacing(1);
 
-    // Create new Widget for Class Navigation (Bar)
+    // Create new widget for class navigation (bar)
     m_classMenuBar = new QWidget(this);
     m_classMenuBar->setContentsMargins(0,0,0,0);
 
-    // These two Comboboxes go inside
+    // These two comboboxes go inside
     m_classBox = new QComboBox(m_classMenuBar);
-    m_methodBox = new QComboBox(m_classMenuBar);
     m_classBox->setMinimumHeight(20);
     m_classBox->setMaxCount(500000);
     m_classBox->setContentsMargins(2, 0, 2, 0);
     m_classBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+
+    m_methodBox = new QComboBox(m_classMenuBar);
     m_methodBox->setMinimumHeight(20);
     m_methodBox->setMaxCount(500000);
     m_methodBox->setContentsMargins(2, 0, 2, 0);
     m_methodBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
 
-    // Layout inside the Widget (two comboBoxes)
+    // Layout inside the widget (two comboboxes)
     QHBoxLayout *hLayoutBox = new QHBoxLayout();
     hLayoutBox->setSpacing(0);
     hLayoutBox->addWidget(m_classBox);
@@ -157,7 +158,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     hLayoutBox->setContentsMargins(0, 0, 0, 0);
     m_classMenuBar->setLayout(hLayoutBox);
 
-    // Set Size for Widget
+    // Set size for widget
     m_classMenuBar->setMinimumHeight(20);
     m_classMenuBar->setMaximumHeight(20);
     m_pVBox->addWidget(m_classMenuBar, 1);
@@ -174,10 +175,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pCenterWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setContentWidget(m_pCenterWidget);
-    //setContentWidget(m_tab);
-
     setFocusPolicy(Qt::StrongFocus);
-//    setAcceptDrops(true);
 
     loadSettings();
 
@@ -281,11 +279,90 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, const QStr
             }
         }   
     }
-
-//    m_classBox->model()->sort(0);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------
+QString argsWordWrap(QString text, int width)
+{
+    QString result;
+    int j, i;
+    bool firstWrap = true;
+
+    for (;;)
+    {
+        i = std::min(width, text.length());
+        j = text.lastIndexOf(", ", i);
+
+        if (j == -1)
+        {
+            j = text.indexOf(", ", i);
+        }
+
+        if (j > 0)
+        {
+            result += text.left(j);
+            result += ",\n    ";
+            text = text.mid(j + 2);
+
+            if (firstWrap)
+            {
+                firstWrap = false;
+                width -= 4;
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if (width >= text.length())
+        {
+            break;
+        }
+    }
+
+    return result + text;
+}
+
+//-------------------------------------------------------------------------------------
+void methodBoxAddItem(
+    QComboBox *methodBox, 
+    const QIcon &icon, 
+    const QString &methPre,
+    const QString &methArgs,
+    const QString &methPost,
+    const QVariant &userData)
+{
+    QString fullSig = QString("%1(%2)%3").arg(methPre, methArgs, methPost);
+    const int maxLength = 150;
+
+    if (fullSig.size() <= maxLength)
+    {
+        methodBox->addItem(icon, fullSig, userData);
+        methodBox->setItemData(methodBox->count() - 1, fullSig, Qt::ToolTipRole);
+    }
+    else
+    {
+        // todo: it seems that eliding the text of the combobox is not relevant
+        // if no stylesheets are applied. Only if stylesheets are used, the
+        // minimumSize of the comboBox seems to be adapted to the necessary
+        // size of the real text in all entries (maybe a bug in Qt???).
+        QString methArgsElide = methArgs.left(
+            std::max(0, maxLength - 4 - methPre.size() - methPost.size())
+        ) + "...";
+        methodBox->addItem(
+            icon, 
+            QString("%1(%2)%3").arg(methPre, methArgsElide, methPost), 
+            userData
+        );
+
+        QString methArgsWrapped = argsWordWrap(methArgs, 100);
+        fullSig = QString("%1(\n    %2\n)%3").arg(methPre, methArgsWrapped, methPost);
+        methodBox->setItemData(methodBox->count() - 1, fullSig, Qt::ToolTipRole);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 {
     // insert empty dummy item
@@ -305,11 +382,23 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox, 
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType, 
+                    itemPointer);
             }
             
         }
@@ -317,22 +406,46 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args, 
+                    " [static]" + item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name, 
+                    item->m_args,
+                    " [static]" + item->m_returnType, 
+                    itemPointer);
             }
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name+"("+item->m_args+")  [classmember]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args +
+                    " [classmember]",item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [classmember]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name,
+                    item->m_args, 
+                    " [classmember]" + item->m_returnType, 
+                    itemPointer);
             }
         }
     }
