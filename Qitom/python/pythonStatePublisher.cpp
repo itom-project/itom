@@ -22,15 +22,29 @@
 
 #include "pythonStatePublisher.h"
 #include "pythonEngine.h"
+#include "../AppManagement.h"
+#include "../mainApplication.h"
 
 namespace ito
 {
 
 //-------------------------------------------------------------------------------------
-PythonStatePublisher::PythonStatePublisher(const PythonEngine *engine)
+PythonStatePublisher::PythonStatePublisher(const PythonEngine *engine) :
+    m_timeoutMs(100)
 {
-    connect(engine, &PythonEngine::pythonStateChanged, 
-            this, &PythonStatePublisher::onPythonStateChanged);
+    propertiesChanged(); // read real timeout time
+
+    connect(
+        engine, 
+        &PythonEngine::pythonStateChanged, 
+        this, 
+        &PythonStatePublisher::onPythonStateChanged);
+
+    connect(
+        qobject_cast<MainApplication*>(AppManagement::getMainApplication()), 
+        &MainApplication::propertiesChanged,
+        this, 
+        &PythonStatePublisher::propertiesChanged);
 }
 
 //-------------------------------------------------------------------------------------
@@ -83,13 +97,13 @@ void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition,
             killTimer(m_delayedTrans.timerId);
         }
 
-        if (immediate)
+        if (immediate || m_timeoutMs <= 0)
         {
             emit pythonStateChanged(pyTransition);
         }
         else
         {
-            m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(100));
+            m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(m_timeoutMs));
             m_delayedTrans.transition = pyTransition;
         }
         
@@ -106,6 +120,12 @@ void PythonStatePublisher::timerEvent(QTimerEvent *event)
         killTimer(m_delayedTrans.timerId);
         m_delayedTrans.timerId = -1;
     }
+}
+
+//-------------------------------------------------------------------------------------
+void PythonStatePublisher::propertiesChanged()
+{
+    // can be implemented if the delay should be configured by settings!
 }
 
 } //end namespace ito

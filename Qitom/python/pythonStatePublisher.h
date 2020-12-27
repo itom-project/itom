@@ -75,9 +75,11 @@ private:
     };
 
     DelayedTransition m_delayedTrans;
+    int m_delayMs; //!< delay time of non-immediate state changes in ms 
 
 private Q_SLOTS:
     void onPythonStateChanged(tPythonTransitions pyTransition, bool immediate);
+    void propertiesChanged();
 
 Q_SIGNALS:
     void pythonStateChanged(tPythonTransitions pyTransition);
