@@ -415,8 +415,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
         if (m_inputStreamWaitCond)
         {
             m_markInputLineMode->clearAllMarkers();
-            m_caretLineHighlighter->setEnabled(true);
-            //TODO: setCaretLineVisible(true);
+            m_caretLineHighlighter->setBlocked(false);
             m_inputStreamBuffer->clear();
             m_inputStreamWaitCond->release();
             m_inputStreamWaitCond->deleteSemaphore();
@@ -529,8 +528,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                 else
                 {
                     m_markInputLineMode->clearAllMarkers();
-                    m_caretLineHighlighter->setEnabled(true);
-                    //TODO: setCaretLineVisible(true);
+                    m_caretLineHighlighter->setBlocked(false);
                     m_inputStreamBuffer->clear();
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
@@ -632,8 +630,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     }
 
                     m_markInputLineMode->clearAllMarkers();
-                    m_caretLineHighlighter->setEnabled(true);
-                    //TODO: setCaretLineVisible(true);
+                    m_caretLineHighlighter->setBlocked(false);
 
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
@@ -994,8 +991,7 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     m_inputStartLine = lineCount() - 1;
     m_inputStartCol = lineText(m_inputStartLine).size();
     m_markInputLineMode->addMarker(m_inputStartLine);
-    m_caretLineHighlighter->setEnabled(false);
-    //TODO setCaretLineVisible(false);
+    m_caretLineHighlighter->setBlocked(true);
     setFocus();
 }
 

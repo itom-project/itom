@@ -49,7 +49,8 @@ CaretLineHighlighterMode::CaretLineHighlighterMode(const QString &description /*
     Mode("CaretLineHighlighterMode", description),
     QObject(parent),
     m_decoration(NULL),
-    m_color(QColor())
+    m_color(QColor()),
+    m_blocked(false)
 {
 }
 
@@ -83,8 +84,31 @@ QColor CaretLineHighlighterMode::background() const
 */
 void CaretLineHighlighterMode::setBackground(const QColor &color)
 {
-    m_color = color;
-    refresh();
+    if (m_color != color)
+    {
+        m_color = color;
+        refresh();
+    }
+}
+
+//----------------------------------------------------------
+/*
+*/
+bool CaretLineHighlighterMode::blocked() const
+{
+    return m_blocked;
+}
+
+//----------------------------------------------------------
+/*
+*/
+void CaretLineHighlighterMode::setBlocked(bool blocked)
+{
+    if (m_blocked != blocked)
+    {
+        m_blocked = blocked;
+        refresh();
+    }
 }
 
 //----------------------------------------------------------
@@ -123,11 +147,11 @@ Updates the current line decoration
 */
 void CaretLineHighlighterMode::refresh()
 {
-    if (enabled())
+    if (enabled() && !m_blocked)
     {
         QBrush brush;
-
         clearDeco();
+
         if (m_color.isValid())
         {
             brush = QBrush(m_color);
@@ -137,10 +161,16 @@ void CaretLineHighlighterMode::refresh()
             brush = Utils::driftColor(editor()->background(), 110);
         }
 
-        m_decoration = TextDecoration::Ptr(new TextDecoration(editor()->textCursor(),-1,-1,-1,-1,100));
+        m_decoration = TextDecoration::Ptr(
+            new TextDecoration(editor()->textCursor(), -1, -1, -1, -1, 100, "", true)
+        );
         m_decoration->setBackground(brush);
         m_decoration->setFullWidth();
         editor()->decorations()->append(m_decoration);
+    }
+    else
+    {
+        clearDeco();
     }
 }
 
