@@ -36,7 +36,7 @@
 #include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
 #include "../helper/qpropertyHelper.h"
-
+#include "../models/timerModel.h"
 
 #include "widgetWrapper.h"
 #include "userInteractionWatcher.h"
@@ -112,8 +112,9 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
 */
 UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     m_garbageCollectorTimer(0),
-    m_widgetWrapper(NULL),
-    m_pUiLoader(NULL)
+    m_widgetWrapper(nullptr),
+    m_pUiLoader(nullptr),
+    m_pTimerModel(new TimerModel())
 {
     m_dialogList.clear();
     m_objectList.clear();
@@ -124,7 +125,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
-    qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
+    qRegisterMetaType<QWeakPointer<QTimer> >("QWeakPointer<QTimer>");
 
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
@@ -169,6 +170,7 @@ UiOrganizer::~UiOrganizer()
     }
 
     DELETE_AND_SET_NULL(m_widgetWrapper);
+    DELETE_AND_SET_NULL(m_pTimerModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4184,84 +4186,37 @@ dialog of the main window where it can also be stopped by the user.
 
 \param timer is the weak pointer to the active QTimer instance
 \param name is a name that describes the timer (e.g. its timer id)
-\param semaphore is the optional semaphore for thread-based calls (or NULL)
 \return ito::retOk if active timer was valid and could be registered (e.g. for active timer dialog), else ito::retError
 \sa unregisterActiveTimer
 */
-RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QString &name, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::registerActiveTimer(const QWeakPointer<QTimer>& timer, const QString &name)
 {
     ito::RetVal retval;
-    if (timer.data())
+
+    if (!timer.isNull())
     {
-        TimerContainer timerContainer;
-        timerContainer.timer = timer;
-        timerContainer.name = name;
-        m_timers.append(timerContainer);
-        connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
+        m_pTimerModel->registerNewTimer(timer, name);
     }
     else
     {
         retval += ito::RetVal(ito::retError, 0, tr("timer is invalid").toLatin1().data());
     }
 
-    if (semaphore)
-    {
-        semaphore->returnValue = retval;
-        semaphore->release();
-        semaphore->deleteSemaphore();
-    }
-
     return retval;
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//!  returns a QList with the TimerContainers inside. This function is for instance by 'timer dialog'
+//-------------------------------------------------------------------------------------
+//!  returns the timer model that organizes all registered QTimer objects
 /*!
-This method is usually called by the Python 'active timer dialog'  and is rquired for updating the sialog
-
-\return QList<TimerContainer>
+\return TimerModel*
 */
-QList<TimerContainer> UiOrganizer::getRegisteredTimers()
+TimerModel* UiOrganizer::getTimerModel() const
 {
-    return m_timers;
+    return m_pTimerModel;
 }
 
-//! unregisterActiveTimer scans the m_timers qList for NULL pointers
-/*!
-This private slot is usually connected to the destroyed signal of a timer registered in m_timers. mTimers provides the
-active timers which are needed for the timer manager. If a timer is deleted the pointer in m_timers will be NULL. In this
-slot the list is scanned for pointers equal to NULL.
-
-
-\param semaphore is the optional semaphore for thread-based calls (or NULL)
-\return ito::retOk if active timer was valid and could be registered (e.g. for active timer dialog), else ito::retError
-\sa registerActiveTimer
-*/
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::unregisterActiveTimer(ItomSharedSemaphore *semaphore  /*= NULL*/)
-{
-    ito::RetVal retval;
-    int i;
-    for (i = m_timers.length() - 1; i >= 0; --i)
-    {
-        if (m_timers.at(i).timer == NULL)
-        {
-            m_timers.removeAt(i);
-        }
-    }
-    if (semaphore)
-    {
-        semaphore->returnValue = retval;
-        semaphore->release();
-        semaphore->deleteSemaphore();
-    }
-
-    return retval;
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! getAllAvailableHandles ruturns all available figure handles
 /*!
 This method is usually invoked by mainWindow.
@@ -4274,20 +4229,21 @@ RetVal UiOrganizer::getAllAvailableHandles(QSharedPointer<QList<unsigned int> > 
 {
     ito::RetVal retval;
     list->clear();
-    QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
-    FigureWidget *fig = NULL;
-    while (i != m_dialogList.end())
+    auto it = m_dialogList.constBegin();
+    FigureWidget *fig = nullptr;
+
+    while (it != m_dialogList.constEnd())
     {
-        fig = qobject_cast<FigureWidget*>(i.value().container->getUiWidget());
+        fig = qobject_cast<FigureWidget*>(it.value().container->getUiWidget());
+
         if (fig)
         {
-            list->append(i++.key());
+            list->append(it.key());
         }
-        else
-        {
-            ++i;
-        }
+        
+        ++it;
     }
+
     if (semaphore)
     {
         semaphore->returnValue = retval;
@@ -4297,10 +4253,13 @@ RetVal UiOrganizer::getAllAvailableHandles(QSharedPointer<QList<unsigned int> > 
 
     return retval;
 }
+
+//-------------------------------------------------------------------------------------
 RetVal UiOrganizer::getPlotWindowTitlebyHandle(const unsigned int& objectID, QSharedPointer<QString> title, ItomSharedSemaphore * semaphore /*=NULL*/)
 {
     ito::RetVal retval;
-    FigureWidget *fig = NULL;
+    FigureWidget *fig = nullptr;
+
     if (m_dialogList.contains(objectID))
     {
         fig = qobject_cast<FigureWidget*>(m_dialogList[objectID].container->getUiWidget());
@@ -4313,6 +4272,7 @@ RetVal UiOrganizer::getPlotWindowTitlebyHandle(const unsigned int& objectID, QSh
     {
         retval += ito::RetVal(ito::retError, 0, tr("could not find figure with given handle %1").arg(objectID).toLatin1().data());
     }
+
     if (semaphore)
     {
         semaphore->returnValue = retval;
