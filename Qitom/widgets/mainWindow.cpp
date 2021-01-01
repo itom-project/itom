@@ -1544,32 +1544,38 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QString &buttonName, QSharedPointer<size_t> buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+//-------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(
+    const QString &toolbarName, 
+    const QString &buttonName, 
+    QSharedPointer<QVector<size_t> > buttonHandles, 
+    bool showMessage /*= true*/, 
+    ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-    QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.find(toolbarName);
+    auto it = m_userDefinedToolBars.constFind(toolbarName);
     QAction* tempAction;
     bool found = false;
-    *buttonHandle = (size_t)NULL;
+    
+    buttonHandles->clear();
 
-    if (it != m_userDefinedToolBars.end())
+    if (it != m_userDefinedToolBars.constEnd())
     {
         foreach(tempAction, (*it)->actions())
         {
-            if (tempAction->text() == buttonName)
+            if (tempAction->text() == buttonName || buttonName == "")
             {
                 (*it)->removeAction(tempAction);
-                *buttonHandle = (size_t)(tempAction->property("itom__buttonHandle").toUInt()); //0 if invalid
+                buttonHandles->append((size_t)(tempAction->property("itom__buttonHandle").toUInt())); //0 if invalid
                 DELETE_AND_SET_NULL(tempAction);
                 found = true;
-                break;
             }
         }
         
-        if ((*it)->actions().size() == 0) //remove this toolbar
+        if ((*it)->actions().size() == 0) 
         {
+            //remove this toolbar
             QString tmpName = it.key();
             removeToolBar(*it);
             m_userDefinedToolBars.remove(tmpName);
@@ -1577,12 +1583,23 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
 
         if (!found)
         {
-            retval += ito::RetVal::format(ito::retError, 0, tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), buttonName.toLatin1().data(), toolbarName.toLatin1().data());
+            retval += ito::RetVal::format(
+                ito::retError,
+                0, 
+                tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), 
+                buttonName.toLatin1().data(), 
+                toolbarName.toLatin1().data()
+            );
         }
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("The toolbar '%s' could not be found.").toLatin1().data(), toolbarName.toLatin1().data());
+        retval += ito::RetVal::format(
+            ito::retError, 
+            0, 
+            tr("The toolbar '%s' could not be found.").toLatin1().data(), 
+            toolbarName.toLatin1().data()
+        );
     }
 
     if (waitCond)
@@ -1601,8 +1618,11 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+//-------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(
+    const size_t buttonHandle, 
+    bool showMessage /*= true*/, 
+    ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     //buttonHandle is the pointer-address to the QAction of the button
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1611,7 +1631,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
     bool found = false;
 
-    for (QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin(); !found && it != m_userDefinedToolBars.end(); ++it)
+    for (auto it = m_userDefinedToolBars.constBegin(); !found && it != m_userDefinedToolBars.constEnd(); ++it)
     {
         foreach (tempAction, (*it)->actions())
         {
@@ -1635,7 +1655,11 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("The button (%i) could not be found.").toLatin1().data(), buttonHandle);
+        retval += ito::RetVal::format(
+            ito::retError, 
+            0, 
+            tr("The button (%i) could not be found.").toLatin1().data(), 
+            buttonHandle);
     }
 
     if (waitCond)

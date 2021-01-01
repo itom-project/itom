@@ -2981,6 +2981,9 @@ format is png). \n\
 \n\
 For more information see also the section :ref:`toolbar-addtoolbar` of the documentation. \n\
 \n\
+**New in itom 4.1**: The ``code`` argument accepts all kind of callable objects, not \n\
+only Python methods and functions. \n\
+\n\
 Parameters \n\
 ----------- \n\
 toolbarName : str \n\
@@ -2989,6 +2992,11 @@ buttonName : str \n\
     The name and identifier of the button to create.\n\
 code : str or callable \n\
     The code or callable to be executed if the button is pressed.\n\
+    If the code is a callable method, it can either be an unbounded function \n\
+    (including lambda functions) or a bounded member method of a class instance. \n\
+    In the latter case, the button does not keep a reference to the class \n\
+    instance, such that a ``RuntimeError`` is raised if the instance is not \n\
+    available any more if the button is triggered. \n\
 icon : str, optional \n\
     The filename of an icon file. This can also be relative to the application \n\
     directory of **itom**.\n\
@@ -3101,9 +3109,9 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle) -> None \\\n\
-removeButton(toolbarName, buttonName = '') -> None \n\
+removeButton(toolbarName, buttonName = \"\") -> None \n\
 \n\
-Removes a button from a given toolbar in the itom main window. \n\
+Removes one or all buttons from a given toolbar in the itom main window. \n\
 \n\
 This method removes an existing button from a toolbar in the main window of \n\
 **itom**. This button must have been created by the method :meth:`addButton` before. \n\
@@ -3115,7 +3123,8 @@ A button can be identified by two different ways: \n\
    This can also be used, if multiple buttons should have the same name. \n\
 2. Identify the button by its ``toolbarName`` and ``buttonName``. If more than \n\
    one button is available in the toolbar with the given ``buttonName``, all \n\
-   matched buttons are removed. \n\
+   matched buttons are removed. If ``buttonName`` is an empty string (default) \n\
+   all buttons that are contained in the toolbar are removed (including the toolbar). \n\
 \n\
 For more information see also the section :ref:`toolbar-addtoolbar` of the documentation. \n\
 \n\
@@ -3127,7 +3136,8 @@ toolbarName : str \n\
     The name of the toolbar.\n\
 buttonName : str \n\
     The name (str, identifier) of the button to remove (only necessary, \n\
-    if ``toolbarName`` is given instead of ``handle``.\n\
+    if ``toolbarName`` is given instead of ``handle``). If an empty string \n\
+    all buttons of the given toolbar are removed (including the toolbar itself). \n\
 \n\
 Raises \n\
 ------- \n\
@@ -3139,30 +3149,32 @@ See Also \n\
 addButton");
 PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    const char* toolbarName = NULL;
-    const char* buttonName = NULL;
-    unsigned int buttonHandle;
+    const char* toolbarName = nullptr;
+    const char* buttonName = nullptr;
     bool callByNames = true;
+    unsigned int buttonHandle = 0;
 
-    if (! PyArg_ParseTuple(pArgs, "ss", &toolbarName, &buttonName))
+    if (! PyArg_ParseTuple(pArgs, "s|s", &toolbarName, &buttonName))
     {
         PyErr_Clear();
         callByNames = false;
+
         if (!PyArg_ParseTuple(pArgs, "I", &buttonHandle))
         {
             PyErr_SetString(
                 PyExc_TypeError, 
                 "Wrong length or type of arguments. Type help(removeButton) for more information.");
-            return NULL;
+            return nullptr;
         }
     }
 
     QObject *mainWindow = AppManagement::getMainWindow();
+
     if (mainWindow)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QSharedPointer<size_t> buttonHandle_(new size_t);
-        *buttonHandle_ = (size_t)NULL;
+        QSharedPointer<QVector<size_t> > buttonHandles(new QVector<size_t>);
+        buttonHandles->clear();
 
         if (callByNames)
         {
@@ -3170,8 +3182,8 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
                 mainWindow,
                 "removeToolbarButton", 
                 Q_ARG(QString, toolbarName), 
-                Q_ARG(QString, buttonName), 
-                Q_ARG(QSharedPointer<size_t>, buttonHandle_), 
+                Q_ARG(QString, buttonName ? buttonName : ""), 
+                Q_ARG(QSharedPointer<QVector<size_t> >, buttonHandles), 
                 Q_ARG(bool, false), 
                 Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
@@ -3188,31 +3200,40 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
         if (!locker->wait(2000))
         {
             PyErr_SetString(PyExc_RuntimeError, "Timeout while waiting for button being removed.");
-            return NULL;
+            return nullptr;
         }
         else
         {
             if (!PythonCommon::transformRetValToPyException(locker->returnValue)) 
             {
-                return NULL;
+                return nullptr;
             }
+
+            ito::RetVal retval;
 
             if (callByNames)
             {
-                buttonHandle = *buttonHandle_;
+                foreach(size_t handle, *buttonHandles)
+                {
+                    retval += PythonItom::unhashButtonOrMenuCode(handle);
+                }
             }
+            else
+            {
+                retval += PythonItom::unhashButtonOrMenuCode(buttonHandle);
+            }
+            
 
-            ito::RetVal retval = PythonItom::unhashButtonOrMenuCode(buttonHandle);
             if (!PythonCommon::transformRetValToPyException(retval)) 
             {
-                return NULL;
+                return nullptr;
             }
         }
     }
     else
     {
         PyErr_SetString(PyExc_RuntimeError, "Main window not available. Button cannot be removed.");
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -6240,11 +6261,16 @@ PyObject* PythonItom::PyInitItom(void)
 }
 
 //-------------------------------------------------------------------------------------
-/*static*/ ito::FuncWeakRef* PythonItom::hashButtonOrMenuCode(PyObject *code, PyObject *argtuple, ito::RetVal &retval, QString &codeString)
+/*static*/ ito::FuncWeakRef* PythonItom::hashButtonOrMenuCode(
+    PyObject *code,
+    PyObject *argtuple,
+    ito::RetVal &retval,
+    QString &codeString)
 {
     ito::FuncWeakRef *ref = NULL;
 
-    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    // works since pythonItom is friend with pythonEngine
+    PythonEngine *pyEngine = PythonEngine::instance; 
     
     if (pyEngine)
     {
@@ -6252,12 +6278,14 @@ PyObject* PythonItom::PyInitItom(void)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("No code is given").toLatin1().data());
         }
-        else if (PyMethod_Check(code) || PyFunction_Check(code))
+        else if (PyMethod_Check(code) || 
+            PyCFunction_Check(code) ||
+            PyCallable_Check(code))
         {
             
             PyObject *arguments = PyTuple_New(1);
             Py_INCREF(code);
-            PyTuple_SetItem(arguments,0,code); //steals ref
+            PyTuple_SetItem(arguments, 0, code); //steals ref
             ito::PythonProxy::PyProxy *proxy = (ito::PythonProxy::PyProxy*)PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
             Py_DECREF(arguments);
                         
@@ -6300,6 +6328,7 @@ PyObject* PythonItom::PyInitItom(void)
         {
             bool ok;
             codeString = PythonQtConversion::PyObjGetString(code, true, ok);
+
             if (!ok)
             {
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("Code is no function or method call and no executable code string").toLatin1().data());
@@ -6315,18 +6344,21 @@ PyObject* PythonItom::PyInitItom(void)
 }
 
 //-------------------------------------------------------------------------------------
-//this method removes a possible proxy object to a python method or function including its possible argument tuple
-//from the hash list that has been added there for guarding functions or objects related to toolbar buttons or menu entries.
+// this method removes a possible proxy object to a python method or function including 
+// its possible argument tuple from the hash list that has been added there for 
+// guarding functions or objects related to toolbar buttons or menu entries.
 /*static*/ ito::RetVal PythonItom::unhashButtonOrMenuCode(const size_t &handle)
 {
     ito::RetVal retval;
 
-    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    // works since pythonItom is friend with pythonEngine
+    PythonEngine *pyEngine = PythonEngine::instance;
     
     if (pyEngine)
     {
-        //check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which start with the given hashValue (hence its childs)
-        QHash<size_t, FuncWeakRef >::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
+        // check if hashValue is in m_pyFuncWeakRefHashes and delete 
+        // it and all hashValues which start with the given hashValue (hence its childs)
+        auto it = pyEngine->m_pyFuncWeakRefHashes.begin();
 
         while(it != pyEngine->m_pyFuncWeakRefHashes.end())
         {
@@ -6343,7 +6375,11 @@ PyObject* PythonItom::PyInitItom(void)
         return ito::retOk;
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Python engine is not available").toLatin1().data());
+    return ito::RetVal(
+        ito::retError,
+        0, 
+        QObject::tr("Python engine is not available").toLatin1().data()
+    );
 }
 
 //-------------------------------------------------------------------------------------
