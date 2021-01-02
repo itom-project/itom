@@ -130,8 +130,8 @@ AbstractDockWidget::~AbstractDockWidget()
     if (m_pWindow)
     {
         DELETE_AND_SET_NULL(m_pWindow);
-
     }
+
     m_toolBars.clear();
 
     const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
@@ -394,6 +394,7 @@ void AbstractDockWidget::setEnabled(bool enabled)
 void AbstractDockWidget::setMinimumSize(const QSize &size)
 {
     QDockWidget::setMinimumSize(size);
+
     if (m_pWindow)
     {
         m_pWindow->setMinimumSize(size);
@@ -428,40 +429,6 @@ void AbstractDockWidget::saveState(const QString &iniName) const
         {
             QByteArray geometry = m_pWindow->saveGeometry();
 
-			if (iniName == "itomHelpDockWidget")
-			{
-                QDataStream stream(geometry);
-                stream.setVersion(QDataStream::Qt_4_0);
-
-                const quint32 magicNumber = 0x1D9D0CB;
-                quint32 storedMagicNumber;
-                stream >> storedMagicNumber;
-
-                const quint16 currentMajorVersion = 2;
-                quint16 majorVersion = 0;
-                quint16 minorVersion = 0;
-
-                stream >> majorVersion >> minorVersion;
-
-                // (Allow all minor versions.)
-
-                QRect restoredFrameGeometry;
-                QRect restoredNormalGeometry;
-                qint32 restoredScreenNumber;
-                quint8 maximized;
-                quint8 fullScreen;
-                qint32 restoredScreenWidth = 0;
-
-                stream >> restoredFrameGeometry
-                    >> restoredNormalGeometry
-                    >> restoredScreenNumber
-                    >> maximized
-                    >> fullScreen;
-
-				qDebug() << "Save geometry of itomHelpDockWidget to ini: " << ", frame geometry: " << restoredFrameGeometry << ", normal geometry: " << \
-					restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen << ", docked: " << docked();
-            }
-
 			if (!docked())
 			{
 				settings.setValue("geometry", geometry);
@@ -473,7 +440,9 @@ void AbstractDockWidget::saveState(const QString &iniName) const
             }
             else
             {
-                settings.setValue("visible", QVariant()); //invalidate setting 'visible' since it is always false if docked (saveState is called in destructor, where visible is already false)
+                // invalidate setting 'visible' since it is always false if docked 
+                // (saveState is called in destructor, where visible is already false)
+                settings.setValue("visible", QVariant()); 
             }
         }
 
@@ -495,43 +464,6 @@ void AbstractDockWidget::restoreState(const QString &iniName)
 		QVariant docked = settings.value("docked");
 		QVariant visible_ = settings.value("visible");
 		bool visible = visible_.isValid() ? visible_.toBool() : true;
-
-		if (iniName == "itomHelpDockWidget")
-		{
-			QDataStream stream(geometry);
-			stream.setVersion(QDataStream::Qt_4_0);
-
-			const quint32 magicNumber = 0x1D9D0CB;
-			quint32 storedMagicNumber;
-			stream >> storedMagicNumber;
-
-			const quint16 currentMajorVersion = 2;
-			quint16 majorVersion = 0;
-			quint16 minorVersion = 0;
-
-			stream >> majorVersion >> minorVersion;
-
-			// (Allow all minor versions.)
-
-			QRect restoredFrameGeometry;
-			QRect restoredNormalGeometry;
-			qint32 restoredScreenNumber;
-			quint8 maximized;
-			quint8 fullScreen;
-			qint32 restoredScreenWidth = 0;
-
-			stream >> restoredFrameGeometry
-				>> restoredNormalGeometry
-				>> restoredScreenNumber
-				>> maximized
-				>> fullScreen;
-
-
-			qDebug() << "Load geometry of itomHelpDockWidget from ini: " << ", frame geometry: " << restoredFrameGeometry << ", normal geometry: " << \
-				restoredNormalGeometry << ", screen number: " << restoredScreenNumber << ", maximized:" << maximized << ", fullscreen: " << fullScreen << \
-				", visible: " << visible << ", floating window?: " << (m_floatingStyle == floatingWindow) << ", visible valid?:" << visible_.isValid();
-		}
-
 
         if (m_floatingStyle == floatingWindow)
         {
@@ -571,6 +503,7 @@ void AbstractDockWidget::restoreState(const QString &iniName)
         else
         {
             QVariant docked = settings.value("docked");
+
             if (docked.isValid())
             {
                 setFloating(!docked.toBool());

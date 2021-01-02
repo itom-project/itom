@@ -2485,7 +2485,7 @@ For more information see also the section :ref:`qtdesigner` of the user document
 Parameters \n\
 ----------- \n\
 filename : str \n\
-    path to the user interface file (\*.ui), absolute or relative to current directory. \n\
+    path to the user interface file (.ui), absolute or relative to current directory. \n\
 type : int, optional \n\
     This ``type`` defines how the loaded user interface is displayed: \n\
     \n\

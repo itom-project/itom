@@ -64,7 +64,7 @@ namespace ito
     initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed 
     for instance from the python-method "call".
 
-    \sa PythonUiDialog, UiOrganizer
+    \sa UiOrganizer
 */
 WidgetWrapper::WidgetWrapper(UiOrganizer *uiOrganizer) : 
     m_initialized(false),
