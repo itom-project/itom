@@ -414,6 +414,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
@@ -634,6 +635,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp

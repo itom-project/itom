@@ -375,6 +375,52 @@ namespace Utils
         text.replace("\r", "\n");
         return text.split("\n");
     }
+
+    //---------------------------------------------------------------------------
+    /* Wraps a signature by its arguments, separated by ', ' into
+    multiple lines, where each line has a maximum length of 'width'. 
+    Each following line is indented by four spaces.*/
+    QString signatureWordWrap(QString signature, int width)
+    {
+        QString result;
+        int j, i;
+        bool firstWrap = true;
+
+        for (;;)
+        {
+            i = std::min(width, signature.length());
+            j = signature.lastIndexOf(", ", i);
+
+            if (j == -1)
+            {
+                j = signature.indexOf(", ", i);
+            }
+
+            if (j > 0)
+            {
+                result += signature.left(j);
+                result += ",\n    ";
+                signature = signature.mid(j + 2);
+
+                if (firstWrap)
+                {
+                    firstWrap = false;
+                    width -= 4;
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            if (width >= signature.length())
+            {
+                break;
+            }
+        }
+
+        return result + signature;
+    }
 };
 
 } //end namespace ito

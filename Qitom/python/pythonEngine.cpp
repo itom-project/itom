@@ -2195,6 +2195,15 @@ void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &requ
 }
 
 //-------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request)
+{
+    if (!m_jediRunner.isNull())
+    {
+        m_jediRunner->addGetHelpRequest(request);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
 {
     if (!m_jediRunner.isNull())

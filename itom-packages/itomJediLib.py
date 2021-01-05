@@ -398,6 +398,271 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     return result
 
 
+def name_tooltip_type_module(item):
+    """Generates a description text for a given item, whose type is 'module'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    heading = "Module %s" % (item.name,)
+    body = item.docstring()
+    if body is not None and body != "":
+        tooltip = "%s\n\n%s" % (heading, body)
+    else:
+        tooltip = heading
+    return [tooltip, ]
+
+
+def name_tooltip_type_statement(item):
+    """Generates a description text for a given item, whose type is 'statement'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    typehint = item.get_type_hint()
+    if typehint != "":
+        heading = "%s: %s" % (item.name, typehint)
+    else:
+        heading = item.name
+    
+    body = item.docstring()
+    if body is not None and body != "":
+        tooltip = "%s\n\n%s" % (heading, body)
+    else:
+        tooltip = heading
+    return [tooltip, ]
+
+
+def name_tooltip_type_instance(item):
+    """Generates a description text for a given item, whose type is 'instance'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    return [item.docstring(), ]
+
+
+def name_tooltip_type_param(item):
+    """Generates a description text for a given item, whose type is 'param'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    return [item.description, ]
+
+
+def name_tooltip_type_property(item):
+    """Generates a description text for a given item, whose type is 'property'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    name = item.name
+    rettype = item.get_type_hint()
+    docstring = item.docstring()
+    
+    if docstring != "":
+        return ["%s: %s\n\n%s" % (name, rettype, docstring), ]
+    else:
+        return ["%s: %s" % (name, rettype), ]
+
+
+def name_tooltip_type_general(item):
+    """Generates a description text for a given item, whose type is any other.
+    
+    Any other type is any type, that is not covered by the specific methods
+    name_tooltip_type_<specific_type>, for example 'class', 'function', 'path'.
+    
+    The description text can consist of one or more possible strings, each
+    one having a format for a tooltip. The first line is usually considered
+    to be a headline, followed by two newline characters and a multiline description
+    string.
+    
+    Parameters
+    ----------
+    item : jedi.api.classes.Name
+        is the item whose tooltip docstring should be generated.
+    
+    Returns
+    -------
+        list of str
+            One or multiple possible tooltips for the given item.
+    """
+    desc = item.description
+    
+    if jedi.__version__ >= '0.16.0':
+        signatures = item.get_signatures()
+        if len(signatures) == 0:
+            tooltip = item.docstring()
+            name = item.name
+            if jedi.__version__ < '0.18.0':
+                # properties are also reported as type function
+                rettype = item.get_type_hint()
+                if rettype != "":
+                    name += ": %s" % rettype
+            if tooltip != "":
+                tooltip = "%s\n\n%s" % (name, tooltip)
+            else:
+                tooltip = name
+            tooltipList = [tooltip, ]
+        elif len(signatures) == 1:
+            tooltip = signatures[0].docstring()
+            # for some properties, signatures[0].docstring() only
+            # contains the return value, but no description, fall back
+            # to item.docstring() then...
+            if "\n\n" not in tooltip:
+                tooltip = item.docstring()
+            # workaround: there seems to be a bug in jedi for
+            # properties that return something with None: NoneType()
+            # is always returned in doc. However, item.get_type_hint()
+            # returns the real rettype hint. Replace it.
+            # see also: https://github.com/davidhalter/jedi/issues/1695
+            pattern = "NoneType()\n"
+            if tooltip.startswith(pattern):
+                if jedi.__version__ >= '0.17.0':
+                    rettype = item.get_type_hint()
+                    if rettype != "":
+                        tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                else:
+                    # jedi < 0.17.0 does not have the get_type_hint() method
+                    tooltip = tooltip[len(pattern):].lstrip()
+            tooltipList = [tooltip, ]
+        elif len(signatures) > 1:
+            # only use unique signatures
+            docstrings = [signatures[0].docstring(), ]
+            for s in signatures[1:]:
+                d = s.docstring()
+                if d != docstrings[0]:
+                    docstrings.append(d)
+            tooltipList = [d for d in docstrings]
+        else:
+            tooltip = item.docstring()
+            if tooltip != "":
+                # if tooltip is empty, use desc as tooltip (done in C++)
+                if jedi.__version__ >= '0.17.0':
+                    type_hint = item.get_type_hint()
+                    if type_hint != "" and not tooltip.startswith(type_hint):
+                        tooltip = type_hint + " : " + tooltip
+                tooltipList = [tooltip, ]
+            else:
+                tooltipList = [desc, ]
+    else:
+        tooltipList = [item.docstring(), ]
+    
+    return tooltipList
+
+
+def get_help(code, line, column, path):
+    """
+    """
+    if jedi.__version__ >= '0.17.0':
+        script = jedi.Script(code=code, path=path, environment=jedienv)
+        helps = script.help(line=line + 1, column=column)
+    elif jedi.__version__ >= '0.16.0':
+        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+        helps = script.help(line=line + 1, column=column)
+    else:
+        if jedi.__version__ >= '0.12.0':
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
+        else:
+            script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+        helps = script.help()
+    
+    results = []
+    # disable error stream to avoid import errors of jedi, 
+    # which are directly printed to sys.stderr (no exception)
+    with StreamHider(('stderr', )) as h:
+        for h in helps:
+            if h.type == "keyword":
+                continue
+            try:
+                desc = h.description
+                
+                itemType = h.type.lower()
+                
+                if itemType == "module":
+                    tooltips = name_tooltip_type_module(h)
+                elif itemType == "statement":
+                    tooltips = name_tooltip_type_statement(h)
+                elif itemType == "instance":
+                    tooltips = name_tooltip_type_instance(h)
+                elif itemType == "param":
+                    tooltips = name_tooltip_type_param(h)
+                elif itemType == "property":
+                    tooltips = name_tooltip_type_property(h)
+                elif itemType == "keyword":
+                    continue
+                else:
+                    # class, function, path
+                    tooltips = name_tooltip_type_general(h)
+                    
+                results.append((desc, tooltips))
+            except Exception as ex:
+                break  # todo, check this further
+    
+    return results
+
+
 if __name__ == "__main__":
     
     text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"

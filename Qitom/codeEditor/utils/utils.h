@@ -113,6 +113,7 @@ namespace Utils
     QString strip(const QString &string);
     int numlines(const QString &string);
     QStringList splitlines(const QString &string);
+    QString signatureWordWrap(QString signature, int width);
 
     
 };
