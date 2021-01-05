@@ -66,7 +66,7 @@ WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTool
     m_requestCount(0),
     m_tooltipsMaxLength(300)
 {
-    m_pTimer = new DelayJobRunnerArgTextCursor<WordHoverTooltipMode, void(WordHoverTooltipMode::*)(QTextCursor)>(500);
+    m_pTimer = new DelayJobRunnerArgTextCursor<WordHoverTooltipMode, void(WordHoverTooltipMode::*)(QTextCursor)>(400);
 }
 
 //-------------------------------------------------------------------------------------
