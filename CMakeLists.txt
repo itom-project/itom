@@ -29,7 +29,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
  
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
-
+ 
 itom_init_cmake_policy(3.15)
 itom_init_core_common_vars()
 

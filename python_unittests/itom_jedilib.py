@@ -1,4 +1,5 @@
 import itomJediLib as jedilib
+import jedi
 import unittest
 from typing import Tuple, Dict, List, Optional
 import warnings
@@ -15,9 +16,12 @@ class ItomJediLibTest(unittest.TestCase):
     def _assertStartsWith(self, statement, string):
         self.assertTrue(statement.startswith(string))
     
-    def _assertOneHelpEntry(self, tooltips, description, docstrstart):
+    def _assertOneHelpEntry(self, tooltips, description, docstrstart, descStartsWith=False):
         self.assertEqual(len(tooltips), 1)
-        self.assertEqual(tooltips[0][0], description)
+        if descStartsWith:
+            self.assertTrue(tooltips[0][0].startswith(description))
+        else:
+            self.assertEqual(tooltips[0][0], description)
         self.assertEqual(len(tooltips[0][1]), 1)
         self.assertTrue(tooltips[0][1][0].startswith(docstrstart))
     
@@ -60,8 +64,14 @@ dataObject.ones([2, 2])"""
         self.assertEqual(len(result), 1)  # 1 result
         item = result[0]
         self.assertEqual(item[0], "base")
-        self.assertEqual(item[1], "def base")
-        self.assertEqual(item[2], ":/classNavigator/icons/var.png")
+        if jedi.__version__ >= '0.18.0':
+            # jedi 0.18 reported type property for the first time (bugfix)
+            self.assertTrue(item[1].startswith(
+                "def base(self) -> Optional[Union[dataObject, np.ndarray]]:"))
+            self.assertEqual(item[2], ":/classNavigator/icons/var.png")
+        else:
+            self.assertEqual(item[1], "def base")
+            self.assertEqual(item[2], ":/classNavigator/icons/var.png")
         
         # check method
         result = jedilib.completions(text, 4, 8, path="", prefix="")
@@ -96,6 +106,25 @@ dataObject.ones([2, 2])"""
         self.assertEqual(item[0], "bytes")
         self.assertEqual(item[1], "class bytes")
         self.assertEqual(item[2], ":/classNavigator/icons/class.png")
+    
+    def test_goto_assignments(self):
+        """unittest for goto_assignments method."""
+        text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"
+        
+        assign1 = jedilib.goto_assignments(text, 3, 8, "", 0)
+        self.assertEqual(assign1, [('', -1, -1, 'builtins.int')])
+        
+        assign2 = jedilib.goto_assignments(text, 3, 8, "", 1)
+        self.assertEqual(len(assign2), 1)
+        self.assertTrue(type(assign2[0][0]) is str)
+        self.assertTrue(assign2[0][0].endswith('python_unittests'))
+        self.assertEqual(assign2[0][1:], (2, -1, 'python_unittests.data'))
+        
+        assign3 = jedilib.goto_assignments(text, 3, 8, "", 2)
+        self.assertEqual(len(assign3), 1)
+        self.assertTrue(type(assign3[0][0]) is str)
+        self.assertTrue(assign3[0][0].endswith('python_unittests'))
+        self.assertEqual(assign3[0][1:], (2, -1, 'python_unittests.data'))
     
     def test_help_notypehints(self):
         """."""
@@ -170,7 +199,10 @@ dataObject.ones([2, 2])"""
         h = jedilib.get_help(doc, 26, 14, path=p)  # dobj3.shape, word 'dobj3'
         self.assertEqual(h, [('dobj3 = dobj.reshape([3, 2])', ['dobj3: dataObject'])])
         h = jedilib.get_help(doc, 26, 19, path=p)  # dobj3.shape, word 'shape'
-        self._assertOneHelpEntry(h, "def shape", "shape: tuple\n\nGets the shape")
+        if jedi.__version__ > "0.18.0":
+            self._assertOneHelpEntry(h, "def shape", "shape: tuple\n\nGets the shape", True)
+        else:
+            self._assertOneHelpEntry(h, "def shape", "shape: tuple", True)
         
         # main code part
         h = jedilib.get_help(doc, 131, 8, path=p)  # comment -> no help
