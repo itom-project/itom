@@ -117,14 +117,22 @@ dataObject.ones([2, 2])"""
         assign2 = jedilib.goto_assignments(text, 3, 8, "", 1)
         self.assertEqual(len(assign2), 1)
         self.assertTrue(type(assign2[0][0]) is str)
-        self.assertTrue(assign2[0][0].endswith('python_unittests'))
-        self.assertEqual(assign2[0][1:], (2, -1, 'python_unittests.data'))
+        if jedi.__version__ >= "0.18.0":
+            self.assertTrue(assign2[0][0].endswith('python_unittests'))
+            self.assertEqual(assign2[0][1:], (2, -1, 'python_unittests.data'))
+        else:
+            self.assertEqual(assign2[0][0], "")
+            self.assertEqual(assign2[0][1:], (2, -1, '__main__.data'))
         
         assign3 = jedilib.goto_assignments(text, 3, 8, "", 2)
         self.assertEqual(len(assign3), 1)
         self.assertTrue(type(assign3[0][0]) is str)
-        self.assertTrue(assign3[0][0].endswith('python_unittests'))
-        self.assertEqual(assign3[0][1:], (2, -1, 'python_unittests.data'))
+        if jedi.__version__ >= "0.18.0":
+            self.assertTrue(assign3[0][0].endswith('python_unittests'))
+            self.assertEqual(assign3[0][1:], (2, -1, 'python_unittests.data'))
+        else:
+            self.assertEqual(assign3[0][0], "")
+            self.assertEqual(assign3[0][1:], (2, -1, '__main__.data'))
     
     def test_help_notypehints(self):
         """."""
