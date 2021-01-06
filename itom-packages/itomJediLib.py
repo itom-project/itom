@@ -102,11 +102,14 @@ def icon_from_typename(name, icon_type):
         'KEYWORD-PRIV': ICON_KEYWORD,
         'KEYWORD-PROT': ICON_KEYWORD,
         'PARAM': ICON_VAR,
+        'PARAM-PRIV': ICON_VAR,
+        'PARAM-PROT': ICON_VAR,
+        'PROPERTY': ICON_VAR,
+        'PROPERTY-PRIV': ICON_VAR,
+        'PROPERTY-PROT': ICON_VAR,
         'ARRAY': ICON_VAR,
         'INSTANCEELEMENT': ICON_VAR,
         'INSTANCE': ICON_VAR,
-        'PARAM-PRIV': ICON_VAR,
-        'PARAM-PROT': ICON_VAR,
         'FUNCTION': ICON_FUNC,
         'DEF': ICON_FUNC,
         'FUNCTION-PRIV': ICON_FUNC_PRIVATE,
@@ -264,59 +267,62 @@ def completions(code, line, column, path, prefix):
                 continue
             try:
                 desc = completion.description
+                compl_type = completion.type
                 
                 if jedi.__version__ >= '0.16.0':
-                    signatures = completion.get_signatures()
-                    if len(signatures) == 0:
-                        tooltip = completion.docstring()
-                        if tooltip != "":
-                            tooltip = "%s\n\n%s" % (completion.name, tooltip)
-                        tooltipList = [tooltip, ]
-                    elif len(signatures) == 1:
-                        tooltip = signatures[0].docstring()
-                        # for some properties, signatures[0].docstring() only
-                        # contains the return value, but no description, fall back
-                        # to completion.docstring() then...
-                        if "\n\n" not in tooltip:
-                            tooltip = completion.docstring()
-                        # workaround: there seems to be a bug in jedi for
-                        # properties that return something with None: NoneType()
-                        # is always returned in doc. However, completion.get_type_hint()
-                        # returns the real rettype hint. Replace it.
-                        # see also: https://github.com/davidhalter/jedi/issues/1695
-                        pattern = "NoneType()\n"
-                        if tooltip.startswith(pattern):
-                            if jedi.__version__ >= '0.17.0':
-                                rettype = completion.get_type_hint()
-                                if rettype != "":
-                                    tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
-                            else:
-                                # jedi < 0.17.0 does not have the get_type_hint() method
-                                tooltip = tooltip[len(pattern):].lstrip()
-                        tooltipList = [tooltip, ]
-                    elif len(signatures) > 1:
-                        # only use unique signatures
-                        docstrings = [signatures[0].docstring(),]
-                        for s in signatures[1:]:
-                            d = s.docstring()
-                            if d != docstrings[0]:
-                                docstrings.append(d)
-                        tooltipList = [d for d in docstrings]
+                    if compl_type == "property":
+                        tooltipList = name_tooltip_type_property(completion)
                     else:
-                        tooltip = completion.docstring()
-                        if tooltip != "":
-                            # if tooltip is empty, use desc as tooltip (done in C++)
-                            if jedi.__version__ >= '0.17.0':
-                                type_hint = completion.get_type_hint()
-                                if type_hint != "" and not tooltip.startswith(type_hint):
-                                    tooltip = type_hint + " : " + tooltip
+                        signatures = completion.get_signatures()
+                        if len(signatures) == 0:
+                            tooltip = completion.docstring()
+                            if tooltip != "":
+                                tooltip = "%s\n\n%s" % (completion.name, tooltip)
                             tooltipList = [tooltip, ]
+                        elif len(signatures) == 1:
+                            tooltip = signatures[0].docstring()
+                            # for some properties, signatures[0].docstring() only
+                            # contains the return value, but no description, fall back
+                            # to completion.docstring() then...
+                            if "\n\n" not in tooltip:
+                                tooltip = completion.docstring()
+                            # workaround: there seems to be a bug in jedi for
+                            # properties that return something with None: NoneType()
+                            # is always returned in doc. However, completion.get_type_hint()
+                            # returns the real rettype hint. Replace it.
+                            # see also: https://github.com/davidhalter/jedi/issues/1695
+                            pattern = "NoneType()\n"
+                            if tooltip.startswith(pattern):
+                                if jedi.__version__ >= '0.17.0':
+                                    rettype = completion.get_type_hint()
+                                    if rettype != "":
+                                        tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                                else:
+                                    # jedi < 0.17.0 does not have the get_type_hint() method
+                                    tooltip = tooltip[len(pattern):].lstrip()
+                            tooltipList = [tooltip, ]
+                        elif len(signatures) > 1:
+                            # only use unique signatures
+                            docstrings = [signatures[0].docstring(),]
+                            for s in signatures[1:]:
+                                d = s.docstring()
+                                if d != docstrings[0]:
+                                    docstrings.append(d)
+                            tooltipList = [d for d in docstrings]
                         else:
-                            tooltipList = [desc, ]
+                            tooltip = completion.docstring()
+                            if tooltip != "":
+                                # if tooltip is empty, use desc as tooltip (done in C++)
+                                if jedi.__version__ >= '0.17.0':
+                                    type_hint = completion.get_type_hint()
+                                    if type_hint != "" and not tooltip.startswith(type_hint):
+                                        tooltip = type_hint + " : " + tooltip
+                                tooltipList = [tooltip, ]
+                            else:
+                                tooltipList = [desc, ]
                 else:
                     tooltipList = [completion.docstring(), ]
                 
-                compl_type = completion.type
                 if compl_type == "function" and len(tooltipList) > 0:
                     """Properties, defined in C, are displayed as funtion.
                     However, if the tooltip starts with 'type : text', it
@@ -382,9 +388,9 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     for assignment in assignments:
         if assignment.full_name and \
                 assignment.full_name != "" and \
-                (assignment.module_path is None or not assignment.module_path.endswith("pyi")):
+                (assignment.module_path is None or not str(assignment.module_path).endswith("pyi")):
             result.append(
-                (assignment.module_path if assignment.module_path is not None else "",
+                (str(assignment.module_path) if assignment.module_path is not None else "",
                 assignment.line - 1 if assignment.line else -1,
                 assignment.column if assignment.column else -1,
                 assignment.full_name,
