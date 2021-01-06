@@ -1006,9 +1006,13 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
         docstring = docstring.toHtmlEscaped();
         docstring = docstring.replace('\n', br);
 
-        if (signatures != "")
+        if (signatures != "" && docstring != "")
         {
             styledTooltips.append(QString("<code>%1</code><hr><nobr>%2</nobr>").arg(signatures).arg(docstring));
+        }
+        else if (signatures != "")
+        {
+            styledTooltips.append(QString("<code>%1</code>").arg(signatures));
         }
         else if (docstring != "")
         {

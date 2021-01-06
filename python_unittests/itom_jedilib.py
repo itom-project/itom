@@ -15,6 +15,12 @@ class ItomJediLibTest(unittest.TestCase):
     def _assertStartsWith(self, statement, string):
         self.assertTrue(statement.startswith(string))
     
+    def _assertOneHelpEntry(self, tooltips, description, docstrstart):
+        self.assertEqual(len(tooltips), 1)
+        self.assertEqual(tooltips[0][0], description)
+        self.assertEqual(len(tooltips[0][1]), 1)
+        self.assertTrue(tooltips[0][1][0].startswith(docstrstart))
+    
     def test_completions_errors(self):
         """tests errors in completions."""
         text = "range(0, 4)\nbytes()"
@@ -164,9 +170,61 @@ dataObject.ones([2, 2])"""
         h = jedilib.get_help(doc, 26, 14, path=p)  # dobj3.shape, word 'dobj3'
         self.assertEqual(h, [('dobj3 = dobj.reshape([3, 2])', ['dobj3: dataObject'])])
         h = jedilib.get_help(doc, 26, 19, path=p)  # dobj3.shape, word 'shape'
-        self.assertEqual(len(h), 1)
-        self.assertEqual(h[0][0], "def shape")
-        self._assertStartsWith(h[0][1][0], "shape: tuple\n\nGets the shape")
+        self._assertOneHelpEntry(h, "def shape", "shape: tuple\n\nGets the shape")
+        
+        # main code part
+        h = jedilib.get_help(doc, 131, 8, path=p)  # comment -> no help
+        self.assertEqual(len(h), 0)
+        
+        h = jedilib.get_help(doc, 132, 7, path=p)  # pathes = ... -> help
+        self.assertEqual(h, [('pathes = sys.path', ['pathes: List[str]'])])
+        
+        h = jedilib.get_help(doc, 132, 15, path=p)  # pathes = sys... -> help
+        self._assertOneHelpEntry(h, "module sys", "Module sys\n\nThis module")
+        
+        h = jedilib.get_help(doc, 137, 7, path=p)  # result1
+        self.assertEqual(h, [('result1 = meth1_nodocstr()', ['result1: float'])])
+        h = jedilib.get_help(doc, 137, 14, path=p)  # meth1_nodocstr()
+        self.assertEqual(h, [('def meth1_nodocstr', ['meth1_nodocstr()'])])
+        
+        h = jedilib.get_help(doc, 138, 7, path=p)  # result2
+        self.assertEqual(h, [('result2 = meth1_docstr()', ['result2: float'])])
+        h = jedilib.get_help(doc, 138, 14, path=p)  # meth1_docstr()
+        self.assertEqual(h, [('def meth1_docstr', 
+            ['meth1_docstr()\n\nReturns the float result of 2 + 3.'])])
+        
+        h = jedilib.get_help(doc, 139, 7, path=p)  # result3
+        self.assertEqual(h, [('result3 = meth2_nodocstr(-3)', ['result3: None'])])
+        h = jedilib.get_help(doc, 139, 14, path=p)  # meth2_nodocstr()
+        self.assertEqual(h, 
+                         [('def meth2_nodocstr', 
+                           ['meth2_nodocstr(arg1, arg2=4.0)'])])
+        
+        h = jedilib.get_help(doc, 140, 7, path=p)  # result4
+        self.assertEqual(h, [('result4 = meth2_docstr(7)', ['result4: None'])])
+        h = jedilib.get_help(doc, 140, 14, path=p)  # meth2_docstr()
+        self.assertEqual(
+            h, 
+            [('def meth2_docstr', 
+              ['meth2_docstr(arg1, arg2=4.0)\n\nPrints the values of both arguments.']
+              )])
+        
+        h = jedilib.get_help(doc, 141, 7, path=p)  # result5
+        self.assertEqual(
+            h, 
+            [('result5 = meth3_docstr(2, 3.0, "hello", [b"test", 3])', 
+              ['result5: List[Union[float, int]]'])])
+        h = jedilib.get_help(doc, 141, 14, path=p)  # meth3_docstr()
+        self.assertEqual(
+            h, 
+            [('def meth3_docstr', 
+              ['meth3_docstr(arg1, arg2, *args)\n\nReturns a list of all unwrapped arguments.'])])
+        
+        h = jedilib.get_help(doc, 143, 7, path=p)  # mycls1
+        self.assertEqual(h, [('mycls1 = MyClass(6, 7)', ['mycls1: MyClass'])])
+        
+        h = jedilib.get_help(doc, 152, 7, path=p)  # mycls1
+        self.assertEqual(h, [('mycls1 = MyClassDocStr(6, 7)', ['mycls1: MyClassDocStr'])])
         
 
 if __name__ == '__main__':
