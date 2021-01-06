@@ -8,7 +8,12 @@ class ItomJediLibTest(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        """Loads the demo scripts itom_jedilib_demo_notypehints.py."""
+        with open("itom_jedilib_demo_notypehints.py", "rt") as fp:
+            cls.sample_notypehints = fp.read()
+    
+    def _assertStartsWith(self, statement, string):
+        self.assertTrue(statement.startswith(string))
     
     def test_completions_errors(self):
         """tests errors in completions."""
@@ -86,6 +91,83 @@ dataObject.ones([2, 2])"""
         self.assertEqual(item[1], "class bytes")
         self.assertEqual(item[2], ":/classNavigator/icons/class.png")
     
+    def test_help_notypehints(self):
+        """."""
+        doc = self.sample_notypehints
+        p = "temp.py"
+        
+        # multiline comment -> no help
+        h = jedilib.get_help(doc, 0, 15, path=p)
+        self.assertEqual(len(h), 0)
+        
+        # empty line -> no help
+        h = jedilib.get_help(doc, 1, 0, path=p)
+        self.assertEqual(len(h), 0)
+        
+        # import itom
+        h = jedilib.get_help(doc, 2, 3, path=p)  # import is nothing
+        self.assertEqual(len(h), 0)
+        h = jedilib.get_help(doc, 2, 9, path=p)  # itom is a module
+        self.assertEqual(h[0][0], "module itom")
+        self.assertTrue("Module itom" in h[0][1][0])
+        
+        # __version__ string
+        h1 = jedilib.get_help(doc, 5, 3, path=p)  # __version__ variable -> help
+        self.assertEqual(h1, [('__version__ = "2.0.0"', ['__version__: str'])])
+        h2 = jedilib.get_help(doc, 5, 14, path=p)  # equal sign (keyword) -> no help
+        self.assertEqual(len(h2), 0)
+        h3 = jedilib.get_help(doc, 5, 18, path=p)  # version string -> no help
+        self.assertEqual(len(h3), 0)
+        
+        # meth1_nodocstr
+        h = jedilib.get_help(doc, 8, 1, path=p)  # keyword -> no help
+        self.assertEqual(len(h), 0)
+        h = jedilib.get_help(doc, 8, 12, path=p)  # method itself -> help
+        self.assertEqual(h, [('def meth1_nodocstr', ['meth1_nodocstr()'])])
+        
+        # meth1_nodocstr, content
+        h = jedilib.get_help(doc, 9, 15, path=p)  # int number
+        self.assertEqual(h[0][0], 'instance int')
+        self.assertTrue("int([x]) -> integer\n" in h[0][1][0])
+        h = jedilib.get_help(doc, 9, 13, path=p)  # keyword + -> no help
+        self.assertEqual(len(h), 0)
+        h = jedilib.get_help(doc, 9, 6, path=p)  # var, no typehints, rettype None
+        self.assertEqual(h, [('var = 2 + 3', ['var: None'])])
+        h = jedilib.get_help(doc, 10, 6, path=p)  # var, no typehints, one expr: type: int
+        self.assertEqual(h, [('var2 = 3', ['var2: int'])])
+        
+        # meth1_docstr
+        h = jedilib.get_help(doc, 14, 1, path=p)  # keyword -> no help
+        self.assertEqual(len(h), 0)
+        h = jedilib.get_help(doc, 14, 12, path=p)  # method itself -> help
+        self.assertEqual(
+            h, 
+            [('def meth1_docstr',
+              ['meth1_docstr()\n\nReturns the float result of 2 + 3.'])
+            ]
+        )
+        
+        # meth2_nodocstr
+        h = jedilib.get_help(doc, 20, 14, path=p)  # signature
+        self.assertEqual(h, [('def meth2_nodocstr', ['meth2_nodocstr(arg1, arg2=4.0)'])])
+        
+        h = jedilib.get_help(doc, 20, 22, path=p)  # arg1
+        h2 = jedilib.get_help(doc, 21, 11, path=p)  # the same arg1
+        self.assertEqual(h, [('param arg1', ['param arg1'])])
+        self.assertEqual(h, h2)
+        
+        h = jedilib.get_help(doc, 20, 28, path=p)  # arg2
+        h2 = jedilib.get_help(doc, 21, 18, path=p)  # the same arg2
+        self.assertEqual(h, [('param arg2=4.0', ['param arg2=4.0'])])
+        self.assertEqual(h, h2)
+        
+        h = jedilib.get_help(doc, 26, 14, path=p)  # dobj3.shape, word 'dobj3'
+        self.assertEqual(h, [('dobj3 = dobj.reshape([3, 2])', ['dobj3: dataObject'])])
+        h = jedilib.get_help(doc, 26, 19, path=p)  # dobj3.shape, word 'shape'
+        self.assertEqual(len(h), 1)
+        self.assertEqual(h[0][0], "def shape")
+        self._assertStartsWith(h[0][1][0], "shape: tuple\n\nGets the shape")
+        
 
 if __name__ == '__main__':
     unittest.main(module='itom_jedilib', exit=False)
