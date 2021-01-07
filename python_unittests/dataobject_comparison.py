@@ -48,5 +48,34 @@ class DataObjectComparison(unittest.TestCase):
         with self.assertRaises(ValueError):
             bool(many)
 
+    def test_cmplx(self):
+            # using complex comparators to force not all True / not all False
+            # using randN and comparing, also using multiple dimensions to check implementation
+            # using np.any() / np.all() to circumvent the current bool() 'error'
+            
+            dtypes = ['complex64','complex128']
+            for dt in dtypes:
+                zero = dataObject.zeros([2,3,4], dtype=dt)
+                self.assertFalse(np.any(zero))
+                
+                one = dataObject.ones([2,3,4], dtype=dt)
+                self.assertTrue(np.all(one))
+                
+
+                many = dataObject.randN([2,3,4], dtype=dt)
+                # full DObject compare
+                compmany = many.copy()
+                self.assertTrue(np.all(many==compmany))
+                compmany[0,0,0]*=5 #setting one value to be changed
+                self.assertTrue(np.any(many!=compmany))
+                
+                #DObj to scalar
+                self.assertFalse(np.any(many == 2+3j)) # randN -> all values should be < 1 -> should never be True
+                self.assertTrue(np.all(many != 2+3j))
+            
+            #many = dataObject.randN([2,3,4])
+            #with self.assertRaises(ValueError):
+            #    bool(many)
+            
 if __name__ == '__main__':
     unittest.main(module='dataobject_comparison', exit=False)
