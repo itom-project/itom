@@ -421,6 +421,79 @@ namespace Utils
 
         return result + signature;
     }
+
+    //---------------------------------------------------------------------------
+    /*
+    the signature is represented as <code> monospace section.
+    this requires much more space than ordinary letters. 
+    Therefore reduce the maximum line length to 88/2.
+    */
+    QStringList parseStyledTooltipsFromSignature(
+        const QStringList &signatures, 
+        const QString &docstring,
+        int maxLength /*= 44*/)
+    {
+        QStringList styledTooltips;
+        QStringList defs = signatures;
+
+        
+
+        for (int i = 0; i < defs.size(); ++i)
+        {
+            if (defs[i].size() > maxLength)
+            {
+                defs[i] = Utils::signatureWordWrap(defs[i], maxLength);
+            }
+        }
+
+        QString sigs = defs.join("\n");
+
+        sigs = sigs.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+
+        // search for the last occurence of ") ->" and replaces the arrow
+        // by a real arrow, since the -> arrow will be wrapped (although <nobr>).
+        const QString pattern(") -&gt; ");
+        int idx = sigs.lastIndexOf(pattern);
+
+        if (idx >= 0)
+        {
+            sigs = sigs.replace(idx, pattern.size(), ") &#8594; ");
+        }
+
+        QStringList s = sigs.split('\n', QString::SkipEmptyParts);
+
+        // for unbreakable paragraphs, do not use <nobr>, but <p style=...>
+        // see also: https://bugreports.qt.io/browse/QTBUG-1135
+        const QString pstart = "<p style=\"white-space:pre; padding-bottom:0px; margin-bottom:0px;\">";
+        const QString br = "<br>";
+
+        if (s.size() > 0)
+        {
+            sigs = pstart + s.join(br) + "</p>";
+        }
+        else
+        {
+            sigs = "";
+        }
+
+        QString docstr = docstring.toHtmlEscaped().replace('\n', br);
+
+        if (sigs != "" && docstr != "")
+        {
+            styledTooltips.append(QString("<code>%1</code><hr>%2%3</p>")
+                .arg(sigs).arg(pstart).arg(docstr));
+        }
+        else if (sigs != "")
+        {
+            styledTooltips.append(QString("<code>%1</code>").arg(sigs));
+        }
+        else if (docstr != "")
+        {
+            styledTooltips.append(QString("%1%2</p>").arg(pstart).arg(docstr));
+        }
+
+        return styledTooltips;
+    }
 };
 
 } //end namespace ito

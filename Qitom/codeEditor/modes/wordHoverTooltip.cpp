@@ -283,59 +283,18 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
     section with the definitions and wrap after maximum line length.
     Make a <hr> after the first section
     */
-    const QString br("<br>");
     QStringList styledTooltips;
 
     foreach(const auto &tip, tooltips)
     {
-        QString signatures;
-        QString docstring;
-
-        QStringList defs = tip.first;
-
         // the signature is represented as <code> monospace section.
         // this requires much more space than ordinary letters. 
         // Therefore reduce the maximum line length to 88/2.
-        const int maxLength = 44;
-
-        for (int i = 0; i < defs.size(); ++i)
-        {
-            if (defs[i].size() > maxLength)
-            {
-                defs[i] = Utils::signatureWordWrap(defs[i], maxLength);
-            }
-        }
-
-        signatures = defs.join("\n");
-        docstring = tip.second;
-
-        signatures = signatures.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
-        QStringList s = signatures.split('\n', QString::SkipEmptyParts);
-
-        if (s.size() > 0)
-        {
-            signatures = "<nobr>" + s.join("</nobr><br><nobr>") + "</nobr>";
-        }
-        else
-        {
-            signatures = "";
-        }
-
-        docstring = docstring.toHtmlEscaped();
-        docstring = docstring.replace('\n', br);
-
-        if (signatures != "" && docstring != "")
-        {
-            styledTooltips.append(QString("<code>%1</code><hr><nobr>%2</nobr>").arg(signatures).arg(docstring));
-        }
-        else if (signatures != "")
-        {
-            styledTooltips.append(QString("<code>%1</code>").arg(signatures));
-        }
-        else if (docstring != "")
-        {
-            styledTooltips.append(QString("<nobr>%1</nobr>").arg(docstring));
-        }
+        styledTooltips << Utils::parseStyledTooltipsFromSignature(
+            tip.first,
+            tip.second,
+            44
+        );
     }
 
     if (styledTooltips.size() == 0)
