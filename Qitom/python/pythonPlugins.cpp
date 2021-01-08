@@ -403,6 +403,57 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 }
 
 
+//-------------------------------------------------------------------------------------
+PyObject* plugin_userMutexLock(ito::AddInBase *aib, PyObject* args, PyObject* kwds, bool &userMutexLocked)
+{
+    if (aib->getBasePlugin()->getAddInInterfaceVersion() < 0x040200)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "The plugin must implement the AddInInterface version >= 4.2 to support the user mutex.");
+    }
+
+    const char *kwlist[] = { "timeout",  NULL };
+    int timeout = 3000;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", const_cast<char**>(kwlist), &timeout))
+    {
+        return NULL;
+    }
+
+    bool r = aib->getUserMutex().tryLock(timeout);
+
+    userMutexLocked = r;
+
+    if (r)
+    {
+        Py_RETURN_TRUE;
+    }
+    else
+    {
+        Py_RETURN_FALSE;
+    }
+}
+
+
+//-------------------------------------------------------------------------------------
+PyObject* plugin_userMutexUnlock(ito::AddInBase *aib, bool &userMutexLocked)
+{
+    if (aib->getBasePlugin()->getAddInInterfaceVersion() < 0x040200)
+    {
+        return PyErr_Format(PyExc_RuntimeError, "The plugin must implement the AddInInterface version >= 4.2 to support the user mutex.");
+    }
+
+    // unlock will lead to an undefined error if it is not locked, yet.
+    // Therefore, try to lock it immediately... such that unlock will always work.
+    aib->getUserMutex().tryLock(0);
+
+    aib->getUserMutex().unlock();
+
+    userMutexLocked = false;
+
+    Py_RETURN_NONE;
+}
+
+
 
 //-------------------------------------------------------------------------------------
 /** returns the names of extended Functionality available in a plugin
@@ -1226,6 +1277,60 @@ See Also \n\
 -------- \n\
 getExecFuncsInfo");
 
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyPlugin_userMutex_tryLock_doc, "tryLock(timeout = 3000) -> bool \n\
+\n\
+Tries to lock the user mutex of this plugin. \n\
+\n\
+Every plugin contains a user mutex, that can be used for arbitrary purposes. \n\
+It is not used for any official purposes. You can for instance use this mutex \n\
+both from Python and other C++ threads to protect a series of calls to this \n\
+plugin to not to be interrupted by other participants. However, it is the \n\
+full responsibility of the programmer to carefully use this mutex. \n\
+\n\
+Please be careful, that this method can lead to a deadlock if ``timeout`` is \n\
+set to a negative value (inifinite wait) and if the mutex is not released \n\
+by any other thread. Hint: A Python thread is no `real` thread, it must be \n\
+a real C++ thread. If you want to use the mutex within two or more Python \n\
+threads, it is recommended, to call this method with a defined ``timeout`` \n\
+within a loop and wait for this method to return ``True``. This allows \n\
+unlocking the mutex by another thread. \n\
+\n\
+This method is new for plugins that implement the AddInInterface >= 4.2. \n\
+\n\
+Parameters \n\
+---------- \n\
+timeout : int \n\
+    This method will wait for at most ``timeout`` milliseconds for the \n\
+    mutex to become available. If this value is negative, it will wait forever \n\
+    until the mutex become available.\n\
+\n\
+Returns \n\
+------- \n\
+bool \n\
+    ``True`` if the user defined mutex could be locked, else ``False``. \n\
+\n\
+See Also \n\
+-------- \n\
+unlock");
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyPlugin_userMutex_unlock_doc, "unlock() \n\
+\n\
+Tries to unlock the user mutex of this plugin. \n\
+\n\
+Every plugin contains a user mutex, that can be used for arbitrary purposes. \n\
+It is not used for any official purposes. You can for instance use this mutex \n\
+both from Python and other C++ threads to protect a series of calls to this \n\
+plugin to not to be interrupted by other participants. However, it is the \n\
+full responsibility of the programmer to carefully use this mutex. \n\
+fu\n\
+This method is new for plugins that implement the AddInInterface >= 4.2. \n\
+\n\
+See Also \n\
+-------- \n\
+lock");
 //general docstrings END
 
 
@@ -1358,7 +1463,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 {
     if (self->weakreflist != NULL)
     {
-        PyObject_ClearWeakRefs((PyObject *) self);
+        PyObject_ClearWeakRefs((PyObject *)self);
     }
 
     if (self->actuatorObj)
@@ -1375,7 +1480,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            
+
             if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
@@ -1388,11 +1493,20 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 
             waitCond->deleteSemaphore();
             waitCond = NULL;
-            
+
             PythonCommon::transformRetValToPyException(retval);
         }
     }
+
     DELETE_AND_SET_NULL(self->signalMapper);
+
+    if (self->userMutexLocked)
+    {
+        // unlock the user mutex (if it has not been locked by Python yet, this
+        // will be temporarily done in the unlock method)
+        PyActuatorPlugin_userMutex_unlock(self);
+    }
+
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -2683,6 +2797,20 @@ PyObject* PythonPlugins::PyActuatorPlugin_hideToolbox(PyActuatorPlugin* self)
 }
 
 //-------------------------------------------------------------------------------------
+PyObject* PythonPlugins::PyActuatorPlugin_userMutex_tryLock(PyActuatorPlugin* self, PyObject* args, PyObject* kwds)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    return plugin_userMutexLock(aib, args, kwds, self->userMutexLocked);
+}
+
+//-------------------------------------------------------------------------------------
+PyObject* PythonPlugins::PyActuatorPlugin_userMutex_unlock(PyActuatorPlugin* self)
+{
+    ito::AddInBase *aib = self->actuatorObj;
+    return plugin_userMutexUnlock(aib, self->userMutexLocked);
+}
+
+//-------------------------------------------------------------------------------------
 /** helper function to parse the positioning parameters for an actuator
 *   @param [in]  args       arguments passed to the function (in python)
 *   @param [in/out] cargs   parsed argument values
@@ -3144,6 +3272,8 @@ PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"connect", (PyCFunction)PythonPlugins::PyActuatorPlugin_connect, METH_VARARGS | METH_KEYWORDS, pyActuatorConnect_doc},
    {"disconnect", (PyCFunction)PythonPlugins::PyActuatorPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, pyActuatorDisconnect_doc},
    {"info",(PyCFunction)PythonPlugins::PyActuatorPlugin_info, METH_VARARGS, pyActuatorInfo_doc},
+   {"userMutexTryLock", (PyCFunction)PythonPlugins::PyActuatorPlugin_userMutex_tryLock, METH_VARARGS | METH_KEYWORDS, PyPlugin_userMutex_tryLock_doc },
+   {"userMutexUnlock", (PyCFunction)PythonPlugins::PyActuatorPlugin_userMutex_unlock, METH_NOARGS, PyPlugin_userMutex_unlock_doc },
    {NULL}  /* Sentinel */
 };
 
@@ -3328,13 +3458,18 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
             waitCond = NULL;
 
             PythonCommon::transformRetValToPyException(retval);
-            /*if (retval != ito::retOk)
-            {
-                PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
-            }*/
         }
     }
+
     DELETE_AND_SET_NULL(self->signalMapper);
+
+    if (self->userMutexLocked)
+    {
+        // unlock the user mutex (if it has not been locked by Python yet, this
+        // will be temporarily done in the unlock method)
+        PyDataIOPlugin_userMutex_unlock(self);
+    }
+
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -5339,6 +5474,20 @@ PyObject* PythonPlugins::PyDataIOPlugin_hideToolbox(PyDataIOPlugin* self)
 }
 
 //-------------------------------------------------------------------------------------
+PyObject* PythonPlugins::PyDataIOPlugin_userMutex_tryLock(PyDataIOPlugin* self, PyObject* args, PyObject* kwds)
+{
+    ito::AddInBase *aib = self->dataIOObj;
+    return plugin_userMutexLock(aib, args, kwds, self->userMutexLocked);
+}
+
+//-------------------------------------------------------------------------------------
+PyObject* PythonPlugins::PyDataIOPlugin_userMutex_unlock(PyDataIOPlugin* self)
+{
+    ito::AddInBase *aib = self->dataIOObj;
+    return plugin_userMutexUnlock(aib, self->userMutexLocked);
+}
+
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
     {NULL}  /* Sentinel */
 };
@@ -5374,8 +5523,15 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"connect", (PyCFunction)PythonPlugins::PyDataIOPlugin_connect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_connect_doc},
    {"disconnect", (PyCFunction)PythonPlugins::PyDataIOPlugin_disconnect, METH_VARARGS | METH_KEYWORDS, PyDataIOPlugin_disconnect_doc },
    { "info",(PyCFunction)PythonPlugins::PyDataIOPlugin_info, METH_VARARGS,PyDataIOPlugin_info_doc },
+   {"userMutexTryLock", (PyCFunction)PythonPlugins::PyDataIOPlugin_userMutex_tryLock, METH_VARARGS |METH_KEYWORDS, PyPlugin_userMutex_tryLock_doc },
+   {"userMutexUnlock", (PyCFunction)PythonPlugins::PyDataIOPlugin_userMutex_unlock, METH_NOARGS, PyPlugin_userMutex_unlock_doc },
    {NULL}  /* Sentinel */
 };
+
+
+
+
+
 
 //-------------------------------------------------------------------------------------
 PyModuleDef PythonPlugins::PyDataIOPluginModule = {
