@@ -4370,20 +4370,10 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
 //-------------------------------------------------------------------------------------
 /*static*/ int PythonDataObject::PyDataObj_nbBool(PyDataObject *self)
 {
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
-        PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
+        PyErr_SetString(PyExc_RuntimeError, "DataObject is nullptr.");
         return -1;
-    }
-
-    //TODO: Remove this warning (entire if/else-case), added after the release of itom 3.2.1, if the new behaviour (similar to numpy) should be set.
-    if (PyErr_WarnEx(PyExc_DeprecationWarning, "bool(dataObject) will change in the future. It will not return True in all cases, but return the truth value of a dataObject (only valid if len of dataObject is equal to 1).", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
-    {
-        return -1;
-    }
-    else
-    {
-        return 1;
     }
 
     switch (self->dataObject->getTotal())
@@ -4393,9 +4383,19 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
         break;
     case 1:
     {
+        // currently the biggest data type of dataObject is complex128 -> 16 * 8 bit.
+        // Therefore zeros is initialized with 16 * 8bit value 0 for a zero comparison.
+        int elemSize = self->dataObject->elemSize();
+
+        if (elemSize > 16)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Datatype of dataObject is too large for bool implementation.");
+            return -1;
+        }
+
         const uchar zeros[] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-        uchar* data = self->dataObject->getCvPlaneMat(0)->data;
-        if (memcmp(zeros, data, self->dataObject->elemSize()) == 0)
+        const uchar* data = self->dataObject->getCvPlaneMat(0)->data;
+        if (memcmp(zeros, data, elemSize) == 0)
         {
             return 0;
         }
