@@ -79,9 +79,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
         BookmarkModel *bookmarkModel,
         QWidget *parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
-    m_tab(NULL),
-    m_pWidgetFindWord(NULL),
-    m_pDialogReplace(NULL),
+    m_tab(nullptr),
+    m_pWidgetFindWord(nullptr),
+    m_pDialogReplace(nullptr),
     m_actTabIndex(-1),
     m_tabContextMenu(NULL),
     m_winMenu(NULL),
@@ -936,6 +936,10 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         name = info.fileName();
     }
     m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
+
+    // add the new index to the stackHistory.
+    m_stackHistory.prepend(m_tab->count() - 1);
+
     //!< activate appended tab
     m_tab->setCurrentIndex(m_tab->count() - 1);
     m_tab->setTabToolTip(m_tab->count() - 1, toolTip);
@@ -947,6 +951,10 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     connect(editorWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
     connect(editorWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
+    connect(
+        editorWidget, &ScriptEditorWidget::tabChangeRequested, 
+        this, &ScriptDockWidget::tabChangedRequest
+    );
     
     // Load the right Class->Method model for this Editor
     connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -973,11 +981,24 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
 */
 ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 {
-    if (index < 0 || index >= m_tab->count()) return NULL;
+    if (index < 0 || index >= m_tab->count())
+    {
+        return nullptr;
+    }
 
     ScriptEditorWidget* removedWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
 
-    //removedWidget->reportCurrentCursorAsGoBackNavigationItem("close script", removedWidget->getUID());
+    // adapt m_stackHistory
+    m_stackHistory.removeOne(index); //remove the index
+
+    for (int i = 0; i < m_stackHistory.size(); ++i)
+    {
+        if (m_stackHistory[i] > index)
+        {
+            // decrement index at pos i, since index is removed
+            m_stackHistory[i]--;
+        }
+    }
 
     m_tab->removeTab(index);
     disconnect(removedWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
@@ -986,6 +1007,10 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     disconnect(removedWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
+    disconnect(
+        removedWidget, &ScriptEditorWidget::tabChangeRequested,
+        this, &ScriptDockWidget::tabChangedRequest
+    );
 
     // Class Navigator
     disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -993,7 +1018,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     updateEditorActions();
     updatePythonActions();
 
-    if (index>0)
+    if (index > 0)
     {
         m_tab->setCurrentIndex(index - 1);
     }
@@ -1037,6 +1062,13 @@ bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (withou
 void ScriptDockWidget::currentTabChanged(int index)
 {
     m_actTabIndex = index;
+
+    if (m_stackHistory.contains(index))
+    {
+        // move the current index to the front
+        m_stackHistory.removeOne(index);
+        m_stackHistory.prepend(index);
+    }
 
     if (index >= 0)
     {
@@ -1124,7 +1156,8 @@ void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 void ScriptDockWidget::tabCloseRequested(int index)
 {
     ScriptEditorWidget *sew = getEditorByIndex(index);
-    if (sew == NULL)
+
+    if (sew == nullptr)
     {
         return;
     }
@@ -1170,8 +1203,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst, bool closeScriptWid
     {
         ScriptEditorWidget *sew = this->removeEditor(index);
         sew->deleteLater();
-        //delete sew;
-        sew = NULL;
+        sew = nullptr;
     }
 
     if (m_tab->count() == 0 && closeScriptWidgetIfLastTabClosed)
@@ -2573,6 +2605,12 @@ void ScriptDockWidget::findWordWidgetFinished()
 void ScriptDockWidget::setCurrentIndex(int index)
 {
     m_tab->setCurrentIndex(index);
+
+    if (m_stackHistory.contains(index))
+    {
+        m_stackHistory.removeOne(index);
+        m_stackHistory.prepend(index);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2585,6 +2623,28 @@ void ScriptDockWidget::mnuCopyFilename()
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(sew->getFilename(), QClipboard::Clipboard);
     }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+Tab navigation with "most recently used" behaviour.
+It's fired when pressing the Ctrl+Tab shortcut.
+*/
+void ScriptDockWidget::tabChangedRequest()
+{
+    // pass getActiveInstance as parent, since this is either the
+    // itom main window (docked mode) or the window of the abstractDockWidget
+    // if undocked.
+    m_tabSwitcherWidget = QSharedPointer<TabSwitcherWidget>(
+        new TabSwitcherWidget(
+            m_tab, 
+            m_stackHistory, 
+            this,
+            getActiveInstance()));
+
+    m_tabSwitcherWidget->show();
+    m_tabSwitcherWidget->selectRow(1);
+    m_tabSwitcherWidget->setFocus();
 }
 
 } //end namespace ito

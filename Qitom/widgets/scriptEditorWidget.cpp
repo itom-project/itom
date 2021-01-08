@@ -348,6 +348,10 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
     editorMenu->addSeparator();
 
+    QShortcut *tabChangedShortcut  = new QShortcut(QKeySequence(tr("Ctrl+Tab", "QShortcut")), this);
+    tabChangedShortcut->setContext(Qt::WidgetShortcut);
+    connect(tabChangedShortcut, &QShortcut::activated, this, &ScriptEditorWidget::tabChangeRequest);
+
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
@@ -2457,6 +2461,12 @@ void ScriptEditorWidget::onCursorPositionChanged()
         found = false;
         return QString();
     }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::tabChangeRequest()
+{
+    emit tabChangeRequested();
 }
 
 } // end namespace ito

@@ -218,6 +218,7 @@ signals:
     void marginChanged();
     void requestModelRebuild(ScriptEditorWidget *editor);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
+    void tabChangeRequested();
 
 public slots:
     void triggerCodeChecker();
@@ -284,6 +285,8 @@ private slots:
 
     void dumpFoldsToConsole(bool);
     void onCursorPositionChanged();
+
+    void tabChangeRequest();
 };
 
 } //end namespace ito
