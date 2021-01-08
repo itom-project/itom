@@ -909,7 +909,12 @@ void ScriptEditorWidget::menuInsertCodec()
         items = codec.split(" ");
         if (items.size() > 0)
         {
-            setPlainText(QString("# coding=%1\n%2").arg(items[0]).arg(toPlainText()));
+            QTextCursor currentCursor = textCursor();
+            QString newText = QString("# coding=%1").arg(items[0]);
+            setPlainText(QString("%1\n%2").arg(newText).arg(toPlainText()));
+            currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+            currentCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, newText.size());
+            setTextCursor(currentCursor);
             setModified(true);
         }
     }
