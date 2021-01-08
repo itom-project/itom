@@ -31,6 +31,7 @@
 #include "../codeEditor/panels/breakpointPanel.h"
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
 
@@ -193,6 +194,7 @@ private:
     QSharedPointer<ErrorLineHighlighterMode> m_errorLineHighlighterMode;
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
+    QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
 
     static const QString lineBreak;
     static int currentMaximumUID;

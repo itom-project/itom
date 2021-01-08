@@ -205,6 +205,9 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
+    m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
+    modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
+
     if (m_symbolMatcher)
     {
         m_symbolMatcher->setMatchBackground(QColor("lightGray"));
@@ -317,6 +320,8 @@ void ScriptEditorWidget::loadSettings()
     }
 
     m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
+
+    m_wordHoverTooltipMode->setEnabled(settings.value("helpTooltipEnabled", true).toBool());
 
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
