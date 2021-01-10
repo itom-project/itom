@@ -328,6 +328,10 @@ void ScriptEditorWidget::loadSettings()
     setSelectLineOnCopyEmpty(settings.value("selectLineOnCopyEmpty", true).toBool());
     setKeepIndentationOnPaste(settings.value("keepIndentationOnPaste", true).toBool());
 
+    m_pyAutoIndentMode->setAutoStripTrailingSpacesAfterReturn(
+        settings.value("autoStripTrailingSpacesAfterReturn", true).toBool()
+    );
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();

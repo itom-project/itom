@@ -122,19 +122,18 @@ void AbstractCodeEditorWidget::loadSettings()
     }*/
 
     QSharedPointer<PyAutoIndentMode> pyAutoIndentMode = modes()->get("PyAutoIndentMode").dynamicCast<PyAutoIndentMode>();
+
     if (pyAutoIndentMode)
     {
-        pyAutoIndentMode->setEnabled(settings.value("autoIndent", true).toBool()); //auto indentation
+        //always enable=true, control the two functionalities via 
+        //enableAutoIndent and setAutoStripTrailingSpacesAfterReturn
+        pyAutoIndentMode->setEnabled(true); 
+        pyAutoIndentMode->enableAutoIndent(settings.value("autoIndent", true).toBool()); //auto indentation
     }
 
     setUseSpacesInsteadOfTabs(!settings.value("indentationUseTabs", false).toBool()); //tabs (true) or whitespace (false)
     setTabLength(settings.value("indentationWidth", 4).toInt()); //numbers of whitespaces   
     setShowIndentationGuides(settings.value("showIndentationGuides", true).toBool());
-
-    //TODO
-    //spacing above and below each line
-    //setExtraAscent(settings.value("extraAscent", 0).toInt());
-    //setExtraDescent(settings.value("extraDescent", 0).toInt());
 
     // ------------ calltips --------------------------------------------------------
     m_calltipsMode->setEnabled(settings.value("calltipsEnabled",true).toBool());

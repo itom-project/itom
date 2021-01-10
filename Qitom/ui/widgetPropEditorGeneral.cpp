@@ -37,7 +37,6 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
 {
     ui.setupUi(this);
 
-    ui.groupExtends->setVisible(false);
     ui.groupEolMode->setVisible(false);
 }
 
@@ -75,9 +74,7 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkIndentShowGuides->setChecked(settings.value("showIndentationGuides", true).toBool());
     ui.checkShowWhitespace->setChecked(settings.value("showWhitespace", true).toBool());
 
-    //Extends
-    ui.spinExtraAscent->setValue(settings.value("extraAscent", 0).toInt());
-    ui.spinExtraDescent->setValue(settings.value("extraDescent", 0).toInt());
+    ui.checkStripSpacesAfterReturn->setChecked(settings.value("autoStripTrailingSpacesAfterReturn", true).toBool());
 
     //cut, copy, paste behaviour
     ui.checkSelectLineOnCopyEmpty->setChecked(settings.value("selectLineOnCopyEmpty", true).toBool());
@@ -114,9 +111,7 @@ void WidgetPropEditorGeneral::writeSettings()
     settings.setValue("showIndentationGuides", ui.checkIndentShowGuides->isChecked());
     settings.setValue("showWhitespace", ui.checkShowWhitespace->isChecked());
 
-    //Extends
-    settings.setValue("extraAscent", ui.spinExtraAscent->value());
-    settings.setValue("extraDescent", ui.spinExtraDescent->value());
+    settings.setValue("autoStripTrailingSpacesAfterReturn", ui.checkStripSpacesAfterReturn->isChecked());
 
     //cut, copy, paste behaviour
     settings.setValue("selectLineOnCopyEmpty", ui.checkSelectLineOnCopyEmpty->isChecked());
