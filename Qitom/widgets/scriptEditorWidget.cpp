@@ -905,20 +905,29 @@ void ScriptEditorWidget::menuInsertCodec()
 {
     QStringList items;
     bool ok;
-    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
-    QString codec = QInputDialog::getItem(this, tr("Insert Codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, false, &ok);
+    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" 
+          << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
+
+    QString codec = QInputDialog::getItem(
+        this, 
+        tr("Insert Codec"), 
+        tr("Choose an encoding of the file which is added to the first line of the script"), 
+        items, 
+        2, 
+        false, 
+        &ok
+    );
 
     if (codec != "" && ok)
     {
         items = codec.split(" ");
+
         if (items.size() > 0)
         {
+            QString newText = QString("# coding=%1\n").arg(items[0]);
             QTextCursor currentCursor = textCursor();
-            QString newText = QString("# coding=%1").arg(items[0]);
-            setPlainText(QString("%1\n%2").arg(newText).arg(toPlainText()));
             currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-            currentCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, newText.size());
-            setTextCursor(currentCursor);
+            currentCursor.insertText(newText);
             setModified(true);
         }
     }
