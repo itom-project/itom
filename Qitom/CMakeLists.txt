@@ -394,6 +394,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
@@ -616,6 +617,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp

@@ -372,6 +372,8 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
     m_editorMenuActions["foldAll"] = foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
     editorMenu->addSeparator();
+    editorMenu->addAction(QIcon(), tr("Style Formatting"), this, SLOT(menuPyCodeFormatting()));
+    editorMenu->addSeparator();
     m_editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
 }
 
@@ -955,6 +957,48 @@ void ScriptEditorWidget::menuFoldUnfoldToplevel()
 void ScriptEditorWidget::menuFoldUnfoldAll()
 {
     m_foldingPanel->toggleFold(false);
+}
+
+//-------------------------------------------------------------------------------------
+void doDeleteLater(QObject *obj)
+{
+    obj->deleteLater();
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuPyCodeFormatting()
+{
+    m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
+    connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
+        this, &ScriptEditorWidget::pyCodeFormatterDone);
+    ito::RetVal retval = m_pyCodeFormatter->startFormatting(toPlainText(), this);
+
+    if (retval.containsError())
+    {
+        QMessageBox::critical(
+            this,
+            tr("Error starting code formatting"),
+            tr("The code formatting could not be started: %1").arg(retval.errorMessage())
+        );
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
+{
+    if (success && code != toPlainText())
+    {
+        QTextCursor cursor = textCursor();
+        cursor.movePosition(QTextCursor::Start);
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        cursor.beginEditBlock();
+        cursor.removeSelectedText();
+        cursor.insertText(code);
+        cursor.endEditBlock();
+        setModified(true);
+    }
+
+    m_pyCodeFormatter.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
