@@ -15,6 +15,7 @@
         <qresource prefix="/editor">
         <file alias="icons/editCut.png">icons_dark/editCut.png</file>
         <file alias="icons/find.png">icons_dark/find.png</file>
+        <file alias="icons/leftAlign.png">icons_dark/leftAlign.png</file>
     </qresource>
 </RCC>
 

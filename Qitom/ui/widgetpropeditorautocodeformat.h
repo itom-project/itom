@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-
+  
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -18,51 +18,50 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-    
 *********************************************************************** */
 
 #pragma once
 
-#include <qobject.h>
-#include <qprocess.h>
-#include <qstring.h>
-#include <qsharedpointer.h>
-#include <qprogressdialog.h>
+#include "abstractPropertyPageWidget.h"
 
-#include "common/retVal.h"
+#include <qwidget.h>
+#include <qsharedpointer.h>
+
+#include "../codeEditor/pyCodeFormatter.h"
+
+#include "ui_widgetPropEditorAutoCodeFormat.h"
 
 namespace ito
 {
 
-    class PyCodeFormatter : public QObject
-    {
-        Q_OBJECT
-    public:
-        PyCodeFormatter(QObject *parent = nullptr);
-        ~PyCodeFormatter();
+class WidgetPropEditorAutoCodeFormat : public AbstractPropertyPageWidget
+{
+    Q_OBJECT
 
-        ito::RetVal startFormatting(const QString &cmd, const QString &code, QWidget *dialogParent = nullptr);
+public:
+    WidgetPropEditorAutoCodeFormat(QWidget *parent = NULL);
+    ~WidgetPropEditorAutoCodeFormat();
 
-    private:
-        QProcess m_process;
-        QString m_currentCode;
-        QString m_currentError;
-        QSharedPointer<QProgressDialog> m_progressDialog;
-        bool m_isCancelling;
+    void readSettings();
+    void writeSettings();
 
+protected:
+    static void deleteLater(QObject *obj);
 
-    private slots:
-        void errorOccurred(QProcess::ProcessError error);
-        void finished(int exitCode, QProcess::ExitStatus exitStatus);
-        void readyReadStandardError();
-        void readyReadStandardOutput();
-        void started();
-        void stateChanged(QProcess::ProcessState newState);
-        void cancelRequested();
+private:
+    Ui::WidgetPropEditorAutoCodeFormat ui;
+    QString m_demoCode;
+    QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    
+signals:
 
-    signals:
-        void formattingDone(bool success, QString code);
+public slots:
 
-    };
+private slots:
+    void on_btnTest_clicked();
+    void on_btnTake_clicked();
 
-}; // end namepsace ito
+    void testCodeFormatterDone(bool success, QString code);
+};
+
+} //end namespace ito

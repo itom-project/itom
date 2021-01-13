@@ -190,6 +190,7 @@ private:
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
@@ -248,6 +249,7 @@ public slots:
     void menuDebugScript();
     void menuStopScript();
 
+    void menuPyCodeFormatting();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
@@ -293,7 +295,7 @@ private slots:
 
     void tabChangeRequest();
 
-    void menuPyCodeFormatting();
+    
     void pyCodeFormatterDone(bool success, QString code);
 };
 

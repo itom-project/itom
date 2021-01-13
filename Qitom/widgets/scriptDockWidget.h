@@ -150,6 +150,7 @@ private:
     ShortcutAction *m_uncommentAction;
     ShortcutAction *m_indentAction;
     ShortcutAction *m_unindentAction;
+    ShortcutAction *m_autoCodeFormatAction;
     ShortcutAction *m_scriptRunAction;
     ShortcutAction *m_scriptRunSelectionAction;
     ShortcutAction *m_scriptDebugAction;
@@ -185,6 +186,8 @@ private:
     QToolBar* m_editToolBar;
     QToolBar* m_scriptToolBar;
     QToolBar* m_bookmarkToolBar;
+
+    QString m_autoCodeFormatCmd;
 
     // ClassNavigator
     QWidget *m_classMenuBar;
@@ -271,6 +274,7 @@ private slots:
     void mnuToggleBookmark();
     void mnuInsertCodec();
     void mnuCopyFilename();
+    void mnuPyCodeFormatting();
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);

@@ -68,7 +68,11 @@ PyCodeFormatter::~PyCodeFormatter()
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal PyCodeFormatter::startFormatting(const QString &code, QWidget *dialogParent /*= nullptr*/)
+/*
+\param cmd is the command <cmd> in the call python -m <cmd> and must allow passing
+    the code string via stdin.
+*/
+ito::RetVal PyCodeFormatter::startFormatting(const QString &cmd, const QString &code, QWidget *dialogParent /*= nullptr*/)
 {
     m_isCancelling = false;
 
@@ -105,8 +109,9 @@ ito::RetVal PyCodeFormatter::startFormatting(const QString &code, QWidget *dialo
     }
 
     m_currentCode = code;
+    m_currentError = "";
 
-    QString exec = QString("%1 -m black -q -l 88 -").arg(pythonPath);
+    QString exec = QString("%1 -m %2").arg(pythonPath).arg(cmd);
     m_process.start(exec);
 
     return ito::retOk;
@@ -159,15 +164,14 @@ void PyCodeFormatter::finished(int exitCode, QProcess::ExitStatus exitStatus)
     }
     else
     {
-        emit formattingDone(false, "");
+        emit formattingDone(false, m_currentError);
     }
 }
 
 //-------------------------------------------------------------------------------------
 void PyCodeFormatter::readyReadStandardError()
 {
-    std::cerr << "PyCodeFormatter error: "
-        << m_process.readAllStandardError().data() << std::endl;
+    m_currentError += QLatin1String(m_process.readAllStandardError());
 }
 
 //-------------------------------------------------------------------------------------

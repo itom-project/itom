@@ -243,6 +243,12 @@ void ScriptDockWidget::loadSettings()
         break;
     }
 
+    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "").toString();
+    
+    m_autoCodeFormatAction->action()->setVisible(settings.value("autoCodeFormatEnabled", true).toBool());
+    
+    m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && getCurrentEditor() != nullptr);
+
     settings.endGroup();
 }
 
@@ -1293,10 +1299,15 @@ int ScriptDockWidget::getIndexByEditor(const ScriptEditorWidget* sew) const
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns reference to current ScriptEditorWidget
 /*!
-    \return reference to current ScriptEditorWidget or NULL
+    \return reference to current ScriptEditorWidget or nullptr
 */
 ScriptEditorWidget* ScriptDockWidget::getCurrentEditor() const
 {
+    if (m_tab->count() == 0)
+    {
+        return nullptr;
+    }
+
     return static_cast<ScriptEditorWidget*>(m_tab->currentWidget());
 }
 
@@ -1349,18 +1360,19 @@ void ScriptDockWidget::updateEditorActions()
         sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
     }
 
-    m_saveScriptAction->setEnabled(tabCount>0 && sew != NULL && sew->isModified());
-    m_saveScriptAsAction->setEnabled(tabCount>0 && sew != NULL);
+    m_saveScriptAction->setEnabled(tabCount>0 && sew != nullptr && sew->isModified());
+    m_saveScriptAsAction->setEnabled(tabCount>0 && sew != nullptr);
 
-    m_cutAction->setEnabled(sew != NULL && sew->getCanCopy());
-    m_copyAction->setEnabled(sew != NULL && sew->getCanCopy());
-    m_pasteAction->setEnabled(tabCount > 0 && sew != NULL);
-    m_undoAction->setEnabled(sew != NULL && sew->isUndoAvailable());
-    m_redoAction->setEnabled(sew != NULL && sew->isRedoAvailable());
-    m_commentAction->setEnabled(tabCount > 0 && sew != NULL);
-    m_uncommentAction->setEnabled(tabCount > 0 && sew != NULL);
-    m_indentAction->setEnabled(tabCount > 0 && sew != NULL);
-    m_unindentAction->setEnabled(tabCount > 0 && sew != NULL);
+    m_cutAction->setEnabled(sew != nullptr && sew->getCanCopy());
+    m_copyAction->setEnabled(sew != nullptr && sew->getCanCopy());
+    m_pasteAction->setEnabled(tabCount > 0 && sew != nullptr);
+    m_undoAction->setEnabled(sew != nullptr && sew->isUndoAvailable());
+    m_redoAction->setEnabled(sew != nullptr && sew->isRedoAvailable());
+    m_commentAction->setEnabled(tabCount > 0 && sew != nullptr);
+    m_uncommentAction->setEnabled(tabCount > 0 && sew != nullptr);
+    m_indentAction->setEnabled(tabCount > 0 && sew != nullptr);
+    m_unindentAction->setEnabled(tabCount > 0 && sew != nullptr);
+    m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && tabCount > 0 && sew != nullptr);
 
     m_tabCloseAction->setEnabled(m_actTabIndex > -1);
     m_tabCloseAllAction->setEnabled(m_actTabIndex > -1);
@@ -1368,12 +1380,15 @@ void ScriptDockWidget::updateEditorActions()
     m_replaceTextExprAction->setEnabled(m_actTabIndex > -1);
     m_gotoAction->setEnabled(m_actTabIndex > -1);
     m_openIconBrowser->setEnabled(m_actTabIndex > -1);
-    m_bookmarkToggle->setEnabled(sew != NULL);
+    m_bookmarkToggle->setEnabled(sew != nullptr);
 
-    m_scriptRunSelectionAction->setEnabled(pyEngine && sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
-
-//    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1, false));
-    if (m_pWidgetFindWord != NULL)
+    m_scriptRunSelectionAction->setEnabled(
+        pyEngine && 
+        sew != nullptr && 
+        sew->getCanCopy() && 
+        (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+    
+    if (m_pWidgetFindWord != nullptr)
     {
         m_pWidgetFindWord->setFindBarEnabled(m_actTabIndex > -1, false);
     }
@@ -1529,6 +1544,10 @@ void ScriptDockWidget::createActions()
     m_unindentAction = new ShortcutAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), 
         this, QKeySequence(tr("Shift+Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
+
+    m_autoCodeFormatAction = new ShortcutAction(QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"),
+        this, QKeySequence(tr("Ctrl+Alt+I", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_autoCodeFormatAction->connectTrigger(this, SLOT(mnuPyCodeFormatting()));
 
     m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), 
         this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
@@ -1727,6 +1746,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_uncommentAction->action());
     m_editMenu->addAction(m_indentAction->action());
     m_editMenu->addAction(m_unindentAction->action());
+    m_editMenu->addAction(m_autoCodeFormatAction->action());
     m_editMenu->addSeparator();
     m_editMenu->addAction(m_findTextExprAction->action());
     m_editMenu->addAction(m_replaceTextExprAction->action());
@@ -1805,6 +1825,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_findTextExprAction->action());
     m_editToolBar->addAction(m_replaceTextExprAction->action());
     m_editToolBar->addAction(m_openIconBrowser->action());
+    m_editToolBar->addAction(m_autoCodeFormatAction->action());
     m_editToolBar->setFloatable(false);
 
     m_scriptToolBar = new QToolBar(tr("Script Toolbar"), this);
@@ -2416,6 +2437,17 @@ void ScriptDockWidget::mnuInsertCodec()
     if (sew != NULL)
     {
         sew->menuInsertCodec();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuPyCodeFormatting()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+
+    if (sew != nullptr)
+    {
+        sew->menuPyCodeFormatting();
     }
 }
 
