@@ -309,7 +309,7 @@ QTextCursor SymbolMatcherMode::createDecoration(int pos, bool match /*= true*/)
     QTextCursor cursor = editor()->textCursor();
     cursor.setPosition(pos);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-    TextDecoration::Ptr deco(new TextDecoration(cursor, -1, -1, -1 , -1, 10));
+    TextDecoration::Ptr deco(new TextDecoration(cursor, -1, -1, -1 , -1, 500));
     deco->properties()["line"] = cursor.blockNumber();
     deco->properties()["column"] = cursor.columnNumber();
     deco->properties()["character"] = cursor.selectedText();

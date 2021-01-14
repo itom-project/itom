@@ -53,9 +53,6 @@ StyleItem::StyleItem(StyleType type, const QTextCharFormat &format) :
         m_name = ""; //QObject::tr("Paper color");
         break;
 
-    case KeyHighlight:
-        m_name = QObject::tr("Current selection");
-        break;
     case KeyDefault:
         m_name = QObject::tr("Default");
         break;
@@ -257,7 +254,6 @@ CodeEditorStyle::CodeEditorStyle()
     m_formats[StyleItem::KeyDecorator] = StyleItem(StyleItem::KeyDecorator, StyleItem::createFormat(defaultFontName, defaultPointSize, "#805000", Qt::white, false));
     m_formats[StyleItem::KeyFunction] = StyleItem(StyleItem::KeyFunction, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f7f", Qt::white, true));
 
-    m_formats[StyleItem::KeyHighlight] = StyleItem(StyleItem::KeyHighlight, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::cyan, Qt::white, false));
     m_formats[StyleItem::KeyBuiltin] = StyleItem(StyleItem::KeyBuiltin, StyleItem::createFormat(defaultFontName, defaultPointSize, "#06287e", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyOperatorWord] = StyleItem(StyleItem::KeyOperatorWord, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyDefinition] = StyleItem(StyleItem::KeyDefinition, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
@@ -294,16 +290,6 @@ void CodeEditorStyle::setBackground(const QColor &color)
         m_formats[StyleItem::KeyBackground].rformat().setBackground(bg);
         //qDebug() << m_formats[StyleItem::KeyBackground].format().background().color();
     }
-}
-
-//------------------------------------------------------------------
-/*
-Gets the highlight color.
-:return:
-*/
-QColor CodeEditorStyle::highlight() const
-{
-    return m_formats[StyleItem::KeyHighlight].format().background().color();
 }
 
 //------------------------------------------------------------------

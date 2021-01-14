@@ -152,12 +152,6 @@ void AbstractCodeEditorWidget::loadSettings()
         setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
         m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
-        //TODO
-        //setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
-        //setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
-        //setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
-        //    QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
-
         QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
 
         if (keyWhitespaceFormat.background() != QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()))
