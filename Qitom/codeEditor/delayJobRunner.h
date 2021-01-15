@@ -232,7 +232,6 @@ public:
         m_func(NULL),
         m_obj(NULL)
     {
-        int i = 0;
     }
 
     virtual ~DelayJobRunnerArgTextCursor() {}

@@ -119,10 +119,35 @@ namespace ito
         QString m_fullName; //assignement full name
     };
 
+    //--------------------------------------------------------------------------------------
+    struct JediGetHelpRequest
+    {
+        QString m_source;
+        int m_line;
+        int m_col;
+        QString m_path;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
+    struct JediGetHelp
+    {
+        JediGetHelp() {};
+        JediGetHelp(const QString &description, const QStringList &tooltips) :
+            m_description(description),
+            m_tooltips(tooltips)
+        {}
+
+        QString m_description;
+        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+    };
+
 } //end namespace ito
 
 Q_DECLARE_METATYPE(ito::JediCalltip)
 Q_DECLARE_METATYPE(ito::JediCompletion)
 Q_DECLARE_METATYPE(ito::JediAssignment)
+Q_DECLARE_METATYPE(ito::JediGetHelp)
 
 #endif

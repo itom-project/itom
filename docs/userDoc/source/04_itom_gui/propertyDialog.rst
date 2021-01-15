@@ -395,8 +395,8 @@ if there is not enough space. The last option is the default.
 
 .. _gui-prop-calltips:
 
-Calltips
-----------------------
+Calltips and Help Tooltips
+----------------------------
 
 Calltips can provide information about possible arguments of a function that 
 is currently typed into the command line or a python script. A check for possible 
@@ -410,9 +410,14 @@ disabled, no check for calltips is executed.
 The highlighted argument of a calltip indicates the argument, that corresponds 
 to the current position of the cursor in the script.
 
+Additionally, it is possible to generate a information tooltip about the word
+under the mouse cursor. This help string is generated if the mouse remains for
+a while (400 ms) over a word. If this feature is enabled, a tooltip is displayed
+with the information string, if it could be fetched.
+
 .. note::
     
-    Calltips can only be checked, if both the Python packages **jedi** 
+    These features can only be checked, if both the Python packages **jedi** 
     (version >= 0.12) and **parso** are installed.
 
 .. _gui-prop-auto-completion:

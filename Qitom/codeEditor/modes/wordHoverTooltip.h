@@ -1,3 +1,5 @@
+
+
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
@@ -35,76 +37,59 @@
 
 *********************************************************************** */
 
-#ifndef AUTOINDENT_H
-#define AUTOINDENT_H
+#pragma once
 
-#include "../utils/utils.h"
+/*
+This module contains the WordHoverTooltipMode
+*/
+
 #include "../mode.h"
-#include <qevent.h>
+#include "../textDecoration.h"
+#include "../delayJobRunner.h"
+#include "../../python/pythonJedi.h"
 #include <qobject.h>
-#include <qpair.h>
 #include <qstring.h>
+#include <qtextcursor.h>
+#include <qevent.h>
+#include <qvector.h>
+#include <qpair.h>
 
 namespace ito {
 
 /*
-Contains the automatic generic indenter
+Adds support for tooltips when hovering words in a script.
+
+
 */
-
-
-/*
-Indents text automatically.
-Generic indenter mode that indents the text when the user press RETURN.
-
-You can customize this mode by overriding
-:meth:`pyqode.core.modes.AutoIndentMode._get_indent`
-
-This mode contains two features:
-
-1. The auto indentation itself
-2. It is possible to remove trailing whitespaces and tabs
-   from the current line before the newline character is
-   applied. This improves the accordance to Pep8, which
-   does not allow empty lines, that contains only spaces.
-
-To handle these two features, always enable the mode and
-control the enable/disable state of the two features using
-the specific setters enableAutoIndent, 
-setAutoStripTrailingSpacesAfterReturn.
-*/
-class AutoIndentMode : public QObject, public Mode
+class WordHoverTooltipMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    AutoIndentMode(const QString &name, const QString &description = "", QObject *parent = NULL);
-    virtual ~AutoIndentMode();
+    WordHoverTooltipMode(const QString &name = "WordHoverTooltipMode", const QString &description = "", QObject *parent = nullptr);
+    virtual ~WordHoverTooltipMode();
 
     virtual void onStateChanged(bool state);
 
-    void setKeyPressedModifiers(Qt::KeyboardModifiers modifiers);
-    Qt::KeyboardModifiers keyPressedModifiers() const;
-
-    void setAutoStripTrailingSpacesAfterReturn(bool strip);
-    bool autoStripTrailingSpacesAfterReturn() const;
-
-    void enableAutoIndent(bool autoIndent);
-    bool isAutoIndentEnabled() const;
-
-private slots:
-    void onKeyPressed(QKeyEvent *e);
-
 protected:
-    QChar indentChar() const;
-    QString singleIndent() const;
-    virtual QPair<QString, QString> getIndent(const QTextCursor &cursor) const;
+    QTextCursor m_cursor;
+
+    void emitWordHover(QTextCursor cursor);
+
+    /*
+    \returns (stringlist os signatures, docstring)
+    */
+    QPair<QStringList, QString> parseTooltipDocstring(const QString &docstring) const;
 
 private:
-    Qt::KeyboardModifiers m_keyPressedModifiers;
-    bool m_autoStripTrailingSpacesAfterReturn;
-    bool m_enableAutoIndent;
+    DelayJobRunnerBase *m_pTimer;
+    QObject *m_pPythonEngine;
+    int m_requestCount;
+    int m_tooltipsMaxLength;
+
+private slots:
+    void onMouseMoved(QMouseEvent *e);
+    void onJediGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
 
 };
 
 } //end namespace ito
-
-#endif

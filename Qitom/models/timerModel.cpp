@@ -24,7 +24,6 @@
 
 #include <qthread.h>
 
-
 namespace ito
 {
     
@@ -252,7 +251,7 @@ void TimerModel::autoUpdateModel(bool enabled)
 
     if (m_enableCount > 0 && m_timerId == -1)
     {
-        m_timerId = startTimer(std::chrono::milliseconds(250));
+        m_timerId = startTimer(250);
     }
     else if (m_enableCount == 0 && m_timerId >= 0)
     {
