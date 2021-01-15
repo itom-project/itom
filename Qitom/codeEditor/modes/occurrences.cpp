@@ -320,7 +320,10 @@ void OccurrencesHighlighterMode::onResultsAvailable(QList<QPair<int,int> > resul
                 continue;
             }
 
-            deco = TextDecoration::Ptr(new TextDecoration(editor()->textCursor(), start, end,-1,-1,3));
+            deco = TextDecoration::Ptr(
+                new TextDecoration(
+                    editor()->textCursor(), start, end,-1, -1, 200));
+
             if (m_underlined)
             {
                 deco->setAsUnderlined(m_background);
@@ -328,6 +331,7 @@ void OccurrencesHighlighterMode::onResultsAvailable(QList<QPair<int,int> > resul
             else
             {
                 deco->setBackground(QBrush(m_background));
+
                 if (m_foreground.isValid())
                 {
                     deco->setForeground(m_foreground);

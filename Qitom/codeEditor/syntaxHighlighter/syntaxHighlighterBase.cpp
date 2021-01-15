@@ -196,20 +196,14 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
     }
 
     editor()->setBackground(editorStyle->background());
-    //editor()->setForeground(editorStyle->format(StyleItem::KeyDefault).foreground().color());
     editor()->setWhitespacesForeground(editorStyle->format(StyleItem::KeyWhitespace).foreground().color());
-    Mode::Ptr mode = editor()->modes()->get("CaretLineHighlighterMode");
-    if (mode)
-    {
-        CaretLineHighlighterMode* clh = dynamic_cast<CaretLineHighlighterMode*>(mode.data());
-        clh->setBackground(editorStyle->highlight());
-        clh->refresh();
-    }
 
     Panel::Ptr panel = editor()->panels()->get("FoldingPanel");
+
     if (panel)
     {
         QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+
         if (fp)
         {
             fp->refreshDecorations(true);
