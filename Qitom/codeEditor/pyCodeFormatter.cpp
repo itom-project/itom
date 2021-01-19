@@ -39,9 +39,6 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
     QObject(parent),
     m_isCancelling(false)
 {
-    connect(&m_process, &QProcess::stateChanged,
-        this, &PyCodeFormatter::stateChanged);
-
     connect(&m_process, &QProcess::errorOccurred,
         this, &PyCodeFormatter::errorOccurred);
 
@@ -143,8 +140,12 @@ void PyCodeFormatter::errorOccurred(QProcess::ProcessError error)
         m_progressDialog.clear();
     }
 
-    std::cerr << "PyCodeFormatter error: "
-        << error << std::endl;
+    if (!m_isCancelling)
+    {
+        std::cerr << "PyCodeFormatter error: "
+            << error << std::endl;
+    }
+
     emit formattingDone(false, "");
 }
 
@@ -196,12 +197,6 @@ void PyCodeFormatter::started()
     {
         m_progressDialog->setValue(20);
     }
-}
-
-//-------------------------------------------------------------------------------------
-void PyCodeFormatter::stateChanged(QProcess::ProcessState newState)
-{
-    //qDebug() << "stateChanged:" << newState;
 }
 
 } //end namespace ito

@@ -333,7 +333,7 @@ void ScriptEditorWidget::loadSettings()
     );
 
     bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
-    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "").toString();
+    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
     auto pyCodeFormatAction = m_editorMenuActions.find("formatFile");
 
     if (pyCodeFormatAction != m_editorMenuActions.end())

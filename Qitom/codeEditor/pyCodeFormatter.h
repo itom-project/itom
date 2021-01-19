@@ -57,7 +57,6 @@ namespace ito
         void readyReadStandardError();
         void readyReadStandardOutput();
         void started();
-        void stateChanged(QProcess::ProcessState newState);
         void cancelRequested();
 
     signals:

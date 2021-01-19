@@ -243,7 +243,7 @@ void ScriptDockWidget::loadSettings()
         break;
     }
 
-    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "").toString();
+    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
     
     m_autoCodeFormatAction->action()->setVisible(settings.value("autoCodeFormatEnabled", true).toBool());
     
