@@ -106,5 +106,73 @@ void ClassNavigatorItem::setIcon(t_type t)
     }
 }
 
+//-------------------------------------------------------------------------------------
+OutlineItem::OutlineItem(Type type) :
+    m_type(type),
+    m_async(false),
+    m_private(false),
+    m_startLineIdx(-1),
+    m_endLineIdx(-1)
+{
+    if (type == typeRoot)
+    {
+        m_name = QObject::tr("{Global Scope}");
+    }
+
+}
+
+//-------------------------------------------------------------------------------------
+OutlineItem::~OutlineItem()
+{
+    m_childs.clear();
+    m_parent.clear();
+}
+
+//-------------------------------------------------------------------------------------
+QIcon OutlineItem::icon() const
+{
+    switch (m_type)
+    {
+    case typeRoot:
+        return QIcon(":/classNavigator/icons/global.png");
+    case typeClass:
+        return QIcon(":/classNavigator/icons/class.png");
+    case typePropertyGet:
+        return QIcon(":/classNavigator/icons/namespace.png");
+    case typePropertySet:
+        return QIcon(":/classNavigator/icons/namespace.png");
+    case typeClassMethod:
+        if (m_private)
+        {
+            return QIcon(":/classNavigator/icons/method_clmethod_private.png");
+        }
+        else
+        {
+            return QIcon(":/classNavigator/icons/method_clmethod.png");
+        }
+    case typeStaticMethod:
+        if (m_private)
+        {
+            return QIcon(":/classNavigator/icons/method_static_private.png");
+        }
+        else
+        {
+            return QIcon(":/classNavigator/icons/method_static.png");
+        }
+    case typeFunction:
+    case typeMethod:
+        if (m_private)
+        {
+            return QIcon(":/classNavigator/icons/method_private.png");
+        }
+        else
+        {
+            return QIcon(":/classNavigator/icons/method.png");
+        }
+    default:
+        return QIcon();
+    }
+}
+
 
 } //end namespace ito

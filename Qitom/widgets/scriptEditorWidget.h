@@ -45,6 +45,7 @@
 #include <qevent.h>
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
+#include <qregularexpression.h>
 #include "../models/classNavigatorItem.h"
 #include "../models/bookmarkModel.h"
 
@@ -109,8 +110,6 @@ public:
     inline int getUID() const { return m_uid; }
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
-    inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
-    inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
     RetVal setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod);
@@ -203,14 +202,17 @@ private:
 
     // Class Navigator
     bool m_classNavigatorEnabled;               // Enable Class-Navigator
-    QTimer *m_classNavigatorTimer;              // Class Navigator Timer
-    bool m_classNavigatorTimerEnabled;          // Class Navigator Timer Enable
-    int m_classNavigatorInterval;               // Class Navigator Timer Interval
-    QString m_currentClass;
-    QString m_currentMethod;
+    QTimer *m_outlineTimer;              // Class Navigator Timer
+    bool m_outlineTimerEnabled;          // Class Navigator Timer Enable
+    QSharedPointer<OutlineItem> m_rootOutlineItem;
+    QRegularExpression m_regExpClass;
+    QRegularExpression m_regExpDecorator;
+    QRegularExpression m_regExpMethodStart;
+    QRegularExpression m_regExpMethod;
 
-    int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation = -1);
-    int getIndentationLength(const QString &str) const;
+    QSharedPointer<OutlineItem> parseOutline() const;
+    void parseOutlineRecursive(QSharedPointer<OutlineItem> &parent) const;
+    QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 
 signals:
     void pythonRunFile(QString filename);
@@ -218,7 +220,7 @@ signals:
     void pythonDebugFile(QString filename);
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
-    void requestModelRebuild(ScriptEditorWidget *editor);
+    void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
 
@@ -256,9 +258,6 @@ public slots:
 
     void updateSyntaxCheck();
 
-    // Class Navigator  
-    ClassNavigatorItem* getPythonNavigatorRoot(); //creates new tree of current python code structure and returns its root pointer. Caller must delete the root pointer after usage.
-
     void print();
 
 private slots:
@@ -278,7 +277,7 @@ private slots:
 
     void copyAvailable(const bool yes);
 
-    void classNavTimerElapsed();
+    void outlineTimerElapsed();
 
     void nrOfLinesChanged();
 

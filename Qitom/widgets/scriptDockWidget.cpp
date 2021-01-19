@@ -38,8 +38,6 @@
 #include "../ui/dialogGoto.h"
 #include "../ui/dialogReplace.h"
 
-//#include <QPrinter>
-//#include <QPrintDialog>
 #include <qsignalmapper.h>
 
 #include "../ui/dialogIconBrowser.h"
@@ -88,6 +86,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_commonActions(commonActions),
     m_pBookmarkModel(bookmarkModel)
 {
+    qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
+
     m_tab = new QTabWidgetItom(this);
 
     //!< tab-settings
@@ -163,7 +163,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_classMenuBar->setMaximumHeight(20);
     m_pVBox->addWidget(m_classMenuBar, 1);
 
-    connect(m_classBox, SIGNAL(activated(QString)), this, SLOT(classChosen(QString)));
+    connect(m_classBox, SIGNAL(activated(int)), this, SLOT(navigatorClassSelected(int)));
     connect(m_methodBox, SIGNAL(activated(QString)), this, SLOT(methodChosen(QString)));
 
     // Add EditorTab
@@ -202,11 +202,7 @@ ScriptDockWidget::~ScriptDockWidget()
         closeTab(i, false);
     }
 
-    foreach (int key, m_rootElements.keys())
-    {
-        delete m_rootElements.value(key);
-    }
-    m_rootElements.clear();
+    m_outlineRootItems.clear();
 
     DELETE_AND_SET_NULL(m_tab);
     DELETE_AND_SET_NULL(m_pWidgetFindWord);
@@ -246,38 +242,61 @@ void ScriptDockWidget::loadSettings()
     settings.endGroup();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, const QString &prefix)
+//------------------------------------------------------------------------------------ 
+/* Recursive fill of all classes in the outline to the class combo box. */
+void ScriptDockWidget::fillNavigationClassComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix)
 {
-    QVariant parentPointer = qVariantFromValue((void *)parent);
-    if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+    if (!parent.isNull())
     {
-        //Global Scope
-        m_classBox->addItem(parent->m_icon, QString("%1").arg(parent->m_name), parentPointer);
-    }
-    else if (prefix == "")
-    {
-        m_classBox->addItem(parent->m_icon, QString("class %1").arg(parent->m_name), parentPointer);
-    }
-    else 
-    {
-        m_classBox->addItem(parent->m_icon, QString("class %1::%2").arg(prefix, parent->m_name), parentPointer);
-    }
+        auto parentLocked = parent.lock();
+        QString name;
 
-    for (int i = 0; i < parent->m_member.length(); ++i)
-    {
-        if ((parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass) ||
-            (parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyRoot))
+        if (parentLocked->m_type == OutlineItem::typeRoot)
         {
-            if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+            QVariant userData = qVariantFromValue(parent);
+            m_classBox->addItem(
+                parentLocked->icon(),
+                parentLocked->m_name,
+                userData
+            );
+        }
+
+        foreach(auto item, parentLocked->m_childs)
+        {
+            if (item->m_type == OutlineItem::typeClass)
             {
-                fillClassBox(parent->m_member[i], "");
+                auto weakItem = item.toWeakRef();
+                QVariant userData = qVariantFromValue(weakItem);
+
+                if (prefix != "")
+                {
+                    name = QString("class %1.%2").arg(prefix, item->m_name);
+                }
+                else
+                {
+                    name = QString("class %1").arg(item->m_name);
+                }
+
+                m_classBox->addItem(
+                    parentLocked->icon(),
+                    name,
+                    userData
+                );
+
+                if (item->m_childs.size() > 0)
+                {
+                    if (prefix == "")
+                    {
+                        fillNavigationClassComboBox(weakItem, item->m_name);
+                    }
+                    else
+                    {
+                        fillNavigationClassComboBox(weakItem, QString("%1.%2").arg(prefix).arg(item->m_name));
+                    }
+                }
+                
             }
-            else
-            {
-                fillClassBox(parent->m_member[i], parent->m_name);
-            }
-        }   
+        }
     }
 }
 
@@ -363,15 +382,24 @@ void methodBoxAddItem(
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
+void ScriptDockWidget::fillNavigationMethodComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix)
 {
     // insert empty dummy item
-    QVariant nullPointer = qVariantFromValue((void *)NULL);
-    m_methodBox->addItem(QIcon(), "", nullPointer);
-    
-    ClassNavigatorItem const *item;
-    QVariant itemPointer;
+    auto invalid = qVariantFromValue(QWeakPointer<OutlineItem>());
+    m_methodBox->addItem(QIcon(), "", invalid);
 
+    if (parent.isNull())
+    {
+        return;
+    }
+
+    auto parentLock = parent.lock();
+
+    foreach(const auto &item, parentLock->m_childs)
+    {
+
+    }
+    
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         item = parent->m_member[i];
@@ -454,41 +482,33 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
-void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
+// public Slot invoked by requestOutlineModelUpdate from EditorWidget or by tabchange etc.
+void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem)
 { 
     if (m_classNavigatorEnabled && editor)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
-            QString lastClass = editor->getCurrentClass();
-            QString lastMethod = editor->getCurrentMethod();
-
-            ClassNavigatorItem *lastMethodItem = NULL;
+            int line = 0;
+            editor->getCursorPosition(&line, nullptr);
 
             m_methodBox->setEnabled(false);
+            m_methodBox->blockSignals(true);
             m_classBox->setEnabled(false);
-            disconnect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));
-            disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
+            m_classBox->blockSignals(true);
             m_classBox->clear();
             m_methodBox->clear();
-        
-            if (m_rootElements.contains(m_tab->indexOf(editor)))
-            {
-                delete m_rootElements.value(m_tab->indexOf(editor));
-            }
 
-            // Request new RootItem from EditorWidget                    // This code is good for storage and fast tab switching without rebuild of the model
-            ClassNavigatorItem *root = editor->getPythonNavigatorRoot(); // m_rootElements.value(m_tab->indexOf(editor));
-            m_rootElements.insert(m_tab->indexOf(editor), root);  // value(m_tab->indexOf(editor)) 
+            m_outlineRootItems.insert(m_tab->indexOf(editor), rootItem);  // value(m_tab->indexOf(editor)) 
 
-            // Use new RootItem to fill comboBoxes
-            fillClassBox(root, "");
+            // update the classes combo box
+            m_classBox->clear();
+            fillNavigationClassComboBox(rootItem.toWeakRef(), "");
 
-            connect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));  
-            connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
             m_classBox->setEnabled(true);
             m_methodBox->setEnabled(true);
+            m_classBox->blockSignals(false);
+            m_methodBox->blockSignals(false);
 
             // This part is responsible for the reselection of the item that was selected before the refresh
             int iClass = m_classBox->findText(lastClass);
@@ -534,12 +554,26 @@ void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// private Slot invoked by ScriptEditorWidget when class from classCombobox is chosen to display the subelements in second combobox
-// The parameter is just for signal->slot compability. If an empty string is passed (computer selection of an item) the item
-// will be selected in the Combobox but the editor is not going to jump to the corresponding position
-void ScriptDockWidget::classChosen(const QString &text)
+//-------------------------------------------------------------------------------------
+// Slot called if any entry in the class navigation combobox is selected.
+/* The definition of the selected class (if a class is selected) is
+highlighted in the current script. If the class has child items, the
+method box is initialized with these children.
+*/
+void ScriptDockWidget::navigatorClassSelected(int row)
 {
+    QWeakPointer<OutlineItem> classItem = 
+        m_classBox->itemData(row, Qt::UserRole).value<QWeakPointer<OutlineItem>>();
+
+    if (classItem.isNull())
+    {
+        m_methodBox->clear();
+    }
+    else
+    {
+        auto classItemLocked = classItem.lock();
+    }
+
     ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
 
     if (classItem)
@@ -582,7 +616,7 @@ void ScriptDockWidget::methodChosen(const QString &text)
         {
             QString className = m_classBox->currentText();
 
-            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, className,  methodItem->m_name);
+            getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, className,  methodItem->m_name);
         }
     }
 }
@@ -957,9 +991,8 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     );
     
     // Load the right Class->Method model for this Editor
-    connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
-
-    updateCodeNavigation(editorWidget);
+    connect(editorWidget, &ScriptEditorWidget::outlineModelChanged,
+        this, &ScriptDockWidget::updateCodeNavigation);
 
     updateEditorActions();
     updatePythonActions();
@@ -1013,7 +1046,10 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     );
 
     // Class Navigator
-    disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
+    disconnect(
+        removedWidget, &ScriptEditorWidget::outlineModelChanged,
+        this, &ScriptDockWidget::updateCodeNavigation
+    );
 
     updateEditorActions();
     updatePythonActions();
