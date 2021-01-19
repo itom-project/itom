@@ -50,6 +50,8 @@ namespace ito
         QSharedPointer<QProgressDialog> m_progressDialog;
         bool m_isCancelling;
 
+        ito::RetVal getPythonPath(QString &path) const;
+
 
     private slots:
         void errorOccurred(QProcess::ProcessError error);

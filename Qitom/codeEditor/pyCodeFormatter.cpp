@@ -31,6 +31,8 @@
 
 #include <qdebug.h>
 #include <iostream>
+#include <qdir.h>
+#include <qfileinfo.h>
 
 namespace ito {
 
@@ -65,6 +67,14 @@ PyCodeFormatter::~PyCodeFormatter()
 }
 
 //-------------------------------------------------------------------------------------
+ito::RetVal PyCodeFormatter::getPythonPath(QString &path) const
+{
+    
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
 /*
 \param cmd is the command <cmd> in the call python -m <cmd> and must allow passing
     the code string via stdin.
@@ -79,7 +89,7 @@ ito::RetVal PyCodeFormatter::startFormatting(const QString &cmd, const QString &
     }
 
     const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    QString pythonPath;
+    QString pythonPath = "";
 
     if (pyeng)
     {
@@ -172,13 +182,15 @@ void PyCodeFormatter::finished(int exitCode, QProcess::ExitStatus exitStatus)
 //-------------------------------------------------------------------------------------
 void PyCodeFormatter::readyReadStandardError()
 {
-    m_currentError += QLatin1String(m_process.readAllStandardError());
+    QByteArray output = m_process.readAllStandardError();
+    m_currentError += QString::fromUtf8(output);
 }
 
 //-------------------------------------------------------------------------------------
 void PyCodeFormatter::readyReadStandardOutput()
 {
-    m_currentCode += QLatin1String(m_process.readAllStandardOutput());
+    QByteArray output = m_process.readAllStandardOutput();
+    m_currentCode += QString::fromUtf8(output);
 }
 
 //-------------------------------------------------------------------------------------
@@ -189,7 +201,8 @@ void PyCodeFormatter::started()
         m_progressDialog->setValue(10);
     }
 
-    m_process.write(m_currentCode.toUtf8());
+    QByteArray ba = m_currentCode.toUtf8();
+    m_process.write(ba);
     m_currentCode = "";
     m_process.closeWriteChannel();
 

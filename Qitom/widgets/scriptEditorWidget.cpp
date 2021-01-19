@@ -1055,7 +1055,8 @@ void ScriptEditorWidget::menuPyCodeFormatting()
         QMessageBox::critical(
             this,
             tr("Missing auto code format command"),
-            tr("No auto code format call command has been given in the itom property dialog. Please indicate a command there.")
+            tr("No auto code format call command has been given in the "
+                "itom property dialog. Please indicate a command there.")
         );
         return;
     }
@@ -1130,7 +1131,7 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         cursor.endEditBlock();
         setModified(true);
     }
-    else if (code.trimmed() != "")
+    else if (!success && code.trimmed() != "")
     {
         const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
         ito::UserFeatures features = userOrg->getCurrentUserFeatures();
