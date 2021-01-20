@@ -65,11 +65,10 @@ public:
        
     static PyObject *PyProxy_richcompare(PyObject *v, PyObject *w, int op);
     static PyObject *PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwds);
+
     //-------------------------------------------------------------------------------------------------
     // type structures
     //------------------------------------------------------------------------------------------------- 
-    //static PyMemberDef PyNpDataObject_members[];
-    //static PyMethodDef PyPointCloud_methods[];
     static PyTypeObject PyProxyType;
     static PyModuleDef PyProxyModule;
 

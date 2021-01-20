@@ -22,12 +22,12 @@
 
 #include "pythonProxy.h"
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 
 namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
     Our own proxy object which enables weak references to bound and unbound
     methods and arbitrary callables. Pulls information about the function,
@@ -44,7 +44,7 @@ void PythonProxy::PyProxy_addTpDict(PyObject * /*tp_dict*/)
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonProxy::PyProxy_dealloc(PyProxy* self)
 {
     Py_XDECREF(self->klass);
@@ -54,47 +54,55 @@ void PythonProxy::PyProxy_dealloc(PyProxy* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonProxy::PyProxy_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyProxy* self = (PyProxy *)type->tp_alloc(type, 0);
-    if (self != NULL)
+
+    if (self != nullptr)
     {
-        self->klass = NULL;
-        self->inst = NULL;
-        self->func = NULL;
-        self->base = NULL;
+        self->klass = nullptr;
+        self->inst = nullptr;
+        self->func = nullptr;
+        self->base = nullptr;
     }
 
     return (PyObject *)self;
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/)
 {
-    PyObject *method = NULL;
+    PyObject *method = nullptr;
+
     if (!PyArg_ParseTuple(args, "O", &method))
     {
-        PyErr_SetString(PyExc_RuntimeError, "argument must be a bounded or unbounded method or function");
+        PyErr_SetString(
+            PyExc_RuntimeError, 
+            "argument must be a bounded or unbounded method or function");
         return -1;
     }
 
-    if (PyMethod_Check(method) == false && PyFunction_Check(method) == false)
+    if (!PyMethod_Check(method) &&
+        !PyCFunction_Check(method) &&
+        !PyCallable_Check(method))
     {
-        PyErr_SetString(PyExc_RuntimeError, "argument must be a bounded or unbounded method or function");
+        PyErr_SetString(
+            PyExc_RuntimeError, 
+            "argument must be a bounded or unbounded method or function");
         return -1;
     }
 
-    if (PyObject_HasAttrString(method, "__self__"))
+    if (!PyCFunction_Check(method) && PyObject_HasAttrString(method, "__self__"))
     {
         PyObject *temp = PyObject_GetAttrString(method, "__self__"); //new reference
-        self->inst = PyWeakref_NewRef(temp, NULL); //new ref
+        self->inst = PyWeakref_NewRef(temp, nullptr); //new ref
         Py_DECREF(temp);
         
     }
     else
     {
-        self->inst = NULL;
+        self->inst = nullptr;
     }
 
     Py_INCREF(Py_None);
@@ -113,7 +121,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
     return 0;
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Compare the held function and instance with that held by another proxy.
 
@@ -132,16 +140,25 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
 
         bool res = false;
 
-        if (v2 == NULL || w2 == NULL)
+        if (v2 == nullptr || w2 == nullptr)
         {
-            PyErr_SetString(PyExc_RuntimeError, "both elements of the comparison must be of type PyProxy.");
-            return NULL;
+            PyErr_SetString(
+                PyExc_RuntimeError, 
+                "both elements of the comparison must be of type PyProxy."
+            );
+            return nullptr;
         }
 
         if (v2->func == w2->func)
         {
-            if (v2->inst == NULL && w2->inst == NULL) res = true;
-            else if (PyWeakref_GetObject(v2->inst) == PyWeakref_GetObject(w2->inst)) res = true;
+            if (v2->inst == nullptr && w2->inst == nullptr)
+            {
+                res = true;
+            }
+            else if (PyWeakref_GetObject(v2->inst) == PyWeakref_GetObject(w2->inst))
+            {
+                res = true;
+            }
         }
 
         if (op == Py_EQ)
@@ -157,12 +174,15 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "For the proxy-object, only the comparison operators == and != are allowed.");
-        return NULL;
+        PyErr_SetString(
+            PyExc_RuntimeError, 
+            "For the proxy-object, only the comparison operators == and != are allowed."
+        );
+        return nullptr;
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Proxy for a call to the weak referenced object. Take arbitrary params to
 pass to the callable.
@@ -171,17 +191,21 @@ pass to the callable.
 */
 PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwds)
 {
-    PyObject *mtd = NULL;
-    PyObject *res = NULL;
-    PyObject *wr = NULL;
+    PyObject *mtd = nullptr;
+    PyObject *res = nullptr;
+    PyObject *wr = nullptr;
 
-    if (self->inst != NULL)
+    if (self->inst != nullptr)
     {
         wr = PyWeakref_GetObject(self->inst); //borrowed reference
+
         if (wr == Py_None)
         {
-            PyErr_SetString(PyExc_ReferenceError, "The reference to the instance of the proxy object is dead");
-            return NULL;
+            PyErr_SetString(
+                PyExc_ReferenceError, 
+                "The reference to the instance of the proxy object is dead"
+            );
+            return nullptr;
         }
         else
         {
@@ -201,25 +225,15 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//PyGetSetDef PythonProxy::PyPointCloud_getseters[] = {
-//    {NULL}  /* Sentinel */
-//};
-//
-//----------------------------------------------------------------------------------------------------------------------------------
-//PyMethodDef PythonProxy::PyPointCloud_methods[] = {
-//    {NULL}  /* Sentinel */
-//};
-
-//----------------------------------------------------------------------------------------------------------------------------------
 PyModuleDef PythonProxy::PyProxyModule = {
     PyModuleDef_HEAD_INIT, "Proxy", "Weak reference proxy object for (un)bounded method calls", -1,
-    NULL, NULL, NULL, NULL, NULL
+    nullptr, nullptr, nullptr, nullptr, nullptr
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyTypeObject PythonProxy::PyProxyType = {
-    PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
-    "itom.Proxy",             /* tp_name */
+    PyVarObject_HEAD_INIT(nullptr, 0) /* here has been NULL,0 */
+    "itom.proxy",             /* tp_name */
     sizeof(PyProxy),             /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor)PythonProxy::PyProxy_dealloc, /* tp_dealloc */

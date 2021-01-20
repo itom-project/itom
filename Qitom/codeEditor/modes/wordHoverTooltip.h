@@ -1,3 +1,5 @@
+
+
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
@@ -35,50 +37,59 @@
 
 *********************************************************************** */
 
-#ifndef CARETLINHIGHLIGHT_H
-#define CARETLINHIGHLIGHT_H
+#pragma once
 
 /*
-This module contains the care line highlighter mode
+This module contains the WordHoverTooltipMode
 */
 
-#include "../textDecoration.h"
 #include "../mode.h"
-
-#include <qcolor.h>
+#include "../textDecoration.h"
+#include "../delayJobRunner.h"
+#include "../../python/pythonJedi.h"
+#include <qobject.h>
+#include <qstring.h>
+#include <qtextcursor.h>
+#include <qevent.h>
+#include <qvector.h>
+#include <qpair.h>
 
 namespace ito {
 
 /*
-Highlights the caret line
+Adds support for tooltips when hovering words in a script.
+
+
 */
-class CaretLineHighlighterMode : public QObject, public Mode
+class WordHoverTooltipMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    CaretLineHighlighterMode(const QString &description = "", QObject *parent = NULL);
-    virtual ~CaretLineHighlighterMode();
+    WordHoverTooltipMode(const QString &name = "WordHoverTooltipMode", const QString &description = "", QObject *parent = nullptr);
+    virtual ~WordHoverTooltipMode();
 
-    QColor background() const;
-    void setBackground(const QColor &color);
-
-    bool blocked() const;
-    void setBlocked(bool blocked);
-
-    virtual void onInstall(CodeEditor *editor);
     virtual void onStateChanged(bool state);
 
-public slots:
-    void refresh();
-
 protected:
-    void clearDeco();
+    QTextCursor m_cursor;
 
-    QColor m_color;
-    TextDecoration::Ptr m_decoration;
-    bool m_blocked; //!< if true, the highlighter is temporarily disabled, even if it is enabled.
+    void emitWordHover(QTextCursor cursor);
+
+    /*
+    \returns (stringlist os signatures, docstring)
+    */
+    QPair<QStringList, QString> parseTooltipDocstring(const QString &docstring) const;
+
+private:
+    DelayJobRunnerBase *m_pTimer;
+    QObject *m_pPythonEngine;
+    int m_requestCount;
+    int m_tooltipsMaxLength;
+
+private slots:
+    void onMouseMoved(QMouseEvent *e);
+    void onJediGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
+
 };
 
 } //end namespace ito
-
-#endif

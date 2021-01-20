@@ -79,10 +79,6 @@ private:
     QString colorStringMixedWithPaperBgColor(const QColor &color);
 
     QColor m_paperBgcolor;
-    QColor m_foldMarginFgcolor;
-    QColor m_foldMarginBgcolor;
-    QColor m_marginFgcolor;
-    QColor m_marginBgcolor;
     QColor m_markerScriptErrorBgcolor;
     QColor m_markerCurrentBgcolor;
     QColor m_markerInputBgcolor;

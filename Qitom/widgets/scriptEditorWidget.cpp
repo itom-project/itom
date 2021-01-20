@@ -218,6 +218,9 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
+    m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
+    modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
+
     if (m_symbolMatcher)
     {
         m_symbolMatcher->setMatchBackground(QColor("lightGray"));
@@ -331,10 +334,16 @@ void ScriptEditorWidget::loadSettings()
 
     m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
 
+    m_wordHoverTooltipMode->setEnabled(settings.value("helpTooltipEnabled", true).toBool());
+
     m_errorLineHighlighterMode->setBackground(QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
     setSelectLineOnCopyEmpty(settings.value("selectLineOnCopyEmpty", true).toBool());
     setKeepIndentationOnPaste(settings.value("keepIndentationOnPaste", true).toBool());
+
+    m_pyAutoIndentMode->setAutoStripTrailingSpacesAfterReturn(
+        settings.value("autoStripTrailingSpacesAfterReturn", true).toBool()
+    );
 
     settings.endGroup();
 
@@ -360,6 +369,10 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut")));
     m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
     editorMenu->addSeparator();
+
+    QShortcut *tabChangedShortcut  = new QShortcut(QKeySequence(tr("Ctrl+Tab", "QShortcut")), this);
+    tabChangedShortcut->setContext(Qt::WidgetShortcut);
+    connect(tabChangedShortcut, &QShortcut::activated, this, &ScriptEditorWidget::tabChangeRequest);
 
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
@@ -905,15 +918,29 @@ void ScriptEditorWidget::menuInsertCodec()
 {
     QStringList items;
     bool ok;
-    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
-    QString codec = QInputDialog::getItem(this, tr("Insert Codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, false, &ok);
+    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" 
+          << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
+
+    QString codec = QInputDialog::getItem(
+        this, 
+        tr("Insert Codec"), 
+        tr("Choose an encoding of the file which is added to the first line of the script"), 
+        items, 
+        2, 
+        false, 
+        &ok
+    );
 
     if (codec != "" && ok)
     {
         items = codec.split(" ");
+
         if (items.size() > 0)
         {
-            setPlainText(QString("# coding=%1\n%2").arg(items[0]).arg(toPlainText()));
+            QString newText = QString("# coding=%1\n").arg(items[0]);
+            QTextCursor currentCursor = textCursor();
+            currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+            currentCursor.insertText(newText);
             setModified(true);
         }
     }
@@ -2221,7 +2248,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             {
                 if (lineIndex < count && offset < 30) //more than 30 parameter lines are very unlikely
                 {
-                    line += lineText(lineIndex + offset).trimmed();
+                    line = line + lineText(lineIndex + offset).trimmed() + " ";
                     offset++;
                 }
                 else
@@ -2470,6 +2497,12 @@ void ScriptEditorWidget::onCursorPositionChanged()
         found = false;
         return QString();
     }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::tabChangeRequest()
+{
+    emit tabChangeRequested();
 }
 
 } // end namespace ito

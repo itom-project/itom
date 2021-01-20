@@ -79,9 +79,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
         BookmarkModel *bookmarkModel,
         QWidget *parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
-    m_tab(NULL),
-    m_pWidgetFindWord(NULL),
-    m_pDialogReplace(NULL),
+    m_tab(nullptr),
+    m_pWidgetFindWord(nullptr),
+    m_pDialogReplace(nullptr),
     m_actTabIndex(-1),
     m_tabContextMenu(NULL),
     m_winMenu(NULL),
@@ -133,23 +133,24 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pVBox->setContentsMargins(0, 0, 0, 0);
     m_pVBox->setSpacing(1);
 
-    // Create new Widget for Class Navigation (Bar)
+    // Create new widget for class navigation (bar)
     m_classMenuBar = new QWidget(this);
     m_classMenuBar->setContentsMargins(0,0,0,0);
 
-    // These two Comboboxes go inside
+    // These two comboboxes go inside
     m_classBox = new QComboBox(m_classMenuBar);
-    m_methodBox = new QComboBox(m_classMenuBar);
     m_classBox->setMinimumHeight(20);
     m_classBox->setMaxCount(500000);
     m_classBox->setContentsMargins(2, 0, 2, 0);
     m_classBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+
+    m_methodBox = new QComboBox(m_classMenuBar);
     m_methodBox->setMinimumHeight(20);
     m_methodBox->setMaxCount(500000);
     m_methodBox->setContentsMargins(2, 0, 2, 0);
     m_methodBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
 
-    // Layout inside the Widget (two comboBoxes)
+    // Layout inside the widget (two comboboxes)
     QHBoxLayout *hLayoutBox = new QHBoxLayout();
     hLayoutBox->setSpacing(0);
     hLayoutBox->addWidget(m_classBox);
@@ -157,7 +158,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     hLayoutBox->setContentsMargins(0, 0, 0, 0);
     m_classMenuBar->setLayout(hLayoutBox);
 
-    // Set Size for Widget
+    // Set size for widget
     m_classMenuBar->setMinimumHeight(20);
     m_classMenuBar->setMaximumHeight(20);
     m_pVBox->addWidget(m_classMenuBar, 1);
@@ -174,10 +175,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pCenterWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setContentWidget(m_pCenterWidget);
-    //setContentWidget(m_tab);
-
     setFocusPolicy(Qt::StrongFocus);
-//    setAcceptDrops(true);
 
     loadSettings();
 
@@ -281,11 +279,90 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, const QStr
             }
         }   
     }
-
-//    m_classBox->model()->sort(0);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------
+QString argsWordWrap(QString text, int width)
+{
+    QString result;
+    int j, i;
+    bool firstWrap = true;
+
+    for (;;)
+    {
+        i = std::min(width, text.length());
+        j = text.lastIndexOf(", ", i);
+
+        if (j == -1)
+        {
+            j = text.indexOf(", ", i);
+        }
+
+        if (j > 0)
+        {
+            result += text.left(j);
+            result += ",\n    ";
+            text = text.mid(j + 2);
+
+            if (firstWrap)
+            {
+                firstWrap = false;
+                width -= 4;
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if (width >= text.length())
+        {
+            break;
+        }
+    }
+
+    return result + text;
+}
+
+//-------------------------------------------------------------------------------------
+void methodBoxAddItem(
+    QComboBox *methodBox, 
+    const QIcon &icon, 
+    const QString &methPre,
+    const QString &methArgs,
+    const QString &methPost,
+    const QVariant &userData)
+{
+    QString fullSig = QString("%1(%2)%3").arg(methPre, methArgs, methPost);
+    const int maxLength = 150;
+
+    if (fullSig.size() <= maxLength)
+    {
+        methodBox->addItem(icon, fullSig, userData);
+        methodBox->setItemData(methodBox->count() - 1, fullSig, Qt::ToolTipRole);
+    }
+    else
+    {
+        // todo: it seems that eliding the text of the combobox is not relevant
+        // if no stylesheets are applied. Only if stylesheets are used, the
+        // minimumSize of the comboBox seems to be adapted to the necessary
+        // size of the real text in all entries (maybe a bug in Qt???).
+        QString methArgsElide = methArgs.left(
+            std::max(0, maxLength - 4 - methPre.size() - methPost.size())
+        ) + "...";
+        methodBox->addItem(
+            icon, 
+            QString("%1(%2)%3").arg(methPre, methArgsElide, methPost), 
+            userData
+        );
+
+        QString methArgsWrapped = argsWordWrap(methArgs, 100);
+        fullSig = QString("%1(\n    %2\n)%3").arg(methPre, methArgsWrapped, methPost);
+        methodBox->setItemData(methodBox->count() - 1, fullSig, Qt::ToolTipRole);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 {
     // insert empty dummy item
@@ -305,11 +382,23 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox, 
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType, 
+                    itemPointer);
             }
             
         }
@@ -317,22 +406,46 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args, 
+                    " [static]" + item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [static]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name, 
+                    item->m_args,
+                    " [static]" + item->m_returnType, 
+                    itemPointer);
             }
         }
         else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
         {
             if (item->m_async)
             {
-                m_methodBox->addItem(item->m_icon, QString("async def " + item->m_name+"("+item->m_args+")  [classmember]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "async def " + item->m_name,
+                    item->m_args +
+                    " [classmember]",item->m_returnType, 
+                    itemPointer);
             }
             else
             {
-                m_methodBox->addItem(item->m_icon, QString("def " + item->m_name + "(" + item->m_args + ")  [classmember]" + item->m_returnType), itemPointer);
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->m_icon, 
+                    "def " + item->m_name,
+                    item->m_args, 
+                    " [classmember]" + item->m_returnType, 
+                    itemPointer);
             }
         }
     }
@@ -823,6 +936,10 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         name = info.fileName();
     }
     m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
+
+    // add the new index to the stackHistory.
+    m_stackHistory.prepend(m_tab->count() - 1);
+
     //!< activate appended tab
     m_tab->setCurrentIndex(m_tab->count() - 1);
     m_tab->setTabToolTip(m_tab->count() - 1, toolTip);
@@ -834,6 +951,10 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     connect(editorWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     connect(editorWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
     connect(editorWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
+    connect(
+        editorWidget, &ScriptEditorWidget::tabChangeRequested, 
+        this, &ScriptDockWidget::tabChangedRequest
+    );
     
     // Load the right Class->Method model for this Editor
     connect(editorWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -860,11 +981,24 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
 */
 ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 {
-    if (index < 0 || index >= m_tab->count()) return NULL;
+    if (index < 0 || index >= m_tab->count())
+    {
+        return nullptr;
+    }
 
     ScriptEditorWidget* removedWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
 
-    //removedWidget->reportCurrentCursorAsGoBackNavigationItem("close script", removedWidget->getUID());
+    // adapt m_stackHistory
+    m_stackHistory.removeOne(index); //remove the index
+
+    for (int i = 0; i < m_stackHistory.size(); ++i)
+    {
+        if (m_stackHistory[i] > index)
+        {
+            // decrement index at pos i, since index is removed
+            m_stackHistory[i]--;
+        }
+    }
 
     m_tab->removeTab(index);
     disconnect(removedWidget, SIGNAL(modificationChanged(bool)), this, SLOT(scriptModificationChanged(bool)));
@@ -873,6 +1007,10 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     disconnect(removedWidget, SIGNAL(marginChanged()), this, SLOT(editorMarginChanged()));
     disconnect(removedWidget, SIGNAL(updateActions()), this, SLOT(updateEditorActions()));
     disconnect(removedWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)));
+    disconnect(
+        removedWidget, &ScriptEditorWidget::tabChangeRequested,
+        this, &ScriptDockWidget::tabChangedRequest
+    );
 
     // Class Navigator
     disconnect(removedWidget, SIGNAL(requestModelRebuild(ScriptEditorWidget*)), this, SLOT(updateCodeNavigation(ScriptEditorWidget*)));
@@ -880,7 +1018,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     updateEditorActions();
     updatePythonActions();
 
-    if (index>0)
+    if (index > 0)
     {
         m_tab->setCurrentIndex(index - 1);
     }
@@ -924,6 +1062,13 @@ bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (withou
 void ScriptDockWidget::currentTabChanged(int index)
 {
     m_actTabIndex = index;
+
+    if (m_stackHistory.contains(index))
+    {
+        // move the current index to the front
+        m_stackHistory.removeOne(index);
+        m_stackHistory.prepend(index);
+    }
 
     if (index >= 0)
     {
@@ -1011,7 +1156,8 @@ void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 void ScriptDockWidget::tabCloseRequested(int index)
 {
     ScriptEditorWidget *sew = getEditorByIndex(index);
-    if (sew == NULL)
+
+    if (sew == nullptr)
     {
         return;
     }
@@ -1057,8 +1203,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst, bool closeScriptWid
     {
         ScriptEditorWidget *sew = this->removeEditor(index);
         sew->deleteLater();
-        //delete sew;
-        sew = NULL;
+        sew = nullptr;
     }
 
     if (m_tab->count() == 0 && closeScriptWidgetIfLastTabClosed)
@@ -2460,6 +2605,12 @@ void ScriptDockWidget::findWordWidgetFinished()
 void ScriptDockWidget::setCurrentIndex(int index)
 {
     m_tab->setCurrentIndex(index);
+
+    if (m_stackHistory.contains(index))
+    {
+        m_stackHistory.removeOne(index);
+        m_stackHistory.prepend(index);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2472,6 +2623,28 @@ void ScriptDockWidget::mnuCopyFilename()
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(sew->getFilename(), QClipboard::Clipboard);
     }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+Tab navigation with "most recently used" behaviour.
+It's fired when pressing the Ctrl+Tab shortcut.
+*/
+void ScriptDockWidget::tabChangedRequest()
+{
+    // pass getActiveInstance as parent, since this is either the
+    // itom main window (docked mode) or the window of the abstractDockWidget
+    // if undocked.
+    m_tabSwitcherWidget = QSharedPointer<TabSwitcherWidget>(
+        new TabSwitcherWidget(
+            m_tab, 
+            m_stackHistory, 
+            this,
+            getActiveInstance()));
+
+    m_tabSwitcherWidget->show();
+    m_tabSwitcherWidget->selectRow(1);
+    m_tabSwitcherWidget->setFocus();
 }
 
 } //end namespace ito

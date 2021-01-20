@@ -75,7 +75,8 @@ public:
     {
         RunnableCalltip,
         RunnableCompletion,
-        RunnableGoToAssignment
+        RunnableGoToAssignment,
+        RunnableGetHelp
     };
 
     JediRunnable(
@@ -243,6 +244,49 @@ private:
 };
 
 //-------------------------------------------------------------------------------------
+//!< runnable that executes a calltip call to Jedi by the thread pool of Python Jedi Runner.
+class GetHelpRunnable : public JediRunnable
+{
+public:
+    GetHelpRunnable(
+        const QString &additionalImportString,
+        PyObject *pPyModJedi,
+        const JediGetHelpRequest &request
+    ) :
+        JediRunnable(JediRunnable::RunnableGetHelp, pPyModJedi, additionalImportString),
+        m_request(request)
+    {
+        m_mutex.lock();
+
+        if (mostRecentId < 255)
+        {
+            m_currentId = ++mostRecentId;
+        }
+        else
+        {
+            m_currentId = 0;
+            mostRecentId = 0;
+        }
+
+        m_mutex.unlock();
+    };
+
+    virtual ~GetHelpRunnable() {};
+
+    void run();
+
+    virtual unsigned char getMostRecentId() const
+    {
+        return GetHelpRunnable::mostRecentId;
+    }
+
+private:
+    JediGetHelpRequest m_request;
+
+    static unsigned char mostRecentId;
+};
+
+//-------------------------------------------------------------------------------------
 //!< Thread-safe helper class for PythonEngine to manage calls to the Python Jedi package.
 /* This class is initialized by the PythonEngine as singleton and opened in pythonStartup()
 and closed in pythonShutdown().
@@ -288,6 +332,9 @@ public:
 
     //!< Adds a new goto assignment / definition request. Thread-safe.
     void addGoToAssignmentRequest(const JediAssignmentRequest &request);
+
+    //!< Adds a new get-help request. Thread-safe.
+    void addGetHelpRequest(const JediGetHelpRequest &request);
 
 private:
     QString additionalImportString() const {

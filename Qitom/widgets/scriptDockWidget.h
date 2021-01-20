@@ -26,12 +26,14 @@
 #include "abstractDockWidget.h"
 #include "itomQWidgets.h"
 #include "scriptEditorWidget.h"
+#include "tabSwitcherWidget.h"
 
 #include <qaction.h>
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qcombobox.h>
 #include <qpointer.h>
+#include <qsharedpointer.h>
 
 #include "../models/classNavigatorItem.h"
 #include "../models/bookmarkModel.h"
@@ -114,6 +116,14 @@ private:
     BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
+
+    //!< indices of the tabs. The most recently activated tab index is at the front.
+    /*
+    This list is used to initialize the tabSwitcherWidget if Ctrl+Tab is pressed.
+    */
+    QList<int> m_stackHistory; 
+
+    QSharedPointer<TabSwitcherWidget> m_tabSwitcherWidget;
 
     // ACTIONS
     ShortcutAction *m_tabMoveLeftAction;
@@ -275,6 +285,7 @@ private slots:
 public slots:
     void editorMarginChanged();
     void updateCodeNavigation(ScriptEditorWidget *editor);
+    void tabChangedRequest();
 };
 
 } //end namespace ito

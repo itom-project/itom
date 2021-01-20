@@ -113,8 +113,8 @@ namespace Utils
     QString strip(const QString &string);
     int numlines(const QString &string);
     QStringList splitlines(const QString &string);
-
-    
+    QString signatureWordWrap(QString signature, int width);
+    QStringList parseStyledTooltipsFromSignature(const QStringList &signatures, const QString &docstring, int maxLength = 44);    
 };
 
 } //end namespace ito

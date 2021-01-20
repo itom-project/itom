@@ -267,6 +267,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
@@ -376,6 +377,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/tabSwitcherWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
@@ -414,6 +416,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
@@ -499,6 +502,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
@@ -601,6 +605,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/tabSwitcherWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
@@ -634,6 +639,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp

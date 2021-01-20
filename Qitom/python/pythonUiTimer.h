@@ -26,6 +26,7 @@
 #include "pythonCommon.h"
 
 #include <qobject.h>
+#include <qsharedpointer.h>
 
 class QTimer; //forward declaration
 
@@ -36,16 +37,46 @@ class TimerCallback : public QObject
 {
     Q_OBJECT
     public:
-        TimerCallback() : m_function(NULL), m_boundedInstance(NULL), m_callbackArgs(0),  m_boundedMethod(0) {}
-        ~TimerCallback() {}
-        PyObject *m_function; //pyFunctionObject
-        PyObject *m_boundedInstance; //self if bounded method, else null
-        PyObject *m_callbackArgs;
-        bool m_boundedMethod;
+        TimerCallback();
+        ~TimerCallback();
+
+        enum class CallableType
+        {
+            Callable_Invalid, //!< the callable is invalid
+
+            //!< class method (written in python), the function is stored in m_function, the self object is stored in m_boundedInstance
+            Callable_Method,
+
+            //!< unbounded python method, the function is stored in m_function, m_boundedInstance is NULL
+            Callable_Function,
+
+            //!< function, written in C, stored in m_function. m_boundedInstance is NULL, since the potential self object is also contained in the CFunction object
+            Callable_CFunction
+        };
+
+        /* If the target is a bounded method, this member holds a Python 
+        weak reference (new ref) to the method, that acts as slot.
+        m_boundedInstance is != nullptr then.
+
+        If the target is an unbounded function,
+        this member holds a new reference to the function itself (that acts as slot).
+        m_boundedInstance is nullptr then. */
+        PyObject *m_function;
+
+        /* weak reference to the python-class instance of the 
+        function (if the function is bounded) or nullptr if the function is unbounded*/
+        PyObject *m_boundedInstance;   
+
+        //!< type of the python callable (see CallableType)
+        CallableType m_callableType;
+
+        //!< new reference to a (empty) tuple with arguments passed to the callable function
+        PyObject *m_callbackArgs; 
 
     public slots:
         void timeout(); 
 };
+
 
 class PythonTimer
 {
@@ -57,8 +88,8 @@ public:
     typedef struct
     {
         PyObject_HEAD
-        QTimer *timer;
-        TimerCallback *callbackFunc;
+        QSharedPointer<QTimer> timer;
+        QSharedPointer<TimerCallback> callbackFunc;
     }
     PyTimer;
 
