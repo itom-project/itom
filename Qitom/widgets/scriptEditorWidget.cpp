@@ -1136,6 +1136,14 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
         ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
+        code = code.trimmed();
+
+        if (code.size() > 200)
+        {
+            // trim code if too long
+            code = code.left(98) + "\n...\n" + code.right(99);
+        }
+
         QString text1 = tr("The code formatting failed:\n%1").arg(code);
         QString text2 = tr("\n\nShould this feature be deactivated?"
             "This can be changed again in the property dialog of itom.");
