@@ -30,7 +30,7 @@ namespace ito
 
 //-------------------------------------------------------------------------------------
 PythonStatePublisher::PythonStatePublisher(const PythonEngine *engine) :
-    m_timeoutMs(100)
+    m_delayMs(100)
 {
     propertiesChanged(); // read real timeout time
 
@@ -97,13 +97,13 @@ void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition,
             killTimer(m_delayedTrans.timerId);
         }
 
-        if (immediate || m_timeoutMs <= 0)
+        if (immediate || m_delayMs <= 0)
         {
             emit pythonStateChanged(pyTransition);
         }
         else
         {
-            m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(m_timeoutMs));
+            m_delayedTrans.timerId = startTimer(m_delayMs);
             m_delayedTrans.transition = pyTransition;
         }
         
