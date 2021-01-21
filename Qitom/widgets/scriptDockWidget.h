@@ -191,10 +191,9 @@ private:
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
     bool m_classNavigatorEnabled;
-    void fillNavigationClassComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix);
-    void fillNavigationMethodComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix);
+    void fillNavigationClassComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
+    void fillNavigationMethodComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
     void showClassNavigator(bool show);
-    QMap<int, QSharedPointer<OutlineItem>> m_outlineRootItems;
 
     static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 
@@ -277,7 +276,7 @@ private slots:
 
     // Class Navigator
     void navigatorClassSelected(int row);
-    void methodChosen(const QString &text);
+    void navigatorMethodSelected(int row);
 
     void loadSettings();
     void findWordWidgetFinished();

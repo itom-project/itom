@@ -112,7 +112,7 @@ public:
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
-    RetVal setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod);
+    RetVal showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
 
     void removeCurrentCallstackLine(); //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
 
@@ -125,6 +125,8 @@ public:
 
     //!< if UidFilter is -1, the current cursor position is always reported, else only if its editorUID is equal to UIDFilter
     void reportCurrentCursorAsGoBackNavigationItem(const QString &reason, int UIDFilter = -1);
+
+    QSharedPointer<OutlineItem> parseOutline() const;
 
     static QString filenameFromUID(int UID, bool &found);
 
@@ -210,7 +212,6 @@ private:
     QRegularExpression m_regExpMethodStart;
     QRegularExpression m_regExpMethod;
 
-    QSharedPointer<OutlineItem> parseOutline() const;
     void parseOutlineRecursive(QSharedPointer<OutlineItem> &parent) const;
     QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 

@@ -29,35 +29,7 @@
 
 namespace ito {
 
-class ClassNavigatorItem;
 class OutlineItem;
-
-class ClassNavigatorItem
-{
-
-public:
-    // Enumeration
-    enum t_type {typePyRoot, typePyGlobal, typePyClass, typePyDef, typePyStaticDef, typePyClMethDef};
-    
-    ClassNavigatorItem();
-    ~ClassNavigatorItem();
-
-    // Methods
-    void setInternalType(t_type t);
-    void setIcon(t_type t);
-   
-    // Variables
-    int m_lineno;
-    QString m_name;
-    QString m_args;
-    QString m_returnType;
-    QIcon m_icon;
-    QList<const ClassNavigatorItem*> m_member;
-    t_type m_internalType;
-    bool m_priv;
-    bool m_async;
-    
-};
 
 class OutlineItem
 {
@@ -93,4 +65,6 @@ public:
 };
 
 } //end namespace ito
+
+Q_DECLARE_METATYPE(QSharedPointer<ito::OutlineItem>) //must be outside of namespace
 

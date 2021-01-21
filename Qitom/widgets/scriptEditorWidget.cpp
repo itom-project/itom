@@ -653,22 +653,22 @@ void ScriptEditorWidget::removeCurrentCallstackLine()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod)
+RetVal ScriptEditorWidget::showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity)
 {
     ito::RetVal retval;
     
     if (line >= 0)
     {
         retval += setCursorPosAndEnsureVisible(line);
-        // regular expression for Classes and Methods
-        QRegExp reg("(\\s*)(class||def||async\\s+def)\\s(.+)\\(.*");
-        reg.setMinimal(true);
-        reg.indexIn(this->lineText(line), 0);
-        setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
-    }
 
-    m_currentClass = currentClass;
-    m_currentMethod = currentMethod;
+        QString text = lineText(line);
+        int idx = text.indexOf(highlightedText, 0, caseSensitivity);
+
+        if (idx >= 0)
+        {
+            setSelection(line, idx, line, idx + highlightedText.size());
+        }
+    }
 
     return retval;
 }
@@ -2374,7 +2374,7 @@ void ScriptEditorWidget::outlineTimerElapsed()
     m_outlineTimer->stop();
     m_rootOutlineItem = parseOutline();
 
-    emit requestOutlineModelUpdate(this);
+    emit outlineModelChanged(this, m_rootOutlineItem);
 }
 
 //----------------------------------------------------------------------------------
@@ -2487,6 +2487,8 @@ void ScriptEditorWidget::onCursorPositionChanged()
 {
     QTextCursor c = textCursor();
     int currentLine = c.isNull() ? -1 : c.blockNumber();
+
+    emit outlineModelChanged(this, m_rootOutlineItem);
 
     // set the current cursor position to the global cursor position variable
     //if (hasFocus())

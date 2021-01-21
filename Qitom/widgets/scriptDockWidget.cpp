@@ -164,7 +164,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pVBox->addWidget(m_classMenuBar, 1);
 
     connect(m_classBox, SIGNAL(activated(int)), this, SLOT(navigatorClassSelected(int)));
-    connect(m_methodBox, SIGNAL(activated(QString)), this, SLOT(methodChosen(QString)));
+    connect(m_methodBox, SIGNAL(activated(int)), this, SLOT(navigatorMethodSelected(int)));
 
     // Add EditorTab
     m_pVBox->addWidget(m_tab);
@@ -201,8 +201,6 @@ ScriptDockWidget::~ScriptDockWidget()
     {
         closeTab(i, false);
     }
-
-    m_outlineRootItems.clear();
 
     DELETE_AND_SET_NULL(m_tab);
     DELETE_AND_SET_NULL(m_pWidgetFindWord);
@@ -244,29 +242,29 @@ void ScriptDockWidget::loadSettings()
 
 //------------------------------------------------------------------------------------ 
 /* Recursive fill of all classes in the outline to the class combo box. */
-void ScriptDockWidget::fillNavigationClassComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix)
+void ScriptDockWidget::fillNavigationClassComboBox(
+    const QSharedPointer<OutlineItem> &parent, 
+    const QString &prefix)
 {
     if (!parent.isNull())
     {
-        auto parentLocked = parent.lock();
         QString name;
 
-        if (parentLocked->m_type == OutlineItem::typeRoot)
+        if (parent->m_type == OutlineItem::typeRoot)
         {
             QVariant userData = qVariantFromValue(parent);
             m_classBox->addItem(
-                parentLocked->icon(),
-                parentLocked->m_name,
+                parent->icon(),
+                parent->m_name,
                 userData
             );
         }
 
-        foreach(auto item, parentLocked->m_childs)
+        foreach(auto item, parent->m_childs)
         {
             if (item->m_type == OutlineItem::typeClass)
             {
-                auto weakItem = item.toWeakRef();
-                QVariant userData = qVariantFromValue(weakItem);
+                QVariant userData = qVariantFromValue(item);
 
                 if (prefix != "")
                 {
@@ -278,7 +276,7 @@ void ScriptDockWidget::fillNavigationClassComboBox(QWeakPointer<OutlineItem> &pa
                 }
 
                 m_classBox->addItem(
-                    parentLocked->icon(),
+                    item->icon(),
                     name,
                     userData
                 );
@@ -287,14 +285,13 @@ void ScriptDockWidget::fillNavigationClassComboBox(QWeakPointer<OutlineItem> &pa
                 {
                     if (prefix == "")
                     {
-                        fillNavigationClassComboBox(weakItem, item->m_name);
+                        fillNavigationClassComboBox(item, item->m_name);
                     }
                     else
                     {
-                        fillNavigationClassComboBox(weakItem, QString("%1.%2").arg(prefix).arg(item->m_name));
+                        fillNavigationClassComboBox(item, QString("%1.%2").arg(prefix).arg(item->m_name));
                     }
                 }
-                
             }
         }
     }
@@ -352,7 +349,13 @@ void methodBoxAddItem(
     const QString &methPost,
     const QVariant &userData)
 {
-    QString fullSig = QString("%1(%2)%3").arg(methPre, methArgs, methPost);
+    QString fullSig = QString("%1(%2)").arg(methPre, methArgs);
+
+    if (methPost != "")
+    {
+        fullSig += " -> " + methPost;
+    }
+
     const int maxLength = 150;
 
     if (fullSig.size() <= maxLength)
@@ -382,107 +385,111 @@ void methodBoxAddItem(
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptDockWidget::fillNavigationMethodComboBox(QWeakPointer<OutlineItem> &parent, const QString &prefix)
+void ScriptDockWidget::fillNavigationMethodComboBox(
+    const QSharedPointer<OutlineItem> &parent, 
+    const QString &prefix)
 {
     // insert empty dummy item
-    auto invalid = qVariantFromValue(QWeakPointer<OutlineItem>());
-    m_methodBox->addItem(QIcon(), "", invalid);
+    if (prefix == "")
+    {
+        auto invalid = qVariantFromValue(QSharedPointer<OutlineItem>());
+        m_methodBox->addItem(QIcon(), "", invalid);
+    }
 
     if (parent.isNull())
     {
         return;
     }
 
-    auto parentLock = parent.lock();
-
-    foreach(const auto &item, parentLock->m_childs)
+    foreach(const auto &item, parent->m_childs)
     {
+        auto userData = qVariantFromValue(item);
 
+        switch (item->m_type)
+        {
+        case OutlineItem::typeFunction:
+        case OutlineItem::typeMethod:
+        case OutlineItem::typePropertyGet:
+        case OutlineItem::typePropertySet:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typeStaticMethod:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[static] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[static] def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typeClassMethod:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[classmethod] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[classmethod] def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        default:
+            // class...
+            continue;
+        }
+
+        if (item->m_childs.size() > 0)
+        {
+            fillNavigationMethodComboBox(item, prefix + "... ");
+        }
     }
-    
-    for (int i = 0; i < parent->m_member.length(); ++i)
-    {
-        item = parent->m_member[i];
-        itemPointer = qVariantFromValue((void *)item);
-
-        if (item->m_internalType == ClassNavigatorItem::typePyDef ||
-            item->m_internalType == ClassNavigatorItem::typePyGlobal)
-        {
-            if (item->m_async)
-            {
-                methodBoxAddItem(
-                    m_methodBox, 
-                    item->m_icon, 
-                    "async def " + item->m_name,
-                    item->m_args,
-                    item->m_returnType, 
-                    itemPointer);
-            }
-            else
-            {
-                methodBoxAddItem(
-                    m_methodBox,
-                    item->m_icon, 
-                    "def " + item->m_name,
-                    item->m_args,
-                    item->m_returnType, 
-                    itemPointer);
-            }
-            
-        }
-        else if (item->m_internalType == ClassNavigatorItem::typePyStaticDef)                 
-        {
-            if (item->m_async)
-            {
-                methodBoxAddItem(
-                    m_methodBox,
-                    item->m_icon, 
-                    "async def " + item->m_name,
-                    item->m_args, 
-                    " [static]" + item->m_returnType, 
-                    itemPointer);
-            }
-            else
-            {
-                methodBoxAddItem(
-                    m_methodBox,
-                    item->m_icon, 
-                    "def " + item->m_name, 
-                    item->m_args,
-                    " [static]" + item->m_returnType, 
-                    itemPointer);
-            }
-        }
-        else if (item->m_internalType == ClassNavigatorItem::typePyClMethDef)
-        {
-            if (item->m_async)
-            {
-                methodBoxAddItem(
-                    m_methodBox,
-                    item->m_icon, 
-                    "async def " + item->m_name,
-                    item->m_args +
-                    " [classmember]",item->m_returnType, 
-                    itemPointer);
-            }
-            else
-            {
-                methodBoxAddItem(
-                    m_methodBox,
-                    item->m_icon, 
-                    "def " + item->m_name,
-                    item->m_args, 
-                    " [classmember]" + item->m_returnType, 
-                    itemPointer);
-            }
-        }
-    }
-
-    m_methodBox->model()->sort(0);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// public Slot invoked by requestOutlineModelUpdate from EditorWidget or by tabchange etc.
+//-------------------------------------------------------------------------------------
+// public Slot invoked by outlineModelChanged from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem)
 { 
     if (m_classNavigatorEnabled && editor)
@@ -492,65 +499,60 @@ void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor, QSharedP
             int line = 0;
             editor->getCursorPosition(&line, nullptr);
 
-            m_methodBox->setEnabled(false);
             m_methodBox->blockSignals(true);
-            m_classBox->setEnabled(false);
             m_classBox->blockSignals(true);
             m_classBox->clear();
             m_methodBox->clear();
 
-            m_outlineRootItems.insert(m_tab->indexOf(editor), rootItem);  // value(m_tab->indexOf(editor)) 
+            fillNavigationClassComboBox(rootItem, "");
 
-            // update the classes combo box
-            m_classBox->clear();
-            fillNavigationClassComboBox(rootItem.toWeakRef(), "");
+            // check if there is a match in the class list concerning the current line
+            OutlineItem *item;
+            int rowCandidate = 0; //default is the global class section
 
-            m_classBox->setEnabled(true);
-            m_methodBox->setEnabled(true);
+            for (int row = 0; row < m_classBox->count(); ++row)
+            {
+                item = m_classBox->itemData(row, Qt::UserRole)
+                    .value<QSharedPointer<OutlineItem>>().data();
+
+                if (item &&
+                    item->m_startLineIdx <= line &&
+                    item->m_endLineIdx >= line)
+                {
+                    rowCandidate = row;
+                }
+            }
+
+            if (rowCandidate >= 0)
+            {
+                m_classBox->setCurrentIndex(rowCandidate);
+                auto parent = m_classBox->itemData(rowCandidate, Qt::UserRole)
+                    .value<QSharedPointer<OutlineItem>>();
+                fillNavigationMethodComboBox(parent, "");
+                rowCandidate = -1;
+
+                for (int row = 0; row < m_methodBox->count(); ++row)
+                {
+                    item = m_methodBox->itemData(row, Qt::UserRole)
+                        .value<QSharedPointer<OutlineItem>>().data();
+
+                    if (item &&
+                        item->m_startLineIdx <= line &&
+                        item->m_endLineIdx >= line)
+                    {
+                        rowCandidate = row;
+                    }
+                }
+
+                if (rowCandidate >= 0)
+                {
+                    m_methodBox->setCurrentIndex(rowCandidate);
+                }
+            }
+
             m_classBox->blockSignals(false);
             m_methodBox->blockSignals(false);
-
-            // This part is responsible for the reselection of the item that was selected before the refresh
-            int iClass = m_classBox->findText(lastClass);
-
-            if (iClass != -1)
-            {
-                bool lastClassFound = false;
-                for (int i = 0; i < m_classBox->count(); ++i)
-                {
-                    if (m_classBox->itemText(i) == lastClass)
-                    {
-                        m_classBox->setCurrentIndex(i);
-                        classChosen(""); // This empty cal avoids the jump to the position
-                        lastClassFound = true;
-                        break;
-                    }
-                }
-
-                /*int iMethod = m_methodBox->findText(lastMethod);*/
-                if (lastClassFound)
-                {
-                    for (int j = 0; j < m_methodBox->count(); ++j)
-                    {
-                        lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(j, Qt::UserRole).value<void*>());
-                        if (lastMethodItem)
-                        {
-                            if (lastMethodItem->m_name == lastMethod)
-                            {
-                                m_methodBox->setCurrentIndex(j);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Otherwise choose global scope
-                classChosen("");
-            }
         }
-        // else the request is from an inactive tab by timer or so. 
     }
 }
 
@@ -562,8 +564,8 @@ method box is initialized with these children.
 */
 void ScriptDockWidget::navigatorClassSelected(int row)
 {
-    QWeakPointer<OutlineItem> classItem = 
-        m_classBox->itemData(row, Qt::UserRole).value<QWeakPointer<OutlineItem>>();
+    QSharedPointer<OutlineItem> classItem =
+        m_classBox->itemData(row, Qt::UserRole).value<QSharedPointer<OutlineItem>>();
 
     if (classItem.isNull())
     {
@@ -571,57 +573,45 @@ void ScriptDockWidget::navigatorClassSelected(int row)
     }
     else
     {
-        auto classItemLocked = classItem.lock();
-    }
+        const auto editor = getCurrentEditor();
 
-    ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+        if (editor)
+        {
+            editor->showLineAndHighlightWord(
+                classItem->m_startLineIdx,
+                classItem->m_name);
+        }
 
-    if (classItem)
-    {
-        ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
-        QString method = methodItem ? methodItem->m_name : "";
-        QString className = m_classBox->currentText();
-
-        m_methodBox->setEnabled(false);
-        disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->clear();
-
-        if (text != "")
-        {
-            if (classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
-            {
-                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, className, method);
-            }
-            else
-            {
-                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(-1, className, method);
-            }
-        }
-
-        fillMethodBox(classItem);
-        connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
-        m_methodBox->setEnabled(true);
+        fillNavigationMethodComboBox(classItem, "");
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::methodChosen(const QString &text)
+//-------------------------------------------------------------------------------------
+// Slot called if any entry in the method navigation combobox is selected.
+/* The definition of the selected method (if a method is selected) is
+highlighted in the current script.
+*/
+void ScriptDockWidget::navigatorMethodSelected(int row)
 {
-    // When method is chosen, set CursorPosition to "method" definition position
-    ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
+    QSharedPointer<OutlineItem> methodItem =
+        m_methodBox->itemData(row, Qt::UserRole)
+        .value<QSharedPointer<OutlineItem>>();
 
-    if (methodItem)
+    if (!methodItem.isNull())
     {
-        if (methodItem->m_lineno >= 0)
-        {
-            QString className = m_classBox->currentText();
+        const auto editor = getCurrentEditor();
 
-            getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, className,  methodItem->m_name);
+        if (editor)
+        {
+            editor->showLineAndHighlightWord(
+                methodItem->m_startLineIdx,
+                methodItem->m_name);
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::showClassNavigator(bool show)
 {
     m_classMenuBar->setVisible(show);
@@ -1112,7 +1102,7 @@ void ScriptDockWidget::currentTabChanged(int index)
         setWindowModified(editorWidget->isModified());
 
         // ClassNavigator: set the right classes in comboboxes
-        updateCodeNavigation(editorWidget);
+        updateCodeNavigation(editorWidget, editorWidget->parseOutline());
 
         if (editorWidget->hasNoFilename())
         {
