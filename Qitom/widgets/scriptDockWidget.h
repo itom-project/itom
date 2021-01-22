@@ -35,7 +35,7 @@
 #include <qpointer.h>
 #include <qsharedpointer.h>
 
-#include "../models/classNavigatorItem.h"
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <qevent.h>
@@ -190,10 +190,10 @@ private:
     QWidget *m_classMenuBar;
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
-    bool m_classNavigatorEnabled;
+    bool m_outlineShowNavigation;
     void fillNavigationClassComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
     void fillNavigationMethodComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
-    void showClassNavigator(bool show);
+    void showOutlineNavigationBar(bool show);
 
     static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 

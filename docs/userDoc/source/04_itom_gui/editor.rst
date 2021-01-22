@@ -291,32 +291,41 @@ variable **myfunc** is introduced for the first time.
 
 **New in |itom| 3.2**
 
-.. _gui-editor-class-navigator:
+.. _gui-editor-outline-navigator:
 
-Direction class and method navigator
+Code Outline
 ================================================
 
-Above every script, there are two comboboxes that are part of a class and 
-method navigator. If these combo boxes are not available, you need to 
-enable this navigator in the property dialog, 
-:ref:`tab general <gui-prop-py-general>`. After a configurable number of 
-seconds after the last change in the script, it is analyzed and the combo 
-boxes are adapted with respect to the current structure of the script.
+When a script is loaded or changed, an outline of all methods, classes
+is created. This outline can then be used for multiple purposes.
+Many features can be parameterized by the :
+ref:`script editors <gui-prop-script-editors>` subpage of the property dialog.
+
+One feature is the code navigation bar above each script editor. Its
+visibility can be set by a checkbox in the property dialog. If visible,
+it looks like this:
 
 .. figure:: images/editor-class-navigator.png
     :scale: 100%
     :align: center
 
-The left combobox displays all classes and the global namespace of the 
-script. By clicking on any class name, the cursor jumps to the class 
-and the name is highlighted. The right combobox shows the sub-items that 
-belong to the chosen class or namespace.
+The left combo box shows a **globals** section for all methods,
+that are not part of any classes, as well a list of all classes,
+detected in the current script. If one of these values is selected,
+the cursor is moved to the line, where the class is defined (if it is
+a class) and the right combo box shows all methods, functions, properties...
+that belong to this class or the globals section of the script.
+Again, you can jump to the definition of such a method by selecting an
+entry from the combo box. 
 
-The navigator can distinguish between public and private methods, static 
-methods (with the decorator **@staticmethod**) and specially marked class 
-methods (decorator **@classmethod**). All globally defined methods are
-categorized into the global namespace (**Global Scope**).
+If one moves the cursor into a line, that belongs to a method or
+class, the corresponding entries are immediately displayed in both
+combo boxes.
 
+In general, the outline is updated whenever a script is updated whenever
+a tab is changed or a script is loaded. However, it can also be automatically
+updated after a short delay after the last key press in the editor. This
+delay can also be adjusted in the property dialog.
 
 .. _gui-editor-syntax-check:
 

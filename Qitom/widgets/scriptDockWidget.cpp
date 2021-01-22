@@ -84,7 +84,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tabContextMenu(NULL),
     m_winMenu(NULL),
     m_commonActions(commonActions),
-    m_pBookmarkModel(bookmarkModel)
+    m_pBookmarkModel(bookmarkModel),
+    m_outlineShowNavigation(true)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -215,9 +216,9 @@ void ScriptDockWidget::loadSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    // Class Navigator
-    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
-    showClassNavigator(m_classNavigatorEnabled);
+    // Code Outline
+    m_outlineShowNavigation = settings.value("outlineShowNavigation", true).toBool();
+    showOutlineNavigationBar(m_outlineShowNavigation);
 
     int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();
 
@@ -409,8 +410,6 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
         {
         case OutlineItem::typeFunction:
         case OutlineItem::typeMethod:
-        case OutlineItem::typePropertyGet:
-        case OutlineItem::typePropertySet:
             if (item->m_async)
             {
                 methodBoxAddItem(
@@ -427,6 +426,50 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
                     m_methodBox,
                     item->icon(),
                     prefix + "def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typePropertyGet:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[get] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[get] def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typePropertySet:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[set] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[set] def " + item->m_name,
                     item->m_args,
                     item->m_returnType,
                     userData);
@@ -492,7 +535,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
 // public Slot invoked by outlineModelChanged from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem)
 { 
-    if (m_classNavigatorEnabled && editor)
+    if (m_outlineShowNavigation && editor)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
@@ -612,8 +655,21 @@ void ScriptDockWidget::navigatorMethodSelected(int row)
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptDockWidget::showClassNavigator(bool show)
+//!< displays or hides the entire outline navigation bar (class and method combo box)
+void ScriptDockWidget::showOutlineNavigationBar(bool show)
 {
+    if (show)
+    {
+        ScriptEditorWidget *editorWidget = 
+            static_cast<ScriptEditorWidget*>(m_tab->widget(m_actTabIndex));
+        
+        if (editorWidget)
+        {
+            // update the content of the navigation combo boxes
+            updateCodeNavigation(editorWidget, editorWidget->parseOutline());
+        }
+    }
+
     m_classMenuBar->setVisible(show);
 }
 

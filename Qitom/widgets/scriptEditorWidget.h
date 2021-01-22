@@ -46,7 +46,7 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
-#include "../models/classNavigatorItem.h"
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -202,15 +202,15 @@ private:
     static CursorPosition currentGlobalEditorCursorPos; //! the current cursor position within all opened editor widgets
     static QHash<int, ScriptEditorWidget*> editorByUID; //! hash table that maps the UID to its instance of ScriptEditorWidget*
 
-    // Class Navigator
-    bool m_classNavigatorEnabled;               // Enable Class-Navigator
-    QTimer *m_outlineTimer;              // Class Navigator Timer
-    bool m_outlineTimerEnabled;          // Class Navigator Timer Enable
+    // Outline
+    QTimer *m_outlineTimer; //!< timer to recreate the outline model with a certain delay
+    bool m_outlineTimerEnabled; //!<
+    int m_currentLineIndex; //!< current line index of the cursor
     QSharedPointer<OutlineItem> m_rootOutlineItem;
-    QRegularExpression m_regExpClass;
-    QRegularExpression m_regExpDecorator;
-    QRegularExpression m_regExpMethodStart;
-    QRegularExpression m_regExpMethod;
+    QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
+    QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator
+    QRegularExpression m_regExpMethodStart; //!< regular expression to parse the start of a method definition
+    QRegularExpression m_regExpMethod; //!< regular expression to parse a full method definition
 
     void parseOutlineRecursive(QSharedPointer<OutlineItem> &parent) const;
     QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;

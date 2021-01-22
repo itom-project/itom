@@ -75,7 +75,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_contextMenu(NULL),
     m_keepIndentationOnPaste(true),
     m_cursorJumpLastAction(false),
-    m_pBookmarkModel(bookmarkModel)
+    m_pBookmarkModel(bookmarkModel),
+    m_currentLineIndex(-1)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -97,12 +98,13 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_regExpClass = QRegularExpression("^(\\s*)(class)\\s(?<name>.+)(\\(.*\\))?:\\s*(#?.*)");
     m_regExpClass.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
     m_regExpDecorator = QRegularExpression("^(\\s*)(@)(?<name>\\S+)\\s*(#?.*)");
-    m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s*)?def\\s+(?<private>_*)(?<name>\\w+)\\(");
+    m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s*)?def\\s+(?<name>\\w+)\\(");
     m_regExpMethodStart.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
-    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<private>_*)(?<name>.+)\\(?<args>(.*)(\\)(\\s*|\\s->\\s(?<rettype>.+)):\\s*(#?.*)?|\\\\)");
+    //m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<private>_*)(?<name>.+)\\(?<args>(.*)(\\)(\\s*|\\s->\\s(?<rettype>.+)):\\s*(#?.*)?|\\\\)");
 
     // named groups in complex OR-cases seems not to work
-    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<private>_*)(?<name>.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<name>.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s+(?<name>.+)\\((.*)\\)(\\s*|\\s+->\\s+(.+)):\\s*(#?.*)?");
     m_regExpMethod.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
 
     m_outlineTimer = new QTimer(this);
@@ -290,12 +292,10 @@ void ScriptEditorWidget::loadSettings()
         codeCheckerResultsChanged(QList<ito::CodeCheckerItem>());
     }
 
-    // Class Navigator
-    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
-
-    m_outlineTimerEnabled = settings.value("classNavigatorTimerActive", true).toBool();
+    // Code Outline
+    m_outlineTimerEnabled = settings.value("outlineAutoUpdateEnabled", true).toBool();
     m_outlineTimer->stop();
-    m_outlineTimer->setInterval((settings.value("classNavigatorInterval", 2.00).toDouble() * 1000));
+    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 2.00).toDouble() * 1000));
 
     //todo
     // Fold Style
@@ -1294,8 +1294,10 @@ bool ScriptEditorWidget::event(QEvent *event)
                 m_codeCheckerCallTimer->start(); //starts or restarts the timer
             }
         }
-        if (m_classNavigatorEnabled && m_outlineTimerEnabled)
-        {   // Class Navigator if Timer is active
+
+        if (m_outlineTimerEnabled)
+        {   
+            // Class Navigator if Timer is active
             m_outlineTimer->start();
         }
 
@@ -2032,7 +2034,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
             m_codeCheckerCallTimer->start(); //starts or restarts the timer
         }
     }
-    if (m_classNavigatorEnabled && m_outlineTimerEnabled)
+    if (m_outlineTimerEnabled)
     {
         m_outlineTimer->start(); //starts or restarts the timer
     }
@@ -2183,7 +2185,13 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
     }
 
     // read from settings
-    QString line = lineText(startLineIdx);
+    QString line = lineText(startLineIdx).trimmed();
+
+    if (line.endsWith('\\'))
+    {
+        line = line.left(line.size() - 1);
+    }
+
     QString decoLine;   // @-Decorato(@)r Line in previous line of a function
 
     //auto classMatch = m_regExpClass.match("class MyClass:  # comment");
@@ -2223,22 +2231,30 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
         //it again (max. 30 lines).
         methodMatch = m_regExpMethod.match(line);
 
+        
+
         while (!methodMatch.hasMatch() &&
             lineIndex <= endLineIdx)
         {
-            line = line + lineText(++lineIndex).trimmed() + " ";
+            QString linenew = lineText(++lineIndex).trimmed();
+
+            if (linenew.endsWith('\\'))
+            {
+                linenew = linenew.left(linenew.size() - 1);
+            }
+
+            line = line + linenew + " ";
             methodMatch = m_regExpMethod.match(line);
         }
 
         if (methodMatch.hasMatch())
         {
             QSharedPointer<OutlineItem> item(new OutlineItem(OutlineItem::typeFunction));
-            item->m_name = methodMatch.captured("private") + methodMatch.captured("name");
-            item->m_private = methodMatch.captured("private").startsWith("_");
-            //qDebug() << methodMatch.capturedTexts();
-            item->m_args = methodMatch.captured(6).trimmed();
+            item->m_name = methodMatch.captured("name");
+            item->m_private = item->m_name.startsWith("_");
+            item->m_args = methodMatch.captured(5).trimmed();
             bool hasSelf = item->m_args.startsWith("self", Qt::CaseInsensitive);
-            item->m_returnType = methodMatch.captured(9);
+            item->m_returnType = methodMatch.captured(7);
             item->m_startLineIdx = startLineIdx;
             item->m_endLineIdx = endLineIdx;
             item->m_async = methodMatch.captured("async")
@@ -2488,7 +2504,11 @@ void ScriptEditorWidget::onCursorPositionChanged()
     QTextCursor c = textCursor();
     int currentLine = c.isNull() ? -1 : c.blockNumber();
 
-    emit outlineModelChanged(this, m_rootOutlineItem);
+    if (currentLine != m_currentLineIndex)
+    {
+        emit outlineModelChanged(this, m_rootOutlineItem);
+        m_currentLineIndex = currentLine;
+    }
 
     // set the current cursor position to the global cursor position variable
     //if (hasFocus())

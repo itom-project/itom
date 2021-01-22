@@ -185,7 +185,7 @@ The editor section covers all properties, that are related to the
 :ref:`script editor windows <gui-editor>`.
 
 .. _gui-prop-py-general:
-    
+
 General
 ----------------------
 
@@ -213,7 +213,7 @@ In this tab, you can mainly set all settings that are related to indentation:
   removed from a block with another initial indentation level, should be adapted 
   to the current identation level of the current cursor position.
 
-    .. _gui-prop-py-code-checkers:
+.. _gui-prop-py-code-checkers:
 
 Code Checkers
 ----------------------
@@ -369,17 +369,22 @@ Within itom you can set the following options:
         max-doc-length=79
         disable-noqa
 
+.. _gui-prop-script-editors:
+
 Script Editors
 ----------------------
 
-The **Class Navigator** feature allows configuring the 
-:ref:`class navigator <gui-editor-class-navigator>` of any script editor window. 
-The checkbox of the entire groupbox en- or disables this feature. Use the timer 
-to recheck the script structure after a certain amount of seconds since the 
-last change of the script. If the timer is disabled, the structure is only 
-analyzed when the script is shown or loaded.
+The **Code Outline** feature allows configuring the 
+:ref:`code outline <gui-editor-outline-navigator>` of any script editor.
+The outline contains the start and end of all functions, class and methods of
+a script. It can for instance be used as content for the code navigation bar
+above each script editor. It is for instance possible to show or hide this
+navigation bar. The outline is usually determined once a script is loaded
+or if a tab is changed. However, you can also enable an automatic update
+mechanism, such that the outline is updated after that the last key has
+been pressed in a script. The delay can be configured in this property page, too.
 
-As second last option in this property page, you can optionally choose if a 
+As next option in this property page, you can optionally choose if a 
 vertical line should be displayed in the background of the script editor windows 
 after a user-defined number of columns. This line can for instance be used to 
 keep the script thin and be remembered to add a line break instead of generating 
