@@ -42,6 +42,8 @@
         <file>icons/method_clmethod_private.png</file>
         <file>icons/method_static.png</file>
         <file>icons/method_static_private.png</file>
+        <file>icons/property_get.png</file>
+        <file>icons/property_set.png</file>
         <file>icons/namespace.png</file>
         <file>icons/global.png</file>
     </qresource>

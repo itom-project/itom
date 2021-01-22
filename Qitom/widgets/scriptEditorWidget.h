@@ -46,7 +46,7 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
-#include "../models/classNavigatorItem.h"
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <QtPrintSupport/qprinter.h>

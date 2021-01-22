@@ -35,7 +35,7 @@
 #include <qpointer.h>
 #include <qsharedpointer.h>
 
-#include "../models/classNavigatorItem.h"
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <qevent.h>

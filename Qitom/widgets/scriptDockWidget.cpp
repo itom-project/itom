@@ -409,8 +409,6 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
         {
         case OutlineItem::typeFunction:
         case OutlineItem::typeMethod:
-        case OutlineItem::typePropertyGet:
-        case OutlineItem::typePropertySet:
             if (item->m_async)
             {
                 methodBoxAddItem(
@@ -427,6 +425,50 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
                     m_methodBox,
                     item->icon(),
                     prefix + "def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typePropertyGet:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[get] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[get] def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            break;
+        case OutlineItem::typePropertySet:
+            if (item->m_async)
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[set] async def " + item->m_name,
+                    item->m_args,
+                    item->m_returnType,
+                    userData);
+            }
+            else
+            {
+                methodBoxAddItem(
+                    m_methodBox,
+                    item->icon(),
+                    prefix + "[set] def " + item->m_name,
                     item->m_args,
                     item->m_returnType,
                     userData);
