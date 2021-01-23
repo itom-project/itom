@@ -26,7 +26,8 @@
 #include "qpair.h"
 
 #include "../global.h"
-#include "../Qitom/AppManagement.h"
+#include "../AppManagement.h"
+#include "../mainApplication.h"
 #include "../helper/guiHelper.h"
 
 #include <qfileinfo.h>
@@ -90,6 +91,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     
     initEditor();
     initMenus();
+    loadSettings();
 
     m_pFileSysWatcher = new QFileSystemWatcher(this);
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
@@ -223,8 +225,6 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_breakpointPanel.data(), SIGNAL(gotoNextBreakPointRequested()), this, SLOT(gotoNextBreakPoint()));
     connect(m_breakpointPanel.data(), SIGNAL(gotoPreviousBreakRequested()), this, SLOT(gotoPreviousBreakPoint()));
 
-    loadSettings();
-
     return RetVal(retOk);
 }
 
@@ -332,29 +332,104 @@ void ScriptEditorWidget::loadSettings()
         settings.value("autoStripTrailingSpacesAfterReturn", true).toBool()
     );
 
+    bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
+    m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
+    auto pyCodeFormatAction = m_editorMenuActions.find("formatFile");
+
+    if (pyCodeFormatAction != m_editorMenuActions.end())
+    {
+        pyCodeFormatAction->second->setVisible(pyCodeFormatEnabled);
+        pyCodeFormatAction->second->setEnabled(m_autoCodeFormatCmd != "");
+    }
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::initMenus()
 {
     QMenu *editorMenu = contextMenu();
 
-    m_editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, SLOT(menuCut()), QKeySequence::Cut);
-    m_editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, SLOT(menuCopy()), QKeySequence::Copy);
-    m_editorMenuActions["paste"] = editorMenu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, SLOT(menuPaste()), QKeySequence::Paste);
+    m_editorMenuActions["cut"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editCut.png"), tr("Cut"), 
+            this, SLOT(menuCut()), QKeySequence::Cut
+        );
+
+
+    m_editorMenuActions["copy"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editCopy.png"), tr("Copy"), 
+            this, SLOT(menuCopy()), QKeySequence::Copy
+        );
+
+    m_editorMenuActions["paste"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editPaste.png"), tr("Paste"), 
+            this, SLOT(menuPaste()), QKeySequence::Paste
+        );
+
     editorMenu->addSeparator();
-    m_editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("Indent"), this, SLOT(menuIndent()), QKeySequence(tr("Tab", "QShortcut")));
-    m_editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), this, SLOT(menuUnindent()), QKeySequence(tr("Shift+Tab", "QShortcut")));
-    m_editorMenuActions["comment"] = editorMenu->addAction(QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, SLOT(menuComment()), QKeySequence(tr("Ctrl+R", "QShortcut")));
-    m_editorMenuActions["uncomment"] = editorMenu->addAction(QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, SLOT(menuUncomment()), QKeySequence(tr("Ctrl+Shift+R", "QShortcut")));
+
+    m_editorMenuActions["indent"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editIndent.png"), tr("Indent"), 
+            this, SLOT(menuIndent()), QKeySequence(tr("Tab", "QShortcut"))
+        );
+    
+    m_editorMenuActions["unindent"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), 
+            this, SLOT(menuUnindent()), QKeySequence(tr("Shift+Tab", "QShortcut"))
+        );
+    
+    m_editorMenuActions["comment"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, 
+            SLOT(menuComment()), QKeySequence(tr("Ctrl+R", "QShortcut"))
+        );
+    
+    m_editorMenuActions["uncomment"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, 
+            SLOT(menuUncomment()), QKeySequence(tr("Ctrl+Shift+R", "QShortcut"))
+        );
+    
+    m_editorMenuActions["formatFile"] = 
+        editorMenu->addAction(
+            QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"), 
+            this, SLOT(menuPyCodeFormatting()), QKeySequence(tr("Ctrl+Alt+I", "QShortcut"))
+        );
+    m_editorMenuActions["formatFile"]->setVisible(false);
+    
     editorMenu->addSeparator();
-    m_editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run Script"), this, SLOT(menuRunScript()), QKeySequence(tr("F5", "QShortcut")));
-    m_editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut")));
-    m_editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut")));
-    m_editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut")));
+    
+    m_editorMenuActions["runScript"] = 
+        editorMenu->addAction(
+            QIcon(":/script/icons/runScript.png"), tr("Run Script"), this, 
+            SLOT(menuRunScript()), QKeySequence(tr("F5", "QShortcut"))
+        );
+    
+    m_editorMenuActions["runSelection"] = 
+        editorMenu->addAction(
+            QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, 
+            SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut"))
+        );
+    
+    m_editorMenuActions["debugScript"] = 
+        editorMenu->addAction(
+            QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, 
+            SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut"))
+        );
+    
+    m_editorMenuActions["stopScript"] = 
+        editorMenu->addAction(
+            QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, 
+            SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut"))
+        );
+    
     editorMenu->addSeparator();
 
     QShortcut *tabChangedShortcut  = new QShortcut(QKeySequence(tr("Ctrl+Tab", "QShortcut")), this);
@@ -364,15 +439,24 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
-    //editorMenu->addAction("dump folds", this, SLOT(dumpFoldsToConsole(bool)));
-
+    
     QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
-    m_editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
-    m_editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
-    m_editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
-    m_editorMenuActions["foldAll"] = foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
+    m_editorMenuActions["foldUnfoldToplevel"] = 
+        foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
+    
+    m_editorMenuActions["foldUnfoldAll"] = 
+        foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
+    
+    m_editorMenuActions["unfoldAll"] = 
+        foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
+    
+    m_editorMenuActions["foldAll"] = 
+        foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
+    
     editorMenu->addSeparator();
-    m_editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
+    
+    m_editorMenuActions["insertCodec"] = 
+        editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -957,6 +1041,152 @@ void ScriptEditorWidget::menuFoldUnfoldAll()
     m_foldingPanel->toggleFold(false);
 }
 
+//-------------------------------------------------------------------------------------
+void doDeleteLater(QObject *obj)
+{
+    obj->deleteLater();
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuPyCodeFormatting()
+{
+    if (m_autoCodeFormatCmd == "")
+    {
+        QMessageBox::critical(
+            this,
+            tr("Missing auto code format command"),
+            tr("No auto code format call command has been given in the "
+                "itom property dialog. Please indicate a command there.")
+        );
+        return;
+    }
+
+    // the PyCodeFormatter should be destroyed using deleteLater
+    // since the cancel button event will indirectly lead to 
+    // a clear command of m_pyCodeFormatter (via the method pyCodeFormatterDone).
+    // This would then destroy the QProgressDialog before the mouseRelease event
+    // of the cancel button has been fully terminated.
+    m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
+    connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
+        this, &ScriptEditorWidget::pyCodeFormatterDone);
+    ito::RetVal retval = m_pyCodeFormatter->startFormatting(m_autoCodeFormatCmd, toPlainText(), this);
+
+    if (retval.containsError())
+    {
+        const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+        ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
+        QString text1 = tr("The code formatting could not be started:\n%1").arg(retval.errorMessage());
+        QString text2 = tr("\n\nShould this feature be deactivated?"
+            "This can be changed again in the property dialog of itom.");
+
+        if (features & ito::UserFeature::featProperties)
+        {
+            int btn = QMessageBox::critical(
+                this,
+                tr("Error starting auto code format"),
+                text1 + text2,
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::Yes
+            );
+
+            if (btn == QMessageBox::Yes)
+            {
+                QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+                settings.beginGroup("CodeEditor");
+                settings.setValue("autoCodeFormatEnabled", false);
+                settings.endGroup();
+
+                MainApplication *ma = qobject_cast<MainApplication*>(
+                    AppManagement::getMainApplication());
+
+                if (ma)
+                {
+                    emit ma->propertiesChanged();
+                }
+            }
+        }
+        else
+        {
+            QMessageBox::critical(
+                this,
+                tr("Error starting auto code format"),
+                text1
+            );
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
+{
+    if (success && code != toPlainText())
+    {
+        QTextCursor cursor = textCursor();
+        cursor.movePosition(QTextCursor::Start);
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        cursor.beginEditBlock();
+        cursor.removeSelectedText();
+        cursor.insertText(code);
+        cursor.endEditBlock();
+        setModified(true);
+    }
+    else if (!success && code.trimmed() != "")
+    {
+        const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+        ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+
+        code = code.trimmed();
+
+        if (code.size() > 200)
+        {
+            // trim code if too long
+            code = code.left(98) + "\n...\n" + code.right(99);
+        }
+
+        QString text1 = tr("The code formatting failed:\n%1").arg(code);
+        QString text2 = tr("\n\nShould this feature be deactivated?"
+            "This can be changed again in the property dialog of itom.");
+
+        if (features & ito::UserFeature::featProperties)
+        {
+            int btn = QMessageBox::critical(
+                this,
+                tr("Auto code format error"),
+                text1 + text2,
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::Yes
+            );
+
+            if (btn == QMessageBox::Yes)
+            {
+                QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+                settings.beginGroup("CodeEditor");
+                settings.setValue("autoCodeFormatEnabled", false);
+                settings.endGroup();
+
+                MainApplication *ma = qobject_cast<MainApplication*>(
+                    AppManagement::getMainApplication());
+
+                if (ma)
+                {
+                    emit ma->propertiesChanged();
+                }
+            }
+        }
+        else
+        {
+            QMessageBox::critical(
+                this,
+                tr("Auto code format error"),
+                text1
+            );
+        }
+    }
+
+    m_pyCodeFormatter.clear();
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument)
 {
@@ -965,7 +1195,12 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     {
         if (isModified())
         {
-            int ret = QMessageBox::information(this, tr("Unsaved Changes"), tr("There are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+            int ret = QMessageBox::information(
+                this, 
+                tr("Unsaved Changes"), 
+                tr("There are unsaved changes in the current document. Do you want to save it first?"), 
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes
+            );
 
             if (ret & QMessageBox::Cancel)
             {
@@ -1056,7 +1291,13 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
 
     if (askFirst)
     {
-        int ret = QMessageBox::information(this, tr("Unsaved Changes"), tr("There are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+        int ret = QMessageBox::information(
+            this, 
+            tr("Unsaved Changes"), 
+            tr("There are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes
+        );
+
         if (ret & QMessageBox::Cancel)
         {
             return RetVal(retError);
@@ -1070,6 +1311,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     m_pFileSysWatcher->removePath(getFilename());
 
     QFile file(getFilename());
+
     if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
@@ -1082,11 +1324,12 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     QString t = toPlainText();
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
-
     QFileInfo fi(getFilename());
+
     if (fi.exists())
     {
         QObject *seo = AppManagement::getScriptEditorOrganizer();
+
         if (seo)
         {
             QMetaObject::invokeMethod(seo, "fileOpenedOrSaved", Q_ARG(QString, m_filename));
