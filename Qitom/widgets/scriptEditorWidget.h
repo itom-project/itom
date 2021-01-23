@@ -34,6 +34,7 @@
 #include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
+#include "../codeEditor/pyCodeFormatter.h"
 
 #include "../global.h"
 
@@ -189,6 +190,9 @@ private:
 
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
+    QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
+
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
     QSharedPointer<BreakpointPanel> m_breakpointPanel;
@@ -248,6 +252,7 @@ public slots:
     void menuDebugScript();
     void menuStopScript();
 
+    void menuPyCodeFormatting();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
@@ -289,6 +294,9 @@ private slots:
     void onCursorPositionChanged();
 
     void tabChangeRequest();
+
+    
+    void pyCodeFormatterDone(bool success, QString code);
 };
 
 } //end namespace ito
