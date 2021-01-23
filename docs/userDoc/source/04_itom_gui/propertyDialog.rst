@@ -473,9 +473,10 @@ a dot.:
     Auto completion hints can only be checked and displayed, if both the Python 
     packages **jedi** (version >= 0.12) and **parso** are installed.
 
+.. _gui-prop-auto-code-format:
 
-Auto Code Format
-----------------
+Auto Code Formatting
+--------------------
 
 There are several modules in Python available, that allow automatically
 formatting Python scripts based on style guides. The most important style
@@ -489,8 +490,9 @@ Popular auto formatting modules are
 
 You can select one of these or any other module as automatic python code
 formatter in itom. If this feature is enabled, a button is added to the
-edit toolbar of any script editor (as well as an entry in the edit menu and
-the context menu). If the user presses this button, the current script is
+edit toolbar of any script editor as well as an entry in the edit menu and
+the context menu (see :ref:`gui-editor-auto-code-formatter`). 
+If the user presses this button, the current script is
 passed to the selected auto formatting module and the script is modified
 by the corrected version.
 
@@ -510,6 +512,13 @@ sure, that the command allows this.
 
 You can test your inserted command using the test button, where a demo code
 snippet is called. If this test passes, a valid command is given.
+
+One major parameter of many code formatting packages is the maximum desired line
+length. Usually, the formatter tries to wrap code longer than this maximum.
+It is recommended to set this value to the same value that is also set to
+optionally display a vertical line or different background color in the itom
+editor (see :ref:`gui-prop-script-editors`) as well as the maximum line 
+length used in the :ref:`code checker <gui-prop-py-code-checkers>`.
 
 
 .. _gui-prop-py-styles:
