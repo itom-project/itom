@@ -76,7 +76,7 @@ public:
         KeyDecorator = 15,
 
         KeyBackground = 1000, /*special style: directly set by settings*/
-        KeyHighlight,
+        KeyHighlight, /* not used any more, should be there to keep ids in settings. */
         KeyNamespace,
         KeyType,
         KeyKeywordReserved,
@@ -151,8 +151,6 @@ public:
 
     QColor background() const;
     void setBackground(const QColor &color);
-
-    QColor highlight() const;
 
 private:
     QMap<int, StyleItem> m_formats;

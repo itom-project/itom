@@ -410,3 +410,35 @@ Since there are a lot of icons, it is possible to filter the list by typing part
 of an icon filename into the search box on top of the icon list. Instead of using 
 the **Copy to clipboard** button, it is also possible to copy the 
 path of the selected icon from the textbox below the icon list.
+
+.. _gui-editor-auto-code-formatter:
+
+Auto Code Formatting
+========================
+
+itom provides the possibility to call an auto code formatting tool, that get the
+current script as input stream and returns the formatted version. If this version
+is different than the initial version, the code is replaced by the formatted
+code and the current script is marked as changed. The changed version can be reverted
+via the undo button.
+
+The auto code formatting feature can either be run by a button in the toolbar of
+a script, by the menu **edit** of a script editor window or by the shortcut 
+**Ctrl + Alt + I**.
+
+.. figure:: images/scripteditor_codeautoformat.png
+    :scale: 100%
+    :align: center
+
+Usually, the auto code formatting tool depends on further 3rd party Python packages.
+In general it is possible to use any loadable module, that accepts a code string
+via its input stream and returns the result via the output stream. Common packages are
+**black**, **yapf** or **autopep8**.
+
+If the button is pressed, and the auto formatting cannot be executed successfully,
+an error message appears and (if sufficient user rights are available) the user
+can check to disable this option for the future. 
+
+For configuring the auto code formatting, please see the 
+:ref:`auto code formatting <gui-prop-auto-code-format>`
+page of the itom property dialog.

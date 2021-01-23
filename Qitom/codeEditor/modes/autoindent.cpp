@@ -46,7 +46,9 @@ namespace ito {
 AutoIndentMode::AutoIndentMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     Mode(name, description),
     QObject(parent),
-    m_keyPressedModifiers()
+    m_keyPressedModifiers(),
+    m_autoStripTrailingSpacesAfterReturn(false),
+    m_enableAutoIndent(true)
 {
 }
 
@@ -63,13 +65,20 @@ AutoIndentMode::~AutoIndentMode()
 */
 void AutoIndentMode::onStateChanged(bool state)
 {
-    if (state)
+    if (state && 
+        (m_enableAutoIndent || m_autoStripTrailingSpacesAfterReturn))
     {
-        connect(editor(), SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onKeyPressed(QKeyEvent*)));
+        // maybe the connection already exists.
+        connect(
+            editor(), &CodeEditor::keyPressed, 
+            this, &AutoIndentMode::onKeyPressed,
+            Qt::UniqueConnection);
     }
     else
     {
-        disconnect(editor(), SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onKeyPressed(QKeyEvent*)));
+        disconnect(
+            editor(), &CodeEditor::keyPressed, 
+            this, &AutoIndentMode::onKeyPressed);
     }       
 }
 
@@ -125,6 +134,34 @@ Qt::KeyboardModifiers AutoIndentMode::keyPressedModifiers() const
     return m_keyPressedModifiers;
 }
 
+//---------------------------------------------------------
+void AutoIndentMode::setAutoStripTrailingSpacesAfterReturn(bool strip)
+{
+    m_autoStripTrailingSpacesAfterReturn = strip;
+
+    onStateChanged(enabled());
+}
+
+//---------------------------------------------------------
+bool AutoIndentMode::autoStripTrailingSpacesAfterReturn() const
+{
+    return m_autoStripTrailingSpacesAfterReturn;
+}
+
+//---------------------------------------------------------
+void AutoIndentMode::enableAutoIndent(bool autoIndent)
+{
+    m_enableAutoIndent = autoIndent;
+
+    onStateChanged(enabled());
+}
+
+//---------------------------------------------------------
+bool AutoIndentMode::isAutoIndentEnabled() const
+{
+    return m_enableAutoIndent;
+}
+
 //----------------------------------------------------------
 /*
 Auto indent if the released key is the return key.
@@ -139,22 +176,59 @@ void AutoIndentMode::onKeyPressed(QKeyEvent *e)
             ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)))
         {
             QTextCursor cursor = editor()->textCursor();
-            QPair<QString,QString> pre_post = getIndent(cursor);
+            int pos = cursor.position();
             cursor.beginEditBlock();
-            cursor.insertText(QString("%1\n%2").arg(pre_post.first, pre_post.second));
 
-            //eats possible whitespaces
-            cursor.movePosition(QTextCursor::WordRight, QTextCursor::KeepAnchor);
-            QString txt = cursor.selectedText();
-            if (txt.startsWith(" "))
+            if (m_enableAutoIndent)
             {
-                QString new_txt = txt.replace(" ", "");
-                if (txt.size() > new_txt.size())
+                QPair<QString, QString> pre_post = getIndent(cursor);
+
+                cursor.insertText(QString("%1\n%2").arg(pre_post.first, pre_post.second));
+
+                //eats possible whitespaces
+                cursor.movePosition(QTextCursor::WordRight, QTextCursor::KeepAnchor);
+                QString txt = cursor.selectedText();
+
+                if (txt.startsWith(" "))
                 {
-                    cursor.insertText(new_txt);
+                    QString new_txt = txt.replace(" ", "");
+
+                    if (txt.size() > new_txt.size())
+                    {
+                        cursor.insertText(new_txt);
+                    }
                 }
             }
+            else
+            {
+                cursor.insertText("\n");  // the line break must always be set.
+            }
+
+            // check if the line, where the original cursor is in,
+            // contains trailing spaces or tabs. If so, remove them.
+            // PEP8: empty lines should not contain any whitespaces
+            if (m_autoStripTrailingSpacesAfterReturn)
+            {
+                cursor.setPosition(pos, QTextCursor::MoveAnchor);
+                cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+                QString selected = cursor.selectedText();
+
+                if (selected != "")
+                {
+                    QString rstrip = Utils::rstrip(selected);
+
+                    if (rstrip != selected)
+                    {
+                        cursor.setPosition(pos - selected.size() + rstrip.size(), QTextCursor::MoveAnchor);
+                        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+                        cursor.removeSelectedText();
+                    }
+                    
+                }
+            }
+
             cursor.endEditBlock();
+            
             e->accept();
         }
     }
