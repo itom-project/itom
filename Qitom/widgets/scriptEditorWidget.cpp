@@ -1102,7 +1102,7 @@ void ScriptEditorWidget::menuPyCodeFormatting()
         ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
         QString text1 = tr("The code formatting could not be started:\n%1").arg(retval.errorMessage());
-        QString text2 = tr("\n\nShould this feature be deactivated?"
+        QString text2 = tr("\n\nShould this feature be deactivated? "
             "This can be changed again in the property dialog of itom.");
 
         if (features & ito::UserFeature::featProperties)
@@ -1170,7 +1170,7 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         }
 
         QString text1 = tr("The code formatting failed:\n%1").arg(code);
-        QString text2 = tr("\n\nShould this feature be deactivated?"
+        QString text2 = tr("\n\nShould this feature be deactivated? "
             "This can be changed again in the property dialog of itom.");
 
         if (features & ito::UserFeature::featProperties)
@@ -1180,7 +1180,7 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
                 tr("Auto code format error"),
                 text1 + text2,
                 QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::Yes
+                QMessageBox::No
             );
 
             if (btn == QMessageBox::Yes)
