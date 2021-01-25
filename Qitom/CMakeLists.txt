@@ -373,6 +373,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
@@ -602,6 +603,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp

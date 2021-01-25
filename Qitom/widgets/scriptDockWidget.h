@@ -27,6 +27,7 @@
 #include "itomQWidgets.h"
 #include "scriptEditorWidget.h"
 #include "tabSwitcherWidget.h"
+#include "outlineSelectorWidget.h"
 
 #include <qaction.h>
 #include <qstring.h>
@@ -86,6 +87,7 @@ public:
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
+    void activeTabShowLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -124,6 +126,7 @@ private:
     QList<int> m_stackHistory; 
 
     QSharedPointer<TabSwitcherWidget> m_tabSwitcherWidget;
+    QSharedPointer<OutlineSelectorWidget> m_outlineSelectorWidget;
 
     // ACTIONS
     ShortcutAction *m_tabMoveLeftAction;
@@ -274,6 +277,7 @@ private slots:
     void mnuInsertCodec();
     void mnuCopyFilename();
     void mnuPyCodeFormatting();
+    void mnuOutlineSelector();
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);

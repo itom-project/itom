@@ -1694,6 +1694,8 @@ void ScriptDockWidget::createActions()
     m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
+    QShortcut *shortcut = new QShortcut(QKeySequence(tr("Ctrl+Alt+P")), this, SLOT(mnuOutlineSelector()), Q_NULLPTR, Qt::WidgetWithChildrenShortcut);
+
     updatePythonActions();
     updateTabContextActions();
     updateEditorActions();
@@ -2008,12 +2010,16 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int curren
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/, bool showSelectedCallstackLine /*= false*/)
+//-------------------------------------------------------------------------------------
+bool ScriptDockWidget::activeTabEnsureLineVisible(
+    const int lineNr, 
+    bool errorMessageClick /*= false*/, 
+    bool showSelectedCallstackLine /*= false*/)
 {
     if (m_actTabIndex >= 0)
     {
         ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
+
         if (sew)
         {
             if (showSelectedCallstackLine &&
@@ -2035,6 +2041,23 @@ bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMe
     }
 
     return false;
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::activeTabShowLineAndHighlightWord(
+    const int line,
+    const QString &highlightedText,
+    Qt::CaseSensitivity caseSensitivity /*= Qt::CaseInsensitive*/)
+{
+    if (m_actTabIndex >= 0)
+    {
+        ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
+
+        if (sew)
+        {
+            sew->showLineAndHighlightWord(line, highlightedText, caseSensitivity);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2737,6 +2760,39 @@ void ScriptDockWidget::mnuCopyFilename()
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(sew->getFilename(), QClipboard::Clipboard);
     }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuOutlineSelector()
+{
+    if (m_actTabIndex < 0 || m_actTabIndex >= m_tab->count())
+    {
+        return;
+    }
+
+    QList<OutlineSelectorWidget::EditorOutline> outlines;
+    const ScriptEditorWidget *sew;
+
+    for (int i = 0; i < m_tab->count(); ++i)
+    {
+        OutlineSelectorWidget::EditorOutline item;
+        sew = getEditorByIndex(i);
+        item.filename = sew->hasNoFilename() ? "" : sew->getFilename();
+        item.editorUID = sew->getUID();
+        item.rootOutline = sew->parseOutline();
+        outlines << item;
+    }
+
+    m_outlineSelectorWidget = QSharedPointer<OutlineSelectorWidget>(
+        new OutlineSelectorWidget(
+            outlines,
+            m_actTabIndex,
+            this,
+            getActiveInstance()));
+
+    m_outlineSelectorWidget->show();
+    //m_outlineSelectorWidget->selectRow(1);
+    m_outlineSelectorWidget->setFocus();
 }
 
 //-------------------------------------------------------------------------------------
