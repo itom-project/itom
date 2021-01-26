@@ -63,7 +63,7 @@ QHash<int, ScriptEditorWidget*> ScriptEditorWidget::editorByUID;
 int ScriptEditorWidget::currentMaximumUID = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent) :
+ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent /*= nullptr*/) :
     AbstractCodeEditorWidget(parent),
     m_pFileSysWatcher(NULL), 
     m_filename(QString()),
@@ -479,6 +479,14 @@ void ScriptEditorWidget::initMenus()
         foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
     
     editorMenu->addSeparator();
+
+    m_editorMenuActions["insertCodec"] =
+        editorMenu->addAction(tr("&Insert Codec..."), this, SIGNAL(menuInsertCodec()));
+
+    m_editorMenuActions["findSymbols"] =
+        editorMenu->addAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
+            this, SIGNAL(findSymbolsShowRequested()), 
+            QKeySequence(tr("Ctrl+D", "QShortcut")));
     
     m_editorMenuActions["insertCodec"] = 
         editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));

@@ -28,9 +28,11 @@ This module contains the OutlineSelectorWidget
 */
 
 #include <qwidget.h>
+#include <qdialog.h>
 #include <qsharedpointer.h>
 #include <qlist.h>
 #include <qtreewidget.h>
+#include <qitemdelegate.h>
 
 #include "../models/outlineItem.h"
 
@@ -40,7 +42,7 @@ namespace ito {
 class ScriptDockWidget;
 
 //!< Show tabs in mru order and change between them.
-class OutlineSelectorWidget : public QWidget
+class OutlineSelectorWidget : public QDialog
 {
     Q_OBJECT
 public:
@@ -57,7 +59,10 @@ public:
     //void selectRow(int steps);
 
 protected:
+    enum Scope { AllScripts, SingleScript };
+
     void setDialogPosition();
+    void fillContent();
     QList<QTreeWidgetItem*> parseTree(const QString &filename, int editorUID, const QSharedPointer<OutlineItem> &root) const;
     bool filterItemRec(QTreeWidgetItem *root, const QString &text);
 
@@ -69,10 +74,31 @@ protected:
 private:
     ScriptDockWidget* m_pScriptDockWidget;
     QTreeWidget *m_pTreeWidget;
+    QLineEdit *m_pLineEdit;
+    Scope m_currentScope;
+    QList<EditorOutline> m_outlines;
+    int m_currentOutlineIndex;
 
 private slots:
     void filterTextChanged(const QString &text);
     void itemActivated(QTreeWidgetItem *item, int column);
 };
+
+
+/*
+This delegate allows the list view of the switcher to look like it has
+    the focus, even when its focus policy is set to Qt.NoFocus.
+*/
+class SelectorDelegate : public QItemDelegate
+{
+public:
+    SelectorDelegate(QObject *parent = nullptr);
+    ~SelectorDelegate();
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+};
+
 
 } //end namespace ito

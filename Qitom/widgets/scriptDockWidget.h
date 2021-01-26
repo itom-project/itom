@@ -88,6 +88,7 @@ public:
     bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
     void activeTabShowLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
+    const QTabWidget* tabWidget() const { return m_tab;  }
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -171,6 +172,7 @@ private:
     
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
+    ShortcutAction *m_findSymbols;
 
     ScriptEditorActions m_commonActions;
 
@@ -277,7 +279,7 @@ private slots:
     void mnuInsertCodec();
     void mnuCopyFilename();
     void mnuPyCodeFormatting();
-    void mnuOutlineSelector();
+    
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
@@ -293,6 +295,7 @@ public slots:
     void editorMarginChanged();
     void updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void tabChangedRequest();
+    void mnuFindSymbolsShow();
 };
 
 } //end namespace ito

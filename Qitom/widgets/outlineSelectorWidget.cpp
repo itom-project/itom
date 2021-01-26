@@ -31,6 +31,10 @@
 #include <qboxlayout.h>
 #include <qlineedit.h>
 #include <qtreewidget.h>
+#include <qicon.h>
+#include <qfileinfo.h>
+#include <qlabel.h>
+#include <qtabwidget.h>
 
 namespace ito
 {
@@ -41,29 +45,36 @@ OutlineSelectorWidget::OutlineSelectorWidget(
         int currentOutlineIndex,
         ScriptDockWidget *scriptDockWidget, 
         QWidget *parent /*= nullptr*/) :
+    QDialog(parent),
     m_pScriptDockWidget(scriptDockWidget),
-    QWidget(parent)
+    m_pTreeWidget(nullptr),
+    m_pLineEdit(nullptr),
+    m_currentScope(Scope::SingleScript),
+    m_outlines(outlines),
+    m_currentOutlineIndex(currentOutlineIndex)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    QLineEdit *lineEdit = new QLineEdit(this);
-    connect(lineEdit, &QLineEdit::textChanged,
+    QLineEdit *m_pLineEdit = new QLineEdit(this);
+    m_pLineEdit->setText("@");
+    m_pLineEdit->setToolTip(tr("Limit the search to the current script with a leading @ sign."));
+    connect(m_pLineEdit, &QLineEdit::textChanged,
         this, &OutlineSelectorWidget::filterTextChanged);
-    lineEdit->installEventFilter(this);
-    layout->addWidget(lineEdit);
+    m_pLineEdit->installEventFilter(this);
+    layout->addWidget(m_pLineEdit);
 
     m_pTreeWidget = new QTreeWidget(this);
     m_pTreeWidget->setHeaderHidden(true);
     m_pTreeWidget->setIndentation(15);
+    m_pTreeWidget->setItemDelegate(new SelectorDelegate(this));
     connect(m_pTreeWidget, &QTreeWidget::itemActivated,
         this, &OutlineSelectorWidget::itemActivated);
 
     layout->addWidget(m_pTreeWidget);
+
     setLayout(layout);
 
-    //setFocusPolicy(Qt::NoFocus);
-    setFocusProxy(lineEdit);
     setContentsMargins(0,0,0,0);
 
     float f = GuiHelper::screenDpiFactor();
@@ -75,14 +86,63 @@ OutlineSelectorWidget::OutlineSelectorWidget(
     resize(size);
     setDialogPosition();
 
-    const EditorOutline &eo = outlines[currentOutlineIndex];
-    m_pTreeWidget->addTopLevelItems(parseTree(eo.filename, eo.editorUID, eo.rootOutline));
-    m_pTreeWidget->expandAll();
+    fillContent();
+
+    m_pLineEdit->setFocus();
 }
 
 //-------------------------------------------------------------------------------------
 OutlineSelectorWidget::~OutlineSelectorWidget()
 {
+}
+
+//-------------------------------------------------------------------------------------
+void OutlineSelectorWidget::fillContent()
+{
+    m_pTreeWidget->clear();
+
+    if (m_currentScope == Scope::SingleScript)
+    {
+        const EditorOutline &eo = m_outlines[m_currentOutlineIndex];
+        m_pTreeWidget->addTopLevelItems(parseTree(eo.filename, eo.editorUID, eo.rootOutline));
+    }
+    else
+    {
+        foreach(const EditorOutline &eo, m_outlines)
+        {
+            QTreeWidgetItem *toplevel = new QTreeWidgetItem();
+            toplevel->setIcon(0, QIcon(":/files/icons/filePython.png"));
+
+            if (eo.filename != "")
+            {
+                QFileInfo fi(eo.filename);
+                toplevel->setData(0, Qt::DisplayRole, fi.fileName());
+                toplevel->setData(0, Qt::ToolTipRole, eo.filename);
+                toplevel->setData(0, Qt::UserRole, eo.filename);
+            }
+            else
+            {
+                toplevel->setData(0, Qt::DisplayRole, tr("Untitled%1").arg(eo.editorUID));
+                toplevel->setData(0, Qt::UserRole, "");
+            }
+
+            
+            toplevel->setData(0, Qt::UserRole + 1, eo.editorUID);
+            toplevel->setData(0, Qt::UserRole + 2, -1);
+            toplevel->setData(0, Qt::UserRole + 3, "");
+
+            toplevel->addChildren(parseTree(eo.filename, eo.editorUID, eo.rootOutline));
+
+            m_pTreeWidget->addTopLevelItem(toplevel);
+        }
+    }
+
+    m_pTreeWidget->expandAll();
+
+    if (m_pTreeWidget->topLevelItemCount() > 0)
+    {
+        m_pTreeWidget->setCurrentItem(m_pTreeWidget->topLevelItem(0));
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -108,11 +168,74 @@ QList<QTreeWidgetItem*> OutlineSelectorWidget::parseTree(
     else
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
-        item->setData(0, Qt::DisplayRole, root->m_name);
         item->setIcon(0, root->icon());
         item->setData(0, Qt::UserRole, filename);
         item->setData(0, Qt::UserRole + 1, editorUID);
         item->setData(0, Qt::UserRole + 2, root->m_startLineIdx);
+        item->setData(0, Qt::UserRole + 3, root->m_name);
+
+        QString displayName;
+
+        switch (root->m_type)
+        {
+        case OutlineItem::typeFunction:
+        case OutlineItem::typeMethod:
+            if (root->m_async)
+            {
+                displayName = "[async] " + root->m_name;
+            }
+            else
+            {
+                displayName = root->m_name;
+            }
+            break;
+        case OutlineItem::typePropertyGet:
+            if (root->m_async)
+            {
+                displayName = "[get, async] " + root->m_name;
+            }
+            else
+            {
+                displayName = "[get] " + root->m_name;
+            }
+            break;
+        case OutlineItem::typePropertySet:
+            if (root->m_async)
+            {
+                displayName = "[set, async] " + root->m_name;
+            }
+            else
+            {
+                displayName = "[set] " + root->m_name;
+            }
+            break;
+        case OutlineItem::typeStaticMethod:
+            if (root->m_async)
+            {
+                displayName = "[static, async] " + root->m_name;
+            }
+            else
+            {
+                displayName = "[static] " + root->m_name;
+            }
+            break;
+        case OutlineItem::typeClassMethod:
+            if (root->m_async)
+            {
+                displayName = "[classmethod] async " + root->m_name;
+            }
+            else
+            {
+                displayName = "[classmethod] " + root->m_name;
+            }
+            break;
+        case OutlineItem::typeClass:
+        default:
+            displayName = root->m_name;
+            break;
+        }
+
+        item->setData(0, Qt::DisplayRole, displayName);
 
         for (int i = 0; i < root->m_childs.count(); ++i)
         {
@@ -131,10 +254,14 @@ Positions the tab switcher in the top-center of the editor.
 */
 void OutlineSelectorWidget::setDialogPosition()
 {
-    int left = m_pScriptDockWidget->geometry().width() / 2 - width() / 2;
-    int top = m_pScriptDockWidget->geometry().top();
+    const QTabWidget *tab = m_pScriptDockWidget->tabWidget();
 
-    move(m_pScriptDockWidget->mapToGlobal(QPoint(left, top)));
+    int left = tab->geometry().width() / 2 - width() / 2;
+    int top = 0;
+
+    QPoint pt = m_pScriptDockWidget->tabWidget()->mapToGlobal(QPoint(left, top));
+
+    move(pt);
 }
 
 //-------------------------------------------------------------------------------------
@@ -160,15 +287,32 @@ void OutlineSelectorWidget::keyReleaseEvent(QKeyEvent* ev)
 //-------------------------------------------------------------------------------------
 bool OutlineSelectorWidget::eventFilter(QObject* obj, QEvent *ev)
 {
-    if (ev->type() == QEvent::FocusOut) 
+    if (ev->type() == QEvent::KeyPress)
     {
-        focusOutEvent((QFocusEvent*)ev);
-        return true;
+        QKeyEvent *keyev = (QKeyEvent*)ev;
+
+        if (keyev->key() == Qt::Key_Down ||
+            keyev->key() == Qt::Key_Up)
+        {
+            keyev->accept();
+            QKeyEvent ev2(keyev->type(),
+                keyev->key(),
+                keyev->modifiers(),
+                keyev->text(),
+                keyev->isAutoRepeat(),
+                keyev->count());
+            QApplication::sendEvent(m_pTreeWidget, &ev2);
+
+        }
+        else if (keyev->key() == Qt::Key_Return ||
+            keyev->key() == Qt::Key_Enter)
+        {
+            keyev->accept();
+            itemActivated(m_pTreeWidget->currentItem(), 0);
+        }
     }
-    else {
-        // standard event processing
-        return QObject::eventFilter(obj, ev);
-    }
+
+    return QObject::eventFilter(obj, ev);
 }
 
 //-------------------------------------------------------------------------------------
@@ -185,34 +329,13 @@ void OutlineSelectorWidget::keyPressEvent(QKeyEvent* ev)
     else if (ev->key() == Qt::Key_Down ||
         ev->key() == Qt::Key_Up)
     {
-        ev->accept();
-        QKeyEvent ev2(ev->type(),
-            ev->key(),
-            ev->modifiers(),
-            ev->text(),
-            ev->isAutoRepeat(),
-            ev->count());
-        QApplication::sendEvent(m_pTreeWidget, &ev2);
-        
+        ev->accept();        
     }
     else if (ev->key() == Qt::Key_Return ||
         ev->key() == Qt::Key_Enter)
     {
         ev->accept();
         itemActivated(m_pTreeWidget->currentItem(), 0);
-    }
-
-    if (ev->modifiers() & Qt::ControlModifier)
-    {
-        /*if (ev->key() == Qt::Key_Tab ||
-            ev->key() == Qt::Key_Down)
-        {
-            selectRow(1);
-        }
-        else if (ev->key() == Qt::Key_Up)
-        {
-            selectRow(-1);
-        }*/
     }
 }
 
@@ -283,9 +406,27 @@ bool OutlineSelectorWidget::filterItemRec(QTreeWidgetItem *root, const QString &
 //-------------------------------------------------------------------------------------
 void OutlineSelectorWidget::filterTextChanged(const QString &text)
 {
+    if (m_currentScope == Scope::SingleScript && !text.startsWith("@"))
+    {
+        m_currentScope = Scope::AllScripts;
+        fillContent();
+    }
+    else if (m_currentScope == Scope::AllScripts && text.startsWith("@"))
+    {
+        m_currentScope = Scope::SingleScript;
+        fillContent();
+    }
+
+    QString text_ = text;
+
+    if (text_.startsWith("@"))
+    {
+        text_ = text_.mid(1); // remove the @ sign
+    }
+
     for (int i = 0; i < m_pTreeWidget->topLevelItemCount(); ++i)
     {
-        filterItemRec(m_pTreeWidget->topLevelItem(i), text);
+        filterItemRec(m_pTreeWidget->topLevelItem(i), text_);
     }
 }
 
@@ -297,7 +438,7 @@ void OutlineSelectorWidget::itemActivated(QTreeWidgetItem *item, int column)
         QString filename = item->data(0, Qt::UserRole).toString();
         int editorUID = item->data(0, Qt::UserRole + 1).toInt();
         int startLineIdx = item->data(0, Qt::UserRole + 2).toInt();
-        QString name = item->data(0, Qt::DisplayRole).toString();
+        QString name = item->data(0, Qt::UserRole + 3).toString();
 
         m_pScriptDockWidget->activateTabByFilename(filename, -1, editorUID);
 
@@ -311,6 +452,33 @@ void OutlineSelectorWidget::itemActivated(QTreeWidgetItem *item, int column)
     }
 
     close();
+}
+
+//-------------------------------------------------------------------------------------
+SelectorDelegate::SelectorDelegate(QObject *parent /*= nullptr*/) :
+    QItemDelegate(parent)
+{
+
+}
+
+//-------------------------------------------------------------------------------------
+SelectorDelegate::~SelectorDelegate()
+{
+
+}
+
+//-------------------------------------------------------------------------------------
+/* Override Qt method to force this delegate to look active at all times.
+*/
+void SelectorDelegate::paint(
+    QPainter *painter,
+    const QStyleOptionViewItem &option,
+    const QModelIndex &index) const
+{
+    QStyleOptionViewItem option2(option);
+    option2.state |= QStyle::State_Active;
+
+    QItemDelegate::paint(painter, option2, index);
 }
 
 } // end namespace ito

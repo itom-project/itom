@@ -95,7 +95,7 @@ class ScriptEditorWidget : public AbstractCodeEditorWidget
     Q_OBJECT
 
 public:
-    ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent = NULL);
+    ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent = nullptr);
     ~ScriptEditorWidget();
 
     RetVal saveFile(bool askFirst = true);
@@ -228,6 +228,7 @@ signals:
     void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
+    void findSymbolsShowRequested();
 
 public slots:
     void triggerCodeChecker();

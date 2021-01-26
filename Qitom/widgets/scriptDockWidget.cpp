@@ -1041,6 +1041,9 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         editorWidget, &ScriptEditorWidget::tabChangeRequested, 
         this, &ScriptDockWidget::tabChangedRequest
     );
+    connect(
+        editorWidget, &ScriptEditorWidget::findSymbolsShowRequested,
+        this, &ScriptDockWidget::mnuFindSymbolsShow);
     
     // Load the right Class->Method model for this Editor
     connect(editorWidget, &ScriptEditorWidget::outlineModelChanged,
@@ -1694,7 +1697,12 @@ void ScriptDockWidget::createActions()
     m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
-    QShortcut *shortcut = new QShortcut(QKeySequence(tr("Ctrl+Alt+P")), this, SLOT(mnuOutlineSelector()), Q_NULLPTR, Qt::WidgetWithChildrenShortcut);
+    m_findSymbols = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
+    m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
+
+    m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
+        this, QKeySequence(tr("Ctrl+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
 
     updatePythonActions();
     updateTabContextActions();
@@ -1835,6 +1843,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_findTextExprAction->action());
     m_editMenu->addAction(m_replaceTextExprAction->action());
     m_editMenu->addAction(m_gotoAction->action());
+    m_editMenu->addAction(m_findSymbols->action());
     m_editMenu->addAction(m_openIconBrowser->action());
     m_editMenu->addAction(m_insertCodecAct->action());
     m_editMenu->addSeparator();
@@ -2763,7 +2772,7 @@ void ScriptDockWidget::mnuCopyFilename()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptDockWidget::mnuOutlineSelector()
+void ScriptDockWidget::mnuFindSymbolsShow()
 {
     if (m_actTabIndex < 0 || m_actTabIndex >= m_tab->count())
     {
@@ -2792,7 +2801,7 @@ void ScriptDockWidget::mnuOutlineSelector()
 
     m_outlineSelectorWidget->show();
     //m_outlineSelectorWidget->selectRow(1);
-    m_outlineSelectorWidget->setFocus();
+    //m_outlineSelectorWidget->setFocus();
 }
 
 //-------------------------------------------------------------------------------------
