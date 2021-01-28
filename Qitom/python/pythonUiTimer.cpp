@@ -188,6 +188,8 @@ An active timer can be stopped by the :meth:`stop` method, or if this object is 
 deleted. Furthermore, itom provides the :ref:`gui-timermanager` dialog, where \n\
 all or selected timers can be started or stopped. \n\
 \n\
+**New in itom 4.1**: Added optional ''startAfterInit'' argument. \n\
+\n\
 Parameters \n\
 ----------- \n\
 interval : int \n\
