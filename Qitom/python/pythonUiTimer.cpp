@@ -169,7 +169,7 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = (), singleShot = False, name = \"\") -> timer \n\
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = (), singleShot = False, name = \"\", startAfterInit = True) -> timer \n\
 \n\
 Creates a new timer object for (continously) triggering a callback function \n\
 \n\
@@ -188,6 +188,8 @@ An active timer can be stopped by the :meth:`stop` method, or if this object is 
 deleted. Furthermore, itom provides the :ref:`gui-timermanager` dialog, where \n\
 all or selected timers can be started or stopped. \n\
 \n\
+**New in itom 4.1**: Added optional ``startAfterInit`` argument. \n\
+\n\
 Parameters \n\
 ----------- \n\
 interval : int \n\
@@ -203,6 +205,9 @@ singleShot : bool, optional \n\
 name : str, optional \n\
     Is the optional name of this timer. This name is displayed in the timer \n\
     manager dialog (instead of the timer ID, if no name is given. \n\
+startAfterInit : bool, optional \n\
+    If this optional boolean is set to False the timer will not start after initialization. \n\
+    The timer can be started later by using timer.start(). \n\
 \n\
 Examples \n\
 -------- \n\
@@ -219,7 +224,7 @@ Examples \n\
 4.01 sec elapsed : 25");
 int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"interval", "callbackFunc", "argTuple", "singleShot", "name", nullptr };
+    const char *kwlist[] = {"interval", "callbackFunc", "argTuple", "singleShot", "name", "startAfterInit", nullptr };
 
     if(args == nullptr || PyTuple_Size(args) == 0) //empty constructor
     {
@@ -231,13 +236,15 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     int timeOut = -1;
     unsigned char singleShot = 0;
     const char* name = nullptr;
+    unsigned char startAfterInit = 1;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "iO|O!bs", const_cast<char**>(kwlist), 
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "iO|O!bsb", const_cast<char**>(kwlist), 
         &timeOut,
         &callable,
         &PyTuple_Type, &self->callbackFunc->m_callbackArgs, 
         &singleShot,
-        &name))
+        &name,
+        &startAfterInit))
     {
         return -1;
     }
@@ -304,7 +311,7 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     self->timer->setSingleShot(singleShot > 0); 
     self->timer->start();
 
-    if (self->timer->timerId() < 0)
+    if (self->timer->timerId() < 0 )
     {
         if (PyErr_WarnEx(
                 PyExc_RuntimeWarning, 
@@ -336,6 +343,11 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
             Q_ARG(QWeakPointer<QTimer>, qTimerPtr),
             Q_ARG(QString, nameStr)
         );
+    }
+
+    if (!startAfterInit)
+    {
+        self->timer->stop();
     }
 
     return 0;
