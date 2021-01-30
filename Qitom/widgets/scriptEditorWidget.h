@@ -60,6 +60,8 @@ QT_END_NAMESPACE
 namespace ito
 {
 
+class BreakPointModel;
+
 struct ScriptEditorStorage
 {
     QString     filename;
@@ -128,6 +130,9 @@ public:
     //!< if UidFilter is -1, the current cursor position is always reported, else only if its editorUID is equal to UIDFilter
     void reportCurrentCursorAsGoBackNavigationItem(const QString &reason, int UIDFilter = -1);
 
+    //!< wrapper for undo() or redo() that tries to keep breakpoints and bookmarks
+    void startUndoRedo(bool unundoNotRedo);
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
@@ -140,10 +145,18 @@ protected:
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
 
     void reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const;
+
+    void replaceSelectionAndKeepBookmarksAndBreakpoints(QTextCursor &cursor, const QString &newString);
+    QVector<int> compareTexts(const QString &oldText, const QString &newText);
+    void addBookmarksAndBreakpointsIfNotExist(QList<BookmarkItem> bookmarks, QList<BreakPointItem> breakpoints);
+
+    BreakPointModel* getBreakPointModel();
+    const BreakPointModel* getBreakPointModel() const;
 
 private:
     enum markerType
@@ -186,7 +199,7 @@ private:
 
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
-
+    int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
@@ -256,7 +269,7 @@ public slots:
     void pythonDebugPositionChanged(QString filename, int lineno);
 
     void breakPointAdd(BreakPointItem bp, int row);
-    void breakPointDelete(QString filename, int lineNo, int pyBpNumber);
+    void breakPointDelete(QString filename, int lineIdx, int pyBpNumber);
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
 
     void updateSyntaxCheck();

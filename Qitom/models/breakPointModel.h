@@ -42,9 +42,9 @@ namespace ito {
 struct BreakPointItem
 {
     /*! constructor fills struct with default values */
-    BreakPointItem(): filename(""), lineno(-1), enabled(true), temporary(false), conditioned(false), condition(""), ignoreCount(0), pythonDbgBpNumber(-1)  {}
+    BreakPointItem(): filename(""), lineIdx(-1), enabled(true), temporary(false), conditioned(false), condition(""), ignoreCount(0), pythonDbgBpNumber(-1)  {}
     QString filename;       /*!<  filename of corresponding python file */
-    int lineno;             /*!<  line number */
+    int lineIdx;             /*!<  line number */
     bool enabled;           /*!<  indicates whether breakpoint is actually enabled */
     bool temporary;         /*!<  indicates whether breakpoint is temporary. If yes, debugger only stops one time at this breakpoint */
     bool conditioned;       /*!<  indicates whether breakpoint is conditioned */
@@ -89,14 +89,14 @@ public:
     RetVal deleteBreakPoints(const QModelIndexList &indizes);
     RetVal deleteAllBreakPoints();
 
-    QModelIndex getFirstBreakPointIndex(const QString &filename, int lineNo) const;
-    QModelIndexList getBreakPointIndizes(const QString &filename, int lineNo) const;
+    QModelIndex getFirstBreakPointIndex(const QString &filename, int lineIdx) const;
+    QModelIndexList getBreakPointIndizes(const QString &filename, int lineIdx) const;
     QModelIndexList getBreakPointIndizes(const QString &filename) const;
     QModelIndexList getAllBreakPointIndizes();
 
-    BreakPointItem getBreakPoint(const QString &filename, int lineNo) const;
+    BreakPointItem getBreakPoint(const QString &filename, int lineIdx) const;
     BreakPointItem getBreakPoint(const QModelIndex &index) const;
-    QList<BreakPointItem> getBreakPoints(const QModelIndexList indizes) const;
+    QList<BreakPointItem> getBreakPoints(const QModelIndexList &indizes) const;
 
     RetVal changeBreakPoint(const QModelIndex index, BreakPointItem bp, bool emitBreakPointChanged = true);
     RetVal changeBreakPoints(const QModelIndexList indizes, QList<BreakPointItem> bps, bool emitBreakPointChanged = true);
@@ -128,9 +128,15 @@ private:
     Qt::CaseSensitivity m_filenameCaseSensitivity;
 
 signals:
-    void breakPointAdded(BreakPointItem bp, int row);                       /*!<  emitted if breakpoint has been added to model at position row */
-    void breakPointDeleted(QString filename, int lineNo, int pyBpNumber);   /*!<  emitted if breakpoint in file filename at line lineNo with python internal debugger number has been deleted from model */
-    void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     /*!<  emitted if breakpoint oldBp has been changed to newBp */
+    /*!<  emitted if breakpoint has been added to model at position row */
+    void breakPointAdded(BreakPointItem bp, int row);
+
+    /*!<  emitted if breakpoint in file filename at line lineIdx with python 
+    internal debugger number has been deleted from model */
+    void breakPointDeleted(QString filename, int lineIdx, int pyBpNumber);  
+    
+    /*!<  emitted if breakpoint oldBp has been changed to newBp */
+    void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     
 };
 
 } //end namespace ito
