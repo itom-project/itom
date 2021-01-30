@@ -169,7 +169,7 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = (), singleShot = False, name = \"\") -> timer \n\
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = (), singleShot = False, name = \"\", startAfterInit = True) -> timer \n\
 \n\
 Creates a new timer object for (continously) triggering a callback function \n\
 \n\
@@ -188,7 +188,7 @@ An active timer can be stopped by the :meth:`stop` method, or if this object is 
 deleted. Furthermore, itom provides the :ref:`gui-timermanager` dialog, where \n\
 all or selected timers can be started or stopped. \n\
 \n\
-**New in itom 4.1**: Added optional ''startAfterInit'' argument. \n\
+**New in itom 4.1**: Added optional ``startAfterInit`` argument. \n\
 \n\
 Parameters \n\
 ----------- \n\
