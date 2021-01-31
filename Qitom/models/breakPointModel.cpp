@@ -40,14 +40,14 @@ namespace ito
 {
     QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj)
     {
-        out << obj.filename << obj.lineno << obj.condition << obj.conditioned << obj.enabled << obj.ignoreCount << obj.temporary;
+        out << obj.filename << obj.lineIdx << obj.condition << obj.conditioned << obj.enabled << obj.ignoreCount << obj.temporary;
         return out;
     }
 
     QDataStream &operator>>(QDataStream &in, BreakPointItem &obj)
     {
         obj.pythonDbgBpNumber = -1; //invalid, only valid if python is deubugging
-        in >> obj.filename >> obj.lineno >> obj.condition >> obj.conditioned >> obj.enabled >> obj.ignoreCount >> obj.temporary;
+        in >> obj.filename >> obj.lineIdx >> obj.condition >> obj.conditioned >> obj.enabled >> obj.ignoreCount >> obj.temporary;
         return in;
     }
 
@@ -224,7 +224,7 @@ RetVal BreakPointModel::deleteBreakPoint(const QModelIndex &index)
 
                 // remove the breakpoint
                 beginRemoveRows(fileItem, row, row);
-                emit(breakPointDeleted(item.filename, item.lineno, item.pythonDbgBpNumber));
+                emit(breakPointDeleted(item.filename, item.lineIdx, item.pythonDbgBpNumber));
                 m_breakpoints.removeAt(breakPointIndex);
                 endRemoveRows();
 
@@ -294,7 +294,7 @@ RetVal BreakPointModel::deleteAllBreakPoints()
     beginResetModel();
     foreach (const BreakPointItem &item, m_breakpoints)
     {
-        emit(breakPointDeleted(item.filename, item.lineno, item.pythonDbgBpNumber));
+        emit(breakPointDeleted(item.filename, item.lineIdx, item.pythonDbgBpNumber));
     }
     m_breakpoints.clear();
     m_scriptFiles.clear();
@@ -394,7 +394,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             switch(index.column())
             {
             case 0: //line
-                return item.lineno + 1;
+                return item.lineIdx + 1;
             case 1: //condition
                 return item.conditioned ? item.condition : "";
             case 2: //temporary
@@ -639,10 +639,10 @@ QModelIndex BreakPointModel::getFilenameModelIndex(const QString &filename) cons
 //! returns QModelIndex for first breakpoint which is found in given filename and at given line number.
 /*!
     \param filename Filename of Python macro file
-    \param lineNo line, where breakpoint is expected
+    \param lineIdx line, where breakpoint is expected
     \return valid QModelIndex, if breakpoint could be found, else returns empty QModelIndex
 */
-QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, int lineNo) const
+QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, int lineIdx) const
 {
     void *filePointer = NULL;
 
@@ -666,7 +666,7 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
             {
                 count++;
 
-                if (m_breakpoints[row].lineno == lineNo)
+                if (m_breakpoints[row].lineIdx == lineIdx)
                 {
                     return createIndex(count, 0, filePointer);
                 }
@@ -681,11 +681,11 @@ QModelIndex BreakPointModel::getFirstBreakPointIndex(const QString &filename, in
 //! returns a list of QModelIndex for all breakpoints, which are registered in given file and at given line number.
 /*!
     \param filename Filename of python macro
-    \param lineNo line, where breakpoint is expected
+    \param lineIdx line, where breakpoint is expected
     \return list of detected QModelIndex, corresponding to each found breakpoint
     \sa getFirstBreakPointIndex
 */
-QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, int lineNo) const
+QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, int lineIdx) const
 {
     QModelIndexList list;
     void *filePointer = NULL;
@@ -710,7 +710,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
             {
                 count++;
 
-                if (m_breakpoints[row].lineno == lineNo)
+                if (m_breakpoints[row].lineIdx == lineIdx)
                 {
                     list.push_back(createIndex(count, 0, filePointer));
                 }
@@ -721,7 +721,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
     return list;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns a List of all Breakpoints, doesn't matter in which file they are.
 /*
     \return QModelIndexList of all Breakpoints whereever they are
@@ -737,19 +737,19 @@ QModelIndexList BreakPointModel::getAllBreakPointIndizes()
     return allBPs;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns BreakPointItem for breakpoint being in given file and at given line number
 /*!
     \param filename Filename of python macro file
-    \param lineNo line number in given filename
+    \param lineIdx line number in given filename
     \return breakpoint element represented by a BreakPointItem-struct
 */
-BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineNo) const
+BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineIdx) const
 {
-    return getBreakPoint(getFirstBreakPointIndex(filename, lineNo));
+    return getBreakPoint(getFirstBreakPointIndex(filename, lineIdx));
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns BreakPointItem for given QModelIndex
 /*!
     \param index given QModelIndex
@@ -765,11 +765,15 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
             {
                 QString filename = m_scriptFiles[i];
                 int breakpointIndex = index.row();
-
                 int count = -1;
+
                 for (int j = 0; j < m_breakpoints.size(); ++j)
                 {
-                    if (QString::compare(m_breakpoints[j].filename, filename, m_filenameCaseSensitivity) == 0) count++;
+                    if (QString::compare(m_breakpoints[j].filename, filename, m_filenameCaseSensitivity) == 0) 
+                    { 
+                        count++;
+                    }
+
                     if (count == breakpointIndex)
                     {
                         return m_breakpoints[j];
@@ -782,7 +786,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
     return BreakPointItem();
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns the index for given QModelIndex
 /*!
     \param index given QModelIndex
@@ -798,11 +802,15 @@ int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
             {
                 QString filename = m_scriptFiles[i];
                 int breakpointIndex = index.row();
-
                 int count = -1;
+
                 for (int i = 0; i < m_breakpoints.size(); ++i)
                 {
-                    if (QString::compare(m_breakpoints[i].filename, filename, m_filenameCaseSensitivity) == 0) count++;
+                    if (QString::compare(m_breakpoints[i].filename, filename, m_filenameCaseSensitivity) == 0)
+                    {
+                        count++;
+                    }
+
                     if (count == breakpointIndex)
                     {
                         return i;
@@ -815,7 +823,7 @@ int BreakPointModel::getBreakPointIndex(const QModelIndex &index) const
     return -1;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! This function returns a list of all files that contain breakpoints.
 /*!
     \return QModelIndexList of all files that contain breakpoints.
@@ -831,7 +839,7 @@ QModelIndexList BreakPointModel::getAllFileIndexes()
     return retList;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! changes breakpoint, given by its QModelIndex to values, determined by BreakPointItem
 /*!
     if indicated, emits signal emitBreakPointChanged with old and new BreakPointItem
@@ -866,9 +874,8 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
             {
                 BreakPointItem oldBp = m_breakpoints[idx];
                 m_breakpoints[idx] = bp;
-                //emit(dataChanged(index,index));
-                //this->setData(index, QVariant(), Qt::DisplayRole);
                 emit(dataChanged(createIndex(index.row(),0,index.internalPointer()),createIndex(index.row(),0/*m_headers.size()-1*/,index.internalPointer())));
+
                 if(emitBreakPointChanged) //!< should be false, if filename or line-nr of editor has changed.
                 {
                     emit(breakPointChanged(oldBp, bp));
@@ -884,7 +891,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
     return retval;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns QModelIndexList with all breakpoints being in one given file
 /*!
     \param filename Filename of python macro file
@@ -922,13 +929,13 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename) c
     return list;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns list of BreakPointItem corresponding to given list of model indices
 /*!
     \param indizes list of model indices
     \return list of BreakPointItem
 */
-QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList indizes) const
+QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList &indizes) const
 {
     QList<BreakPointItem> bps;
 
@@ -943,7 +950,7 @@ QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList indi
     return bps;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! change multiple breakpoints to data, given by list of BreakPointItem
 /*!
     \param indizes list of model indices
@@ -1002,7 +1009,7 @@ RetVal BreakPointModel::resetAllPyBpNumbers()
 RetVal BreakPointModel::setPyBpNumber(const BreakPointItem &item, int pyBpNumber)
 {                                                     //???
     //get modelIndex of file
-    QModelIndex index = getFirstBreakPointIndex(item.filename, item.lineno);
+    QModelIndex index = getFirstBreakPointIndex(item.filename, item.lineIdx);
 
     if (index.isValid())
     {

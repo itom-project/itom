@@ -56,8 +56,6 @@ public:
     OutlineSelectorWidget(const QList<EditorOutline> &outlines, int currentOutlineIndex, ScriptDockWidget *scriptDockWidget, QWidget *parent = nullptr);
     virtual ~OutlineSelectorWidget();
 
-    //void selectRow(int steps);
-
 protected:
     enum Scope { AllScripts, SingleScript };
 

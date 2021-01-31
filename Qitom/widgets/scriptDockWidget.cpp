@@ -2273,34 +2273,35 @@ void ScriptDockWidget::mnuCopy()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a paste command in active script editor
 void ScriptDockWidget::mnuPaste()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         sew->menuPaste();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute an undo command in active script editor
 void ScriptDockWidget::mnuUndo()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    sew->undo();
+    sew->startUndoRedo(true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a redo command in active script editor
 void ScriptDockWidget::mnuRedo()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    sew->redo();
+    sew->startUndoRedo(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a comment command in active script editor
 void ScriptDockWidget::mnuComment()
 {

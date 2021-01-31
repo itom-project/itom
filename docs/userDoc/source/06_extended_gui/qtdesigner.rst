@@ -846,6 +846,33 @@ applied to. It is not part of the call statement in |Python|.
     You have to set the flags properly before changing the state.
     For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
+.. py:function:: QTableWidget.sortItems(column: int, sortOrder: Qt.SortOrder)
+    
+    Sorts all the rows in the table widget based on a given column index
+    and the sort order. For possible values of the sort order, see the 
+    enumeration `Qt::SortOrder`_.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualColumn(logicalColumn: int) -> int
+    
+    Returns the visual column of the given ``logicalColumn``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualRow(row: int) -> int
+    
+    Returns the visual row of the given ``logicalRow``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.setCurrentCell(row: int, column: int)
+    
+    Sets the current cell to be the cell at position (row, column).
+    Depending on the current selection mode, the cell may also be selected.
+    
+    **New in itom 4.1**
+
 .. py:function:: QTableView.horizontalHeader() -> uiItem
     
     returns a reference to the horizontal header widget as :py:class:`~itom.uiItem`.
