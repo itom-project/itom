@@ -41,7 +41,18 @@ namespace ito {
 
 class ScriptDockWidget;
 
-//!< Show tabs in mru order and change between them.
+
+//!< framless dialog, shown as popup over a script editor, to display the outline.
+/* Usually, this popup is displayed by a menu of the script dock widget
+or if the Ctrl+D key is pressed.
+
+It then shows the outline of all classes and methods of the current script
+or of all opened scripts.
+
+This outline can be filtered by a filter text box and if a method is
+selected, the corresponding script is shown and the cursor is placed
+at the definition of the selected method or class.
+*/
 class OutlineSelectorWidget : public QDialog
 {
     Q_OBJECT
@@ -63,6 +74,9 @@ protected:
     void fillContent();
     QList<QTreeWidgetItem*> parseTree(const QString &filename, int editorUID, const QSharedPointer<OutlineItem> &root) const;
     bool filterItemRec(QTreeWidgetItem *root, const QString &text);
+    QString renderTooltipText(const QSharedPointer<OutlineItem> &item) const;
+    QString argsWordWrap(QString argText, int maxLineLength) const;
+    bool selectFirstVisibleChild(QTreeWidgetItem *parent);
 
     void keyReleaseEvent(QKeyEvent* ev);
     void keyPressEvent(QKeyEvent* ev);
@@ -76,10 +90,14 @@ private:
     Scope m_currentScope;
     QList<EditorOutline> m_outlines;
     int m_currentOutlineIndex;
+    bool m_sortItems;
+    QAction *m_actScopeChange;
 
 private slots:
     void filterTextChanged(const QString &text);
     void itemActivated(QTreeWidgetItem *item, int column);
+    void actSort(bool triggered);
+    void actScopeChanged(bool triggered);
 };
 
 

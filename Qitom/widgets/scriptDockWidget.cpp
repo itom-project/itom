@@ -386,7 +386,13 @@ void methodBoxAddItem(
         );
 
         QString methArgsWrapped = argsWordWrap(methArgs, 100);
-        fullSig = QString("%1(\n    %2\n)%3").arg(methPre, methArgsWrapped, methPost);
+        fullSig = QString("%1(\n    %2\n)").arg(methPre, methArgsWrapped);
+
+        if (methPost != "")
+        {
+            fullSig += " -> " + methPost;
+        }
+
         methodBox->setItemData(methodBox->count() - 1, fullSig, Qt::ToolTipRole);
     }
 }

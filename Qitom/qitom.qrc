@@ -100,6 +100,7 @@
     </qresource>
     <qresource prefix="/files">
         <file>icons/filePython.png</file>
+        <file>icons/multiFilePython.png</file>
         <file>icons/fileSave.png</file>
         <file>icons/fileSaveAll.png</file>
         <file>icons/fileSaveAs.png</file>
