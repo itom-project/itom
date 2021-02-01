@@ -40,7 +40,8 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
 {
     ui.setupUi(this);
 
-    on_radioWhl_clicked(true);
+    ui.radioSearchIndex->setChecked(true);
+    on_radioSearchIndex_clicked(true);
 
 #if WIN32
     ui.checkRunSudo->setVisible(false);
@@ -49,7 +50,6 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
     if (package == "")
     {
         setWindowTitle(tr("Install Package"));
-        ui.radioWhl->setChecked(true);
         ui.checkUpgrade->setChecked(false);
         ui.txtPackage->setText("");
         m_upgradeMode = false;
@@ -67,7 +67,6 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
     else
     {
         setWindowTitle(tr("Update Package"));
-        ui.radioSearchIndex->setChecked(true);
         ui.checkUpgrade->setChecked(true);
         ui.txtPackage->setText(package);
         m_upgradeMode = true;
