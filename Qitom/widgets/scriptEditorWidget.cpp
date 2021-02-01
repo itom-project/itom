@@ -484,9 +484,6 @@ void ScriptEditorWidget::initMenus()
     
     editorMenu->addSeparator();
 
-    m_editorMenuActions["insertCodec"] =
-        editorMenu->addAction(tr("&Insert Codec..."), this, SIGNAL(menuInsertCodec()));
-
     m_editorMenuActions["findSymbols"] =
         editorMenu->addAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
             this, SIGNAL(findSymbolsShowRequested()), 

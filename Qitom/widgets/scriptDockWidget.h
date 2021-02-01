@@ -93,6 +93,9 @@ public:
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
 
+    //!< return all outlines in the tabs of this script dock widget
+    QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(int &activeIndex) const;
+
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;
     ScriptEditorWidget* getCurrentEditor() const;

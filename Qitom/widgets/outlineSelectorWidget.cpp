@@ -28,6 +28,7 @@
 #include "../helper/guiHelper.h"
 #include "scriptDockWidget.h"
 #include "../AppManagement.h"
+#include "../organizer/scriptEditorOrganizer.h"
 
 #include <qboxlayout.h>
 #include <qlineedit.h>
@@ -109,6 +110,9 @@ OutlineSelectorWidget::OutlineSelectorWidget(
         this, &OutlineSelectorWidget::itemActivated);
 
     layout->addWidget(m_pTreeWidget);
+
+    setTabOrder(toolBar, m_pLineEdit);
+    setTabOrder(m_pLineEdit, m_pTreeWidget);
 
     setLayout(layout);
 
@@ -429,7 +433,7 @@ void OutlineSelectorWidget::setDialogPosition()
     const QTabWidget *tab = m_pScriptDockWidget->tabWidget();
 
     int left = tab->geometry().width() / 2 - width() / 2;
-    int top = 10;
+    int top = 8;
 
     QPoint pt = m_pScriptDockWidget->tabWidget()->mapToGlobal(QPoint(left, top));
 
@@ -481,6 +485,11 @@ bool OutlineSelectorWidget::eventFilter(QObject* obj, QEvent *ev)
             keyev->accept();
             itemActivated(m_pTreeWidget->currentItem(), 0);
         }
+        /*else if (keyev->key() == Qt::Key_Tab)
+        {
+            keyev->accept();
+            m_pTreeWidget->setFocus();
+        }*/
     }
 
     return QObject::eventFilter(obj, ev);
@@ -669,14 +678,20 @@ void OutlineSelectorWidget::itemActivated(QTreeWidgetItem *item, int column)
         int startLineIdx = item->data(0, Qt::UserRole + 2).toInt();
         QString name = item->data(0, Qt::UserRole + 3).toString();
 
-        m_pScriptDockWidget->activateTabByFilename(filename, -1, editorUID);
+        auto *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
-        if (startLineIdx >= 0)
+        if (seo)
         {
-            m_pScriptDockWidget->activeTabShowLineAndHighlightWord(
-                startLineIdx,
-                name
-            );
+            ScriptDockWidget* scriptDockWidget = 
+                seo->activateOpenedScriptByFilename(filename, -1, editorUID);
+
+            if (scriptDockWidget && startLineIdx >= 0)
+            {
+                scriptDockWidget->activeTabShowLineAndHighlightWord(
+                    startLineIdx,
+                    name
+                );
+            }
         }
     }
 

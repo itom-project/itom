@@ -1106,11 +1106,13 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
         this, &ScriptDockWidget::tabChangedRequest
     );
 
-    // Class Navigator
     disconnect(
-        removedWidget, &ScriptEditorWidget::outlineModelChanged,
-        this, &ScriptDockWidget::updateCodeNavigation
-    );
+        removedWidget, &ScriptEditorWidget::findSymbolsShowRequested,
+        this, &ScriptDockWidget::mnuFindSymbolsShow);
+
+    // Load the right Class->Method model for this Editor
+    disconnect(removedWidget, &ScriptEditorWidget::outlineModelChanged,
+        this, &ScriptDockWidget::updateCodeNavigation);
 
     updateEditorActions();
     updatePythonActions();
@@ -1735,7 +1737,7 @@ void ScriptDockWidget::createActions()
     updateEditorActions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*Slot aboutToOpen*/
 void ScriptDockWidget::menuLastFilesAboutToShow()
 {
@@ -1744,14 +1746,17 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
     {
         m_lastFilesMenu->actions().at(i)->deleteLater();
     }
+
     m_lastFilesMenu->clear();
     
     // Get StringList of last Files
     QStringList fileList;
     QObject *seoO = AppManagement::getScriptEditorOrganizer();
+
     if (seoO)
     {
         ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+
         if (sEO)
         {
             if (sEO->getRecentlyUsedFiles().isEmpty())
@@ -2799,14 +2804,10 @@ void ScriptDockWidget::mnuCopyFilename()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptDockWidget::mnuFindSymbolsShow()
+QList<OutlineSelectorWidget::EditorOutline> ScriptDockWidget::getAllOutlines(int &activeIndex) const
 {
-    if (m_actTabIndex < 0 || m_actTabIndex >= m_tab->count())
-    {
-        return;
-    }
-
     QList<OutlineSelectorWidget::EditorOutline> outlines;
+    activeIndex = m_actTabIndex;
     const ScriptEditorWidget *sew;
 
     for (int i = 0; i < m_tab->count(); ++i)
@@ -2819,16 +2820,31 @@ void ScriptDockWidget::mnuFindSymbolsShow()
         outlines << item;
     }
 
-    m_outlineSelectorWidget = QSharedPointer<OutlineSelectorWidget>(
-        new OutlineSelectorWidget(
-            outlines,
-            m_actTabIndex,
-            this,
-            getActiveInstance()));
+    return outlines;
+}
 
-    m_outlineSelectorWidget->show();
-    //m_outlineSelectorWidget->selectRow(1);
-    //m_outlineSelectorWidget->setFocus();
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuFindSymbolsShow()
+{
+    auto *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+    if (seo)
+    {
+        int currentIndex = -1; //index of the current tab in the returned outline list
+        auto outlines = seo->getAllOutlines(this, currentIndex);
+
+        if (currentIndex >= 0)
+        {
+            m_outlineSelectorWidget = QSharedPointer<OutlineSelectorWidget>(
+                new OutlineSelectorWidget(
+                    outlines,
+                    currentIndex,
+                    this,
+                    getActiveInstance()));
+
+            m_outlineSelectorWidget->show();
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------

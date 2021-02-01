@@ -327,6 +327,39 @@ a tab is changed or a script is loaded. However, it can also be automatically
 updated after a short delay after the last key press in the editor. This
 delay can also be adjusted in the property dialog.
 
+Fast symbol search popup
+=========================
+
+From **itom 4.1**, another option to easily jump to methods or classes in
+the current script or any opened scripts is provided. To show this popup dialog,
+either select the item **Fast symbol search...** from the **edit** menu of
+the script window or from the context menu of the script editor. Alternatively,
+simply use the **Ctrl + D** shortcut to open the popup.
+
+The popup looks like this:
+
+.. figure:: images/outlineSelectorWidget.png
+    :scale: 100%
+    :align: center
+
+It can be closed again by pressing **Esc** or by clicking anywhere outside of the
+popup. Per default, this popup shows the outline of the current script in the
+tree widget (5). This is also indicated by the leading **@** sign in the filtering
+text box (3) or by the unchecked action (2). If you remove the **@** sign or toggle
+the action, the outlines of all opened scripts is displayed, where the top level
+items of the tree widget are the filenames.
+
+The entries in the tree widget are usually sorted by their order in the script(s).
+However, it is also possible to sort them alphabetically in ascending order, if the
+action (1) is checked.
+
+To jump to any symbol, either double click the symbol (class, method...) or
+use the up / down key arrows to select the desired item and press **Return** or
+**Enter**. This will also close the dialog.
+
+It is also possible to filter the displayed values by typing a part of the names
+in the text box (4).
+
 .. _gui-editor-syntax-check:
 
 Automatic syntax and code check

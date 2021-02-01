@@ -41,7 +41,8 @@ BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objN
     m_pModel(NULL),
     m_pMainToolbar(NULL),
     m_pSpacerAction(NULL),
-    m_pContextMenu(NULL)
+    m_pContextMenu(NULL),
+    m_bookmarkView(nullptr)
 {
     m_bookmarkView = new QTreeViewItom(this);
 
