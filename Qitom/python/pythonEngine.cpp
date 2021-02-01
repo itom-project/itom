@@ -242,6 +242,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
+    qRegisterMetaType<Qt::SortOrder>("Qt::SortOrder");
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
     qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
@@ -2242,6 +2243,22 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
     {
         CodeCheckerOptions &opt = m_codeCheckerOptions;
 
+        if (code == "")
+        {
+            QObject *s = sender.data();
+
+            if (s && callbackFctName != "")
+            {
+                QMetaObject::invokeMethod(
+                    s, 
+                    callbackFctName.constData(), 
+                    Q_ARG(QList<ito::CodeCheckerItem>, QList<ito::CodeCheckerItem>())
+                );
+            }
+
+            return;
+        }
+
         int modeNumber = 0; //!< this is the mode number, that is understood by the check method in itomSyntaxCheck.py
 
         //check if the required python packages are available
@@ -2409,7 +2426,7 @@ ito::RetVal PythonEngine::submitAllBreakpointsToDebugger()
     {
         if (it->pythonDbgBpNumber == -1)
         {
-            retValTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
+            retValTemp = pythonAddBreakpoint(it->filename, it->lineIdx, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
             if (retValTemp == ito::retOk)
             {
                 bpModel->setPyBpNumber(*it, pyBpNumber);
@@ -3250,7 +3267,7 @@ void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 {
     int pyBpNumber;
     PyGILState_STATE gstate = PyGILState_Ensure();
-    pythonAddBreakpoint(bp.filename, bp.lineno, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
+    pythonAddBreakpoint(bp.filename, bp.lineIdx, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
     PyGILState_Release(gstate);
     bpModel->setPyBpNumber(bp, pyBpNumber);
 }
@@ -3273,7 +3290,7 @@ void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int p
 void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
-    ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
+    ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineIdx, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
 
     if (ret.containsError())
     {

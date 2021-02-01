@@ -95,7 +95,7 @@ protected:
     ScriptEditorWidget* getCurrentEditor() const;
 
     int getIndexByEditor(const ScriptEditorWidget* sew) const;
-
+    void tabFilenameOrModificationChanged(int index);
 
     void createActions();
     //void deleteActions();

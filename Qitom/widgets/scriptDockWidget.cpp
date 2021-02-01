@@ -1058,27 +1058,12 @@ bool ScriptDockWidget::containsNewScripts() const //!< new means unsaved (withou
     return newScripts;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by tab-widget if current tab changed
-/*!
-    modifies title of this ScriptDockWidget instance, depending on the active tab.
-
-    \param index tab-index of changed editor
-*/
-void ScriptDockWidget::currentTabChanged(int index)
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::tabFilenameOrModificationChanged(int index)
 {
-    m_actTabIndex = index;
-
-    if (m_stackHistory.contains(index))
-    {
-        // move the current index to the front
-        m_stackHistory.removeOne(index);
-        m_stackHistory.prepend(index);
-    }
-
     if (index >= 0)
     {
-        ScriptEditorWidget *editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(m_actTabIndex));
+        ScriptEditorWidget *editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
         setWindowModified(editorWidget->isModified());
 
         // ClassNavigator: set the right classes in comboboxes
@@ -1086,7 +1071,13 @@ void ScriptDockWidget::currentTabChanged(int index)
 
         if (editorWidget->hasNoFilename())
         {
-            setAdvancedWindowTitle(editorWidget->getUntitledName().prepend(" - ").append("[*]"), true);
+            if (index == m_actTabIndex)
+            {
+                setAdvancedWindowTitle(
+                    editorWidget->getUntitledName().prepend(" - ").append("[*]"), true
+                );
+            }
+            
 
             if (editorWidget->isModified())
             {
@@ -1099,9 +1090,15 @@ void ScriptDockWidget::currentTabChanged(int index)
         }
         else
         {
-            setAdvancedWindowTitle(editorWidget->getFilename().prepend(" - ").append("[*]"), true);
+            if (index == m_actTabIndex)
+            {
+                setAdvancedWindowTitle(
+                    editorWidget->getFilename().prepend(" - ").append("[*]"), true
+                );
+            }
 
             QFileInfo info(editorWidget->getFilename());
+
             if (editorWidget->isModified())
             {
                 m_tab->setTabText(index, info.fileName().append("*"));
@@ -1122,6 +1119,27 @@ void ScriptDockWidget::currentTabChanged(int index)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! slot invoked by tab-widget if current tab changed
+/*!
+    modifies title of this ScriptDockWidget instance, depending on the active tab.
+
+    \param index tab-index of changed editor
+*/
+void ScriptDockWidget::currentTabChanged(int index)
+{
+    m_actTabIndex = index;
+
+    if (m_stackHistory.contains(index))
+    {
+        // move the current index to the front
+        m_stackHistory.removeOne(index);
+        m_stackHistory.prepend(index);
+    }
+
+    tabFilenameOrModificationChanged(index);
+}
+
+//-------------------------------------------------------------------------------------
 //! slot connected to each ScriptEditorWidget instance. Invoked if any content in any script changed.
 /*!
     calls slot currentTabChanged with tab index of scriptEditorWidget that sent the signal or
@@ -1131,8 +1149,8 @@ void ScriptDockWidget::currentTabChanged(int index)
 */
 void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 {
-    //in case of save-all or other commands that change other scripts than the active on, this slot
-    //needs to know the sender of the signal:
+    // in case of save-all or other commands that change other scripts than the active on, 
+    // this slot needs to know the sender of the signal:
     const QObject *senderObject = sender();
 
     if (senderObject)
@@ -1141,18 +1159,19 @@ void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
         {
             if (qobject_cast<QObject*>(getEditorByIndex(i)) == senderObject)
             {
-                currentTabChanged(i);
+                tabFilenameOrModificationChanged(i);
             }
         }
     }
     else
     {    
-        currentTabChanged(m_actTabIndex);
+        tabFilenameOrModificationChanged(m_actTabIndex);
     }
+
     updateEditorActions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked if close button of any tab of m_tab (QTabWidgetItom) has been pressed
 /*!
     tries to close the tab in question
@@ -1171,13 +1190,14 @@ void ScriptDockWidget::tabCloseRequested(int index)
     closeTab(index, true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreModifications)
 {
-    if (sew == NULL)
+    if (sew == nullptr)
     {
         return;
     }
+
     int index = getIndexByEditor(sew);
 
     closeTab(index, ignoreModifications);
@@ -2139,34 +2159,35 @@ void ScriptDockWidget::mnuCopy()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a paste command in active script editor
 void ScriptDockWidget::mnuPaste()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         sew->menuPaste();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute an undo command in active script editor
 void ScriptDockWidget::mnuUndo()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    sew->undo();
+    sew->startUndoRedo(true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a redo command in active script editor
 void ScriptDockWidget::mnuRedo()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
-    sew->redo();
+    sew->startUndoRedo(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a comment command in active script editor
 void ScriptDockWidget::mnuComment()
 {

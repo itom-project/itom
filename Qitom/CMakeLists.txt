@@ -427,6 +427,14 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/iterator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.h
 )
 
 set(qitom_UI
@@ -652,6 +660,13 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.cpp
 )
 
 if(MSVC)
@@ -674,7 +689,9 @@ itom_add_source_group(codeEditor/modes)
 itom_add_source_group(codeEditor/panels)
 itom_add_source_group(codeEditor/syntaxHighlighter)
 itom_add_source_group(codeEditor/utils)
+itom_add_source_group(textdiff)
 #end add filters to visual studio
+
 
 #Find ITOM_VERION version by looking at global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")

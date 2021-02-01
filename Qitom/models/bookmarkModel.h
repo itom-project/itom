@@ -43,7 +43,7 @@ struct BookmarkItem
 {
     /*! constructor fills struct with default values */
     BookmarkItem(): filename(""), lineIdx(-1), enabled(true)  {}
-    BookmarkItem(const QString &filename_, int lineno_) : filename(filename_), lineIdx(lineno_), enabled(true) {}
+    BookmarkItem(const QString &filename_, int lineidx_) : filename(filename_), lineIdx(lineidx_), enabled(true) {}
     QString filename;       /*!<  filename of corresponding python file */
     int lineIdx;            /*!<  line number */
     bool enabled;           /*!<  indicates whether breakpoint is actually enabled */

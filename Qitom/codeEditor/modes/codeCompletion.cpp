@@ -987,8 +987,10 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
 
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
-    pos.setY(pos.y() - 15);
-    ToolTip::showText(pos, styledTooltips.join("<hr>"), editor());
+    pos.ry() -= 15;
+    QPoint altTopRightPos = m_pCompleter->popup()->pos();
+    altTopRightPos.ry() += 40;
+    ToolTip::showText(pos, styledTooltips.join("<hr>"), editor(), altTopRightPos);
 }
 
 //--------------------------------------------------------------------
