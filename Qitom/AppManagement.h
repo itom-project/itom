@@ -43,6 +43,7 @@ class AppManagement
 
         inline static QObject* getScriptEditorOrganizer() { QMutexLocker locker(&m_mutex); return m_sew; } /*!< returns static pointer to ScriptEditorOrganizer instance */
         inline static QObject* getPythonEngine() { QMutexLocker locker(&m_mutex); return m_pe; }           /*!< returns static pointer to PythonEngine instance */
+        inline static QObject* getPythonStatePublisher() { QMutexLocker locker(&m_mutex); return m_psp; }           /*!< returns static pointer to PythonStatePublisher instance */
     
         inline static QObject* getPaletteOrganizer() { QMutexLocker locker(&m_mutex); return m_plo; }        /*!< returns static pointer to PaletteOrganizer instance */
         inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; }        /*!< returns static pointer to DesignerWidgetOrganizer instance */
@@ -76,6 +77,12 @@ class AppManagement
         {
             QMutexLocker locker(&m_mutex);
             m_pe = pythonEngine;
+        }
+
+        static void setPythonStatePublisher(QObject* pythonStatePublisher)       /*!< sets PythonStatePublisher instance pointer */
+        {
+            QMutexLocker locker(&m_mutex);
+            m_psp = pythonStatePublisher;
         }
 
         static void setPaletteOrganizer(QObject* paletteOrganizer)               /*!< sets PythonEngine instance pointer */
@@ -139,6 +146,7 @@ class AppManagement
     private:
         static QObject* m_sew;  /*!< static pointer to ScriptEditorOrganizer (default: NULL) */
         static QObject* m_pe;   /*!< static pointer to PythonEngine (default: NULL) */
+        static QObject* m_psp;  /*!< static pointer to PythonStatePublisher (default: NULL) */
         static QObject* m_dwo;   /*!< static pointer to DesignerWidgetOrganizer (default: NULL) */
         static QObject* m_plo;   /*!< static pointer to FigureOrganizer (default: NULL) */
         static QObject* m_app;  /*!< static pointer to MainApplication (default: NULL) */

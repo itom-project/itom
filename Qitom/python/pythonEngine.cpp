@@ -2932,7 +2932,7 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
     switch (m_pythonState)
     {
         case pyStateIdle:
-            pythonStateTransition(pyTransBeginRun);
+            pythonStateTransition(pyTransBeginRun, false);
             runFunction(callable, argTuple, gilExternal);
             emitPythonDictionary(DictUpdate, DictNoAction, !gilExternal);
             pythonStateTransition(pyTransEndRun);
@@ -3106,8 +3106,20 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
+//-------------------------------------------------------------------------------------
+//!< signals a state change of the Python interpreter
+/*
+    This method consumes and reports a state change of the Python interpreter.
+    Depending on the current state, not all transitions are allowed. If a
+    transition is allowed, this method correctly sets the new state m_pythonState
+    and reports the transition via the signal `pythonStateChanged`.
+
+    \param transition is the state transition to signal
+    \param immediate is True if the pythonStatePublisher should publish the
+        captured state change immediately, False if it can postpone it by a small
+        delay to wait if the state falls back to its previous state.
+*/
+ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, bool immediate /*= true*/)
 {
     RetVal retValue(retOk);
     pythonStateChangeMutex.lock();
@@ -3118,12 +3130,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransBeginRun)
         {
             m_pythonState = pyStateRunning;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransBeginDebug)
         {
             m_pythonState = pyStateDebugging;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3134,7 +3146,7 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndRun)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3145,12 +3157,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugWaiting)
         {
             m_pythonState = pyStateDebuggingWaiting;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3161,17 +3173,17 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugContinue)
         {
             m_pythonState = pyStateDebugging;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugExecCmdBegin)
         {
             m_pythonState = pyStateDebuggingWaitingButBusy;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3182,12 +3194,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugExecCmdEnd)
         {
             m_pythonState = pyStateDebuggingWaiting;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {

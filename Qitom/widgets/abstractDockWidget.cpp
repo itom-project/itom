@@ -21,11 +21,9 @@
 *********************************************************************** */
 
 #include <string>
-//#ifndef Q_MOC_RUN
-//    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
-//    #define NO_IMPORT_ARRAY
-//#endif
+
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 
 #include "abstractDockWidget.h"
 #include "../AppManagement.h"
@@ -91,7 +89,8 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     }
 
     PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if (pyEngine != NULL)
+
+    if (pyEngine)
     {
         m_pythonBusy = pyEngine->isPythonBusy();
         m_pythonDebugMode = pyEngine->isPythonDebugging();
@@ -135,9 +134,12 @@ AbstractDockWidget::~AbstractDockWidget()
 
     m_toolBars.clear();
 
-    if (PythonEngine::getInstance())
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+
+    if (pyStatePublisher)
     {
-        disconnect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        disconnect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &AbstractDockWidget::pythonStateChanged);
     }
 }
 
@@ -173,7 +175,7 @@ void AbstractDockWidget::init()
     }
     else if (m_floatingStyle == floatingWindow)
     {
-        //nothing
+        // nothing
     }
 
     if (m_movingStyle == movingEnabled)
@@ -183,8 +185,9 @@ void AbstractDockWidget::init()
 
     setFeatures(features);
 
-    if (m_floatingStyle == floatingWindow && m_dockAvailable) //only show dock-toolbar, if this widget is able to be a full-window in undocked mode
+    if (m_floatingStyle == floatingWindow && m_dockAvailable)
     {
+        // only show dock-toolbar, if this widget is able to be a full-window in undocked mode
         m_dockToolbar = new QToolBar(tr("Docking Toolbar"), this);
         m_dockToolbar->setObjectName("toolBarDocking"); // to avoid Qt warnings during saveState / restoreState
 
@@ -208,9 +211,13 @@ void AbstractDockWidget::init()
         m_pWindow->addToolBar(m_dockToolbar);
     }
 
-    if (PythonEngine::getInstance())
+    const PythonStatePublisher *pyStatePublisher = \
+        qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+
+    if (pyStatePublisher)
     {
-        connect(PythonEngine::getInstance(), SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &AbstractDockWidget::pythonStateChanged);
     }
 
     createActions();

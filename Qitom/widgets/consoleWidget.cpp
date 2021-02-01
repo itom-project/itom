@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 #include "../python/qDebugStream.h"
 #include "consoleWidget.h"
 #include "../global.h"
@@ -102,11 +103,12 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
 	qDebug() << "Streams connected";
 
-    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
-    if (pyEngine)
+    if (pyStatePublisher)
     {
-        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ConsoleWidget::pythonStateChanged);
     }
 
     m_pCmdList = new DequeCommandList(20);
@@ -153,10 +155,12 @@ ConsoleWidget::~ConsoleWidget()
     settings->endGroup();
     delete settings;
 
-    const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
-    if (pyEngine)
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+
+    if (pyStatePublisher)
     {
-        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        disconnect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ConsoleWidget::pythonStateChanged);
     }
 
     DELETE_AND_SET_NULL(m_pCmdList);
@@ -257,6 +261,7 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             for (int i = m_startLineBeginCmd; i <= lineCount() - 1; i++)
             {
                 temp.push_back(lineText(i));
+
                 if (!lineText(i).endsWith(lineBreak) && i < (lineCount() - 1))
                 {
                     //lines with a smooth line break have no endline character. add it to distinguish these lines
@@ -266,10 +271,6 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             m_temporaryRemovedCommands = temp.join("");
             setSelection(m_startLineBeginCmd, 0, lineCount() - 1, lineLength(lineCount() - 1));
             removeSelectedText();
-        }
-        else
-        {
-            //m_temporaryRemovedCommands = "";
         }
 
         m_pythonBusy = true;
@@ -294,7 +295,6 @@ void ConsoleWidget::pythonStateChanged(tPythonTransitions pyTransition)
             m_startLineBeginCmd = lineCount() - 1;
 
             append(m_temporaryRemovedCommands);
-            //qDebug() << "temp commands: " << m_temporaryRemovedCommands;
             m_temporaryRemovedCommands = "";
             moveCursorToEnd();
         }
@@ -1022,12 +1022,13 @@ void ConsoleWidget::disableInputTextMode()
 //-------------------------------------------------------------------------------------
 RetVal ConsoleWidget::executeCmdQueue()
 {
-    cmdQueueStruct value;
     processStreamBuffer();
 
     if (m_cmdQueue.empty())
     {
+        m_currentlyExecutedCommand = CmdQueueItem();
         m_markCurrentLineMode->clearAllMarkers();
+
         if (m_waitForCmdExecutionDone)
         {
             m_waitForCmdExecutionDone = false;
@@ -1048,33 +1049,36 @@ RetVal ConsoleWidget::executeCmdQueue()
         m_canCut = false;
         m_canCopy = false;
 
-        value = m_cmdQueue.front();
+        const CmdQueueItem value = m_cmdQueue.front();
         m_cmdQueue.pop();
 
         m_markCurrentLineMode->clearAllMarkers();
-        m_markCurrentLineMode->addMarker(value.m_lineBegin, value.m_lineBegin + value.m_nrOfLines - 1);    
+        m_markCurrentLineMode->addMarker(
+            value.m_lineBegin,
+            value.m_lineBegin + value.m_nrOfLines - 1);
 
-        if (value.singleLine == "")
+        if (value.m_singleLine == "")
         {
             //do nothing, emit end of command
             executeCmdQueue();
         }
-        else if (value.singleLine == "clc" || value.singleLine == "clear")
+        else if (value.m_singleLine == "clc" || value.m_singleLine == "clear")
         {
             clearCommandLine();
-            m_pCmdList->add(value.singleLine);
+            m_pCmdList->add(value.m_singleLine);
             executeCmdQueue();
-            emit sendToLastCommand(value.singleLine);
+            emit sendToLastCommand(value.m_singleLine);
         }
-        else if (value.singleLine == "clearAll")
+        else if (value.m_singleLine == "clearAll")
         {
             QObject *pyEngine = AppManagement::getPythonEngine();
+
             if (pyEngine)
             {
                 QMetaObject::invokeMethod(pyEngine, "pythonClearAll");
                 executeCmdQueue();
-                m_pCmdList->add(value.singleLine);
-                emit sendToLastCommand(value.singleLine);
+                m_pCmdList->add(value.m_singleLine);
+                emit sendToLastCommand(value.m_singleLine);
             }
             else
             {
@@ -1086,18 +1090,19 @@ RetVal ConsoleWidget::executeCmdQueue()
         else
         {
             QObject *pyEngine = AppManagement::getPythonEngine();
+
             if (pyEngine)
             {
-                QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.singleLine));
+                QMetaObject::invokeMethod(pyEngine, "pythonExecStringFromCommandLine", Q_ARG(QString, value.m_singleLine));
             }
             else
             {
                 QMessageBox::critical(this, tr("Script Execution"), tr("Python is not available"));
             }
 
-            m_pCmdList->add(value.singleLine);
+            m_pCmdList->add(value.m_singleLine);
 
-            emit sendToLastCommand(value.singleLine);
+            emit sendToLastCommand(value.m_singleLine);
         }
 
 		autoLineDelete();
@@ -1128,7 +1133,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         {
             singleLine.remove(0, ConsoleWidget::newCommandPrefix.size());
         }
-        m_cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 1));
+        m_cmdQueue.push(CmdQueueItem(singleLine, beginLine, 1));
     }
     else
     {
@@ -1161,11 +1166,11 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         {
             if (encoding.length() > 0)
             {
-                m_cmdQueue.push(cmdQueueStruct(singleLine, beginLine, 2));
+                m_cmdQueue.push(CmdQueueItem(singleLine, beginLine, 2));
             }
             else
             {
-                m_cmdQueue.push(cmdQueueStruct(singleLine, beginLine, buffer.length()));
+                m_cmdQueue.push(CmdQueueItem(singleLine, beginLine, buffer.length()));
             }
         }
         else
@@ -1197,7 +1202,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
                     singleLine.prepend("#coding=" + encoding + "\n");
                 }
 
-                m_cmdQueue.push(cmdQueueStruct(singleLine, beginLine + lines[i] - 1, temp.length()));
+                m_cmdQueue.push(CmdQueueItem(singleLine, beginLine + lines[i] - 1, temp.length()));
             }
         }
     }
@@ -1927,10 +1932,10 @@ void ConsoleWidget::autoLineDelete()
 		removeSelectedText();	
 
         //adapt lines numbers of items in execution queue
-        std::queue<cmdQueueStruct> newQueue;
+        std::queue<CmdQueueItem> newQueue;
         while (m_cmdQueue.empty() == false)
         {
-            cmdQueueStruct q = m_cmdQueue.front();
+            CmdQueueItem q = m_cmdQueue.front();
             m_cmdQueue.pop();
             if (q.m_lineBegin > removeLines)
             {
