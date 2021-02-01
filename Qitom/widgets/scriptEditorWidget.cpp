@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 #include "../widgets/mainWindow.h"
 #include "scriptEditorWidget.h"
 #include "qpair.h"
@@ -126,13 +127,19 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+
+    if (pyStatePublisher)
+    {
+        connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ScriptEditorWidget::pythonStateChanged);
+    }
 
     if (pyEngine) 
     {
         m_pythonBusy = pyEngine->isPythonBusy();
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
     
         connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
@@ -183,14 +190,20 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
 ScriptEditorWidget::~ScriptEditorWidget()
 {
     const PythonEngine *pyEngine = PythonEngine::getInstance();
+    PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+
+    if (pyStatePublisher)
+    {
+        disconnect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+            this, &ScriptEditorWidget::pythonStateChanged);
+    }
 
     if (pyEngine)
     {
         const BreakPointModel *bpModel = getBreakPointModel();
 
         disconnect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
 
         disconnect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         disconnect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));

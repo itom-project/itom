@@ -303,6 +303,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
@@ -545,6 +546,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
