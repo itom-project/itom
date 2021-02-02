@@ -506,16 +506,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         settings->endGroup();
 
         QDir iconThemeDir(QCoreApplication::applicationDirPath());
-        QString iconThemeFile = "iconThemeBright.rcc";
-        if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
-        {
-            iconThemeFile = "iconThemeDark.rcc";
-        }
-
-        if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
-        {
-            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
-        }
 
         if (styleName != "")
         {
@@ -585,6 +575,30 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             {
                 qDebug() << "style-file " << cssFile << " does not exist";
             }
+        }
+
+        // test the base color of a widget 
+        QString iconThemeFile = "iconThemeBright.rcc";
+
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
+        {
+            // test the base color of the color palette of a widget (here: the splashscreen)
+            // and set the dark theme, if the lightness of this color is < 0.5.
+            QColor bgColor = m_pSplashScreen->palette().background().color();
+
+            if (bgColor.toHsv().lightnessF() < 0.5)
+            {
+                iconThemeFile = "iconThemeDark.rcc";
+            }
+        }
+        else if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
+        {
+            iconThemeFile = "iconThemeDark.rcc";
+        }
+
+        if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
+        {
+            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
         }
     }
 

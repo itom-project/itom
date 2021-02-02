@@ -107,6 +107,10 @@ between the following style sheet options:
 
 Some icons have two different representations, one for bright themes and 
 one for dark themes. It is possible to switch between both themes by the drop-down box. 
+Set this value to automatic, if the icon theme should be chosen automatically
+based on the selected style. If the basic background color is rather dark, the dark
+theme is chosen, else the bright theme.
+
 Changes to style-sheets and icons are only effectuated after a restart of |itom|.
 
 Section Console
