@@ -263,7 +263,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
@@ -374,6 +374,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
@@ -509,7 +510,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
@@ -612,6 +613,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp

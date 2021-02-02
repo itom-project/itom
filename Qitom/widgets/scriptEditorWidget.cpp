@@ -45,6 +45,7 @@
 #include <qdatetime.h>
 #include <qcryptographichash.h>
 #include <qtextdocumentfragment.h>
+#include <qregularexpression.h>
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -66,7 +67,7 @@ QHash<int, ScriptEditorWidget*> ScriptEditorWidget::editorByUID;
 int ScriptEditorWidget::currentMaximumUID = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent) :
+ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent /*= nullptr*/) :
     AbstractCodeEditorWidget(parent),
     m_pFileSysWatcher(NULL), 
     m_filename(QString()),
@@ -75,11 +76,12 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_pythonExecutable(true),
     m_canCopy(false),
     m_codeCheckerCallTimer(NULL),
-    m_classNavigatorTimer(NULL),
+    m_outlineTimer(NULL),
     m_contextMenu(NULL),
     m_keepIndentationOnPaste(true),
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel),
+    m_currentLineIndex(-1),
     m_textBlockLineIdxAboutToBeDeleted(-1)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
@@ -88,9 +90,32 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     connect(m_codeCheckerCallTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
     m_codeCheckerCallTimer->setInterval(1000);
 
-    m_classNavigatorTimer = new QTimer(this);
-    connect(m_classNavigatorTimer, SIGNAL(timeout()), this, SLOT(classNavTimerElapsed()));
-    m_classNavigatorTimer->setInterval(2000);
+    // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
+    //the regular expression should detect begin of definitions. This is:
+    // 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
+    // 2. 'def' + 1 whitespace characters is following --> (def)\\s
+    // 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
+    // 4. 1..inf arbitrary characters will come (function name) --> (.+)
+    // 5. bracket open '(' --> \\(
+    // 6. arbitrary characters --> (.*)
+    // 7. OR combination --> (cond1|cond2)
+    // 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
+    // 7b. backspace to indicate a newline --> \\\\ 
+    m_regExpClass = QRegularExpression("^(\\s*)(class)\\s(?<name>.+)(\\(.*\\))?:\\s*(#?.*)");
+    m_regExpClass.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    m_regExpDecorator = QRegularExpression("^(\\s*)(@)(?<name>\\S+)\\s*(#?.*)");
+    m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s*)?def\\s+(?<name>\\w+)\\(");
+    m_regExpMethodStart.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    //m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<private>_*)(?<name>.+)\\(?<args>(.*)(\\)(\\s*|\\s->\\s(?<rettype>.+)):\\s*(#?.*)?|\\\\)");
+
+    // named groups in complex OR-cases seems not to work
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<name>.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s+(?<name>.+)\\((.*)\\)(\\s*|\\s+->\\s+(.+)):\\s*(#?.*)?");
+    m_regExpMethod.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+
+    m_outlineTimer = new QTimer(this);
+    connect(m_outlineTimer, SIGNAL(timeout()), this, SLOT(outlineTimerElapsed()));
+    m_outlineTimer->setInterval(2000);
 
     m_cursorBeforeMouseClick.invalidate();
     
@@ -156,6 +181,9 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
 #else
     m_filenameCaseSensitivity = Qt::CaseInsensitive;
 #endif
+
+    // update the outline
+    outlineTimerElapsed();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -281,13 +309,10 @@ void ScriptEditorWidget::loadSettings()
         codeCheckerResultsChanged(QList<ito::CodeCheckerItem>());
     }
 
-    // Class Navigator
-    m_classNavigatorEnabled = settings.value("classNavigator", true).toBool();
-
-    m_classNavigatorTimerEnabled = settings.value("classNavigatorTimerActive", true).toBool();
-    m_classNavigatorInterval = (int)(settings.value("classNavigatorInterval", 2.00).toDouble()*1000);
-    m_classNavigatorTimer->stop();
-    m_classNavigatorTimer->setInterval(m_classNavigatorInterval);
+    // Code Outline
+    m_outlineTimerEnabled = settings.value("outlineAutoUpdateEnabled", true).toBool();
+    m_outlineTimer->stop();
+    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 2.00).toDouble() * 1000));
 
     //todo
     // Fold Style
@@ -471,6 +496,11 @@ void ScriptEditorWidget::initMenus()
         foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
     
     editorMenu->addSeparator();
+
+    m_editorMenuActions["findSymbols"] =
+        editorMenu->addAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
+            this, SIGNAL(findSymbolsShowRequested()), 
+            QKeySequence(tr("Ctrl+D", "QShortcut")));
     
     m_editorMenuActions["insertCodec"] = 
         editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
@@ -749,22 +779,22 @@ void ScriptEditorWidget::removeCurrentCallstackLine()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod)
+RetVal ScriptEditorWidget::showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity)
 {
     ito::RetVal retval;
     
     if (line >= 0)
     {
         retval += setCursorPosAndEnsureVisible(line);
-        // regular expression for Classes and Methods
-        QRegExp reg("(\\s*)(class||def||async\\s+def)\\s(.+)\\(.*");
-        reg.setMinimal(true);
-        reg.indexIn(this->lineText(line), 0);
-        setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
-    }
 
-    m_currentClass = currentClass;
-    m_currentMethod = currentMethod;
+        QString text = lineText(line);
+        int idx = text.indexOf(highlightedText, 0, caseSensitivity);
+
+        if (idx >= 0)
+        {
+            setSelection(line, idx, line, idx + highlightedText.size());
+        }
+    }
 
     return retval;
 }
@@ -1619,6 +1649,9 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
 
         setModified(false);
 
+        // update the outline
+        outlineTimerElapsed();
+
         QObject *seo = AppManagement::getScriptEditorOrganizer();
         if (seo)
         {
@@ -1862,9 +1895,11 @@ bool ScriptEditorWidget::event(QEvent *event)
                 m_codeCheckerCallTimer->start(); //starts or restarts the timer
             }
         }
-        if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)
-        {   // Class Navigator if Timer is active
-            m_classNavigatorTimer->start();
+
+        if (m_outlineTimerEnabled)
+        {   
+            // Class Navigator if Timer is active
+            m_outlineTimer->start();
         }
 
         QKeyEvent *keyEvent = (QKeyEvent*)event;
@@ -2643,9 +2678,9 @@ void ScriptEditorWidget::nrOfLinesChanged()
             m_codeCheckerCallTimer->start(); //starts or restarts the timer
         }
     }
-    if (m_classNavigatorEnabled && m_classNavigatorTimerEnabled)
+    if (m_outlineTimerEnabled)
     {
-        m_classNavigatorTimer->start(); //starts or restarts the timer
+        m_outlineTimer->start(); //starts or restarts the timer
     }
 }
 
@@ -2769,216 +2804,229 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// Class-Navigator
-//----------------------------------------------------------------------------------------------------------------------------------
-int ScriptEditorWidget::getIndentationLength(const QString &str) const
-{
-    QString temp = str;
-    temp.replace('\t', QString(tabLength(), ' '));
-    return temp.size();
-}
+//-------------------------------------------------------------------------------------
+// Outline
+//-------------------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------------------
-int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation /*= -1*/)
+//-------------------------------------------------------------------------------------
+QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
+    int startLineIdx, 
+    int endLineIdx) const
 {
-    int lineIndex = lineNumber;
-    int depth = parentDepth;
-    int indent;
-    int offset;
-    int count = lineCount();
-    bool signatureFound;
+    int lineIndex = startLineIdx;
+
+    if (endLineIdx >= lineCount())
+    {
+        endLineIdx = lineCount() - 1;
+    }
 
     // read from settings
-    QString line = "";
-    QString decoLine;   // @-Decorato(@)r Line in previous line of a function
-    
-    // regular expression for Classes
-    QRegExp classes("^(\\s*)(class)\\s(.+)(\\(.*\\))?:\\s*(#?.*)");
-    classes.setMinimal(true);
-    
-    QRegExp methods("^(\\s*)(async\\s*)?(def)\\s(_*)(.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
-    methods.setMinimal(true);
+    QString line = lineText(startLineIdx).trimmed();
 
-    QRegExp methodStartTag("^(\\s*)(async\\s*)?def\\s+(_*)(\\w+)\\(");
-    methodStartTag.setMinimal(true);
-
-
-    // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-    //the regular expression should detect begin of definitions. This is:
-    // 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
-    // 2. 'def' + 1 whitespace characters is following --> (def)\\s
-    // 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
-    // 4. 1..inf arbitrary characters will come (function name) --> (.+)
-    // 5. bracket open '(' --> \\(
-    // 6. arbitrary characters --> (.*)
-    // 7. OR combination --> (cond1|cond2)
-    // 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
-    // 7b. backspace to indicate a newline --> \\\\  
-    
-
-    // regular expresseion for decorator
-    QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
-
-    while(lineIndex < count)
+    if (line.endsWith('\\'))
     {
-        line = lineText(lineIndex);
+        line = line.left(line.size() - 1);
+    }
 
-        // CLASS
-        if (classes.indexIn(line) != -1)
+    QString decoLine;   // @-Decorato(@)r Line in previous line of a function
+
+    //auto classMatch = m_regExpClass.match("class MyClass:  # comment");
+    //qDebug() << classMatch.hasMatch() << classMatch.hasPartialMatch() << classMatch.capturedTexts();
+        
+    auto classMatch = m_regExpClass.match(line);
+
+    if (classMatch.hasMatch())
+    {
+        QSharedPointer<OutlineItem> item(new OutlineItem(OutlineItem::typeClass));
+        item->m_name = classMatch.captured("name");
+        item->m_startLineIdx = startLineIdx;
+        item->m_endLineIdx = endLineIdx;
+        item->m_private = item->m_name.startsWith("_");
+        item->m_async = false;
+        return item;
+    }
+
+    /*auto methodMatch = m_regExpMethod.match("   def test():");
+    qDebug() << methodMatch.hasMatch() << methodMatch.hasPartialMatch() << methodMatch.capturedTexts();
+
+    methodMatch = m_regExpMethod.match("   def __sdfsdf__(self, a=[]): # comment");
+    qDebug() << methodMatch.hasMatch() << methodMatch.hasPartialMatch() << methodMatch.capturedTexts();
+
+    methodMatch = m_regExpMethod.match("   async   def _sdf(clicked):   ");
+    qDebug() << methodMatch.hasMatch() << methodMatch.hasPartialMatch() << methodMatch.capturedTexts();
+
+    methodMatch = m_regExpMethod.match("   async   def _sdf(clicked, test: bla) -> Optional[int]:  # sdf ");
+    qDebug() << methodMatch.hasMatch() << methodMatch.hasPartialMatch() << methodMatch.capturedTexts();*/
+
+    auto methodMatch = m_regExpMethodStart.match(line);
+
+    if (methodMatch.hasMatch())
+    {
+        //it can be that the def signature is spread over multiple lines.
+        //then iteratively add more lines to the possible text and try
+        //it again (max. 30 lines).
+        methodMatch = m_regExpMethod.match(line);
+
+        
+
+        while (!methodMatch.hasMatch() &&
+            lineIndex <= endLineIdx)
         {
-            indent = getIndentationLength(classes.cap(1));
-            if (singleIndentation <= 0)
+            QString linenew = lineText(++lineIndex).trimmed();
+
+            if (linenew.endsWith('\\'))
             {
-                singleIndentation = indent;
+                linenew = linenew.left(linenew.size() - 1);
             }
 
-            if (indent >= depth * singleIndentation)
-            { 
-                ClassNavigatorItem *classt = new ClassNavigatorItem();
-                // Line indented => Subclass of parent
-                classt->m_name = classes.cap(3);
-                // classt->m_args = classes.cap(4); // normally not needed
-                classt->setInternalType(ClassNavigatorItem::typePyClass);
-                classt->m_priv = false; // Class is usually not private
-                classt->m_lineno = lineIndex;
-                classt->m_async = false;
-                parent->m_member.append(classt);
-                ++lineIndex;
-                lineIndex = buildClassTree(classt, depth + 1, lineIndex, indent + 1);
-                continue;
-            }
-            else 
-            {
-                return lineIndex;
-            }
+            line = line + linenew + " ";
+            methodMatch = m_regExpMethod.match(line);
         }
-        // METHOD
-        else if (methodStartTag.indexIn(line) != -1)
+
+        if (methodMatch.hasMatch())
         {
-            //it can be that the def signature is spread over multiple lines.
-            //then iteratively add more lines to the possible text and try
-            //it again (max. 30 lines).
-            offset = 1;
-            signatureFound = true;
+            QSharedPointer<OutlineItem> item(new OutlineItem(OutlineItem::typeFunction));
+            item->m_name = methodMatch.captured("name");
+            item->m_private = item->m_name.startsWith("_");
+            item->m_args = methodMatch.captured(5).trimmed();
+            bool hasSelf = item->m_args.startsWith("self", Qt::CaseInsensitive);
+            item->m_returnType = methodMatch.captured(7);
+            item->m_startLineIdx = startLineIdx;
+            item->m_endLineIdx = endLineIdx;
+            item->m_async = methodMatch.captured("async")
+                .trimmed()
+                .startsWith("async", Qt::CaseInsensitive) 
+                ? true : false;
 
-            while (methods.indexIn(line) < 0)
+            // check for decorator
+            if (startLineIdx > 0)
             {
-                if (lineIndex < count && offset < 30) //more than 30 parameter lines are very unlikely
-                {
-                    line = line + lineText(lineIndex + offset).trimmed() + " ";
-                    offset++;
-                }
-                else
-                {
-                    //nothing found
-                    signatureFound = false;
-                    lineIndex += (offset - 1);
-                    break;
-                }
-            }
+                decoLine = lineText(startLineIdx - 1);
+                auto decoMatch = m_regExpDecorator.match(decoLine);
 
-            if (signatureFound)
-            {
-                indent = getIndentationLength(methods.cap(1));
-
-                if (singleIndentation <= 0)
+                if (decoMatch.hasMatch())
                 {
-                    singleIndentation = indent;
-                }
+                    QString decorator = decoMatch.captured("name").trimmed().toLower();
 
-                // Methode
-                //checken ob line-1 == @decorator besitzt
-                ClassNavigatorItem *meth = new ClassNavigatorItem();
-                meth->m_name = methods.cap(4) + methods.cap(5);
-                meth->m_args = methods.cap(6);
-                meth->m_returnType = methods.cap(8);
-                meth->m_lineno = lineIndex;
-                meth->m_async = methods.cap(2).contains("async", Qt::CaseInsensitive) ? true : false;
-
-                if (methods.cap(4) == "_" || methods.cap(4) == "__")
-                {
-                    meth->m_priv = true;
-                }
-                else
-                {
-                    meth->m_priv = false;
-                }
-
-                if (indent >= depth * singleIndentation)
-                {
-                    decoLine = lineText(lineIndex - 1);
-
-                    // Child des parents
-                    if (decorator.indexIn(decoLine) != -1)
+                    if (decorator == "staticmethod")
                     {
-                        QString decorator_ = decorator.cap(3);
-                        if (decorator_ == "staticmethod")
-                        {
-                            meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
-                        }
-                        else if (decorator_ == "classmethod")
-                        {
-                            meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
-                        }
-                        else // some other decorator
-                        {
-                            meth->setInternalType(ClassNavigatorItem::typePyDef);
-                        }
+                        item->m_type = OutlineItem::typeStaticMethod;
+                    }
+                    else if (decorator == "classmethod")
+                    {
+                        item->m_type = OutlineItem::typeClassMethod;
+                    }
+                    else if (decorator == "property")
+                    {
+                        item->m_type = OutlineItem::typePropertyGet;
+                    }
+                    else if (decorator.endsWith(".setter"))
+                    {
+                        item->m_type = OutlineItem::typePropertySet;
                     }
                     else
                     {
-                        meth->setInternalType(ClassNavigatorItem::typePyDef);
+                        item->m_type = hasSelf ? OutlineItem::typeMethod : OutlineItem::typeFunction;
                     }
-
-                    parent->m_member.append(meth);
-                    lineIndex += offset;
-                    continue;
                 }
                 else
-                {// Negativ indentation => it must be a child of a parental class
-                    DELETE_AND_SET_NULL(meth);
-                    return lineIndex;
+                {
+                    item->m_type = hasSelf ? OutlineItem::typeMethod : OutlineItem::typeFunction;
+                }
+            }
+            else
+            {
+                item->m_type = hasSelf ? OutlineItem::typeMethod : OutlineItem::typeFunction;
+            }
+
+            return item;
+        }
+    }
+
+    return QSharedPointer<OutlineItem>(); // invalid item
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem> &parent) const
+{
+    const QTextDocument* doc = document();
+    bool valid;
+
+    for (int blockIdx = parent->m_startLineIdx + 1; blockIdx <= parent->m_endLineIdx; ++blockIdx)
+    {
+        const QTextBlock &block = doc->findBlockByNumber(blockIdx);
+
+        if (Utils::TextBlockHelper::isFoldTrigger(block))
+        {
+            FoldScope scope(block, valid);
+
+            if (valid)
+            {
+                auto range = scope.getRange();
+                QSharedPointer<OutlineItem> item = checkBlockForOutlineItem(range.first, range.second);
+
+                if (!item.isNull())
+                {
+                    parseOutlineRecursive(item);
+                    item->m_parent = parent.toWeakRef();
+                    parent->m_childs.append(item);
+                    blockIdx = range.second;
                 }
             }
         }
-
-        ++lineIndex;
     }
-    return lineIndex;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// This function is just a workaround because the elapsed timer and requestClassModel cannot connect because of parameterset
-void ScriptEditorWidget::classNavTimerElapsed()
+//-------------------------------------------------------------------------------------
+QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
 {
-    m_classNavigatorTimer->stop();
-    emit requestModelRebuild(this);
+    const QTextDocument* doc = document();
+    bool valid;
+
+    QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
+
+    for (int blockIdx = 0; blockIdx < blockCount(); ++blockIdx)
+    {
+        const QTextBlock &block = doc->findBlockByNumber(blockIdx);
+
+        if (Utils::TextBlockHelper::isFoldTrigger(block))
+        {
+            FoldScope scope(block, valid);
+
+            if (valid)
+            {
+                auto range = scope.getRange();
+
+                QSharedPointer<OutlineItem> item = checkBlockForOutlineItem(range.first, range.second);
+
+                if (!item.isNull())
+                {
+                    parseOutlineRecursive(item);
+                    item->m_parent = root.toWeakRef();
+                    root->m_childs.append(item);
+                    blockIdx = range.second;
+                }
+            }
+        }
+    }
+
+    return root;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-// Slot invoked by Dockwidget when Tabs change (new Tab, other Tab selected, etc)
-// This method is used to start the build process of the class tree and the linear model or update the Comboboxes after a Tab change
-ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
+
+//-------------------------------------------------------------------------------------
+/* slot called if the outline timer expired. This is the case if the document has
+been changed a very short time ago. Therefore, the outline has to be parsed again
+and sent to the script dock widget. 
+
+This method is also directly called if a new file is opened in this editor.
+*/
+void ScriptEditorWidget::outlineTimerElapsed()
 {
-    if (m_classNavigatorEnabled)
-    {
-        // create new Root-Element
-        ClassNavigatorItem *rootElement = new ClassNavigatorItem();
-        rootElement->m_name = tr("{Global Scope}");
-        rootElement->m_lineno = 0;
-        rootElement->setInternalType(ClassNavigatorItem::typePyRoot);
+    m_outlineTimer->stop();
+    m_rootOutlineItem = parseOutline();
 
-        // create Class-Tree
-        buildClassTree(rootElement, 0, 0, -1);
-
-        // send rootItem to DockWidget
-        return rootElement;
-    }
-    else // Otherwise the ClassNavigator is Disabled
-    {
-        return NULL;
-    }
+    emit outlineModelChanged(this, m_rootOutlineItem);
 }
 
 //----------------------------------------------------------------------------------
@@ -3091,6 +3139,12 @@ void ScriptEditorWidget::onCursorPositionChanged()
 {
     QTextCursor c = textCursor();
     int currentLine = c.isNull() ? -1 : c.blockNumber();
+
+    if (currentLine != m_currentLineIndex)
+    {
+        emit outlineModelChanged(this, m_rootOutlineItem);
+        m_currentLineIndex = currentLine;
+    }
 
     // set the current cursor position to the global cursor position variable
     //if (hasFocus())

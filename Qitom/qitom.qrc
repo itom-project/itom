@@ -42,8 +42,11 @@
         <file>icons/method_clmethod_private.png</file>
         <file>icons/method_static.png</file>
         <file>icons/method_static_private.png</file>
+        <file>icons/property_get.png</file>
+        <file>icons/property_set.png</file>
         <file>icons/namespace.png</file>
         <file>icons/global.png</file>
+        <file>icons/at.png</file>
     </qresource>
     <qresource prefix="/application">
         <file>icons/itomicon/itomLogo3_64.png</file>
@@ -97,6 +100,7 @@
     </qresource>
     <qresource prefix="/files">
         <file>icons/filePython.png</file>
+        <file>icons/multiFilePython.png</file>
         <file>icons/fileSave.png</file>
         <file>icons/fileSaveAll.png</file>
         <file>icons/fileSaveAs.png</file>
