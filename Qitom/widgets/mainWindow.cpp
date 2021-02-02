@@ -1670,7 +1670,7 @@ ito::RetVal MainWindow::removeToolbarButton(
         retval += ito::RetVal::format(
             ito::retError, 
             0, 
-            tr("The button (%i) could not be found.").toLatin1().data(), 
+            tr("The button (%1) could not be found.").toLatin1().data(), 
             buttonHandle);
     }
 
@@ -1959,7 +1959,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%i' could not be found").toLatin1().data(), menuHandle);
+        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%1' could not be found").toLatin1().data(), menuHandle);
     }
 
     if (waitCond)
