@@ -152,11 +152,23 @@ void PyCodeFormatter::errorOccurred(QProcess::ProcessError error)
 
     if (!m_isCancelling)
     {
-        std::cerr << "PyCodeFormatter error: "
-            << error << std::endl;
+        switch (error)
+        {
+        case QProcess::FailedToStart:
+            emit formattingDone(false, tr("The code formatter could not be started. Maybe you do not have enough user rights."));
+            break;
+        case QProcess::ProcessError::Crashed:
+            emit formattingDone(false, tr("The started code formatter process crashed."));
+            break;
+        default:
+            emit formattingDone(false, tr("The started code formatter process finished with an error (code: %1).").arg(error));
+            break;
+        }
     }
-
-    emit formattingDone(false, "");
+    else
+    {
+        emit formattingDone(false, "");
+    }
 }
 
 //-------------------------------------------------------------------------------------
