@@ -175,6 +175,13 @@ protected:
 
     void connectNotify(const QMetaMethod &signal);
 
+    enum DebuggerErrorCode
+    {
+        DbgErrorNo = 0,
+        DbgErrorInvalidBp = 1, // the breakpoint candidate could not be set and will be deleted
+        DbgErrorOther = 2 // any other error
+    };
+
 private:
     enum DictUpdateFlag
     {
@@ -215,10 +222,10 @@ private:
     ito::RetVal pythonStateTransition(tPythonTransitions transition, bool immediate = true);
 
     //methods for breakpoint
-    ito::RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
-    ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
+    ito::RetVal pythonAddBreakpoint(const BreakPointItem &breakpoint, int &pyBpNumber);
+    ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const BreakPointItem &newBreakpoint);
     ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
-    ito::RetVal submitAllBreakpointsToDebugger();
+    void submitAllBreakpointsToDebugger();
 
     ito::RetVal autoReloaderCheck();
 
