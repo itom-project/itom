@@ -281,6 +281,7 @@ Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom
 Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\pipProcess\*.*"; DestDir: "{app}\itom-packages\pipProcess"; Flags: ignoreversion
 
 ; SDK
 Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignoreversion; Components: SDK
