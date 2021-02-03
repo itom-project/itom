@@ -57,6 +57,9 @@ if _HAS_FLAKE8:
     # disable the flake8.checker logger
     log = logging.getLogger("flake8.checker")
     log.disabled = True
+    # disable the logger for warnings in the options manager of flake8
+    log = logging.getLogger("flake8.options.manager")
+    log.disabled = True
 try:
     from pyflakes import api as pyflakesapi
     _HAS_PYFLAKES = True
