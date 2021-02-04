@@ -1725,9 +1725,6 @@ void ScriptDockWidget::createActions()
     m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
-    m_findSymbols = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
-    m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
-
     m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
         this, QKeySequence(tr("Ctrl+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
@@ -1949,6 +1946,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_findTextExprAction->action());
     m_editToolBar->addAction(m_replaceTextExprAction->action());
     m_editToolBar->addAction(m_openIconBrowser->action());
+    m_editToolBar->addAction(m_findSymbols->action());
     m_editToolBar->addAction(m_autoCodeFormatAction->action());
     m_editToolBar->setFloatable(false);
 
