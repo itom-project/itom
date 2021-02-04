@@ -77,7 +77,6 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_canCopy(false),
     m_codeCheckerCallTimer(NULL),
     m_outlineTimer(NULL),
-    m_contextMenu(NULL),
     m_keepIndentationOnPaste(true),
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel),
@@ -504,6 +503,16 @@ void ScriptEditorWidget::initMenus()
     
     m_editorMenuActions["insertCodec"] = 
         editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+    //Qt 5.10.x (see https://bugreports.qt.io/browse/QTBUG-65244)
+    foreach(auto it, m_editorMenuActions)
+    {
+        it.second->setShortcutVisibleInContextMenu(true);
+    }
+#endif
+#endif
 }
 
 //-------------------------------------------------------------------------------------

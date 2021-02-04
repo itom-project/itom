@@ -185,7 +185,6 @@ private:
     Qt::CaseSensitivity m_filenameCaseSensitivity;
 
     //!< menus
-    QMenu *m_contextMenu;
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
