@@ -118,8 +118,42 @@ ito::RetVal PyCodeFormatter::startFormatting(const QString &cmd, const QString &
     m_currentCode = code;
     m_currentError = "";
 
-    QString exec = QString("%1 -m %2").arg(pythonPath).arg(cmd);
-    m_process.start(exec);
+    /* Under Windows, if itom is directly started from C:/Program Files,
+    it seems, that the arguments must be passed to m_process as QStringList.
+    Else a ProcessError::FailedToStart occurs. Therefore try to split the arguments...*/
+    QStringList args = cmd.split(" ");
+
+    // now check if items start with a leading " and search for the
+    // component that ends with the corresponding ", but not \" and
+    // join them again.
+    QChar sign = '"';
+    int startIdx = -1;
+
+    for (int idx = 0; idx < args.size(); ++idx)
+    {
+        if (startIdx == -1)
+        {
+            if (args[idx].startsWith(sign))
+            {
+                startIdx = idx;
+            }
+        }
+        else
+        {
+            args[startIdx].append(" " + args[idx]);
+            
+            if (args[idx].endsWith(sign) && !args[idx].endsWith('\\' + sign))
+            {
+                startIdx = -1;
+            }
+
+            args[idx] = "";
+        }
+    }
+
+    args.removeAll("");
+    args.prepend("-m");
+    m_process.start(pythonPath, args);
 
     return ito::retOk;
 }
