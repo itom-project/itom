@@ -76,11 +76,21 @@ void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDet
 /*static*/ QTextBlock SyntaxHighlighterBase::findPrevNonBlankBlock(const QTextBlock &currentBlock)
 {
     QTextBlock previousBlock = currentBlock.blockNumber() ? currentBlock.previous() : QTextBlock();
+    QString t = previousBlock.text().trimmed();
     // find the previous non-blank block
-    while (previousBlock.isValid() && previousBlock.blockNumber() && previousBlock.text().trimmed() == "")
+    while (previousBlock.isValid() && 
+        previousBlock.text().trimmed() == "")
     {
         previousBlock = previousBlock.previous();
+        t = previousBlock.text().trimmed();
     }
+
+    if (previousBlock.isValid() && 
+        previousBlock.text().trimmed() == "")
+    {
+        previousBlock = QTextBlock();
+    }
+
     return previousBlock;
 }
 
