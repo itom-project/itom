@@ -123,7 +123,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     loadSettings();
 
     m_pFileSysWatcher = new QFileSystemWatcher(this);
-    connect(m_pFileSysWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(fileSysWatcherFileChanged(const QString&)));
+    connect(m_pFileSysWatcher, &QFileSystemWatcher::fileChanged, 
+        this, &ScriptEditorWidget::fileSysWatcherFileChanged);
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
@@ -2741,75 +2742,97 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     }
 }
 
-//--------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) 
 {
     if (m_fileSystemWatcherMutex.tryLock(1))
     {
-        QMessageBox msgBox(this);
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-
         if (path == getFilename())
         {
-            QFile file(path);
+            QFileInfo file(path);
 
-            if (!file.exists())
+            if (!file.exists()) //file deleted
             {
                 //if git updates a file, the file is deleted and then the modified file is created.
                 //this will cause a 'delete' notification, however the 'modified' notification would be correct.
                 //try to sleep for a while and recheck the state of the file again...
-                QThread::sleep(0.4);
+                QTimer::singleShot(500, this, std::bind(
+                    &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
+                    this,
+                    path)
+                );
             }
+            else //file changed
+            {    
+                fileSysWatcherFileChangedStep2(path);
+            }
+        }
 
-            if (!file.exists()) //file deleted
+        m_fileSystemWatcherMutex.unlock();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/* this method is called by fileSysWatcherFileChanged. If the file
+is modified, it is called immediately. If the file is pretended to be deleted,
+this 2nd step method is called with a certain delay, since it might be,
+that the file exists again after this delay (e.g. during a git modification step)
+*/
+void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
+{
+    if (path == getFilename())
+    {
+        QFile file(path);
+
+        if (!file.exists()) //file deleted
+        {
+            QMessageBox msgBox(this);
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
+            msgBox.setInformativeText(tr("Keep this file in editor?"));
+
+            int ret = msgBox.exec();
+
+            if (ret == QMessageBox::No)
             {
-                msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
-                msgBox.setInformativeText(tr("Keep this file in editor?"));
+                emit closeRequest(this, true);
+            }
+            else
+            {
+                document()->setModified(true);
+            }
+        }
+        else //file changed
+        {
+            QCryptographicHash fileHash(QCryptographicHash::Sha1);
+            file.open(QIODevice::ReadOnly | QIODevice::Text);
+            fileHash.addData(file.readAll());
 
+            QCryptographicHash fileHash2(QCryptographicHash::Sha1);
+            fileHash2.addData(toPlainText().toLatin1());
+
+            if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
+            {
+                QMessageBox msgBox(this);
+                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msgBox.setDefaultButton(QMessageBox::Yes);
+                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
+                msgBox.setInformativeText(tr("Do you want to reload it?"));
                 int ret = msgBox.exec();
 
-                if (ret == QMessageBox::No)
+                if (ret == QMessageBox::Yes)
                 {
-                    emit closeRequest(this, true);
+                    openFile(path, true);
                 }
                 else
                 {
                     document()->setModified(true);
                 }
             }
-            else //file changed
-            {    
-                QCryptographicHash fileHash(QCryptographicHash::Sha1);
-                file.open(QIODevice::ReadOnly | QIODevice::Text);
-                fileHash.addData(file.readAll());
 
-                QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-                fileHash2.addData(toPlainText().toLatin1());
-
-                //fileModified = !(QLatin1String(file.readAll()) == text()); //does not work!?
-                
-                if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
-                {
-                    msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-                    msgBox.setInformativeText(tr("Do you want to reload it?"));
-                    int ret = msgBox.exec();
-
-                    if (ret == QMessageBox::Yes)
-                    {
-                        openFile(path, true);
-                    }
-                    else
-                    {
-                        document()->setModified(true);
-                    }
-                }
-                
-            }
         }
-
-        m_fileSystemWatcherMutex.unlock();
     }
 }
 

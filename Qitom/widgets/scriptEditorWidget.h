@@ -300,7 +300,8 @@ private slots:
 
     void nrOfLinesChanged();
 
-    void fileSysWatcherFileChanged ( const QString & path );
+    void fileSysWatcherFileChanged(const QString &path);
+    void fileSysWatcherFileChangedStep2(const QString &path);
     void printPreviewRequested(QPrinter *printer);
 
     void dumpFoldsToConsole(bool);
