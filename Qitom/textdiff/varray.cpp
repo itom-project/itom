@@ -3,7 +3,7 @@
 #include <stdlib.h> 
 #include <string.h>
 
-void varray_init(struct varray *p_pos,int element_size,int value)
+void varray_init(struct varray *p_pos,int element_size)
 {
     p_pos->element_size=element_size;
     p_pos->length=10;
