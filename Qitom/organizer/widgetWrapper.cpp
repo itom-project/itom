@@ -757,7 +757,7 @@ ito::RetVal WidgetWrapper::callTabWidget(QTabWidget *tabWidget, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -782,7 +782,7 @@ ito::RetVal WidgetWrapper::callTableView(QTableView *tableView, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -825,7 +825,7 @@ ito::RetVal WidgetWrapper::callSplitter(QSplitter *splitter, int methodIndex, vo
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -852,7 +852,7 @@ ito::RetVal WidgetWrapper::callStatusBar(QStatusBar *statusBar, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
