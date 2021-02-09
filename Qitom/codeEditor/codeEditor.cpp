@@ -121,11 +121,6 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
-    foreach (TextBlockUserData *tbud, m_textBlockUserDataList)
-    {
-        tbud->removeCodeEditorRef();
-    }
-
     delete m_pPanels;
     m_pPanels = NULL;
 
