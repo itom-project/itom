@@ -39,7 +39,6 @@
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
-#include <qmutex.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmenu.h>
@@ -175,7 +174,6 @@ private:
     RetVal changeFilename(const QString &newFilename);
 
     QFileSystemWatcher *m_pFileSysWatcher;
-    QMutex m_fileSystemWatcherMutex;
 
     // the following variables are related to the code checker feature of Python
     bool m_codeCheckerEnabled;
