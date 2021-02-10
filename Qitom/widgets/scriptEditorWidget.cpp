@@ -252,6 +252,9 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
+    m_pyDocstringGeneratorMode = QSharedPointer<PyDocstringGeneratorMode>(new PyDocstringGeneratorMode("PyDocstringGeneratorMode"));
+    modes()->append(m_pyDocstringGeneratorMode.dynamicCast<ito::Mode>());
+
     m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
@@ -445,6 +448,12 @@ void ScriptEditorWidget::initMenus()
             this, SLOT(menuPyCodeFormatting()), QKeySequence(tr("Ctrl+Alt+I", "QShortcut"))
         );
     m_editorMenuActions["formatFile"]->setVisible(false);
+
+    m_editorMenuActions["generateDocstring"] =
+        editorMenu->addAction(
+            QIcon(), tr("Generate Docstring"),
+            this, SLOT(menuGenerateDocstring()), QKeySequence(tr("Ctrl+Alt+D", "QShortcut"))
+        );
     
     editorMenu->addSeparator();
     
@@ -565,6 +574,7 @@ bool ScriptEditorWidget::keepIndentationOnPaste() const
     return m_keepIndentationOnPaste;
 }
 
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
 {
     m_keepIndentationOnPaste = value;
@@ -578,6 +588,15 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    if (lineIndex >= 0 && !m_pythonBusy)
+    {
+        //update outline
+        m_rootOutlineItem = parseOutline();
+    }
+
     m_editorMenuActions["cut"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
@@ -585,7 +604,13 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
-    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy);   
+    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy); 
+    m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["generateDocstring"]->setEnabled(
+        !m_pythonBusy && 
+        lineIndex >= 0 &&
+        !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull()
+    );
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
 }
@@ -1192,6 +1217,12 @@ void ScriptEditorWidget::menuPyCodeFormatting()
             );
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuGenerateDocstring()
+{
+    m_pyDocstringGeneratorMode->insertDocstring(textCursor());
 }
 
 //-------------------------------------------------------------------------------------
@@ -3045,7 +3076,6 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
     return root;
 }
 
-
 //-------------------------------------------------------------------------------------
 /* slot called if the outline timer expired. This is the case if the document has
 been changed a very short time ago. Therefore, the outline has to be parsed again
@@ -3061,7 +3091,7 @@ void ScriptEditorWidget::outlineTimerElapsed()
     emit outlineModelChanged(this, m_rootOutlineItem);
 }
 
-//----------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::dumpFoldsToConsole(bool)
 {
     int lvl;

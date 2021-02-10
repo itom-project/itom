@@ -417,6 +417,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
@@ -648,6 +649,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp

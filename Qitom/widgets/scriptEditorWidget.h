@@ -31,6 +31,7 @@
 #include "../codeEditor/panels/breakpointPanel.h"
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
@@ -212,6 +213,7 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;
     static int currentMaximumUID;
@@ -266,6 +268,7 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
+    void menuGenerateDocstring();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
