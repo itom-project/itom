@@ -33,7 +33,7 @@ import time
 
 class ItomUiClassDemo(ItomUi):
     """This class contains the code for the user interface "itomUiClassDemo.ui"."""
-    
+
     def __init__(self):
         """Constructor.
         
@@ -44,11 +44,12 @@ class ItomUiClassDemo(ItomUi):
         Use the constructor to further initialize the user interface.
         """
         ItomUi.__init__(
-            self, "itomUiClassDemo.ui", type=ui.TYPEWINDOW, deleteOnClose=True)
-        
+            self, "itomUiClassDemo.ui", type=ui.TYPEWINDOW, deleteOnClose=True
+        )
+
         # further initialization
         self.gui.progressBar["visible"] = False
-    
+
     @ItomUi.autoslot("bool")
     def on_checkEnabled_toggled(self, checked):
         """Auto-slot if the check box has been checked or unchecked.
@@ -69,7 +70,7 @@ class ItomUiClassDemo(ItomUi):
                 the signal ``toggled(bool checked)`` of the checkbox (class QCheckBox).
         """
         self.gui.groupBox["enabled"] = checked
-        
+
     @ItomUi.autoslot("")  # the signal is clicked()
     def on_btnStart_clicked(self):
         """Auto-slot that is connected with the ``clicked`` signal of the button btnStart.
@@ -80,27 +81,36 @@ class ItomUiClassDemo(ItomUi):
         (dependent on the current enabled state of the group box).
         """
         # the following items will be disabled (enabled=False) during with statement
-        disableItems = [self.gui.groupBox, self.gui.checkEnabled, self.gui.btnStart]
-        
+        disableItems = [
+            self.gui.groupBox,
+            self.gui.checkEnabled,
+            self.gui.btnStart,
+        ]
+
         # the following items will be shown (visible=True) during with statement
-        showItems = [self.gui.progressBar, ]
-        
+        showItems = [
+            self.gui.progressBar,
+        ]
+
         # the following items will be hidden (visible=False) during with statement
-        hideItems = [self.gui.btnStartException, ]
-        
+        hideItems = [
+            self.gui.btnStartException,
+        ]
+
         # the following items will be enabled (enabled=True) during with statement
         enableItems = []
-        
+
         with self.disableGui(
-                disableItems=disableItems,
-                showItems=showItems,
-                hideItems=hideItems,
-                enableItems=enableItems,
-                revertToInitialStateOnExit=True,
-                showWaitCursor=self.gui.checkWaitCursor["checked"]):
+            disableItems=disableItems,
+            showItems=showItems,
+            hideItems=hideItems,
+            enableItems=enableItems,
+            revertToInitialStateOnExit=True,
+            showWaitCursor=self.gui.checkWaitCursor["checked"],
+        ):
             # long going operation within the with statement
             time.sleep(3)
-    
+
     @ItomUi.autoslot("")  # the signal is clicked()
     def on_btnStartException_clicked(self):
         """Auto-slot that is connected with the ``clicked`` signal of the button btnStartException.
@@ -116,29 +126,40 @@ class ItomUiClassDemo(ItomUi):
         a with statement.
         """
         # the following items will be disabled (enabled=False) during with statement
-        disableItems = [self.gui.groupBox, self.gui.checkEnabled, self.gui.btnStartException]
-        
+        disableItems = [
+            self.gui.groupBox,
+            self.gui.checkEnabled,
+            self.gui.btnStartException,
+        ]
+
         # the following items will be shown (visible=True) during with statement
-        showItems = [self.gui.progressBar, ]
-        
+        showItems = [
+            self.gui.progressBar,
+        ]
+
         # the following items will be hidden (visible=False) during with statement
-        hideItems = [self.gui.btnStart, ]
-        
+        hideItems = [
+            self.gui.btnStart,
+        ]
+
         # the following items will be enabled (enabled=True) during with statement
         enableItems = []
-        
+
         with self.disableGui(
-                disableItems=disableItems,
-                showItems=showItems,
-                hideItems=hideItems,
-                enableItems=enableItems,
-                revertToInitialStateOnExit=True,
-                showWaitCursor=self.gui.checkWaitCursor["checked"]):
+            disableItems=disableItems,
+            showItems=showItems,
+            hideItems=hideItems,
+            enableItems=enableItems,
+            revertToInitialStateOnExit=True,
+            showWaitCursor=self.gui.checkWaitCursor["checked"],
+        ):
             # long going operation within the with statement
             time.sleep(3)
-            
-            raise RuntimeError("an unhandled exception occurred, but the "
-                               "GUI is turned into the original state though")
+
+            raise RuntimeError(
+                "an unhandled exception occurred, but the "
+                "GUI is turned into the original state though"
+            )
 
 
 if __name__ == "__main__":

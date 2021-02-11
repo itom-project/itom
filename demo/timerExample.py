@@ -1,4 +1,4 @@
-'''
+"""
 This script creates an instance of a dummy grabber
 and implements a timer with an interval of 1000ms.
 
@@ -8,7 +8,7 @@ list myImages
 
 To stop the timer, call the method cancel. Additionally, the timer
 is automatically interrupted after 10 iterations.
-'''
+"""
 from itom import *
 
 
@@ -17,7 +17,7 @@ def imageAcquisition():
     global t
     global cam
     global myImages
-    
+
     print("acquire next image")
     cam.acquire()
     d = dataObject()
@@ -26,27 +26,28 @@ def imageAcquisition():
     iters += 1
     if iters >= 10:
         t.stop()
-    
 
 
 def cancel():
-    '''call this method (e.g. by your gui) to stop the timer'''
+    """call this method (e.g. by your gui) to stop the timer"""
     global t
     global cam
     t.stop()
     cam.stopDevice()
-    
+
+
 def demo_timedAcquisition():
     global t
     global cam
     global myImages
     global iters
-    
+
     cam = dataIO("DummyGrabber")
     myImages = []
     iters = 0
     cam.startDevice()
     t = timer(1000, imageAcquisition)
+
 
 if __name__ == "__main__":
     demo_timedAcquisition()

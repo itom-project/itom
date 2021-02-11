@@ -19,11 +19,19 @@ def demo_dataObject():
     obj3dim = dataObject([zDim, yDim, xDim], "uint16")
 
     """Special constructors for zero, ones, eye and randomly filled objects"""
-    objZero = dataObject.zeros([yDim, xDim], "float64")  # 2D object filled with zeros
-    objOnes = dataObject.ones([yDim, xDim], "float64")  # 2D object filled with ones
+    objZero = dataObject.zeros(
+        [yDim, xDim], "float64"
+    )  # 2D object filled with zeros
+    objOnes = dataObject.ones(
+        [yDim, xDim], "float64"
+    )  # 2D object filled with ones
     objEye = dataObject.eye(4, "uint8")  # 4x4 matrix
-    objRand = dataObject.rand([yDim, xDim], "uint8")  # 2D object filled with uniformly distributed random values
-    objRandN = dataObject.randN([yDim, xDim], "uint8")  # 2D object filled with Gaussian distributed random values
+    objRand = dataObject.rand(
+        [yDim, xDim], "uint8"
+    )  # 2D object filled with uniformly distributed random values
+    objRandN = dataObject.randN(
+        [yDim, xDim], "uint8"
+    )  # 2D object filled with Gaussian distributed random values
     # hint: the methods rand and randN create values in the full data range for integer based data types
     #        whereas the randomly distributed values are in the range [0,1) for floating point data types.
 
@@ -31,11 +39,17 @@ def demo_dataObject():
     objRandFloat = objRand.astype("float64")
 
     """Assign values to data objects"""
-    obj2dim[0 : yDim // 2, :] = 5.7  # fill the upper half of the object with 5.7 (the operator // makes an integer division)
-    obj2dim[yDim // 2 :, :] = 6.6  # fill the bottom half of the object with 6.6 (the operator // makes an integer division)
+    obj2dim[
+        0 : yDim // 2, :
+    ] = 5.7  # fill the upper half of the object with 5.7 (the operator // makes an integer division)
+    obj2dim[
+        yDim // 2 :, :
+    ] = 6.6  # fill the bottom half of the object with 6.6 (the operator // makes an integer division)
     obj2dim[5:10, 20:100] = -2.0  # fill a selected rectangle with -2.0
     obj3dim[:, :, :] = 0  # fill the entire 3d object with zero
-    obj3dim[1, :, :] = objRand.astype(obj3dim.dtype)  # replace the 2nd plane of the 3d object by the random values of the casted object
+    obj3dim[1, :, :] = objRand.astype(
+        obj3dim.dtype
+    )  # replace the 2nd plane of the 3d object by the random values of the casted object
 
     """Delete objects"""
     del objRandFloat
@@ -49,9 +63,15 @@ def demo_dataObject():
     # size of the object is individual for each object.
 
     objZero2 = objZero  # both variables point to exactly the same dataObject in memory (everything shared)
-    objZero3 = objZero[:, :]  # objZero3 is a shallow copy of objZero with the same matrix size
-    objZero4 = objZero[0:20, 0:20]  # objZero4 is a shallow copy including a region of interest to the first 20 rows and columns
-    objZero4[:, :] = 5  # change the values in the first 20 rows and columns of objZero4 to 5
+    objZero3 = objZero[
+        :, :
+    ]  # objZero3 is a shallow copy of objZero with the same matrix size
+    objZero4 = objZero[
+        0:20, 0:20
+    ]  # objZero4 is a shallow copy including a region of interest to the first 20 rows and columns
+    objZero4[
+        :, :
+    ] = 5  # change the values in the first 20 rows and columns of objZero4 to 5
     # (hence, objZero, objZero2 and objZero4 are changed, too). Proof:
     plot(objZero)  # opens a 2d plot of objZero
 
@@ -63,7 +83,9 @@ def demo_dataObject():
     """Accessing values"""
     print("objZero at index 0,5 (row, column):", objZero[0, 5])
     # get the first five values of the first row of objZero:
-    vals = objZero[0, 0:5]  # the last value of a slice is always EXCLUDED from the slice
+    vals = objZero[
+        0, 0:5
+    ]  # the last value of a slice is always EXCLUDED from the slice
     # vals is now a dataObject, however it can be converted to a tuple:
     print("first five values of objZero:", vals.value)
 
@@ -79,9 +101,7 @@ def demo_dataObject():
     obj2dim.axisDescriptions = ("y-axis", "x-axis")
     obj2dim.setTag("title", "obj2dim Title")
 
-    obj2dim.valueUnit = (
-        "°"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
-    )
+    obj2dim.valueUnit = "°"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
     obj2dim.valueDescription = "phase"
 
     plot(obj2dim, properties={"colorBarVisible": True})
@@ -90,7 +110,10 @@ def demo_dataObject():
     # it is possible to add string or double valued tags to each dataObject. There are some special tags,
     # that can directly be interpreted by plots (e.g. the 'title' tag). All other tags can be used for any purpose.
 
-    obj3dim.setTag("title", "This is a 3d object, use the spin box to switch between planes")
+    obj3dim.setTag(
+        "title",
+        "This is a 3d object, use the spin box to switch between planes",
+    )
     plot(obj3dim)
 
     # Set additional informations (meta data) as tags

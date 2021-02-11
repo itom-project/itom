@@ -29,10 +29,10 @@ upper_error = error
 asymmetric_error = [lower_error, upper_error]
 
 fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
-ax0.errorbar(x, y, yerr=error, fmt='-o')
-ax0.set_title('variable, symmetric error')
+ax0.errorbar(x, y, yerr=error, fmt="-o")
+ax0.set_title("variable, symmetric error")
 
-ax1.errorbar(x, y, xerr=asymmetric_error, fmt='o')
-ax1.set_title('variable, asymmetric error')
-ax1.set_yscale('log')
+ax1.errorbar(x, y, xerr=asymmetric_error, fmt="o")
+ax1.set_title("variable, asymmetric error")
+ax1.set_yscale("log")
 plt.show()
