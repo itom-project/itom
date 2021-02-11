@@ -73,7 +73,7 @@ class DataObjectComparison(unittest.TestCase):
                 self.assertFalse(np.any(many == 2+3j)) # randN -> all values should be < 1 -> should never be True
                 self.assertTrue(np.all(many != 2+3j))
             
-            #many = dataObject.randN([2,3,4])
+            #many = dataObject.randN([2,3,4]) #?
             #with self.assertRaises(ValueError):
             #    bool(many)
             
