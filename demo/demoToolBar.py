@@ -36,10 +36,7 @@ def demo_toolbar():
 
     # Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
     addButton(
-        "amipola",
-        "HelloWorld",
-        "res = app.printHelloWorld(True)",
-        "icons_m/HV_on.png",
+        "amipola", "HelloWorld", "res = app.printHelloWorld(True)", "icons_m/HV_on.png",
     )
 
     # For Debug test with single step

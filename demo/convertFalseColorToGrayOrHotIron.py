@@ -21,9 +21,7 @@ if result_map == "hotIron":
 for m in range(height):
     for n in range(width):
         px = img1[m, n]
-        [h, s, v] = colorsys.rgb_to_hsv(
-            px.r / 255.0, px.g / 255.0, px.b / 255.0
-        )
+        [h, s, v] = colorsys.rgb_to_hsv(px.r / 255.0, px.g / 255.0, px.b / 255.0)
         if s > 0.3:
             if result_map == "gray":
                 h_ = int(v * h * 255)

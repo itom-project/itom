@@ -24,9 +24,7 @@ def getAlignNdArray(image):
 try:
     import pyfftw
 
-    myfft2 = (
-        pyfftw.interfaces.numpy_fft.fft2
-    )  # if PyFFTW: use fft2 from this package
+    myfft2 = pyfftw.interfaces.numpy_fft.fft2  # if PyFFTW: use fft2 from this package
     myifft2 = pyfftw.interfaces.numpy_fft.ifft2
     alignSize = pyfftw.simd_alignment
 

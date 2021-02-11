@@ -1,9 +1,7 @@
 try:
     import matlab
 except Exception as ex:
-    print(
-        "itom is possibly compiled without Matlab support. This demo is not working"
-    )
+    print("itom is possibly compiled without Matlab support. This demo is not working")
     raise ex
 
 

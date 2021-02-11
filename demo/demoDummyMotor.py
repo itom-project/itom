@@ -94,9 +94,7 @@ def demo_DummyMotor():
     # be added to the connection, such that the statusChanged slot is only called after 100ms again. All intermediate
     # calls are ignored (new in itom 3.2)
     stage.connect(
-        "actuatorStatusChanged(QVector<int>,QVector<double>)",
-        statusChanged,
-        100,
+        "actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged, 100,
     )
 
     stage.setPosAbs(0, 0.0, 1, 0.0)

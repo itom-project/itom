@@ -1,9 +1,9 @@
 from MLJ050 import *
 
-zstage=MLJ050()
+zstage = MLJ050()
 
 print(zstage.HWinfo)
-print('SN = ' + str(zstage.SN))
+print("SN = " + str(zstage.SN))
 
 zstage.jogUp()
 zstage.jogUp()
@@ -17,4 +17,3 @@ zstage.moveHome()
 print(zstage.getPos())
 
 del zstage
-

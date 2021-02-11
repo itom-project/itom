@@ -44,9 +44,7 @@ if __name__ == "__main__":
             print(res.get(timeout=1))  # prints the PID of that process
 
             # launching multiple evaluations asynchronously *may* use more processes
-            multiple_results = [
-                pool.apply_async(os.getpid, ()) for i in range(4)
-            ]
+            multiple_results = [pool.apply_async(os.getpid, ()) for i in range(4)]
             print([res.get(timeout=1) for res in multiple_results])
 
             # make a single worker sleep for 10 secs
@@ -54,9 +52,7 @@ if __name__ == "__main__":
             try:
                 print(res.get(timeout=1))
             except TimeoutError:
-                print(
-                    "We lacked patience and got a multiprocessing.TimeoutError"
-                )
+                print("We lacked patience and got a multiprocessing.TimeoutError")
 
             print("For the moment, the pool remains available for more work")
 

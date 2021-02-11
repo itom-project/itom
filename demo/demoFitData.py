@@ -63,9 +63,7 @@ def demo_fitData():
     )
 
     sample_reconstruction = dataObject()
-    filter(
-        "polyval2DSinglePoints", X2, Y2, sample_reconstruction, coeffs2, 2, 2
-    )
+    filter("polyval2DSinglePoints", X2, Y2, sample_reconstruction, coeffs2, 2, 2)
 
 
 if __name__ == "__main__":

@@ -17,9 +17,7 @@ def demo_CameraAndImages_Samples(bpp=8):
     # to stop the timer of the live images for a certain amount of time. After you are
     # done with your manual acquisition, you can restart the timer again.
     currentStatus = cam.getAutoGrabbing()
-    print(
-        "Current value of auto grabbing property of the camera:", currentStatus
-    )
+    print("Current value of auto grabbing property of the camera:", currentStatus)
 
     cam.setAutoGrabbing(False)
 
@@ -58,9 +56,7 @@ def demo_CameraAndImages_Samples(bpp=8):
 
     for i in range(0, 10):
         cam.acquire()
-        cam.copyVal(
-            d[i, :, :]
-        )  # partial deep copy into one part of the 3d object d
+        cam.copyVal(d[i, :, :])  # partial deep copy into one part of the 3d object d
 
     plot(d)
 

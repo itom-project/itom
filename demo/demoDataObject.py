@@ -19,12 +19,8 @@ def demo_dataObject():
     obj3dim = dataObject([zDim, yDim, xDim], "uint16")
 
     """Special constructors for zero, ones, eye and randomly filled objects"""
-    objZero = dataObject.zeros(
-        [yDim, xDim], "float64"
-    )  # 2D object filled with zeros
-    objOnes = dataObject.ones(
-        [yDim, xDim], "float64"
-    )  # 2D object filled with ones
+    objZero = dataObject.zeros([yDim, xDim], "float64")  # 2D object filled with zeros
+    objOnes = dataObject.ones([yDim, xDim], "float64")  # 2D object filled with ones
     objEye = dataObject.eye(4, "uint8")  # 4x4 matrix
     objRand = dataObject.rand(
         [yDim, xDim], "uint8"
@@ -111,8 +107,7 @@ def demo_dataObject():
     # that can directly be interpreted by plots (e.g. the 'title' tag). All other tags can be used for any purpose.
 
     obj3dim.setTag(
-        "title",
-        "This is a 3d object, use the spin box to switch between planes",
+        "title", "This is a 3d object, use the spin box to switch between planes",
     )
     plot(obj3dim)
 

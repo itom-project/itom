@@ -19,9 +19,7 @@ def userdemo_PickPointsAndMarkers():
     # marker demo
     # --------------
 
-    markers = dataObject(
-        [2, 3], "float32", data=[10.1, 20.2, 30.3, 7, 100, 500]
-    )
+    markers = dataObject([2, 3], "float32", data=[10.1, 20.2, 30.3, 7, 100, 500])
     [nr, h] = plot(obj, "itom2dqwtplot")
     h["title"] = "Showcase: plot the currently selected points"
     h.call(
