@@ -19,9 +19,9 @@ KNOWN_TRANSLATORS = [
 ]
 # List so it has a stable order. Descending order of precedence.
 FEATURE_CLASSES = [
-    ('boxes', BoxesMixin),
-    ('literal_blocks', LiteralBlocksMixin),
-    ('compat', HTMLCompatMixin),
+    ("boxes", BoxesMixin),
+    ("literal_blocks", LiteralBlocksMixin),
+    ("compat", HTMLCompatMixin),
 ]
 ALL_FEATURES = [f[0] for f in FEATURE_CLASSES]
 # This may change.
@@ -47,10 +47,9 @@ def setup_translators(app):
 
 
 def setup(app):
-    app.add_config_value('quark_html_rewrite_features',
-                         DEFAULT_FEATURES, 'html')
-    app.connect('builder-inited', setup_translators)
+    app.add_config_value("quark_html_rewrite_features", DEFAULT_FEATURES, "html")
+    app.connect("builder-inited", setup_translators)
     return {
-        'version': __version__,
-        'parallel_read_safe': True,
+        "version": __version__,
+        "parallel_read_safe": True,
     }

@@ -1,12 +1,14 @@
 import threading
 import time
 
+
 def worker():
     """thread worker function"""
-    print ('worker start')
+    print("worker start")
     time.sleep(2)
-    print ('worker end')
+    print("worker end")
     return
+
 
 threads = []
 for i in range(5):

@@ -26,21 +26,27 @@ mot = actuator("DummyMotor", 3)
 
 gui = ui("paramEditorWidget.ui", ui.TYPEWINDOW)
 
+
 def onApply():
     """Call 'setParam' of the DummyGrabber device
     for all changed parameters in the right
     ParamEditorWidget of the camera tab."""
     gui.pewGrabber2.call("applyChangedParameters")
 
+
 # configure the DummyGrabber camera tab
 gui.plot["camera"] = cam  # assign the camera to the plot
-gui.pewGrabber["plugin"] = cam  # assign the camera to the left ParamEditorWidget
+gui.pewGrabber[
+    "plugin"
+] = cam  # assign the camera to the left ParamEditorWidget
 
-# if a parameter is changed in this ParamEditorWidget, directly call 
+# if a parameter is changed in this ParamEditorWidget, directly call
 # setParam of the camera
 gui.pewGrabber["immediatelyModifyPluginParamsAfterChange"] = True
 
-gui.pewGrabber2["plugin"] = cam  # assign the camera to the right ParamEditorWidget
+gui.pewGrabber2[
+    "plugin"
+] = cam  # assign the camera to the right ParamEditorWidget
 
 # do not directly change the parameters in the camera, instead click
 # the Apply button...
@@ -54,7 +60,7 @@ gui.motorController["actuator"] = mot
 gui.pewMotor1["plugin"] = mot
 
 # do only show parameters that belong to these two categories
-gui.pewMotor1["filteredCategories"] = ("General","Motion")
+gui.pewMotor1["filteredCategories"] = ("General", "Motion")
 
 # make the left ParamEditorWidget readonly
 gui.pewMotor1["readonly"] = True

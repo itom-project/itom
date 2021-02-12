@@ -35,17 +35,22 @@ maxreclimit = 1100
 if sys.getrecursionlimit() > maxreclimit:
     sys.setrecursionlimit(maxreclimit)
 
-if jedi.__version__ >= '0.12.0':
+if jedi.__version__ >= "0.12.0":
     jedienv = jedi.api.environment.InterpreterEnvironment()
 
-ICON_CLASS = ('code-class', ':/classNavigator/icons/class.png')
-ICON_FUNC = ('code-function', ':/classNavigator/icons/method.png')
-ICON_FUNC_PRIVATE = ('code-function', ':/classNavigator/icons/method_private.png')
-ICON_FUNC_PROTECTED = ('code-function',
-                       ':/classNavigator/icons/method_protected.png')
-ICON_NAMESPACE = ('code-context', ':/classNavigator/icons/namespace.png')
-ICON_VAR = ('code-variable', ':/classNavigator/icons/var.png')
-ICON_KEYWORD = ('quickopen', ':/classNavigator/icons/var.png')
+ICON_CLASS = ("code-class", ":/classNavigator/icons/class.png")
+ICON_FUNC = ("code-function", ":/classNavigator/icons/method.png")
+ICON_FUNC_PRIVATE = (
+    "code-function",
+    ":/classNavigator/icons/method_private.png",
+)
+ICON_FUNC_PROTECTED = (
+    "code-function",
+    ":/classNavigator/icons/method_protected.png",
+)
+ICON_NAMESPACE = ("code-context", ":/classNavigator/icons/namespace.png")
+ICON_VAR = ("code-variable", ":/classNavigator/icons/var.png")
+ICON_KEYWORD = ("quickopen", ":/classNavigator/icons/var.png")
 
 __version__ = "1.1.0"
 
@@ -54,6 +59,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     itomStubsGen.parse_stubs()
 
+
 class StreamHider:
     """A stream class, that emits nothing.
     
@@ -61,7 +67,8 @@ class StreamHider:
     stream in order not display unwanted background
     errors or warnings in itom.
     """
-    def __init__(self, channels=('stdout',)):
+
+    def __init__(self, channels=("stdout",)):
         self._orig = {ch: None for ch in channels}
 
     def __enter__(self):
@@ -90,30 +97,30 @@ def icon_from_typename(name, icon_type):
     :returns: The associate icon resource filename or None.
     """
     ICONS = {
-        'CLASS': ICON_CLASS,
-        'IMPORT': ICON_NAMESPACE,
-        'STATEMENT': ICON_VAR,
-        'FORFLOW': ICON_VAR,
-        'FORSTMT': ICON_VAR,
-        'WITHSTMT': ICON_VAR,
-        'GLOBALSTMT': ICON_VAR,
-        'MODULE': ICON_NAMESPACE,
-        'KEYWORD': ICON_KEYWORD,
-        'KEYWORD-PRIV': ICON_KEYWORD,
-        'KEYWORD-PROT': ICON_KEYWORD,
-        'PARAM': ICON_VAR,
-        'PARAM-PRIV': ICON_VAR,
-        'PARAM-PROT': ICON_VAR,
-        'PROPERTY': ICON_VAR,
-        'PROPERTY-PRIV': ICON_VAR,
-        'PROPERTY-PROT': ICON_VAR,
-        'ARRAY': ICON_VAR,
-        'INSTANCEELEMENT': ICON_VAR,
-        'INSTANCE': ICON_VAR,
-        'FUNCTION': ICON_FUNC,
-        'DEF': ICON_FUNC,
-        'FUNCTION-PRIV': ICON_FUNC_PRIVATE,
-        'FUNCTION-PROT': ICON_FUNC_PROTECTED
+        "CLASS": ICON_CLASS,
+        "IMPORT": ICON_NAMESPACE,
+        "STATEMENT": ICON_VAR,
+        "FORFLOW": ICON_VAR,
+        "FORSTMT": ICON_VAR,
+        "WITHSTMT": ICON_VAR,
+        "GLOBALSTMT": ICON_VAR,
+        "MODULE": ICON_NAMESPACE,
+        "KEYWORD": ICON_KEYWORD,
+        "KEYWORD-PRIV": ICON_KEYWORD,
+        "KEYWORD-PROT": ICON_KEYWORD,
+        "PARAM": ICON_VAR,
+        "PARAM-PRIV": ICON_VAR,
+        "PARAM-PROT": ICON_VAR,
+        "PROPERTY": ICON_VAR,
+        "PROPERTY-PRIV": ICON_VAR,
+        "PROPERTY-PROT": ICON_VAR,
+        "ARRAY": ICON_VAR,
+        "INSTANCEELEMENT": ICON_VAR,
+        "INSTANCE": ICON_VAR,
+        "FUNCTION": ICON_FUNC,
+        "DEF": ICON_FUNC,
+        "FUNCTION-PRIV": ICON_FUNC_PRIVATE,
+        "FUNCTION-PROT": ICON_FUNC_PROTECTED,
     }
     ret_val = ""
     icon_type = icon_type.upper()
@@ -145,131 +152,153 @@ def calltipModuleItomModification(sig, params):
         doc = sig.docstring(raw=False, fast=True)
     except Exception:
         return None
-    
+
     arrow_idx = doc.find("->")
-    
+
     if arrow_idx == -1 or not doc.startswith(sig.name):
         return None
-    
-    signature = doc[len(sig.name):arrow_idx].strip()
+
+    signature = doc[len(sig.name) : arrow_idx].strip()
     signature = signature[1:-1]
     parts = signature.split(",")
-    
+
     if len(parts) == len(params):
         return parts
-    elif len(params) >= 1 and \
-        params[0].name == "self" and \
-            len(parts) == len(params) - 1:
-        return ["self", ] + parts
+    elif (
+        len(params) >= 1
+        and params[0].name == "self"
+        and len(parts) == len(params) - 1
+    ):
+        return ["self",] + parts
     else:
         return None
 
 
-calltipsModificationList = {'itom': calltipModuleItomModification}
+calltipsModificationList = {"itom": calltipModuleItomModification}
 
 
 def calltips(code, line, column, path=None):
     """
     """
     max_calltip_line_length = 120
-    
-    if jedi.__version__ >= '0.17.0':
+
+    if jedi.__version__ >= "0.17.0":
         script = jedi.Script(code=code, path=path, environment=jedienv)
         signatures = script.get_signatures(line=line + 1, column=column)
-    elif jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+    elif jedi.__version__ >= "0.16.0":
+        script = jedi.Script(
+            source=code, path=path, encoding="utf-8", environment=jedienv
+        )
         signatures = script.get_signatures(line=line + 1, column=column)
     else:
-        if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
+        if jedi.__version__ >= "0.12.0":
+            script = jedi.Script(
+                code,
+                line + 1,
+                column,
+                path,
+                encoding="utf-8",
+                environment=jedienv,
+            )
         else:
             script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         signatures = script.call_signatures()
-    
+
     result = []
-    
+
     for sig in signatures:
         index = sig.index
-        
+
         if index is None:
             index = -1
-        
+
         # create a formatted calltip (current index appear in bold)
         module_name = str(sig.module_name)
         call_name = str(sig.name)
         paramlist = None
-        
+
         if module_name in calltipsModificationList:
             paramlist = calltipsModificationList[module_name](sig, sig.params)
-        
+
         if paramlist is None:
             paramlist = [p.description for p in sig.params]
-        
+
         # remove the prefix "param " from every parameter (if it exists)
         pkwd = "param "
         pkwdlen = len(pkwd)
         for pidx in range(len(paramlist)):
             if paramlist[pidx].startswith(pkwd):
                 paramlist[pidx] = paramlist[pidx][pkwdlen:]
-        
+
         if index >= 0 and index < len(paramlist):
             paramlist[index] = "<b>%s</b>" % paramlist[index]
-        
+
         if module_name != "":
             method_name = "%s.%s" % (module_name, call_name)
         else:
             method_name = call_name
-        
+
         result.append(
-            (method_name,
-             paramlist,
-             column,
-             sig.bracket_start[0],
-             sig.bracket_start[1])
+            (
+                method_name,
+                paramlist,
+                column,
+                sig.bracket_start[0],
+                sig.bracket_start[1],
             )
-        
+        )
+
     return result
 
 
 def completions(code, line, column, path, prefix):
     """
     """
-    if jedi.__version__ >= '0.17.0':
+    if jedi.__version__ >= "0.17.0":
         script = jedi.Script(code=code, path=path, environment=jedienv)
         completions = script.complete(line=line + 1, column=column)
-    elif jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+    elif jedi.__version__ >= "0.16.0":
+        script = jedi.Script(
+            source=code, path=path, encoding="utf-8", environment=jedienv
+        )
         completions = script.complete(line=line + 1, column=column)
     else:
-        if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
+        if jedi.__version__ >= "0.12.0":
+            script = jedi.Script(
+                code,
+                line + 1,
+                column,
+                path,
+                encoding="utf-8",
+                environment=jedienv,
+            )
         else:
             script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         completions = script.completions()
-    
+
     result = []
-    
+
     # the following pairs of [name, type] will not be returned as possible completion
     blacklist = [
-        ['and', 'keyword'],
-        ['if', 'keyword'],
-        ['in', 'keyword'],
-        ['is', 'keyword'],
-        ['not', 'keyword'],
-        ['or', 'keyword']
+        ["and", "keyword"],
+        ["if", "keyword"],
+        ["in", "keyword"],
+        ["is", "keyword"],
+        ["not", "keyword"],
+        ["or", "keyword"],
     ]
-    
-    # disable error stream to avoid import errors of jedi, 
+
+    # disable error stream to avoid import errors of jedi,
     # which are directly printed to sys.stderr (no exception)
-    with StreamHider(('stderr', )) as h:
+    with StreamHider(("stderr",)) as h:
         for completion in completions:
             if [completion.name, completion.type] in blacklist:
                 continue
             try:
                 desc = completion.description
                 compl_type = completion.type
-                
-                if jedi.__version__ >= '0.16.0':
+
+                if jedi.__version__ >= "0.16.0":
                     if compl_type == "property":
                         tooltipList = name_tooltip_type_property(completion)
                     else:
@@ -277,8 +306,13 @@ def completions(code, line, column, path, prefix):
                         if len(signatures) == 0:
                             tooltip = completion.docstring()
                             if tooltip != "":
-                                tooltip = "%s\n\n%s" % (completion.name, tooltip)
-                            tooltipList = [tooltip, ]
+                                tooltip = "%s\n\n%s" % (
+                                    completion.name,
+                                    tooltip,
+                                )
+                            tooltipList = [
+                                tooltip,
+                            ]
                         elif len(signatures) == 1:
                             tooltip = signatures[0].docstring()
                             # for some properties, signatures[0].docstring() only
@@ -293,17 +327,25 @@ def completions(code, line, column, path, prefix):
                             # see also: https://github.com/davidhalter/jedi/issues/1695
                             pattern = "NoneType()\n"
                             if tooltip.startswith(pattern):
-                                if jedi.__version__ >= '0.17.0':
+                                if jedi.__version__ >= "0.17.0":
                                     rettype = completion.get_type_hint()
                                     if rettype != "":
-                                        tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                                        tooltip = (
+                                            rettype
+                                            + ": "
+                                            + tooltip[len(pattern) :].lstrip()
+                                        )
                                 else:
                                     # jedi < 0.17.0 does not have the get_type_hint() method
-                                    tooltip = tooltip[len(pattern):].lstrip()
-                            tooltipList = [tooltip, ]
+                                    tooltip = tooltip[len(pattern) :].lstrip()
+                            tooltipList = [
+                                tooltip,
+                            ]
                         elif len(signatures) > 1:
                             # only use unique signatures
-                            docstrings = [signatures[0].docstring(),]
+                            docstrings = [
+                                signatures[0].docstring(),
+                            ]
                             for s in signatures[1:]:
                                 d = s.docstring()
                                 if d != docstrings[0]:
@@ -313,16 +355,25 @@ def completions(code, line, column, path, prefix):
                             tooltip = completion.docstring()
                             if tooltip != "":
                                 # if tooltip is empty, use desc as tooltip (done in C++)
-                                if jedi.__version__ >= '0.17.0':
+                                if jedi.__version__ >= "0.17.0":
                                     type_hint = completion.get_type_hint()
-                                    if type_hint != "" and not tooltip.startswith(type_hint):
+                                    if (
+                                        type_hint != ""
+                                        and not tooltip.startswith(type_hint)
+                                    ):
                                         tooltip = type_hint + " : " + tooltip
-                                tooltipList = [tooltip, ]
+                                tooltipList = [
+                                    tooltip,
+                                ]
                             else:
-                                tooltipList = [desc, ]
+                                tooltipList = [
+                                    desc,
+                                ]
                 else:
-                    tooltipList = [completion.docstring(), ]
-                
+                    tooltipList = [
+                        completion.docstring(),
+                    ]
+
                 if compl_type == "function" and len(tooltipList) > 0:
                     """Properties, defined in C, are displayed as funtion.
                     However, if the tooltip starts with 'type : text', it
@@ -330,21 +381,23 @@ def completions(code, line, column, path, prefix):
                     text = tooltipList[0]
                     colon_idx = text.find(":")
                     bracket_idx = text.find("(")
-                    
+
                     if bracket_idx == -1:
                         compl_type = "keyword"
                     elif colon_idx >= 0 and colon_idx < bracket_idx:
                         compl_type = "keyword"
-                
+
                 result.append(
-                    (completion.name,
-                     desc,
-                     icon_from_typename(completion.name, compl_type),
-                     tooltipList)
+                    (
+                        completion.name,
+                        desc,
+                        icon_from_typename(completion.name, compl_type),
+                        tooltipList,
                     )
+                )
             except Exception as ex:
                 break  # todo, check this further
-    
+
     return result
 
 
@@ -352,28 +405,49 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     """
     mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
     """
-    if jedi.__version__ >= '0.16.0':
-        if jedi.__version__ >= '0.17.0':
+    if jedi.__version__ >= "0.16.0":
+        if jedi.__version__ >= "0.17.0":
             script = jedi.Script(code=code, path=path, environment=jedienv)
         else:
-            script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
-        
+            script = jedi.Script(
+                source=code, path=path, encoding="utf-8", environment=jedienv
+            )
+
         try:
             if mode == 0:
-                assignments = script.infer(line=line + 1, column=column, prefer_stubs=False)
+                assignments = script.infer(
+                    line=line + 1, column=column, prefer_stubs=False
+                )
             elif mode == 1:
-                assignments = script.goto(line=line + 1, column=column, follow_imports=False, prefer_stubs=False)
+                assignments = script.goto(
+                    line=line + 1,
+                    column=column,
+                    follow_imports=False,
+                    prefer_stubs=False,
+                )
             else:
-                assignments = script.goto(line=line + 1, column=column, follow_imports=True, prefer_stubs=False)
+                assignments = script.goto(
+                    line=line + 1,
+                    column=column,
+                    follow_imports=True,
+                    prefer_stubs=False,
+                )
         except Exception:
             assignments = []
-    
+
     else:
-        if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
+        if jedi.__version__ >= "0.12.0":
+            script = jedi.Script(
+                code,
+                line + 1,
+                column,
+                path,
+                encoding="utf-8",
+                environment=jedienv,
+            )
         else:
             script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-        
+
         try:
             if mode == 0:
                 assignments = script.goto_definitions()
@@ -383,24 +457,34 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                 assignments = script.goto_assignments(follow_imports=True)
         except Exception:
             assignments = []
-    
+
     result = []
     for assignment in assignments:
-        if assignment.full_name and \
-                assignment.full_name != "" and \
-                (assignment.module_path is None or not str(assignment.module_path).endswith("pyi")):
-            result.append(
-                (str(assignment.module_path) if assignment.module_path is not None else "",
-                assignment.line - 1 if assignment.line else -1,
-                assignment.column if assignment.column else -1,
-                assignment.full_name,
-                ) \
+        if (
+            assignment.full_name
+            and assignment.full_name != ""
+            and (
+                assignment.module_path is None
+                or not str(assignment.module_path).endswith("pyi")
             )
-    
+        ):
+            result.append(
+                (
+                    str(assignment.module_path)
+                    if assignment.module_path is not None
+                    else "",
+                    assignment.line - 1 if assignment.line else -1,
+                    assignment.column if assignment.column else -1,
+                    assignment.full_name,
+                )
+            )
+
     if len(result) == 0 and len(assignments) > 0 and mode == 0:
         # instead of 'infer' try 'goto' instead
-        result = goto_assignments(code, line, column, path, mode=1, encoding=encoding)
-    
+        result = goto_assignments(
+            code, line, column, path, mode=1, encoding=encoding
+        )
+
     return result
 
 
@@ -428,7 +512,9 @@ def name_tooltip_type_module(item):
         tooltip = "%s\n\n%s" % (heading, body)
     else:
         tooltip = heading
-    return [tooltip, ]
+    return [
+        tooltip,
+    ]
 
 
 def name_tooltip_type_statement(item):
@@ -454,13 +540,15 @@ def name_tooltip_type_statement(item):
         heading = "%s: %s" % (item.name, typehint)
     else:
         heading = item.name
-    
+
     body = item.docstring()
     if body is not None and body != "":
         tooltip = "%s\n\n%s" % (heading, body)
     else:
         tooltip = heading
-    return [tooltip, ]
+    return [
+        tooltip,
+    ]
 
 
 def name_tooltip_type_instance(item):
@@ -481,7 +569,9 @@ def name_tooltip_type_instance(item):
         list of str
             One or multiple possible tooltips for the given item.
     """
-    return [item.docstring(), ]
+    return [
+        item.docstring(),
+    ]
 
 
 def name_tooltip_type_param(item):
@@ -502,7 +592,9 @@ def name_tooltip_type_param(item):
         list of str
             One or multiple possible tooltips for the given item.
     """
-    return [item.description, ]
+    return [
+        item.description,
+    ]
 
 
 def name_tooltip_type_property(item):
@@ -526,11 +618,15 @@ def name_tooltip_type_property(item):
     name = item.name
     rettype = item.get_type_hint()
     docstring = item.docstring()
-    
+
     if docstring != "":
-        return ["%s: %s\n\n%s" % (name, rettype, docstring), ]
+        return [
+            "%s: %s\n\n%s" % (name, rettype, docstring),
+        ]
     else:
-        return ["%s: %s" % (name, rettype), ]
+        return [
+            "%s: %s" % (name, rettype),
+        ]
 
 
 def name_tooltip_type_general(item):
@@ -555,13 +651,13 @@ def name_tooltip_type_general(item):
             One or multiple possible tooltips for the given item.
     """
     desc = item.description
-    
-    if jedi.__version__ >= '0.16.0':
+
+    if jedi.__version__ >= "0.16.0":
         signatures = item.get_signatures()
         if len(signatures) == 0:
             tooltip = item.docstring()
             name = item.name
-            if jedi.__version__ < '0.18.0':
+            if jedi.__version__ < "0.18.0":
                 # properties are also reported as type function
                 rettype = item.get_type_hint()
                 if rettype != "":
@@ -570,7 +666,9 @@ def name_tooltip_type_general(item):
                 tooltip = "%s\n\n%s" % (name, tooltip)
             else:
                 tooltip = name
-            tooltipList = [tooltip, ]
+            tooltipList = [
+                tooltip,
+            ]
         elif len(signatures) == 1:
             tooltip = signatures[0].docstring()
             # for some properties, signatures[0].docstring() only
@@ -585,17 +683,23 @@ def name_tooltip_type_general(item):
             # see also: https://github.com/davidhalter/jedi/issues/1695
             pattern = "NoneType()\n"
             if tooltip.startswith(pattern):
-                if jedi.__version__ >= '0.17.0':
+                if jedi.__version__ >= "0.17.0":
                     rettype = item.get_type_hint()
                     if rettype != "":
-                        tooltip = rettype + ": " + tooltip[len(pattern):].lstrip()
+                        tooltip = (
+                            rettype + ": " + tooltip[len(pattern) :].lstrip()
+                        )
                 else:
                     # jedi < 0.17.0 does not have the get_type_hint() method
-                    tooltip = tooltip[len(pattern):].lstrip()
-            tooltipList = [tooltip, ]
+                    tooltip = tooltip[len(pattern) :].lstrip()
+            tooltipList = [
+                tooltip,
+            ]
         elif len(signatures) > 1:
             # only use unique signatures
-            docstrings = [signatures[0].docstring(), ]
+            docstrings = [
+                signatures[0].docstring(),
+            ]
             for s in signatures[1:]:
                 d = s.docstring()
                 if d != docstrings[0]:
@@ -605,47 +709,62 @@ def name_tooltip_type_general(item):
             tooltip = item.docstring()
             if tooltip != "":
                 # if tooltip is empty, use desc as tooltip (done in C++)
-                if jedi.__version__ >= '0.17.0':
+                if jedi.__version__ >= "0.17.0":
                     type_hint = item.get_type_hint()
                     if type_hint != "" and not tooltip.startswith(type_hint):
                         tooltip = type_hint + " : " + tooltip
-                tooltipList = [tooltip, ]
+                tooltipList = [
+                    tooltip,
+                ]
             else:
-                tooltipList = [desc, ]
+                tooltipList = [
+                    desc,
+                ]
     else:
-        tooltipList = [item.docstring(), ]
-    
+        tooltipList = [
+            item.docstring(),
+        ]
+
     return tooltipList
 
 
 def get_help(code, line, column, path):
     """
     """
-    if jedi.__version__ >= '0.17.0':
+    if jedi.__version__ >= "0.17.0":
         script = jedi.Script(code=code, path=path, environment=jedienv)
         helps = script.help(line=line + 1, column=column)
-    elif jedi.__version__ >= '0.16.0':
-        script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+    elif jedi.__version__ >= "0.16.0":
+        script = jedi.Script(
+            source=code, path=path, encoding="utf-8", environment=jedienv
+        )
         helps = script.help(line=line + 1, column=column)
     else:
-        if jedi.__version__ >= '0.12.0':
-            script = jedi.Script(code, line + 1, column, path, encoding="utf-8", environment=jedienv)
+        if jedi.__version__ >= "0.12.0":
+            script = jedi.Script(
+                code,
+                line + 1,
+                column,
+                path,
+                encoding="utf-8",
+                environment=jedienv,
+            )
         else:
             script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
         helps = script.help()
-    
+
     results = []
-    # disable error stream to avoid import errors of jedi, 
+    # disable error stream to avoid import errors of jedi,
     # which are directly printed to sys.stderr (no exception)
-    with StreamHider(('stderr', )) as h:
+    with StreamHider(("stderr",)) as h:
         for h in helps:
             if h.type == "keyword":
                 continue
             try:
                 desc = h.description
-                
+
                 itemType = h.type.lower()
-                
+
                 if itemType == "module":
                     tooltips = name_tooltip_type_module(h)
                 elif itemType == "statement":
@@ -661,22 +780,22 @@ def get_help(code, line, column, path):
                 else:
                     # class, function, path
                     tooltips = name_tooltip_type_general(h)
-                    
+
                 results.append((desc, tooltips))
             except Exception as ex:
                 break  # todo, check this further
-    
+
     return results
 
 
 if __name__ == "__main__":
-    
+
     text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"
     print(goto_assignments(text, 3, 8, "", 0))
     print(goto_assignments(text, 3, 8, "", 1))
     print(goto_assignments(text, 3, 8, "", 2))
-    
-    text = '''def test():
+
+    text = """def test():
     data = b''
     start = [1,2]
     while(True):
@@ -685,30 +804,32 @@ if __name__ == "__main__":
             start = []
         else:
             break
-    return data'''
-    
+    return data"""
+
     print(goto_assignments(text, 9, 13, "", 0))
     print(goto_assignments(text, 9, 13, "", 1))
-    
-    source = '''def my_func():
+
+    source = """def my_func():
     print ('called')
 
 alias = my_func
 my_list = [1, None, alias]
 inception = my_list[2]
 
-inception()'''
+inception()"""
     print(goto_assignments(source, 7, 1, "", 0))
     print(goto_assignments(source, 7, 1, "", 1))
-    
+
     print(calltips("from itom import dataObject\ndataObject.copy(", 1, 16))
-    print(calltips("from itom import dataObject\na = dataObject()\na.copy(", 2, 7))
+    print(
+        calltips("from itom import dataObject\na = dataObject()\na.copy(", 2, 7)
+    )
     print(completions("import win", 0, 10, "", ""))
     print(calltips("from itom import dataObject\ndataObject.zeros(", 1, 17))
     result = completions("Pdm[:,i] = m[02,i]*P[:,i]", 0, 15, "", "")
     print(calltips("from itom import dataObject\ndataObject([4,5], 'u", 1, 17))
     print(calltips("def test(a, b=2):\n    pass\ntest(", 2, 5))
-    
+
     print(completions("from itom import dataObject\ndataO, 'u", 1, 5, "", ""))
     print(completions("1", 0, 1, "", ""))
     print(completions("import numpy as np\nnp.arr", 1, 6, "", ""))
@@ -718,7 +839,6 @@ inception()'''
     result = completions("import itom\nitom.region().bounding", 1, 21, "", "")
     result = completions("import itom\nitom.region.ELLIPSE", 1, 16, "", "")
     result = completions("import itom\nitom.pointCloud(", 1, 12, "", "")
-    
+
     text = "import itom\nitom."
     completions(text, 1, 5, "", "")
-

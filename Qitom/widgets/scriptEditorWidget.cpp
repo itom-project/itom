@@ -1665,10 +1665,12 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
         }
 
         QStringList watchedFiles = m_pFileSysWatcher->files();
+
         if (watchedFiles.size() > 0)
         {
             m_pFileSysWatcher->removePaths(watchedFiles);
         }
+
         m_pFileSysWatcher->addPath(m_filename);
 
         //!< check if BreakPointModel already contains breakpoints for this editor and load them
@@ -2777,30 +2779,35 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) 
 {
-    if (m_fileSystemWatcherMutex.tryLock(1))
+    if (path == getFilename())
     {
-        if (path == getFilename())
+        QFileInfo file(path);
+
+        // due to a bug in file system watcher, the fileChanged signal
+        // is sometimes emitted more than one time. Therefore block it here
+        // and release it in the fileSysWatcherFileChangedStep2 method after
+        // a while.
+        m_pFileSysWatcher->blockSignals(true);
+
+        if (!file.exists()) //file deleted
         {
-            QFileInfo file(path);
-
-            if (!file.exists()) //file deleted
-            {
-                //if git updates a file, the file is deleted and then the modified file is created.
-                //this will cause a 'delete' notification, however the 'modified' notification would be correct.
-                //try to sleep for a while and recheck the state of the file again...
-                QTimer::singleShot(500, this, std::bind(
-                    &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
-                    this,
-                    path)
-                );
-            }
-            else //file changed
-            {    
-                fileSysWatcherFileChangedStep2(path);
-            }
+            //if git updates a file, the file is deleted and then the modified file is created.
+            //this will cause a 'delete' notification, however the 'modified' notification would be correct.
+            //try to sleep for a while and recheck the state of the file again...
+            QTimer::singleShot(500, this, std::bind(
+                &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
+                this,
+                path)
+            );
         }
-
-        m_fileSystemWatcherMutex.unlock();
+        else //file changed
+        {    
+            QTimer::singleShot(100, this, std::bind(
+                &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
+                this,
+                path)
+            );
+        }
     }
 }
 
@@ -2818,13 +2825,14 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
         if (!file.exists()) //file deleted
         {
-            QMessageBox msgBox(this);
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::Yes);
-            msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
-            msgBox.setInformativeText(tr("Keep this file in editor?"));
+            QMessageBox *msgBox = new QMessageBox(this);
+            msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox->setDefaultButton(QMessageBox::Yes);
+            msgBox->setText(tr("The file '%1' does not exist any more.").arg(path));
+            msgBox->setInformativeText(tr("Keep this file in editor?"));
 
-            int ret = msgBox.exec();
+            int ret = msgBox->exec();
+            DELETE_AND_SET_NULL(msgBox);
 
             if (ret == QMessageBox::No)
             {
@@ -2846,12 +2854,13 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
             if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
             {
-                QMessageBox msgBox(this);
-                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgBox.setDefaultButton(QMessageBox::Yes);
-                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-                msgBox.setInformativeText(tr("Do you want to reload it?"));
-                int ret = msgBox.exec();
+                QMessageBox *msgBox = new QMessageBox(this);
+                msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msgBox->setDefaultButton(QMessageBox::Yes);
+                msgBox->setText(tr("The file '%1' has been modified by another program.").arg(path));
+                msgBox->setInformativeText(tr("Do you want to reload it?"));
+                int ret = msgBox->exec();
+                DELETE_AND_SET_NULL(msgBox);
 
                 if (ret == QMessageBox::Yes)
                 {
@@ -2865,6 +2874,8 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
         }
     }
+
+    m_pFileSysWatcher->blockSignals(false);
 }
 
 //-------------------------------------------------------------------------------------

@@ -37,7 +37,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 # 1.0.7: added support for "Apply" button
 # 1.0.6: code cleaning
 
-__version__ = '1.0.10'
+__version__ = "1.0.10"
 __license__ = __doc__
 
 import copy
@@ -52,9 +52,12 @@ _log = logging.getLogger(__name__)
 
 BLACKLIST = {"title", "label"}
 
-__dialogCache__ = [] #cache to current instances of DialogEditProperties (as long as the real dialog is visible)
+__dialogCache__ = (
+    []
+)  # cache to current instances of DialogEditProperties (as long as the real dialog is visible)
 
-class FormWidget():
+
+class FormWidget:
     def __init__(self, data, title, comment="", with_margin=False, parentUiItem=None):
         """
         Parameters
@@ -73,42 +76,47 @@ class FormWidget():
         parent : QWidget or None
             The parent widget.
         """
-        self.formWidget = parentUiItem.call("addFormWidget", title, comment, with_margin)
+        self.formWidget = parentUiItem.call(
+            "addFormWidget", title, comment, with_margin
+        )
         self.data = copy.deepcopy(data)
         self.widgets = []
-    
+
     def _tuple_to_font(self, tup):
         """
         Create a itom.font from tuple:
             (family [string], size [int], italic [bool], bold [bool])
         """
-        if not (isinstance(tup, tuple) and len(tup) == 4
-                and itom.font.isFamilyInstalled(tup[0])
-                and isinstance(tup[1], Integral)
-                and isinstance(tup[2], bool)
-                and isinstance(tup[3], bool)):
+        if not (
+            isinstance(tup, tuple)
+            and len(tup) == 4
+            and itom.font.isFamilyInstalled(tup[0])
+            and isinstance(tup[1], Integral)
+            and isinstance(tup[2], bool)
+            and isinstance(tup[3], bool)
+        ):
             return None
-        
+
         family, size, italic, bold = tup
         weight = itom.font.Normal
         if bold:
             weigt = itom.font.Bold
-        font = itom.font(family, size, weight = weight, italic = italic)
+        font = itom.font(family, size, weight=weight, italic=italic)
         return font
-    
+
     def _to_color(self, color):
         """Create a itom.rgba from a matplotlib color"""
         try:
-            r,g,b,a = mcolors.to_rgba(color)
+            r, g, b, a = mcolors.to_rgba(color)
         except ValueError:
-            cbook._warn_external('Ignoring invalid color %r' % color)
-            return itom.rgba(0,0,0)  # return invalid QColor
-        return itom.rgba(int(r*255), int(g*255), int(b*255), int(a*255))
+            cbook._warn_external("Ignoring invalid color %r" % color)
+            return itom.rgba(0, 0, 0)  # return invalid QColor
+        return itom.rgba(int(r * 255), int(g * 255), int(b * 255), int(a * 255))
 
     def setup(self):
         for label, value in self.data:
             font = self._tuple_to_font(value)
-            
+
             if label is None and value is None:
                 # Separator: (None, None)
                 self.formWidget.call("addSeparator")
@@ -121,8 +129,7 @@ class FormWidget():
                 continue
             elif font is not None:
                 field = self.formWidget.call("addFont", label, font)
-            elif (label.lower() not in BLACKLIST
-                  and mcolors.is_color_like(value)):
+            elif label.lower() not in BLACKLIST and mcolors.is_color_like(value):
                 field = self.formWidget.call("addColor", label, self._to_color(value))
             elif isinstance(value, str):
                 field = self.formWidget.call("addText", label, value)
@@ -139,7 +146,7 @@ class FormWidget():
                     value = [val for _key, val in value]
                 else:
                     keys = value
-                
+
                 if selindex in value:
                     selindex = value.index(selindex)
                 elif selindex in keys:
@@ -147,7 +154,10 @@ class FormWidget():
                 elif not isinstance(selindex, Integral):
                     _log.warning(
                         "index '%s' is invalid (label: %s, value: %s)",
-                        selindex, label, value)
+                        selindex,
+                        label,
+                        value,
+                    )
                     selindex = 0
                 field = self.formWidget.call("addComboBox", label, value, selindex)
             elif isinstance(value, bool):
@@ -157,13 +167,23 @@ class FormWidget():
             elif isinstance(value, Real):
                 field = self.formWidget.call("addReal", label, value)
             elif isinstance(value, datetime.datetime):
-                field = self.formWidget.call("dDatetimeUTC", label, \
-                                value.year, value.month, value.day, \
-                                value.hour, value.minute, value.second, value.microsecond)
+                field = self.formWidget.call(
+                    "dDatetimeUTC",
+                    label,
+                    value.year,
+                    value.month,
+                    value.day,
+                    value.hour,
+                    value.minute,
+                    value.second,
+                    value.microsecond,
+                )
                 field = QtWidgets.QDateTimeEdit(self)
                 field.setDateTime(value)
             elif isinstance(value, datetime.date):
-                field = self.formWidget.call("addDate", label, value.year, value.month, value.day)
+                field = self.formWidget.call(
+                    "addDate", label, value.year, value.month, value.day
+                )
             else:
                 field = self.formWidget.call("addText", label, repr(value))
             self.widgets.append(field)
@@ -177,7 +197,12 @@ class FormWidget():
                 continue
             elif self._tuple_to_font(value) is not None:
                 font = field["font"]
-                value = (font.family, font.pointSize, font.italic, font.weight == itom.font.Bold)
+                value = (
+                    font.family,
+                    font.pointSize,
+                    font.italic,
+                    font.weight == itom.font.Bold,
+                )
             elif isinstance(value, str) or mcolors.is_color_like(value):
                 value = str(field["text"])
             elif isinstance(value, (list, tuple)):
@@ -202,13 +227,14 @@ class FormWidget():
         return valuelist
 
 
-class FormComboWidget():
-
+class FormComboWidget:
     def __init__(self, datalist, title, comment, parentUiItem):
         self.comboWidget = parentUiItem.call("addFormComboWidget", title, comment)
         self.widgetlist = []
         for data, title, comment in datalist:
-            widget = FormWidget(data, title, comment=comment, parentUiItem=self.comboWidget)
+            widget = FormWidget(
+                data, title, comment=comment, parentUiItem=self.comboWidget
+            )
             self.widgetlist.append(widget)
 
     def setup(self):
@@ -219,17 +245,23 @@ class FormComboWidget():
         return [widget.get() for widget in self.widgetlist]
 
 
-class FormTabWidget():
-
+class FormTabWidget:
     def __init__(self, datalist, title, comment, parentUiItem):
         self.tabWidget = parentUiItem.call("addFormTabWidget", title, comment)
         self.widgetlist = []
         for data, title, comment in datalist:
             if len(data[0]) == 3:
-                widget = FormComboWidget(data, title, comment=comment, parentUiItem=self.tabWidget)
+                widget = FormComboWidget(
+                    data, title, comment=comment, parentUiItem=self.tabWidget
+                )
             else:
-                widget = FormWidget(data, title, with_margin=True, comment=comment,
-                                    parentUiItem=self.tabWidget)
+                widget = FormWidget(
+                    data,
+                    title,
+                    with_margin=True,
+                    comment=comment,
+                    parentUiItem=self.tabWidget,
+                )
             self.widgetlist.append(widget)
 
     def setup(self):
@@ -242,38 +274,43 @@ class FormTabWidget():
 
 class DialogEditProperties:
     """Form Dialog"""
-    def __init__(self, matplotlibplotUiItem, data, title="", comment="",
-                 apply=None):
-        
+
+    def __init__(self, matplotlibplotUiItem, data, title="", comment="", apply=None):
+
         self.apply_callback = apply
-        
-        self.dialog = matplotlibplotUiItem.call("createDialogEditProperties", not apply is None, title)
+
+        self.dialog = matplotlibplotUiItem.call(
+            "createDialogEditProperties", not apply is None, title
+        )
         self.dialog.connect("accepted()", self.accepted)
         self.dialog.connect("applied()", self.applied)
         self.dialog.connect("rejected()", self.rejected)
-        #self.dialog["modal"] = True
-        
+        # self.dialog["modal"] = True
+
         self.float_fields = []
-        
+
         # Form
         if isinstance(data[0][0], (list, tuple)):
             contenttype = "FormTabWidget"
-            self.formwidget = FormTabWidget(data, title = "", comment=comment,
-                                            parentUiItem=self.dialog)
+            self.formwidget = FormTabWidget(
+                data, title="", comment=comment, parentUiItem=self.dialog
+            )
         elif len(data[0]) == 3:
             contenttype = "FormComboWidget"
-            self.formwidget = FormComboWidget(data, title = "", comment=comment,
-                                              parentUiItem=self.dialog)
+            self.formwidget = FormComboWidget(
+                data, title="", comment=comment, parentUiItem=self.dialog
+            )
         else:
             contenttype = "FormWidget"
-            self.formwidget = FormWidget(data, title = "", comment=comment,
-                                         parentUiItem=self.dialog)
-        
+            self.formwidget = FormWidget(
+                data, title="", comment=comment, parentUiItem=self.dialog
+            )
+
         self.formwidget.setup()
-    
+
     def show(self):
         self.dialog.call("show")
-    
+
     def register_float_field(self, field):
         self.float_fields.append(field)
 
@@ -282,8 +319,10 @@ class DialogEditProperties:
         for field in self.float_fields:
             if not is_edit_valid(field):
                 valid = False
-        for btn_type in (QtWidgets.QDialogButtonBox.Ok,
-                         QtWidgets.QDialogButtonBox.Apply):
+        for btn_type in (
+            QtWidgets.QDialogButtonBox.Ok,
+            QtWidgets.QDialogButtonBox.Apply,
+        ):
             btn = self.bbox.button(btn_type)
             if btn is not None:
                 btn.setEnabled(valid)
@@ -303,12 +342,12 @@ class DialogEditProperties:
 
     def applied(self):
         self.apply_callback(self.formwidget.get())
-    
+
     def _deleteDialog(self):
         if not self.dialog is None:
             self.dialog.call("deleteLater")
             self.dialog = None
-        
+
     def get(self):
         """Return form result"""
         return self.data
@@ -341,11 +380,10 @@ def fedit(matplotlibplotUiItem, data, title="", comment="", apply=None):
           * the first element will be the selected index (or value)
           * the other elements can be couples (key, value) or only values
     """
-    
-    
+
     dialog = DialogEditProperties(matplotlibplotUiItem, data, title, comment, apply)
     dialog.show()
-    
+
     global __dialogCache__
     __dialogCache__ = dialog
 
@@ -353,44 +391,70 @@ def fedit(matplotlibplotUiItem, data, title="", comment="", apply=None):
 if __name__ == "__main__":
 
     def create_datalist_example():
-        return [('str', 'this is a string'),
-                ('list', [0, '1', '3', '4']),
-                ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
-                           ('-.', 'DashDot'), ('-', 'Solid'),
-                           ('steps', 'Steps'), (':', 'Dotted')]),
-                ('float', 1.2),
-                (None, 'Other:'),
-                ('int', 12),
-                ('font', ('Arial', 10, False, True)),
-                ('color', '#123409'),
-                ('bool', True),
-                ('date', datetime.date(2010, 10, 10)),
-                ('datetime', datetime.datetime(2010, 10, 10)),
-                ]
+        return [
+            ("str", "this is a string"),
+            ("list", [0, "1", "3", "4"]),
+            (
+                "list2",
+                [
+                    "--",
+                    ("none", "None"),
+                    ("--", "Dashed"),
+                    ("-.", "DashDot"),
+                    ("-", "Solid"),
+                    ("steps", "Steps"),
+                    (":", "Dotted"),
+                ],
+            ),
+            ("float", 1.2),
+            (None, "Other:"),
+            ("int", 12),
+            ("font", ("Arial", 10, False, True)),
+            ("color", "#123409"),
+            ("bool", True),
+            ("date", datetime.date(2010, 10, 10)),
+            ("datetime", datetime.datetime(2010, 10, 10)),
+        ]
 
     def create_datagroup_example():
         datalist = create_datalist_example()
-        return ((datalist, "Category 1", "Category 1 comment"),
-                (datalist, "Category 2", "Category 2 comment"),
-                (datalist, "Category 3", "Category 3 comment"))
+        return (
+            (datalist, "Category 1", "Category 1 comment"),
+            (datalist, "Category 2", "Category 2 comment"),
+            (datalist, "Category 3", "Category 3 comment"),
+        )
 
-    #--------- datalist example
+    # --------- datalist example
     datalist = create_datalist_example()
 
     def apply_test(data):
         print("data:", data)
-    print("result:", fedit(datalist, title="Example",
-                           comment="This is just an <b>example</b>.",
-                           apply=apply_test))
 
-    #--------- datagroup example
+    print(
+        "result:",
+        fedit(
+            datalist,
+            title="Example",
+            comment="This is just an <b>example</b>.",
+            apply=apply_test,
+        ),
+    )
+
+    # --------- datagroup example
     datagroup = create_datagroup_example()
     print("result:", fedit(datagroup, "Global title"))
 
-    #--------- datagroup inside a datagroup example
+    # --------- datagroup inside a datagroup example
     datalist = create_datalist_example()
     datagroup = create_datagroup_example()
-    print("result:", fedit(((datagroup, "Title 1", "Tab 1 comment"),
-                            (datalist, "Title 2", "Tab 2 comment"),
-                            (datalist, "Title 3", "Tab 3 comment")),
-                            "Global title"))
+    print(
+        "result:",
+        fedit(
+            (
+                (datagroup, "Title 1", "Tab 1 comment"),
+                (datalist, "Title 2", "Tab 2 comment"),
+                (datalist, "Title 3", "Tab 3 comment"),
+            ),
+            "Global title",
+        ),
+    )

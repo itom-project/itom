@@ -22,7 +22,7 @@ combining classes, this value will be incorporated into the name.
 
 
 def _name_tag(mixin):
-    if hasattr(mixin, '__name_tag__'):
+    if hasattr(mixin, "__name_tag__"):
         return mixin.__name_tag__
     else:
         return mixin.__name__
@@ -31,7 +31,7 @@ def _name_tag(mixin):
 class _NewStyleBase(object):
     """Helper class to make sure all compound classes include ``object``."""
 
-    __name_tag__ = ''
+    __name_tag__ = ""
 
     def __init__(self, *args, **kwargs):
         object.__init__(self)
@@ -49,17 +49,20 @@ def create_compound_class(base_class, mixins, name=None):
     all_bases.append(base_class)
     if not issubclass(base_class, object):
         all_bases.append(_NewStyleBase)
-    clsname = name if name else '_'.join(_name_tag(base) for base in all_bases
-                                         if _name_tag(base))
+    clsname = (
+        name
+        if name
+        else "_".join(_name_tag(base) for base in all_bases if _name_tag(base))
+    )
 
     def __init__(self, *args, **kwargs):
         for base in reversed(all_bases):
-            if hasattr(base, '__init__'):
+            if hasattr(base, "__init__"):
                 base.__init__(self, *args, **kwargs)
 
     cls_dict = {
-        '__init__': __init__,
-        '__super__': base_class,
+        "__init__": __init__,
+        "__super__": base_class,
     }
 
     return type(clsname, tuple(all_bases), cls_dict)

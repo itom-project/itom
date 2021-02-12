@@ -1293,7 +1293,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
 
     int index = getIndexByEditor(sew);
 
-    closeTab(index, ignoreModifications);
+    closeTab(index, !ignoreModifications);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

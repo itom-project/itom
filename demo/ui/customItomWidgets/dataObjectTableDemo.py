@@ -1,41 +1,54 @@
 # coding=iso-8859-15
 def printContent():
     gui.table["data"].data()
-    
+
+
 def printInfo():
     gui.table.info()
-    
+
+
 def cellClicked(row, column):
-    #see statusbar example for details about accessing the statusBar of a QMainWindow
-    gui.call("statusBar").call("showMessage","cell clicked. row:" + str(row) + ", col:" + str(column),1000)
-    
+    # see statusbar example for details about accessing the statusBar of a QMainWindow
+    gui.call("statusBar").call(
+        "showMessage",
+        "cell clicked. row:" + str(row) + ", col:" + str(column),
+        1000,
+    )
+
+
 def radioUInt8Clicked():
-    gui.table["data"] = dataObject.randN([10,20],'uint8')
+    gui.table["data"] = dataObject.randN([10, 20], "uint8")
     gui.spinDecimals["enabled"] = False
     gui.spinDecimalsEditing["enabled"] = False
     gui.table["horizontalResizeMode"] = "ResizeToContents"
 
+
 def radioFloat32Clicked():
-    gui.table["data"] = dataObject.randN([2,2],'float32')
+    gui.table["data"] = dataObject.randN([2, 2], "float32")
     gui.spinDecimals["enabled"] = True
     gui.spinDecimalsEditing["enabled"] = True
     gui.table["horizontalResizeMode"] = "Stretch"
-    
+
+
 def radioComplex64Clicked():
-    gui.table["data"] = dataObject.randN([3,4],'complex64')
+    gui.table["data"] = dataObject.randN([3, 4], "complex64")
     gui.spinDecimals["enabled"] = True
     gui.spinDecimalsEditing["enabled"] = True
     gui.table["horizontalResizeMode"] = "Stretch"
-    
+
+
 def spinDecimalsChanged(val):
     gui.table["decimals"] = val
-    
+
+
 def spinDecimalsEditingChanged(val):
     gui.table["editorDecimals"] = val
-    
+
+
 def checkReadonlyChanged(val):
     gui.table["readOnly"] = val
-    
+
+
 def comboLabelsChanged(idx):
     if idx == 0:
         gui.table["suffixes"] = ()
@@ -50,11 +63,12 @@ def comboLabelsChanged(idx):
         gui.table["horizontalHeaderVisible"] = True
         gui.table["verticalHeaderVisible"] = True
     elif idx == 2:
-        gui.table["suffixes"] =  (" mm", " °", "")
+        gui.table["suffixes"] = (" mm", " °", "")
         gui.table["horizontalHeaderVisible"] = False
         gui.table["verticalHeaderVisible"] = False
 
-gui = ui("dataObjectTableDemo.ui", ui.TYPEWINDOW, deleteOnClose = True)
+
+gui = ui("dataObjectTableDemo.ui", ui.TYPEWINDOW, deleteOnClose=True)
 radioUInt8Clicked()
 gui.spinDecimals["value"] = gui.table["decimals"]
 gui.spinDecimalsEditing["value"] = gui.table["editorDecimals"]
