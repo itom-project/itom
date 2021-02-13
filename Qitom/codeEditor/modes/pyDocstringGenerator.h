@@ -45,6 +45,7 @@
 #include <qobject.h>
 #include <qtextcursor.h>
 #include <qstring.h>
+#include <qlist.h>
 #include <qsharedpointer.h>
 
 namespace ito {
@@ -66,7 +67,40 @@ public:
     QSharedPointer<OutlineItem> getOutlineOfLineIdx(int lineIdx) const;
 
 protected:
+
+    struct ArgInfo
+    {
+        ArgInfo(const QString &name = "", const QString &type = "", bool isOptional = false) :
+            m_name(name),
+            m_type(type),
+            m_isOptional(isOptional)
+        {
+
+        }
+
+        QString m_name;
+        QString m_type;
+        bool m_isOptional;
+    };
+
+    struct FunctionInfo
+    {
+        FunctionInfo() :
+            m_hasYield(false)
+        {
+
+        }
+
+        QList<ArgInfo> m_args;
+        QList<QString> m_returnTypes;
+        bool m_hasYield;
+        QList<QString> m_raises;
+    };
+
     int lastLineIdxOfDefinition(const QSharedPointer<OutlineItem> &item) const;
+    FunctionInfo parseFunctionInfo(const QSharedPointer<OutlineItem> &item, int lastLineIdxOfDefinition) const;
+    void parseArgList(const QSharedPointer<OutlineItem> &item, FunctionInfo &info) const;
+    QString generateGoogleDoc(const QSharedPointer<OutlineItem> &item, const FunctionInfo &info) const;
     
 
 private slots:

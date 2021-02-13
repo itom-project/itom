@@ -1486,6 +1486,11 @@ void ScriptDockWidget::updateEditorActions()
     m_indentAction->setEnabled(tabCount > 0 && sew != nullptr);
     m_unindentAction->setEnabled(tabCount > 0 && sew != nullptr);
     m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && tabCount > 0 && sew != nullptr);
+    m_pyDocstringGeneratorAction->setEnabled(
+        pyEngine && 
+        !pyEngine->isPythonBusy() &&
+        tabCount > 0 && 
+        sew != nullptr);
 
     m_tabCloseAction->setEnabled(m_actTabIndex > -1);
     m_tabCloseAllAction->setEnabled(m_actTabIndex > -1);
@@ -1661,6 +1666,10 @@ void ScriptDockWidget::createActions()
     m_autoCodeFormatAction = new ShortcutAction(QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"),
         this, QKeySequence(tr("Ctrl+Alt+I", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_autoCodeFormatAction->connectTrigger(this, SLOT(mnuPyCodeFormatting()));
+
+    m_pyDocstringGeneratorAction = new ShortcutAction(QIcon(), tr("Generate Docstring"),
+        this, QKeySequence(tr("Ctrl+Alt+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_pyDocstringGeneratorAction->connectTrigger(this, SLOT(mnuPyDocstringGenerator()));
 
     m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), 
         this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
@@ -1867,6 +1876,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_indentAction->action());
     m_editMenu->addAction(m_unindentAction->action());
     m_editMenu->addAction(m_autoCodeFormatAction->action());
+    m_editMenu->addAction(m_pyDocstringGeneratorAction->action());
     m_editMenu->addSeparator();
     m_editMenu->addAction(m_findTextExprAction->action());
     m_editMenu->addAction(m_replaceTextExprAction->action());
@@ -2592,6 +2602,17 @@ void ScriptDockWidget::mnuPyCodeFormatting()
     if (sew != nullptr)
     {
         sew->menuPyCodeFormatting();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuPyDocstringGenerator()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+
+    if (sew != nullptr)
+    {
+        sew->menuGenerateDocstring();
     }
 }
 
