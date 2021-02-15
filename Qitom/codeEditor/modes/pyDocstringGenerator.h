@@ -47,6 +47,8 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qsharedpointer.h>
+#include <qmenu.h>
+#include <qaction.h>
 
 namespace ito {
 
@@ -63,7 +65,7 @@ public:
 
     virtual void onStateChanged(bool state);
 
-    void insertDocstring(const QTextCursor &cursor) const;
+    void insertDocstring(const QTextCursor &cursor, const QString &quotes = "\"\"\"") const;
     QSharedPointer<OutlineItem> getOutlineOfLineIdx(int lineIdx) const;
 
 protected:
@@ -100,13 +102,13 @@ protected:
     int lastLineIdxOfDefinition(const QSharedPointer<OutlineItem> &item) const;
     FunctionInfo parseFunctionInfo(const QSharedPointer<OutlineItem> &item, int lastLineIdxOfDefinition) const;
     void parseArgList(const QSharedPointer<OutlineItem> &item, FunctionInfo &info) const;
-    QString generateGoogleDoc(const QSharedPointer<OutlineItem> &item, const FunctionInfo &info) const;
+    QString generateGoogleDoc(const QSharedPointer<OutlineItem> &item, const FunctionInfo &info, int &cursorPos) const;
     
+    QSharedPointer<QMenu> m_popupMenu;
 
 private slots:
-    void onKeyPressed(QKeyEvent *e) {};
-
-
+    void onKeyPressed(QKeyEvent *e);
+    void mnuInsertDocstring();
 };
 
 } //end namespace ito

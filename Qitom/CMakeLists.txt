@@ -374,7 +374,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h

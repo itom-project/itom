@@ -1490,7 +1490,7 @@ void ScriptDockWidget::updateEditorActions()
         pyEngine && 
         !pyEngine->isPythonBusy() &&
         tabCount > 0 && 
-        sew != nullptr);
+        sew != nullptr && sew->currentLineCanHaveDocstring());
 
     m_tabCloseAction->setEnabled(m_actTabIndex > -1);
     m_tabCloseAllAction->setEnabled(m_actTabIndex > -1);

@@ -81,7 +81,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel),
     m_currentLineIndex(-1),
-    m_textBlockLineIdxAboutToBeDeleted(-1)
+    m_textBlockLineIdxAboutToBeDeleted(-1),
+    m_outlineDirty(true)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -168,6 +169,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+    connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 
     connect(m_pBookmarkModel, SIGNAL(bookmarkAdded(BookmarkItem)), this, SLOT(onBookmarkAdded(BookmarkItem)));
     connect(m_pBookmarkModel, SIGNAL(bookmarkDeleted(BookmarkItem)), this, SLOT(onBookmarkDeleted(BookmarkItem)));
@@ -608,11 +610,19 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["generateDocstring"]->setEnabled(
         !m_pythonBusy && 
-        lineIndex >= 0 &&
-        !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull()
+        currentLineCanHaveDocstring()
     );
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
+}
+
+//-------------------------------------------------------------------------------------
+bool ScriptEditorWidget::currentLineCanHaveDocstring() const
+{
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    return !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1241,10 +1251,11 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     QList<BreakPointItem> breakpointsCache;
     QList<BookmarkItem> bookmarksCacheNew;
     QList<BreakPointItem> breakpointsCacheNew;
+    int numLines = lineCount();
 
     foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
     {
-        if (item.isValid())
+        if (item.isValid() && item.lineIdx < numLines && item.lineIdx >= 0)
         {
             bookmarksCache << item;
         }
@@ -1257,7 +1268,10 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 
         foreach(const BreakPointItem &item, allBreakpoints)
         {
-            breakpointsCache << item;
+            if (item.lineIdx >= 0 && item.lineIdx < numLines)
+            {
+                breakpointsCache << item;
+            }
         }
     }
 
@@ -3054,8 +3068,14 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem> &pare
 //-------------------------------------------------------------------------------------
 QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
 {
+    if (!m_outlineDirty)
+    {
+        return m_rootOutlineItem;
+    }
+
     const QTextDocument* doc = document();
     bool valid;
+    m_outlineDirty = false;
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
@@ -3248,6 +3268,12 @@ void ScriptEditorWidget::onCursorPositionChanged()
 void ScriptEditorWidget::tabChangeRequest()
 {
     emit tabChangeRequested();
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::onTextChanged()
+{
+    m_outlineDirty = true;
 }
 
 } // end namespace ito

@@ -38,7 +38,9 @@
 #include "pyDocstringGenerator.h"
 
 #include "../codeEditor.h"
+#include "../managers/panelsManager.h"
 #include "../../widgets/scriptEditorWidget.h"
+#include "../../widgets/menuOnlyForEnter.h"
 
 #include <qdebug.h>
 #include <qregularexpression.h>
@@ -79,6 +81,82 @@ void PyDocstringGeneratorMode::onStateChanged(bool state)
             editor(), &CodeEditor::keyPressed, 
             this, &PyDocstringGeneratorMode::onKeyPressed);
     }       
+}
+
+//-------------------------------------------------------------------------------------
+/*
+*/
+void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
+{
+    if (!e->isAccepted())
+    {
+        if (e->key() == Qt::Key_QuoteDbl ||
+            e->key() == Qt::Key_Apostrophe) // " or '
+        {
+            CodeEditor *ed = editor();
+            QTextCursor cursor = ed->textCursor();
+            int lineIdx = cursor.blockNumber();
+            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+
+            if (cursor.hasSelection())
+            {
+                QString sel = cursor.selectedText().trimmed();
+
+                if ((e->key() == Qt::Key_QuoteDbl && sel == "\"\"") ||
+                    (e->key() == Qt::Key_Apostrophe && sel == "''"))
+                {
+                    QSharedPointer<OutlineItem> item = getOutlineOfLineIdx(lineIdx);
+
+                    if (!item.isNull())
+                    {
+                        if (lastLineIdxOfDefinition(item) == lineIdx - 1)
+                        {
+                            // the first """ sign in the line right after the 
+                            // definition.
+                            QPoint pt = ed->cursorRect().bottomRight();
+                            pt.rx() += ed->panels()->marginSize(ito::Panel::Left);
+                            pt.ry() += ed->panels()->marginSize(ito::Panel::Top);
+                            pt = ed->mapToGlobal(pt);
+
+                            m_popupMenu = QSharedPointer<QMenu>(new MenuOnlyForEnter(ed));
+                            QAction *a = m_popupMenu->addAction(
+                                QIcon(":/arrows/icons/plus.png"),
+                                tr("Generate docstring"), 
+                                this, 
+                                &PyDocstringGeneratorMode::mnuInsertDocstring
+                            );
+                            m_popupMenu->setActiveAction(a);
+                            m_popupMenu->popup(pt);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PyDocstringGeneratorMode::mnuInsertDocstring()
+{
+    CodeEditor *e = editor();
+    QTextCursor cursor = e->textCursor();
+
+    cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+    cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+
+    if (cursor.hasSelection())
+    {
+        if (cursor.selectedText().trimmed() == "\"\"\"")
+        {
+            cursor.removeSelectedText();
+            insertDocstring(cursor, "\"\"\"");
+        }
+        else if (cursor.selectedText().trimmed() == "'''")
+        {
+            cursor.removeSelectedText();
+            insertDocstring(cursor, "'''");
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -129,7 +207,7 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
 
 //-------------------------------------------------------------------------------------
-void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor) const
+void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const QString &quotes /*= "\"\"\""*/) const
 {
     if (cursor.isNull())
     {
@@ -162,9 +240,10 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor) const
         QString(initIndent + 1, '\t');
     
     FunctionInfo finfo = parseFunctionInfo(outline, lineIdx);
+    int cursorPos = 0;
 
-    QString docstring = generateGoogleDoc(outline, finfo);
-    docstring = QString("\"\"\"%1\n\"\"\"").arg(docstring);
+    QString docstring = generateGoogleDoc(outline, finfo, cursorPos);
+    docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
 
     // add the indentation to all lines of the docstring
     QStringList lines = docstring.split("\n");
@@ -175,9 +254,11 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor) const
     }
 
     // insert the docstring
+    insertCursor.beginEditBlock();
     insertCursor.insertText("\n" + lines.join("\n"));
+    insertCursor.endEditBlock();
 
-    e->setCursorPosition(cursor.blockNumber() + 1, indent.size() + 3);
+    e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
 }
 
 //-------------------------------------------------------------------------------------
@@ -268,7 +349,10 @@ void PyDocstringGeneratorMode::parseArgList(
 {
     bool expectSelfOrCls = 
         item->m_type == OutlineItem::typeClassMethod || 
-        item->m_type == OutlineItem::typeMethod;
+        item->m_type == OutlineItem::typeMethod ||
+        item->m_type == OutlineItem::typePropertyGet ||
+        item->m_type == OutlineItem::typePropertySet;
+
     QString argstr = item->m_args.trimmed();
     QStringList args;
     int lastpos = 0;
@@ -277,81 +361,77 @@ void PyDocstringGeneratorMode::parseArgList(
 
     for (int pos = 0; pos < argstr.size(); ++pos)
     {
-        if (specialCharStack.size() == 0)
+        if (argstr[pos] == "," && specialCharStack.size() == 0)
         {
-            if (argstr[pos] == ",")
+            if (pos - lastpos > 0)
             {
-                if (pos - lastpos > 0)
-                {
-                    args.append(argstr.mid(lastpos, pos - lastpos));
-                }
-
-                lastpos = pos + 1; //ignore the comma
+                args.append(argstr.mid(lastpos, pos - lastpos));
             }
+
+            lastpos = pos + 1; //ignore the comma
+            continue;
         }
-        else
-        {
-            QChar lastChar = specialCharStack.last();
 
-            if (lastChar != '"' && lastChar != '\'')
+        QChar lastChar = specialCharStack.size() == 0 ? QChar() : specialCharStack.last();
+
+        if (lastChar != '"' && lastChar != '\'')
+        {
+            switch (argstr[pos].toLatin1())
             {
-                switch (argstr[pos].toLatin1())
-                {
-                case '(':
-                    specialCharStack.append('(');
-                    break;
-                case ')':
-                    if (lastChar == '(')
-                    {
-                        specialCharStack.removeLast();
-                    }
-                    break;
-                case '[':
-                    specialCharStack.append('[');
-                    break;
-                case ']':
-                    if (lastChar == '[')
-                    {
-                        specialCharStack.removeLast();
-                    }
-                    break;
-                case '{':
-                    specialCharStack.append('{');
-                    break;
-                case '}':
-                    if (lastChar == '{')
-                    {
-                        specialCharStack.removeLast();
-                    }
-                    break;
-                case '"':
-                    if (lastChar == '"')
-                    {
-                        specialCharStack.removeLast();
-                    }
-                    else
-                    {
-                        specialCharStack.append('"');
-                    }
-                    break;
-                case '\'':
-                    if (lastChar == '\'')
-                    {
-                        specialCharStack.removeLast();
-                    }
-                    else
-                    {
-                        specialCharStack.append('\'');
-                    }
-                    break;
-                }
-            }
-            else // last char = " or '
-            {
-                if (argstr[pos] == lastChar)
+            case '(':
+                specialCharStack.append('(');
+                break;
+            case ')':
+                if (lastChar == '(')
                 {
                     specialCharStack.removeLast();
                 }
+                break;
+            case '[':
+                specialCharStack.append('[');
+                break;
+            case ']':
+                if (lastChar == '[')
+                {
+                    specialCharStack.removeLast();
+                }
+                break;
+            case '{':
+                specialCharStack.append('{');
+                break;
+            case '}':
+                if (lastChar == '{')
+                {
+                    specialCharStack.removeLast();
+                }
+                break;
+            case '"':
+                if (lastChar == '"')
+                {
+                    specialCharStack.removeLast();
+                }
+                else
+                {
+                    specialCharStack.append('"');
+                }
+                break;
+            case '\'':
+                if (lastChar == '\'')
+                {
+                    specialCharStack.removeLast();
+                }
+                else
+                {
+                    specialCharStack.append('\'');
+                }
+                break;
+            }
+        }
+        else // last char = " or '
+        {
+            if (argstr[pos] == lastChar)
+            {
+                specialCharStack.removeLast();
             }
         }
     }
@@ -403,58 +483,82 @@ void PyDocstringGeneratorMode::parseArgList(
 
 //-------------------------------------------------------------------------------------
 QString PyDocstringGeneratorMode::generateGoogleDoc(
-    const QSharedPointer<OutlineItem> &item, const FunctionInfo &info) const
+    const QSharedPointer<OutlineItem> &item, const FunctionInfo &info, int &cursorPos) const
 {
     QString docs = "";
+    cursorPos = 0;
 
-    if (info.m_args.size() > 0)
+    if (item->m_type == OutlineItem::typePropertyGet ||
+        item->m_type == OutlineItem::typePropertySet)
     {
-        docs += "\n\nArgs:";
-
-        foreach(const ArgInfo &arg, info.m_args)
+        if (info.m_returnTypes.size() == 1)
         {
-            if (arg.m_name != "")
-            {
-                QString typ = arg.m_type != "" ? arg.m_type : "TYPE";
+            docs += info.m_returnTypes[0] + ": ";
+            cursorPos = docs.size();
+            docs += "DESCRIPTION";
+        }
 
-                if (arg.m_isOptional)
-                {
-                    docs += QString("\n    %1 (%2, optional): DESCRIPTION")
-                        .arg(arg.m_name).arg(typ);
-                }
-                else
-                {
-                    docs += QString("\n    %1 (%2): DESCRIPTION")
-                        .arg(arg.m_name).arg(typ);
-                }
+        if (info.m_raises.size() > 0)
+        {
+            docs += "\n\nRaises:";
+
+            foreach(const QString &exc, info.m_raises)
+            {
+                docs += QString("\n    %1: DESCRIPTION").arg(exc);
             }
         }
     }
-
-    if (info.m_raises.size() > 0)
+    else
     {
-        docs += "\n\nRaises:";
+        if (info.m_args.size() > 0)
+        {
+            docs += "\n\nArgs:";
 
-        foreach(const QString &exc, info.m_raises)
-        {
-            docs += QString("\n    %1: DESCRIPTION").arg(exc);
-        }
-    }
+            foreach(const ArgInfo &arg, info.m_args)
+            {
+                if (arg.m_name != "")
+                {
+                    QString typ = arg.m_type != "" ? arg.m_type : "TYPE";
 
-    if (info.m_returnTypes.size() > 0)
-    {
-        if (info.m_hasYield)
-        {
-            docs += "\n\nYields:";
-        }
-        else
-        {
-            docs += "\n\nReturns:";
+                    if (arg.m_isOptional)
+                    {
+                        docs += QString("\n    %1 (%2, optional): DESCRIPTION")
+                            .arg(arg.m_name).arg(typ);
+                    }
+                    else
+                    {
+                        docs += QString("\n    %1 (%2): DESCRIPTION")
+                            .arg(arg.m_name).arg(typ);
+                    }
+                }
+            }
         }
 
-        foreach(const QString &returnType, info.m_returnTypes)
+        if (info.m_raises.size() > 0)
         {
-            docs += QString("\n    %1: DESCRIPTION").arg(returnType);
+            docs += "\n\nRaises:";
+
+            foreach(const QString &exc, info.m_raises)
+            {
+                docs += QString("\n    %1: DESCRIPTION").arg(exc);
+            }
+        }
+
+        if (info.m_returnTypes.size() > 0)
+        {
+            if (info.m_hasYield)
+            {
+                docs += "\n\nYields:";
+            }
+            else
+            {
+                docs += "\n\nReturns:";
+            }
+
+            foreach(const QString &returnType, info.m_returnTypes)
+            {
+                docs += QString("\n    %1: DESCRIPTION").arg(returnType);
+            }
         }
     }
 
