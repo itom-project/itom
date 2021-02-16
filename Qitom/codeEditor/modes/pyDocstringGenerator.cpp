@@ -145,6 +145,11 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
     cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
 
+    if (!cursor.hasSelection())
+    {
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    }
+
     if (cursor.hasSelection())
     {
         if (cursor.selectedText().trimmed() == "\"\"\"")
