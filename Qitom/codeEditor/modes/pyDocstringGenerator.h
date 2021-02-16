@@ -60,6 +60,12 @@ class PyDocstringGeneratorMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
+    enum Style
+    {
+        GoogleStyle = 0,
+        NumpyStyle = 1
+    };
+
     PyDocstringGeneratorMode(const QString &name, const QString &description = "", QObject *parent = nullptr);
     virtual ~PyDocstringGeneratorMode();
 
@@ -67,6 +73,9 @@ public:
 
     void insertDocstring(const QTextCursor &cursor, const QString &quotes = "\"\"\"") const;
     QSharedPointer<OutlineItem> getOutlineOfLineIdx(int lineIdx) const;
+
+    Style docstringStyle() const { return m_docstringStyle; }
+    void setDocstringStyle(const Style &style) { m_docstringStyle = style; }
 
 protected:
 
@@ -103,8 +112,10 @@ protected:
     FunctionInfo parseFunctionInfo(const QSharedPointer<OutlineItem> &item, int lastLineIdxOfDefinition) const;
     void parseArgList(const QSharedPointer<OutlineItem> &item, FunctionInfo &info) const;
     QString generateGoogleDoc(const QSharedPointer<OutlineItem> &item, const FunctionInfo &info, int &cursorPos) const;
+    QString generateNumpyDoc(const QSharedPointer<OutlineItem> &item, const FunctionInfo &info, int &cursorPos) const;
     
     QSharedPointer<QMenu> m_popupMenu;
+    Style m_docstringStyle;
 
 private slots:
     void onKeyPressed(QKeyEvent *e);

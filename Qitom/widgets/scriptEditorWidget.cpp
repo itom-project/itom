@@ -389,6 +389,17 @@ void ScriptEditorWidget::loadSettings()
         pyCodeFormatAction->second->setEnabled(m_autoCodeFormatCmd != "");
     }
 
+    QString style = settings.value("docstringGeneratorStyle", "googleStyle").toString();
+
+    if (style == "numpyStyle")
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::NumpyStyle);
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::GoogleStyle);
+    }
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -1232,7 +1243,19 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGenerateDocstring()
 {
-    m_pyDocstringGeneratorMode->insertDocstring(textCursor());
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    QString quotes = settings.value("docstringGeneratorQuotes", "doubleQuotes").toString();
+    settings.endGroup();
+
+    if (quotes == "apostrophe")
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "'''");
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "\"\"\"");
+    }
 }
 
 //-------------------------------------------------------------------------------------

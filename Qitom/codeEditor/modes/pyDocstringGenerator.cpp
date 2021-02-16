@@ -50,7 +50,8 @@ namespace ito {
 //-------------------------------------------------------------------------------------
 PyDocstringGeneratorMode::PyDocstringGeneratorMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     Mode(name, description),
-    QObject(parent)
+    QObject(parent),
+    m_docstringStyle(Style::GoogleStyle)
 {
 }
 
@@ -173,7 +174,7 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
     auto result = QSharedPointer<OutlineItem>();
     bool found = true;
 
-    while (found && !current.isNull())
+    while (found && !current.isNull() && current->m_childs.size() > 0)
     {
         found = false;
 
@@ -242,7 +243,17 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
     FunctionInfo finfo = parseFunctionInfo(outline, lineIdx);
     int cursorPos = 0;
 
-    QString docstring = generateGoogleDoc(outline, finfo, cursorPos);
+    QString docstring;
+    
+    if (m_docstringStyle == GoogleStyle)
+    {
+        docstring = generateGoogleDoc(outline, finfo, cursorPos);
+    }
+    else
+    {
+        docstring = generateNumpyDoc(outline, finfo, cursorPos);
+    }
+
     docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
 
     // add the indentation to all lines of the docstring
@@ -558,6 +569,90 @@ QString PyDocstringGeneratorMode::generateGoogleDoc(
             foreach(const QString &returnType, info.m_returnTypes)
             {
                 docs += QString("\n    %1: DESCRIPTION").arg(returnType);
+            }
+        }
+    }
+
+    return docs;
+}
+
+//-------------------------------------------------------------------------------------
+QString PyDocstringGeneratorMode::generateNumpyDoc(
+    const QSharedPointer<OutlineItem> &item, const FunctionInfo &info, int &cursorPos) const
+{
+    QString docs = "";
+    cursorPos = 0;
+
+    if (item->m_type == OutlineItem::typePropertyGet ||
+        item->m_type == OutlineItem::typePropertySet)
+    {
+        if (info.m_returnTypes.size() == 1)
+        {
+            docs += info.m_returnTypes[0] + ": ";
+            cursorPos = docs.size();
+            docs += "DESCRIPTION";
+        }
+
+        if (info.m_raises.size() > 0)
+        {
+            docs += "\n\nRaises\n------";
+
+            foreach(const QString &exc, info.m_raises)
+            {
+                docs += QString("\n%1\n    DESCRIPTION").arg(exc);
+            }
+        }
+    }
+    else
+    {
+        if (info.m_args.size() > 0)
+        {
+            docs += "\n\nParameters\n----------";
+
+            foreach(const ArgInfo &arg, info.m_args)
+            {
+                if (arg.m_name != "")
+                {
+                    QString typ = arg.m_type != "" ? arg.m_type : "TYPE";
+
+                    if (arg.m_isOptional)
+                    {
+                        docs += QString("\n%1 : %2, optional\n    DESCRIPTION")
+                            .arg(arg.m_name).arg(typ);
+                    }
+                    else
+                    {
+                        docs += QString("\n%1 : %2\n    DESCRIPTION")
+                            .arg(arg.m_name).arg(typ);
+                    }
+                }
+            }
+        }
+
+        if (info.m_raises.size() > 0)
+        {
+            docs += "\n\nRaises\n------";
+
+            foreach(const QString &exc, info.m_raises)
+            {
+                docs += QString("\n%1\n    DESCRIPTION").arg(exc);
+            }
+        }
+
+        if (info.m_returnTypes.size() > 0)
+        {
+            if (info.m_hasYield)
+            {
+                docs += "\n\nYields\n------";
+            }
+            else
+            {
+                docs += "\n\nReturns\n-------";
+            }
+
+            foreach(const QString &returnType, info.m_returnTypes)
+            {
+                docs += QString("\n%1\n    DESCRIPTION").arg(returnType);
             }
         }
     }

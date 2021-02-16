@@ -102,11 +102,26 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
         {
             // ignore commented lines(could have arbitary indentation)
             // Verify if the previous line ends with a continuation line
-            // with a regex
-
-            if (m_reContinuationLine.match(prev_text).hasMatch())
+            // with a regex.
+            // The 2nd case is for this (e.g. produced by black):
+            /* def test(
+                    a: int,
+                    b: int
+               ):
+                    pass            
+            */
+            if (m_reContinuationLine.match(prev_text).hasMatch() || Utils::lstrip(text).startsWith("):"))
             {
                 min_lvl = prev_lvl;
+            }
+            else
+            {
+                QString lstriptext = Utils::lstrip(text);
+
+                if (lstriptext.startsWith(")") && Utils::lstrip(lstriptext.mid(1)).startsWith(":"))
+                {
+                    min_lvl = prev_lvl;
+                }
             }
         }
     }
