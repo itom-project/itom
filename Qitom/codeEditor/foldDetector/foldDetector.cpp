@@ -96,6 +96,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
 
     int prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
     int fold_level;
+
     if (text.trimmed() == "")
     {
         // blank line always have the same level as the previous line
@@ -104,6 +105,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     else
     {
         fold_level = detectFoldLevel(previousBlock, currentBlock);
+
         if (fold_level > d->m_limit)
         {
             fold_level = d->m_limit;
@@ -116,11 +118,13 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     {
         // apply on previous blank lines
         QTextBlock block = currentBlock.previous();
+
         while (block.isValid() && block.text().trimmed() == "")
         {
             Utils::TextBlockHelper::setFoldLvl(block, fold_level);
             block = block.previous();
         }
+
         Utils::TextBlockHelper::setFoldTrigger(block, true);
     }
 
@@ -129,6 +133,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     {
         Utils::TextBlockHelper::setFoldTrigger(previousBlock, fold_level > prev_fold_level);
     }
+
     Utils::TextBlockHelper::setFoldLvl(currentBlock, fold_level);
 
     // user pressed enter at the beginning of a fold trigger line
@@ -136,7 +141,10 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     // (which actually contains the trigger) must use the prev state (
     // and prev state must then be reset).
     QTextBlock prev = currentBlock.previous();  // real prev block (may be blank)
-    if (prev.isValid() && prev.text().trimmed() == "" & Utils::TextBlockHelper::isFoldTrigger(prev))
+
+    if (prev.isValid() 
+        && prev.text().trimmed() == "" 
+        && Utils::TextBlockHelper::isFoldTrigger(prev))
     {
         // prev line has the correct trigger fold state
         Utils::TextBlockHelper::setCollapsed(currentBlock, Utils::TextBlockHelper::isCollapsed(prev));

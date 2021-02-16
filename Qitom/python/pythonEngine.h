@@ -133,7 +133,7 @@ public:
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
-    inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
+    inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
     bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
@@ -148,6 +148,9 @@ public:
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
     void enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request);
+
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
+    void enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request);
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
@@ -172,10 +175,26 @@ protected:
 
     void connectNotify(const QMetaMethod &signal);
 
+    enum DebuggerErrorCode
+    {
+        DbgErrorNo = 0,
+        DbgErrorInvalidBp = 1, // the breakpoint candidate could not be set and will be deleted
+        DbgErrorOther = 2 // any other error
+    };
+
 private:
+    enum DictUpdateFlag
+    {
+        DictUpdate,
+        DictReset,
+        DictNoAction
+    };
+
     static PythonEngine *getInstanceInternal();
 
-    inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
+    /*!< returns reference to local dictionary (workspace of method, 
+    which is handled right now). Is NULL if no method is executed right now. */
+    inline PyObject *getLocalDictionary() { return m_pLocalDictionary; } 
 
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
@@ -183,10 +202,16 @@ private:
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
-    void emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict);
+    void emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
+
+    //!< runs the given Python string command
+    void pythonRunString(QString cmd);
+
+    //!< debugs the given Python string command
+    void pythonDebugString(QString cmd);
 
     //methods for debugging
     void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);
@@ -194,13 +219,13 @@ private:
     bool DbgCommandsAvailable();
     void clearDbgCmdLoop();
 
-    ito::RetVal pythonStateTransition(tPythonTransitions transition);
+    ito::RetVal pythonStateTransition(tPythonTransitions transition, bool immediate = true);
 
     //methods for breakpoint
-    ito::RetVal pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber);
-    ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount);
+    ito::RetVal pythonAddBreakpoint(const BreakPointItem &breakpoint, int &pyBpNumber);
+    ito::RetVal pythonEditBreakpoint(const int pyBpNumber, const BreakPointItem &newBreakpoint);
     ito::RetVal pythonDeleteBreakpoint(const int pyBpNumber);
-    ito::RetVal submitAllBreakpointsToDebugger();
+    void submitAllBreakpointsToDebugger();
 
     ito::RetVal autoReloaderCheck();
 
@@ -218,14 +243,12 @@ private:
         QByteArray furtherPropertiesJson; //!< these parameters are parsed from a QVariantMap to json and will be passed to itomSyntaxCheck.py
 	};
     
-
     //member variables
     bool m_started;
 	CodeCheckerOptions m_codeCheckerOptions;
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
-    QMutex dictChangeMutex;
     QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
@@ -235,9 +258,9 @@ private:
     ito::BreakPointModel *bpModel;
 
     PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
-    PyObject* mainDictionary;      //!< main dictionary of python [borrowed]
-    PyObject* localDictionary;     //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then globalDictionary is equal to the local dictionary of the current frame
-    PyObject* globalDictionary;    //!< global dictionary of python [borrowed], equals to mainDictionary unless if debugger is in "interaction-mode", then globalDictionary is equal to the global dictionary of the current frame
+    PyObject* m_pMainDictionary;   //!< main dictionary of python [borrowed]
+    PyObject* m_pLocalDictionary;  //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the local dictionary of the current frame
+    PyObject* m_pGlobalDictionary; //!< global dictionary of python [borrowed], equals to m_pMainDictionary unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the global dictionary of the current frame
     PyObject *itomDbgModule;       //!< debugger module
     PyObject *itomDbgInstance;     //!< debugger instance
     PyObject *itomModule;          //!< itom module [new ref]
@@ -310,7 +333,7 @@ private:
 
 signals:
     void pythonDebugPositionChanged(QString filename, int lineNo);
-    void pythonStateChanged(tPythonTransitions pyTransition);
+    void pythonStateChanged(tPythonTransitions pyTransition, bool immediate);
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
     void pythonCurrentDirChanged();
@@ -324,8 +347,6 @@ signals:
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
 
 public slots:
-    void pythonRunString(QString cmd);
-    void pythonDebugString(QString cmd);
     void pythonExecStringFromCommandLine(QString cmd);
     void pythonRunFile(QString filename);
     void pythonDebugFile(QString filename);

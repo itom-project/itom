@@ -98,11 +98,6 @@ bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
 
     //qDebug() << "deco #" << m_decorations.size() << "(append)";
 
-    QList<QTextEdit::ExtraSelection> sels = editor()->extraSelections();
-    /*foreach (QTextEdit::ExtraSelection s, sels)
-    {
-        qDebug() << "sel " << s.cursor.position() << s.cursor.selectedText() << s.format.property(QTextFormat::FullWidthSelection);
-    }*/
     return true;
 }
 

@@ -15,9 +15,41 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="checkCallTips">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Calltips</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="checkCallTips">
+        <property name="text">
+         <string>Calltips enabled</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Help Tooltip</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="checkHelpTooltip">
+        <property name="text">
+         <string>Enable help tooltips on mouse over a word in a script editor.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Calltips enabled (requires Python packages jedi and parso)</string>
+      <string>These features require the Python packages jedi and parso.</string>
      </property>
     </widget>
    </item>

@@ -121,9 +121,9 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
-    foreach (TextBlockUserData *tbud, m_textBlockUserDataList)
+    foreach(auto item, m_textBlockUserDataList)
     {
-        tbud->removeCodeEditorRef();
+        item->removeCodeEditorRef();
     }
 
     delete m_pPanels;
@@ -135,9 +135,12 @@ CodeEditor::~CodeEditor()
     delete m_pModes;
     m_pModes = NULL;
 
-    m_pTooltipsRunner->cancelRequests();
-    delete m_pTooltipsRunner;
-    m_pTooltipsRunner = NULL;
+    if (m_pTooltipsRunner)
+    {
+        m_pTooltipsRunner->cancelRequests();
+        delete m_pTooltipsRunner;
+        m_pTooltipsRunner = NULL;
+    }
 
     delete m_pContextMenu;
     m_pContextMenu = NULL;
@@ -968,8 +971,13 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
                 args << mapToGlobal(position);
                 args << itPtr->tooltip().left(1024);
                 args << QVariant::fromValue(*it);
-                DELAY_JOB_RUNNER(m_pTooltipsRunner, CodeEditor, void(CodeEditor::*)(QList<QVariant>))->requestJob( \
-                    this, &CodeEditor::showTooltipDelayJobRunner, args);
+
+                if (m_pTooltipsRunner)
+                {
+                    DELAY_JOB_RUNNER(m_pTooltipsRunner, CodeEditor, void(CodeEditor::*)(QList<QVariant>))->requestJob(\
+                        this, &CodeEditor::showTooltipDelayJobRunner, args);
+                }
+
                 m_prevTooltipBlockNbr = cursor.blockNumber();
             }
             blockFound = true;
@@ -983,7 +991,11 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
     {
         QToolTip::hideText();
         m_prevTooltipBlockNbr = -1;
-        m_pTooltipsRunner->cancelRequests();
+        
+        if (m_pTooltipsRunner)
+        {
+            m_pTooltipsRunner->cancelRequests();
+        }
     }
 
     emit mouseMoved(e);

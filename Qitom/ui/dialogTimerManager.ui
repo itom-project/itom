@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>311</width>
-    <height>166</height>
+    <width>456</width>
+    <height>235</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,14 +19,17 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>List of all Timers:</string>
+        <string>List of all timers:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="listWidget">
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+      <widget class="QListView" name="listView"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>The timer ID of inactive timers is always -1.</string>
        </property>
       </widget>
      </item>
@@ -80,5 +83,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnOk</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogTimerManager</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>424</x>
+     <y>14</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>46</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

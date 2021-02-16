@@ -1,4 +1,4 @@
-''' Linear Algebra Helper Routines '''
+""" Linear Algebra Helper Routines """
 
 __docformat__ = "restructuredtext en"
 
@@ -6,13 +6,23 @@ from warnings import warn
 import numpy
 import scipy
 import scipy.sparse as sparse
-#from scipy.linalg.lapack import get_lapack_funcs
-#from scipy.linalg import calc_lwork
 
-__all__ = ['approximate_spectral_radius', 'infinity_norm', 'norm', 'residual_norm',
-           'condest', 'cond', 'issymm', 'pinv_array']
+# from scipy.linalg.lapack import get_lapack_funcs
+# from scipy.linalg import calc_lwork
 
-def norm(x, pnorm='2'):
+__all__ = [
+    "approximate_spectral_radius",
+    "infinity_norm",
+    "norm",
+    "residual_norm",
+    "condest",
+    "cond",
+    "issymm",
+    "pinv_array",
+]
+
+
+def norm(x, pnorm="2"):
     """
     2-norm of a vector
     
@@ -39,17 +49,18 @@ def norm(x, pnorm='2'):
     scipy.linalg.norm : scipy general matrix or vector norm
     """
 
-    #TODO check dimensions of x
-    #TODO speedup complex case
-    
+    # TODO check dimensions of x
+    # TODO speedup complex case
+
     x = numpy.ravel(x)
-    
-    if pnorm == '2':
-        return numpy.sqrt( numpy.inner(x.conj(),x).real )
-    elif pnorm == 'inf':
+
+    if pnorm == "2":
+        return numpy.sqrt(numpy.inner(x.conj(), x).real)
+    elif pnorm == "inf":
         return numpy.max(numpy.abs(x))
     else:
-        raise ValueError('Only the 2-norm and infinity-norm are supported')
+        raise ValueError("Only the 2-norm and infinity-norm are supported")
+
 
 def infinity_norm(A):
     """
@@ -89,21 +100,22 @@ def infinity_norm(A):
     """
 
     if sparse.isspmatrix_csr(A) or sparse.isspmatrix_csc(A):
-        #avoid copying index and ptr arrays
-        abs_A = A.__class__((numpy.abs(A.data),A.indices,A.indptr),shape=A.shape)
-        return (abs_A * numpy.ones((A.shape[1]),dtype=A.dtype)).max()
+        # avoid copying index and ptr arrays
+        abs_A = A.__class__((numpy.abs(A.data), A.indices, A.indptr), shape=A.shape)
+        return (abs_A * numpy.ones((A.shape[1]), dtype=A.dtype)).max()
     elif sparse.isspmatrix(A):
-        return (abs(A) * numpy.ones((A.shape[1]),dtype=A.dtype)).max()
+        return (abs(A) * numpy.ones((A.shape[1]), dtype=A.dtype)).max()
     else:
-        return numpy.dot(numpy.abs(A), numpy.ones((A.shape[1],),dtype=A.dtype)).max()
+        return numpy.dot(numpy.abs(A), numpy.ones((A.shape[1],), dtype=A.dtype)).max()
+
 
 def residual_norm(A, x, b):
     """Compute ||b - A*x||"""
 
-    return norm(numpy.ravel(b) - A*numpy.ravel(x))
+    return norm(numpy.ravel(b) - A * numpy.ravel(x))
 
 
-def axpy(x,y,a=1.0):
+def axpy(x, y, a=1.0):
     """
     Quick level-1 call to blas::
     y = a*x+y
@@ -129,10 +141,11 @@ def axpy(x,y,a=1.0):
     """
     from scipy.lib.blas import get_blas_funcs
 
-    fn = get_blas_funcs(['axpy'], [x,y])[0]
-    fn(x,y,a)
+    fn = get_blas_funcs(["axpy"], [x, y])[0]
+    fn(x, y, a)
 
-#def approximate_spectral_radius(A, tol=0.1, maxiter=10, symmetric=False):
+
+# def approximate_spectral_radius(A, tol=0.1, maxiter=10, symmetric=False):
 #    """approximate the spectral radius of a matrix
 #
 #    Parameters
@@ -156,15 +169,16 @@ def axpy(x,y,a=1.0):
 #        method = eigen_symmetric
 #    else:
 #        method = eigen
-#    
+#
 #    return norm( method(A, k=1, tol=0.1, which='LM', maxiter=maxiter, return_eigenvectors=False) )
+
 
 def _approximate_eigenvalues(A, tol, maxiter, symmetric=None):
     """Used by approximate_spectral_radius and condest"""
 
     from scipy.sparse.linalg import aslinearoperator
 
-    A = aslinearoperator(A) # A could be dense or sparse, or something weird
+    A = aslinearoperator(A)  # A could be dense or sparse, or something weird
 
     ##
     # Choose tolerance for deciding if break-down has occurred
@@ -172,76 +186,76 @@ def _approximate_eigenvalues(A, tol, maxiter, symmetric=None):
     eps = numpy.finfo(numpy.float).eps
     feps = numpy.finfo(numpy.single).eps
     geps = numpy.finfo(numpy.longfloat).eps
-    _array_precision = {'f': 0, 'd': 1, 'g': 2, 'F': 0, 'D': 1, 'G':2}
-    breakdown = {0: feps*1e3, 1: eps*1e6, 2: geps*1e6}[_array_precision[t]]
+    _array_precision = {"f": 0, "d": 1, "g": 2, "F": 0, "D": 1, "G": 2}
+    breakdown = {0: feps * 1e3, 1: eps * 1e6, 2: geps * 1e6}[_array_precision[t]]
 
     if A.shape[0] != A.shape[1]:
-        raise ValueError('expected square matrix')
+        raise ValueError("expected square matrix")
 
-    maxiter = min(A.shape[0],maxiter)
+    maxiter = min(A.shape[0], maxiter)
 
-    v0  = scipy.rand(A.shape[1],1)
+    v0 = scipy.rand(A.shape[1], 1)
     if A.dtype == complex:
-        v0 = v0 + 1.0j * scipy.rand(A.shape[1],1)
+        v0 = v0 + 1.0j * scipy.rand(A.shape[1], 1)
 
     v0 /= norm(v0)
 
-    H  = numpy.zeros((maxiter+1,maxiter), dtype=A.dtype)
+    H = numpy.zeros((maxiter + 1, maxiter), dtype=A.dtype)
     V = [v0]
 
     for j in range(maxiter):
         w = A * V[-1]
-   
+
         if symmetric:
             if j >= 1:
-                H[j-1,j] = beta
+                H[j - 1, j] = beta
                 w -= beta * V[-2]
 
             alpha = numpy.dot(numpy.conjugate(numpy.ravel(w)), numpy.ravel(V[-1]))
-            H[j,j] = alpha
-            w -= alpha * V[-1]  #axpy(V[-1],w,-alpha) 
-            
-            beta = norm(w)
-            H[j+1,j] = beta
+            H[j, j] = alpha
+            w -= alpha * V[-1]  # axpy(V[-1],w,-alpha)
 
-            if (H[j+1,j] < breakdown): 
+            beta = norm(w)
+            H[j + 1, j] = beta
+
+            if H[j + 1, j] < breakdown:
                 break
-            
+
             w /= beta
 
             V.append(w)
-            V = V[-2:] #retain only last two vectors
+            V = V[-2:]  # retain only last two vectors
 
         else:
-            #orthogonalize against Vs
-            for i,v in enumerate(V):
-                H[i,j] = numpy.dot(numpy.conjugate(numpy.ravel(v)), numpy.ravel(w))
-                w = w - H[i,j]*v
+            # orthogonalize against Vs
+            for i, v in enumerate(V):
+                H[i, j] = numpy.dot(numpy.conjugate(numpy.ravel(v)), numpy.ravel(w))
+                w = w - H[i, j] * v
 
-            H[j+1,j] = norm(w)
-            
-            if (H[j+1,j] < breakdown): 
+            H[j + 1, j] = norm(w)
+
+            if H[j + 1, j] < breakdown:
                 break
-            
-            w = w/H[j+1,j] 
+
+            w = w / H[j + 1, j]
             V.append(w)
-   
+
             # if upper 2x2 block of Hessenberg matrix H is almost symmetric,
             # and the user has not explicitly specified symmetric=False,
             # then switch to symmetric Lanczos algorithm
-            #if symmetric is not False and j == 1:
+            # if symmetric is not False and j == 1:
             #    if abs(H[1,0] - H[0,1]) < 1e-12:
             #        #print "using symmetric mode"
             #        symmetric = True
             #        V = V[1:]
             #        H[1,0] = H[0,1]
             #        beta = H[2,1]
-    
-    #print "Approximated spectral radius in %d iterations" % (j + 1)
-    
+
+    # print "Approximated spectral radius in %d iterations" % (j + 1)
+
     from scipy.linalg import eigvals
 
-    return eigvals(H[:j+1,:j+1])
+    return eigvals(H[: j + 1, : j + 1])
 
 
 def approximate_spectral_radius(A, tol=0.1, maxiter=10, symmetric=None):
@@ -293,17 +307,18 @@ def approximate_spectral_radius(A, tol=0.1, maxiter=10, symmetric=None):
     >>> print max([norm(x) for x in eigvals(A)])
     1.0
     """
-    
-    if not hasattr(A, 'rho'):
-        ev = _approximate_eigenvalues(A, tol, maxiter, symmetric) 
+
+    if not hasattr(A, "rho"):
+        ev = _approximate_eigenvalues(A, tol, maxiter, symmetric)
         rho = numpy.max(numpy.abs(ev))
         if sparse.isspmatrix(A):
             A.rho = rho
-        
+
         return rho
 
     else:
         return A.rho
+
 
 def condest(A, tol=0.1, maxiter=25, symmetric=False):
     """Estimates the condition number of A
@@ -344,7 +359,8 @@ def condest(A, tol=0.1, maxiter=25, symmetric=False):
 
     ev = _approximate_eigenvalues(A, tol, maxiter, symmetric)
 
-    return numpy.max([norm(x) for x in ev])/min([norm(x) for x in ev])      
+    return numpy.max([norm(x) for x in ev]) / min([norm(x) for x in ev])
+
 
 def cond(A):
     """Returns condition number of A
@@ -374,19 +390,19 @@ def cond(A):
     >>> condest(numpy.array([[1,0],[0,2]]))
     1.0
 
-    """  
+    """
 
     if A.shape[0] != A.shape[1]:
-        raise ValueError('expected square matrix')
+        raise ValueError("expected square matrix")
 
     if sparse.isspmatrix(A):
         A = A.todense()
 
-    #2-Norm Condition Number
+    # 2-Norm Condition Number
     from scipy.linalg import svd
 
     U, Sigma, Vh = svd(A)
-    return numpy.max(Sigma)/min(Sigma)
+    return numpy.max(Sigma) / min(Sigma)
 
 
 def issymm(A, fast_check=True, tol=1e-6):
@@ -430,13 +446,16 @@ def issymm(A, fast_check=True, tol=1e-6):
         A = numpy.asmatrix(A)
 
     if fast_check:
-        x = scipy.rand(A.shape[0],1)
-        y = scipy.rand(A.shape[0],1)
+        x = scipy.rand(A.shape[0], 1)
+        y = scipy.rand(A.shape[0], 1)
         if A.dtype == complex:
-            x += 1.0j*scipy.rand(A.shape[0],1)
-            y += 1.0j*scipy.rand(A.shape[0],1)
-        diff = float( numpy.abs(numpy.dot( (A*x).conjugate().T, y) - \
-                                numpy.dot(x.conjugate().T, A*y)) )
+            x += 1.0j * scipy.rand(A.shape[0], 1)
+            y += 1.0j * scipy.rand(A.shape[0], 1)
+        diff = float(
+            numpy.abs(
+                numpy.dot((A * x).conjugate().T, y) - numpy.dot(x.conjugate().T, A * y)
+            )
+        )
 
     else:
         # compute the difference, A - A.H
@@ -448,12 +467,13 @@ def issymm(A, fast_check=True, tol=1e-6):
         if numpy.max(diff.shape) == 0:
             diff = 0
         else:
-            diff = numpy.max(numpy.abs(diff)) 
-        
+            diff = numpy.max(numpy.abs(diff))
+
     if diff < tol:
         diff = 0
-    
+
     return diff
+
 
 def pinv_array(a, cond=None):
     """Calculate the Moore-Penrose pseudo inverse of each block of 
@@ -493,8 +513,10 @@ def pinv_array(a, cond=None):
      [ 0.5  0.5]]  
 
     """
-    
-    raise RuntimeError("lapack not available. Please comment line +++from scipy.linalg.lapack import get_lapack_funcs+++")
+
+    raise RuntimeError(
+        "lapack not available. Please comment line +++from scipy.linalg.lapack import get_lapack_funcs+++"
+    )
     n = a.shape[0]
     m = a.shape[1]
 
@@ -502,20 +524,20 @@ def pinv_array(a, cond=None):
         ##
         # Pseudo-inverse of 1 x 1 matrices is trivial
         zero_entries = (a == 0.0).nonzero()[0]
-        a[:] = 1.0/a
+        a[:] = 1.0 / a
         a[zero_entries] = 0.0
         del zero_entries
-    
-    else: 
+
+    else:
         ##
         # The block size is greater than 1
-        
+
         ##
         # Create necessary arrays and function pointers for calculating pinv
-        gelss, = get_lapack_funcs(('gelss',), (numpy.ones((1,), dtype=a.dtype)) )
+        (gelss,) = get_lapack_funcs(("gelss",), (numpy.ones((1,), dtype=a.dtype)))
         RHS = numpy.eye(m, dtype=a.dtype)
         lwork = calc_lwork.gelss(gelss.prefix, m, m, m)[1]
-        
+
         ##
         # Choose tolerance for which singular values are zero in *gelss below
         if cond is None:
@@ -523,14 +545,12 @@ def pinv_array(a, cond=None):
             eps = numpy.finfo(numpy.float).eps
             feps = numpy.finfo(numpy.single).eps
             geps = numpy.finfo(numpy.longfloat).eps
-            _array_precision = {'f': 0, 'd': 1, 'g': 2, 'F': 0, 'D': 1, 'G':2}
-            cond = {0: feps*1e3, 1: eps*1e6, 2: geps*1e6}[_array_precision[t]]
+            _array_precision = {"f": 0, "d": 1, "g": 2, "F": 0, "D": 1, "G": 2}
+            cond = {0: feps * 1e3, 1: eps * 1e6, 2: geps * 1e6}[_array_precision[t]]
 
-        ## 
+        ##
         # Invert each block of a
         for kk in xrange(n):
-            v, a[kk], s, rank, info = gelss(a[kk], RHS, cond=cond, 
-                              lwork=lwork, overwrite_a=True, overwrite_b=False)
-
-
-
+            v, a[kk], s, rank, info = gelss(
+                a[kk], RHS, cond=cond, lwork=lwork, overwrite_a=True, overwrite_b=False
+            )

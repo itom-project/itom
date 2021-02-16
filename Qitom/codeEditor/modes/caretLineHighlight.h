@@ -62,6 +62,9 @@ public:
     QColor background() const;
     void setBackground(const QColor &color);
 
+    bool blocked() const;
+    void setBlocked(bool blocked);
+
     virtual void onInstall(CodeEditor *editor);
     virtual void onStateChanged(bool state);
 
@@ -73,6 +76,7 @@ protected:
 
     QColor m_color;
     TextDecoration::Ptr m_decoration;
+    bool m_blocked; //!< if true, the highlighter is temporarily disabled, even if it is enabled.
 };
 
 } //end namespace ito

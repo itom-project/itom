@@ -498,7 +498,22 @@ namespace ito
         */
         QVector<ito::AddInBase::AddInRef *> * getArgAddIns(void) { return &m_hwDecList; }
 
+        //! returns the user mutex of this plugin, that can be used for user-defined purposes.
+        /* This mutex has no designed task in the plugin, however it can be used by
+        the user to for instance protect a sequence of different calls to this plugin.
+
+        This can be important, if the plugin is for instance a communication object,
+        that is used by different other hardware instances (e.g. a SerialIO to
+        an arduino, that controls different motors, sensors etc.). Then, it might
+        be important, that every hardware plugin object, that uses the serialIO
+        plugin, can protect a setVal / getVal sequence without that any other
+        plugin instance interrupts its. However, it is the task of the user to
+        implement that protection. This mutex can only help for this.
+        */
+        QMutex& getUserMutex();
+
         static int getMaximumThreadCount();
+
         static RetVal setMaximumThreadCount(int threadCount);
 
     protected:

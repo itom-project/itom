@@ -76,11 +76,21 @@ void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDet
 /*static*/ QTextBlock SyntaxHighlighterBase::findPrevNonBlankBlock(const QTextBlock &currentBlock)
 {
     QTextBlock previousBlock = currentBlock.blockNumber() ? currentBlock.previous() : QTextBlock();
+    QString t = previousBlock.text().trimmed();
     // find the previous non-blank block
-    while (previousBlock.isValid() && previousBlock.blockNumber() && previousBlock.text().trimmed() == "")
+    while (previousBlock.isValid() && 
+        previousBlock.text().trimmed() == "")
     {
         previousBlock = previousBlock.previous();
+        t = previousBlock.text().trimmed();
     }
+
+    if (previousBlock.isValid() && 
+        previousBlock.text().trimmed() == "")
+    {
+        previousBlock = QTextBlock();
+    }
+
     return previousBlock;
 }
 
@@ -196,20 +206,14 @@ void SyntaxHighlighterBase::refreshEditor(QSharedPointer<CodeEditorStyle> editor
     }
 
     editor()->setBackground(editorStyle->background());
-    //editor()->setForeground(editorStyle->format(StyleItem::KeyDefault).foreground().color());
     editor()->setWhitespacesForeground(editorStyle->format(StyleItem::KeyWhitespace).foreground().color());
-    Mode::Ptr mode = editor()->modes()->get("CaretLineHighlighterMode");
-    if (mode)
-    {
-        CaretLineHighlighterMode* clh = dynamic_cast<CaretLineHighlighterMode*>(mode.data());
-        clh->setBackground(editorStyle->highlight());
-        clh->refresh();
-    }
 
     Panel::Ptr panel = editor()->panels()->get("FoldingPanel");
+
     if (panel)
     {
         QSharedPointer<FoldingPanel> fp = panel.dynamicCast<FoldingPanel>();
+
         if (fp)
         {
             fp->refreshDecorations(true);

@@ -19,17 +19,17 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-
+  
 project(itom)
-
+  
 message(STATUS "--------------- PROJECT itom -----------------")
  
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+ 
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
-
+ 
 itom_init_cmake_policy(3.15)
 itom_init_core_common_vars()
 

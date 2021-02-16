@@ -46,8 +46,8 @@ namespace ito
     #define MAXVERSION                          CREATEVERSION(255,0,0)    //maximum possible version (that means no maximum version is indicated); ck 17.01.2017 changed maxversion major to 255, avoiding warning about too many bits in bitshift CREATEVERSION macro / Linux
     #define MINVERSION                          CREATEVERSION(0,0,0)         //minimum possible version
 
-    #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};
-    #define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != NULL) { delete[] pointer; pointer = NULL;};
+    #define DELETE_AND_SET_NULL(pointer) if(pointer != nullptr) { delete pointer; pointer = nullptr;};
+    #define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != nullptr) { delete[] pointer; pointer = nullptr;};
 
     #define ItomDoc_VAR(name) static char name[]
     #define ItomDoc_STRVAR(name,str) ItomDoc_VAR(name) = str

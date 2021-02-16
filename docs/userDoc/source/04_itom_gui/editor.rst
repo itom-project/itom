@@ -291,32 +291,74 @@ variable **myfunc** is introduced for the first time.
 
 **New in |itom| 3.2**
 
-.. _gui-editor-class-navigator:
+.. _gui-editor-outline-navigator:
 
-Direction class and method navigator
+Code Outline
 ================================================
 
-Above every script, there are two comboboxes that are part of a class and 
-method navigator. If these combo boxes are not available, you need to 
-enable this navigator in the property dialog, 
-:ref:`tab general <gui-prop-py-general>`. After a configurable number of 
-seconds after the last change in the script, it is analyzed and the combo 
-boxes are adapted with respect to the current structure of the script.
+When a script is loaded or changed, an outline of all methods, classes
+is created. This outline can then be used for multiple purposes.
+Many features can be parameterized by the :
+ref:`script editors <gui-prop-script-editors>` subpage of the property dialog.
+
+One feature is the code navigation bar above each script editor. Its
+visibility can be set by a checkbox in the property dialog. If visible,
+it looks like this:
 
 .. figure:: images/editor-class-navigator.png
     :scale: 100%
     :align: center
 
-The left combobox displays all classes and the global namespace of the 
-script. By clicking on any class name, the cursor jumps to the class 
-and the name is highlighted. The right combobox shows the sub-items that 
-belong to the chosen class or namespace.
+The left combo box shows a **globals** section for all methods,
+that are not part of any classes, as well a list of all classes,
+detected in the current script. If one of these values is selected,
+the cursor is moved to the line, where the class is defined (if it is
+a class) and the right combo box shows all methods, functions, properties...
+that belong to this class or the globals section of the script.
+Again, you can jump to the definition of such a method by selecting an
+entry from the combo box. 
 
-The navigator can distinguish between public and private methods, static 
-methods (with the decorator **@staticmethod**) and specially marked class 
-methods (decorator **@classmethod**). All globally defined methods are
-categorized into the global namespace (**Global Scope**).
+If one moves the cursor into a line, that belongs to a method or
+class, the corresponding entries are immediately displayed in both
+combo boxes.
 
+In general, the outline is updated whenever a script is updated whenever
+a tab is changed or a script is loaded. However, it can also be automatically
+updated after a short delay after the last key press in the editor. This
+delay can also be adjusted in the property dialog.
+
+Fast symbol search popup
+=========================
+
+From **itom 4.1**, another option to easily jump to methods or classes in
+the current script or any opened scripts is provided. To show this popup dialog,
+either select the item **Fast symbol search...** from the **edit** menu of
+the script window or from the context menu of the script editor. Alternatively,
+simply use the **Ctrl + D** shortcut to open the popup.
+
+The popup looks like this:
+
+.. figure:: images/outlineSelectorWidget.png
+    :scale: 100%
+    :align: center
+
+It can be closed again by pressing **Esc** or by clicking anywhere outside of the
+popup. Per default, this popup shows the outline of the current script in the
+tree widget (5). This is also indicated by the leading **@** sign in the filtering
+text box (3) or by the unchecked action (2). If you remove the **@** sign or toggle
+the action, the outlines of all opened scripts is displayed, where the top level
+items of the tree widget are the filenames.
+
+The entries in the tree widget are usually sorted by their order in the script(s).
+However, it is also possible to sort them alphabetically in ascending order, if the
+action (1) is checked.
+
+To jump to any symbol, either double click the symbol (class, method...) or
+use the up / down key arrows to select the desired item and press **Return** or
+**Enter**. This will also close the dialog.
+
+It is also possible to filter the displayed values by typing a part of the names
+in the text box (4).
 
 .. _gui-editor-syntax-check:
 
@@ -410,3 +452,35 @@ Since there are a lot of icons, it is possible to filter the list by typing part
 of an icon filename into the search box on top of the icon list. Instead of using 
 the **Copy to clipboard** button, it is also possible to copy the 
 path of the selected icon from the textbox below the icon list.
+
+.. _gui-editor-auto-code-formatter:
+
+Auto Code Formatting
+========================
+
+itom provides the possibility to call an auto code formatting tool, that get the
+current script as input stream and returns the formatted version. If this version
+is different than the initial version, the code is replaced by the formatted
+code and the current script is marked as changed. The changed version can be reverted
+via the undo button.
+
+The auto code formatting feature can either be run by a button in the toolbar of
+a script, by the menu **edit** of a script editor window or by the shortcut 
+**Ctrl + Alt + I**.
+
+.. figure:: images/scripteditor_codeautoformat.png
+    :scale: 100%
+    :align: center
+
+Usually, the auto code formatting tool depends on further 3rd party Python packages.
+In general it is possible to use any loadable module, that accepts a code string
+via its input stream and returns the result via the output stream. Common packages are
+**black**, **yapf** or **autopep8**.
+
+If the button is pressed, and the auto formatting cannot be executed successfully,
+an error message appears and (if sufficient user rights are available) the user
+can check to disable this option for the future. 
+
+For configuring the auto code formatting, please see the 
+:ref:`auto code formatting <gui-prop-auto-code-format>`
+page of the itom property dialog.

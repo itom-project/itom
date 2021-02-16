@@ -204,6 +204,13 @@
     </message>
 </context>
 <context>
+    <name>PathLineEditPrivate</name>
+    <message>
+        <source>Open a dialog</source>
+        <translation type="vanished">Dialog öffnen</translation>
+    </message>
+</context>
+<context>
     <name>PlotInfoMarker</name>
     <message>
         <source>Property</source>
@@ -347,6 +354,13 @@
     <message>
         <source>SliderSpinBoxWidget</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SearchBoxPrivate</name>
+    <message>
+        <source>Search...</source>
+        <translation type="vanished">Suchen...</translation>
     </message>
 </context>
 <context>

@@ -98,12 +98,13 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
     
     if(fullNameParentItem == "")
     {
-        loadDictionaryRec(obj,"",&m_rootItem,deleteList);
+        loadDictionaryRec(obj, "", &m_rootItem, deleteList);
         emit updateAvailable(&m_rootItem, fullNameParentItem, deleteList);
     }
     else
     {
         QStringList nameSplit = fullNameParentItem.split(ito::PyWorkspaceContainer::delimiter);
+
         if(nameSplit[0] == "") 
         {
             nameSplit.removeFirst();
@@ -115,6 +116,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
         while(nameSplit.count() > 0)
         {
             it = parent->m_childs.find(nameSplit.takeFirst());
+
             if(it != parent->m_childs.end())
             {
                 parent = *it;

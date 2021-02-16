@@ -709,7 +709,7 @@ applied to. It is not part of the call statement in |Python|.
     
     returns a tuple of all selected row indices
 
-.. py:function:: Tuple[str] QListWidget.selectedTexts()
+.. py:function:: QListWidget.selectedTexts() -> Tuple[str]
     
     returns a tuple of all selected values
 
@@ -730,7 +730,7 @@ applied to. It is not part of the call statement in |Python|.
     
     sets the text of the item from the given row or raises an exception if the item does not exist
     
-    *New in **itom** > 3.2.1*
+    *New in itom > 3.2.1*
 
 .. py:function:: QListWidget.checkState(row: int) -> int[Qt.CheckState]
     
@@ -845,6 +845,33 @@ applied to. It is not part of the call statement in |Python|.
     set the flags of the item in the given row and column based on the flags bitmask (use an integer). 
     You have to set the flags properly before changing the state.
     For possible values of flags, see the enumeration `Qt::ItemFlags`_.
+
+.. py:function:: QTableWidget.sortItems(column: int, sortOrder: Qt.SortOrder)
+    
+    Sorts all the rows in the table widget based on a given column index
+    and the sort order. For possible values of the sort order, see the 
+    enumeration `Qt::SortOrder`_.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualColumn(logicalColumn: int) -> int
+    
+    Returns the visual column of the given ``logicalColumn``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualRow(row: int) -> int
+    
+    Returns the visual row of the given ``logicalRow``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.setCurrentCell(row: int, column: int)
+    
+    Sets the current cell to be the cell at position (row, column).
+    Depending on the current selection mode, the cell may also be selected.
+    
+    **New in itom 4.1**
 
 .. py:function:: QTableView.horizontalHeader() -> uiItem
     

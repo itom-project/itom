@@ -2123,7 +2123,7 @@ fromXYZ(XYZ, deleteNaN = False) -> pointCloud \n\
 \n\
 Creates a point cloud from three X,Y,Z dataObjects or from one 3xMxN or Mx3 dataObject. \n\
 \n\
-The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or n\
+The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or \n\
 ``Inf`` values are within the :class:`pointCloud`. :attr:`dense` is ``True`` forever, if \n\
 ``deleteNaN = True``. \n\
 \n\
@@ -2297,7 +2297,7 @@ fromXYZI(XYZ, I, deleteNaN = False) -> pointCloud \n\
 \n\
 Creates a point cloud from four X, Y, Z, I dataObjects or from one 3xMxN or Mx3 dataObject and one I dataObject. \n\
 \n\
-The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or n\
+The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or \n\
 ``Inf`` values are within the :class:`pointCloud`. :attr:`dense` is ``True`` forever, if \n\
 ``deleteNaN = True``. \n\
 \n\
@@ -2461,7 +2461,7 @@ fromXYZRGBA(XYZ, color, deleteNaN = False) -> pointCloud \n\
 \n\
 Creates a point cloud from three X, Y, Z, color dataObjects or from one 3xMxN or Mx3 dataObject and one color dataObject. \n\
 \n\
-The created point cloud is not organized(``height = 1``) and ``dense``, if no ``NaN`` or n\
+The created point cloud is not organized(``height = 1``) and ``dense``, if no ``NaN`` or \n\
 ``Inf`` values are within the : class :`pointCloud`. : attr : `dense` is ``True`` forever, if \n\
 ``deleteNaN = True``. \n\
 \n\

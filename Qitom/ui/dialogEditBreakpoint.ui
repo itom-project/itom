@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>396</width>
-    <height>286</height>
+    <height>222</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -214,6 +214,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>txtCondition</tabstop>
+  <tabstop>spinBoxIgnoreCount</tabstop>
+  <tabstop>checkTemporaryBP</tabstop>
+  <tabstop>checkEnabled</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
