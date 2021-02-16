@@ -454,7 +454,7 @@ void PyDocstringGeneratorMode::parseArgList(
         }
     }
 
-    if (lastpos < argstr.size() - 1)
+    if (lastpos < argstr.size())
     {
         // append last section
         args.append(argstr.mid(lastpos));
