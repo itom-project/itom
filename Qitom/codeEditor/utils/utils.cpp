@@ -409,11 +409,24 @@ namespace Utils
         return text.split("\n");
     }
 
+    QString signatureWordWrapCropString(const QString &str, int totalMaxLineWidth)
+    {
+        if (totalMaxLineWidth > 0)
+        {
+            if (str.size() > totalMaxLineWidth)
+            {
+                return str.left(totalMaxLineWidth - 3) + "...";
+            }
+        }
+
+        return str;
+    }
+
     //---------------------------------------------------------------------------
     /* Wraps a signature by its arguments, separated by ', ' into
     multiple lines, where each line has a maximum length of 'width'. 
     Each following line is indented by four spaces.*/
-    QString signatureWordWrap(QString signature, int width)
+    QString signatureWordWrap(QString signature, int width, int totalMaxLineWidth /*= -1*/)
     {
         QString result;
         int j, i;
@@ -431,7 +444,7 @@ namespace Utils
 
             if (j > 0)
             {
-                result += signature.left(j);
+                result += signatureWordWrapCropString(signature.left(j), totalMaxLineWidth);
                 result += ",\n    ";
                 signature = signature.mid(j + 2);
 
@@ -452,7 +465,7 @@ namespace Utils
             }
         }
 
-        return result + signature;
+        return result + signatureWordWrapCropString(signature, totalMaxLineWidth);
     }
 
     //---------------------------------------------------------------------------
@@ -464,23 +477,41 @@ namespace Utils
     QStringList parseStyledTooltipsFromSignature(
         const QStringList &signatures, 
         const QString &docstring,
-        int maxLength /*= 44*/)
+        int maxLineLength /*= 44*/,
+        int maxDocStrLength /*= -1*/)
     {
         QStringList styledTooltips;
         QStringList defs = signatures;
 
-        
-
         for (int i = 0; i < defs.size(); ++i)
         {
-            if (defs[i].size() > maxLength)
+            if (defs[i].size() > maxLineLength)
             {
-                defs[i] = Utils::signatureWordWrap(defs[i], maxLength);
+                defs[i] = Utils::signatureWordWrap(defs[i], maxLineLength, 3 * maxLineLength);
             }
         }
 
-        QString sigs = defs.join("\n");
+        // sometimes one element of a signature is still very long. Then cut
+        if (defs.size() > 20)
+        {
+            QStringList newDefs;
 
+            for (int i = 0; i < 10; ++i)
+            {
+                newDefs << defs[i];
+            }
+
+            newDefs << "...";
+
+            for (int i = defs.size() - 10; i < defs.size(); ++i)
+            {
+                newDefs << defs[i];
+            }
+
+            defs = newDefs;
+        }
+
+        QString sigs = defs.join("\n");
         sigs = sigs.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
         // search for the last occurence of ") ->" and replaces the arrow
@@ -510,6 +541,11 @@ namespace Utils
         }
 
         QString docstr = docstring.toHtmlEscaped().replace('\n', br);
+
+        if (maxDocStrLength > 3 && docstr.size() > maxDocStrLength)
+        {
+            docstr = docstr.left(maxDocStrLength - 3) + "...";
+        }
 
         if (sigs != "" && docstr != "")
         {

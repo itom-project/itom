@@ -31,6 +31,7 @@
 #include "../codeEditor/panels/breakpointPanel.h"
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
@@ -133,6 +134,10 @@ public:
 
     QSharedPointer<OutlineItem> parseOutline() const;
 
+    //!< returns true if the current line can be a trigger to insert a template docstring
+    //!< for a possible method / function, this line belongs to.
+    bool currentLineCanHaveDocstring() const;
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
@@ -210,6 +215,7 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;
     static int currentMaximumUID;
@@ -221,6 +227,7 @@ private:
     bool m_outlineTimerEnabled; //!<
     int m_currentLineIndex; //!< current line index of the cursor
     QSharedPointer<OutlineItem> m_rootOutlineItem;
+    mutable bool m_outlineDirty;
     QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
     QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator
     QRegularExpression m_regExpMethodStart; //!< regular expression to parse the start of a method definition
@@ -264,6 +271,7 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
+    void menuGenerateDocstring();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
@@ -282,7 +290,6 @@ private slots:
     void onBookmarkAdded(const BookmarkItem &item);  
     void onBookmarkDeleted(const BookmarkItem &item);
     
-
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);
     RetVal editBreakpoint(int line);
@@ -304,10 +311,9 @@ private slots:
 
     void dumpFoldsToConsole(bool);
     void onCursorPositionChanged();
-
+    void onTextChanged();
     void tabChangeRequest();
 
-    
     void pyCodeFormatterDone(bool success, QString code);
 };
 

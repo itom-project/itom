@@ -81,7 +81,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel),
     m_currentLineIndex(-1),
-    m_textBlockLineIdxAboutToBeDeleted(-1)
+    m_textBlockLineIdxAboutToBeDeleted(-1),
+    m_outlineDirty(true)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -168,6 +169,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+    connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 
     connect(m_pBookmarkModel, SIGNAL(bookmarkAdded(BookmarkItem)), this, SLOT(onBookmarkAdded(BookmarkItem)));
     connect(m_pBookmarkModel, SIGNAL(bookmarkDeleted(BookmarkItem)), this, SLOT(onBookmarkDeleted(BookmarkItem)));
@@ -251,6 +253,9 @@ RetVal ScriptEditorWidget::initEditor()
     m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
+
+    m_pyDocstringGeneratorMode = QSharedPointer<PyDocstringGeneratorMode>(new PyDocstringGeneratorMode("PyDocstringGeneratorMode"));
+    modes()->append(m_pyDocstringGeneratorMode.dynamicCast<ito::Mode>());
 
     m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
@@ -384,6 +389,17 @@ void ScriptEditorWidget::loadSettings()
         pyCodeFormatAction->second->setEnabled(m_autoCodeFormatCmd != "");
     }
 
+    QString style = settings.value("docstringGeneratorStyle", "googleStyle").toString();
+
+    if (style == "numpyStyle")
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::NumpyStyle);
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::GoogleStyle);
+    }
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -445,6 +461,12 @@ void ScriptEditorWidget::initMenus()
             this, SLOT(menuPyCodeFormatting()), QKeySequence(tr("Ctrl+Alt+I", "QShortcut"))
         );
     m_editorMenuActions["formatFile"]->setVisible(false);
+
+    m_editorMenuActions["generateDocstring"] =
+        editorMenu->addAction(
+            QIcon(), tr("Generate Docstring"),
+            this, SLOT(menuGenerateDocstring()), QKeySequence(tr("Ctrl+Alt+D", "QShortcut"))
+        );
     
     editorMenu->addSeparator();
     
@@ -565,6 +587,7 @@ bool ScriptEditorWidget::keepIndentationOnPaste() const
     return m_keepIndentationOnPaste;
 }
 
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
 {
     m_keepIndentationOnPaste = value;
@@ -578,6 +601,15 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    if (lineIndex >= 0 && !m_pythonBusy)
+    {
+        //update outline
+        m_rootOutlineItem = parseOutline();
+    }
+
     m_editorMenuActions["cut"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
@@ -585,9 +617,23 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
-    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy);   
+    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy); 
+    m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["generateDocstring"]->setEnabled(
+        !m_pythonBusy && 
+        currentLineCanHaveDocstring()
+    );
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
+}
+
+//-------------------------------------------------------------------------------------
+bool ScriptEditorWidget::currentLineCanHaveDocstring() const
+{
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    return !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1195,6 +1241,24 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 }
 
 //-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuGenerateDocstring()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    QString quotes = settings.value("docstringGeneratorQuotes", "doubleQuotes").toString();
+    settings.endGroup();
+
+    if (quotes == "apostrophe")
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "'''");
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "\"\"\"");
+    }
+}
+
+//-------------------------------------------------------------------------------------
 //!< executes and undo or redo action and tries to preserve bookmarks and breakpoints
 void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 {
@@ -1210,10 +1274,11 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     QList<BreakPointItem> breakpointsCache;
     QList<BookmarkItem> bookmarksCacheNew;
     QList<BreakPointItem> breakpointsCacheNew;
+    int numLines = lineCount();
 
     foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
     {
-        if (item.isValid())
+        if (item.isValid() && item.lineIdx < numLines && item.lineIdx >= 0)
         {
             bookmarksCache << item;
         }
@@ -1226,7 +1291,10 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 
         foreach(const BreakPointItem &item, allBreakpoints)
         {
-            breakpointsCache << item;
+            if (item.lineIdx >= 0 && item.lineIdx < numLines)
+            {
+                breakpointsCache << item;
+            }
         }
     }
 
@@ -3023,8 +3091,14 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem> &pare
 //-------------------------------------------------------------------------------------
 QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
 {
+    if (!m_outlineDirty)
+    {
+        return m_rootOutlineItem;
+    }
+
     const QTextDocument* doc = document();
     bool valid;
+    m_outlineDirty = false;
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
@@ -3056,7 +3130,6 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
     return root;
 }
 
-
 //-------------------------------------------------------------------------------------
 /* slot called if the outline timer expired. This is the case if the document has
 been changed a very short time ago. Therefore, the outline has to be parsed again
@@ -3072,7 +3145,7 @@ void ScriptEditorWidget::outlineTimerElapsed()
     emit outlineModelChanged(this, m_rootOutlineItem);
 }
 
-//----------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::dumpFoldsToConsole(bool)
 {
     int lvl;
@@ -3218,6 +3291,12 @@ void ScriptEditorWidget::onCursorPositionChanged()
 void ScriptEditorWidget::tabChangeRequest()
 {
     emit tabChangeRequested();
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::onTextChanged()
+{
+    m_outlineDirty = true;
 }
 
 } // end namespace ito
