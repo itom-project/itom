@@ -70,12 +70,9 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_fontFamily("Verdana"),
     m_selectLineOnCopyEmpty(true),
     m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "),
-    m_dirty(false),
-    m_cleaning(false),
     m_pPanels(NULL),
     m_pDecorations(NULL),
     m_pModes(NULL),
-    m_saveOnFocusOut(false),
     m_lastMousePos(QPoint(0,0)),
     m_prevTooltipBlockNbr(-1),
     m_pTooltipsRunner(NULL),
@@ -93,7 +90,6 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
 
     // connect slots
-    connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(update()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(update()));
@@ -495,21 +491,6 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
 }
 
 //-----------------------------------------------------------
-/*
-Automatically saves editor content on focus out.
-Default is False.
-*/
-bool CodeEditor::saveOnFocusOut() const
-{
-    return m_saveOnFocusOut;
-}
-
-void CodeEditor::setSaveOnFocusOut(bool value)
-{
-    m_saveOnFocusOut = value;
-}
-
-//-----------------------------------------------------------
 QList<VisibleBlock> CodeEditor::visibleBlocks() const
 {
     return m_visibleBlocks;
@@ -519,18 +500,6 @@ QList<VisibleBlock> CodeEditor::visibleBlocks() const
 void CodeEditor::emitDirtyChanged(bool state)
 {
     emit dirtyChanged(state);
-}
-
-//-----------------------------------------------------------
-void CodeEditor::onTextChanged()
-{
-    // Adjust dirty flag depending on editor's content
-    if (!m_cleaning)
-    {
-        int line, column;
-        cursorPosition(line, column);
-        m_modifiedLines << line;
-    }
 }
 
 //-----------------------------------------------------------
@@ -848,11 +817,6 @@ void CodeEditor::focusInEvent(QFocusEvent *e)
 */
 void CodeEditor::focusOutEvent(QFocusEvent *e)
 {
-    if (m_saveOnFocusOut && m_dirty ) //todo:  && this->file.path)
-    {
-        //TODO
-        //file.save();
-    }
     QPlainTextEdit::focusOutEvent(e);
 }
 
@@ -1405,7 +1369,7 @@ QString CodeEditor::currentLineText() const
 
 //------------------------------------------------------------
 /*
-Extends setPlainText to force the user to setup an encoding and amime type.
+Extends setPlainText to force the user to setup an encoding and a mime type.
 
 Emits the new_text_set signal.
 
@@ -1416,9 +1380,6 @@ Emits the new_text_set signal.
 */
 void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= ""*/, const QString &encoding /*= ""*/)
 {
-    //TODO: mimeType, encoding
-    m_modifiedLines.clear();
-
     QPlainTextEdit::setPlainText(text);
     emit newTextSet();
     setRedoAvailable(false);

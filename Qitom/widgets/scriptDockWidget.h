@@ -158,6 +158,7 @@ private:
     ShortcutAction *m_indentAction;
     ShortcutAction *m_unindentAction;
     ShortcutAction *m_autoCodeFormatAction;
+    ShortcutAction *m_pyDocstringGeneratorAction;
     ShortcutAction *m_scriptRunAction;
     ShortcutAction *m_scriptRunSelectionAction;
     ShortcutAction *m_scriptDebugAction;
@@ -282,6 +283,7 @@ private slots:
     void mnuInsertCodec();
     void mnuCopyFilename();
     void mnuPyCodeFormatting();
+    void mnuPyDocstringGenerator();
     
 
     void menuLastFilesAboutToShow();

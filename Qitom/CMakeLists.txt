@@ -346,6 +346,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
@@ -374,7 +375,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
@@ -417,6 +419,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
@@ -471,6 +474,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
@@ -585,6 +589,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCodeFormat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.cpp
@@ -648,6 +653,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
