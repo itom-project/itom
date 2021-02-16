@@ -570,6 +570,24 @@ This property page is divided into the following parts:
     texts), are not parsed by the python syntax highlighted, but they are
     styled with the specific styles **Stream Output** or **Stream Error**.
 
+.. _gui-prop-docstring-generator:
+
+Docstring Generator
+--------------------
+
+In the section :ref:`docstring generator <gui-editor-docstring-generator>` of the 
+script editor, there is explained how to automatically insert a pre-filled 
+docstring for methods, functions or properties.
+
+In this property page, this feature can be configured:
+
+1. Style: Choose if the **Google Style** or **Numpy Docstring Style** should
+   be applied. For more information see 
+   `here <https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html>`_.
+2. Quote characters: Choose between if the docstring should be wrapped by
+   three double quotes (""") or by three apostrophes (''').
+
+
 Section Workspace
 ===================
 

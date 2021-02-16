@@ -150,11 +150,13 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
             cursor.removeSelectedText();
+            cursor.movePosition(QTextCursor::PreviousBlock);
             insertDocstring(cursor, "\"\"\"");
         }
         else if (cursor.selectedText().trimmed() == "'''")
         {
             cursor.removeSelectedText();
+            cursor.movePosition(QTextCursor::PreviousBlock);
             insertDocstring(cursor, "'''");
         }
     }
