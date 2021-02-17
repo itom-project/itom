@@ -596,6 +596,8 @@ void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 {
+    m_wordHoverTooltipMode->hideTooltip();
+
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     int lineFrom, indexFrom, lineTo, indexTo;
 
