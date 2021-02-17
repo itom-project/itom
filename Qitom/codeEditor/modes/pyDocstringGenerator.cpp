@@ -277,6 +277,8 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
+
+    e->textChanged();
 }
 
 //-------------------------------------------------------------------------------------

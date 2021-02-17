@@ -746,6 +746,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
             //deny soft line break. not desired in editor.
             e->accept(); //do not further process this key
         }
+        else if ((e->modifiers() & Qt::AltModifier) 
+            && (e->modifiers() & Qt::ControlModifier) 
+            && (e->key() == Qt::Key_D))
+        {
+            // ignore this key, even if the generate docstring action is currently disabled.
+            e->accept();
+        }
 
         if (!e->isAccepted())
         {

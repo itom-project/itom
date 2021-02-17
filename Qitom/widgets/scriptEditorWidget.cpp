@@ -710,6 +710,8 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
     {
         AbstractCodeEditorWidget::insertFromMimeData(source);
     }
+
+    onTextChanged();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -950,6 +952,8 @@ void ScriptEditorWidget::menuComment()
         {
             setCursorPosition(lineTo, indexTo);
         }
+
+        onTextChanged();
     }
 }
 
@@ -1136,6 +1140,7 @@ void ScriptEditorWidget::menuInsertCodec()
             currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
             currentCursor.insertText(newText);
             setModified(true);
+            onTextChanged();
         }
     }
 }
@@ -1332,7 +1337,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     // are immediately removed. Therefore, add non-existing bookmarks
     // and breakpoints from the cache again will be executed by a small
     // delay.
-    QTimer::singleShot(20, this, std::bind(
+    QTimer::singleShot(75, this, std::bind(
         &ScriptEditorWidget::addBookmarksAndBreakpointsIfNotExist, 
         this, 
         bookmarksCache, 
@@ -1576,6 +1581,8 @@ void ScriptEditorWidget::replaceSelectionAndKeepBookmarksAndBreakpoints(
             }
         }
     }
+
+    onTextChanged();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3140,6 +3147,7 @@ This method is also directly called if a new file is opened in this editor.
 void ScriptEditorWidget::outlineTimerElapsed()
 {
     m_outlineTimer->stop();
+    m_outlineDirty = true;
     m_rootOutlineItem = parseOutline();
 
     emit outlineModelChanged(this, m_rootOutlineItem);
@@ -3268,6 +3276,9 @@ void ScriptEditorWidget::onCursorPositionChanged()
         currentGlobalEditorCursorPos.cursor = c;
         currentGlobalEditorCursorPos.editorUID = m_uid;
     }
+
+    // update the actions of the script dock widget, e.g. for docstring generator...
+    emit updateActions();
 }
 
 //-----------------------------------------------------------

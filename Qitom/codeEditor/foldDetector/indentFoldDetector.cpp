@@ -61,7 +61,7 @@ IndentFoldDetector::IndentFoldDetector(QObject *parent /*= NULL*/) :
         "^\\s*\\)\\s*(->\\s*.+)?:\\s*(#.*)?$"
     );
 
-    bool a = m_lastSignatureLine.match("):").hasMatch();
+    /*bool a = m_lastSignatureLine.match("):").hasMatch();
     a = m_lastSignatureLine.match("   ) :    ").hasMatch();
     a = m_lastSignatureLine.match("  ) -> :  ").hasMatch();
     a = m_lastSignatureLine.match(") -> 'class' :").hasMatch();
@@ -70,7 +70,7 @@ IndentFoldDetector::IndentFoldDetector(QObject *parent /*= NULL*/) :
     a = m_lastSignatureLine.match("):#sfdwer").hasMatch();
     a = m_lastSignatureLine.match("   ) :    # :)'").hasMatch();
     a = m_lastSignatureLine.match("  ) -> :  #wersdf").hasMatch();
-    a = m_lastSignatureLine.match(") -> 'class' :'lwers").hasMatch();
+    a = m_lastSignatureLine.match(") -> 'class' :'lwers").hasMatch();*/
 }
 
 //--------------------------------------------------
