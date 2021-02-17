@@ -5218,6 +5218,7 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
 */
 template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObject * src2, DataObject * dst, int cmpOp)
 {
+    /*
     switch (cmpOp)
     {
     case(cv::CMP_EQ):
@@ -5226,10 +5227,8 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
         const cv::Mat *src1mat;
         const cv::Mat *src2mat;
         cv::Mat *dest;
-        bool equal = (cmpOp == cv::CMP_EQ);
-        cv::Mat destTemp;
-        ito::complex64 *src1ptr;
-        ito::complex64 *src2ptr;
+        const ito::complex64 *src1ptr;
+        const ito::complex64 *src2ptr;
         ito::uint8 *destptr;
 
         for (int nmat = 0; nmat < numMats; nmat++)
@@ -5237,8 +5236,6 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
             src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
             src2mat = src2->get_mdata()[src2->seekMat(nmat, numMats)];
             dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
-
-            cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5251,13 +5248,13 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
 #endif
                 for (int r = 0; r < src1mat->rows; ++r)
                 {
-                    src1ptr = (ito::complex64 *) src1mat->ptr(r);
-                    src2ptr = (ito::complex64 *) src2mat->ptr(r);
-                    destptr = (ito::uint8 *) dest->ptr(r);
+                    src1ptr = src1mat->ptr<const ito::complex64>(r);
+                    src2ptr = src2mat->ptr<const ito::complex64>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
 
                     for (int c = 0; c < src1mat->cols; ++c)
                     {
-                        destptr[c] = (src1ptr[c].real() == src2ptr[c].real() && src1ptr[c].imag() == src2ptr[c].imag()) ? 255 : 0;
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<float>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<float>::epsilon()) ? 255 : 0;
                     }
                 }
 #if (USEOMP)
@@ -5272,10 +5269,8 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
         const cv::Mat *src1mat;
         const cv::Mat *src2mat;
         cv::Mat *dest;
-        bool equal = (cmpOp == cv::CMP_EQ);
-        cv::Mat destTemp;
-        ito::complex64 *src1ptr;
-        ito::complex64 *src2ptr;
+       const  ito::complex64 *src1ptr;
+        const ito::complex64 *src2ptr;
         ito::uint8 *destptr;
 
         for (int nmat = 0; nmat < numMats; nmat++)
@@ -5283,8 +5278,6 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
             src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
             src2mat = src2->get_mdata()[src2->seekMat(nmat, numMats)];
             dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
-
-            cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5297,13 +5290,13 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
 #endif
                 for (int r = 0; r < src1mat->rows; ++r)
                 {
-                    src1ptr = (ito::complex64 *) src1mat->ptr(r);
-                    src2ptr = (ito::complex64 *) src2mat->ptr(r);
-                    destptr = (ito::uint8 *) dest->ptr(r);
+                    src1ptr = src1mat->ptr<const ito::complex64>(r);
+                    src2ptr = src2mat->ptr<const ito::complex64>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
 
                     for (int c = 0; c < src1mat->cols; ++c)
                     {
-                        destptr[c] = (src1ptr[c].real() == src2ptr[c].real() && src1ptr[c].imag() == src2ptr[c].imag()) ? 0 : 255;
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<float>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<float>::epsilon()) ? 0 : 255;
                     }
                 }
 #if (USEOMP)
@@ -5318,6 +5311,7 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
         break;
     }
     }
+    */
     return ito::retOk;
 }
 
@@ -5327,14 +5321,14 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
 */
 template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataObject * src2, DataObject * dst, int cmpOp)
 {
+    /*
     if (cmpOp == cv::CMP_EQ || cmpOp == cv::CMP_NE)
     {
         int numMats = src1->getNumPlanes();
         const cv::Mat *src1mat;
         const cv::Mat *src2mat;
         cv::Mat *dest;
-        bool equal = (cmpOp == cv::CMP_EQ);
-        cv::Mat destTemp;
+         cv::Mat destTemp;
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
@@ -5371,6 +5365,7 @@ template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataOb
     {
         cv::error(cv::Exception(CV_StsAssert, "complex128 is an unorderable type.", "", __FILE__, __LINE__));
     }
+    */
     return ito::retOk;
 }
 
@@ -5468,12 +5463,12 @@ DataObject DataObject::operator == (DataObject &rhs)
         int matNum2 = 0;
         int resMatNum = 0;
 
-        cv::Mat *src1;
-        cv::Mat *src2;
+        const cv::Mat *src1;
+        const cv::Mat *src2;
         cv::Mat *dest;
         ito::uint8 *destptr;
-        ito::complex64 *src1ptr;
-        ito::complex64 *src2ptr;
+        const ito::complex64 *src1ptr;
+        const ito::complex64 *src2ptr;
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5491,7 +5486,16 @@ DataObject DataObject::operator == (DataObject &rhs)
                 dest = resMat.get_mdata()[resMatNum];
 
                 for (int r = 0; r < src1->rows; ++r) {
-                    src1ptr = (ito::complex64*)src1->ptr(r);
+                    
+                    src1ptr = src1->ptr<const ito::complex64>(r);
+                    src2ptr = src2->ptr<const ito::complex64>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
+
+                    for (int c = 0; c < src1->cols; ++c)
+                    {
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<float>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<float>::epsilon()) ? 255 : 0;
+                    }
+                    /*src1ptr = (ito::complex64*)src1->ptr(r);
                     src2ptr = (ito::complex64*)src2-> ptr(r);
                     destptr = (ito::uint8*)dest->ptr(r);
 
@@ -5499,7 +5503,7 @@ DataObject DataObject::operator == (DataObject &rhs)
                     {
                         destptr[x] = (src1ptr[x].real() == src2ptr[x].real() && src1ptr[x].imag() == src2ptr[x].imag()) ? 255 : 0;
                     }
-
+                    */
                 }
 #if(USEOMP)
             }
@@ -5514,12 +5518,12 @@ DataObject DataObject::operator == (DataObject &rhs)
         int matNum2 = 0;
         int resMatNum = 0;
 
-        cv::Mat *src1;
-        cv::Mat *src2;
+        const cv::Mat *src1;
+        const cv::Mat *src2;
         cv::Mat *dest;
         ito::uint8 *destptr;
-        ito::complex128 *src1ptr;
-        ito::complex128 *src2ptr;
+        const ito::complex128 *src1ptr;
+        const ito::complex128 *src2ptr;
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5537,6 +5541,17 @@ DataObject DataObject::operator == (DataObject &rhs)
                 dest = resMat.get_mdata()[resMatNum];
 
                 for (int r = 0; r < src1->rows; ++r) {
+                    
+                    src1ptr = src1->ptr<const ito::complex128>(r);
+                    src2ptr = src2->ptr<const ito::complex128>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
+
+                    for (int c = 0; c < src1->cols; ++c)
+                    {
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<double>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<double>::epsilon()) ? 255 : 0;
+                    }
+
+                    /*
                     src1ptr = (ito::complex128*)src1->ptr(r);
                     src2ptr = (ito::complex128*)src2->ptr(r);
                     destptr = (ito::uint8*)dest->ptr(r);
@@ -5545,7 +5560,7 @@ DataObject DataObject::operator == (DataObject &rhs)
                     {
                         destptr[x] = (src1ptr[x].real() == src2ptr[x].real() && src1ptr[x].imag() == src2ptr[x].imag()) ? 255 : 0;
                     }
-
+                    */
                 }
 #if(USEOMP)
             }
@@ -5584,12 +5599,12 @@ DataObject DataObject::operator != (DataObject &rhs)
         int matNum2 = 0;
         int resMatNum = 0;
 
-        cv::Mat *src1;
-        cv::Mat *src2;
+        const cv::Mat *src1;
+        const cv::Mat *src2;
         cv::Mat *dest;
         ito::uint8 *destptr;
-        ito::complex64 *src1ptr;
-        ito::complex64 *src2ptr;
+        const ito::complex64 *src1ptr;
+        const ito::complex64 *src2ptr;
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5607,6 +5622,16 @@ DataObject DataObject::operator != (DataObject &rhs)
                 dest = resMat.get_mdata()[resMatNum];
 
                 for (int r = 0; r < src1->rows; ++r) {
+
+                    src1ptr = src1->ptr<const ito::complex64>(r);
+                    src2ptr = src2->ptr<const ito::complex64>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
+
+                    for (int c = 0; c < src1->cols; ++c)
+                    {
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<float>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<float>::epsilon()) ? 0 : 255;
+                    }
+                    /*
                     src1ptr = (ito::complex64*)src1->ptr(r);
                     src2ptr = (ito::complex64*)src2->ptr(r);
                     destptr = (ito::uint8*)dest->ptr(r);
@@ -5615,7 +5640,7 @@ DataObject DataObject::operator != (DataObject &rhs)
                     {
                         destptr[x] = (src1ptr[x].real() == src2ptr[x].real() && src1ptr[x].imag() == src2ptr[x].imag()) ? 0 : 255;
                     }
-
+                    */
                 }
 #if(USEOMP)
             }
@@ -5630,12 +5655,12 @@ DataObject DataObject::operator != (DataObject &rhs)
         int matNum2 = 0;
         int resMatNum = 0;
 
-        cv::Mat *src1;
-        cv::Mat *src2;
+        const cv::Mat *src1;
+        const cv::Mat *src2;
         cv::Mat *dest;
         ito::uint8 *destptr;
-        ito::complex128 *src1ptr;
-        ito::complex128 *src2ptr;
+        const ito::complex128 *src1ptr;
+        const ito::complex128 *src2ptr;
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -5653,6 +5678,16 @@ DataObject DataObject::operator != (DataObject &rhs)
                 dest = resMat.get_mdata()[resMatNum];
 
                 for (int r = 0; r < src1->rows; ++r) {
+
+                    src1ptr = src1->ptr<const ito::complex128>(r);
+                    src2ptr = src2->ptr<const ito::complex128>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
+
+                    for (int c = 0; c < src1->cols; ++c)
+                    {
+                        destptr[c] = (std::abs(src1ptr[c].real() - src2ptr[c].real()) < std::numeric_limits<double>::epsilon() && std::abs(src1ptr[c].imag() - src2ptr[c].imag()) < std::numeric_limits<double>::epsilon()) ? 0 : 255;
+                    }
+                    /*
                     src1ptr = (ito::complex128*)src1->ptr(r);
                     src2ptr = (ito::complex128*)src2->ptr(r);
                     destptr = (ito::uint8*)dest->ptr(r);
@@ -5661,7 +5696,7 @@ DataObject DataObject::operator != (DataObject &rhs)
                     {
                         destptr[x] = (src1ptr[x].real() == src2ptr[x].real() && src1ptr[x].imag() == src2ptr[x].imag()) ? 0 : 255;
                     }
-
+                    */
                 }
 #if(USEOMP)
             }
