@@ -590,9 +590,10 @@ namespace ito
 			}
 			if (list.contains("roi")) //if key is roi sizex and sizey must be adapted
 			{
-				updateSizeXY();
+				updateSizeXY();				
 			}
 			applyParamsToChannelParams(list);
+			checkData();
 		}
 		if (!retValue.containsError())
 		{
