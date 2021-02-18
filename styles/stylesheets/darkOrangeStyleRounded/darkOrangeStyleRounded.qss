@@ -558,6 +558,10 @@ QScrollBar::handle:horizontal:focus {
   border: 1px solid #ff9800;
 }
 
+QScrollBar::handle:horizontal:disabled {
+  background-color: #37464F;
+}
+
 QScrollBar::handle:vertical {
   background-color: #62717B;
   border: 1px solid #37464F;
@@ -574,6 +578,10 @@ QScrollBar::handle:vertical:hover {
 
 QScrollBar::handle:vertical:focus {
   border: 1px solid #ff9800;
+}
+
+QScrollBar::handle:vertical:disabled {
+  background-color: #37464F;
 }
 
 QScrollBar::add-line:horizontal {
@@ -1443,6 +1451,11 @@ QSlider::handle:horizontal:focus {
   border: 1px solid #ff9800;
 }
 
+QSlider::handle:horizontal:disabled {
+  background: #37464F;
+  border: 1px solid #263137;
+}
+
 QSlider::handle:vertical {
   background: #62717B;
   border: 1px solid #37464F;
@@ -1459,6 +1472,11 @@ QSlider::handle:vertical:hover {
 
 QSlider::handle:vertical:focus {
   border: 1px solid #ff9800;
+}
+
+QSlider::handle:vertical:disabled {
+  background: #37464F;
+  border: 1px solid #263137;
 }
 
 /* QLineEdit --------------------------------------------------------------
@@ -2525,4 +2543,9 @@ ToolTip {
   /* Remove padding, for fix combo box tooltip */
   padding: 0px;
   /* Remove opacity, fix #174 - may need to use RGBA */
+}
+
+ito--Panel {
+  /* background of panels of script editor */
+  background: #37464F;
 }

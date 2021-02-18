@@ -36,49 +36,51 @@ from itom import progressObserver
 from threading import Thread
 from time import sleep
 
+
 class FunctionCall:
     """This class wraps GUI items, the thread and observer of one function call.
     """
-    
-    def __init__(self,
-                 label,
-                 progress,
-                 abortButton,
-                 overallObserver):
+
+    def __init__(self, label, progress, abortButton, overallObserver):
         """Constructor."""
         self.label = label
         self.progress = progress
         self.abortBtn = abortButton
         self.thread = None
-        
+
         # create the local observer for one function call
         self.observer = progressObserver(
-            progressBar=self.progress,
-            progressMinimum=0,
-            progressMaximum=100)
-        
+            progressBar=self.progress, progressMinimum=0, progressMaximum=100
+        )
+
         # pass the overall observer
         self.overallObserver = overallObserver
-        
+
         # make several connections to signals of some objects with methods of this class
         self.abortBtn.connect("clicked()", self.on_abortButton_clicked)
-        self.observer.connect("progressValueChanged(int)", self.on_progressValue_changed)
-        self.observer.connect("progressTextChanged(QString)", self.on_progressText_changed)
-        self.observer.connect("cancellationRequested()", self.on_observer_cancellationRequested)
-        
+        self.observer.connect(
+            "progressValueChanged(int)", self.on_progressValue_changed
+        )
+        self.observer.connect(
+            "progressTextChanged(QString)", self.on_progressText_changed
+        )
+        self.observer.connect(
+            "cancellationRequested()", self.on_observer_cancellationRequested
+        )
+
         # True if the function is currently executed
         self.inProgress = False
-        
+
         # Last reported progress value to the overallObserver [0, 25] in percent.
         self._lastReportedProgressValue = 0
-    
+
     def reset(self):
         """Resets the relevant GUI items to an idle state."""
         self.label["text"] = "-"
         self.progress["value"] = 0
         self.progress["enabled"] = False
         self.abortBtn["enabled"] = False
-    
+
     def on_abortButton_clicked(self):
         """Callback if the abort button of this function is clicked."""
         if self.observer:
@@ -87,18 +89,18 @@ class FunctionCall:
             # has to regularily check for this request and terminate the algorithm
             # (with an exception set) as soon as possible.
             self.observer.requestCancellation()
-    
+
     def start(self):
         """Start the complex function in a Python thread by executing self.run."""
         self.thread = Thread(target=self.run)
         self.thread.start()
-    
+
     def cancel(self):
         """Method to request a cancellation of the algorithm call as public interface.
         
         This method is usually called if the global abort button is clicked."""
         self.observer.requestCancellation()
-    
+
     def run(self):
         """Run method, executed in a thread.
         
@@ -111,28 +113,29 @@ class FunctionCall:
         of a cancellation).
         """
         self.observer.reset()
-        
+
         self.progress["value"] = 0
         self.progress["enabled"] = True
         self.abortBtn["enabled"] = True
-        
+
         try:
             self.inProgress = True
             filter("demoCancellationFunction", _observer=self.observer)
-            #self.on_progressValue_changed(100)
+            # self.on_progressValue_changed(100)
         except RuntimeError:
             # cancellation
             pass
         finally:
             # done or cancelled: report a full progress of 25%
-            self.overallObserver.progressValue += \
-                max(0, 25 - self._lastReportedProgressValue)
+            self.overallObserver.progressValue += max(
+                0, 25 - self._lastReportedProgressValue
+            )
             self._lastReportedProgressValue = 25
             self.abortBtn["enabled"] = False
             self.inProgress = False
             sleep(1)
             self.reset()
-    
+
     def on_progressValue_changed(self, value):
         """Callback if the local observer reports a new progress value."""
         if self.inProgress:
@@ -140,17 +143,18 @@ class FunctionCall:
                 self.label["text"] = "%i/100" % value
             else:
                 self.label["text"] = "done"
-            
-            self.overallObserver.progressValue += \
-                max(0, (value // 4) - self._lastReportedProgressValue)
+
+            self.overallObserver.progressValue += max(
+                0, (value // 4) - self._lastReportedProgressValue
+            )
             self._lastReportedProgressValue = value // 4
-    
+
     def on_progressText_changed(self, text):
         """Callback if the local observer reports a new progress text.
         
         Hint: it makes no real sense to change the toolTip. It is just an example."""
         self.label["toolTip"] = text
-        
+
     def on_observer_cancellationRequested(self):
         """Callback if a cancellation has been requested to the local observer."""
         if self.inProgress:
@@ -160,31 +164,41 @@ class FunctionCall:
 
 class DemoObserver(ItomUi):
     """Main GUI class that provides functionality to run for complex algorithms in parallel."""
-    
+
     def __init__(self):
         """Constructor."""
         ItomUi.__init__(self, "observedParallelFunctions.ui")
-        
-        self.sets = []  # sets of widgets in the GUI for each parallel function execution
-        
+
+        self.sets = (
+            []
+        )  # sets of widgets in the GUI for each parallel function execution
+
         # this overallObserver gives 25% to each of the 4 parallel function calls.
         self.overallObserver = progressObserver(
-            progressBar=self.gui.progressAll, progressMinimum=0, progressMaximum=100)
-        self.overallObserver.connect("progressValueChanged(int)", self.overallProgressChanged)
-        
+            progressBar=self.gui.progressAll,
+            progressMinimum=0,
+            progressMaximum=100,
+        )
+        self.overallObserver.connect(
+            "progressValueChanged(int)", self.overallProgressChanged
+        )
+
         # Initialization of four FunctionCall objects for four parallel complex
         # function calls.
         for idx in range(1, 5):
             self.sets.append(
-                FunctionCall(self.gui.getChild("lblRun%i" % idx),
-                             self.gui.getChild("progressRun%i" % idx),
-                             self.gui.getChild("btnAbortRun%i" % idx),
-                             self.overallObserver))
-        
+                FunctionCall(
+                    self.gui.getChild("lblRun%i" % idx),
+                    self.gui.getChild("progressRun%i" % idx),
+                    self.gui.getChild("btnAbortRun%i" % idx),
+                    self.overallObserver,
+                )
+            )
+
         # reset and hide all besides the start button
         for s in self.sets:
             s.reset()
-        
+
         self.gui.btnAbort["enabled"] = False
         self.gui.progressAll["visible"] = False
 
@@ -194,28 +208,27 @@ class DemoObserver(ItomUi):
         self.gui.btnAbort["enabled"] = True
         self.gui.btnStart["enabled"] = False
         self.gui.progressAll["visible"] = True
-        
+
         # resets the overall
         self.overallObserver.reset()
-        
+
         # start the 4 threads with a short delay
         for s in self.sets:
             s.start()
             sleep(0.1)
-        
 
     @ItomUi.autoslot("")
     def on_btnAbort_clicked(self):
         """Informs the algorithm call to interrupt as soon as possible."""
-        
+
         # cancels all four function calls
         for s in self.sets:
             s.cancel()
-        
+
         self.gui.btnAbort["enabled"] = False
         self.gui.btnStart["enabled"] = True
         self.gui.progressAll["visible"] = False
-    
+
     def overallProgressChanged(self, value):
         """Callback if the progressValueChanged signal of the overall progressObserver is emitted."""
         if value >= 100:
@@ -228,4 +241,3 @@ class DemoObserver(ItomUi):
 if __name__ == "__main__":
     demoObserverGui = DemoObserver()
     demoObserverGui.show()
-

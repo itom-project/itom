@@ -48,7 +48,6 @@
 #include "pythonProgressObserver.h"
 
 #include "common/interval.h"
-#include "../helper/sleeper.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -167,9 +166,9 @@ PythonEngine::PythonEngine() :
     m_pythonState(pyStateIdle),
     bpModel(NULL),
     mainModule(NULL),
-    mainDictionary(NULL),
-    localDictionary(NULL),
-    globalDictionary(NULL),
+    m_pMainDictionary(NULL),
+    m_pLocalDictionary(NULL),
+    m_pGlobalDictionary(NULL),
     itomDbgModule(NULL),
     itomDbgInstance(NULL),
     itomModule(NULL),
@@ -243,6 +242,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
+    qRegisterMetaType<Qt::SortOrder>("Qt::SortOrder");
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
     qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
@@ -472,13 +472,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
             if (mainModule)
             {
-                mainDictionary = PyModule_GetDict(mainModule); //borrowed
+                m_pMainDictionary = PyModule_GetDict(mainModule); //borrowed
             }
 
-            setGlobalDictionary(mainDictionary);   // reference to string-list of available methods, member-variables... of module.
+            setGlobalDictionary(m_pMainDictionary);   // reference to string-list of available methods, member-variables... of module.
             setLocalDictionary(NULL);
 
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            emitPythonDictionary(DictUpdate, DictUpdate, false);
 
             if (_import_array() < 0)
             {
@@ -1169,9 +1169,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
         mainModule = NULL;
-        mainDictionary = NULL;
-        localDictionary = NULL;
-        globalDictionary = NULL;
+        m_pMainDictionary = NULL;
+        m_pLocalDictionary = NULL;
+        m_pGlobalDictionary = NULL;
 
         PythonEngine::instantiated.unlock();
 
@@ -1655,7 +1655,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 }
                 else
                 {
-                    result = PyEval_EvalCode(compile, mainDictionary, NULL);
+                    result = PyEval_EvalCode(compile, m_pMainDictionary, NULL);
 
                     if (result == NULL)
                     {
@@ -1863,11 +1863,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         }
 
         //!< submit all breakpoints
-        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
-        if (retValueBp.containsError())
-        {
-            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
-        }
+        submitAllBreakpointsToDebugger();
 
         //!< setup connections for live-changes in breakpoints
         setupBreakPointDebugConnections();
@@ -1979,11 +1975,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         }
 
         //!< submit all breakpoints
-        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
-        if (retValueBp.containsError())
-        {
-            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
-        }
+        submitAllBreakpointsToDebugger();
 
         //!< setup connections for live-changes in breakpoints
         setupBreakPointDebugConnections();
@@ -2094,11 +2086,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         }
 
         //!< submit all breakpoints
-        ito::RetVal retValueBp = submitAllBreakpointsToDebugger();
-        if (retValueBp.containsError())
-        {
-            std::cerr << retValueBp.errorMessage() << "\n" << std::endl;
-        }
+        submitAllBreakpointsToDebugger();
 
         //!< setup connections for live-changes in breakpoints
         setupBreakPointDebugConnections();
@@ -2196,6 +2184,15 @@ void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &requ
 }
 
 //-------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request)
+{
+    if (!m_jediRunner.isNull())
+    {
+        m_jediRunner->addGetHelpRequest(request);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
 {
     if (!m_jediRunner.isNull())
@@ -2233,6 +2230,22 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
     if (m_pyModCodeChecker)
     {
         CodeCheckerOptions &opt = m_codeCheckerOptions;
+
+        if (code == "")
+        {
+            QObject *s = sender.data();
+
+            if (s && callbackFctName != "")
+            {
+                QMetaObject::invokeMethod(
+                    s, 
+                    callbackFctName.constData(), 
+                    Q_ARG(QList<ito::CodeCheckerItem>, QList<ito::CodeCheckerItem>())
+                );
+            }
+
+            return;
+        }
 
         int modeNumber = 0; //!< this is the mode number, that is understood by the check method in itomSyntaxCheck.py
 
@@ -2385,83 +2398,136 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //!< submits all breakpoints to the debugger. This should be called before code is debugged.
-ito::RetVal PythonEngine::submitAllBreakpointsToDebugger()
+void PythonEngine::submitAllBreakpointsToDebugger()
 {
     //when calling this method, the Python GIL must already be locked
-    QList<BreakPointItem> bp = bpModel->getBreakpoints();
-    QList<BreakPointItem>::iterator it;
+    QModelIndexList bpIndices = bpModel->getAllBreakPointIndizes();
+    QModelIndexList bpIndicesToDelete;
     int pyBpNumber;
-    QModelIndex modelIndex;
     ito::RetVal retVal;
-    ito::RetVal retValTemp;
 
-    for (it = bp.begin(); it != bp.end(); ++it)
+    foreach(const QModelIndex &idx, bpIndices)
     {
-        if (it->pythonDbgBpNumber == -1)
+        const BreakPointItem &bp = bpModel->getBreakPoint(idx);
+
+        if (bp.pythonDbgBpNumber == -1)
         {
-            retValTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
-            if (retValTemp == ito::retOk)
+            retVal = pythonAddBreakpoint(bp, pyBpNumber);
+
+            if (retVal == ito::retOk)
             {
-                bpModel->setPyBpNumber(*it, pyBpNumber);
+                bpModel->setPyBpNumber(bp, pyBpNumber);
             }
             else
             {
-                bpModel->setPyBpNumber(*it, -1);
-                retVal += retValTemp;
+                if (retVal.hasErrorMessage())
+                {
+                    std::cerr << retVal.errorMessage() << "\n";
+                }
+
+                if (retVal.errorCode() == DbgErrorInvalidBp)
+                {
+                    bpIndicesToDelete << idx;
+                    std::cerr << "The breakpoint will be deleted.\n" << std::endl;
+                }
+                else
+                {
+                    std::cerr << std::endl;
+                }
+
+                bpModel->setPyBpNumber(bp, -1);
             }
         }
     }
 
-    return retVal;
+    if (bpIndicesToDelete.size() > 0)
+    {
+        bpModel->deleteBreakPoints(bpIndicesToDelete);
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
+//-------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::pythonAddBreakpoint(
+    const BreakPointItem &breakpoint, 
+    int &pyBpNumber)
 {
     RetVal retval;
     //when calling this method, the Python GIL must already be locked
-    PyObject *result = NULL;
-
+    PyObject *result = nullptr;
+    int lineNo = breakpoint.lineIdx + 1;
     pyBpNumber = -1;
 
-    if (itomDbgInstance == NULL)
+    if (itomDbgInstance == nullptr)
     {
-        retval += RetVal(retError, 0, "Debugger not available");
+        retval += RetVal(retError, DbgErrorNo, "Debugger not available");
     }
     else
     {
-        PyObject *PyEnabled = enabled ? Py_True : Py_False;
-        PyObject *PyTemporary = temporary ? Py_True : Py_False;
+        PyObject *pyEnabled = breakpoint.enabled ? Py_True : Py_False;
+        PyObject *pyTemporary = breakpoint.temporary ? Py_True : Py_False;
 
-        if (condition == "")
+        if (breakpoint.condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOOi", filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(
+                itomDbgInstance, 
+                "addNewBreakPoint", 
+                "siOOOi", 
+                breakpoint.filename.toUtf8().data(), 
+                lineNo,
+                pyEnabled, 
+                pyTemporary, 
+                Py_None, 
+                breakpoint.ignoreCount);
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "addNewBreakPoint", "siOOsi", filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
+            result = PyObject_CallMethod(
+                itomDbgInstance, 
+                "addNewBreakPoint", 
+                "siOOsi", 
+                breakpoint.filename.toUtf8().data(),
+                lineNo,
+                pyEnabled, 
+                pyTemporary, 
+                breakpoint.condition.toLatin1().data(),
+                breakpoint.ignoreCount);
         }
 
-        if (result == NULL)
+        if (result == nullptr)
         {
             //this is an exception case that should not occur under normal circumstances
-            std::cerr << tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.").arg(filename).arg(lineno + 1).toLatin1().constData() << "\n" << std::endl;
-            printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            retval += RetVal(retError, 0, tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.").arg(filename).arg(lineno + 1).toLatin1().constData());
+            std::cerr << tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.")
+                .arg(breakpoint.filename).arg(lineNo).toLatin1().constData() << "\n" << std::endl;
+
+            //traceback is sense-less, since the traceback is in itoDebugger.py only!
+            printPythonErrorWithoutTraceback(); 
             PyErr_Clear();
+
+            retval += RetVal(
+                retError, 
+                DbgErrorOther, 
+                tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.")
+                    .arg(breakpoint.filename).arg(lineNo).toLatin1().constData());
         }
         else
         {
             if (PyLong_Check(result))
             {
+                // ok
                 long retNumber = PyLong_AsLong(result);
+
                 if (retNumber < 0)
                 {
                     pyBpNumber = -1;
-                    retval += RetVal::format(retError, 0, tr("Adding breakpoint to file '%s', line %i failed in Python debugger (invalid breakpoint id).").toLatin1().data(), 
-                        filename.toLatin1().data(), lineno + 1);
+                    retval += RetVal::format(
+                        retError, 
+                        DbgErrorOther,
+                        tr("Adding breakpoint to file '%s', line %i failed in Python debugger (invalid breakpoint id).").toLatin1().data(), 
+                        breakpoint.filename.toLatin1().data(),
+                        lineNo
+                    );
                 }
                 else
                 {
@@ -2473,87 +2539,154 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
             {
                 bool ok;
                 QByteArray error = PythonQtConversion::PyObjGetString(result, true, ok).toLatin1();
+
                 if (ok)
                 {
-                    retval += RetVal(retError, 0, error.data());
+                    if (error.startsWith("_"))
+                    {
+                        error = error.remove(0, 1);
+                        retval += RetVal(retError, DbgErrorOther, error.constData());
+                    }
+                    else
+                    {
+                        retval += RetVal(retError, DbgErrorInvalidBp, error.constData());
+                    }
                 }
                 else
                 {
-                    retval += RetVal::format(retError, 0, tr("Adding breakpoint to file '%s', line %i in Python debugger returned unknown error string").toLatin1().data(), 
-                        filename.toLatin1().data(), lineno + 1);
+                    retval += RetVal::format(
+                        retError, 
+                        DbgErrorOther, 
+                        tr("Adding breakpoint to file '%s', line %i in Python debugger returned unknown error string.").toLatin1().data(),
+                        breakpoint.filename.toLatin1().data(),
+                        lineNo
+                    );
                 }
             }
         }
 
         Py_XDECREF(result);
-        result = NULL;
+        result = nullptr;
     }
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
+//-------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const BreakPointItem &newBreakpoint)
 {
     RetVal retval;
     //when calling this method, the Python GIL must already be locked
-    PyObject *result = NULL;
+    PyObject *result = nullptr;
+    int lineno = newBreakpoint.lineIdx + 1;
 
-    if (itomDbgInstance == NULL)
+    if (itomDbgInstance == nullptr)
     {
-        retval += RetVal(retError, 0, tr("Debugger not available").toLatin1().data());
+        retval += RetVal(retError, DbgErrorOther, tr("Debugger not available").toLatin1().data());
     }
     else if (pyBpNumber >= 0)
     {
-        PyObject *PyEnabled = enabled ? Py_True : Py_False;
-        PyObject *PyTemporary = temporary ? Py_True : Py_False;
+        PyObject *pyEnabled = newBreakpoint.enabled ? Py_True : Py_False;
+        PyObject *pyTemporary = newBreakpoint.temporary ? Py_True : Py_False;
 
-        if (condition == "")
+        if (newBreakpoint.condition == "")
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOOi", pyBpNumber, filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, Py_None, ignoreCount);
+            result = PyObject_CallMethod(
+                itomDbgInstance, 
+                "editBreakPoint", 
+                "isiOOOi", 
+                pyBpNumber, 
+                newBreakpoint.filename.toUtf8().data(),
+                lineno, 
+                pyEnabled, 
+                pyTemporary, 
+                Py_None, 
+                newBreakpoint.ignoreCount
+            );
         }
         else
         {
-            result = PyObject_CallMethod(itomDbgInstance, "editBreakPoint", "isiOOsi", pyBpNumber, filename.toUtf8().data(), lineno+1, PyEnabled, PyTemporary, condition.toLatin1().data(), ignoreCount);
+            result = PyObject_CallMethod(
+                itomDbgInstance, 
+                "editBreakPoint", 
+                "isiOOsi", 
+                pyBpNumber, 
+                newBreakpoint.filename.toUtf8().data(),
+                lineno, 
+                pyEnabled, 
+                pyTemporary, 
+                newBreakpoint.condition.toLatin1().data(),
+                newBreakpoint.ignoreCount
+            );
         }
 
-        if (result == NULL)
+        if (result == nullptr)
         {
             //this is an exception case that should not occure under normal circumstances
             std::cerr << "Error while editing breakpoint in debugger." << "\n" << std::endl;
+
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            retval += RetVal(retError, 0, tr("Exception raised while editing breakpoint in debugger.").toLatin1().data());
+            PyErr_Clear();
+
+            retval += RetVal(
+                retError, 
+                DbgErrorOther, 
+                tr("Exception raised while editing breakpoint in debugger.").toLatin1().data()
+            );
         }
         else if (PyLong_Check(result))
         {
             long val = PyLong_AsLong(result);
+
             if (val != 0)
             {
-                retval += RetVal::format(retError, 0, tr("Editing breakpoint (file '%s', line %i) in Python debugger returned error code %i").toLatin1().data(), 
-                    filename.toLatin1().data(), lineno + 1, val);
+                retval += RetVal::format(
+                    retError, DbgErrorOther, 
+                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned error code %i").toLatin1().data(), 
+                    newBreakpoint.filename.toLatin1().data(), 
+                    lineno, 
+                    val
+                );
             }
         }
         else
         {
             bool ok;
             QByteArray error = PythonQtConversion::PyObjGetString(result, true, ok).toLatin1();
+
             if (ok)
             {
-                retval += RetVal(retError, 0, error.data());
+                if (error.startsWith("_"))
+                {
+                    error = error.remove(0, 1);
+                    retval += RetVal(retError, DbgErrorOther, error.constData());
+                }
+                else
+                {
+                    retval += RetVal(retError, DbgErrorInvalidBp, error.constData());
+                }
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("Editing breakpoint (file '%s', line %i) in Python debugger returned unknown error string").toLatin1().data(), 
-                    filename.toLatin1().data(), lineno + 1);
+                retval += RetVal::format(
+                    retError, 
+                    DbgErrorOther, 
+                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned unknown error string").toLatin1().data(), 
+                    newBreakpoint.filename.toLatin1().data(), 
+                    lineno);
             }
         }
 
         Py_XDECREF(result);
-        result = NULL;
+        result = nullptr;
     }
     else
     {
-        retval += RetVal::format(retError, 0, tr("Breakpoint in file '%s', line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)").toLatin1().data(), 
-            filename.toLatin1().data(), lineno + 1);
+        retval += RetVal::format(
+            retError, 
+            0, 
+            tr("Breakpoint in file '%s', line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)").toLatin1().data(), 
+            newBreakpoint.filename.toLatin1().data(), 
+            lineno);
     }
 
     return retval;
@@ -2682,41 +2815,28 @@ void PythonEngine::printPythonErrorWithoutTraceback()
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::setGlobalDictionary(PyObject* globalDict)
 {
-    dictChangeMutex.lock();
-    if (globalDict != NULL)
+    if (globalDict != nullptr)
     {
-        globalDictionary = globalDict;
+        m_pGlobalDictionary = globalDict;
     }
     else
     {
-        globalDictionary = mainDictionary;
+        m_pGlobalDictionary = m_pMainDictionary;
     }
-    /*else if (mainModule != NULL)
-    {
-        globalDictionary = PyModule_GetDict(mainModule);
-    }
-    else
-    {
-        globalDictionary = NULL;
-    }*/
-    dictChangeMutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::setLocalDictionary(PyObject* localDict)
 {
-    dictChangeMutex.lock();
-    localDictionary = localDict;
-    dictChangeMutex.unlock();
+    m_pLocalDictionary = localDict;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunString(QString cmd)
 {
-    QByteArray ba(cmd.toLatin1());
-    if (ba.trimmed().startsWith("#"))
+    if (cmd.trimmed().startsWith("#"))
     {
-        ba.prepend("pass"); //a single command line leads to an error while execution
+        cmd.prepend("pass"); //a single command line leads to an error while execution
     }
     //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
@@ -2725,11 +2845,9 @@ void PythonEngine::pythonRunString(QString cmd)
     case pyStateIdle:
         {
         pythonStateTransition(pyTransBeginRun);
-        runString(ba.data());
+        runString(cmd);
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        PyGILState_Release(gstate);
+        emitPythonDictionary(DictUpdate, DictNoAction, true);
 
         pythonStateTransition(pyTransEndRun);
         }
@@ -2741,8 +2859,8 @@ void PythonEngine::pythonRunString(QString cmd)
         break;
     case pyStateDebuggingWaiting:
         pythonStateTransition(pyTransDebugExecCmdBegin);
-        runString(ba.data());
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+        runString(cmd);
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -2760,6 +2878,7 @@ void PythonEngine::pythonRunFile(QString filename)
         pythonStateTransition(pyTransBeginRun);
 
         list = filename.split(";");
+
         foreach(const QString &filenameTemp, list)
         {
             if (filenameTemp != "")
@@ -2768,9 +2887,7 @@ void PythonEngine::pythonRunFile(QString filename)
             }
         }
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        PyGILState_Release(gstate);
+        emitPythonDictionary(DictUpdate, DictNoAction, true);
         
         pythonStateTransition(pyTransEndRun);
         }
@@ -2795,9 +2912,7 @@ void PythonEngine::pythonDebugFile(QString filename)
         pythonStateTransition(pyTransBeginDebug);
         debugFile(filename);
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        PyGILState_Release(gstate);
+        emitPythonDictionary(DictUpdate, DictReset, true);
 
         pythonStateTransition(pyTransEndDebug);
         }
@@ -2815,10 +2930,9 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-    QByteArray ba = cmd.toLatin1();
-    if (ba.trimmed().startsWith("#"))
+    if (cmd.trimmed().startsWith("#"))
     {
-        ba.prepend("pass"); //a single comment while cause an error in python
+        cmd.prepend("pass"); //a single comment while cause an error in python
     }
 
     switch (m_pythonState)
@@ -2826,11 +2940,9 @@ void PythonEngine::pythonDebugString(QString cmd)
     case pyStateIdle:
         {
         pythonStateTransition(pyTransBeginDebug);
-        debugString(cmd.toLatin1().data());
+        debugString(cmd);
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        PyGILState_Release(gstate);
+        emitPythonDictionary(DictUpdate, DictReset, true);
 
         pythonStateTransition(pyTransEndDebug);
         }
@@ -2848,12 +2960,10 @@ void PythonEngine::pythonDebugString(QString cmd)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    //QByteArray ba(cmd.toLatin1());
     if (cmd.trimmed().startsWith("#"))
     {
         cmd.prepend("pass"); //a single command line leads to an error while execution
     }
-    //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
 
     switch (m_pythonState)
     {
@@ -2863,18 +2973,14 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
             pythonStateTransition(pyTransBeginDebug);
             debugString(cmd);
-            PyGILState_STATE gstate = PyGILState_Ensure();
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-            PyGILState_Release(gstate);
+            emitPythonDictionary(DictUpdate, DictReset, true);
             pythonStateTransition(pyTransEndDebug);
         }
         else
         {
             pythonStateTransition(pyTransBeginRun);
             runString(cmd);
-            PyGILState_STATE gstate = PyGILState_Ensure();
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-            PyGILState_Release(gstate);
+            emitPythonDictionary(DictUpdate, DictReset, true);
             pythonStateTransition(pyTransEndRun);
         }
         break;
@@ -2887,9 +2993,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
         pythonStateTransition(pyTransDebugExecCmdBegin);
         runString(cmd);
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-        PyGILState_Release(gstate);
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         }
         break;
@@ -2904,33 +3008,25 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
         debugFunction(callable, argTuple, gilExternal);
-
-        if (gilExternal)
-        {
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        }
-        else
-        {
-            PyGILState_STATE gstate = PyGILState_Ensure();
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-            PyGILState_Release(gstate);
-        }
-
+        emitPythonDictionary(DictUpdate, DictReset, !gilExternal);
         pythonStateTransition(pyTransEndDebug);
         break;
     case pyStateRunning:
     case pyStateDebugging:
         // no command execution allowed if running or debugging without being in waiting mode
-        std::cerr << "it is not allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
+        std::cerr 
+            << "it is not allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n" 
+            << std::endl;
         break;
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
         pythonStateTransition(pyTransDebugExecCmdBegin);
-        std::cout << "Function will be executed instead of debugged since another debug session is currently running.\n" << std::endl;
+        std::cout 
+            << "Function will be executed instead of debugged since another debug session is currently running.\n" 
+            << std::endl;
         pythonRunFunction(callable, argTuple, gilExternal);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         // no command execution allowed if running or debugging without being in waiting mode
-        //qDebug() << "it is now allowed to debug a python function or method in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
         break;
     }
 }
@@ -2940,58 +3036,30 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
 void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     m_interruptCounter = 0;
+
     switch (m_pythonState)
     {
         case pyStateIdle:
-            pythonStateTransition(pyTransBeginRun);
+            pythonStateTransition(pyTransBeginRun, false);
             runFunction(callable, argTuple, gilExternal);
-
-            if (gilExternal)
-            {
-                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-            }
-            else
-            {
-                PyGILState_STATE gstate = PyGILState_Ensure();
-                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-                PyGILState_Release(gstate);
-            }
-
+            emitPythonDictionary(DictUpdate, DictNoAction, !gilExternal);
             pythonStateTransition(pyTransEndRun);
         break;
 
         case pyStateRunning:
         case pyStateDebugging:
-        case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
+        case pyStateDebuggingWaitingButBusy: 
+            // functions (from signal-calls) can be executed whenever another python method is 
+            // executed (only possible if another method executing python code is calling 
+            // processEvents. processEvents stops until this "runFunction" has been terminated
             runFunction(callable, argTuple, gilExternal);
-
-            if (gilExternal)
-            {
-                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-            }
-            else
-            {
-                PyGILState_STATE gstate = PyGILState_Ensure();
-                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-                PyGILState_Release(gstate);
-            }
+            emitPythonDictionary(DictUpdate, DictUpdate, !gilExternal);
         break;
 
         case pyStateDebuggingWaiting:
             pythonStateTransition(pyTransDebugExecCmdBegin);
             runFunction(callable, argTuple, gilExternal);
-
-            if (gilExternal)
-            {
-                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-            }
-            else
-            {
-                PyGILState_STATE gstate = PyGILState_Ensure();
-                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-                PyGILState_Release(gstate);
-            }
-
+            emitPythonDictionary(DictUpdate, DictUpdate, !gilExternal);
             pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -3002,6 +3070,7 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 {
     size_t hashValue;
     m_interruptCounter = 0;
+
     if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
         bool success;
@@ -3011,17 +3080,23 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
         
         if (!success)
         {
-            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            std::cerr 
+                << "The command '" 
+                << cmdOrFctHashCropped.toLatin1().data() 
+                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" 
+                << std::endl;
             return;
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
 
-        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
-        if (it != m_pyFuncWeakRefHashes.end())
+        QHash<size_t, FuncWeakRef>::const_iterator it = m_pyFuncWeakRefHashes.constFind(hashValue);
+
+        if (it != m_pyFuncWeakRefHashes.constEnd())
         {
             PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
             PyObject *argTuple = it->getArguments(); //borrowed reference
+
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -3039,13 +3114,22 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
+                std::cerr 
+                    << "The method associated with the key '" 
+                    << cmdOrFctHashCropped.toLatin1().data() 
+                    << "' does not exist any more\n" 
+                    << std::endl;
             }
+
             Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr 
+                << "No action associated with key '" 
+                << cmdOrFctHashCropped.toLatin1().data() 
+                << "' could be found in internal hash table\n" 
+                << std::endl;
         }
 
         PyGILState_Release(gstate);
@@ -3061,26 +3145,32 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
 {
     size_t hashValue;
     m_interruptCounter = 0;
+
     if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
         bool success;
-
         QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
         hashValue = cmdOrFctHashCropped.toUInt(&success);
         
         if (!success)
         {
-            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            std::cerr 
+                << "The command '" 
+                << cmdOrFctHashCropped.toLatin1().data() 
+                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" 
+                << std::endl;
             return;
         }
 
         PyGILState_STATE gstate = PyGILState_Ensure();
 
-        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
-        if (it != m_pyFuncWeakRefHashes.end())
+        QHash<size_t, FuncWeakRef>::const_iterator it = m_pyFuncWeakRefHashes.constFind(hashValue);
+
+        if (it != m_pyFuncWeakRefHashes.constEnd())
         {
             PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
             PyObject *argTuple = it->getArguments(); //borrowed reference
+
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -3098,13 +3188,21 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
+                std::cerr 
+                    << "The method associated with the key '" 
+                    << cmdOrFctHashCropped.toLatin1().data() 
+                    << "' does not exist any more\n" 
+                    << std::endl;
             }
             Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr 
+                << "No action associated with key '" 
+                << cmdOrFctHashCropped.toLatin1().data() 
+                << "' could be found in internal hash table\n" 
+                << std::endl;
         }
 
         PyGILState_Release(gstate);
@@ -3116,8 +3214,20 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
+//-------------------------------------------------------------------------------------
+//!< signals a state change of the Python interpreter
+/*
+    This method consumes and reports a state change of the Python interpreter.
+    Depending on the current state, not all transitions are allowed. If a
+    transition is allowed, this method correctly sets the new state m_pythonState
+    and reports the transition via the signal `pythonStateChanged`.
+
+    \param transition is the state transition to signal
+    \param immediate is True if the pythonStatePublisher should publish the
+        captured state change immediately, False if it can postpone it by a small
+        delay to wait if the state falls back to its previous state.
+*/
+ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, bool immediate /*= true*/)
 {
     RetVal retValue(retOk);
     pythonStateChangeMutex.lock();
@@ -3128,12 +3238,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransBeginRun)
         {
             m_pythonState = pyStateRunning;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransBeginDebug)
         {
             m_pythonState = pyStateDebugging;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3144,7 +3254,7 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndRun)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3155,12 +3265,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugWaiting)
         {
             m_pythonState = pyStateDebuggingWaiting;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3171,17 +3281,17 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugContinue)
         {
             m_pythonState = pyStateDebugging;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugExecCmdBegin)
         {
             m_pythonState = pyStateDebuggingWaitingButBusy;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3192,12 +3302,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
         if (transition == pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else if (transition == pyTransDebugExecCmdEnd)
         {
             m_pythonState = pyStateDebuggingWaiting;
-            emit(pythonStateChanged(transition));
+            emit(pythonStateChanged(transition, immediate));
         }
         else
         {
@@ -3211,49 +3321,38 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition)
     return retValue;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//void PythonEngine::setDbgCmd(tPythonDbgCmd dbgCmd)
-//{
-//    dbgCmdMutex.lock();
-//    debugCommand = dbgCmd;
-//    dbgCmdMutex.unlock();
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-//void PythonEngine::resetDbgCmd()
-//{
-//    dbgCmdMutex.lock();
-//    debugCommand = pyDbgNone;
-//    dbgCmdMutex.unlock();
-//
-//}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd)
 {
     if (dbgCmd != pyDbgNone)
     {
         dbgCmdMutex.lock();
-        debugCommandQueue.enqueue(dbgCmd); //if you don't want, that shortcuts are collected in a queue and handled one after the other one, then only enqueue the new command if the queue is empty
+
+        // if you don't want, that shortcuts are collected in a queue and 
+        // handled one after the other one, then only enqueue the new 
+        // command if the queue is empty
+        debugCommandQueue.enqueue(dbgCmd); 
         dbgCmdMutex.unlock();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::tPythonDbgCmd PythonEngine::dequeueDbgCmd()
 {
     tPythonDbgCmd cmd = pyDbgNone;
     dbgCmdMutex.lock();
+
     if (debugCommandQueue.length()>0) 
     {
         cmd = debugCommandQueue.dequeue();
     }
+
     dbgCmdMutex.unlock();
 
     return cmd;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool PythonEngine::DbgCommandsAvailable()
 {
     bool ret;
@@ -3263,7 +3362,7 @@ bool PythonEngine::DbgCommandsAvailable()
     return ret;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonEngine::clearDbgCmdLoop()
 {
     dbgCmdMutex.lock();
@@ -3271,41 +3370,91 @@ void PythonEngine::clearDbgCmdLoop()
     dbgCmdMutex.unlock();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 {
     int pyBpNumber;
     PyGILState_STATE gstate = PyGILState_Ensure();
-    pythonAddBreakpoint(bp.filename, bp.lineno, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
+    RetVal ret = pythonAddBreakpoint(bp, pyBpNumber);
     PyGILState_Release(gstate);
-    bpModel->setPyBpNumber(bp, pyBpNumber);
+
+    if (ret.containsError())
+    {
+        if (ret.hasErrorMessage())
+        {
+            std::cerr << ret.errorMessage() << "\n";
+        }
+        else
+        {
+            std::cerr << "unknown error while adding breakpoint\n";
+        }
+
+        if (ret.errorCode() == DbgErrorInvalidBp)
+        {
+            std::cerr << "The breakpoint will be deleted.\n" << std::endl;
+
+            QModelIndex idx = bpModel->getFirstBreakPointIndex(bp.filename, bp.lineIdx);
+            bpModel->deleteBreakPoint(idx);
+        }
+        else
+        {
+            std::cerr << std::endl;
+        }
+    }
+    else
+    {
+        bpModel->setPyBpNumber(bp, pyBpNumber);
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int pyBpNumber)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
     ito::RetVal ret = pythonDeleteBreakpoint(pyBpNumber);
+
     if (ret.containsError())
     {
         std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while deleting breakpoint") << "\n" << std::endl;
     }
+
     PyGILState_Release(gstate);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
-    ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
+    ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp);
+
     if (ret.containsError())
     {
-        std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while editing breakpoint") << "\n" << std::endl;
+        if (ret.hasErrorMessage())
+        {
+            std::cerr << ret.errorMessage() << "\n";
+        }
+        else
+        {
+            std::cerr << "unknown error while editing breakpoint\n";
+        }
+
+        if (ret.errorCode() == DbgErrorInvalidBp)
+        {
+            std::cerr << "The breakpoint will be deleted.\n" << std::endl;
+
+            QModelIndex idx = bpModel->getFirstBreakPointIndex(newBp.filename, newBp.lineIdx);
+            bpModel->deleteBreakPoint(idx);
+        }
+        else
+        {
+            std::cerr << std::endl;
+        }
     }
+
     PyGILState_Release(gstate);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::setupBreakPointDebugConnections()
 {
     connect(bpModel, SIGNAL(breakPointAdded(BreakPointItem,int)), this, SLOT(breakPointAdded(BreakPointItem,int)));
@@ -3314,7 +3463,7 @@ ito::RetVal PythonEngine::setupBreakPointDebugConnections()
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::shutdownBreakPointDebugConnections()
 {
     disconnect(bpModel, SIGNAL(breakPointAdded(BreakPointItem,int)), this, SLOT(breakPointAdded(BreakPointItem,int)));
@@ -3340,9 +3489,8 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
             connect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_localWorkspaceContainer.insert(container);
         }
-        PyGILState_STATE gstate = PyGILState_Ensure();
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-        PyGILState_Release(gstate);
+
+        emitPythonDictionary(DictUpdate, DictUpdate, true);
     }
     else
     {
@@ -3727,8 +3875,15 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
+void PythonEngine::emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL)
 {
+    PyGILState_STATE gstate;
+
+    if (lockGIL)
+    {
+        gstate = PyGILState_Ensure();
+    }
+
 #if defined _DEBUG
     if (!PyGILState_Check())
     {
@@ -3740,18 +3895,20 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
     //if localDict is equal to globalDict, the localDict is the current global dict 
     //(currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
-    if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
+    if (globalDict != DictNoAction && m_mainWorkspaceContainer.count() > 0)
     {
-        if (globalDict != NULL)
+        if (globalDict == DictUpdate)
         {
+            PyObject *dict = getGlobalDictionary();
+
             foreach (ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
             {
                 cont->m_accessMutex.lock();
-                cont->loadDictionary(globalDict,"");
+                cont->loadDictionary(dict, "");
                 cont->m_accessMutex.unlock();
             }
         }
-        else
+        else // DictReset
         {
             foreach (ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
             {
@@ -3762,18 +3919,30 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
         }
     }
 
-    if (emitLocal && m_localWorkspaceContainer.count() > 0)
+    if (localDict != DictNoAction && m_localWorkspaceContainer.count() > 0)
     {
-        if (localDict != NULL && localDict != globalDict)
+        if (localDict == DictUpdate)
         {
-            foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
+            PyObject *global = getGlobalDictionary();
+            PyObject *local = getLocalDictionary();
+
+            foreach(ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
                 cont->m_accessMutex.lock();
-                cont->loadDictionary(localDict,"");
+
+                if (global != local)
+                {
+                    cont->loadDictionary(local, "");
+                }
+                else
+                {
+                    cont->clear();
+                }
+                    
                 cont->m_accessMutex.unlock();
             }
         }
-        else
+        else //DictReset
         {
             foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
@@ -3782,6 +3951,11 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
                 cont->m_accessMutex.unlock();
             }
         }
+    }
+
+    if (lockGIL)
+    {
+        PyGILState_Release(gstate);
     }
 }
 
@@ -3999,13 +4173,8 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     emit pyEngine->updateCallStack(stack_files, stack_lines, stack_methods);
 
-
-    //qDebug() << "Debug stop in file: " << filename << " at line " << lineno;
-
-    ////!< prepare for waiting loop
-    //pyEngine->resetDbgCmd();
-
     pyEngine->pythonStateTransition(pyTransDebugWaiting);
+
     if (filename != "" && filename.contains("<") == false && filename.contains(">") == false)
     {
         QFileInfo info(filename);
@@ -4037,11 +4206,11 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         {
             if (localDict != globalDict)
             {
-                pyEngine->emitPythonDictionary(true,true,globalDict,localDict);
+                pyEngine->emitPythonDictionary(DictUpdate, DictUpdate, false);
             }
             else
             {
-                pyEngine->emitPythonDictionary(true,true,globalDict,NULL);
+                pyEngine->emitPythonDictionary(DictUpdate, DictReset, false);
             }
         }
 
@@ -4055,7 +4224,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             //this while loop iterates without a tiny sleep.
             //The subsequent processEvents however is necessary to t(5get
             //the next debug command.
-            Sleeper::msleep(50);
+            QThread::msleep(50);
 
             QCoreApplication::processEvents();
 
@@ -4123,12 +4292,12 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         }
     }
 
-    pyEngine->setGlobalDictionary(NULL); //reset to mainDictionary of itom
+    pyEngine->setGlobalDictionary(nullptr); //reset to m_pMainDictionary of itom
     Py_CLEAR(globalDict);
 
-    pyEngine->setLocalDictionary(NULL);
+    pyEngine->setLocalDictionary(nullptr);
     Py_XDECREF(localDict);
-    localDict = NULL;
+    localDict = nullptr;
 
     emit (pyEngine->deleteCallStack());
 
@@ -4309,16 +4478,14 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
             semaphore->release();
         }
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, NULL, getLocalDictionary());
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
-        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -4460,17 +4627,14 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
 
         if (semaphore != NULL) semaphore->release();
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, NULL, getLocalDictionary());
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
-        PyGILState_Release(gstate);
-
 
         if (oldState == pyStateIdle)
         {
@@ -4837,16 +5001,14 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 released = true;
             }
 
-            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+                emitPythonDictionary(DictUpdate, DictNoAction, true);
             }
             else
             {
-                emitPythonDictionary(false, true, NULL, getLocalDictionary());
+                emitPythonDictionary(DictNoAction, DictUpdate, true);
             }
-            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -5162,8 +5324,6 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 Py_XDECREF(varname);
             }
 
-            //PyGILState_Release(gstate);
-
             if (semaphore != NULL) 
             {
                 semaphore->returnValue = retVal;
@@ -5171,15 +5331,15 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 released = true;
             }
 
-            //gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+                emitPythonDictionary(DictUpdate, DictNoAction, false);
             }
             else
             {
-                emitPythonDictionary(false, true, NULL, getLocalDictionary());
+                emitPythonDictionary(DictNoAction, DictUpdate, false);
             }
+
             PyGILState_Release(gstate);
         }
 
@@ -5339,10 +5499,9 @@ ito::RetVal PythonEngine::pythonClearAll()
     }*/
     else
     {
-        PyGILState_STATE gstate;
-        gstate = PyGILState_Ensure();
+        PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject_CallMethod(itomFunctions, "clearAll", "");
-        emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+        emitPythonDictionary(DictUpdate, DictNoAction, false);
         PyGILState_Release(gstate);        
     }
     return retVal;
@@ -5464,16 +5623,14 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             semaphore->release();
         }
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
-            emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+            emitPythonDictionary(DictUpdate, DictNoAction, true);
         }
         else
         {
-            emitPythonDictionary(false, true, NULL, getLocalDictionary());
+            emitPythonDictionary(DictNoAction, DictUpdate, true);
         }
-        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -6070,16 +6227,14 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
                 released = true;
             }
 
-            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
-                emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
+                emitPythonDictionary(DictUpdate, DictNoAction, true);
             }
             else
             {
-                emitPythonDictionary(false, true, NULL, getLocalDictionary());
+                emitPythonDictionary(DictNoAction, DictUpdate, true);
             }
-            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)

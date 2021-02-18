@@ -700,21 +700,21 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
 
         if (installSettings.type == PipInstall::typeWhl)
         {
-            if (m_pipVersion >= 0x070100)
+            if (m_pipVersion >= 0x120000) // version >= 18.0
             {
                 arguments << "--prefer-binary"; // << ("--only-binary=" + installSettings.packageName.trimmed());
             }
         }
         else if (installSettings.type == PipInstall::typeSearchIndex)
         {
-            if (m_pipVersion >= 0x070100)
+            if (m_pipVersion >= 0x120000) // version >= 18.0
             {
                 arguments << "--prefer-binary";
             }
         }
         else if (installSettings.type == PipInstall::typeTarGz) // typeTarGz
         {
-            if (m_pipVersion >= 0x070100)
+            if (m_pipVersion >= 0x120000) // version >= 18.0
             {
                 arguments << "--prefer-binary"; // << ("--no-binary=" + installSettings.packageName.trimmed());
             }

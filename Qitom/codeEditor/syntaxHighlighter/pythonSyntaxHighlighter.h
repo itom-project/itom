@@ -57,6 +57,14 @@ class PythonSyntaxHighlighter : public SyntaxHighlighterBase
 {
     Q_OBJECT
 public:
+    enum State //!< Syntax highlighting states (from one text block to another):
+    {
+        Normal = 0,
+        InsideSq3String = 1, // the line is within a '''....''' multiline comment
+        InsideDq3String = 2, // the line is within a """....""" multiline comment
+        InsideSqString = 3, // the line is within a '...' string
+        InsideDqString = 4 // the line is within a "..." string
+    };
 
     typedef QRegularExpression QQRegExp;
 
@@ -77,14 +85,6 @@ public:
     virtual void rehighlight();
 
 private:
-    enum State //!< Syntax highlighting states (from one text block to another):
-    {
-        Normal = 0,
-        InsideSq3String = 1,
-        InsideDq3String = 2,
-        InsideSqString = 3,
-        InsideDqString = 4
-    };
 
     struct NamedRegExp
     {

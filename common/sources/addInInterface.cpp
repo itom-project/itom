@@ -185,6 +185,20 @@ namespace ito
         QMutex m_refCountMutex;                 //!< mutex for making the reference counting mechanism thread-safe.
         int m_refCount;                         //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
         int m_alive;                            //!< member to check if thread is still responsive
+        
+        //!< this user defined mutex can be accessed via C++ oder Python by the user code.
+        /* This mutex has no designed task in the plugin, however it can be used by
+        the user to for instance protect a sequence of different calls to this plugin.
+
+        This can be important, if the plugin is for instance a communication object,
+        that is used by different other hardware instances (e.g. a SerialIO to
+        an arduino, that controls different motors, sensors etc.). Then, it might
+        be important, that every hardware plugin object, that uses the serialIO
+        plugin, can protect a setVal / getVal sequence without that any other
+        plugin instance interrupts its. However, it is the task of the user to
+        implement that protection. This mutex can only help for this.
+        */
+        QMutex m_userMutex;
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -331,6 +345,13 @@ namespace ito
     {
         Q_D(AddInBase);
         d->m_alive = 1;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    QMutex& AddInBase::getUserMutex()
+    {
+        Q_D(AddInBase);
+        return d->m_userMutex;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

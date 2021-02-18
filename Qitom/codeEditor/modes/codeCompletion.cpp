@@ -829,22 +829,21 @@ void CodeCompletionMode::showCompletions(const QVector<JediCompletion> &completi
 }
 
 //--------------------------------------------------------------------
-QString CodeCompletionMode::parseTooltipDocstring(const QString &docstring) const
+QPair<QStringList, QString> CodeCompletionMode::parseTooltipDocstring(const QString &docstring) const
 {
     QStringList lines = Utils::strip(docstring).split("\n");
-    QStringList output;
-
+    QStringList signatures;
     int idx = 0;
 
     for (; idx < lines.size(); ++idx)
     {
-        output << lines[idx];
-
         if (lines[idx] == "" || (lines[idx][0] == ' ' && lines[idx].trimmed() == ""))
         {
             // empty line or line with spaces only. skip. the real docstring comes now.
             break;
         }
+
+        signatures << lines[idx];
     }
 
     QString docstr = lines.mid(idx + 1).join("\n");
@@ -865,9 +864,7 @@ QString CodeCompletionMode::parseTooltipDocstring(const QString &docstring) cons
         docstr += tr("...");
     }
 
-    output << docstr;
-
-    return output.join("\n");
+    return qMakePair<QStringList, QString>(signatures, docstr);
 }
 
 //--------------------------------------------------------------------
@@ -892,22 +889,36 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
         item = new QStandardItem();
         item->setData(name, Qt::DisplayRole);
 
+        QList<QPair<QStringList, QString>> tooltips;
+        QPair<QStringList, QString> tooltip;
+
         if (completion.m_tooltips.size() > 0)
         {
-            QStringList tooltips;
-            QString tooltip;
-
             foreach(const QString &tt, completion.m_tooltips)
             {
-                tooltips << parseTooltipDocstring(tt);
+                if (tt != "")
+                {
+                    tooltip = parseTooltipDocstring(tt);
+
+                    if (tooltips.size() > 0 && tooltips.last().second == tooltip.second)
+                    {
+                        //same docstring -> add signatures to previous
+                        tooltips[tooltips.size() - 1].first.append(tooltip.first);
+                    }
+                    else
+                    {
+                        tooltips.append(tooltip);
+                    }
+                }
             }
-            
-            m_tooltips[name] = tooltips.join("\n\n");
         }
-        else if (completion.m_description != "")
+        
+        if (tooltips.size() == 0 && completion.m_description != "")
         {
-            m_tooltips[name] = parseTooltipDocstring(completion.m_description);
+            tooltips.append(parseTooltipDocstring(completion.m_description));
         }
+
+        m_tooltips[name] = tooltips;
 
         if (completion.m_icon != "")
         {
@@ -931,49 +942,6 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
     return cc_model;
 }
 
-//--------------------------------------------------------------------
-QString signatureWordWrap(QString text, int width)
-{
-    QString result;
-    int j, i;
-    bool firstWrap = true;
-
-    for (;;) 
-    {
-        i = std::min(width, text.length());
-        j = text.lastIndexOf(", ", i);
-
-        if (j == -1)
-        {
-            j = text.indexOf(", ", i);
-        }
-
-        if (j > 0)
-        {
-            result += text.left(j);
-            result += ",\n    ";
-            text = text.mid(j + 2);
-
-            if (firstWrap)
-            {
-                firstWrap = false;
-                width -= 4;
-            }
-        }
-        else
-        {
-            break;
-        }
-
-        if (width >= text.length())
-        {
-            break;
-        }
-    }
-
-    return result + text;
-}
-
 
 //--------------------------------------------------------------------
 /*
@@ -991,70 +959,39 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
         return;
     }
 
-    QString tooltip = m_tooltips[completion];
+    auto tooltips = m_tooltips[completion];
 
     /* tasks: convert tooltip to html, check for the first 
     section with the definitions and wrap after maximum line length.
     Make a <hr> after the first section
     */
-    const QString br("<br>");
-    int firstSectionIdx = tooltip.indexOf("\n\n");
-    QString signatures;
-    QString docstring;
+    QStringList styledTooltips;
 
-    if (firstSectionIdx >= 0)
+    foreach(const auto &tip, tooltips)
     {
-        QStringList defs = tooltip.left(firstSectionIdx).split('\n');
-
         // the signature is represented as <code> monospace section.
         // this requires much more space than ordinary letters. 
         // Therefore reduce the maximum line length to 88/2.
-        int maxLength = 44;
-
-        for (int i = 0; i < defs.size(); ++i)
-        {
-            if (defs[i].size() > maxLength)
-            {
-                defs[i] = signatureWordWrap(defs[i], maxLength);
-            }
-        }
-
-        signatures = defs.join("\n");
-        docstring = tooltip.mid(firstSectionIdx + 2);
-    }
-    else
-    {
-        docstring = tooltip;
+        styledTooltips << Utils::parseStyledTooltipsFromSignature(
+            tip.first,
+            tip.second,
+            44,
+            m_tooltipsMaxLength
+        );
     }
 
-    signatures = signatures.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
-    QStringList s = signatures.split('\n', QString::SkipEmptyParts);
-
-    if (s.size() > 0)
+    if (styledTooltips.size() == 0)
     {
-        signatures = "<nobr>" + s.join("</nobr><br><nobr>") + "</nobr>";
-    }
-    else
-    {
-        signatures = "";
-    }
-
-    docstring = docstring.toHtmlEscaped();
-    docstring = docstring.replace('\n', br);
-
-    if (signatures != "")
-    {
-        tooltip = QString("<code>%1</code><hr><nobr>%2</nobr>").arg(signatures).arg(docstring);
-    }
-    else
-    {
-        tooltip = QString("<nobr>%1</nobr>").arg(docstring);
+        ToolTip::hideText();
+        return;
     }
 
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
-    pos.setY(pos.y() - 15);
-    ToolTip::showText(pos, tooltip, editor());
+    pos.ry() -= 15;
+    QPoint altTopRightPos = m_pCompleter->popup()->pos();
+    altTopRightPos.ry() += 40;
+    ToolTip::showText(pos, styledTooltips.join("<hr>"), editor(), altTopRightPos);
 }
 
 //--------------------------------------------------------------------

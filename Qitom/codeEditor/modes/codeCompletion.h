@@ -190,14 +190,20 @@ protected:
     void showPopup(int index = 0);
     void showCompletions(const QVector<JediCompletion> &completions);
     QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
-    QString parseTooltipDocstring(const QString &docstring) const;
+
+    /*
+    \returns (stringlist os signatures, docstring)
+    */
+    QPair<QStringList, QString> parseTooltipDocstring(const QString &docstring) const;
     
     static bool isNavigationKey(QKeyEvent *e);
 
 private:
     QObject *m_pPythonEngine;
     int m_requestCount;
-    QMap<QString, QString> m_tooltips;
+
+    /* maps the completion name to a a list of (string list of signatures and a docstring) */
+    QMap<QString, QList<QPair<QStringList, QString>>> m_tooltips;
     bool m_showTooltips;
     QCompleter *m_pCompleter;
     QString m_completionPrefix;

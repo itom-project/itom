@@ -29,7 +29,7 @@ from itom import ui
 import itom
 from contextlib import contextmanager
 
-__version__ = "2.2.0"
+__version__ = "2.4.0"
 
 
 class ItomUi:
@@ -357,6 +357,58 @@ class ItomUi:
 
             for item, prop, value in revertItems:
                 item[prop] = value
+
+    @contextmanager
+    def blockSignals(self, item):
+        """Factory function to temporarily block signals of an widget (item).
+    
+        This function can be called in a with statement to temporarily block
+        signals of the indicated widget ``item`` or the a list or tuple
+        of widgets. This can for instance be used,
+        if the current value or index of a spin box, slider etc. should be changed,
+        without emitting the corresponding ``currentIndexChanged``... signals.
+        
+        When the with statement is entered, ``item.call('blockSignals', True)``
+        is called. At exit ``item.call('blockSignals', False)`` is called again
+        to revert the block. The block is also released if any exception is
+        thrown within the with statement.
+    
+        New in version 2.3 of this module. 
+    
+        Args:
+            item (itom.uiItem or Sequence of itom.uiItem): the ``uiItem``, 
+                whose signals should temporarily be blocked.
+    
+        An exemplary call of this context function is::
+    
+            with self.blockSignals(self.gui.myItem1):
+                self.gui.myItem1['currentIndex'] = 2
+        """
+        if type(item) is itom.uiItem:
+            try:
+                item.call("blockSignals", True)
+                yield
+            finally:
+                item.call("blockSignals", False)
+        elif type(item) is tuple or type(item) is list:
+            for item2 in item:
+                if type(item2) is not itom.uiItem:
+                    raise TypeError(
+                        "items must be an itom.uiItem object or a "
+                        "list / tuple of itom.uiItem objects."
+                    )
+            try:
+                for item2 in item:
+                    item2.call("blockSignals", True)
+                yield
+            finally:
+                for item2 in item:
+                    item2.call("blockSignals", False)
+        else:
+            raise TypeError(
+                "item must be an itom.uiItem object or a "
+                "list / tuple of itom.uiItem objects."
+            )
 
 
 # deprecated: workaround to have old version member of class UiItem again:

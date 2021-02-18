@@ -85,7 +85,6 @@ public slots:
 
 signals:
     void wantToCopy();
-    void pythonExecuteString(QString cmd);
     void sendToLastCommand(QString cmd);
     void sendToPythonMessage(QString cmd);
 
@@ -107,11 +106,20 @@ private slots:
     void processStreamBuffer();
 
 private:
-    struct cmdQueueStruct
+    struct CmdQueueItem
     { 
-        cmdQueueStruct() { singleLine = ""; m_lineBegin = -1; m_nrOfLines = 1; }
-        cmdQueueStruct(QString text, int lineBegin, int nrOfLines) {singleLine = text; m_lineBegin = lineBegin; m_nrOfLines = nrOfLines; }
-        QString singleLine;
+        CmdQueueItem() :
+            m_lineBegin(-1),
+            m_nrOfLines(1)
+        {}
+
+        CmdQueueItem(const QString &text, int lineBegin, int nrOfLines)  :
+            m_singleLine(text),
+            m_lineBegin(lineBegin),
+            m_nrOfLines(nrOfLines)
+        {}
+
+        QString m_singleLine;
         int m_lineBegin;
         int m_nrOfLines;
     };
@@ -150,7 +158,7 @@ private:
     
     DequeCommandList *m_pCmdList; 
 
-    std::queue<cmdQueueStruct> m_cmdQueue; //!< upcoming events to handle
+    std::queue<CmdQueueItem> m_cmdQueue; //!< upcoming events to handle
 
     bool m_canCopy;
     bool m_canCut;
@@ -158,6 +166,7 @@ private:
     QTimer m_receiveStreamBufferTimer;
     bool m_splitLongLines;
     int m_splitLongLinesMaxLength;
+    CmdQueueItem m_currentlyExecutedCommand;
 
     QSharedPointer<LineBackgroundMarkerMode> m_markErrorLineMode;
     QSharedPointer<LineBackgroundMarkerMode> m_markCurrentLineMode;

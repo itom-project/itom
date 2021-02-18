@@ -154,6 +154,7 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
     PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
+
     if (pyEng && (m_requestCount == 0))
     {
         ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());

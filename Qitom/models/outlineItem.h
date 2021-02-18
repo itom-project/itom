@@ -20,48 +20,51 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef CLASSNAVIGATORITEM_H
-#define CLASSNAVIGATORITEM_H
+#pragma once
 
 #include <qlist.h>
-#include <qmap.h>
 #include <qstring.h>
-#include <qstringlist.h>
 #include <qicon.h>
+#include <qsharedpointer.h>
 
 namespace ito {
 
-class ClassNavigatorItem;
-class t_type;
+class OutlineItem;
 
-class ClassNavigatorItem
+class OutlineItem
 {
-
 public:
-    // Enumeration
-    enum t_type {typePyRoot, typePyGlobal, typePyClass, typePyDef, typePyStaticDef, typePyClMethDef};
-    
-    ClassNavigatorItem();
-    ~ClassNavigatorItem();
+    enum Type
+    {
+        typeRoot,
+        typeClass, //!< class method
+        typeFunction, //!< unbound function
+        typeMethod, //!< bound method of a class (first arg is self)
+        typePropertyGet,
+        typePropertySet,
+        typeStaticMethod,
+        typeClassMethod
+    };
 
-    // Methods
-    void setInternalType(t_type t);
-    void setIcon(t_type t);
-   
-    // Variables
-    int m_lineno;
+    explicit OutlineItem(Type type);
+    ~OutlineItem();
+
+    QIcon icon() const;
+
+    Type m_type;
     QString m_name;
     QString m_args;
     QString m_returnType;
-    QIcon m_icon;
-    QList<const ClassNavigatorItem*> m_member;
-    t_type m_internalType;
-    bool m_priv;
+    int m_startLineIdx; //!< the first line where the block starts
+    int m_endLineIdx; //!< the last line where the block ends
+    bool m_private;
     bool m_async;
-    
+    QWeakPointer<OutlineItem> m_parent;
+
+    QList<QSharedPointer<OutlineItem>> m_childs;
 };
 
 } //end namespace ito
 
-#endif
+Q_DECLARE_METATYPE(QSharedPointer<ito::OutlineItem>) //must be outside of namespace
 

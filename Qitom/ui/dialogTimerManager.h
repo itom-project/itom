@@ -20,8 +20,7 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGTIMERMANAGER
-#define DIALOGTIMERMANAGER
+#pragma once
 
 
 #include "ui_dialogTimerManager.h"
@@ -29,26 +28,26 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 namespace ito
 {
+    class TimerModel;
+
 	class DialogTimerManager : public QDialog
 	{
 		Q_OBJECT
 
 	public:
-		DialogTimerManager(QWidget *parent = NULL);
+		DialogTimerManager(QWidget *parent = nullptr);
 		~DialogTimerManager();
+
 	private:
 		Ui::DialogTimerManager ui;
-		
-		void updateTimerList();
+        TimerModel *m_pModel;
 
-	
-	private slots:
+	private Q_SLOTS:
 		void on_btnStop_clicked();
 		void on_btnStart_clicked();
 		void on_btnStopAll_clicked();
-		void on_listWidget_itemSelectionChanged();
-
-
+        void listView_currentChanged(const QModelIndex &current, const QModelIndex &previous);
+        void listView_dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 	};
-}//end namespace ito
-#endif
+
+} //end namespace ito

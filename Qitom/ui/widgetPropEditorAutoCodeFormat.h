@@ -20,21 +20,48 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SLEEPER_H
-#define SLEEPER_H
+#pragma once
 
-#include <qthread.h>
+#include "abstractPropertyPageWidget.h"
+
+#include <qwidget.h>
+#include <qsharedpointer.h>
+
+#include "../codeEditor/pyCodeFormatter.h"
+
+#include "ui_widgetPropEditorAutoCodeFormat.h"
 
 namespace ito
 {
-    //for Qt5 only, QThread::usleep... are all public, then this helper class is not needed any more.
-    class Sleeper : public QThread
-    {
-    public:
-        static void usleep(unsigned long usecs){QThread::usleep(usecs);}
-        static void msleep(unsigned long msecs){QThread::msleep(msecs);}
-        static void sleep(unsigned long secs){QThread::sleep(secs);}
-    };
-}
 
-#endif //SLEEPER_H
+class WidgetPropEditorAutoCodeFormat : public AbstractPropertyPageWidget
+{
+    Q_OBJECT
+
+public:
+    WidgetPropEditorAutoCodeFormat(QWidget *parent = NULL);
+    ~WidgetPropEditorAutoCodeFormat();
+
+    void readSettings();
+    void writeSettings();
+
+protected:
+    static void deleteLater(QObject *obj);
+
+private:
+    Ui::WidgetPropEditorAutoCodeFormat ui;
+    QString m_demoCode;
+    QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    
+signals:
+
+public slots:
+
+private slots:
+    void on_btnTest_clicked();
+    void on_btnTake_clicked();
+
+    void testCodeFormatterDone(bool success, QString code);
+};
+
+} //end namespace ito

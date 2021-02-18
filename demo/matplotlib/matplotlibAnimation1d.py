@@ -40,19 +40,23 @@ from itom import ui
 
 import numpy as np
 import matplotlib
-#matplotlib.use('module://mpl_itom.backend_itomagg',False) # use this line to see the plot during the creation process of the animation
+
+# matplotlib.use('module://mpl_itom.backend_itomagg',False) # use this line to see the plot during the creation process of the animation
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as manimation
-FFMpegWriter = manimation.writers['ffmpeg']
+
+FFMpegWriter = manimation.writers["ffmpeg"]
 
 ####### set value to create animation ##################################################
-(value, accepted) = ui.getText("Animation title", "please type the name of the animation file", "animation")
-comment = ""            # this comment will be added the mp4 file comments 
-fps = 10                       # by variation of the fps parameter the speed of animation can be changed
-dpi_plot = 120           # dpi of the plot
-inches = 6                  # size of image
-dpi_movie = 100        # dpi of the movie
+(value, accepted) = ui.getText(
+    "Animation title", "please type the name of the animation file", "animation"
+)
+comment = ""  # this comment will be added the mp4 file comments
+fps = 10  # by variation of the fps parameter the speed of animation can be changed
+dpi_plot = 120  # dpi of the plot
+inches = 6  # size of image
+dpi_movie = 100  # dpi of the movie
 numberImages = 100  # number of the images, which are created for the animation
 ##############################################################################
 
@@ -63,17 +67,17 @@ x = np.linspace(0, 2, 1000)
 if accepted:
     fig = plt.figure()
     fig.set_dpi(dpi_plot)
-    fig.set_size_inches(inches,inches,forward=True)
-    ax = plt.axes(xlim=(0,2), ylim=(-2,2))
-    line, = plt.plot([],[], lw = 2)
-    
-    metadata = dict(title=value, artist='Matplotlib', comment = comment)
-    writer = FFMpegWriter(fps = fps, metadata=metadata, bitrate = -1, codec = 'mpeg4')
-    
+    fig.set_size_inches(inches, inches, forward=True)
+    ax = plt.axes(xlim=(0, 2), ylim=(-2, 2))
+    (line,) = plt.plot([], [], lw=2)
+
+    metadata = dict(title=value, artist="Matplotlib", comment=comment)
+    writer = FFMpegWriter(fps=fps, metadata=metadata, bitrate=-1, codec="mpeg4")
+
     with writer.saving(fig, outputfile, dpi_movie):
-        for cnt in range(0,numberImages):
+        for cnt in range(0, numberImages):
             y = np.sin(2 * np.pi * (x - 0.02 * cnt))
             line.set_data(x, y)
             writer.grab_frame()
-    
+
     print("animation finished")

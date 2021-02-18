@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
+    <width>522</width>
     <height>413</height>
    </rect>
   </property>
@@ -17,25 +17,25 @@
    <item>
     <widget class="QGroupBox" name="groupClassNavigator">
      <property name="title">
-      <string>Class Navigator</string>
+      <string>Code Outline</string>
      </property>
      <property name="checkable">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="QLabel" name="label_3">
+       <widget class="QCheckBox" name="checkOutlineShowNavigation">
         <property name="text">
-         <string>This feature enables two comboboxes with class- and method-navigation above the editor.</string>
+         <string>Show class and method navigation combo boxes above each script.</string>
         </property>
        </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QCheckBox" name="checkActiveClassNavigatorTimer">
+         <widget class="QCheckBox" name="checkOutlineAutoUpdateEnabled">
           <property name="text">
-           <string>Activate timer</string>
+           <string>Auto update the outline after the last key press with a delay of...</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -43,7 +43,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="spinClassNavigatorInterval">
+         <widget class="QDoubleSpinBox" name="spinOutlineAutoUpdateDelay">
           <property name="suffix">
            <string> s</string>
           </property>
@@ -54,7 +54,7 @@
            <double>0.100000000000000</double>
           </property>
           <property name="value">
-           <double>2.000000000000000</double>
+           <double>0.500000000000000</double>
           </property>
          </widget>
         </item>
@@ -210,18 +210,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>checkActiveClassNavigatorTimer</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spinClassNavigatorInterval</receiver>
+   <sender>checkOutlineAutoUpdateEnabled</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>spinOutlineAutoUpdateDelay</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>378</x>
-     <y>391</y>
+     <x>323</x>
+     <y>86</y>
     </hint>
     <hint type="destinationlabel">
-     <x>466</x>
-     <y>390</y>
+     <x>393</x>
+     <y>89</y>
     </hint>
    </hints>
   </connection>

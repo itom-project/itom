@@ -40,6 +40,8 @@
 
 #include "foldDetector.h"
 
+#include <qregularexpression.h>
+
 namespace ito {
 
 /*
@@ -74,6 +76,9 @@ public:
     */
     virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block);
 private:
+
+    QRegularExpression m_reContinuationLine;
+    QRegularExpression m_lastSignatureLine;
 };
 
 } //end namespace ito

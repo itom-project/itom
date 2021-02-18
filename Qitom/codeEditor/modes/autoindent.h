@@ -58,6 +58,19 @@ Generic indenter mode that indents the text when the user press RETURN.
 
 You can customize this mode by overriding
 :meth:`pyqode.core.modes.AutoIndentMode._get_indent`
+
+This mode contains two features:
+
+1. The auto indentation itself
+2. It is possible to remove trailing whitespaces and tabs
+   from the current line before the newline character is
+   applied. This improves the accordance to Pep8, which
+   does not allow empty lines, that contains only spaces.
+
+To handle these two features, always enable the mode and
+control the enable/disable state of the two features using
+the specific setters enableAutoIndent, 
+setAutoStripTrailingSpacesAfterReturn.
 */
 class AutoIndentMode : public QObject, public Mode
 {
@@ -71,6 +84,12 @@ public:
     void setKeyPressedModifiers(Qt::KeyboardModifiers modifiers);
     Qt::KeyboardModifiers keyPressedModifiers() const;
 
+    void setAutoStripTrailingSpacesAfterReturn(bool strip);
+    bool autoStripTrailingSpacesAfterReturn() const;
+
+    void enableAutoIndent(bool autoIndent);
+    bool isAutoIndentEnabled() const;
+
 private slots:
     void onKeyPressed(QKeyEvent *e);
 
@@ -81,6 +100,8 @@ protected:
 
 private:
     Qt::KeyboardModifiers m_keyPressedModifiers;
+    bool m_autoStripTrailingSpacesAfterReturn;
+    bool m_enableAutoIndent;
 
 };
 
