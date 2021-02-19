@@ -81,7 +81,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel),
     m_currentLineIndex(-1),
-    m_textBlockLineIdxAboutToBeDeleted(-1)
+    m_textBlockLineIdxAboutToBeDeleted(-1),
+    m_outlineDirty(true)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -161,7 +162,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
 
     m_outlineTimer = new QTimer(this);
     connect(m_outlineTimer, SIGNAL(timeout()), this, SLOT(outlineTimerElapsed()));
-    m_outlineTimer->setInterval(2000);
+    m_outlineTimer->setInterval(500);
 
     m_cursorBeforeMouseClick.invalidate();
     
@@ -215,6 +216,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChanged()));
+    connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 
     connect(m_pBookmarkModel, SIGNAL(bookmarkAdded(BookmarkItem)), this, SLOT(onBookmarkAdded(BookmarkItem)));
     connect(m_pBookmarkModel, SIGNAL(bookmarkDeleted(BookmarkItem)), this, SLOT(onBookmarkDeleted(BookmarkItem)));
@@ -299,6 +301,9 @@ RetVal ScriptEditorWidget::initEditor()
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
 
+    m_pyDocstringGeneratorMode = QSharedPointer<PyDocstringGeneratorMode>(new PyDocstringGeneratorMode("PyDocstringGeneratorMode"));
+    modes()->append(m_pyDocstringGeneratorMode.dynamicCast<ito::Mode>());
+
     m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
@@ -359,7 +364,7 @@ void ScriptEditorWidget::loadSettings()
     // Code Outline
     m_outlineTimerEnabled = settings.value("outlineAutoUpdateEnabled", true).toBool();
     m_outlineTimer->stop();
-    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 2.00).toDouble() * 1000));
+    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 0.5).toDouble() * 1000));
 
     //todo
     // Fold Style
@@ -431,6 +436,17 @@ void ScriptEditorWidget::loadSettings()
         pyCodeFormatAction->second->setEnabled(m_autoCodeFormatCmd != "");
     }
 
+    QString style = settings.value("docstringGeneratorStyle", "googleStyle").toString();
+
+    if (style == "numpyStyle")
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::NumpyStyle);
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::GoogleStyle);
+    }
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -492,6 +508,12 @@ void ScriptEditorWidget::initMenus()
             this, SLOT(menuPyCodeFormatting()), QKeySequence(tr("Ctrl+Alt+I", "QShortcut"))
         );
     m_editorMenuActions["formatFile"]->setVisible(false);
+
+    m_editorMenuActions["generateDocstring"] =
+        editorMenu->addAction(
+            QIcon(), tr("Generate Docstring"),
+            this, SLOT(menuGenerateDocstring()), QKeySequence(tr("Ctrl+Alt+D", "QShortcut"))
+        );
     
     editorMenu->addSeparator();
     
@@ -612,6 +634,7 @@ bool ScriptEditorWidget::keepIndentationOnPaste() const
     return m_keepIndentationOnPaste;
 }
 
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
 {
     m_keepIndentationOnPaste = value;
@@ -620,10 +643,21 @@ void ScriptEditorWidget::setKeepIndentationOnPaste(bool value)
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
 {
+    m_wordHoverTooltipMode->hideTooltip();
+
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     int lineFrom, indexFrom, lineTo, indexTo;
 
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    if (lineIndex >= 0 && !m_pythonBusy)
+    {
+        //update outline
+        m_rootOutlineItem = parseOutline();
+    }
 
     m_editorMenuActions["cut"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
@@ -632,9 +666,23 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
-    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy);   
+    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy); 
+    m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["generateDocstring"]->setEnabled(
+        !m_pythonBusy && 
+        currentLineCanHaveDocstring()
+    );
 
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
+}
+
+//-------------------------------------------------------------------------------------
+bool ScriptEditorWidget::currentLineCanHaveDocstring() const
+{
+    const QTextCursor &cursor = textCursor();
+    int lineIndex = cursor.isNull() ? -1 : cursor.blockNumber();
+
+    return !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -711,6 +759,8 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
     {
         AbstractCodeEditorWidget::insertFromMimeData(source);
     }
+
+    onTextChanged();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -951,6 +1001,8 @@ void ScriptEditorWidget::menuComment()
         {
             setCursorPosition(lineTo, indexTo);
         }
+
+        onTextChanged();
     }
 }
 
@@ -1137,6 +1189,7 @@ void ScriptEditorWidget::menuInsertCodec()
             currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
             currentCursor.insertText(newText);
             setModified(true);
+            onTextChanged();
         }
     }
 }
@@ -1242,6 +1295,24 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 }
 
 //-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuGenerateDocstring()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    QString quotes = settings.value("docstringGeneratorQuotes", "doubleQuotes").toString();
+    settings.endGroup();
+
+    if (quotes == "apostrophe")
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "'''");
+    }
+    else
+    {
+        m_pyDocstringGeneratorMode->insertDocstring(textCursor(), "\"\"\"");
+    }
+}
+
+//-------------------------------------------------------------------------------------
 //!< executes and undo or redo action and tries to preserve bookmarks and breakpoints
 void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 {
@@ -1257,10 +1328,11 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     QList<BreakPointItem> breakpointsCache;
     QList<BookmarkItem> bookmarksCacheNew;
     QList<BreakPointItem> breakpointsCacheNew;
+    int numLines = lineCount();
 
     foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
     {
-        if (item.isValid())
+        if (item.isValid() && item.lineIdx < numLines && item.lineIdx >= 0)
         {
             bookmarksCache << item;
         }
@@ -1273,7 +1345,10 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 
         foreach(const BreakPointItem &item, allBreakpoints)
         {
-            breakpointsCache << item;
+            if (item.lineIdx >= 0 && item.lineIdx < numLines)
+            {
+                breakpointsCache << item;
+            }
         }
     }
 
@@ -1311,7 +1386,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     // are immediately removed. Therefore, add non-existing bookmarks
     // and breakpoints from the cache again will be executed by a small
     // delay.
-    QTimer::singleShot(20, this, std::bind(
+    QTimer::singleShot(75, this, std::bind(
         &ScriptEditorWidget::addBookmarksAndBreakpointsIfNotExist, 
         this, 
         bookmarksCache, 
@@ -1555,6 +1630,8 @@ void ScriptEditorWidget::replaceSelectionAndKeepBookmarksAndBreakpoints(
             }
         }
     }
+
+    onTextChanged();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1681,10 +1758,12 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
         }
 
         QStringList watchedFiles = m_pFileSysWatcher->files();
+
         if (watchedFiles.size() > 0)
         {
             m_pFileSysWatcher->removePaths(watchedFiles);
         }
+
         m_pFileSysWatcher->addPath(m_filename);
 
         //!< check if BreakPointModel already contains breakpoints for this editor and load them
@@ -2793,30 +2872,35 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
 void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) 
 {
-    if (m_fileSystemWatcherMutex.tryLock(1))
+    if (path == getFilename())
     {
-        if (path == getFilename())
+        QFileInfo file(path);
+
+        // due to a bug in file system watcher, the fileChanged signal
+        // is sometimes emitted more than one time. Therefore block it here
+        // and release it in the fileSysWatcherFileChangedStep2 method after
+        // a while.
+        m_pFileSysWatcher->blockSignals(true);
+
+        if (!file.exists()) //file deleted
         {
-            QFileInfo file(path);
-
-            if (!file.exists()) //file deleted
-            {
-                //if git updates a file, the file is deleted and then the modified file is created.
-                //this will cause a 'delete' notification, however the 'modified' notification would be correct.
-                //try to sleep for a while and recheck the state of the file again...
-                QTimer::singleShot(500, this, std::bind(
-                    &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
-                    this,
-                    path)
-                );
-            }
-            else //file changed
-            {    
-                fileSysWatcherFileChangedStep2(path);
-            }
+            //if git updates a file, the file is deleted and then the modified file is created.
+            //this will cause a 'delete' notification, however the 'modified' notification would be correct.
+            //try to sleep for a while and recheck the state of the file again...
+            QTimer::singleShot(500, this, std::bind(
+                &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
+                this,
+                path)
+            );
         }
-
-        m_fileSystemWatcherMutex.unlock();
+        else //file changed
+        {    
+            QTimer::singleShot(100, this, std::bind(
+                &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
+                this,
+                path)
+            );
+        }
     }
 }
 
@@ -2834,13 +2918,14 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
         if (!file.exists()) //file deleted
         {
-            QMessageBox msgBox(this);
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::Yes);
-            msgBox.setText(tr("The file '%1' does not exist any more.").arg(path));
-            msgBox.setInformativeText(tr("Keep this file in editor?"));
+            QMessageBox *msgBox = new QMessageBox(this);
+            msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox->setDefaultButton(QMessageBox::Yes);
+            msgBox->setText(tr("The file '%1' does not exist any more.").arg(path));
+            msgBox->setInformativeText(tr("Keep this file in editor?"));
 
-            int ret = msgBox.exec();
+            int ret = msgBox->exec();
+            DELETE_AND_SET_NULL(msgBox);
 
             if (ret == QMessageBox::No)
             {
@@ -2862,12 +2947,13 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
             if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
             {
-                QMessageBox msgBox(this);
-                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgBox.setDefaultButton(QMessageBox::Yes);
-                msgBox.setText(tr("The file '%1' has been modified by another program.").arg(path));
-                msgBox.setInformativeText(tr("Do you want to reload it?"));
-                int ret = msgBox.exec();
+                QMessageBox *msgBox = new QMessageBox(this);
+                msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msgBox->setDefaultButton(QMessageBox::Yes);
+                msgBox->setText(tr("The file '%1' has been modified by another program.").arg(path));
+                msgBox->setInformativeText(tr("Do you want to reload it?"));
+                int ret = msgBox->exec();
+                DELETE_AND_SET_NULL(msgBox);
 
                 if (ret == QMessageBox::Yes)
                 {
@@ -2881,6 +2967,8 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
         }
     }
+
+    m_pFileSysWatcher->blockSignals(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -3057,10 +3145,17 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem> &pare
 }
 
 //-------------------------------------------------------------------------------------
-QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
+QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /*=false*/) const
 {
+    if (!m_outlineDirty && !forceParsing)
+    {
+        return m_rootOutlineItem;
+    }
+
     const QTextDocument* doc = document();
     bool valid;
+    m_outlineDirty = false;
+    m_outlineTimer->stop();
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
@@ -3089,9 +3184,10 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
         }
     }
 
+    m_rootOutlineItem = root;
+
     return root;
 }
-
 
 //-------------------------------------------------------------------------------------
 /* slot called if the outline timer expired. This is the case if the document has
@@ -3103,12 +3199,13 @@ This method is also directly called if a new file is opened in this editor.
 void ScriptEditorWidget::outlineTimerElapsed()
 {
     m_outlineTimer->stop();
-    m_rootOutlineItem = parseOutline();
+    m_rootOutlineItem = parseOutline(true);
 
     emit outlineModelChanged(this, m_rootOutlineItem);
+    emit updateActions();
 }
 
-//----------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::dumpFoldsToConsole(bool)
 {
     int lvl;
@@ -3223,6 +3320,9 @@ void ScriptEditorWidget::onCursorPositionChanged()
     {
         emit outlineModelChanged(this, m_rootOutlineItem);
         m_currentLineIndex = currentLine;
+
+        // update the actions of the script dock widget, e.g. for docstring generator...
+        emit updateActions();
     }
 
     // set the current cursor position to the global cursor position variable
@@ -3254,6 +3354,13 @@ void ScriptEditorWidget::onCursorPositionChanged()
 void ScriptEditorWidget::tabChangeRequest()
 {
     emit tabChangeRequested();
+}
+
+//-------------------------------------------------------------------------------------
+/* on text changed is always emitted after that the foldings have been updated. */
+void ScriptEditorWidget::onTextChanged()
+{
+    m_outlineDirty = true;
 }
 
 } // end namespace ito

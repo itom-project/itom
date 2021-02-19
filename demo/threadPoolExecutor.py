@@ -1,18 +1,22 @@
 import concurrent.futures
 import urllib.request
-'''asyncio/concurrent heavily changed from python 3.4 to 3.7, better read the docs
-and do some tutorials. Asyncio is preferred over plain concurrent module'''
 
-URLS = ['http://www.foxnews.com/',
-        'http://www.cnn.com/',
-        'http://europe.wsj.com/',
-        'http://www.bbc.co.uk/',
-        'http://some-made-up-domain.com/']
+"""asyncio/concurrent heavily changed from python 3.4 to 3.7, better read the docs
+and do some tutorials. Asyncio is preferred over plain concurrent module"""
+
+URLS = [
+    "http://www.foxnews.com/",
+    "http://www.cnn.com/",
+    "http://europe.wsj.com/",
+    "http://www.bbc.co.uk/",
+    "http://some-made-up-domain.com/",
+]
 
 # Retrieve a single page and report the url and contents
 def load_url(url, timeout):
     with urllib.request.urlopen(url, timeout=timeout) as conn:
         return conn.read()
+
 
 # We can use a with statement to ensure threads are cleaned up promptly
 with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
@@ -23,6 +27,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         try:
             data = future.result()
         except Exception as exc:
-            print('%r generated an exception: %s' % (url, exc))
+            print("%r generated an exception: %s" % (url, exc))
         else:
-            print('%r page is %d bytes' % (url, len(data)))
+            print("%r page is %d bytes" % (url, len(data)))

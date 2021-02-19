@@ -484,3 +484,32 @@ can check to disable this option for the future.
 For configuring the auto code formatting, please see the 
 :ref:`auto code formatting <gui-prop-auto-code-format>`
 page of the itom property dialog.
+
+.. _gui-editor-docstring-generator:
+
+Automatic Docstring Generator
+==============================
+
+Another feature in the script editor of itom, is the automatic insertion of a 
+pre-filled docstring template for functions, methods and properties. 
+
+This feature
+can be configured in the :ref:`docstring generator page <gui-prop-docstring-generator>`
+of the itom property dialog. You can for instance choose between the Google style
+or the Numpy docstring style. Furthermore it is possible to define, whether three
+double quotes (""") or three apostrophes (''') should be used for the docstring.
+
+To add such a docstring, there are three different possibilities:
+
+1. Choose **Generate Docstring** from the context menu of the script editor, when
+   clicking the signature of the body of a function or method.
+
+2. Press **Ctrl+Alt+D** if the cursor is located somewhere in the function or method
+   or click the action **Generate Docstring** from the **Edit** menu.
+
+3. Enter three double quotes (""") or three apostropes (''') in the line after the
+   signature. Then, a menu popup appears, where you can choose **Generate Docstring**
+   by pressing Return or Enter. If you press any other key, the popup automatically
+   disappears.
+
+

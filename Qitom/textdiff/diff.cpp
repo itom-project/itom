@@ -291,7 +291,7 @@ int DiffArray(
         ctx.buf=buf;
     }else
     {
-        varray_init(&tmp,sizeof(int),NULL);
+        varray_init(&tmp,sizeof(int));
         ctx.buf=&tmp;
     }
     ctx.DiffEditArray=ses;
@@ -349,7 +349,7 @@ int GetStringSimilarity(const char *a,const char *b)
     int sn,i;
     struct varray ses;
 
-    varray_init(&ses,sizeof(DiffEdit),NULL);
+    varray_init(&ses,sizeof(DiffEdit));
     n=(int)strlen(a);
     m= (int)strlen(b);
 
@@ -450,7 +450,7 @@ bool GetLineMapping(const QByteArray &oldText, const QByteArray &newText, QVecto
     QVector<int> newTextLineIdxs = FillLineIdxs(newText);
     QByteArrayList oldLines = oldText.split('\n');
 
-    varray_init(&ses, sizeof(DiffEdit), NULL);
+    varray_init(&ses, sizeof(DiffEdit));
     n = (int)strlen(a);
     m = (int)strlen(b);
 

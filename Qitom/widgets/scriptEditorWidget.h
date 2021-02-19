@@ -31,6 +31,7 @@
 #include "../codeEditor/panels/breakpointPanel.h"
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
@@ -39,7 +40,6 @@
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
-#include <qmutex.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmenu.h>
@@ -132,7 +132,11 @@ public:
     //!< wrapper for undo() or redo() that tries to keep breakpoints and bookmarks
     void startUndoRedo(bool unundoNotRedo);
 
-    QSharedPointer<OutlineItem> parseOutline() const;
+    QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
+
+    //!< returns true if the current line can be a trigger to insert a template docstring
+    //!< for a possible method / function, this line belongs to.
+    bool currentLineCanHaveDocstring() const;
 
     static QString filenameFromUID(int UID, bool &found);
 
@@ -175,7 +179,6 @@ private:
     RetVal changeFilename(const QString &newFilename);
 
     QFileSystemWatcher *m_pFileSysWatcher;
-    QMutex m_fileSystemWatcherMutex;
 
     // the following variables are related to the code checker feature of Python
     bool m_codeCheckerEnabled;
@@ -212,6 +215,7 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;
     static int currentMaximumUID;
@@ -222,7 +226,8 @@ private:
     QTimer *m_outlineTimer; //!< timer to recreate the outline model with a certain delay
     bool m_outlineTimerEnabled; //!<
     int m_currentLineIndex; //!< current line index of the cursor
-    QSharedPointer<OutlineItem> m_rootOutlineItem;
+    mutable QSharedPointer<OutlineItem> m_rootOutlineItem; //!< cache for the latest outline items
+    mutable bool m_outlineDirty;
     QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
     QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator
     QRegularExpression m_regExpMethodStart; //!< regular expression to parse the start of a method definition
@@ -266,6 +271,7 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
+    void menuGenerateDocstring();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
@@ -284,7 +290,6 @@ private slots:
     void onBookmarkAdded(const BookmarkItem &item);  
     void onBookmarkDeleted(const BookmarkItem &item);
     
-
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);
     RetVal editBreakpoint(int line);
@@ -306,10 +311,9 @@ private slots:
 
     void dumpFoldsToConsole(bool);
     void onCursorPositionChanged();
-
+    void onTextChanged();
     void tabChangeRequest();
 
-    
     void pyCodeFormatterDone(bool success, QString code);
 };
 

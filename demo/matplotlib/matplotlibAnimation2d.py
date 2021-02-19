@@ -40,40 +40,48 @@ from itom import ui
 
 import numpy as np
 import matplotlib
-matplotlib.use('module://mpl_itom.backend_itomagg',False) # use this line to see the plot during the creation process of the animation
+
+matplotlib.use(
+    "module://mpl_itom.backend_itomagg", False
+)  # use this line to see the plot during the creation process of the animation
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as manimation
-FFMpegWriter = manimation.writers['ffmpeg']
+
+FFMpegWriter = manimation.writers["ffmpeg"]
 
 ####### set value to create animation ##################################################
-(value, accepted) = ui.getText("Animation title", "please type the name of the animation file", "animation")
-comment = ""            # this comment will be added the mp4 file comments 
-fps = 15                       # by variation of the fps parameter the speed of animation can be changed
-dpi_plot = 120           # dpi of the plot
-inches = 6                  # size of image
-dpi_movie = 300        # dpi of the movie
+(value, accepted) = ui.getText(
+    "Animation title", "please type the name of the animation file", "animation"
+)
+comment = ""  # this comment will be added the mp4 file comments
+fps = 15  # by variation of the fps parameter the speed of animation can be changed
+dpi_plot = 120  # dpi of the plot
+inches = 6  # size of image
+dpi_movie = 300  # dpi of the movie
 numberImages = 256  # number of the images, which are created for the animation
 ##############################################################################
 
 outputfile = value + ".mp4"
-stack = dataObject.rand([numberImages,1000,1000]) # random 3d data stack is created for the animation
+stack = dataObject.rand(
+    [numberImages, 1000, 1000]
+)  # random 3d data stack is created for the animation
 stack = np.array(stack)
 
 if accepted:
     fig = plt.figure()
     fig.set_dpi(dpi_plot)
-    fig.set_size_inches(inches,inches,forward=True)
-    
-    metadata = dict(title=value, artist='Matplotlib', comment = comment)
-    writer = FFMpegWriter(fps = fps, metadata=metadata, bitrate = -1, codec = 'mpeg4')
-    
+    fig.set_size_inches(inches, inches, forward=True)
+
+    metadata = dict(title=value, artist="Matplotlib", comment=comment)
+    writer = FFMpegWriter(fps=fps, metadata=metadata, bitrate=-1, codec="mpeg4")
+
     with writer.saving(fig, outputfile, dpi_movie):
-        for cnt in range(0,numberImages):
+        for cnt in range(0, numberImages):
             fig.clear()
-            plt.imshow(stack[cnt,:,:], cmap = "viridis")
+            plt.imshow(stack[cnt, :, :], cmap="viridis")
             plt.show()
             writer.grab_frame()
             print("remaining: " + str(numberImages - cnt))
-    
+
     print("animation finished")

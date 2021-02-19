@@ -975,7 +975,8 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
         styledTooltips << Utils::parseStyledTooltipsFromSignature(
             tip.first,
             tip.second,
-            44
+            44,
+            m_tooltipsMaxLength
         );
     }
 

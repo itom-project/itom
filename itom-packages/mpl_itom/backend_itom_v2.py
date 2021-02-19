@@ -1,6 +1,5 @@
 # coding=iso-8859-15
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 import six
 
 import functools
@@ -15,59 +14,70 @@ import matplotlib
 
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.backend_bases import (
-    _Backend, FigureCanvasBase, FigureManagerBase, NavigationToolbar2,
-    TimerBase, cursors, ToolContainerBase, StatusbarBase)
+    _Backend,
+    FigureCanvasBase,
+    FigureManagerBase,
+    NavigationToolbar2,
+    TimerBase,
+    cursors,
+    ToolContainerBase,
+    StatusbarBase,
+)
 import mpl_itom.figureoptions as figureoptions
-#from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
+
+# from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
 from matplotlib.figure import Figure
 from matplotlib.backend_managers import ToolManager
 from matplotlib import backend_tools
 
-#itom specific imports
+# itom specific imports
 import itom
 from itom import uiItem, timer, ui
 import weakref
-#itom specific imports (end)
+
+# itom specific imports (end)
 
 backend_version = "2.0.0"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
 # instead they have manually specified names
-SPECIAL_KEYS = {0x01000021: 'control',
-                0x01000020: 'shift',
-                0x01000023: 'alt',
-                0x01000022: 'super',
-                0x01000005: 'enter',
-                0x01000012: 'left',
-                0x01000013: 'up',
-                0x01000014: 'right',
-                0x01000015: 'down',
-                0x01000000: 'escape',
-                0x01000030: 'f1',
-                0x01000031: 'f2',
-                0x01000032: 'f3',
-                0x01000033: 'f4',
-                0x01000034: 'f5',
-                0x01000035: 'f6',
-                0x01000036: 'f7',
-                0x01000037: 'f8',
-                0x01000038: 'f9',
-                0x01000039: 'f10',
-                0x0100003a: 'f11',
-                0x0100003b: 'f12',
-                0x01000010: 'home',
-                0x01000011: 'end',
-                0x01000016: 'pageup',
-                0x01000017: 'pagedown',
-                0x01000001: 'tab',
-                0x01000003: 'backspace',
-                0x01000005: 'enter',
-                0x01000006: 'insert',
-                0x01000007: 'delete',
-                0x01000008: 'pause',
-                0x0100000a: 'sysreq',
-                0x0100000b: 'clear', }
+SPECIAL_KEYS = {
+    0x01000021: "control",
+    0x01000020: "shift",
+    0x01000023: "alt",
+    0x01000022: "super",
+    0x01000005: "enter",
+    0x01000012: "left",
+    0x01000013: "up",
+    0x01000014: "right",
+    0x01000015: "down",
+    0x01000000: "escape",
+    0x01000030: "f1",
+    0x01000031: "f2",
+    0x01000032: "f3",
+    0x01000033: "f4",
+    0x01000034: "f5",
+    0x01000035: "f6",
+    0x01000036: "f7",
+    0x01000037: "f8",
+    0x01000038: "f9",
+    0x01000039: "f10",
+    0x0100003A: "f11",
+    0x0100003B: "f12",
+    0x01000010: "home",
+    0x01000011: "end",
+    0x01000016: "pageup",
+    0x01000017: "pagedown",
+    0x01000001: "tab",
+    0x01000003: "backspace",
+    0x01000005: "enter",
+    0x01000006: "insert",
+    0x01000007: "delete",
+    0x01000008: "pause",
+    0x0100000A: "sysreq",
+    0x0100000B: "clear",
+}
 
 # define which modifier keys are collected on keyboard events.
 # elements are (mpl names, Modifier Flag, Qt Key) tuples
@@ -75,34 +85,33 @@ SUPER = 0
 ALT = 1
 CTRL = 2
 SHIFT = 3
-MODIFIER_KEYS = [('super', 0x10000000, 0x01000022),
-                 ('alt', 0x08000000, 0x01000023),
-                 ('ctrl', 0x04000000, 0x01000021),
-                 ('shift', 0x02000000, 0x01000020),
-                 ]
+MODIFIER_KEYS = [
+    ("super", 0x10000000, 0x01000022),
+    ("alt", 0x08000000, 0x01000023),
+    ("ctrl", 0x04000000, 0x01000021),
+    ("shift", 0x02000000, 0x01000020),
+]
 
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
-    SPECIAL_KEYS.update({0x01000021: 'cmd',  # cmd/apple key
-                         0x01000022: 'control',
-                         })
-    MODIFIER_KEYS[0] = ('cmd', 0x04000000,
-                        0x01000021)
-    MODIFIER_KEYS[2] = ('ctrl', 0x10000000,
-                        0x01000022)
+    SPECIAL_KEYS.update(
+        {0x01000021: "cmd", 0x01000022: "control",}  # cmd/apple key
+    )
+    MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
+    MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
 
 
 cursord = {
-    -1 : -1, #--> itom specific: remove current overwrite cursor
+    -1: -1,  # --> itom specific: remove current overwrite cursor
     cursors.MOVE: 9,
     cursors.HAND: 13,
     cursors.POINTER: 0,
     cursors.SELECT_REGION: 2,
     cursors.WAIT: 3,
-    }
+}
 
-if hasattr(cursors, "WAIT"): #> matplotlib 2.1
+if hasattr(cursors, "WAIT"):  # > matplotlib 2.1
     cursord[cursors.WAIT] = 3
 
 
@@ -115,21 +124,22 @@ def draw_if_interactive():
         if figManager is not None:
             figManager.canvas.draw_idle()
 
-#if matplotlib.__version__ < '2.1.0':
+
+# if matplotlib.__version__ < '2.1.0':
 #    class Show(ShowBase):
 #        def mainloop(self):
 #            pass
-#else:
+# else:
 #    class Show(ShowBase):
 #        @classmethod
 #        def mainloop(cls):
 #            pass
 
-#show = Show()
+# show = Show()
 
 
 class TimerItom(TimerBase):
-    '''
+    """
     Subclass of :class:`backend_bases.TimerBase` that uses Qt timer events.
 
     Attributes
@@ -144,14 +154,16 @@ class TimerItom(TimerBase):
         events. This list can be manipulated directly, or the functions
         `add_callback` and `remove_callback` can be used.
 
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         TimerBase.__init__(self, *args, **kwargs)
 
         # Create a new timer and connect the timeout() signal to the
         # _on_timer method.
-        self._timer = itom.timer(self._interval, self._on_timer, singleShot = self._single)
+        self._timer = itom.timer(
+            self._interval, self._on_timer, singleShot=self._single
+        )
         self._timer_set_interval()
 
     def __del__(self):
@@ -165,7 +177,9 @@ class TimerItom(TimerBase):
             pass
 
     def _timer_set_single_shot(self):
-        self._timer = itom.timer(self._interval, self._on_timer, singleShot = self._single)
+        self._timer = itom.timer(
+            self._interval, self._on_timer, singleShot=self._single
+        )
 
     def _timer_set_interval(self):
         self._timer.setInterval(self._interval)
@@ -181,44 +195,57 @@ class FigureCanvasItom(FigureCanvasBase):
 
     # map Qt button codes to MouseEvent's ones:
     # left 1, middle 2, right 3
-    buttond = {1: 1,
-               2: 2,
-               4: 3,
-               # QtCore.Qt.XButton1: None,
-               # QtCore.Qt.XButton2: None,
-               }
+    buttond = {
+        1: 1,
+        2: 2,
+        4: 3,
+        # QtCore.Qt.XButton1: None,
+        # QtCore.Qt.XButton2: None,
+    }
 
     def __init__(self, figure, num, matplotlibplotUiItem, embeddedWidget):
-        '''
+        """
         embeddedWidget: bool
             True, if matplotlib widget is embedded into a loaded ui file, 
             False: matplotlib widget is displayed in figure window
-        '''
+        """
         ##_create_qApp()
         super(FigureCanvasItom, self).__init__(figure=figure)
 
         self.figure = figure
-        
-        #--> itom specific start
+
+        # --> itom specific start
         self.num = num
-        
+
         self.initialized = False
         self.embeddedWidget = embeddedWidget
-        self.itomUI = matplotlibplotUiItem #for historic reasons only
+        self.itomUI = matplotlibplotUiItem  # for historic reasons only
         self._destroying = False
-        #self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
-        
-        self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  #this object is deleted in the destroy-method of manager, due to cyclic garbage collection
-        self.matplotlibWidgetUiItem["mouseTracking"] = True #by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+        # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
-        self.matplotlibWidgetUiItem.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
-        self.matplotlibWidgetUiItem.connect("eventMouse(int,int,int,int)", self.mouseEvent)
-        self.matplotlibWidgetUiItem.connect("eventWheel(int,int,int,int)", self.wheelEvent)
+        self.matplotlibWidgetUiItem = (
+            matplotlibplotUiItem.canvasWidget
+        )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+        self.matplotlibWidgetUiItem[
+            "mouseTracking"
+        ] = True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+
+        self.matplotlibWidgetUiItem.connect(
+            "eventLeaveEnter(bool)", self.leaveEnterEvent
+        )
+        self.matplotlibWidgetUiItem.connect(
+            "eventMouse(int,int,int,int)", self.mouseEvent
+        )
+        self.matplotlibWidgetUiItem.connect(
+            "eventWheel(int,int,int,int)", self.wheelEvent
+        )
         self.matplotlibWidgetUiItem.connect("eventKey(int,int,int,bool)", self.keyEvent)
         self.matplotlibWidgetUiItem.connect("eventResize(int,int)", self.resizeEvent)
-        self.matplotlibWidgetUiItem.connect("eventCopyToClipboard(int)", self.copyToClipboardEvent)
-        #itom specific end <--
-        
+        self.matplotlibWidgetUiItem.connect(
+            "eventCopyToClipboard(int)", self.copyToClipboardEvent
+        )
+        # itom specific end <--
+
         # We don't want to scale up the figure DPI more than once.
         # Note, we don't handle a signal for changing DPI yet.
         figure._original_dpi = figure.dpi
@@ -240,23 +267,21 @@ class FigureCanvasItom(FigureCanvasBase):
         self.resize(*self.get_width_height())
         # Key auto-repeat enabled by default
         self._keyautorepeat = True
-        
-        #--> itom specific start
+
+        # --> itom specific start
         self.initialized = True
-        #itom specific end <--
-        
-        self.lastResizeSize = (0,0)
-        
-        
-    
+        # itom specific end <--
+
+        self.lastResizeSize = (0, 0)
+
     def destroy(self):
-        '''itom specific function. not in qt5 backend'''
-        if(self.initialized == True):
+        """itom specific function. not in qt5 backend"""
+        if self.initialized == True:
             del self.matplotlibWidgetUiItem
             self.matplotlibWidgetUiItem = None
-            del self.figure #from base class
-            self.figure = None 
-            
+            del self.figure  # from base class
+            self.figure = None
+
         self.initialized = False
 
     def _update_figure_dpi(self):
@@ -265,7 +290,7 @@ class FigureCanvasItom(FigureCanvasBase):
 
     @property
     def _dpi_ratio(self):
-        '''
+        """
         itom: currently only returns 1
         todo: implement the following code from the qt5 backend:
         # Not available on Qt4 or some older Qt5.
@@ -274,7 +299,7 @@ class FigureCanvasItom(FigureCanvasBase):
             return self.devicePixelRatio() or 1
         except AttributeError:
             return 1
-        '''
+        """
         try:
             dpi_ratio = self.matplotlibWidgetUiItem.call("devicePixelRatioF")
         except Exception:
@@ -296,19 +321,19 @@ class FigureCanvasItom(FigureCanvasBase):
             # The easiest way to resize the canvas is to emit a resizeEvent
             # since we implement all the logic for resizing the canvas for
             # that event.
-            
-            #--> itom specific start
+
+            # --> itom specific start
             width, height = self.matplotlibWidgetUiItem["size"]
-            self.matplotlibWidgetUiItem.call("externalResize",width,height)
+            self.matplotlibWidgetUiItem.call("externalResize", width, height)
             # itom specific end <--
-            
+
             ##--> begin itom specific code
             # externalResize does not trigger a paintEvent. therefore return False
             return False
             ## end itom specific code <--
-            '''# resizeEvent triggers a paintEvent itself, so we exit this one
+            """# resizeEvent triggers a paintEvent itself, so we exit this one
             # (after making sure that the event is immediately handled).
-            return True'''
+            return True"""
         return False
 
     def get_width_height(self):
@@ -317,12 +342,12 @@ class FigureCanvasItom(FigureCanvasBase):
             return int(w / self._dpi_ratio), int(h / self._dpi_ratio)
         else:
             return 0, 0
-    
+
     def leaveEnterEvent(self, enter):
-        '''itom specific: 
+        """itom specific: 
         replacement of enterEvent and leaveEvent of Qt5 backend
-        '''
-        if(enter):
+        """
+        if enter:
             FigureCanvasBase.enter_notify_event(self)
         else:
             itom.setApplicationCursor(-1)
@@ -342,45 +367,50 @@ class FigureCanvasItom(FigureCanvasBase):
         # flip y so y=0 is bottom of canvas
         y = self.figure.bbox.height / dpi_ratio - y
         return x * dpi_ratio, y * dpi_ratio
-    
-    def mouseEvent(self, eventType, x, y, button): 
+
+    def mouseEvent(self, eventType, x, y, button):
         x, y = self.mouseEventCoords(x, y)
         button = self.buttond.get(button)
         if DEBUG:
-            print("mouseEvent %s (%.2f,%.2f), button: %s (fig %i)" % (eventType, x,y,button, self.num))
+            print(
+                "mouseEvent %s (%.2f,%.2f), button: %s (fig %i)"
+                % (eventType, x, y, button, self.num)
+            )
         try:
-            #button: left 1, middle 2, right 3
-            if(eventType == 0): #mousePressEvent
-                FigureCanvasBase.button_press_event( self, x, y, button)
-            elif(eventType == 1): #mouseDoubleClickEvent
-                FigureCanvasBase.button_press_event( self, x, y, button, dblclick=True)
-            elif(eventType == 2): #mouseMoveEvent
-                if(button == 0): #if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
+            # button: left 1, middle 2, right 3
+            if eventType == 0:  # mousePressEvent
+                FigureCanvasBase.button_press_event(self, x, y, button)
+            elif eventType == 1:  # mouseDoubleClickEvent
+                FigureCanvasBase.button_press_event(self, x, y, button, dblclick=True)
+            elif eventType == 2:  # mouseMoveEvent
+                if (
+                    button == 0
+                ):  # if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
                     if self.matplotlibWidgetUiItem.exists():
                         self.matplotlibWidgetUiItem.call("stopTimer")
-                FigureCanvasBase.motion_notify_event( self, x, y)
-            elif(eventType == 3): #mouseReleaseEvent
-                FigureCanvasBase.button_release_event( self, x, y, button)
+                FigureCanvasBase.motion_notify_event(self, x, y)
+            elif eventType == 3:  # mouseReleaseEvent
+                FigureCanvasBase.button_release_event(self, x, y, button)
         except RuntimeError:
             self.signalDestroyedWidget()
-    
+
     def wheelEvent(self, x, y, delta, orientation):
         x, y = self.mouseEventCoords(x, y)
         # from QWheelEvent::delta doc
-        steps = delta/120
-        if (orientation == 1): #vertical
-            FigureCanvasBase.scroll_event( self, x, y, steps)
-    
+        steps = delta / 120
+        if orientation == 1:  # vertical
+            FigureCanvasBase.scroll_event(self, x, y, steps)
+
     def keyEvent(self, type, key, modifiers, autoRepeat):
         key = self._get_key(key, modifiers, autoRepeat)
-        if(key is None):
+        if key is None:
             return
-        
-        if(type == 0): #keyPressEvent
-            FigureCanvasBase.key_press_event( self, key )
-        elif(type == 1): #keyReleaseEvent
-            FigureCanvasBase.key_release_event( self, key )
-    
+
+        if type == 0:  # keyPressEvent
+            FigureCanvasBase.key_press_event(self, key)
+        elif type == 1:  # keyReleaseEvent
+            FigureCanvasBase.key_release_event(self, key)
+
     @property
     def keyAutoRepeat(self):
         """
@@ -391,14 +421,17 @@ class FigureCanvasItom(FigureCanvasBase):
     @keyAutoRepeat.setter
     def keyAutoRepeat(self, val):
         self._keyautorepeat = bool(val)
-    
-    def resizeEvent(self, w, h, draw = True):
-        if self._destroying or (w,h) == self.lastResizeSize:
+
+    def resizeEvent(self, w, h, draw=True):
+        if self._destroying or (w, h) == self.lastResizeSize:
             return
-        
+
         if DEBUG:
-            print("resizeEvent: %i, %i, %i, last: %s (fig %i)" % (w, h, draw, str(self.lastResizeSize), self.num))
-        
+            print(
+                "resizeEvent: %i, %i, %i, last: %s (fig %i)"
+                % (w, h, draw, str(self.lastResizeSize), self.num)
+            )
+
         # _dpi_ratio_prev will be set the first time the canvas is painted, and
         # the rendered buffer is useless before anyways.
         if self._dpi_ratio_prev is None:
@@ -409,13 +442,15 @@ class FigureCanvasItom(FigureCanvasBase):
             hinch = self._dpi_ratio * h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
             status = self._is_drawing
-            if not draw and matplotlib.__version__ >= '2.1.0':
-                self._is_drawing = True #else the following resize_event will call draw_idle, too
+            if not draw and matplotlib.__version__ >= "2.1.0":
+                self._is_drawing = (
+                    True  # else the following resize_event will call draw_idle, too
+                )
             # emit our resize events
             FigureCanvasBase.resize_event(self)
             self._is_drawing = status
             self.lastResizeSize = (w, h)
-    
+
     def copyToClipboardEvent(self, dpi):
         self.copyToClipboard(dpi)
 
@@ -429,8 +464,11 @@ class FigureCanvasItom(FigureCanvasBase):
         # get names of the pressed modifier keys
         # bit twiddling to pick out modifier keys from event_mods bitmask,
         # if event_key is a MODIFIER, it should not be duplicated in mods
-        mods = [name for name, mod_key, qt_key in MODIFIER_KEYS
-                if event_key != qt_key and (event_mods & mod_key) == mod_key]
+        mods = [
+            name
+            for name, mod_key, qt_key in MODIFIER_KEYS
+            if event_key != qt_key and (event_mods & mod_key) == mod_key
+        ]
         try:
             # for certain keys (enter, left, backspace, etc) use a word for the
             # key, rather than unicode
@@ -441,20 +479,20 @@ class FigureCanvasItom(FigureCanvasBase):
             # are not unicode characters (like multimedia keys)
             # skip these
             # if you really want them, you should add them to SPECIAL_KEYS
-            MAX_UNICODE = 0x10ffff
+            MAX_UNICODE = 0x10FFFF
             if event_key > MAX_UNICODE:
                 return None
 
             key = unichr(event_key)
             # qt delivers capitalized letters.  fix capitalization
             # note that capslock is ignored
-            if 'shift' in mods:
-                mods.remove('shift')
+            if "shift" in mods:
+                mods.remove("shift")
             else:
                 key = key.lower()
 
         mods.reverse()
-        return '+'.join(mods + [key])
+        return "+".join(mods + [key])
 
     def new_timer(self, *args, **kwargs):
         """
@@ -521,7 +559,7 @@ class FigureCanvasItom(FigureCanvasBase):
             ##QtCore.QTimer.singleShot(0, self._draw_idle)
 
     def _draw_idle(self):
-        #if self.height() < 0 or self.width() < 0:
+        # if self.height() < 0 or self.width() < 0:
         #    self._draw_pending = False
         if not self._draw_pending:
             return
@@ -539,27 +577,29 @@ class FigureCanvasItom(FigureCanvasBase):
         # to be called at the end of paintEvent.
         try:
             if rect:
-                self.matplotlibWidgetUiItem.call("paintRect", True, *(pt / self._dpi_ratio for pt in rect))
+                self.matplotlibWidgetUiItem.call(
+                    "paintRect", True, *(pt / self._dpi_ratio for pt in rect)
+                )
             else:
-                self.matplotlibWidgetUiItem.call("paintRect", False, 0,0,0,0)
+                self.matplotlibWidgetUiItem.call("paintRect", False, 0, 0, 0, 0)
         except RuntimeError:
             # it is possible that the figure has currently be closed by the user
             self.signalDestroyedWidget()
             print("Matplotlib figure is not available")
-    
+
     def signalDestroyedWidget(self):
-        '''
+        """
         if the figure has been closed (e.g. by the user - clicking the close button),
         this might either be registered by the destroyed-event, catched by FigureManagerItom,
         or by any method of this class which tries to access the figure (since the destroyed
         signal is delivered with a time gap). This function should be called whenever the widget
         is not accessible any more, then the manager is closed as quick as possible, such that
         a new figure can be opened, if desired.
-        '''
-        if (DEBUG):
+        """
+        if DEBUG:
             print("signalDestroyedWidget: (fig %i)" % (self.num,))
-        
-        if(self._destroying == False):
+
+        if self._destroying == False:
             self._destroying = True
             FigureCanvasBase.close_event(self)
             try:
@@ -571,7 +611,7 @@ class FigureCanvasItom(FigureCanvasBase):
                 # line is run, leading to a useless AttributeError.
 
 
-class FigureManagerItom( FigureManagerBase ):
+class FigureManagerItom(FigureManagerBase):
     """
     Attributes
     ----------
@@ -589,20 +629,20 @@ class FigureManagerItom( FigureManagerBase ):
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
         FigureManagerBase.__init__(self, canvas, num)
         self.canvas = canvas
-        self.windowUi = windowUi #can also be None if embeddedWidget is True
+        self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
         self.matplotlibWidgetUiItem = self.matplotlibplotUiItem
-        self.itomUI = self.matplotlibplotUiItem #for historic reasons only
+        self.itomUI = self.matplotlibplotUiItem  # for historic reasons only
         self.embeddedWidget = embeddedWidget
         self._shown = False
-        
-        self.matplotlibplotUiItem["focusPolicy"] = 0x2 #QtCore.Qt.ClickFocus
+
+        self.matplotlibplotUiItem["focusPolicy"] = 0x2  # QtCore.Qt.ClickFocus
         self.matplotlibplotUiItem.connect("destroyed()", self._widgetclosed)
-        
-        if(embeddedWidget == False and self.windowUi):
-            self.windowUi["windowTitle"] = ("Figure %d" % num)
-            
-        '''self.windowUi.closing.connect(canvas.close_event)
+
+        if embeddedWidget == False and self.windowUi:
+            self.windowUi["windowTitle"] = "Figure %d" % num
+
+        """self.windowUi.closing.connect(canvas.close_event)
         self.windowUi.closing.connect(self._widgetclosed)
         
         self.windowUi.setWindowTitle("Figure %d" % num)
@@ -618,47 +658,49 @@ class FigureManagerItom( FigureManagerBase ):
         # on. http://qt-project.org/doc/qt-4.8/qt.html#FocusPolicy-enum or
         # http://doc.qt.digia.com/qt/qt.html#FocusPolicy-enum
         self.canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.canvas.setFocus()'''
-        
+        self.canvas.setFocus()"""
+
         self.canvas._destroying = False
-        
+
         self.toolmanager = self._get_toolmanager()
         self.toolbar = self._get_toolbar(self.canvas, self.windowUi)
         self.statusbar = None
-        
+
         if self.toolmanager:
             backend_tools.add_tools_to_manager(self.toolmanager)
             if self.toolbar:
                 backend_tools.add_tools_to_container(self.toolbar)
                 self.statusbar = StatusbarItom(matplotlibplotUiItem, self.toolmanager)
-        
+
         if self.toolbar is not None:
-            #self.windowUi.addToolBar(self.toolbar)
+            # self.windowUi.addToolBar(self.toolbar)
             if not self.toolmanager:
                 # add text label to status bar (make it self, since the connect command only holds a weakref)
-                self.statusbar_label = self.matplotlibplotUiItem.call("statusBar").call("addLabelWidget", "statusbarLabel")
-                self.toolbar.message.connect(self.statusbar_label, property = "text")
-            #tbs_height = self.toolbar.sizeHint().height()
+                self.statusbar_label = self.matplotlibplotUiItem.call("statusBar").call(
+                    "addLabelWidget", "statusbarLabel"
+                )
+                self.toolbar.message.connect(self.statusbar_label, property="text")
+            # tbs_height = self.toolbar.sizeHint().height()
         else:
-            #tbs_height = 0
+            # tbs_height = 0
             pass
-        
+
         # resize the main window so it will display the canvas with the
         # requested size:
         cs_width, cs_height = self.canvas.get_width_height()
         self.resize(cs_width, cs_height)
-        '''cs = canvas.sizeHint()
+        """cs = canvas.sizeHint()
         sbs = self.windowUi.statusBar().sizeHint()
         self._status_and_tool_height = tbs_height + sbs.height()
         height = cs.height() + self._status_and_tool_height
         self.windowUi.resize(cs.width(), height)
         
-        self.windowUi.setCentralWidget(self.canvas)'''
-        
+        self.windowUi.setCentralWidget(self.canvas)"""
+
         if matplotlib.is_interactive():
             self.windowUi.show()
             self.canvas.draw_idle()
-        
+
         ##self.windowUi.raise_()
 
     def full_screen_toggle(self):
@@ -669,11 +711,12 @@ class FigureManagerItom( FigureManagerBase ):
         ##    self.windowUi.showFullScreen()
 
     def _widgetclosed(self):
-        if self.canvas._destroying: return
-        
-        if (DEBUG):
+        if self.canvas._destroying:
+            return
+
+        if DEBUG:
             print("FigManager._widgetclosed: (fig %i)" % (self.canvas.num,))
-            
+
         self.canvas._destroying = True
         self.canvas.close_event()
         try:
@@ -687,33 +730,35 @@ class FigureManagerItom( FigureManagerBase ):
     def _get_toolbar(self, canvas, parent):
         # must be inited after the window, drawingArea and figure
         # attrs are set
-        if matplotlib.rcParams['toolbar'] == 'toolbar2':
+        if matplotlib.rcParams["toolbar"] == "toolbar2":
             matplotlibplotUiItem = self.matplotlibplotUiItem
-            toolbar = NavigationToolbar2Itom(canvas, matplotlibplotUiItem, parent, False)
-        elif matplotlib.rcParams['toolbar'] == 'toolmanager':
+            toolbar = NavigationToolbar2Itom(
+                canvas, matplotlibplotUiItem, parent, False
+            )
+        elif matplotlib.rcParams["toolbar"] == "toolmanager":
             toolbar = ToolbarItom(self.toolmanager, self.matplotlibplotUiItem)
         else:
             toolbar = None
         return toolbar
 
     def _get_toolmanager(self):
-        if matplotlib.rcParams['toolbar'] == 'toolmanager':
+        if matplotlib.rcParams["toolbar"] == "toolmanager":
             toolmanager = ToolManager(self.canvas.figure)
         else:
             toolmanager = None
         return toolmanager
 
     def resize(self, width, height):
-        'set the canvas size in pixels'
+        "set the canvas size in pixels"
         if "do_not_resize_window" in self.canvas.__dict__:
-            #savefig or copyToClipboard will force to resize the window if dpi is higher than default (only in matplotlib >= 2.0). This is not wanted.
+            # savefig or copyToClipboard will force to resize the window if dpi is higher than default (only in matplotlib >= 2.0). This is not wanted.
             if self.canvas.do_not_resize_window:
                 return
         self.matplotlibWidgetUiItem.canvasWidget.call("externalResize", width, height)
-        self.canvas.resizeEvent(width, height, draw =self._shown)
+        self.canvas.resizeEvent(width, height, draw=self._shown)
 
     def show(self):
-        if(self.embeddedWidget== False):
+        if self.embeddedWidget == False:
             try:
                 self.windowUi.show()
             except RuntimeError:
@@ -725,11 +770,13 @@ class FigureManagerItom( FigureManagerBase ):
 
     def destroy(self, *args):
         # check for qApp first, as PySide deletes it in its atexit handler
-        #if self.canvas._destroying: return
-        if(self.canvas._destroying == False):
-            if(self.embeddedWidget == False):
+        # if self.canvas._destroying: return
+        if self.canvas._destroying == False:
+            if self.embeddedWidget == False:
                 try:
-                    self.matplotlibplotUiItem.disconnect( "destroyed()", self._widgetclosed )
+                    self.matplotlibplotUiItem.disconnect(
+                        "destroyed()", self._widgetclosed
+                    )
                 except:
                     pass
                 try:
@@ -743,7 +790,9 @@ class FigureManagerItom( FigureManagerBase ):
                     pass
             else:
                 try:
-                    self.matplotlibplotUiItem.disconnect( "destroyed()", self._widgetclosed )
+                    self.matplotlibplotUiItem.disconnect(
+                        "destroyed()", self._widgetclosed
+                    )
                 except:
                     pass
         del self.matplotlibplotUiItem
@@ -763,13 +812,14 @@ class FigureManagerItom( FigureManagerBase ):
 
     def set_window_title(self, title):
         self.windowTitle = title
-        if(self.embeddedWidget == False):
-            self.windowUi["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
+        if self.embeddedWidget == False:
+            self.windowUi["windowTitle"] = "%s (Figure %d)" % (title, self.num)
+
 
 class Signal:
     def __init__(self):
         self.callbacks = []
-    
+
     def emit(self, *args):
         for c in self.callbacks:
             widget = c["uiItem"]()
@@ -778,30 +828,29 @@ class Signal:
                     widget[c["property"]] = args[0]
                 elif c["slot"]:
                     widget.call(c["slot"], *args)
-    
-    def connect(self, widget, property = None, slot = None):
+
+    def connect(self, widget, property=None, slot=None):
         if not property is None:
-            self.callbacks.append({"uiItem":weakref.ref(widget), "property":property})
+            self.callbacks.append({"uiItem": weakref.ref(widget), "property": property})
         else:
-            self.callbacks.append({"uiItem":weakref.ref(widget), "slot":slot})
+            self.callbacks.append({"uiItem": weakref.ref(widget), "slot": slot})
+
 
 class NavigationToolbar2Itom(NavigationToolbar2):
-    
-    
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
         """ coordinates: should we show the coordinates on the right? """
         self.canvas = canvas
         self.parentUi = parentUi
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
         self.coordinates = coordinates
-        #self._actions = {}
+        # self._actions = {}
         self.message = Signal()
         self.subplotConfigDialog = None
-        
+
         """A mapping of toolitem method names to their QActions"""
 
         NavigationToolbar2.__init__(self, canvas)
-    
+
     def _get_predef_action(self, callback_name):
         w = self.matplotlibplotUiItem()
         if callback_name == "home":
@@ -825,61 +874,77 @@ class NavigationToolbar2Itom(NavigationToolbar2):
     def _icon_filename(self, name):
         if name.startswith(":"):
             return name
-        return name.replace('.png', '_large.png')
-    
+        return name.replace(".png", "_large.png")
+
     def _action_name(self, name):
         objectName = "action_%s" % name
-        return re.sub('[^a-zA-Z0-9_]', '_', objectName) #replace all characters, which are not among the given set, by an underscore
+        return re.sub(
+            "[^a-zA-Z0-9_]", "_", objectName
+        )  # replace all characters, which are not among the given set, by an underscore
 
     def _init_toolbar(self):
-        self.basedir = os.path.join(matplotlib.rcParams['datapath'], 'images')
-        
+        self.basedir = os.path.join(matplotlib.rcParams["datapath"], "images")
+
         w = self.matplotlibplotUiItem()
         if not w:
             return
-        
+
         items = self.toolitems
         callbacks = [i[3] for i in items]
         if "configure_subplots" in callbacks and not "subplots" in callbacks:
-            icon = ":/itomDesignerPlugins/general/icons/settings" #self._icon_filename()
-            items = items + (("Edit parameters...", "Edit axis, curve and image parameters", icon, "edit_parameters"),)
-        
+            icon = (
+                ":/itomDesignerPlugins/general/icons/settings"  # self._icon_filename()
+            )
+            items = items + (
+                (
+                    "Edit parameters...",
+                    "Edit axis, curve and image parameters",
+                    icon,
+                    "edit_parameters",
+                ),
+            )
+
         for text, tooltip_text, image_file, callback in items:
             if text is None:
-                #add separator
-                self.matplotlibplotUiItem().call("addUserDefinedAction",
-                                         "",
-                                         "", "", "", "default")
+                # add separator
+                self.matplotlibplotUiItem().call(
+                    "addUserDefinedAction", "", "", "", "", "default"
+                )
             else:
                 a = self._get_predef_action(callback)
                 if not a:
                     action_name = self._action_name(callback)
-                    self.matplotlibplotUiItem().call("addUserDefinedAction",
-                                         action_name,
-                                         text, self._icon_filename(image_file + '.png'), "", "default")
-                    
+                    self.matplotlibplotUiItem().call(
+                        "addUserDefinedAction",
+                        action_name,
+                        text,
+                        self._icon_filename(image_file + ".png"),
+                        "",
+                        "default",
+                    )
+
                     a = eval("self.matplotlibplotUiItem().%s" % action_name)
                 else:
                     a["visible"] = True
-                
-                if callback in ['zoom', 'pan']:
+
+                if callback in ["zoom", "pan"]:
                     a["checkable"] = True
                 elif callback == "save_figure":
                     a2 = self._get_predef_action("copy_clipboard")
                     if a2:
                         a2["visible"] = True
-                
+
                 if a["checkable"]:
                     a.connect("triggered(bool)", getattr(self, callback))
                 else:
                     a.connect("triggered()", getattr(self, callback))
-                
+
                 if tooltip_text is not None:
                     a["toolTip"] = tooltip_text
 
         self.buttons = {}
 
-        '''# Add the x,y location widget at the right side of the toolbar
+        """# Add the x,y location widget at the right side of the toolbar
         # The stretch factor is 1 which means any resizing of the toolbar
         # will resize this label instead of the buttons.
         if self.coordinates:
@@ -891,12 +956,12 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                                       QtWidgets.QSizePolicy.Ignored))
             labelAction = self.addWidget(self.locLabel)
             labelAction.setVisible(True)
-        '''
+        """
 
         # reference holder for subplots_adjust window
         self.adj_window = None
 
-        '''# Esthetic adjustments - we need to set these explicitly in PyQt5
+        """# Esthetic adjustments - we need to set these explicitly in PyQt5
         # otherwise the layout looks different - but we don't want to set it if
         # not using HiDPI icons otherwise they look worse than before.
         if is_pyqt5():
@@ -911,25 +976,38 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             size = super(NavigationToolbar2QT, self).sizeHint()
             size.setHeight(max(48, size.height()))
             return size
-        '''
+        """
 
     def edit_parameters(self):
         allaxes = self.canvas.figure.get_axes()
         if not allaxes:
-            itom.ui.msgWarning("Error", "There are no axes to edit.", parent = self.matplotlibplotUiItem())
+            itom.ui.msgWarning(
+                "Error",
+                "There are no axes to edit.",
+                parent=self.matplotlibplotUiItem(),
+            )
             return
         elif len(allaxes) == 1:
-            axes, = allaxes
+            (axes,) = allaxes
         else:
             titles = []
             for axes in allaxes:
-                name = (axes.get_title() or
-                        " - ".join(filter(None, [axes.get_xlabel(),
-                                                 axes.get_ylabel()])) or
-                        "<anonymous {} (id: {:#x})>".format(
-                            type(axes).__name__, id(axes)))
+                name = (
+                    axes.get_title()
+                    or " - ".join(filter(None, [axes.get_xlabel(), axes.get_ylabel()]))
+                    or "<anonymous {} (id: {:#x})>".format(
+                        type(axes).__name__, id(axes)
+                    )
+                )
                 titles.append(name)
-            item, ok = itom.ui.getItem('Customize', 'Select axes:', titles, 0, False, parent = self.matplotlibplotUiItem())
+            item, ok = itom.ui.getItem(
+                "Customize",
+                "Select axes:",
+                titles,
+                0,
+                False,
+                parent=self.matplotlibplotUiItem(),
+            )
             if ok:
                 axes = allaxes[titles.index(six.text_type(item))]
             else:
@@ -939,8 +1017,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
-        self._get_predef_action('pan')["checked"] = (self._active == 'PAN')
-        self._get_predef_action('zoom')["checked"] = (self._active == 'ZOOM')
+        self._get_predef_action("pan")["checked"] = self._active == "PAN"
+        self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
 
     def pan(self, *args):
         super(NavigationToolbar2Itom, self).pan(*args)
@@ -955,8 +1033,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         if self.coordinates:
             r = self.matplotlibplotUiItem()
             if not r is None:
-                s2 = s.encode('latin-1', 'backslashreplace').decode('latin-1')
-                r.call("setLabelText", s2.replace(', ', '\n'))
+                s2 = s.encode("latin-1", "backslashreplace").decode("latin-1")
+                r.call("setLabelText", s2.replace(", ", "\n"))
 
     def set_cursor(self, cursor):
         r = self.matplotlibplotUiItem()
@@ -975,8 +1053,10 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def configure_subplots(self):
         # itom specific start
-        if(self.subplotConfigDialog is None):
-            self.subplotConfigDialog = SubplotToolItom(self.canvas.figure, self.matplotlibplotUiItem())
+        if self.subplotConfigDialog is None:
+            self.subplotConfigDialog = SubplotToolItom(
+                self.canvas.figure, self.matplotlibplotUiItem()
+            )
         self.subplotConfigDialog.showDialog()
         # itom specific end
 
@@ -985,32 +1065,42 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         sorted_filetypes = sorted(six.iteritems(filetypes))
         default_filetype = self.canvas.get_default_filetype()
 
-        startpath = os.path.expanduser(
-            matplotlib.rcParams['savefig.directory'])
+        startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
         start = os.path.join(startpath, self.canvas.get_default_filename())
         filters = []
         selectedFilter = 0
         for name, exts in sorted_filetypes:
-            exts_list = " ".join(['*.%s' % ext for ext in exts])
-            filter = '%s (%s)' % (name, exts_list)
+            exts_list = " ".join(["*.%s" % ext for ext in exts])
+            filter = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
-        filters = ';;'.join(filters)
+        filters = ";;".join(filters)
 
         fname = ui.getSaveFileName(
-                                         "Choose a filename to save to",
-                                         start, filters, selectedFilter, parent = self.parentUi)
+            "Choose a filename to save to",
+            start,
+            filters,
+            selectedFilter,
+            parent=self.parentUi,
+        )
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams['savefig.directory'] = (
-                    os.path.dirname(six.text_type(fname)))
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
+                    six.text_type(fname)
+                )
             try:
                 self.canvas.figure.savefig(six.text_type(fname))
             except Exception as e:
-                itom.ui.msgCritical("Error saving file", six.text_type(e), ui.MsgBoxOk, ui.MsgBoxNoButton, parent = self.parentUi)
-    
+                itom.ui.msgCritical(
+                    "Error saving file",
+                    six.text_type(e),
+                    ui.MsgBoxOk,
+                    ui.MsgBoxNoButton,
+                    parent=self.parentUi,
+                )
+
     def destroy(self):
         pass
 
@@ -1022,76 +1112,101 @@ class SubplotToolItom:
         itomUI.connect("subplotConfigSliderChanged(int,int)", self.funcgeneral)
         itomUI.connect("subplotConfigTight()", self.functight)
         itomUI.connect("subplotConfigReset()", self.reset)
-        
+
         self._attrs = ["top", "bottom", "left", "right", "hspace", "wspace"]
-        self._defaults = {attr: vars(self._figure.subplotpars)[attr] for attr in self._attrs}
-        
+        self._defaults = {
+            attr: vars(self._figure.subplotpars)[attr] for attr in self._attrs
+        }
+
     def _setSliderPositions(self):
-        valLeft = int(self._figure.subplotpars.left*1000)
-        valBottom = int(self._figure.subplotpars.bottom*1000)
-        valRight = int(self._figure.subplotpars.right*1000)
-        valTop = int(self._figure.subplotpars.top*1000)
-        valWSpace = int(self._figure.subplotpars.wspace*1000)
-        valHSpace = int(self._figure.subplotpars.hspace*1000)
-        
+        valLeft = int(self._figure.subplotpars.left * 1000)
+        valBottom = int(self._figure.subplotpars.bottom * 1000)
+        valRight = int(self._figure.subplotpars.right * 1000)
+        valTop = int(self._figure.subplotpars.top * 1000)
+        valWSpace = int(self._figure.subplotpars.wspace * 1000)
+        valHSpace = int(self._figure.subplotpars.hspace * 1000)
+
         r = self.itomUI()
-        if(not r is None):
-            r.call("modifySubplotSliders", valLeft, valTop, valRight, valBottom, valWSpace, valHSpace)
-        
+        if not r is None:
+            r.call(
+                "modifySubplotSliders",
+                valLeft,
+                valTop,
+                valRight,
+                valBottom,
+                valWSpace,
+                valHSpace,
+            )
+
     def showDialog(self):
         self.defaults = {}
-        for attr in ('left', 'bottom', 'right', 'top', 'wspace', 'hspace', ):
+        for attr in (
+            "left",
+            "bottom",
+            "right",
+            "top",
+            "wspace",
+            "hspace",
+        ):
             val = getattr(self._figure.subplotpars, attr)
             self.defaults[attr] = val
         self._setSliderPositions()
-        
-        valLeft = int(self._figure.subplotpars.left*1000)
-        valBottom = int(self._figure.subplotpars.bottom*1000)
-        valRight = int(self._figure.subplotpars.right*1000)
-        valTop = int(self._figure.subplotpars.top*1000)
-        valWSpace = int(self._figure.subplotpars.wspace*1000)
-        valHSpace = int(self._figure.subplotpars.hspace*1000)
-        
+
+        valLeft = int(self._figure.subplotpars.left * 1000)
+        valBottom = int(self._figure.subplotpars.bottom * 1000)
+        valRight = int(self._figure.subplotpars.right * 1000)
+        valTop = int(self._figure.subplotpars.top * 1000)
+        valWSpace = int(self._figure.subplotpars.wspace * 1000)
+        valHSpace = int(self._figure.subplotpars.hspace * 1000)
+
         r = self.itomUI()
-        if(not r is None):
-            r.call("showSubplotConfig", valLeft, valTop, valRight, valBottom, valWSpace, valHSpace)
-    
+        if not r is None:
+            r.call(
+                "showSubplotConfig",
+                valLeft,
+                valTop,
+                valRight,
+                valBottom,
+                valWSpace,
+                valHSpace,
+            )
+
     def funcgeneral(self, type, val):
-        if(type == 0):
+        if type == 0:
             self.funcleft(val)
-        elif(type == 1):
+        elif type == 1:
             self.functop(val)
-        elif(type == 2):
+        elif type == 2:
             self.funcright(val)
-        elif(type == 3):
+        elif type == 3:
             self.funcbottom(val)
-        elif(type == 4):
+        elif type == 4:
             self.funcwspace(val)
-        elif(type == 5):
+        elif type == 5:
             self.funchspace(val)
 
     def funcleft(self, val):
-        self._figure.subplots_adjust(left=val/1000.)
+        self._figure.subplots_adjust(left=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def funcright(self, val):
-        self._figure.subplots_adjust(right=val/1000.)
+        self._figure.subplots_adjust(right=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def funcbottom(self, val):
-        self._figure.subplots_adjust(bottom=val/1000.)
+        self._figure.subplots_adjust(bottom=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def functop(self, val):
-        self._figure.subplots_adjust(top=val/1000.)
+        self._figure.subplots_adjust(top=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def funcwspace(self, val):
-        self._figure.subplots_adjust(wspace=val/1000.)
+        self._figure.subplots_adjust(wspace=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def funchspace(self, val):
-        self._figure.subplots_adjust(hspace=val/1000.)
+        self._figure.subplots_adjust(hspace=val / 1000.0)
         self._figure.canvas.draw_idle()
 
     def functight(self):
@@ -1104,6 +1219,7 @@ class SubplotToolItom:
         self._setSliderPositions()
         self._figure.canvas.draw_idle()
 
+
 class ToolbarItom(ToolContainerBase):
     def __init__(self, toolmanager, matplotlibplotUiItem):
         ToolContainerBase.__init__(self, toolmanager)
@@ -1112,37 +1228,45 @@ class ToolbarItom(ToolContainerBase):
 
     @property
     def _icon_extension(self):
-        return '_large.png'
-    
+        return "_large.png"
+
     def _action_name(self, name):
         objectName = "action_%s" % name
-        return re.sub('[^a-zA-Z0-9_]', '_', objectName) #replace all characters, which are not among the given set, by an underscore
+        return re.sub(
+            "[^a-zA-Z0-9_]", "_", objectName
+        )  # replace all characters, which are not among the given set, by an underscore
 
-    def add_toolitem(
-            self, name, group, position, image_file, description, toggle):
-        
+    def add_toolitem(self, name, group, position, image_file, description, toggle):
+
         if self.matplotlibplotUiItem() is None:
             return
-        
+
         if description is None:
             description = ""
-        
+
         action_name = self._action_name(name)
-        
+
         parent = self.matplotlibplotUiItem()
-        
-        parent.call("addUserDefinedAction",
-                                         action_name,
-                                         name, image_file, description, group, position)
-        
+
+        parent.call(
+            "addUserDefinedAction",
+            action_name,
+            name,
+            image_file,
+            description,
+            group,
+            position,
+        )
+
         button = eval("parent.%s" % action_name)
-        
+
         def handler():
             self.trigger_tool(name)
+
         if toggle:
             button["checkable"] = True
         button.connect("triggered()", handler)
-        
+
         self._toolitems.setdefault(name, [])
         self._toolitems[name].append((button, handler))
 
@@ -1159,14 +1283,18 @@ class ToolbarItom(ToolContainerBase):
 
     def remove_toolitem(self, name):
         if self.matplotlibplotUiItem():
-            self.matplotlibplotUiItem().call("removeUserDefinedAction", self._action_name(name))
+            self.matplotlibplotUiItem().call(
+                "removeUserDefinedAction", self._action_name(name)
+            )
         del self._toolitems[name]
 
 
 class StatusbarItom(StatusbarBase):
     def __init__(self, matplotlibplotUiItem, *args, **kwargs):
         StatusbarBase.__init__(self, *args, **kwargs)
-        self.label = matplotlibplotUiItem.call("statusBar").call("addLabelWidget", "statusbarLabel")
+        self.label = matplotlibplotUiItem.call("statusBar").call(
+            "addLabelWidget", "statusbarLabel"
+        )
 
     def set_message(self, s):
         self.label["text"] = s
@@ -1176,10 +1304,12 @@ class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
         super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
-    
+
     def trigger(self, *args):
-        if(self.subplotConfigDialog is None):
-            self.subplotConfigDialog = SubplotToolItom(self.canvas.figure, self.canvas.manager.matplotlibplotUiItem)
+        if self.subplotConfigDialog is None:
+            self.subplotConfigDialog = SubplotToolItom(
+                self.canvas.figure, self.canvas.manager.matplotlibplotUiItem
+            )
         self.subplotConfigDialog.showDialog()
 
 
@@ -1187,43 +1317,49 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
     def __init__(self, *args, **kwargs):
         backend_tools.SaveFigureBase.__init__(self, *args, **kwargs)
         self.defaultSaveFileName = None
-        
+
     def trigger(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
         sorted_filetypes = sorted(six.iteritems(filetypes))
         default_filetype = self.canvas.get_default_filetype()
 
-        startpath = os.path.expanduser(
-            matplotlib.rcParams['savefig.directory'])
+        startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
         start = os.path.join(startpath, self.canvas.get_default_filename())
         filters = []
         selectedFilter = None
         for name, exts in sorted_filetypes:
-            exts_list = " ".join(['*.%s' % ext for ext in exts])
-            filtername = '%s (%s)' % (name, exts_list)
+            exts_list = " ".join(["*.%s" % ext for ext in exts])
+            filtername = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)
         selectedFilterIndex = -1
         if selectedFilter and selectedFilter in filters:
             selectedFilterIndex = filters.index(selectedFilter)
-        filters = ';;'.join(filters)
+        filters = ";;".join(filters)
 
         parent = self.canvas.matplotlibWidgetUiItem
-        fname = ui.getSaveFileName("Choose a filename to save to", start, 
-                                         filters, selectedFilterIndex, 
-                                         parent = parent)
-        
+        fname = ui.getSaveFileName(
+            "Choose a filename to save to",
+            start,
+            filters,
+            selectedFilterIndex,
+            parent=parent,
+        )
+
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams['savefig.directory'] = (
-                    os.path.dirname(six.text_type(fname)))
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
+                    six.text_type(fname)
+                )
             try:
                 self.canvas.figure.savefig(six.text_type(fname))
                 self.defaultSaveFileName = fname
             except Exception as e:
-                itom.ui.msgCritical("Error saving file", six.text_type(e), parent = parent)
+                itom.ui.msgCritical(
+                    "Error saving file", six.text_type(e), parent=parent
+                )
 
 
 class SetCursorItom(backend_tools.SetCursorBase):
@@ -1251,8 +1387,8 @@ backend_tools.ToolRubberband = RubberbandItom
 
 def error_msg_itom(msg, parent=None):
     if not isinstance(msg, six.string_types):
-        msg = ','.join(map(str, msg))
-    
+        msg = ",".join(map(str, msg))
+
     itom.ui.msgWarning("Matplotlib", msg)
 
 
@@ -1260,11 +1396,11 @@ def exception_handler(type, value, tb):
     """Handle uncaught exceptions
     It does not catch SystemExit
     """
-    msg = ''
+    msg = ""
     # get the filename attribute if available (for IOError)
-    if hasattr(value, 'filename') and value.filename is not None:
-        msg = value.filename + ': '
-    if hasattr(value, 'strerror') and value.strerror is not None:
+    if hasattr(value, "filename") and value.filename is not None:
+        msg = value.filename + ": "
+    if hasattr(value, "strerror") and value.strerror is not None:
         msg += value.strerror
     else:
         msg += six.text_type(value)
@@ -1277,30 +1413,32 @@ def exception_handler(type, value, tb):
 class _BackendItom(_Backend):
     FigureCanvas = FigureCanvasItom
     FigureManager = FigureManagerItom
-    
+
     @classmethod
     def new_figure_manager(cls, num, *args, **kwargs):
         """
         Create a new figure manager instance
         """
-        FigureClass = kwargs.pop('FigureClass', Figure)
-        existingCanvas = kwargs.pop('canvas', None)
-        if(existingCanvas is None):
+        FigureClass = kwargs.pop("FigureClass", Figure)
+        existingCanvas = kwargs.pop("canvas", None)
+        if existingCanvas is None:
             embeddedWidget = False
-            windowUi = itom.figure(num) #itom figure window
+            windowUi = itom.figure(num)  # itom figure window
             matplotlibplotUiItem = windowUi.matplotlibFigure()
         else:
             embeddedWidget = True
-            windowUi = None #matplotlib widget is embedded in a user-defined ui file
-            if(isinstance(existingCanvas,uiItem)):
+            windowUi = None  # matplotlib widget is embedded in a user-defined ui file
+            if isinstance(existingCanvas, uiItem):
                 matplotlibplotUiItem = existingCanvas
             else:
-                raise("keyword 'canvas' must contain an instance of uiItem")
-        thisFig = FigureClass( *args, **kwargs )
-        canvas = cls.FigureCanvas( thisFig, num, matplotlibplotUiItem, embeddedWidget )
-        manager = cls.FigureManager( canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget )
+                raise ("keyword 'canvas' must contain an instance of uiItem")
+        thisFig = FigureClass(*args, **kwargs)
+        canvas = cls.FigureCanvas(thisFig, num, matplotlibplotUiItem, embeddedWidget)
+        manager = cls.FigureManager(
+            canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget
+        )
         return manager
-    
+
     @classmethod
     def new_figure_manager_given_figure(cls, num, figure):
         """Create a new figure manager instance for the given figure.

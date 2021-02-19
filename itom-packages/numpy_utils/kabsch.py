@@ -1,8 +1,9 @@
 import numpy as np
 from numpy import linalg as linalg
 
-def kabsch_algorithm(P, Q, m = None):
-    '''   
+
+def kabsch_algorithm(P, Q, m=None):
+    """   
     [U, r, lrms] = kabsch_algorithm(P, Q, m)
     
     Find the Least Root Mean Square distance 
@@ -54,83 +55,83 @@ def kabsch_algorithm(P, Q, m = None):
       lrms = sqrt(sum_{i=1}^N m(i) (p_i' - q_i)^2)
       is the minimal rms when going over the possible U and r.
       (assuming the weights are already normalized).
-    '''
+    """
 
     sz1 = P.shape
     sz2 = Q.shape
-    
-    if(not isinstance(P,np.matrix) or (not isinstance(Q,np.matrix))):
+
+    if not isinstance(P, np.matrix) or (not isinstance(Q, np.matrix)):
         P = np.matrix(P)
         Q = np.matrix(Q)
-        if(not isinstance(P,np.matrix) or (not isinstance(Q,np.matrix))):
-            raise RuntimeError('P and Q must be np.matrix')
-    
-    if (len(sz1) != 2 or len(sz2) != 2):
-        raise RuntimeError('P and Q must be matrices')
-    
-    if (np.any( sz1!=sz2 )):
-        raise RuntimeError('P and Q must be of same size')
+        if not isinstance(P, np.matrix) or (not isinstance(Q, np.matrix)):
+            raise RuntimeError("P and Q must be np.matrix")
 
-    D = sz1[0] # dimension of space
-    N = sz1[1] # number of points
-    
-    if(m is None):
-        m = np.matrix( np.ones([1,N]) ) / N # m not supplied - use default
+    if len(sz1) != 2 or len(sz2) != 2:
+        raise RuntimeError("P and Q must be matrices")
+
+    if np.any(sz1 != sz2):
+        raise RuntimeError("P and Q must be of same size")
+
+    D = sz1[0]  # dimension of space
+    N = sz1[1]  # number of points
+
+    if m is None:
+        m = np.matrix(np.ones([1, N])) / N  # m not supplied - use default
     else:
         m = np.matrix(m)
-        if( m.shape != (1,N) ):
-            raise RuntimeError('m must be a row vector of length N')
-        
-        if( True in (m < 0) ):
-            raise RuntimeError('m must have non-negative entries')
-        
-        if( np.sum(m) == 0):
-            raise RuntimeError('m must contain some positive entry');
-        
-        m = m / np.sum(m) # normalize so that weights sum to 1
-    
-    p0 = P * m.T #the centroid of P
-    q0 = Q * m.T #the centroid of Q
-    v1 = np.matrix( np.ones([1,N]) ) #row vector of N ones
-    P = P - p0*v1 #translating P to center the origin
-    Q = Q - q0*v1 #translating Q to center the origin
+        if m.shape != (1, N):
+            raise RuntimeError("m must be a row vector of length N")
 
-    #C is a covariance matrix of the coordinates
-    #C = P * np.matrix( np.diag(m) ) * Q.T
+        if True in (m < 0):
+            raise RuntimeError("m must have non-negative entries")
+
+        if np.sum(m) == 0:
+            raise RuntimeError("m must contain some positive entry")
+
+        m = m / np.sum(m)  # normalize so that weights sum to 1
+
+    p0 = P * m.T  # the centroid of P
+    q0 = Q * m.T  # the centroid of Q
+    v1 = np.matrix(np.ones([1, N]))  # row vector of N ones
+    P = P - p0 * v1  # translating P to center the origin
+    Q = Q - q0 * v1  # translating Q to center the origin
+
+    # C is a covariance matrix of the coordinates
+    # C = P * np.matrix( np.diag(m) ) * Q.T
     # but this is inefficient, involving an N*N matrix, while typically D << N.
     # so we use another way to compute Pdm = P*diag(m)
-    Pdm = np.matrix(np.zeros( [D,N] ))
-    for i in range(0,N):
-        Pdm[:,i] = m[0,i]*P[:,i]
+    Pdm = np.matrix(np.zeros([D, N]))
+    for i in range(0, N):
+        Pdm[:, i] = m[0, i] * P[:, i]
 
-    C = Pdm*Q.T     
-    #C = P*Q' / N ;       % (for the non-weighted case)  
-    [V,S,W] = linalg.svd( C ) #singular value decomposition
+    C = Pdm * Q.T
+    # C = P*Q' / N ;       % (for the non-weighted case)
+    [V, S, W] = linalg.svd(C)  # singular value decomposition
     W = W.T
     S = np.matrix(np.diag(S))
-    
+
     I = np.eye(D)
-    
-    if( linalg.det( V * W.T) < 0): #more numerically stable than using (det(C) < 0)
-        I[D-1,D-1] = -1
-    
-    U = W*I*V.T
-    r = q0 - U*p0
 
+    if linalg.det(V * W.T) < 0:  # more numerically stable than using (det(C) < 0)
+        I[D - 1, D - 1] = -1
 
-    Diff = U*P - Q # P, Q already centered
+    U = W * I * V.T
+    r = q0 - U * p0
+
+    Diff = U * P - Q  # P, Q already centered
     # lrms = sqrt(sum(sum(Diff.*Diff))/N) ; % (for the non-weighted case
     lrms = 0
-    for i in range(0,N):
-        lrms = lrms + m[0,i] * Diff[:,i].T * Diff[:,i]
+    for i in range(0, N):
+        lrms = lrms + m[0, i] * Diff[:, i].T * Diff[:, i]
 
     lrms = np.sqrt(lrms)
-    
+
     return [U, r, lrms]
+
 
 ############################################################################
 def umeyama_algorithm(P, Q):
-    '''   
+    """   
     [U, r, s, lrms] = umeyama_algorithm(P, Q, m)
     
     Find the Least Root Mean Square distance 
@@ -161,105 +162,110 @@ def umeyama_algorithm(P, Q):
      
      Definition:
       U is the rotation matrix, such that Q = s * U * P + r (approx.)  
-    '''
+    """
 
     sz1 = P.shape
     sz2 = Q.shape
-    
-    if(not isinstance(P,np.matrix) or (not isinstance(Q,np.matrix))):
+
+    if not isinstance(P, np.matrix) or (not isinstance(Q, np.matrix)):
         P = np.matrix(P)
         Q = np.matrix(Q)
-        if(not isinstance(P,np.matrix) or (not isinstance(Q,np.matrix))):
-            raise RuntimeError('P and Q must be np.matrix')
-    
-    if (len(sz1) != 2 or len(sz2) != 2):
-        raise RuntimeError('P and Q must be matrices')
-    
-    if (np.any( sz1!=sz2 )):
-        raise RuntimeError('P and Q must be of same size')
+        if not isinstance(P, np.matrix) or (not isinstance(Q, np.matrix)):
+            raise RuntimeError("P and Q must be np.matrix")
 
-    D = sz1[0] # dimension of space
-    N = sz1[1] # number of points
-    m = np.matrix( np.ones([1,N]) ) / N # m not supplied - use default
-    
-    p0 = P * m.T #the centroid of P
-    q0 = Q * m.T #the centroid of Q (target)
-    v1 = np.matrix( np.ones([1,N]) ) #row vector of N ones
-    P_centered = P - p0*v1 #translating P to center the origin
-    Q_centered = Q - q0*v1 #translating Q to center the origin
+    if len(sz1) != 2 or len(sz2) != 2:
+        raise RuntimeError("P and Q must be matrices")
 
-    #C is a covariance matrix of the coordinates
-    #C = P * np.matrix( np.diag(m) ) * Q.T
+    if np.any(sz1 != sz2):
+        raise RuntimeError("P and Q must be of same size")
+
+    D = sz1[0]  # dimension of space
+    N = sz1[1]  # number of points
+    m = np.matrix(np.ones([1, N])) / N  # m not supplied - use default
+
+    p0 = P * m.T  # the centroid of P
+    q0 = Q * m.T  # the centroid of Q (target)
+    v1 = np.matrix(np.ones([1, N]))  # row vector of N ones
+    P_centered = P - p0 * v1  # translating P to center the origin
+    Q_centered = Q - q0 * v1  # translating Q to center the origin
+
+    # C is a covariance matrix of the coordinates
+    # C = P * np.matrix( np.diag(m) ) * Q.T
     # but this is inefficient, involving an N*N matrix, while typically D << N.
     # so we use another way to compute Pdm = P*diag(m)
-    Pdm = np.matrix(np.zeros( [D,N] ))
+    Pdm = np.matrix(np.zeros([D, N]))
     f_sd2_q = 0
     f_sd2_p = 0
-    
-    for i in range(0,N):
-        f_sd2_q += (linalg.norm(Q_centered[:,i])**2)
-        f_sd2_p += (linalg.norm(P_centered[:,i])**2)
-        Pdm[:,i] = m[0,i]*P_centered[:,i]
 
-    C = Pdm*Q_centered.T     
-    #C = P*Q' / N ;       % (for the non-weighted case)  
-    [V,S,W] = linalg.svd( C ) #singular value decomposition, S are singular values
+    for i in range(0, N):
+        f_sd2_q += linalg.norm(Q_centered[:, i]) ** 2
+        f_sd2_p += linalg.norm(P_centered[:, i]) ** 2
+        Pdm[:, i] = m[0, i] * P_centered[:, i]
+
+    C = Pdm * Q_centered.T
+    # C = P*Q' / N ;       % (for the non-weighted case)
+    [V, S, W] = linalg.svd(C)  # singular value decomposition, S are singular values
     W = W.T
     S = np.matrix(np.diag(S))
-    
+
     I = np.eye(D)
-    
-    if( linalg.det( V * W.T) < 0): #more numerically stable than using (det(C) < 0)
-        I[D-1,D-1] = -1
-    
+
+    if linalg.det(V * W.T) < 0:  # more numerically stable than using (det(C) < 0)
+        I[D - 1, D - 1] = -1
+
     f_scale = np.sum(S * I) / f_sd2_q
-    f_inv_scale = np.sum(S * I) / f_sd2_p # only one of those is needed
+    f_inv_scale = np.sum(S * I) / f_sd2_p  # only one of those is needed
     scale = f_inv_scale * N
-    
-    U = W*I*V.T
-    r = q0 - scale*U*p0
+
+    U = W * I * V.T
+    r = q0 - scale * U * p0
     ######################
-    
-    Diff = scale*U*P_centered - Q_centered # P, Q already centered
+
+    Diff = scale * U * P_centered - Q_centered  # P, Q already centered
     # lrms = sqrt(sum(sum(Diff.*Diff))/N) ; % (for the non-weighted case
     lrms = 0
-    for i in range(0,N):
-        lrms = lrms + m[0,i] * Diff[:,i].T * Diff[:,i]
+    for i in range(0, N):
+        lrms = lrms + m[0, i] * Diff[:, i].T * Diff[:, i]
 
     lrms = np.sqrt(lrms)
-    
-    return [U, r, scale, lrms]
-    
-if(__name__ == "__main__"): 
-    
-    A=np.array([ [1, 1, 3], [3, 2, 1], [4, 5, 6]])
-    B=np.array([ [0,0,0], [0,0,0], [0,0,0]] )
-    [U,r,lrms] = kabsch_algorithm(A,B)
-    print("U:",U,"\nr:",r,"\nlrms:",lrms)
-    
-    
 
-    A2=np.array([ [1, 1, 3], [3, 2, 1], [4, 5, 6], [7,-1,2]]).T
+    return [U, r, scale, lrms]
+
+
+if __name__ == "__main__":
+
+    A = np.array([[1, 1, 3], [3, 2, 1], [4, 5, 6]])
+    B = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+    [U, r, lrms] = kabsch_algorithm(A, B)
+    print("U:", U, "\nr:", r, "\nlrms:", lrms)
+
+    A2 = np.array([[1, 1, 3], [3, 2, 1], [4, 5, 6], [7, -1, 2]]).T
     dx = 0.2
     dy = 1
     dz = 2
-    B2=np.array([ [1+dx, 1+dy, 3+dz], [3+dx, 2+dy, 1+dz], \
-                    [4+dx, 5+dy, 6+dz], [7+dx,-1+dy,2+dz]]).T
-    [U1,r1,lrms1] = kabsch_algorithm(A2,B2)
-    print("U:",U1,"\nr:",r1,"\nlrms:",lrms1)
-    
-    [U2,r2,s2,lrms2] = umeyama_algorithm(A2,B2)
+    B2 = np.array(
+        [
+            [1 + dx, 1 + dy, 3 + dz],
+            [3 + dx, 2 + dy, 1 + dz],
+            [4 + dx, 5 + dy, 6 + dz],
+            [7 + dx, -1 + dy, 2 + dz],
+        ]
+    ).T
+    [U1, r1, lrms1] = kabsch_algorithm(A2, B2)
+    print("U:", U1, "\nr:", r1, "\nlrms:", lrms1)
 
-    A3=np.eye(3)
-    B3=np.eye(3)
-    [U,r,lrms] = kabsch_algorithm(A3,B3)
-    print("U:",U,"\nr:",r,"\nlrms:",lrms)
+    [U2, r2, s2, lrms2] = umeyama_algorithm(A2, B2)
 
-    A4=np.array([ [1, 1, 3], [3, 2, 1], [4, 5, 6]])
-    B4=np.array([ [2, -1, -3], [-3, 5, 2], [10, 11, 14]] )
-    [U,r,lrms] = kabsch_algorithm(A4,B4)
-    print("U:",U,"\nr:",r,"\nlrms:",lrms)
-    
-    #Benchmark with other library for affine transformation
-    #from numpy_utils.transformations import transformations as trafo
-    #print("U2:",trafo.affine_matrix_from_points(A,B,False,False,True))
+    A3 = np.eye(3)
+    B3 = np.eye(3)
+    [U, r, lrms] = kabsch_algorithm(A3, B3)
+    print("U:", U, "\nr:", r, "\nlrms:", lrms)
+
+    A4 = np.array([[1, 1, 3], [3, 2, 1], [4, 5, 6]])
+    B4 = np.array([[2, -1, -3], [-3, 5, 2], [10, 11, 14]])
+    [U, r, lrms] = kabsch_algorithm(A4, B4)
+    print("U:", U, "\nr:", r, "\nlrms:", lrms)
+
+    # Benchmark with other library for affine transformation
+    # from numpy_utils.transformations import transformations as trafo
+    # print("U2:",trafo.affine_matrix_from_points(A,B,False,False,True))

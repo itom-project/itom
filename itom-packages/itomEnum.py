@@ -1,10 +1,12 @@
 import collections
 
+
 class ItomEnumException(Exception):
     pass
 
+
 class ItomEnum:
-    '''
+    """
     provides a c-like enumeration class
     
     Examples:
@@ -12,10 +14,10 @@ class ItomEnum:
     eEx2 = ItomEnum("enumUserValue",["VALUE0", ("VALUE100",100), "VALUE101"])
     
     See: http://code.activestate.com/recipes/67107-enums-for-python/
-    '''
-    
+    """
+
     def __init__(self, name, enumList):
-        '''Arguments:
+        """Arguments:
         1. name -- the name of the enumeration, safed in __doc__
         2. enumList -- the list with all elements.
         
@@ -24,16 +26,16 @@ class ItomEnum:
         an auto-incremented integer, starting with 0. You can 
         interrupt the auto-incrementing, by providing elements, 
         which are again a list with (key [string], value [integer]).
-        '''
+        """
         self.__doc__ = name
         lookup = collections.OrderedDict()
         reverseLookup = collections.OrderedDict()
         i = 0
-        uniqueNames = [ ]
-        uniqueValues = [ ]
-        
+        uniqueNames = []
+        uniqueValues = []
+
         for x in enumList:
-            if (isinstance(x,tuple) or isinstance(x,list) ):
+            if isinstance(x, tuple) or isinstance(x, list):
                 x, i = x
             if type(x) != str:
                 raise ItomEnumException("enum name is not a string: " + x)
@@ -48,35 +50,35 @@ class ItomEnum:
             lookup[x] = i
             reverseLookup[i] = x
             i = i + 1
-            
+
         self.table = lookup
         self.__reverseLookup = reverseLookup
-        
+
     def __repr__(self):
         return "ItomEnum '" + str(self.__doc__) + "'"
-        
+
     def __getattr__(self, attr):
-        '''returns value for enum-key or raises AttributeError if not found'''
+        """returns value for enum-key or raises AttributeError if not found"""
         if attr not in self.table:
             raise AttributeError
         return self.table[attr]
-        
+
     def whatis(self, value):
-        '''returns enum-key for certain value (integer) or raises KeyError if not found'''
+        """returns enum-key for certain value (integer) or raises KeyError if not found"""
         return self.__reverseLookup[value]
-    
+
     def keys(self):
-        '''returns tuple with all keys'''
+        """returns tuple with all keys"""
         return tuple(self.table.keys())
-    
+
     def values(self):
-        '''returns tuple with all values'''
+        """returns tuple with all values"""
         return tuple(self.table.values())
-    
-    def key_exists(self,key):
-        '''returns TRUE if key exists in Enum-keys, else FALSE'''
+
+    def key_exists(self, key):
+        """returns TRUE if key exists in Enum-keys, else FALSE"""
         return key in self.table
-     
-    def value_exists(self,value):
-         '''returns TRUE if value exists in Enum-values, else FALSE'''
-         return value in self.__reverseLookup
+
+    def value_exists(self, value):
+        """returns TRUE if value exists in Enum-values, else FALSE"""
+        return value in self.__reverseLookup

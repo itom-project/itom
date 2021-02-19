@@ -82,6 +82,20 @@ WordHoverTooltipMode::~WordHoverTooltipMode()
 //-------------------------------------------------------------------------------------
 /*
 */
+void WordHoverTooltipMode::hideTooltip()
+{
+    m_pTimer->cancelRequests();
+
+    if (m_tooltipVisible)
+    {
+        ToolTip::hideText();
+        m_tooltipVisible = false;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+*/
 /*virtual*/ void WordHoverTooltipMode::onStateChanged(bool state)
 {
     CodeEditor *edit = editor();

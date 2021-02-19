@@ -52,6 +52,25 @@ IndentFoldDetector::IndentFoldDetector(QObject *parent /*= NULL*/) :
     m_reContinuationLine = QRegularExpression(
         "(\\sand|\\sor|\\+|\\-|\\*|\\^|>>|<<|\\*|\\*{2}|\\||//|/|,|\\\\)$"
     );
+
+    // it is possible, that a signature ends
+    // with
+    // ): or ) -> type: # comment
+    // in the last line
+    m_lastSignatureLine = QRegularExpression(
+        "^\\s*\\)\\s*(->\\s*.+)?:\\s*(#.*)?$"
+    );
+
+    /*bool a = m_lastSignatureLine.match("):").hasMatch();
+    a = m_lastSignatureLine.match("   ) :    ").hasMatch();
+    a = m_lastSignatureLine.match("  ) -> :  ").hasMatch();
+    a = m_lastSignatureLine.match(") -> 'class' :").hasMatch();
+    a = m_lastSignatureLine.match(")").hasMatch();
+    a = m_lastSignatureLine.match("# ): sdfwer").hasMatch();
+    a = m_lastSignatureLine.match("):#sfdwer").hasMatch();
+    a = m_lastSignatureLine.match("   ) :    # :)'").hasMatch();
+    a = m_lastSignatureLine.match("  ) -> :  #wersdf").hasMatch();
+    a = m_lastSignatureLine.match(") -> 'class' :'lwers").hasMatch();*/
 }
 
 //--------------------------------------------------
@@ -102,9 +121,19 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
         {
             // ignore commented lines(could have arbitary indentation)
             // Verify if the previous line ends with a continuation line
-            // with a regex
-
+            // with a regex.
+            // The 2nd case is for this (e.g. produced by black):
+            /* def test(
+                    a: int,
+                    b: int
+               ):
+                    pass            
+            */
             if (m_reContinuationLine.match(prev_text).hasMatch())
+            {
+                min_lvl = prev_lvl;
+            }
+            else if (m_lastSignatureLine.match(text).hasMatch())
             {
                 min_lvl = prev_lvl;
             }
