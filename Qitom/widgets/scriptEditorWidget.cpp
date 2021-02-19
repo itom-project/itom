@@ -99,18 +99,65 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     // 6. arbitrary characters --> (.*)
     // 7. OR combination --> (cond1|cond2)
     // 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
-    // 7b. backspace to indicate a newline --> \\\\ 
-    m_regExpClass = QRegularExpression("^(\\s*)(class)\\s(?<name>.+)(\\(.*\\))?:\\s*(#?.*)");
-    m_regExpClass.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
-    m_regExpDecorator = QRegularExpression("^(\\s*)(@)(?<name>\\S+)\\s*(#?.*)");
-    m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s*)?def\\s+(?<name>\\w+)\\(");
-    m_regExpMethodStart.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
-    //m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<private>_*)(?<name>.+)\\(?<args>(.*)(\\)(\\s*|\\s->\\s(?<rettype>.+)):\\s*(#?.*)?|\\\\)");
+    // 7b. backspace to indicate a newline --> \\\\ .
+    m_regExpClass = QRegularExpression("^(\\s*)(class)\\s+(?<name>[^\\d\\W]\\w*)(\\(.*\\))?\\s*:\\s*(#.*)?");
+    m_regExpDecorator = QRegularExpression("^(\\s*)(@)(?<name>\\S+)\\s*(#.*)?");
+    m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s+)?def\\s+(?<name>[^\\d\\W]\\w*)\\s*\\(");
 
     // named groups in complex OR-cases seems not to work
-    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s(?<name>.+)\\((.*)(\\)(\\s*|\\s->\\s(.+)):\\s*(#?.*)?|\\\\)");
-    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s*)?(def)\\s+(?<name>.+)\\((.*)\\)(\\s*|\\s+->\\s+(.+)):\\s*(#?.*)?");
-    m_regExpMethod.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s+)?(def)\\s+(?<name>[^\\d\\W]\\w*)\\s*\\((.*)\\)(\\s*|\\s+->\\s+(.+)):\\s*(#.*)?");
+
+#ifdef _DEBUG
+    Q_ASSERT(m_regExpClass.match("class Test:").hasMatch());
+    Q_ASSERT(m_regExpClass.match("   class   _Test(object)   :  # sdf:()").hasMatch());
+    Q_ASSERT(m_regExpClass.match(" class _T_123s(object,bla)  : # yes").hasMatch());
+    Q_ASSERT(!m_regExpClass.match("def yes:").hasMatch());
+    Q_ASSERT(m_regExpClass.match("\tclass\tTest\t:").hasMatch());
+    Q_ASSERT(!m_regExpClass.match("class 1Blub():").hasMatch());
+    Q_ASSERT(!m_regExpClass.match("class Blub(:").hasMatch());
+
+    Q_ASSERT(m_regExpDecorator.match("@ItomUi.autoslot('test,str') # sdf").hasMatch());
+    Q_ASSERT(m_regExpDecorator.match("  @autoslot(name=\"hello\",key=2)").hasMatch());
+    Q_ASSERT(!m_regExpDecorator.match("'@test'").hasMatch());
+    Q_ASSERT(!m_regExpDecorator.match("@ # test").hasMatch());
+
+    Q_ASSERT(m_regExpMethodStart.match("   async    def  _Ab23  (a, b, c):").hasMatch());
+    Q_ASSERT(m_regExpMethodStart.match("def test():  # hello").hasMatch());
+    Q_ASSERT(!m_regExpMethodStart.match("asyncdef test():").hasMatch());
+    Q_ASSERT(!m_regExpMethodStart.match("   def hello").hasMatch());
+    Q_ASSERT(m_regExpMethodStart.match("def myFunc(a='blub',b=2): #yes").hasMatch());
+    Q_ASSERT(!m_regExpMethodStart.match("definition").hasMatch());
+
+    auto m = m_regExpMethod.match("  async  def  myFunc  (a: int, b: float,c = [(2,3), 3,4]) ->  Optional[Union[int,float]]:  # comment");
+    Q_ASSERT(m.hasMatch());
+    auto m2 = m.capturedTexts();
+    Q_ASSERT(m2.size() == 9);
+    Q_ASSERT(m2[4] == "myFunc");
+    Q_ASSERT(m2[5] == "a: int, b: float,c = [(2,3), 3,4]");
+    Q_ASSERT(m2[7] == "Optional[Union[int,float]]");
+
+    m = m_regExpMethod.match("def test():");
+    Q_ASSERT(m.hasMatch());
+    m2 = m.capturedTexts();
+    Q_ASSERT(m2.size() >= 7);
+    Q_ASSERT(m2[4] == "test");
+    Q_ASSERT(m2[5] == "");
+
+    m = m_regExpMethod.match("def test(a) -> int:");
+    Q_ASSERT(m.hasMatch());
+    m2 = m.capturedTexts();
+    Q_ASSERT(m2.size() >= 8);
+    Q_ASSERT(m2[4] == "test");
+    Q_ASSERT(m2[5] == "a");
+    Q_ASSERT(m2[7] == "int");
+
+    m = m_regExpMethod.match("def test(a: int, b: float) :");
+    Q_ASSERT(m.hasMatch());
+    m2 = m.capturedTexts();
+    Q_ASSERT(m2.size() >= 7);
+    Q_ASSERT(m2[4] == "test");
+    Q_ASSERT(m2[5] == "a: int, b: float");
+#endif
 
     m_outlineTimer = new QTimer(this);
     connect(m_outlineTimer, SIGNAL(timeout()), this, SLOT(outlineTimerElapsed()));
