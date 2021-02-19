@@ -528,6 +528,54 @@ namespace ito
 
 	}
 
+	ito::RetVal AddInMultiChannelGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+	{
+		ItomSharedSemaphoreLocker locker(waitCond);
+		ito::RetVal retValue;
+		QString key;
+		bool hasIndex = false;
+		int index;
+		QString suffix;
+		ParamMapIterator it;
+		bool ok = false;
+
+		//parse the given parameter-name (if you support indexed or suffix-based parameters)
+		retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+		if (retValue == ito::retOk)
+		{
+			//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+			if (!suffix.isEmpty() && m_channels.contains(suffix))
+			{
+				retValue += apiGetParamFromMapByKey(m_channels[suffix].m_channelParam, key, it, false);
+				if (retValue.containsError())
+				{
+					retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\".Maybe this is a non channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
+				}
+			}
+			else
+			{
+				retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+			}
+		}
+		if (!retValue.containsError())
+		{
+			retValue += getParameter(val, it, suffix, key, index, hasIndex, ok);
+		}
+		if (!retValue.containsError() && !ok)//the parameter was not processed by the plugin, so it is done here
+		{
+			*val = it.value();
+		}
+
+		if (waitCond)
+		{
+			waitCond->returnValue = retValue;
+			waitCond->release();
+		}
+
+		return retValue;
+	}
+
 	ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond/* = NULL*/)
 	{
 		ItomSharedSemaphoreLocker locker(waitCond);
@@ -540,7 +588,18 @@ namespace ito
 		int cntStartedDevices = grabberStartedCount();
 		if (!retValue.containsError())
 		{
-			retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+			if (!suffix.isEmpty() && m_channels.contains(suffix))
+			{
+				retValue += apiGetParamFromMapByKey(m_channels[suffix].m_channelParam, key, it, true);
+				if (retValue.containsError())
+				{
+					retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\".Maybe this is a non channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
+				}
+			}
+			else
+			{
+				retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+			}
 		}
 		if (!retValue.containsError())
 		{
@@ -563,21 +622,22 @@ namespace ito
 					}
 					else
 					{
-						retValue += ito::RetVal(ito::retError, 0, tr("Unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
+						retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
 					}
 				}
 				if (key == "roi")
 				{
-					if (!hasIndex)
-					{
-						retValue += it->copyValueFrom(&(*val));
-						list << "roi";
-					}
-					else
-					{
-						it->getVal<int*>()[index] = val->getVal<int>();						
-						list << "roi";
-					}
+						if (!hasIndex)
+						{
+							retValue += it->copyValueFrom(&(*val));
+							list << "roi";
+						}
+						else
+						{
+							it->getVal<int*>()[index] = val->getVal<int>();
+							list << "roi";
+						}
+					
 				}
 				else
 				{
@@ -695,7 +755,7 @@ namespace ito
 						}
 						else
 						{
-							retVal = ito::RetVal(ito::retError, 0, tr("Unknown parameter %1 in m_params").arg(tmp).toLatin1().data());
+							retVal = ito::RetVal(ito::retError, 0, tr("unknown parameter %1 in m_params").arg(tmp).toLatin1().data());
 						}
 					}
 				}
@@ -703,7 +763,7 @@ namespace ito
 
 			else
 			{
-				retVal = ito::RetVal(ito::retError, 0, tr("Unknown channel %1").arg(currentChannel).toLatin1().data());
+				retVal = ito::RetVal(ito::retError, 0, tr("unknown channel %1").arg(currentChannel).toLatin1().data());
 			}
 		}
 		else
