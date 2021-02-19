@@ -115,7 +115,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
 
     m_outlineTimer = new QTimer(this);
     connect(m_outlineTimer, SIGNAL(timeout()), this, SLOT(outlineTimerElapsed()));
-    m_outlineTimer->setInterval(2000);
+    m_outlineTimer->setInterval(500);
 
     m_cursorBeforeMouseClick.invalidate();
     
@@ -317,7 +317,7 @@ void ScriptEditorWidget::loadSettings()
     // Code Outline
     m_outlineTimerEnabled = settings.value("outlineAutoUpdateEnabled", true).toBool();
     m_outlineTimer->stop();
-    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 2.00).toDouble() * 1000));
+    m_outlineTimer->setInterval((settings.value("outlineAutoUpdateDelay", 0.5).toDouble() * 1000));
 
     //todo
     // Fold Style
@@ -3098,9 +3098,9 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem> &pare
 }
 
 //-------------------------------------------------------------------------------------
-QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
+QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /*=false*/) const
 {
-    if (!m_outlineDirty)
+    if (!m_outlineDirty && !forceParsing)
     {
         return m_rootOutlineItem;
     }
@@ -3108,6 +3108,7 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
     const QTextDocument* doc = document();
     bool valid;
     m_outlineDirty = false;
+    m_outlineTimer->stop();
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
@@ -3136,6 +3137,8 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline() const
         }
     }
 
+    m_rootOutlineItem = root;
+
     return root;
 }
 
@@ -3149,10 +3152,10 @@ This method is also directly called if a new file is opened in this editor.
 void ScriptEditorWidget::outlineTimerElapsed()
 {
     m_outlineTimer->stop();
-    m_outlineDirty = true;
-    m_rootOutlineItem = parseOutline();
+    m_rootOutlineItem = parseOutline(true);
 
     emit outlineModelChanged(this, m_rootOutlineItem);
+    emit updateActions();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3270,6 +3273,9 @@ void ScriptEditorWidget::onCursorPositionChanged()
     {
         emit outlineModelChanged(this, m_rootOutlineItem);
         m_currentLineIndex = currentLine;
+
+        // update the actions of the script dock widget, e.g. for docstring generator...
+        emit updateActions();
     }
 
     // set the current cursor position to the global cursor position variable
@@ -3278,9 +3284,6 @@ void ScriptEditorWidget::onCursorPositionChanged()
         currentGlobalEditorCursorPos.cursor = c;
         currentGlobalEditorCursorPos.editorUID = m_uid;
     }
-
-    // update the actions of the script dock widget, e.g. for docstring generator...
-    emit updateActions();
 }
 
 //-----------------------------------------------------------
@@ -3307,6 +3310,7 @@ void ScriptEditorWidget::tabChangeRequest()
 }
 
 //-------------------------------------------------------------------------------------
+/* on text changed is always emitted after that the foldings have been updated. */
 void ScriptEditorWidget::onTextChanged()
 {
     m_outlineDirty = true;

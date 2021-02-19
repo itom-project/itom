@@ -71,7 +71,7 @@ public:
 
     virtual void onStateChanged(bool state);
 
-    void insertDocstring(const QTextCursor &cursor, const QString &quotes = "\"\"\"") const;
+    void insertDocstring(const QTextCursor &cursor, const QString &quotes = "\"\"\"", bool insertOpeningQuotes = true) const;
     QSharedPointer<OutlineItem> getOutlineOfLineIdx(int lineIdx) const;
 
     Style docstringStyle() const { return m_docstringStyle; }
