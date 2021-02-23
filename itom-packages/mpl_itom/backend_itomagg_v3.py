@@ -117,7 +117,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         renderer = self.get_renderer()
         original_dpi = renderer.dpi
         renderer.dpi = dpi
-        stringBuffer = renderer._renderer.buffer_rgba()
+        stringBuffer = renderer.buffer_rgba()
         width = int(renderer.width)
         height = int(renderer.height)
         arr = np.frombuffer(stringBuffer, "uint8").reshape([height, width, 4])
