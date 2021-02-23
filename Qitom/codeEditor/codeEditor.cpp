@@ -77,7 +77,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_prevTooltipBlockNbr(-1),
     m_pTooltipsRunner(NULL),
     m_edgeMode(EdgeNone),
-    m_edgeColumn(79),
+    m_edgeColumn(88),
     m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true),
     m_indentationGuidesColor(Qt::darkGray),
