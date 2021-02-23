@@ -399,6 +399,10 @@
         <source>Parameter &apos;%s&apos; does not exist</source>
         <translation type="unfinished">Der Parameter &apos;%s&apos; existiert nicht</translation>
     </message>
+    <message>
+        <source>Filter &apos;%s&apos; has no progress observer and cancellation interface</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInManager</name>
@@ -463,7 +467,7 @@
     </message>
     <message>
         <source>Scan and load plugins (%1)</source>
-        <translation type="unfinished">Sucht und läd Plugins (%1)</translation>
+        <translation type="unfinished">Sucht und lädt Plugins (%1)</translation>
     </message>
     <message>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
@@ -578,10 +582,6 @@
         <translation type="unfinished">Zeitüberschreitung beim Initialisieren des DataIOs</translation>
     </message>
     <message>
-        <source>Timeout while initializing actuator</source>
-        <translation type="obsolete">Zeitüberschreitung beim Initialisieren des Motors</translation>
-    </message>
-    <message>
         <source>Timeout while pulling plugin back to main thread.</source>
         <translation type="unfinished">Zeitüberschreitung beim Zurücksetzen des Plugins in den Haupt-Thread.</translation>
     </message>
@@ -598,6 +598,10 @@
 </source>
         <translation type="unfinished">Der Filter %1 wurde zurückgewiesen, da bereits ein Filter des gleichen Namens in der globalen Filterliste existiert.
 </translation>
+    </message>
+    <message>
+        <source>Plugin with filename &apos;%1&apos; is a dataIO type, but no subtype is given in the type flag.</source>
+        <translation>Das Plugin mti dem Dateinamen &apos;%1&apos; hat den dataIO Type gesetzt, aber es wurde kein Untertyp angegeben.</translation>
     </message>
 </context>
 <context>
@@ -736,22 +740,6 @@
     <message>
         <source>DataIO</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>dataIO(&quot;%1&quot;%2)</source>
-        <translation type="unfinished">DataIO (&quot;%1&quot;%2)</translation>
-    </message>
-    <message>
-        <source>actuator(&quot;%1&quot;%2)</source>
-        <translation type="unfinished">Motor (&quot;%1&quot;%2)</translation>
-    </message>
-    <message>
-        <source>filter(&quot;%1&quot;%2)</source>
-        <translation type="unfinished">Filter (&quot;%1&quot;%2)</translation>
-    </message>
-    <message>
-        <source>ui.createNewPluginWidget(&quot;%1%2&quot;)</source>
-        <translation type="unfinished">&apos;ui.createNewPluginWidget&apos; (&quot;%1%2&quot;)</translation>
     </message>
 </context>
 </TS>
