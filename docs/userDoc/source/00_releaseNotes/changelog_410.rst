@@ -86,6 +86,7 @@ itom
   up to 0.18.
 * If a breakpoint is considered to be in an empty or comment line, an error text is printed at startup
   of a debug session and the breakpoint is deleted.
+* :py:class:`itom.dataObject` can now be compared to other complex64 or complex128 dataObjects or scalar values.
 
 **Further changes:**
 
