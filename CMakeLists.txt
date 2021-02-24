@@ -21,7 +21,7 @@
 cmake_minimum_required(VERSION 3.1)
   
 project(itom)
-  
+   
 message(STATUS "--------------- PROJECT itom -----------------")
  
 set(CMAKE_CXX_STANDARD 11)
@@ -83,7 +83,7 @@ if(BUILD_UNITTEST)
     add_subdirectory(itom_unittests)
 endif()
 
-if(BUILD_ISSCONFIG)
+if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
 
@@ -131,12 +131,20 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsMandatory.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsOptional.txt)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsMandatory.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsOptional.txt)
 
 if(SETUP_ISSCONFIG)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in

@@ -78,6 +78,7 @@ public:
 private:
 
     QRegularExpression m_reContinuationLine;
+    QRegularExpression m_lastSignatureLine;
 };
 
 } //end namespace ito

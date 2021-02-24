@@ -70,6 +70,8 @@ public:
 
     virtual void onStateChanged(bool state);
 
+    void hideTooltip();
+
 protected:
     QTextCursor m_cursor;
 

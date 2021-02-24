@@ -132,7 +132,7 @@ public:
     //!< wrapper for undo() or redo() that tries to keep breakpoints and bookmarks
     void startUndoRedo(bool unundoNotRedo);
 
-    QSharedPointer<OutlineItem> parseOutline() const;
+    QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
 
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
@@ -226,7 +226,7 @@ private:
     QTimer *m_outlineTimer; //!< timer to recreate the outline model with a certain delay
     bool m_outlineTimerEnabled; //!<
     int m_currentLineIndex; //!< current line index of the cursor
-    QSharedPointer<OutlineItem> m_rootOutlineItem;
+    mutable QSharedPointer<OutlineItem> m_rootOutlineItem; //!< cache for the latest outline items
     mutable bool m_outlineDirty;
     QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
     QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator

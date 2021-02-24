@@ -71,7 +71,7 @@ void WidgetPropEditorScripts::readSettings()
 
     on_comboEdgeMode_currentIndexChanged(ui.comboEdgeMode->currentIndex());
 
-    ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 0).toInt());
+    ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 88).toInt());
     ui.colorEdgeBg->setColor(settings.value("edgeColor", QColor(Qt::black)).value<QColor>());
 
     int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();

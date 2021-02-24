@@ -154,15 +154,13 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
     {
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
-            cursor.removeSelectedText();
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "\"\"\"");
+            insertDocstring(cursor, "\"\"\"", false);
         }
         else if (cursor.selectedText().trimmed() == "'''")
         {
-            cursor.removeSelectedText();
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "'''");
+            insertDocstring(cursor, "'''", false);
         }
     }
 }
@@ -177,7 +175,7 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
         return QSharedPointer<OutlineItem>();
     }
 
-    auto current = sew->parseOutline();
+    auto current = sew->parseOutline(false);
     auto result = QSharedPointer<OutlineItem>();
     bool found = true;
 
@@ -215,7 +213,10 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
 
 //-------------------------------------------------------------------------------------
-void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const QString &quotes /*= "\"\"\""*/) const
+void PyDocstringGeneratorMode::insertDocstring(
+    const QTextCursor &cursor, 
+    const QString &quotes /*= "\"\"\""*/, 
+    bool insertOpeningQuotes /*= true*/) const
 {
     if (cursor.isNull())
     {
@@ -241,6 +242,14 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
     QTextCursor insertCursor = e->gotoLine(lineIdx, 0);
     insertCursor.movePosition(QTextCursor::EndOfLine);
 
+    if (!insertOpeningQuotes)
+    {
+        // move one line down and to the end, we expect
+        // the opening quotes to be at the end.
+        insertCursor.movePosition(QTextCursor::NextBlock);
+        insertCursor.movePosition(QTextCursor::EndOfLine);
+    }
+
     // get the indentation for the new docstring
     int initIndent = e->lineIndent(outline->m_startLineIdx);
     QString indent = editor()->useSpacesInsteadOfTabs() ? 
@@ -261,7 +270,14 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
         docstring = generateNumpyDoc(outline, finfo, cursorPos);
     }
 
-    docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
+    if (insertOpeningQuotes)
+    {
+        docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
+    }
+    else
+    {
+        docstring = QString("%2\n%1").arg(quotes).arg(docstring);
+    }
 
     // add the indentation to all lines of the docstring
     QStringList lines = docstring.split("\n");
@@ -273,10 +289,21 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
 
     // insert the docstring
     insertCursor.beginEditBlock();
-    insertCursor.insertText("\n" + lines.join("\n"));
+
+    if (insertOpeningQuotes)
+    {
+        insertCursor.insertText("\n" + lines.join("\n"));
+    }
+    else
+    {
+        insertCursor.insertText(lines.join("\n"));
+    }
+
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
+
+    e->textChanged();
 }
 
 //-------------------------------------------------------------------------------------

@@ -52,6 +52,25 @@ IndentFoldDetector::IndentFoldDetector(QObject *parent /*= NULL*/) :
     m_reContinuationLine = QRegularExpression(
         "(\\sand|\\sor|\\+|\\-|\\*|\\^|>>|<<|\\*|\\*{2}|\\||//|/|,|\\\\)$"
     );
+
+    // it is possible, that a signature ends
+    // with
+    // ): or ) -> type: # comment
+    // in the last line
+    m_lastSignatureLine = QRegularExpression(
+        "^\\s*\\)\\s*(->\\s*.+)?:\\s*(#.*)?$"
+    );
+
+    /*bool a = m_lastSignatureLine.match("):").hasMatch();
+    a = m_lastSignatureLine.match("   ) :    ").hasMatch();
+    a = m_lastSignatureLine.match("  ) -> :  ").hasMatch();
+    a = m_lastSignatureLine.match(") -> 'class' :").hasMatch();
+    a = m_lastSignatureLine.match(")").hasMatch();
+    a = m_lastSignatureLine.match("# ): sdfwer").hasMatch();
+    a = m_lastSignatureLine.match("):#sfdwer").hasMatch();
+    a = m_lastSignatureLine.match("   ) :    # :)'").hasMatch();
+    a = m_lastSignatureLine.match("  ) -> :  #wersdf").hasMatch();
+    a = m_lastSignatureLine.match(") -> 'class' :'lwers").hasMatch();*/
 }
 
 //--------------------------------------------------
@@ -110,18 +129,13 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
                ):
                     pass            
             */
-            if (m_reContinuationLine.match(prev_text).hasMatch() || Utils::lstrip(text).startsWith("):"))
+            if (m_reContinuationLine.match(prev_text).hasMatch())
             {
                 min_lvl = prev_lvl;
             }
-            else
+            else if (m_lastSignatureLine.match(text).hasMatch())
             {
-                QString lstriptext = Utils::lstrip(text);
-
-                if (lstriptext.startsWith(")") && Utils::lstrip(lstriptext.mid(1)).startsWith(":"))
-                {
-                    min_lvl = prev_lvl;
-                }
+                min_lvl = prev_lvl;
             }
         }
     }

@@ -1,0 +1,6 @@
+pip >= 21.0.1
+wheel
+Setuptools
+numpy
+flake8
+black
