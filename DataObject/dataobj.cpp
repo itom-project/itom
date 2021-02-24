@@ -35,7 +35,7 @@
 
 #ifdef USEOPENMP
 // disabled due to application hang on closing when using AddInManager dll
-#define USEOMP 1
+#define USEOMP 0
 #else
 #define USEOMP 0
 #endif
