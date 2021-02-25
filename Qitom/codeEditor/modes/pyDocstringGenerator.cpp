@@ -51,7 +51,8 @@ namespace ito {
 PyDocstringGeneratorMode::PyDocstringGeneratorMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     Mode(name, description),
     QObject(parent),
-    m_docstringStyle(Style::GoogleStyle)
+    m_docstringStyle(Style::GoogleStyle),
+    m_overwriteEndLineIndex(-1)
 {
 }
 
@@ -106,10 +107,14 @@ void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
                 if ((e->key() == Qt::Key_QuoteDbl && sel == "\"\"") ||
                     (e->key() == Qt::Key_Apostrophe && sel == "''"))
                 {
+
                     QSharedPointer<OutlineItem> item = getOutlineOfLineIdx(lineIdx);
 
                     if (!item.isNull())
                     {
+                        qDebug() << item->m_name << item->m_startLineIdx << item->m_endLineIdx;
+                        m_overwriteEndLineIndex = item->m_endLineIdx;
+
                         if (lastLineIdxOfDefinition(item) == lineIdx - 1)
                         {
                             // the first """ sign in the line right after the 
@@ -155,13 +160,15 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "\"\"\"", false);
+            insertDocstring(cursor, "\"\"\"", false, m_overwriteEndLineIndex);
         }
         else if (cursor.selectedText().trimmed() == "'''")
         {
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "'''", false);
+            insertDocstring(cursor, "'''", false, m_overwriteEndLineIndex);
         }
+
+        m_overwriteEndLineIndex = -1;
     }
 }
 
@@ -213,10 +220,18 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
 
 //-------------------------------------------------------------------------------------
+/*
+overwriteEndLineIdx : If this method is called by the popup menu, the method
+    is currently much longer than in reality, since the three opening quotes
+    create an undesired multiline comment. Therefore, the outline after having
+    added the three quotes is much longer than before having inserted it. Therefore
+    the last line of the outline can be overwritten by this value (if != -1).
+*/
 void PyDocstringGeneratorMode::insertDocstring(
     const QTextCursor &cursor, 
     const QString &quotes /*= "\"\"\""*/, 
-    bool insertOpeningQuotes /*= true*/) const
+    bool insertOpeningQuotes /*= true*/,
+    int overwriteEndLineIdx /*= -1*/) const
 {
     if (cursor.isNull())
     {
@@ -228,6 +243,13 @@ void PyDocstringGeneratorMode::insertDocstring(
     if (outline.isNull())
     {
         return;
+    }
+
+    if (overwriteEndLineIdx >= outline->m_startLineIdx)
+    {
+        // deep copy of outline and replace m_endLineIdx
+        outline = QSharedPointer<ito::OutlineItem>(new ito::OutlineItem(*outline));
+        outline->m_endLineIdx = overwriteEndLineIdx;
     }
 
     CodeEditor *e = editor();
