@@ -1,6 +1,4 @@
-# coding=iso-8859-15 
-
-# -*- coding: utf-8 -*-
+# coding=iso-8859-15
 
 import os
 import ctypes
@@ -16,24 +14,25 @@ import shutil
 import glob
 import modify_doc
 import re
-
+import sphinx
+import numpydoc  # required to parse docstrings in numpydoc format
+import breathe  # required to integrate doxygen output into user documentation
 from sys import platform as _platform
 
 clc()
 
-all_files = True
-filenames = False
-confoverrides = {}
-freshenv = False
+# the following variables are set by the CMake configuration process
+cmake_current_source_dir = r"${CMAKE_CURRENT_SOURCE_DIR}"  # CMAKE_CURRENT_SOURCE_DIR
+cmake_current_binary_dir = r"${CMAKE_CURRENT_BINARY_DIR}"  # CMAKE_CURRENT_BINARY_DIR
+build_with_pcl = "${BUILD_WITH_PCL}"  # BUILD_WITH_PCL
+html_help_compiler = (
+    r"${HTML_HELP_COMPILER}"  # HTML_HELP_COMPILER
+)
+pdflatex_compiler = "${PDFLATEX_COMPILER}"  # PDFLATEX_COMPILER
 
-basedir = getCurrentPath()
-srcdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"
-confdir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source"
-aboutDir = "${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/source/AboutItem"
-
-__main__.__dict__["__doxygen__xml"] = "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml"
-
+# choose here the builder(s)
 buildernames = ["qthelp"]  # ["qthelp", "htmlhelp", "latex", "html"]
+
 
 def autodoc_process_docstring(app, what, name, obj, options, lines):
     """Turns the return value of an attribute into a xref."""
@@ -42,7 +41,7 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
         fst_line = 0
         while len(lines) > fst_line and lines[fst_line].strip() == "":
             fst_line += 1
-        
+
         # the first valid line of a docstring is "type : description".
         # The type is in numpydoc, e.g. list of int, turn this itno
         # list of :obj:`int`.
@@ -56,32 +55,84 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
                 if ":" not in comps[-1] and comps[-1] != "None":
                     comps[-1] = ":obj:`%s`" % comps[-1].strip()
                 alternatives[idx] = " of ".join(comps)
-            lines[fst_line] = " or ".join(alternatives) + \
-                " : " + lines[fst_line][colon+1:].strip()
+            lines[fst_line] = (
+                " or ".join(alternatives) + " : " + lines[fst_line][colon + 1 :].strip()
+            )
+
+
+all_files = True
+filenames = False
+confoverrides = {}
+freshenv = False
+
+basedir = getCurrentPath()
+srcdir = os.path.join(cmake_current_source_dir, "docs/userDoc/source")
+confdir = srcdir
+__main__.__dict__["__doxygen__xml"] = os.path.join(
+    cmake_current_binary_dir, r"docs/doxygen/xml"
+)
+
+btn, text = itom.ui.msgQuestion(
+    "Doxygen",
+    "Do you want to run doxygen first?",
+    ui.MsgBoxYes | ui.MsgBoxNo,
+    ui.MsgBoxNo,
+)
+
+if btn == ui.MsgBoxYes:
+    filename = itom.ui.getOpenFileName(
+        "Path to doxygen application",
+        filters="Doxygen (*.exe);;All Files (*.*)",
+        selectedFilterIndex=0,
+    )
+
+    if filename is not None and filename != "":
+        print("doxygen is being executed in an external process...")
+        ret = subprocess.call(
+            [
+                filename,
+                os.path.join(cmake_current_binary_dir, "docs/doxygen/itom_doxygen.dox"),
+            ]
+        )
+        print("doxygen execution done.")
+
+if not os.path.exists(__main__.__dict__["__doxygen__xml"]):
+    raise FileNotFoundError(
+        "The folder '%s' is missing. Run doxygen first."
+        % __main__.__dict__["__doxygen__xml"]
+    )
 
 for buildername in buildernames:
     outdir = basedir + "/build/" + buildername
     doctreedir = basedir + "/build/doctrees"
-    
+
     # for html-builder use another config-file
-    if (buildername == "html"):
+    if buildername == "html":
         confdir = confdir + "/config_html"
-    
+
     try:
         os.mkdir(outdir)
-    except:
+    except Exception:
         pass
 
+    app = Sphinx(
+        srcdir,
+        confdir,
+        outdir,
+        doctreedir,
+        buildername,
+        confoverrides,
+        sys.stdout,
+        sys.stderr,
+        freshenv,
+    )
 
-    app = Sphinx(srcdir, confdir, outdir, doctreedir, buildername,
-                 confoverrides, sys.stdout, sys.stderr, freshenv)
-    
-    app.connect('autodoc-process-docstring', autodoc_process_docstring)
-    
-    if("${BUILD_WITH_PCL}" in ("ON", "on", "TRUE", "true")): #the first variable is automatically set by CMake
-        app.tags.add('PCL')
+    app.connect("autodoc-process-docstring", autodoc_process_docstring)
+
+    if build_with_pcl in ("ON", "on", "TRUE", "true",):
+        app.tags.add("PCL")
     else:
-        app.tags.add('NOPCL')
+        app.tags.add("NOPCL")
 
     nocolor()
 
@@ -95,80 +146,120 @@ for buildername in buildernames:
     else:
         app.builder.build_update()
 
-    if(buildername == "qthelp"):
-        #search for relative name to case insensitive document itomdocumentation.qhcp (linux is case-sensitive)
-        #[iI] is a regexp for case insensitive letter i e.g.
-        filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp") 
+    if buildername == "qthelp":
+        # search for relative name to case insensitive document
+        # itomdocumentation.qhcp (linux is case-sensitive)
+        # [iI] is a regexp for case insensitive letter i e.g.
+        filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp")
         ret = 0
-        
-        import sphinx
+
         if sphinx.__version__ >= "1.8.0" and sphinx.__version__ < "1.8.3":
-            #temporary fix to replace <file>/index.html</file> by <file>index.html</file> in qhp file
-            #see: https://github.com/sphinx-doc/sphinx/issues/5627
-            for qhpName in glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhp"):
+            # temporary fix to replace <file>/index.html</file> by
+            # <file>index.html</file> in qhp file
+            # see: https://github.com/sphinx-doc/sphinx/issues/5627
+            for qhpName in glob.glob(
+                "build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhp"
+            ):
                 newContent = None
-                with open(qhpName, 'rt') as fp:
+                with open(qhpName, "rt") as fp:
                     content = fp.read()
-                    newContent = re.sub("<file>/([a-zA-Z0-9\._\-]*)</file>",r"<file>\1</file>", content, flags =re.M)
-                if not newContent is None:
-                    with open(qhpName, 'wt') as fp:
+                    newContent = re.sub(
+                        "<file>/([a-zA-Z0-9\._\-]*)</file>",
+                        r"<file>\1</file>",
+                        content,
+                        flags=re.M,
+                    )
+                if newContent is not None:
+                    with open(qhpName, "wt") as fp:
                         fp.write(newContent)
-        
-        if version.parse(itom.version(1)["itom"]["QT_Version"]) >= version.parse("5.12.0"): #https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
-            if _platform == "darwin":   # OS X
-                ret = subprocess.call([itom.getQtToolPath("qhelpgenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
+
+        if version.parse(itom.version(1)["itom"]["QT_Version"]) >= version.parse(
+            "5.12.0"
+        ):  # https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
+            if _platform == "darwin":  # OS X
+                ret = subprocess.call(
+                    [
+                        itom.getQtToolPath("qhelpgenerator"),
+                        os.getcwd() + "/" + filenames[0],
+                    ],
+                    shell=True,
+                )
             else:
-                ret = subprocess.call([itom.getQtToolPath("qhelpgenerator"), filenames[0]])
+                ret = subprocess.call(
+                    [itom.getQtToolPath("qhelpgenerator"), filenames[0]]
+                )
         else:
-            if _platform == "darwin":   # OS X
-                ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), os.getcwd()+'/'+filenames[0]], shell=True)
+            if _platform == "darwin":  # OS X
+                ret = subprocess.call(
+                    [
+                        itom.getQtToolPath("qcollectiongenerator"),
+                        os.getcwd() + "/" + filenames[0],
+                    ],
+                    shell=True,
+                )
             else:
-                ret = subprocess.call([itom.getQtToolPath("qcollectiongenerator"), filenames[0]])
-        
-        if(ret != 0 and ret != 127):
+                ret = subprocess.call(
+                    [itom.getQtToolPath("qcollectiongenerator"), filenames[0]]
+                )
+
+        if ret != 0 and ret != 127:
             raise RuntimeError("qcollectiongenerator failed")
         else:
             print("qcollectiongenerator successfully executed")
-            
-        ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
-        if(ret[0] == ui.MsgBoxYes):
-            filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhc") 
+
+        ret = itom.ui.msgInformation(
+            "show result", "do you want to see the result?", ui.MsgBoxYes | ui.MsgBoxNo
+        )
+        if ret[0] == ui.MsgBoxYes:
+            filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhc")
             showHelpViewer(filenames[0])
-            
-            #if _platform == "darwin":   # OS X
-                #subprocess.check_call(["/Applications/Assistant.app/Contents/MacOS/Assistant", "-collectionFile", os.getcwd()+'/'+filenames[0]], shell=True)
-            #else:
-                #subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
-            
-    elif(buildername == "htmlhelp"):
-        hhc = "${HTML_HELP_COMPILER}" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"
-        
-        if( os.path.exists( hhc )):
-            print("Compile chm with", hhc, "...")
-            ret = subprocess.call([hhc, "build/htmlhelp/itom_doc.hhp"])
-            if(ret != 1):
+
+            # if _platform == "darwin":  # OS X
+            #     subprocess.check_call(
+            #         [
+            #             "/Applications/Assistant.app/Contents/MacOS/Assistant",
+            #             "-collectionFile",
+            #             os.getcwd() + "/" + filenames[0],
+            #         ],
+            #         shell=True,
+            #     )
+            # else:
+            #     subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
+
+    elif buildername == "htmlhelp":
+        if os.path.exists(html_help_compiler):
+            print("Compile chm with", html_help_compiler, "...")
+            ret = subprocess.call([html_help_compiler, "build/htmlhelp/itom_doc.hhp"])
+            if ret != 1:
                 raise RuntimeError("html help workshop failed")
             else:
                 print("html help workshop successfully executed")
-                shutil.copy2("build/htmlhelp/itom_doc.chm","..")
+                shutil.copy2("build/htmlhelp/itom_doc.chm", "..")
         else:
             print("HTML Help Workshop (hhc.exe) could not be found.")
-            print("Open HTML Help Workshop and compile resulting *.hpp-file to *.chm help file")
-            print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
-            
-    elif(buildername == "latex"):
+            print(
+                "Open HTML Help Workshop and compile resulting "
+                "*.hpp-file to *.chm help file"
+            )
+            print(
+                "HTML Help Workshop is obtained by "
+                "http://www.microsoft.com/en-us/download/details.aspx?id=21138"
+            )
+
+    elif buildername == "latex":
         if ctypes.windll.shell32.IsUserAnAdmin() == 0:
-            raise RuntimeError("Latex file can only be modified, if itom is executed as admin.")
-            
-        pdflatex  = "${PDFLATEX_COMPILER}" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
-        texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
-        
+            raise RuntimeError(
+                "Latex file can only be modified, if itom is executed as admin."
+            )
+
+        texfolder = outdir
+
         # replace some lines in tex files
         print("\n*.tex is corrected by modify_doc")
-        modify_doc.replaceInFiles(texfolder,".tex")
-        
-        # Convert into pdf 
-        dirList=os.listdir(texfolder)
+        modify_doc.replaceInFiles(texfolder, ".tex")
+
+        # Convert into pdf
+        dirList = os.listdir(texfolder)
         # iterate through files in folder
         for fname in dirList:
             if fname.endswith(".tex"):
@@ -176,8 +267,11 @@ for buildername in buildernames:
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 # the window is hidden with the very last command
-                # Attention: you cannot change the process when errors occur and you are waiting for input
-                ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
+                # Attention: you cannot change the process when errors occur
+                # and you are waiting for input
+                ret = subprocess.call(
+                    [pdflatex_compiler, fname, "-output-directory=" + texfolder]
+                )  # ,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
                 if ret == 0:
                     print("------------------------------")
                     print("******* pdf created *******")
@@ -185,7 +279,9 @@ for buildername in buildernames:
                 elif ret == 1:
                     print("ERROR: Can not create pdf")
                 # The link within the PDF only works if the command is called twice.
-                ret = subprocess.call([pdflatex, fname,"-output-directory=" + texfolder])#,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
+                ret = subprocess.call(
+                    [pdflatex_compiler, fname, "-output-directory=" + texfolder]
+                )  # ,"-quiet"])#, startupinfo=startupinfo)startupinfo=startupinfo)
                 if ret == 0:
                     print("------------------------------")
                     print("******* pdf linked *******")

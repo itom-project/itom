@@ -14,7 +14,7 @@ that have to be installed in order to run the package.
 |itom| provides a package manager, that is accessible via the **Script** menu of the main window:
 
 .. figure:: images/pipManager1.png
-    :scale: 80%
+    :scale: 745px
     :align: center
     
 This package manager is a graphical user interface for the python package 

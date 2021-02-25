@@ -29,7 +29,7 @@ Software packages
 - PointCloudLibrary 1.6 or higher (>= 1.9 recommended, optional)
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
-- Python-Packages: SciPy, Sphinx and Numpydoc (user documentation generation), scikit-image, matplotlib...
+- Python-Packages: SciPy, Sphinx + numpydoc + breathe (user documentation generation), scikit-image, matplotlib...
 
 Detailed information
 ----------------------
