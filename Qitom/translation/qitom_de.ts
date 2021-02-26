@@ -7930,7 +7930,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Gehe zu Definition</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+1"/>
+        <source>F12</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Go To Assignment</source>
         <translation>Gehe zu Zuweisung</translation>
     </message>
@@ -8977,7 +8983,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1182"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1184"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
@@ -9186,7 +9192,9 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <source>
 
 Should this feature be deactivated? This can be changed again in the property dialog of itom.</source>
-        <translation>Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
+        <translation>
+
+Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
     </message>
     <message>
         <location line="-400"/>

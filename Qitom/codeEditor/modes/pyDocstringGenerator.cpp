@@ -306,6 +306,13 @@ void PyDocstringGeneratorMode::insertDocstring(
 
     for (int i = 0; i < lines.size(); ++i)
     {
+        if (!insertOpeningQuotes && i == 0)
+        {
+            // do not indent the first line, since it is already 
+            // right after the existing opening quotes
+            continue;
+        }
+
         lines[i] = Utils::rstrip(indent + lines[i]);
     }
 

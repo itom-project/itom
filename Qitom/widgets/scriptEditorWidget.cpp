@@ -106,7 +106,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_regExpMethodStart = QRegularExpression("^(\\s*)(async\\s+)?def\\s+(?<name>[^\\d\\W]\\w*)\\s*\\(");
 
     // named groups in complex OR-cases seems not to work
-    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s+)?(def)\\s+(?<name>[^\\d\\W]\\w*)\\s*\\((.*)\\)(\\s*|\\s+->\\s+(.+)):\\s*(#.*)?");
+    m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s+)?(def)\\s+(?<name>[^\\d\\W]\\w*)\\s*\\((.*)\\)(\\s*|\\s*->\\s*(.+)):\\s*(#.*)?");
 
 #ifdef _DEBUG
     Q_ASSERT(m_regExpClass.match("class Test:").hasMatch());
@@ -130,6 +130,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     Q_ASSERT(!m_regExpMethodStart.match("definition").hasMatch());
 
     auto m = m_regExpMethod.match("  async  def  myFunc  (a: int, b: float,c = [(2,3), 3,4]) ->  Optional[Union[int,float]]:  # comment");
+    Q_ASSERT(m.hasMatch());
+    m = m_regExpMethod.match("  async  def  myFunc  (a: int, b: float,c = [(2,3), 3,4])->Optional[Union[int,float]]:  # comment");
     Q_ASSERT(m.hasMatch());
     auto m2 = m.capturedTexts();
     Q_ASSERT(m2.size() == 9);

@@ -74,7 +74,7 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pPythonEngine = AppManagement::getPythonEngine();
 
     m_pActionGotoDefinition = new QAction(tr("Go To Definition"), this);
-    m_pActionGotoDefinition->setShortcut(QKeySequence(Qt::Key_F12));
+    m_pActionGotoDefinition->setShortcut(QKeySequence(tr("F12", "QShortcut")));
     connect(m_pActionGotoDefinition, SIGNAL(triggered()), this, SLOT(requestGotoDefinition()));
 
     m_pActionGotoAssignment = new QAction(tr("Go To Assignment"), this);
@@ -135,7 +135,7 @@ void PyGotoAssignmentMode::setMouseClickEnabled(bool enabled)
     if (enabled != m_mouseClickEnabled)
     {
         m_mouseClickEnabled = enabled;
-        WordClickMode::onStateChanged(this->enabled() & m_mouseClickEnabled);
+        WordClickMode::onStateChanged(this->enabled() && m_mouseClickEnabled);
     }
 }
 
