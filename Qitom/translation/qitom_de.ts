@@ -9177,7 +9177,8 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+21"/>
         <source>The code formatting could not be started:
 %1</source>
-        <translation>Die Code-Formatierung konnte nicht gestartet werden:\n%1</translation>
+        <translation>Die Code-Formatierung konnte nicht gestartet werden:
+%1</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -9197,7 +9198,8 @@ Should this feature be deactivated? This can be changed again in the property di
         <location line="+373"/>
         <source>The code formatting failed:
 %1</source>
-        <translation>Die automatische Code-Formatierung ist fehlgeschlagen:\n$1</translation>
+        <translation>Die automatische Code-Formatierung ist fehlgeschlagen:
+%1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -9859,7 +9861,13 @@ Should this feature be deactivated? This can be changed again in the property di
 has been successful formatted to
 
 %2</source>
-        <translation>Der Beispiel-Python Code\n\n%1\n\nwurde erfolgreich formatiert zu\n\n%2</translation>
+        <translation>Der Beispiel-Python Code
+
+%1
+
+wurde erfolgreich formatiert zu
+
+%2</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -9869,7 +9877,12 @@ has been successful formatted to
 
 could not been formatted. Reason:
 %2</source>
-        <translation>Der Beispiel Python Code\n\n%1\n\nkonnte nicht formatiert werden. Grund:\n%2</translation>
+        <translation>Der Beispiel Python Code
+
+%1
+
+konnte nicht formatiert werden. Grund:
+%2</translation>
     </message>
     <message>
         <location line="+2"/>
