@@ -145,6 +145,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requi
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsMandatory.txt)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsOptional.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/itom_setup_zipper_x64.py.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/itom_setup_zipper_x64.py @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in COPYONLY)
 
 if(SETUP_ISSCONFIG)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in
