@@ -1,67 +1,79 @@
-# coding=iso-8859-15 
+# coding=iso-8859-15
 
-# -*- coding: utf-8 -*-
+"""This script modifies latex outputs to avoid latex compiler errors.
+"""
+
 import itom
-import os, re
+import os
+import re
+
 
 def replaceInFiles(path, ending):
-    dirList=os.listdir(path)
+    dirList = os.listdir(path)
     coding = "iso-8859-15"
-    # Files in Ordner durchlaufen
+
+    # Iterate over files in folder
     for fname in dirList:
         if fname.endswith(ending):
-            with open(path+"\\"+fname, "r", encoding = coding) as f:
+            with open(path + "\\" + fname, "r", encoding=coding) as f:
                 s = f.read()
-                s = s.replace("\\begin{quote}\\begin{description}", "\\begin{description}")
+                s = s.replace(
+                    "\\begin{quote}\\begin{description}", "\\begin{description}"
+                )
                 s = s.replace("\\end{description}\\end{quote}", "\\end{description}")
-                
+
                 dict = itom.version(True)
                 itomRefAbbrev = dict["itom"]["itom_GIT_Rev_Abbrev"]
                 itomVersion = dict["itom"]["itom_Version"]
-                s = s.replace("%s" % itomRefAbbrev, "%s" % itomVersion) # replace itom Ref number by itom version
-                
-                s = s.replace(".gif", ".png") # replace gif by png images for pdf
-                
-                # nach Bildern suchen und nach jedem ca. 10. Bild ein \newpage einfÃ¼gen
-                p = re.compile(r'\\begin{figure}\[htbp\]')
-                
-                #chapter, sections... unterbrechen die suche
-                pNeg = re.compile(r'\\chapter{|\\section{|\\subsection{|\\subsubsection{')
-                
-                # j gibt an nach wievielen Bildern der neue Pagebreak kommen soll
+                # replace itom Ref number by itom version
+                s = s.replace("%s" % itomRefAbbrev, "%s" % itomVersion)
+
+                s = s.replace(".gif", ".png")  # replace gif by png images for pdf
+
+                # look for all figures and insert a \newpage after approx. every 10th image
+                p = re.compile(r"\\begin{figure}\[htbp\]")
+
+                # chapter, sections... interrupt the search
+                pNeg = re.compile(
+                    r"\\chapter{|\\section{|\\subsection{|\\subsubsection{"
+                )
+
+                # j indicates after how many images a new pagebreak should appear
                 j = 3
                 pos = 0
-                # count zaehlt die Vorkommen der Bilder
+                # c counts the number of figures
                 c = 0
-                while (pos < len(s)):
-                    m = p.search(s,pos,len(s))
-                    if (m == None):
+                while pos < len(s):
+                    m = p.search(s, pos, len(s))
+                    if m is None:
                         break
-                    
-                    #pruefe ob zwischen pos und pos+m.end() irgendwo ein pNeg war, dann setze den zaehler zurueck
-                    m2 = pNeg.search(s,pos,len(s))
-                    if(not(m2 is None) and m2.end() < m.end()):
+
+                    # check, if pNeg could find a match between pos and pos + m.end().
+                    # If so, reset the counter c.
+                    m2 = pNeg.search(s, pos, len(s))
+                    if not (m2 is None) and m2.end() < m.end():
                         print("new section or chapter, figure newline counter resetted")
                         c = 1
                     else:
                         c += 1
-                    
-                    pos = m.end();
-                    #c = c +1
-                    if (c%j == 0):
-                        #ersetzen
-                        sStart = s[:m.start()]
-                        sRep = re.sub(r'\\begin{figure}\[htbp\]',r'\\newpage\n\\begin{figure}[htbp]',s[m.start():m.end()])
-                        sEnd = s[m.end():]
+
+                    pos = m.end()
+                    # c = c +1
+                    if c % j == 0:
+                        # replace
+                        sStart = s[: m.start()]
+                        sRep = re.sub(
+                            r"\\begin{figure}\[htbp\]",
+                            r"\\newpage\n\\begin{figure}[htbp]",
+                            s[m.start() : m.end()],
+                        )
+                        sEnd = s[m.end() :]
                         s = sStart + sRep + sEnd
-                        
-                # Verbatim-Einzeiler rausschmeißen ... kleiner unschoener Workaround!!!
-                s = re.sub(r'\\begin{Verbatim}.*\n\\end{Verbatim}','\n',s)
-                
-                # leere Descriptions rausschmeißen
-                s = re.sub(r'\\begin{description}\s\\end{description}','\n',s)
-            with open(path+"\\"+fname,"w", encoding = coding) as f:
+
+                # remove single-line verbatim blocks. workaround.
+                s = re.sub(r"\\begin{Verbatim}.*\n\\end{Verbatim}", "\n", s)
+
+                # remove empty descriptions
+                s = re.sub(r"\\begin{description}\s\\end{description}", "\n", s)
+            with open(path + "\\" + fname, "w", encoding=coding) as f:
                 f.write(s,)
-
-
-
