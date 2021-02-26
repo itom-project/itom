@@ -7917,7 +7917,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PyDocstringGeneratorMode</name>
     <message>
-        <location filename="../codeEditor/modes/pyDocstringGenerator.cpp" line="+125"/>
+        <location filename="../codeEditor/modes/pyDocstringGenerator.cpp" line="+130"/>
         <source>Generate docstring</source>
         <translation>Docstring erzeugen</translation>
     </message>
@@ -8977,12 +8977,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1174"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1182"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
-        <location line="+1416"/>
+        <location line="+1399"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -8992,7 +8992,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2128"/>
+        <location line="-2119"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -9123,7 +9123,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Strg+Tab</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+16"/>
         <source>Folding</source>
         <translation>Gliederung</translation>
     </message>
@@ -9206,12 +9206,12 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation>Fehler bei der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+1256"/>
+        <location line="+1239"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde durch ein anderes Programm geändert.</translation>
     </message>
     <message>
-        <location line="-1780"/>
+        <location line="-1763"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>
@@ -9261,7 +9261,7 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+715"/>
+        <location line="+698"/>
         <source>Unnamed</source>
         <translation>Unbenannt</translation>
     </message>
