@@ -35,9 +35,7 @@ import json
 import re
 import itom
 import warnings
-from builtins import (
-    filter as bfilter,
-)  # due to potential conflict with itom.filter
+from builtins import filter as bfilter  # due to potential conflict with itom.filter
 import time
 import logging
 
@@ -115,9 +113,7 @@ class TimeIt(object):
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print(
-                "[%s]: %.4f s elapsed" % (self.name, time.time() - self.tstart)
-            )
+            print("[%s]: %.4f s elapsed" % (self.name, time.time() - self.tstart))
         else:
             print("%.4f s elapsed" % (time.time() - self.tstart))
 
@@ -193,9 +189,7 @@ class ItomFlakesReporter:
         """Reset all current message items."""
         self._items = []
 
-    def _addItem(
-        self, msgType, filename, msgCode, description, lineNo=-1, column=-1
-    ):
+    def _addItem(self, msgType, filename, msgCode, description, lineNo=-1, column=-1):
         """Internal method to add a new item to the list of items.
         
         Args:
@@ -350,9 +344,7 @@ if _HAS_FLAKE8:
             else:
                 with warnings.catch_warnings():
                     warnings.simplefilter("always")
-                    warnings.warn(
-                        "invalid code name: %s" % codes, CheckerWarning
-                    )
+                    warnings.warn("invalid code name: %s" % codes, CheckerWarning)
 
                 if error:
                     return [
@@ -371,13 +363,7 @@ if _HAS_FLAKE8:
             self._warningCodes = self._check_categories(warnCodes, False)
 
         def _addItem(
-            self,
-            errorType,
-            filename,
-            msgCode,
-            description,
-            lineNo=-1,
-            column=-1,
+            self, errorType, filename, msgCode, description, lineNo=-1, column=-1,
         ):
             """
                type: the type of message (0: Info, 1: Warning, 2: Error)
@@ -394,14 +380,7 @@ if _HAS_FLAKE8:
             if lineNo > 0:
                 self._items.append(
                     "%i::%s::%i::%i::%s::%s"
-                    % (
-                        errorType,
-                        filename,
-                        lineNo,
-                        column,
-                        msgCode,
-                        description,
-                    )
+                    % (errorType, filename, lineNo, column, msgCode, description,)
                 )
 
         def results(self):
@@ -526,12 +505,8 @@ if _HAS_FLAKE8:
             application, "parse_preliminary_options_and_args"
         ):  # flake8 >= 3.8
             application.parse_preliminary_options([])
-            prelim_opts, remaining_args = application.parse_preliminary_options(
-                []
-            )
-            flake8.configure_logging(
-                prelim_opts.verbose, prelim_opts.output_file
-            )
+            prelim_opts, remaining_args = application.parse_preliminary_options([])
+            flake8.configure_logging(prelim_opts.verbose, prelim_opts.output_file)
 
             config_finder = config.ConfigFileFinder(
                 application.program,
@@ -542,13 +517,10 @@ if _HAS_FLAKE8:
 
             application.find_plugins(config_finder)
             application.register_plugin_options()
-            application.parse_configuration_and_cli(
-                config_finder, remaining_args
-            )
+            application.parse_configuration_and_cli(config_finder, remaining_args)
 
             config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager,
-                config_finder=config_finder,
+                option_manager=application.option_manager, config_finder=config_finder,
             )
 
         else:  # for older versions of flake8 < 3.8.0
@@ -557,8 +529,7 @@ if _HAS_FLAKE8:
             )  # for max logging pass: ["-vvv"]
 
             flake8.configure_logging(
-                application.prelim_opts.verbose,
-                application.prelim_opts.output_file,
+                application.prelim_opts.verbose, application.prelim_opts.output_file,
             )
             application.make_config_finder()
 
@@ -570,8 +541,7 @@ if _HAS_FLAKE8:
             config_finder = application.config_finder
 
             config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager,
-                config_finder=config_finder,
+                option_manager=application.option_manager, config_finder=config_finder,
             )
 
         # Get the local (project) config again
@@ -646,9 +616,7 @@ if _HAS_FLAKE8:
             "codeCheckerFlake8IgnoreEnabled" in props
             and props["codeCheckerFlake8IgnoreEnabled"]
         ):
-            values = _checkErrorCodeStringList(
-                props["codeCheckerFlake8IgnoreValues"]
-            )
+            values = _checkErrorCodeStringList(props["codeCheckerFlake8IgnoreValues"])
 
             if values is not None:
                 options["ignore"] = values
@@ -678,9 +646,7 @@ if _HAS_FLAKE8:
             "codeCheckerFlake8SelectEnabled" in props
             and props["codeCheckerFlake8SelectEnabled"]
         ):
-            values = _checkErrorCodeStringList(
-                props["codeCheckerFlake8SelectValues"]
-            )
+            values = _checkErrorCodeStringList(props["codeCheckerFlake8SelectValues"])
 
             if values is not None:
                 options["select"] = values
@@ -703,11 +669,7 @@ if _HAS_FLAKE8:
             "codeCheckerFlake8OtherOptions" in props
             and props["codeCheckerFlake8OtherOptions"] != ""
         ):
-            lines = (
-                props["codeCheckerFlake8OtherOptions"]
-                .replace("\r", "")
-                .split("\n")
-            )
+            lines = props["codeCheckerFlake8OtherOptions"].replace("\r", "").split("\n")
 
             for line in lines:
                 parts = line.split("=")
@@ -840,9 +802,7 @@ def check(
         config.update(json.loads(_CHECKER_CACHE["propertiesString"]))
         _CHECKER_CACHE["properties"] = config
 
-        _CHECKER_CACHE["flake8options"] = createFlake8OptionsFromProperties(
-            config
-        )
+        _CHECKER_CACHE["flake8options"] = createFlake8OptionsFromProperties(config)
 
     config = _CHECKER_CACHE["properties"]
 
@@ -868,9 +828,7 @@ def check(
             pyflakesapi.check(codestring, "code", reporter=reporter)
             return reporter.results()
         else:
-            raise RuntimeError(
-                "Code check not possible, since module pyflakes missing"
-            )
+            raise RuntimeError("Code check not possible, since module pyflakes missing")
 
     elif mode == 2:  # CodeCheckerFlake8
         if _HAS_FLAKE8:
@@ -878,9 +836,7 @@ def check(
             if autoImportItom:
                 # add the itom imports as builtins option to flake8.
                 # This overwrites other builtins, set in user or project config files!
-                _CHECKER_CACHE["flake8options"][
-                    "builtins"
-                ] = _PUBLIC_ITOM_MODULES
+                _CHECKER_CACHE["flake8options"]["builtins"] = _PUBLIC_ITOM_MODULES
 
             # with TimeIt("flake8 loader"):
             baseDir = os.path.abspath(os.path.dirname(filename))
@@ -911,9 +867,15 @@ def check(
                         # traceback.print_exc()
                         pass
             else:
+                with open("C:/temp/codestring.pickle", "wb") as fp2:
+                    import pickle
+
+                    pickle.dump(codestring, fp2)
                 with tempfile.NamedTemporaryFile(
-                    "wt", delete=False, suffix=".py"
+                    "wt", encoding="utf-8", suffix=".py", delete=False
                 ) as fp:
+                    import pickle
+
                     tempfilename = fp.name
                     fp.write(codestring)
                     # print("check saved file %s" % tempfilename)
@@ -937,9 +899,7 @@ def check(
             else:
                 return []
         else:
-            raise RuntimeError(
-                "Code check not possible, since module flake8 missing"
-            )
+            raise RuntimeError("Code check not possible, since module flake8 missing")
 
     else:
         raise RuntimeError(
@@ -978,12 +938,7 @@ if __name__ == "__main__":
 }"""
 
     result = check(
-        codestring,
-        filename,
-        fileSaved,
-        mode,
-        autoImportItom,
-        furtherPropertiesJson,
+        codestring, filename, fileSaved, mode, autoImportItom, furtherPropertiesJson,
     )
 
     import pprint
