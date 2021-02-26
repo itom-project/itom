@@ -4,3 +4,4 @@ Setuptools
 numpy
 flake8
 black
+jedi
