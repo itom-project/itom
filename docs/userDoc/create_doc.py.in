@@ -65,6 +65,10 @@ filenames = False
 confoverrides = {}
 freshenv = False
 
+# if True, the breathe cache will be forced to be renewed.
+# If False, it is only renewed, if you select to rerun doxygen.
+clearBreatheCache = False
+
 basedir = getCurrentPath()
 srcdir = os.path.join(cmake_current_source_dir, "docs/userDoc/source")
 confdir = srcdir
@@ -85,6 +89,9 @@ if btn == ui.MsgBoxYes:
         filters="Doxygen (*.exe);;All Files (*.*)",
         selectedFilterIndex=0,
     )
+
+    # force the breathe cache to be deleted
+    clearBreatheCache = True
 
     if filename is not None and filename != "":
         print("doxygen is being executed in an external process...")
@@ -126,6 +133,10 @@ for buildername in buildernames:
         sys.stderr,
         freshenv,
     )
+
+    if clearBreatheCache and hasattr(app.env, "breathe_file_state"):
+        app.env.breathe_file_state = {}
+        clearBreatheCache = False
 
     app.connect("autodoc-process-docstring", autodoc_process_docstring)
 
