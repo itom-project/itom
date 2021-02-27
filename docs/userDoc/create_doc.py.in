@@ -92,7 +92,7 @@ if btn == ui.MsgBoxYes:
             [
                 filename,
                 os.path.join(cmake_current_binary_dir, "docs/doxygen/itom_doxygen.dox"),
-            ]
+            ], cwd=os.path.join(cmake_current_binary_dir, "docs/doxygen")
         )
         print("doxygen execution done.")
 
