@@ -867,15 +867,9 @@ def check(
                         # traceback.print_exc()
                         pass
             else:
-                with open("C:/temp/codestring.pickle", "wb") as fp2:
-                    import pickle
-
-                    pickle.dump(codestring, fp2)
                 with tempfile.NamedTemporaryFile(
                     "wt", encoding="utf-8", suffix=".py", delete=False
                 ) as fp:
-                    import pickle
-
                     tempfilename = fp.name
                     fp.write(codestring)
                     # print("check saved file %s" % tempfilename)
