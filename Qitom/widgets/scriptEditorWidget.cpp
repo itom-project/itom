@@ -549,14 +549,6 @@ void ScriptEditorWidget::initMenus()
     tabChangedShortcut->setContext(Qt::WidgetShortcut);
     connect(tabChangedShortcut, &QShortcut::activated, this, &ScriptEditorWidget::tabChangeRequest);
 
-    QShortcut *undoShortcut = new QShortcut(QKeySequence(QKeySequence::Undo), this);
-    undoShortcut->setContext(Qt::WidgetShortcut);
-    connect(undoShortcut, &QShortcut::activated, this, &ScriptEditorWidget::menuUndo);
-
-    QShortcut *redoShortcut = new QShortcut(QKeySequence(QKeySequence::Redo), this);
-    redoShortcut->setContext(Qt::WidgetShortcut);
-    connect(redoShortcut, &QShortcut::activated, this, &ScriptEditorWidget::menuRedo);
-
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
@@ -2109,6 +2101,31 @@ void ScriptEditorWidget::mouseReleaseEvent(QMouseEvent *event)
 }
 
 //-------------------------------------------------------------------------------------
+void ScriptEditorWidget::keyPressEvent(QKeyEvent *event)
+{
+    if (event->matches(QKeySequence::Undo))
+    {
+        startUndoRedo(true);
+        event->accept();
+        // do not call keyPressEvent of the base class. This leads
+        // sometimes to a sequence of undo operations.
+        return;
+    }
+    else if (event->matches(QKeySequence::Redo))
+    {
+        startUndoRedo(false);
+        event->accept();
+        // do not call keyPressEvent of the base class. This leads
+        // sometimes to a sequence of redo operations.
+        return;
+    }
+
+    AbstractCodeEditorWidget::keyPressEvent(event);
+}
+
+
+//-------------------------------------------------------------------------------------
+
 void ScriptEditorWidget::mousePressEvent(QMouseEvent *event)
 {
     //make a local copy, since the global editor cursor pos is already changed before the release event
@@ -3354,18 +3371,6 @@ void ScriptEditorWidget::tabChangeRequest()
 void ScriptEditorWidget::onTextChanged()
 {
     m_outlineDirty = true;
-}
-
-//-------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuUndo()
-{
-    startUndoRedo(true);
-}
-
-//-------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuRedo()
-{
-    startUndoRedo(false);
 }
 
 } // end namespace ito

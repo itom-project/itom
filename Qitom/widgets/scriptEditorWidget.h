@@ -150,6 +150,7 @@ protected:
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
 
@@ -314,9 +315,6 @@ private slots:
     void tabChangeRequest();
 
     void pyCodeFormatterDone(bool success, QString code);
-
-    void menuUndo();
-    void menuRedo();
 };
 
 } //end namespace ito
