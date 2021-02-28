@@ -158,7 +158,6 @@ protected:
 
     void replaceSelectionAndKeepBookmarksAndBreakpoints(QTextCursor &cursor, const QString &newString);
     QVector<int> compareTexts(const QString &oldText, const QString &newText);
-    void addBookmarksAndBreakpointsIfNotExist(QList<BookmarkItem> bookmarks, QList<BreakPointItem> breakpoints);
 
     BreakPointModel* getBreakPointModel();
     const BreakPointModel* getBreakPointModel() const;

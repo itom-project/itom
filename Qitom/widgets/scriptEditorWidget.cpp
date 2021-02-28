@@ -1328,11 +1328,13 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     QString bmFilename = filename != "" ? filename : getUntitledName();
     QList<BookmarkItem> bookmarksCache;
     QList<BreakPointItem> breakpointsCache;
-    QList<BookmarkItem> bookmarksCacheNew;
-    QList<BreakPointItem> breakpointsCacheNew;
     int numLines = lineCount();
 
-    foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
+    // get all current bookmarks in this file, store them in cache and 
+    // temporarily remove them from this file.
+    auto bookmarks = m_pBookmarkModel->getBookmarks(bmFilename);
+
+    foreach(const BookmarkItem &item, bookmarks)
     {
         if (item.isValid() && item.lineIdx < numLines && item.lineIdx >= 0)
         {
@@ -1340,8 +1342,12 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
         }
     }
 
+    m_pBookmarkModel->deleteBookmarks(bookmarks);
+
     if (bpModel)
     {
+        // get all current breakpoints in this file, store them in cache and 
+        // temporarily remove them from this file.
         QModelIndexList idxList = bpModel->getBreakPointIndizes(bmFilename);
         auto allBreakpoints = bpModel->getBreakPoints(idxList);
 
@@ -1352,10 +1358,14 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
                 breakpointsCache << item;
             }
         }
+
+        bpModel->deleteBreakPoints(idxList);
     }
 
+    // store current text
     QString oldText = toPlainText();
 
+    // execute the undo or redo operation
     if (undoNotRedo)
     {
         undo();
@@ -1380,106 +1390,23 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
         breakpointsCache[i].lineIdx = mapping[breakpointsCache[i].lineIdx];
     }
 
-    // usually we would now check the existing bookmarks and breakpoints
-    // again and add all bookmarks and breakpoints, that are in the caches
-    // but not in the current script any more. However, it seems, that
-    // the undo/redo operation removes blocks with a certain delay, such
-    // that not all bookmarks / breakpoints, that are not there any more,
-    // are immediately removed. Therefore, add non-existing bookmarks
-    // and breakpoints from the cache again will be executed by a small
-    // delay.
-    QTimer::singleShot(75, this, std::bind(
-        &ScriptEditorWidget::addBookmarksAndBreakpointsIfNotExist, 
-        this, 
-        bookmarksCache, 
-        breakpointsCache)
-    );
-}
-
-//-------------------------------------------------------------------------------------
-//!< helper method for startUndoRedo.
-/*
-Pass a list of bookmarks and breakpoints. If any lineIdx is -1, the item will be ignored.
-For all other items, it is checked if there is a bookmark or breakpoint in the indicated
-line. If not, the given item will be added.
-*/
-void ScriptEditorWidget::addBookmarksAndBreakpointsIfNotExist(QList<BookmarkItem> bookmarks, QList<BreakPointItem> breakpoints)
-{
-    BreakPointModel *bpModel = getBreakPointModel();
-
-    QString filename = getFilename();
-    QString bmFilename = filename != "" ? filename : getUntitledName();
-    QList<BookmarkItem> bookmarksCacheNew;
-    QList<BreakPointItem> breakpointsCacheNew;
-
-    // get again all bookmarks and breakpoints
-    foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
+    // restore all cached bookmarks, whose lineIdx ist still >= 0
+    foreach(const BookmarkItem &item, bookmarksCache)
     {
-        if (item.isValid())
-        {
-            bookmarksCacheNew << item;
-        }
-    }
-
-    if (bpModel)
-    {
-        QModelIndexList idxList = bpModel->getBreakPointIndizes(bmFilename);
-        auto allBreakpoints = bpModel->getBreakPoints(idxList);
-
-        foreach(const BreakPointItem &item, allBreakpoints)
-        {
-            breakpointsCacheNew << item;
-        }
-    }
-
-
-    // check all cached bookmarks and see if they are still there.
-    // if not, add them again
-    foreach(const BookmarkItem &item, bookmarks)
-    {
-        bool found = false;
-
         if (item.lineIdx >= 0)
         {
-            foreach(const BookmarkItem &newItem, bookmarksCacheNew)
-            {
-                if (newItem.lineIdx == item.lineIdx)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                m_pBookmarkModel->addBookmark(item);
-            }
+            m_pBookmarkModel->addBookmark(item);
         }
     }
 
     if (bpModel)
     {
-        // check all cached bookmarks and see if they are still there.
-        // if not, add them again
-        foreach(const BreakPointItem &item, breakpoints)
+        // restore all cached breakpoints, whose lineIdx ist still >= 0
+        foreach(const BreakPointItem &item, breakpointsCache)
         {
-            bool found = false;
-
             if (item.lineIdx >= 0)
             {
-                foreach(const BreakPointItem &newItem, breakpointsCacheNew)
-                {
-                    if (newItem.lineIdx == item.lineIdx)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    bpModel->addBreakPoint(item);
-                }
+                bpModel->addBreakPoint(item);
             }
         }
     }
