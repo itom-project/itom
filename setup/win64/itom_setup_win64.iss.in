@@ -225,6 +225,7 @@ Source: "{#SourceDirItomBuild}\plugins\Newport2936\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\niDAQmx\*.*"; DestDir: "{app}\plugins\niDAQmx"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\NITWidySWIR\*.*"; DestDir: "{app}\plugins\NITWidySWIR"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\OceanOpticsSpec\*.*"; DestDir: "{app}\plugins\OceanOpticsSpec"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\*.*"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OphirPowermeter\*.*"; DestDir: "{app}\plugins\OphirPowermeter"; Flags: ignoreversion recursesubdirs

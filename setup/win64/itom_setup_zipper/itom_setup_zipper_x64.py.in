@@ -8,6 +8,7 @@ import sys
 sourcePythonDir = r"C:/Users/itohahn/Desktop/Python38_Pure"
 appDir = r"C:/itom_vs2017_x64_Qt5.12.6_setup4.0/itom4.1.0_portable"
 pythonDLLName = "python38.dll"
+sourceRedistributableDir = r"W:/m/ITOM/Software/MS VisualStudio/Redistributable/DLLs"
 
 #C:/
 innosetupscript = r"@CMAKE_CURRENT_BINARY_DIR@/setup/win64/itom_setup_win64.iss"
@@ -42,10 +43,6 @@ for ap in additionalplugins:
     sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\plugins\\%s\\*.*\"; DestDir: \"{app}\\plugins\\%s\"; Flags: ignoreversion recursesubdirs" % (ap, ap))
     if ap == "GenICam":
         sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\lib\\msvc*120.dll\"; DestDir: \"{app}\\lib\"; Flags: ignoreversion recursesubdirs")
-    elif ap == "twipSensoricPlugin":
-        sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\lib\\twipSensoric.dll\"; DestDir: \"{app}\\lib\"; Flags: ignoreversion recursesubdirs")
-    elif ap == "AmtronLaserCam":
-        sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\lib\\SLMamtroncomBufferDLL.dll\"; DestDir: \"{app}\\lib\"; Flags: ignoreversion recursesubdirs")
 
 currentsection = "General"
 
@@ -85,6 +82,7 @@ def replace(path):
         "{#SourceDirPCL}": sourceDirPCL,
         "{#SourcePythonDir}": sourcePythonDir,
         "{#SourceDirVTK}": sourceDirVTK,
+        "{#SourceRedistributableDir}": sourceRedistributableDir,
         "python37.dll": pythonDLLName,
         "python38.dll": pythonDLLName,
         "python39.dll": pythonDLLName,
