@@ -962,7 +962,7 @@ void MainWindow::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new QAction(QIcon(":/icons/filePython.png"), displayedPath, this);
+                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
                     connect(a, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
                     m_lastFilesMapper->setMapping(a, path);

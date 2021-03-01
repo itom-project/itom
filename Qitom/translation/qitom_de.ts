@@ -4591,7 +4591,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
-        <location line="+222"/>
+        <location line="+250"/>
         <source>%1, Line %2</source>
         <translation>%1, Zeile %2</translation>
     </message>
@@ -8983,12 +8983,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1184"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1176"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
-        <location line="+1399"/>
+        <location line="+1351"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -8998,7 +8998,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2119"/>
+        <location line="-2063"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -9129,7 +9129,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Strg+Tab</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+8"/>
         <source>Folding</source>
         <translation>Gliederung</translation>
     </message>
@@ -9188,7 +9188,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+407"/>
+        <location line="+334"/>
         <source>
 
 Should this feature be deactivated? This can be changed again in the property dialog of itom.</source>
@@ -9197,13 +9197,13 @@ Should this feature be deactivated? This can be changed again in the property di
 Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
     </message>
     <message>
-        <location line="-400"/>
+        <location line="-327"/>
         <location line="+26"/>
         <source>Error starting auto code format</source>
         <translation>Fehler beim Start der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+373"/>
+        <location line="+300"/>
         <source>The code formatting failed:
 %1</source>
         <translation>Die automatische Code-Formatierung ist fehlgeschlagen:
@@ -9216,17 +9216,17 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Fehler bei der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+1239"/>
+        <location line="+1264"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde durch ein anderes Programm geändert.</translation>
     </message>
     <message>
-        <location line="-1763"/>
+        <location line="-1715"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>
     <message>
-        <location line="+543"/>
+        <location line="+470"/>
         <location line="+102"/>
         <location line="+55"/>
         <source>Unsaved Changes</source>
@@ -9271,7 +9271,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+723"/>
         <source>Unnamed</source>
         <translation>Unbenannt</translation>
     </message>
