@@ -146,6 +146,8 @@ protected:
     void insertFromMimeData(const QMimeData *source);
 
     void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -199,6 +201,9 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
+    //!< to accept drop events of other files dropped onto this file, the script 
+    //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
+    bool m_wasReadonly; 
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.

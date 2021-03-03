@@ -82,7 +82,8 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_pBookmarkModel(bookmarkModel),
     m_currentLineIndex(-1),
     m_textBlockLineIdxAboutToBeDeleted(-1),
-    m_outlineDirty(true)
+    m_outlineDirty(true),
+    m_wasReadonly(false)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -687,28 +688,36 @@ bool ScriptEditorWidget::currentLineCanHaveDocstring() const
     return !m_pyDocstringGeneratorMode->getOutlineOfLineIdx(lineIndex).isNull();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 {
+    if (!source)
+    {
+        return false;
+    }
+
     if ((source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
     {
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
         if (uOrg->currentUserHasFeature(featDeveloper))
         {
             QList<QUrl> list(source->urls());
-            for(int i = 0; i<list.length(); ++i)
+
+            for(int i = 0; i < list.length(); ++i)
             {
                 QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
-                if (!((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
-                    || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx")))
+
+                if (fext != "py")
                 {
                     return false;
                 }
             }
+
             return true;
         }
     }
-    else
+    else if (!isReadOnly())
     {
         return AbstractCodeEditorWidget::canInsertFromMimeData(source);
     }
@@ -716,11 +725,12 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
 {
     if (keepIndentationOnPaste() &&
-        source->hasText())
+        source->hasText() &&
+        !m_wasReadonly)
     {
         int lineCount;
         QString formattedText = formatPythonCodePart(source->text(), lineCount);
@@ -765,7 +775,33 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
     onTextChanged();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (canInsertFromMimeData(event->mimeData()))
+    {
+        m_wasReadonly = isReadOnly();
+
+        if (m_wasReadonly)
+        {
+            setReadOnly(false);
+        }
+
+        event->acceptProposedAction();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    if (m_wasReadonly)
+    {
+        setReadOnly(true);
+        m_wasReadonly = false;
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void ScriptEditorWidget::dropEvent(QDropEvent *event)
 {
     QObject *sew = AppManagement::getScriptEditorOrganizer();
@@ -776,6 +812,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
         {
             bool areAllLocals = true; //type of file is already checked in ScriptEditorWidget::canInsertFromMimeData
             QList<QUrl> list(event->mimeData()->urls());
+
             for (int i = 0; i < list.length(); ++i)
             {
                 if (!list[i].isLocalFile())
@@ -784,6 +821,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
                     break;
                 }
             }
+
             if (areAllLocals)
             {
                 for (int i = 0; i < list.length(); ++i)
@@ -791,6 +829,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
                     QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, list[i].toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
                     
                 }
+
                 event->accept();
             }
 
@@ -826,6 +865,12 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
                 }
             }
         }
+    }
+
+    if (m_wasReadonly)
+    {
+        setReadOnly(true);
+        m_wasReadonly = false;
     }
 }
 
