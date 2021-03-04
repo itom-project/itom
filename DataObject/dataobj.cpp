@@ -5684,6 +5684,9 @@ DataObject DataObject::operator != (DataObject &rhs)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//forward declaration
+RetVal CmpFuncScalarComplex64(const DataObject *src, const ito::complex64 &value, DataObject *dst, int cmpOp);
+
 //! template specialisation for compare function of type complex128
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
@@ -5694,12 +5697,12 @@ DataObject DataObject::operator != (DataObject &rhs)
  //  return ito::retOk;
 //}
 
-RetVal CmpFuncScalar(const DataObject *src, const ito::complex128 &value, DataObject *dst, int cmpOp)
+RetVal CmpFuncScalarComplex128(const DataObject *src, const ito::complex128 &value, DataObject *dst, int cmpOp)
 {
     if (src->getType() == ito::tComplex64)
     {
         ito::complex64 val((float)value.real(), (float)value.imag());
-        return CmpFuncScalar(src, val, dst, cmpOp);
+        return CmpFuncScalarComplex64(src, val, dst, cmpOp);
     }
     else if (src->getType() != ito::tComplex128)
     {
@@ -5810,12 +5813,12 @@ RetVal CmpFuncScalar(const DataObject *src, const ito::complex128 &value, DataOb
 //}
 
 //  done like this because MAKEFUNCLIST doesn't like value being changed from float to complex (but otherwise would mean loss of information/accuracy)
-RetVal CmpFuncScalar(const DataObject *src, const ito::complex64 &value, DataObject *dst, int cmpOp) 
+RetVal CmpFuncScalarComplex64(const DataObject *src, const ito::complex64 &value, DataObject *dst, int cmpOp) 
 {
     if (src->getType() == ito::tComplex128)
     {
         ito::complex128 val = value;
-        return CmpFuncScalar(src, val, dst, cmpOp);
+        return CmpFuncScalarComplex128(src, val, dst, cmpOp);
     }
     else if (src->getType() != ito::tComplex64)
     {
@@ -5930,7 +5933,7 @@ template<typename _Tp> RetVal CmpFuncScalar(const DataObject *src, const float64
     if (src->getType() == ito::tComplex128 || src->getType() == ito::tComplex64)
     {
         ito::complex128 val(value, 0.0);
-        return CmpFuncScalar(src, val, dst, cmpOp);
+        return CmpFuncScalarComplex128(src, val, dst, cmpOp);
     }
 
    int numMats = src->getNumPlanes();
@@ -6048,7 +6051,7 @@ DataObject DataObject::operator == (const float64 &value)
 DataObject DataObject::operator != (const ito::complex64 &value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalar(this, value, &resMat, cv::CMP_NE);
+    RetVal retValue = CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_NE);
 
     return resMat;
 }
@@ -6057,7 +6060,7 @@ DataObject DataObject::operator != (const ito::complex64 &value)
 DataObject DataObject::operator == (const ito::complex64 &value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalar(this, value, &resMat, cv::CMP_EQ);
+    RetVal retValue = CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
 }
@@ -6065,7 +6068,7 @@ DataObject DataObject::operator == (const ito::complex64 &value)
 DataObject DataObject::operator != (const ito::complex128 &value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalar(this, value, &resMat, cv::CMP_NE);
+    RetVal retValue = CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_NE);
 
     return resMat;
 }
@@ -6074,7 +6077,7 @@ DataObject DataObject::operator != (const ito::complex128 &value)
 DataObject DataObject::operator == (const ito::complex128 &value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalar(this, value, &resMat, cv::CMP_EQ);
+    RetVal retValue = CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
 }
