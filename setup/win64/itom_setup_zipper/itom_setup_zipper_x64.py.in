@@ -87,7 +87,7 @@ def replace(path):
         "python38.dll": pythonDLLName,
         "python39.dll": pythonDLLName,
         "{app}": appDir,
-        "VC141_v3_2.dll": "VC120_v3_1.dll",
+        #"VC141_v3_2.dll": "VC120_v3_1.dll",
         #"pcl_common.dll": "pcl_common_release.dll",
         #"pcl_features.dll": "pcl_features_release.dll",
         #"pcl_filters.dll": "pcl_filters_release.dll",
