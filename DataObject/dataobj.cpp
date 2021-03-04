@@ -5684,48 +5684,119 @@ DataObject DataObject::operator != (DataObject &rhs)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method which compares each element in source-matrix1 with its corresponding element in source-matrix2 and saves the result in a destionation matrix
+//! template specialisation for compare function of type complex128
 /*!
-    \param *src1 is the first source matrix
-    \param *src2 is the second source matrix
-    \param *dst is the destination matrix, which must have the same ROI than src1 and src2 and must be of type uint8
-    \param cmpOp is the compare operator (cv::CMP_EQ, cv::CMP_GT, cv::CMP_GE, cv::CMP_LT, cv::CMP_LE, cv::CMP_NE)
-    \remark no comparison is possible for source matrices of type int8 (due to openCV-problems)
-    \throws cv::Exception if source matrix is of type int8
-    \return retOk
+    \throws cv::Exception since comparison is not defined for complex input types
 */
-template<typename _Tp> RetVal CmpFuncScalar(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp)
+//template<> RetVal CmpFuncScalar<ito::complex128>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
+//{
+ //  cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+ //  return ito::retOk;
+//}
+
+RetVal CmpFuncScalar(const DataObject *src, const ito::complex128 &value, DataObject *dst, int cmpOp)
 {
-    if (src->getType() == ito::tComplex128 || src->getType() == ito::tComplex64)
+    if (src->getType() == ito::tComplex64)
     {
-        ito::complex128 val = value;
+        ito::complex64 val((float)value.real(), (float)value.imag());
         return CmpFuncScalar(src, val, dst, cmpOp);
     }
+    else if (src->getType() != ito::tComplex128)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Only a complex64 or complex128 dataObject can be compared to a complex scalar.", "", __FILE__, __LINE__));
+    }
 
-   int numMats = src->getNumPlanes();
-   int matNum = 0;
-   int resMatNum = 0;
+    int numMats = src->getNumPlanes();
+    int matNum = 0;
+    int resMatNum = 0;
 
-   const cv::Mat *srcmat;
-   cv::Mat *dest;
+    const ito::complex128 *srcptr;
+    const cv::Mat *srcmat;
+    cv::Mat *dest;
+    ito::uint8 *destptr;
+    const ito::float64 epsilon = std::numeric_limits<ito::float64>::epsilon();
 
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-      matNum = src->seekMat(nmat, numMats);
-      resMatNum = dst->seekMat(nmat, numMats);
 
-      srcmat = src->get_mdata()[matNum];
-      dest = dst->get_mdata()[resMatNum];
+    if (cmpOp == cv::CMP_EQ)
+    {
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+#pragma omp for schedule(guided)
+        {
+#endif
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                matNum = src->seekMat(nmat, numMats);
+                resMatNum = dst->seekMat(nmat, numMats);
+                srcmat = src->get_mdata()[matNum];
+                dest = dst->get_mdata()[resMatNum];
 
-      if(srcmat->depth() == 1 || srcmat->depth() == 7)
-      {
-          cv::error(cv::Exception(CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
-      }      
+                for (int r = 0; r < srcmat->rows; ++r)
+                {
+                    srcptr = srcmat->ptr<const ito::complex128>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
 
-      cv::compare(*srcmat, value, *dest, cmpOp);
-   }
+                    for (int x = 0; x < srcmat->cols; ++x)
+                    {
+                        if (std::abs(srcptr[x].real() - value.real()) < epsilon &&
+                            std::abs(srcptr[x].imag() - value.imag()) < epsilon)
+                        {
+                            destptr[x] = 255;
+                        }
+                        else
+                        {
+                            destptr[x] = 0;
+                        }
+                    }
+                }
+            }
+#if(USEOMP)
+        }
+#endif
+    }
+    else if (cmpOp == cv::CMP_NE)
+    {
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+#pragma omp for schedule(guided)
+        {
+#endif
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                matNum = src->seekMat(nmat, numMats);
+                resMatNum = dst->seekMat(nmat, numMats);
+                srcmat = src->get_mdata()[matNum];
+                dest = dst->get_mdata()[resMatNum];
 
-   return ito::retOk;
+                for (int r = 0; r < srcmat->rows; ++r)
+                {
+                    srcptr = srcmat->ptr<const ito::complex128>(r);
+                    destptr = dest->ptr<ito::uint8>(r);
+
+                    for (int x = 0; x < srcmat->cols; ++x)
+                    {
+                        if (std::abs(srcptr[x].real() - value.real()) < epsilon &&
+                            std::abs(srcptr[x].imag() - value.imag()) < epsilon)
+                        {
+                            destptr[x] = 0;
+                        }
+                        else
+                        {
+                            destptr[x] = 255;
+                        }
+                    }
+                }
+            }
+#if(USEOMP)
+        }
+#endif
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Complex128 is not orderable. Use real, imag, or abs.", "", __FILE__, __LINE__));
+    }
+
+    return ito::retOk;
 }
 
 //! template specialisation for compare function of type complex64
@@ -5844,119 +5915,48 @@ RetVal CmpFuncScalar(const DataObject *src, const ito::complex64 &value, DataObj
     return ito::retOk;
 }
 
-//! template specialisation for compare function of type complex128
+//! low-level, templated method which compares each element in source-matrix1 with its corresponding element in source-matrix2 and saves the result in a destionation matrix
 /*!
-    \throws cv::Exception since comparison is not defined for complex input types
+    \param *src1 is the first source matrix
+    \param *src2 is the second source matrix
+    \param *dst is the destination matrix, which must have the same ROI than src1 and src2 and must be of type uint8
+    \param cmpOp is the compare operator (cv::CMP_EQ, cv::CMP_GT, cv::CMP_GE, cv::CMP_LT, cv::CMP_LE, cv::CMP_NE)
+    \remark no comparison is possible for source matrices of type int8 (due to openCV-problems)
+    \throws cv::Exception if source matrix is of type int8
+    \return retOk
 */
-//template<> RetVal CmpFuncScalar<ito::complex128>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
-//{
- //  cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
- //  return ito::retOk;
-//}
-
-RetVal CmpFuncScalar(const DataObject *src, const ito::complex128 &value, DataObject *dst, int cmpOp)
+template<typename _Tp> RetVal CmpFuncScalar(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp)
 {
-    if (src->getType() == ito::tComplex64)
+    if (src->getType() == ito::tComplex128 || src->getType() == ito::tComplex64)
     {
-        ito::complex64 val = value;
+        ito::complex128 val(value, 0.0);
         return CmpFuncScalar(src, val, dst, cmpOp);
     }
-    else if (src->getType() != ito::tComplex128)
-    {
-        cv::error(cv::Exception(CV_StsAssert, "Only a complex64 or complex128 dataObject can be compared to a complex scalar.", "", __FILE__, __LINE__));
-    }
 
-    int numMats = src->getNumPlanes();
-    int matNum = 0;
-    int resMatNum = 0;
+   int numMats = src->getNumPlanes();
+   int matNum = 0;
+   int resMatNum = 0;
 
-    const ito::complex128 *srcptr;
-    const cv::Mat *srcmat;
-    cv::Mat *dest;
-    ito::uint8 *destptr;
-    const ito::float64 epsilon = std::numeric_limits<ito::float64>::epsilon();
+   const cv::Mat *srcmat;
+   cv::Mat *dest;
 
+   for (int nmat = 0; nmat < numMats; nmat++)
+   {
+      matNum = src->seekMat(nmat, numMats);
+      resMatNum = dst->seekMat(nmat, numMats);
 
-    if (cmpOp == cv::CMP_EQ) 
-    {
-#if (USEOMP)
-#pragma omp parallel num_threads(getMaximumThreadCount())
-#pragma omp for schedule(guided)
-        {
-#endif
-            for (int nmat = 0; nmat < numMats; nmat++)
-            {
-                matNum = src->seekMat(nmat, numMats);
-                resMatNum = dst->seekMat(nmat, numMats);
-                srcmat = src->get_mdata()[matNum];
-                dest = dst->get_mdata()[resMatNum];
+      srcmat = src->get_mdata()[matNum];
+      dest = dst->get_mdata()[resMatNum];
 
-                for (int r = 0; r < srcmat->rows; ++r)
-                {
-                    srcptr = srcmat->ptr<const ito::complex128>(r);
-                    destptr = dest->ptr<ito::uint8>(r);
+      if(srcmat->depth() == 1 || srcmat->depth() == 7)
+      {
+          cv::error(cv::Exception(CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+      }
 
-                    for (int x = 0; x < srcmat->cols; ++x)
-                    {
-                        if (std::abs(srcptr[x].real() - value.real()) < epsilon &&
-                            std::abs(srcptr[x].imag() - value.imag()) < epsilon)
-                        {
-                            destptr[x] = 255;
-                        }
-                        else
-                        {
-                            destptr[x] = 0;
-                        }
-                    }
-                }
-            }
-#if(USEOMP)
-        }
-#endif
-    }
-    else if (cmpOp == cv::CMP_NE)
-    {
-#if (USEOMP)
-#pragma omp parallel num_threads(getMaximumThreadCount())
-#pragma omp for schedule(guided)
-        {
-#endif
-            for (int nmat = 0; nmat < numMats; nmat++)
-            {
-                matNum = src->seekMat(nmat, numMats);
-                resMatNum = dst->seekMat(nmat, numMats);
-                srcmat = src->get_mdata()[matNum];
-                dest = dst->get_mdata()[resMatNum];
+      cv::compare(*srcmat, value, *dest, cmpOp);
+   }
 
-                for (int r = 0; r < srcmat->rows; ++r)
-                {
-                    srcptr = srcmat->ptr<const ito::complex128>(r);
-                    destptr = dest->ptr<ito::uint8>(r);
-
-                    for (int x = 0; x < srcmat->cols; ++x)
-                    {
-                        if (std::abs(srcptr[x].real() - value.real()) < epsilon &&
-                            std::abs(srcptr[x].imag() - value.imag()) < epsilon)
-                        {
-                            destptr[x] = 0;
-                        }
-                        else
-                        {
-                            destptr[x] = 255;
-                        }
-                    }
-                }
-            }
-#if(USEOMP)
-        }
-#endif
-    }
-    else 
-    {
-        cv::error(cv::Exception(CV_StsAssert, "Complex128 is not orderable. Use real, imag, or abs.", "", __FILE__, __LINE__));
-    }
-
-    return ito::retOk;
+   return ito::retOk;
 }
 
 typedef RetVal (*tCmpFuncScalar)(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp);
