@@ -778,17 +778,22 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (canInsertFromMimeData(event->mimeData()))
+    if (isReadOnly())
     {
-        m_wasReadonly = isReadOnly();
-
-        if (m_wasReadonly)
+        if (canInsertFromMimeData(event->mimeData()))
         {
-            setReadOnly(false);
-        }
+            m_wasReadonly = true;
 
-        event->acceptProposedAction();
+            if (m_wasReadonly)
+            {
+                setReadOnly(false);
+            }
+
+            event->acceptProposedAction();
+        }
     }
+
+    AbstractCodeEditorWidget::dragEnterEvent(event);
 }
 
 //-------------------------------------------------------------------------------------
@@ -799,6 +804,8 @@ void ScriptEditorWidget::dragLeaveEvent(QDragLeaveEvent *event)
         setReadOnly(true);
         m_wasReadonly = false;
     }
+
+    AbstractCodeEditorWidget::dragLeaveEvent(event);
 }
 
 //-------------------------------------------------------------------------------------
