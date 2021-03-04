@@ -96,7 +96,7 @@
     <message>
         <location filename="../sources/AbstractDObjPCLFigure.cpp" line="208"/>
         <source>Function &apos;setLinePlot&apos; not supported from this plot widget</source>
-        <translation type="unfinished">Die Funktion  &apos;setLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
+        <translation type="unfinished">Die Funktion &apos;setLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
 </context>
 <context>

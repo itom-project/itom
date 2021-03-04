@@ -3351,17 +3351,17 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     <message>
         <location line="-28"/>
         <source>Code Outline</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Code Gliederung</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Show class and method navigation combo boxes above each script.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klassen- und Methodennavigationsfelder über jedem Skript anzeigen.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Auto update the outline after the last key press with a delay of...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Automatische Aktualisierung der Gliederung nach dem letzten Tastendruck nach...</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -3429,7 +3429,7 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     <message>
         <location line="+10"/>
         <source>Background Color</source>
-        <translation type="unfinished">Hintergrundfarbe</translation>
+        <translation>Hintergrundfarbe</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -3469,7 +3469,7 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     <message>
         <location line="+39"/>
         <source>Style Settings</source>
-        <translation type="unfinished">Einstellungen des Stils</translation>
+        <translation>Einstellungen des Stils</translation>
     </message>
     <message>
         <location line="+57"/>
@@ -3784,7 +3784,7 @@ transparent anzeigen</translation>
     <message>
         <location line="+356"/>
         <source> dpi</source>
-        <translation>dpi</translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+35"/>
@@ -3934,7 +3934,7 @@ transparent anzeigen</translation>
     <message>
         <location line="+21"/>
         <source>Add a new color stop at right side of the selected color stop.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eine neue Farbe rechts der ausgewählten Farbe.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3944,7 +3944,7 @@ transparent anzeigen</translation>
     <message>
         <location line="+11"/>
         <source>Removes the selected color stop.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die aktuell ausgewählte Farbe löschen.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3954,7 +3954,7 @@ transparent anzeigen</translation>
     <message>
         <location line="+11"/>
         <source>Aligns all color stops at equidistant positions.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Richtet alle Farben in gleichen Abständen aus.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3966,7 +3966,7 @@ transparent anzeigen</translation>
         <location line="+29"/>
         <location line="+78"/>
         <source>Toggle to hide / show this color in the preview.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schalter um diese Farbe in der Vorschau ein-/auszublenden.</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -5763,7 +5763,8 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+0"/>
         <source>The following modules could not be reloaded:
 </source>
-        <translation>Folgende Module konnten nicht geladen werden:</translation>
+        <translation>Folgende Module konnten nicht geladen werden:
+</translation>
     </message>
 </context>
 <context>
@@ -7933,7 +7934,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+1"/>
         <source>F12</source>
         <comment>QShortcut</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -9311,7 +9312,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
     <message>
         <location line="+5"/>
         <source>%1; interval: %2 ms; single shot</source>
-        <translation>%1; Intervall: %s ms; einmalige Ausführung</translation>
+        <translation>%1; Intervall: %2 ms; einmalige Ausführung</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -9606,7 +9607,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
     <message>
         <location line="+73"/>
         <source>handle &apos;%1&apos; is no figure.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Handle &apos;%1&apos; ist keine Abbildung.</translation>
     </message>
     <message>
         <location line="+34"/>
@@ -10534,7 +10535,7 @@ konnte nicht formatiert werden. Grund:
     <message>
         <location line="+3"/>
         <source>U</source>
-        <translation type="unfinished">H</translation>
+        <translation>H</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -10544,7 +10545,7 @@ konnte nicht formatiert werden. Grund:
     <message>
         <location line="+3"/>
         <source>D</source>
-        <translation type="unfinished">R</translation>
+        <translation>R</translation>
     </message>
 </context>
 <context>
