@@ -8,7 +8,7 @@ Changelog Version 4.1.0
 itom
 ********
 
-**Version 4.1.0 (2021-02-xx)**
+**Version 4.1.0 (2021-03-05)**
 
 (more than 410 commits in itom repository)
 
@@ -241,7 +241,7 @@ itom
 Plugins
 ******************
 
-**Version 4.1.0 (2021-02-xx)**
+**Version 4.1.0 (2021-03-05)**
 
 (141 commits in plugins repository)
 
@@ -265,7 +265,7 @@ Plugins
 Designer Plugins
 ******************
 
-**Version 4.1.0 (2021-02-xx)**
+**Version 4.1.0 (2021-03-05)**
 
 (more than 10 commits in designerPlugins repository)
 
