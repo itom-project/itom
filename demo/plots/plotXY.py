@@ -14,6 +14,13 @@ def demo_plotXY():
     x = dataObject([1, angle.shape[0]], dtype="float32")
     y = dataObject([1, angle.shape[0]], dtype="float32")
 
+    # for the axis labels the valueDescription and valueUnit of the two data is used
+    x.valueDescription = "x data"
+    x.valueUnit = "a.u."
+
+    y.valueDescription = "y data"
+    y.valueUnit = "a.u."
+
     radius = angle ** 2
     x[:, :] = (radius * np.cos(angle)).astype("float32")
     y[:, :] = (radius * np.sin(angle)).astype("float32")

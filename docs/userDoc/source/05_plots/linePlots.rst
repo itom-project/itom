@@ -45,6 +45,7 @@ It is also possible to set an optional x-vector to the plot. This can only be
 done by giving a second argument to the :py:meth:`~itom.plot1` function or by 
 setting the property **xData** to an existing plot. To plot an N x M 
 dataObject, the x-vector has to be a 1 x M dataObject. 
+For the y axis and x axis label the valueDescription and valueUnit definitions are taken accordingly. 
 
 .. figure:: images/spiral.png
     :scale: 100%
