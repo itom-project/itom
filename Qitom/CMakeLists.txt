@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.1)
  
 set(target_name qitom) 
 project(${target_name})
-
+ 
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
