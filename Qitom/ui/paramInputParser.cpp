@@ -852,7 +852,7 @@ void ParamInputParser::browsePluginPicker(int i)
     p = m_params[i];
     
     ito::HWMeta* hwmeta = static_cast<ito::HWMeta*>(p.getMeta());
-    QString pluginName = QString::Null();
+    QString pluginName = QString();
     int minimumPluginType = 0x0;
     if (hwmeta)
     {
@@ -904,7 +904,7 @@ void ParamInputParser::browseArrayPicker(int i)
 
     tParamType paramType = none;
     ito::Param p = m_params[i];
-    QString leString = QString::Null();
+    QString leString = QString();
     QLineEdit *le;
 
     QWidget *canvas = m_canvas.data();

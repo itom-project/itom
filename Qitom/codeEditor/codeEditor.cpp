@@ -1645,24 +1645,27 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
     }
 
     int pos = block.text().size() - 1;
-    QTextLayout *layout = block.layout();
+    const QTextLayout *layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
-        QList<QTextLayout::FormatRange> additional_formats = layout->additionalFormats();
-        SyntaxHighlighterBase *sh = syntaxHighlighter();
+        auto additional_formats = layout->formats();
+        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
+
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
+                    is_user_obj = (r.format.objectType() == StyleItem::GroupCommentOrString);
+
                     foreach (StyleItem::StyleType fmtType, formats_)
                     {
-                        is_user_obj = (r.format.objectType() == StyleItem::GroupCommentOrString);
-                        if ((ref_formats->format(fmtType) == r.format) && is_user_obj)
+                        if (is_user_obj && (ref_formats->format(fmtType) == r.format))
                         {
                             return true;
                         }
@@ -1671,6 +1674,7 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
             }
         }
     }
+
     return false;
 }
 
@@ -1698,22 +1702,25 @@ Checks if a block/cursor is a number (int, float, complex...).
 bool CodeEditor::isNumber(const QTextBlock &block) const
 {
     int pos = block.text().size() - 1;
-    QTextLayout *layout = block.layout();
+    const QTextLayout *layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
-        QList<QTextLayout::FormatRange> additional_formats = layout->additionalFormats();
-        SyntaxHighlighterBase *sh = syntaxHighlighter();
+        auto additional_formats = layout->formats();
+        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
+
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
+                is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
+
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
-                    is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
-                    if ((ref_formats->format(StyleItem::KeyNumber) == r.format) && is_user_obj)
+                    if (is_user_obj && (ref_formats->format(StyleItem::KeyNumber) == r.format))
                     {
                         return true;
                     }

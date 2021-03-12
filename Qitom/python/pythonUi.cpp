@@ -3083,6 +3083,7 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3090,23 +3091,28 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
-    while(!locker.getSemaphore()->wait(100))
+    int counter = 0;
+    int c = 0;
+
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -3219,6 +3225,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
         Q_ARG(int,step), 
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3226,8 +3233,8 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
+    int counter = 0;
+    int c = 0;
 
     while (!locker.getSemaphore()->wait(100))
     {
@@ -3239,12 +3246,15 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if (*retOk == true)
     {
@@ -3381,7 +3391,8 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
         Q_ARG(int, currentIndex), 
         Q_ARG(bool, editable), 
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-    
+  
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3408,6 +3419,9 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -3515,6 +3529,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
         Q_ARG(QSharedPointer<QString>, retStringValue), 
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3522,10 +3537,10 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
+    int counter = 0;
+    int c = 0;
 
-    while(!locker.getSemaphore()->wait(100))
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
 
@@ -3535,12 +3550,15 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -3767,6 +3785,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
     ); 
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3774,24 +3793,28 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
+    int counter = 0;
+    int c = 0;
 
-    while(!locker.getSemaphore()->wait(100))
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
-            PyErr_SetString(PyExc_RuntimeError, "timeout while showing message box");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
 
     retValue = locker.getSemaphore()->returnValue;
 

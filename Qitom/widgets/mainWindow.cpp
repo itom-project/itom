@@ -1006,7 +1006,7 @@ void MainWindow::mnuFigureAboutToShow()
         }
         else
         {
-            qSort(*widgetNames);
+            std::sort(widgetNames->begin(), widgetNames->end());
             
             foreach(val, *widgetNames)
             {

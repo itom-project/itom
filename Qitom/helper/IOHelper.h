@@ -77,10 +77,10 @@ public:
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
 
-    static RetVal uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath = QString::Null(), QWidget* parent = NULL);
+    static RetVal uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath = QString(), QWidget* parent = NULL);
     static RetVal exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames);
 
-    static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, const IOFilters &IOfilters, QString defaultPath = QString::Null(), QWidget* parent = NULL);
+    static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, const IOFilters &IOfilters, QString defaultPath = QString(), QWidget* parent = NULL);
     static RetVal importPyWorkspaceVars(const QString &filename, bool globalNotLocal, QWidget* parent = NULL);
 
     static RetVal openPythonScript(const QString &filename);

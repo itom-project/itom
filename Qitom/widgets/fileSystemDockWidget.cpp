@@ -59,7 +59,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pCmbFilter(NULL),
     m_pFileSystemModel(NULL),
     m_newDirSelectedMapper(NULL),
-    baseDirectory(QString::Null()),
+    baseDirectory(QString()),
     m_pColumnWidth(NULL),
     m_pActMoveCDUp(NULL),
     m_pActSelectCD(NULL),

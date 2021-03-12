@@ -3139,10 +3139,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     switch(textEncoding)
     {
     case utf_8:
-        return PyUnicode_DecodeUTF8(byteArray,len,errors);
+        return PyUnicode_DecodeUTF8(byteArray, len, errors);
     case latin_1:
     case iso_8859_1:
-        return PyUnicode_DecodeLatin1(byteArray,len,errors);
+        return PyUnicode_DecodeLatin1(byteArray, len, errors);
 #if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS)
     case mbcs:
         return PyUnicode_DecodeMBCS(byteArray, len, errors);
@@ -3177,8 +3177,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonQtConversion::PyUnicodeToPyByteObject(PyObject *unicode, const char *errors /*= "replace"*/)
 {
-    int bo;
-
     if (!PyUnicode_Check(unicode)) 
     {
         PyErr_BadArgument();
@@ -3197,23 +3195,19 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         return PyUnicode_AsMBCSString(unicode);
 #endif
     case ascii:
-            return PyUnicode_AsASCIIString(unicode);
+        return PyUnicode_AsASCIIString(unicode);
     case utf_16:
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, 0);
+        return PyUnicode_AsEncodedString(unicode, "utf_16", errors);
     case utf_16_LE:
-            bo = -1;
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_16_le", errors);
     case utf_16_BE:
-            bo = 1;
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_16_be", errors);
     case utf_32:
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, 0);
+        return PyUnicode_AsEncodedString(unicode, "utf_32", errors);
     case utf_32_LE:
-            bo = -1;
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_32_le", errors);
     case utf_32_BE:
-            bo = 1;
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_32_be", errors);
     case other:
     default:
         {

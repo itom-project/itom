@@ -3198,7 +3198,13 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         {
             if (tmpObjectInfo.length() > 0)
             {
-                qSort(tmpObjectInfo);
+                std::sort(
+                    tmpObjectInfo.begin(), 
+                    tmpObjectInfo.end(), 
+                    [](ito::ClassInfoContainer t1, ito::ClassInfoContainer t2) {
+                        return QString::compare(t1.m_name, t2.m_name, Qt::CaseInsensitive);
+                    }
+                );
             }
 
             std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;

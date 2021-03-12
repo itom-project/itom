@@ -100,11 +100,11 @@ namespace Utils
     void getBlockSymbolData(CodeEditor *editor, const QTextBlock &block, QList<ParenthesisInfo> &parentheses, QList<ParenthesisInfo> &squareBrackets, QList<ParenthesisInfo> &braces)
     {
         parentheses = listSymbols(editor, block, '(') + listSymbols(editor, block, ')');
-        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        std::sort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
         squareBrackets = listSymbols(editor, block, '[') + listSymbols(editor, block, ']');
-        qSort(squareBrackets.begin(), squareBrackets.end(), sortParenthesisInfo);
+        std::sort(squareBrackets.begin(), squareBrackets.end(), sortParenthesisInfo);
         braces = listSymbols(editor, block, '{') + listSymbols(editor, block, '}');
-        qSort(braces.begin(), braces.end(), sortParenthesisInfo);
+        std::sort(braces.begin(), braces.end(), sortParenthesisInfo);
     }
 
     //-------------------------------------------------------------
