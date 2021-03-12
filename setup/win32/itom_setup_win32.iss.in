@@ -251,12 +251,11 @@ Source: "{#SourceDirItomBuild}\plugins\SuperlumBL\*.*"; DestDir: "{app}\plugins\
 Source: "{#SourceDirItomBuild}\plugins\SuperlumBS\*.*"; DestDir: "{app}\plugins\SuperlumBS"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsBP\*.*"; DestDir: "{app}\plugins\ThorlabsBP"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\ThorlabsFF\*.*"; DestDir: "{app}\plugins\ThorlabsISM"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsFF\*.*"; DestDir: "{app}\plugins\ThorlabsFF"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins\ThorlabsISM"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubePA\*.*"; DestDir: "{app}\plugins\ThorlabsKCubePA"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeIM\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeIM"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\ThorlabsFF\*.*"; DestDir: "{app}\plugins\ThorlabsFF"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs
@@ -414,8 +413,8 @@ Source: "{#SourceDirVTK}\bin\vtkzlib-8.2.dll"; DestDir: "{app}\lib"; Flags: igno
 ;Filename: "{tmp}\MS_VS_13_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x86)..."; Components: CREDPACK2013;
 ;Filename: "{tmp}\Microsoft Visual C++ 2015 Redistributable (x86) - 14.0.23026.exe"; Parameters: "/install /quiet /norestart"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable (x86) - 14.0.23026..."; Components: CREDPACK2015;
 Filename: "{tmp}\Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027.1.exe"; Parameters: "/install /quiet /norestart"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027.1..."; Components: CREDPACK2017;
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --no-index -f {tmp}\pythonPackages --only-binary=:all: -r {tmp}\pythonPackages\requirementsMandatory.txt"; WorkingDir: "{tmp}\pythonPackages"; Flags: shellexec waituntilterminated; StatusMsg: "Installing python packages..."; Components: PACKAGESMAND
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --no-index -f {tmp}\pythonPackages --only-binary=:all: -r {tmp}\pythonPackages\requirementsOptional.txt"; WorkingDir: "{tmp}\pythonPackages"; Flags: shellexec waituntilterminated; StatusMsg: "Installing python packages..."; Components: PACKAGESOPT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-index -f {tmp}\pythonPackages --only-binary=:all: -r {tmp}\pythonPackages\requirementsMandatory.txt"; WorkingDir: "{tmp}\pythonPackages"; Flags: shellexec waituntilterminated; StatusMsg: "Installing python packages..."; Components: PACKAGESMAND
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --no-warn-script-location --no-index -f {tmp}\pythonPackages --only-binary=:all: -r {tmp}\pythonPackages\requirementsOptional.txt"; WorkingDir: "{tmp}\pythonPackages"; Flags: shellexec waituntilterminated; StatusMsg: "Installing python packages..."; Components: PACKAGESOPT
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
