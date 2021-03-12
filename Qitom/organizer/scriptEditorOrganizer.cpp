@@ -107,9 +107,6 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     a->setMenu(m_pGoBackNavigationMenu);
     a->setEnabled(false);
 
-    m_pGoBackNavigationMapper = new QSignalMapper(this);
-    connect(m_pGoBackNavigationMapper, SIGNAL(mapped(int)), this, SLOT(mnuNavigateBackwardItem(int)));
-
     m_pBookmarkModel = new ito::BookmarkModel();
     m_pBookmarkModel->restoreState(); //get bookmarks from last session
     connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
@@ -1258,8 +1255,11 @@ void ScriptEditorOrganizer::updateGoBackNavigationActions()
             act->setCheckable(true);
             act->setChecked(idx == m_goBackNavigationIndex);
             act->setToolTip(item.filename);
-            connect(act, SIGNAL(triggered()), m_pGoBackNavigationMapper, SLOT(map()));
-            m_pGoBackNavigationMapper->setMapping(act, idx);
+
+            connect(act, &QAction::triggered, [=]() {
+                mnuNavigateBackwardItem(idx);
+            });
+
             m_pGoBackNavigationMenu->addAction(act);
         }
     }

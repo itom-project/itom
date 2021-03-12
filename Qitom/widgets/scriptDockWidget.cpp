@@ -99,10 +99,6 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab->setTabPosition(QTabWidget::South);
     m_tab->setContentsMargins(2,0,2,0);
 
-    // Signalmapper for dynamic lastFile Menu
-    m_lastFilesMapper = new QSignalMapper(this);
-    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
-
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
     connect(m_tab, SIGNAL(tabContextMenuEvent(QContextMenuEvent*)), this, SLOT(tabContextMenuEvent(QContextMenuEvent*)));
@@ -1776,14 +1772,15 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
                 ShortcutAction *a;
 
                 // Create new menus
-                foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
+                foreach(const QString &path, sEO->getRecentlyUsedFiles())
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
                     a = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_lastFilesMenu->addAction(a->action());
-                    a->connectTrigger(m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(a->action(), path);
+                    connect(a->action(), &QAction::triggered, [=]() {
+                        lastFileOpen(path);
+                    });
                 }
             }
         }

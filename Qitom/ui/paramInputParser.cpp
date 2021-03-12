@@ -42,12 +42,6 @@ ParamInputParser::ParamInputParser(QWidget *canvas) :
 {
     m_canvas = QPointer<QWidget>(canvas);
     m_iconInfo = QIcon(":/plugins/icons/info.png");
-
-    m_pSignalMapper_browsePluginPicker = new QSignalMapper(this);
-    connect(m_pSignalMapper_browsePluginPicker, SIGNAL(mapped(int)), this, SLOT(browsePluginPicker(int)));
-
-    m_pSignalMapper_browseArrayPicker = new QSignalMapper(this);
-    connect(m_pSignalMapper_browseArrayPicker, SIGNAL(mapped(int)), this, SLOT(browseArrayPicker(int)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -499,8 +493,9 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
 
     QToolButton *tool = new QToolButton(container);
     tool->setIcon(QIcon(":/files/icons/browser.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browsePluginPicker, SLOT(map()));
-    m_pSignalMapper_browsePluginPicker->setMapping(tool, virtualIndex);
+    connect(tool, &QToolButton::clicked, [=]() {
+        browsePluginPicker(virtualIndex);
+    });
 
     layout->addWidget(txt);
     layout->addWidget(tool);
@@ -543,8 +538,9 @@ QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent,
 
     QToolButton *tool = new QToolButton(container);
     tool->setIcon(QIcon(":/application/icons/list.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
-    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
+    connect(tool, &QToolButton::clicked, [=]() {
+        browseArrayPicker(virtualIndex);
+    });
 
     layout->addWidget(txt);
     layout->addWidget(tool);
