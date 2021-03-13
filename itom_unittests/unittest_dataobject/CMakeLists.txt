@@ -32,10 +32,15 @@ include("../../cmake/ItomBuildMacrosInternal.cmake")
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../cmake ${PROJECT_SOURCE_DIR}/../../gtest-1.6.0)
+set(CMAKE_MODULE_PATH 
+    ${CMAKE_MODULE_PATH} 
+    ${PROJECT_SOURCE_DIR} 
+    ${PROJECT_SOURCE_DIR}/../../cmake 
+    ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
+)
 
 # Define helper functions and macros used by Google Test.
-include("../../gtest-1.6.0/cmake/internal_utils.cmake")
+include("../../gtest-1.10.0/googletest/cmake/internal_utils.cmake")
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
@@ -44,13 +49,10 @@ fix_default_compiler_settings_()
 
 if(WIN32 AND NOT ${gtest_force_shared_crt})
     message("Please set gtest_force_shared_crt to ON.")
-endif(WIN32 AND NOT ${gtest_force_shared_crt})
+endif()
 
 include_directories(
-    # ${CMAKE_CURRENT_BINARY_DIR}
-    # ${CMAKE_CURRENT_SOURCE_DIR}
-    # ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.6.0/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.10.0/googletest/include
 )
 
 set(unittest_dataobject_HEADERS
@@ -103,7 +105,7 @@ set_target_properties( ${target_name}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/"
 )
 
-SET_TARGET_PROPERTIES(${target_name} PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(${target_name} PROPERTIES DEBUG_POSTFIX "d")
 
 
 
