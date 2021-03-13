@@ -49,7 +49,7 @@ ParamBase::ParamBase(const ByteArray &name) :
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(0), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
 }
@@ -67,7 +67,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type) :
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(0), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
 }
@@ -87,7 +87,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const char *val) 
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(-1), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     if (val)
     {
@@ -120,7 +120,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const float64 val
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(0), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     switch(typeFilter(type))
     {
@@ -156,7 +156,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) 
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(0), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
 
@@ -176,22 +176,22 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) 
             if (val == 0)
             {
                 m_iVal = -1;
-                m_cVal = NULL;
+                m_cVal = nullptr;
             }
             else
             {
-                throw std::runtime_error("constructor with int val and String type is not callable for val != NULL");
+                throw std::runtime_error("constructor with int val and String type is not callable for val != nullptr");
             }
         break;
         case HWRef & paramTypeMask:
             if (val == 0)
             {
                 m_iVal = -1;
-                m_cVal = NULL;
+                m_cVal = nullptr;
             }
             else
             {
-                throw std::runtime_error("constructor with int val and Hardware type is not callable for val != NULL");
+                throw std::runtime_error("constructor with int val and Hardware type is not callable for val != nullptr");
             }
         break;
         default:
@@ -200,8 +200,8 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) 
     }
 }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
-/** constructor with name and type, double val
+//----------------------------------------------------------------------------------------------------------------------------------
+/** constructor with name and type, complex128 val
 *   @param [in] name   name of new ParamBase
 *   @param [in] type   type of new ParamBase for possible types see \ref Type
 *   @param [in] val    actual value
@@ -214,7 +214,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const complex128 
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(0), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     switch(typeFilter(type))
     {
@@ -224,6 +224,45 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const complex128 
         break;
         default:
             throw std::logic_error("constructor with complex128 val is only callable for type Complex");
+        break;
+    }
+
+    inOutCheck();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** constructor with name and type, and a list of strings
+*   @param [in] name   name of new ParamBase
+*   @param [in] type   type of new ParamBase for possible types see \ref Type
+*   @param [in] val    actual value
+*   @return     new ParamBase with name, type and val
+*
+*   creates a new ParamBase with name, type and val. Strings are copied.
+*/
+ParamBase::ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const ByteArray *values) :
+    m_type(type),
+    m_name(name),
+    m_dVal(0.0, 0.0),
+    m_iVal(0),
+    m_cVal(nullptr)
+{
+    switch (typeFilter(type))
+    {
+    case StringList:
+    {
+        m_iVal = size;
+        ByteArray *buf = (ByteArray*)malloc(size * sizeof(ByteArray));
+
+        for (uint32 i = 0; i < size; ++i)
+        {
+            buf[i] = ByteArray(values[i]);
+        }
+
+        m_cVal = (char*)buf;
+        break;
+    }
+    default:
+        throw std::logic_error("constructor with ByteArray values is only callable for type StringList");
         break;
     }
 
@@ -245,14 +284,14 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(size), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
     
-    if (values == NULL)
+    if (values == nullptr)
     {
         m_iVal = -1;
-        m_cVal = NULL;
+        m_cVal = nullptr;
     }
     else
     {
@@ -329,7 +368,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
             break;
 
             default:
-                m_cVal = NULL;
+                m_cVal = nullptr;
                 m_iVal = -1;
             break;
         }
@@ -351,14 +390,14 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(size), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
 
-    if ((size <= 0) || (values == NULL))
+    if ((size <= 0) || (values == nullptr))
     {
         m_iVal = -1;
-        m_cVal = NULL;
+        m_cVal = nullptr;
     }
     else
     {
@@ -426,14 +465,14 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(size), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
     
-    if ((size <= 0) || (values == NULL))
+    if ((size <= 0) || (values == nullptr))
     {
         m_iVal = -1;
-        m_cVal = NULL;
+        m_cVal = nullptr;
     }
     else
     {
@@ -493,14 +532,14 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
     m_name(name),
     m_dVal(0.0, 0.0), 
     m_iVal(size), 
-    m_cVal(NULL)
+    m_cVal(nullptr)
 {
     inOutCheck();
     
-    if ((size <= 0) || (values == NULL))
+    if ((size <= 0) || (values == nullptr))
     {
         m_iVal = -1;
-        m_cVal = NULL;
+        m_cVal = nullptr;
     }
     else
     {
@@ -549,14 +588,22 @@ ParamBase::~ParamBase()
     // int useLim[10] = {1, 0 ,0, 0, 0, 0};
     // (*param) = ito::ParamBase("useLimits", ito::ParamBase::IntArray, (char*)useLim);
     // but if we do not free we might provocate memory leaks ... needs review
-    if ((m_cVal) && ((typeFilter(m_type) == String)
-        || (m_iVal > 0) && (typeFilter(m_type) == DoubleArray)
-        || (m_iVal > 0) && (typeFilter(m_type) == IntArray)
-        || (m_iVal > 0) && (typeFilter(m_type) == CharArray)
-        || (m_iVal > 0) && (typeFilter(m_type) == ComplexArray)))
+    freeMemory();
+}
+
+//-------------------------------------------------------------------------------------
+void ParamBase::freeMemory()
+{
+    if (m_cVal && ((typeFilter(m_type) == String)
+        || ((m_iVal > 0) && ((typeFilter(m_type) == DoubleArray)
+            || (typeFilter(m_type) == IntArray)
+            || (typeFilter(m_type) == CharArray)
+            || (typeFilter(m_type) == ComplexArray)
+            || (typeFilter(m_type) == StringList)))))
     {
         free(m_cVal);
-        m_cVal = NULL;
+        m_cVal = nullptr;
+        m_iVal = 0;
     };
 }
 
@@ -567,7 +614,12 @@ ParamBase::~ParamBase()
 *
 *   creates ParamBase according to passed Param, strings are copied
 */
-ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m_name(copyConstr.m_name), m_dVal(copyConstr.m_dVal), m_iVal(copyConstr.m_iVal), m_cVal(0)
+ParamBase::ParamBase(const ParamBase &copyConstr) : 
+    m_type(copyConstr.m_type), 
+    m_name(copyConstr.m_name), 
+    m_dVal(copyConstr.m_dVal), 
+    m_iVal(copyConstr.m_iVal), 
+    m_cVal(nullptr)
 {
     switch (copyConstr.m_type & paramTypeMask)
     {
@@ -588,7 +640,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
             }
             else
             {
-                m_cVal = 0;
+                m_cVal = nullptr;
             }
         break;
 
@@ -601,7 +653,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
             }
             else
             {
-                m_cVal = 0;
+                m_cVal = nullptr;
             }
         break;
 
@@ -614,7 +666,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
             }
             else
             {
-                m_cVal = 0;
+                m_cVal = nullptr;
             }
         break;
 
@@ -627,7 +679,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
             }
             else
             {
-                m_cVal = 0;
+                m_cVal = nullptr;
             }
         break;
 
@@ -640,7 +692,19 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
             }
             else
             {
-                m_cVal = 0;
+                m_cVal = nullptr;
+            }
+
+        case StringList & paramTypeMask:
+            m_iVal = copyConstr.m_iVal;
+            if (m_iVal > 0)
+            {
+                m_cVal = (char*)malloc(m_iVal * sizeof(ByteArray));
+                memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(ByteArray));
+            }
+            else
+            {
+                m_cVal = nullptr;
             }
         break;
 
@@ -726,6 +790,26 @@ bool ParamBase::operator == (const ParamBase &rhs) const
                 for (int i = 0; i < m_iVal; ++i)
                 {
                     if (!ito::areEqual(((complex128*)m_cVal)[i], ((complex128*)rhs.m_cVal)[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+            }
+        
+        case StringList & paramTypeMask:
+            if (m_iVal > 0 && rhs.m_iVal > 0)
+            {
+                ByteArray* list1 = (ByteArray*)m_cVal;
+                ByteArray* list2 = (ByteArray*)rhs.m_cVal;
+
+                for (int i = 0; i < m_iVal; ++i)
+                {
+                    if (list1[i] != list2[i])
                     {
                         return false;
                     }
@@ -839,6 +923,7 @@ int ParamBase::getLen(void) const
         case IntArray:
         case CharArray:
         case ComplexArray:
+        case StringList:
             if (m_cVal)
             {
                 return m_iVal;
@@ -885,7 +970,8 @@ const ParamBase ParamBase::operator [] (const int num) const
     if ((typeFilter(m_type) == CharArray) 
         || (typeFilter(m_type) == IntArray) 
         || (typeFilter(m_type) == DoubleArray)
-        || (typeFilter(m_type) == ComplexArray))
+        || (typeFilter(m_type) == ComplexArray)
+        || (typeFilter(m_type) == StringList))
     {
         if (num > m_iVal)
         {
@@ -912,6 +998,12 @@ const ParamBase ParamBase::operator [] (const int num) const
                     return ParamBase(m_name, Complex, (getVal<complex128 *>(len))[num]);
                 break;
 
+                case String:
+                {
+                    const ByteArray *ba = getVal<ByteArray*>(len);
+                    return ParamBase(m_name, String, ba[num].data());
+                }
+
                 default:
                     return ParamBase();
                 break;
@@ -934,15 +1026,7 @@ const ParamBase ParamBase::operator [] (const int num) const
 ParamBase& ParamBase::operator = (const ParamBase &rhs)
 {
     //first clear old ParamBase:
-    if ((m_cVal) && ((typeFilter(m_type) == typeFilter(String))
-            || (typeFilter(m_type) == typeFilter(CharArray))
-        || (typeFilter(m_type) == typeFilter(DoubleArray))
-        || (typeFilter(m_type) == typeFilter(IntArray))
-        || (typeFilter(m_type) == typeFilter(ComplexArray))))
-    {
-        free(m_cVal);
-        m_cVal = NULL;
-    };
+    freeMemory();
 
     //now set new parameters:
     m_type = rhs.m_type;
@@ -1015,6 +1099,19 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
             }
         break;
 
+        case StringList & paramTypeMask:
+            m_iVal = rhs.m_iVal;
+            if (m_iVal > 0)
+            {
+                m_cVal = (char*)malloc(m_iVal * sizeof(ByteArray));
+                memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(ByteArray));
+            }
+            else
+            {
+                m_cVal = nullptr;
+            }
+            break;
+
         case HWRef & paramTypeMask:
         case DObjPtr & paramTypeMask:
         case Pointer & paramTypeMask:
@@ -1056,7 +1153,9 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
             if (m_cVal)
             {
                 free(m_cVal); //must have been a string, too (since no type-change)
+                m_cVal = nullptr;
             }
+
             if (rhs->m_cVal)
             {
                 m_cVal = _strdup(rhs->m_cVal);
@@ -1071,8 +1170,11 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
             if (m_cVal)
             {
                 free(m_cVal); //must have been an int-array, too
+                m_cVal = nullptr;
             }
+
             m_iVal = rhs->m_iVal;
+
             if (m_iVal > 0)
             {
                 m_cVal = (char*)malloc(m_iVal * sizeof(char));
@@ -1088,8 +1190,11 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
             if (m_cVal)
             {
                 free(m_cVal); //must have been an int-array, too
+                m_cVal = nullptr;
             }
+
             m_iVal = rhs->m_iVal;
+
             if (m_iVal > 0)
             {
                 m_cVal = (char*)malloc(m_iVal * sizeof(int32));
@@ -1105,8 +1210,11 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
             if (m_cVal)
             {
                 free(m_cVal); //must have been a double-array, too
+                m_cVal = nullptr;
             }
+
             m_iVal = rhs->m_iVal;
+
             if (m_iVal > 0)
             {
                 m_cVal = (char*)malloc(m_iVal * sizeof(float64));
@@ -1122,8 +1230,11 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
             if (m_cVal)
             {
                 free(m_cVal); //must have been a double-array, too
+                m_cVal = nullptr;
             }
+
             m_iVal = rhs->m_iVal;
+
             if (m_iVal > 0)
             {
                 m_cVal = (char*)malloc(m_iVal * sizeof(complex128));
@@ -1134,6 +1245,26 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
                 m_iVal = 0;
             }
         break;
+
+        case StringList & paramTypeMask:
+            if (m_cVal)
+            {
+                free(m_cVal); //must have been a string list, too
+                m_cVal = nullptr;
+            }
+
+            m_iVal = rhs->m_iVal;
+
+            if (m_iVal > 0)
+            {
+                m_cVal = (char*)malloc(m_iVal * sizeof(ByteArray));
+                memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(ByteArray));
+            }
+            else
+            {
+                m_iVal = 0;
+            }
+            break;
 
         case HWRef & paramTypeMask:
         case DObjPtr & paramTypeMask:
@@ -1155,7 +1286,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const char *val, const char *info) :
     ParamBase(name, type, val),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
 }
@@ -1191,7 +1322,7 @@ Param::Param(const ByteArray &name, const uint32 type, const float64 minVal, con
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, const char *info):
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
 }
@@ -1199,7 +1330,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
 }
@@ -1207,7 +1338,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
 }
@@ -1215,7 +1346,15 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
+    m_info(info)
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const ByteArray *values, const char *info) :
+    ParamBase(name, type, size, values),
+    m_pMeta(nullptr),
     m_info(info)
 {
 }
@@ -1223,7 +1362,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const char val, ParamMeta *meta, const char *info) :
     ParamBase(name, type, val),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1232,7 +1371,7 @@ Param::Param(const ByteArray &name, const uint32 type, const char val, ParamMeta
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const int32 val, ParamMeta *meta, const char *info) :
     ParamBase(name, type, val),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1241,7 +1380,7 @@ Param::Param(const ByteArray &name, const uint32 type, const int32 val, ParamMet
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const float64 val, ParamMeta *meta, const char *info) :
     ParamBase(name, type, val),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1250,7 +1389,7 @@ Param::Param(const ByteArray &name, const uint32 type, const float64 val, ParamM
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const complex128 val, ParamMeta *meta, const char *info) :
     ParamBase(name, type, val),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1259,7 +1398,7 @@ Param::Param(const ByteArray &name, const uint32 type, const complex128 val, Par
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1268,7 +1407,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, ParamMeta *meta, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1277,7 +1416,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, ParamMeta *meta, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1286,7 +1425,16 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, ParamMeta *meta, const char *info) :
     ParamBase(name, type, size, values),
-    m_pMeta(NULL),
+    m_pMeta(nullptr),
+    m_info(info)
+{
+    setMeta(meta, true); //throws exception if meta does not fit to type
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, const ByteArray *values, ParamMeta *meta, const char *info) :
+    ParamBase(name, type, size, values),
+    m_pMeta(nullptr),
     m_info(info)
 {
     setMeta(meta, true); //throws exception if meta does not fit to type
@@ -1300,7 +1448,7 @@ Param::~Param()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Param::Param(const Param &copyConstr) : ParamBase(copyConstr), m_pMeta(NULL), m_info(copyConstr.m_info)
+Param::Param(const Param &copyConstr) : ParamBase(copyConstr), m_pMeta(nullptr), m_info(copyConstr.m_info)
 {
     setMeta(copyConstr.m_pMeta);
 }
@@ -1316,7 +1464,8 @@ const Param Param::operator [] (const int num) const
     if ((typeFilter(m_type) == CharArray) 
         || (typeFilter(m_type) == IntArray) 
         || (typeFilter(m_type) == DoubleArray)
-        || (typeFilter(m_type) == ComplexArray))
+        || (typeFilter(m_type) == ComplexArray)
+        || (typeFilter(m_type) == StringList))
     {
         if (num > getLen())
         {
@@ -1335,7 +1484,7 @@ const Param Param::operator [] (const int num) const
                 case Char:
                     {
                     
-                    CharMeta *cMeta = NULL;
+                    CharMeta *cMeta = nullptr;
                     if (m_pMeta->getType() == ParamMeta::rttiCharArrayMeta)
                     {
                         const CharArrayMeta *caMeta = static_cast<const CharArrayMeta*>(m_pMeta);
@@ -1347,7 +1496,7 @@ const Param Param::operator [] (const int num) const
 
                 case Int:
                     {
-                    IntMeta *iMeta = NULL;
+                    IntMeta *iMeta = nullptr;
                     if (m_pMeta->getType() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType() == ParamMeta::rttiIntervalMeta || m_pMeta->getType() == ParamMeta::rttiRangeMeta)
                     {
                         const IntMeta *iaMeta = static_cast<const IntMeta*>(m_pMeta);
@@ -1360,7 +1509,7 @@ const Param Param::operator [] (const int num) const
 
                 case Double:
                     {
-                    DoubleMeta *dMeta = NULL;
+                    DoubleMeta *dMeta = nullptr;
                     if (m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta || m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta)
                     {
                         const DoubleMeta *daMeta = static_cast<const DoubleMeta*>(m_pMeta);
@@ -1373,9 +1522,15 @@ const Param Param::operator [] (const int num) const
                 case Complex:
                     {
                         //complex has no meta, since no min or max comparison is defined for complex values
-                    return Param(newName, m_type & ~Pointer, (getVal<complex128*>(len))[num], NULL, m_info.data());
+                    return Param(newName, m_type & ~Pointer, (getVal<complex128*>(len))[num], nullptr, m_info.data());
                     }
                 break;
+
+                case StringList:
+                {
+                    // no meta up to now
+                    return Param(newName, String, (getVal<ByteArray*>(len))[num].data(), m_info.data());
+                }
 
                 default:
                     return Param();
@@ -1514,13 +1669,13 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
     }
     else
     {
-        m_pMeta = NULL;
+        m_pMeta = nullptr;
     }
 
     if (oldMeta) 
     {
         delete oldMeta; 
-        oldMeta = NULL;
+        oldMeta = nullptr;
     }
 }
 

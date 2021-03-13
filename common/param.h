@@ -77,7 +77,9 @@ namespace ito
     private:
         complex128_ m_dVal;    //!< internal value for float64 and complex128 typed values
         ito::int32 m_iVal;         //!< internal value for integer typed values
-        char *m_cVal;         //!< internal pointer for pointer type values (also strings)
+        char *m_cVal;         //!< internal pointer for pointer type values (also strings and string lists)
+
+        void freeMemory(); //!< free allocated memory, if memory has been allocated.
 
     public:
         enum Type {
@@ -135,7 +137,8 @@ namespace ito
             ComplexArray    = Complex  | Pointer, //!< array of complex numbers
             PointCloudPtr   = 0x000080 | Pointer | NoAutosave, //!< point cloud parameter (pointer, no auto-safe possible)
             PointPtr        = 0x000100 | Pointer | NoAutosave, //!< point parameter (pointer, no auto-safe possible)
-            PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave //!< polygon mesh parameter (pointer, no auto-safe possible)
+            PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave, //!< polygon mesh parameter (pointer, no auto-safe possible)
+            StringList      = 0x000800 | Pointer //!< list of strings, given as ito::ByteArray
         };
 
         
@@ -154,6 +157,7 @@ namespace ito
         ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const int32 *values);       // array constructor with name and type, size and array
         ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const float64 *values);     // array constructor with name and type, size and array
         ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const complex128 *values);  // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const ByteArray *values);   // array constructor with name and type, size and string list
         virtual ~ParamBase(); //Destructor
         ParamBase(const ParamBase &copyConstr); //Copy-Constructor
 
@@ -423,6 +427,19 @@ namespace ito
             \param info can be a documentation string for this parameter, an empty string or NULL
             */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, const char *info);
+
+            //!< Constructor for a string list parameter
+            /*
+            This parameter has no meta information.
+
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the size of the given default values array
+            \param values is the default ByteArray list
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const ByteArray *values, const char *info);
             
             //!< constructor for a character value (int8)
             /*
@@ -430,7 +447,7 @@ namespace ito
             \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
                 e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
             \param val is the default value
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::CharMeta.
                 The ownership is taken by this parameter!
             \param info can be a documentation string for this parameter, an empty string or NULL
@@ -443,7 +460,7 @@ namespace ito
             \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
                 e.g. ito::ParamBase::Int | ito::ParamBase::In for a read-only input parameter
             \param val is the default value
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::IntMeta.
                 The ownership is taken by this parameter!
             \param info can be a documentation string for this parameter, an empty string or NULL
@@ -456,7 +473,7 @@ namespace ito
             \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
                 e.g. ito::ParamBase::Double | ito::ParamBase::In for a read-only input parameter
             \param val is the default value
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::DoubleMeta.
                 The ownership is taken by this parameter!
             \param info can be a documentation string for this parameter, an empty string or NULL
@@ -469,7 +486,7 @@ namespace ito
             \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
             e.g. ito::ParamBase::Complex | ito::ParamBase::In for a read-only input parameter
             \param val is the default value
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 Currently, there is no meta information class for complex value parameters!
             \param info can be a documentation string for this parameter, an empty string or NULL
             */
@@ -482,7 +499,7 @@ namespace ito
                 e.g. ito::ParamBase::CharArray | ito::ParamBase::In for a read-only input parameter
             \param size is the length of the default array, passed to values
             \param values is the pointer to the default array of values
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::CharArrayMeta.
                 The ownership is taken by this parameter!
             \param info can be a documentation string for this parameter, an empty string or NULL
@@ -496,7 +513,7 @@ namespace ito
                 e.g. ito::ParamBase::IntArray | ito::ParamBase::In for a read-only input parameter
             \param size is the length of the default array, passed to values
             \param values is the pointer to the default array of values
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::IntArrayMeta, ito::IntervalMeta, 
                 ito::RangeMeta or ito::RectMeta. 
                 The ownership is taken by this parameter!
@@ -511,7 +528,7 @@ namespace ito
                 e.g. ito::ParamBase::DoubleArray | ito::ParamBase::In for a read-only input parameter
             \param size is the length of the default array, passed to values
             \param values is the pointer to the default array of values
-            \param meta might me NULL, if no meta information should be passed to this parameter.
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
                 If a pointer is given, it has to be an object of ito::DoubleArrayMeta or ito::DoubleIntervalMeta. 
                 The ownership is taken by this parameter!
             \param info can be a documentation string for this parameter, an empty string or NULL
@@ -525,12 +542,26 @@ namespace ito
                 e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
             \param size is the length of the default array, passed to values
             \param values is the pointer to the default array of values
-            \param meta might me NULL, if no meta information should be passed to this parameter. 
+            \param meta might be nullptr, if no meta information should be passed to this parameter. 
                 If a pointer is given, the ownership is taken by this parameter! 
                 Currently, there is no meta information class available for complex array parameters!
             \param info can be a documentation string for this parameter, an empty string or NULL
             */
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, ParamMeta *meta, const char *info);
+
+            //!< constructor for a string list.
+            /*
+            \param name is the name of the parameter
+            \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
+                e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
+            \param size is the length of the default array, passed to values
+            \param values is the pointer to the default string list values
+            \param meta might be nullptr, if no meta information should be passed to this parameter.
+                If a pointer is given, the ownership is taken by this parameter!
+                Currently, there is no meta information class available for complex array parameters!
+            \param info can be a documentation string for this parameter, an empty string or NULL
+            */
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const ByteArray *values, ParamMeta *meta, const char *info);
             
             //!< Destructor
             ~Param();
