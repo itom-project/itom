@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 )
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -46,16 +46,16 @@ TYPED_TEST(AssignTest, AssignOperatorTest)
 {
     int typeno = ito::getDataType( (const TypeParam *) NULL );
 
-    matrix = 1;
-    for (it = matrix.constBegin(); it != matrix.constEnd(); ++it)
+    this->matrix = 1;
+    for (this->it = this->matrix.constBegin(); this->it != this->matrix.constEnd(); ++this->it)
     {
-        EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(1));
+        EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(1));
     }
 
-    matrix = 2.1;
-    for (it = matrix.constBegin(); it != matrix.constEnd(); ++it)
+    this->matrix = 2.1;
+    for (this->it = this->matrix.constBegin(); this->it != this->matrix.constEnd(); ++this->it)
     {
-        EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(2.1));
+        EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(2.1));
     }  
     
 }
@@ -64,44 +64,44 @@ TYPED_TEST(AssignTest, SetToTest)
 {
     int typeno = ito::getDataType( (const TypeParam *) NULL );
 
-    matrix.setTo(1);
-    for (it = matrix.constBegin(); it != matrix.constEnd(); ++it)
+    this->matrix.setTo(1);
+    for (this->it = this->matrix.constBegin(); this->it != this->matrix.constEnd(); ++this->it)
     {
-        EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(1));
+        EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(1));
     }
 
-    matrix.setTo(2.1);
-    for (it = matrix.constBegin(); it != matrix.constEnd(); ++it)
+    this->matrix.setTo(2.1);
+    for (this->it = this->matrix.constBegin(); this->it != this->matrix.constEnd(); ++this->it)
     {
-        EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(2.1));
+        EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(2.1));
     }  
 
     ito::DObjConstIterator it_mask;
-    matrix.setTo(0);
+    this->matrix.setTo(0);
 
-    matrix.setTo(1, mask);
-    for (it = matrix.constBegin(), it_mask = mask.constBegin(); it != matrix.constEnd(); ++it, ++it_mask)
+    this->matrix.setTo(1, this->mask);
+    for (this->it = this->matrix.constBegin(), it_mask = this->mask.constBegin(); this->it != this->matrix.constEnd(); ++this->it, ++it_mask)
     {
         if (*(*it_mask))
         {
-            EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(1));
+            EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(1));
         }
         else
         {
-            EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(0));
+            EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(0));
         }
     }
 
-    matrix.setTo(2.1, mask);
-    for (it = matrix.constBegin(), it_mask = mask.constBegin(); it != matrix.constEnd(); ++it, ++it_mask)
+    this->matrix.setTo(2.1, this->mask);
+    for (this->it = this->matrix.constBegin(), it_mask = this->mask.constBegin(); this->it != this->matrix.constEnd(); ++this->it, ++it_mask)
     {
         if (*(*it_mask))
         {
-            EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(2.1));
+            EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(2.1));
         }
         else
         {
-            EXPECT_EQ ( *((TypeParam*)(*it)), cv::saturate_cast<TypeParam>(0.0));
+            EXPECT_EQ ( *((TypeParam*)(*this->it)), cv::saturate_cast<TypeParam>(0.0));
         }
     }  
     

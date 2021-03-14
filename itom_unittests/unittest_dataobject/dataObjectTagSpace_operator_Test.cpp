@@ -1,10 +1,10 @@
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -33,96 +33,97 @@ public:
         rotMat[7] = 7.0;
         rotMat[8] = 35.0;
 
-        mat1_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
-        mat1_2d.setTag("testTag1", "test");
-        mat1_2d.setTag("testTag2", 0.0);
-        mat1_2d.setTag("testTag3", 1.0);
+        this->mat1_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
+        this->mat1_2d.setTag("testTag1", "test");
+        this->mat1_2d.setTag("testTag2", 0.0);
+        this->mat1_2d.setTag("testTag3", 1.0);
         
-        mat1_2d.setAxisDescription(0, "y");
-        mat1_2d.setAxisDescription(1, "x");
+        this->mat1_2d.setAxisDescription(0, "y");
+        this->mat1_2d.setAxisDescription(1, "x");
 
-        mat1_2d.setAxisUnit(0, "mm");
-        mat1_2d.setAxisUnit(1, "%");
+        this->mat1_2d.setAxisUnit(0, "mm");
+        this->mat1_2d.setAxisUnit(1, "%");
 
-        mat1_2d.setAxisOffset(0, 0.0);
-        mat1_2d.setAxisOffset(1, 1.0);
+        this->mat1_2d.setAxisOffset(0, 0.0);
+        this->mat1_2d.setAxisOffset(1, 1.0);
 
-        mat1_2d.setAxisScale(0, 2.0);
-        mat1_2d.setAxisScale(1, 0.5);
+        this->mat1_2d.setAxisScale(0, 2.0);
+        this->mat1_2d.setAxisScale(1, 0.5);
 
-        mat1_2d.setValueUnit("mm");
-        mat1_2d.setValueDescription("val");
-        mat1_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
+        this->mat1_2d.setValueUnit("mm");
+        this->mat1_2d.setValueDescription("val");
+        this->mat1_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
         
 
-        mat2_2d = ito::DataObject(3,3,ito::getDataType2<_Tp*>());
-        mat2_2d.setTag("testTag1", "test");
-        mat2_2d.setTag("testTag2", 0.0);
-        mat2_2d.setTag("testTag3", 1.0);
-        mat2_2d.setAxisDescription(0, "y");
-        mat2_2d.setAxisDescription(1, "x");
+        this->mat2_2d = ito::DataObject(3,3,ito::getDataType2<_Tp*>());
+        this->mat2_2d.setTag("testTag1", "test");
+        this->mat2_2d.setTag("testTag2", 0.0);
+        this->mat2_2d.setTag("testTag3", 1.0);
+        this->mat2_2d.setAxisDescription(0, "y");
+        this->mat2_2d.setAxisDescription(1, "x");
 
-        mat2_2d.setAxisUnit(0, "mm");
-        mat2_2d.setAxisUnit(1, "%");
+        this->mat2_2d.setAxisUnit(0, "mm");
+        this->mat2_2d.setAxisUnit(1, "%");
 
-        mat2_2d.setAxisOffset(0, 2.0);
-        mat2_2d.setAxisOffset(1, 3.0);
+        this->mat2_2d.setAxisOffset(0, 2.0);
+        this->mat2_2d.setAxisOffset(1, 3.0);
 
-        mat2_2d.setAxisScale(0, 1.0);
-        mat2_2d.setAxisScale(1, 2.0);
-        mat2_2d.setValueUnit("mm");
-        mat2_2d.setValueDescription("val");
-        mat2_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
+        this->mat2_2d.setAxisScale(0, 1.0);
+        this->mat2_2d.setAxisScale(1, 2.0);
+        this->mat2_2d.setValueUnit("mm");
+        this->mat2_2d.setValueDescription("val");
+        this->mat2_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
 
-        mat1_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
-        mat1_3d.setTag("testTag1", "test");
-        mat1_3d.setTag("testTag2", 0.0);
-        mat1_3d.setTag("testTag3", 1.0);
+        this->mat1_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
+        this->mat1_3d.setTag("testTag1", "test");
+        this->mat1_3d.setTag("testTag2", 0.0);
+        this->mat1_3d.setTag("testTag3", 1.0);
         
-        mat1_3d.setAxisDescription(0, "z");
-        mat1_3d.setAxisDescription(1, "y");
-        mat1_3d.setAxisDescription(2, "x");
+        this->mat1_3d.setAxisDescription(0, "z");
+        this->mat1_3d.setAxisDescription(1, "y");
+        this->mat1_3d.setAxisDescription(2, "x");
 
-        mat1_3d.setAxisUnit(0, "s");
-        mat1_3d.setAxisUnit(1, "%");
-        mat1_3d.setAxisUnit(2, "mm");
+        this->mat1_3d.setAxisUnit(0, "s");
+        this->mat1_3d.setAxisUnit(1, "%");
+        this->mat1_3d.setAxisUnit(2, "mm");
 
-        mat1_3d.setAxisOffset(0, 0.0);
-        mat1_3d.setAxisOffset(1, 1.0);
-        mat1_3d.setAxisOffset(2, 1.0);
+        this->mat1_3d.setAxisOffset(0, 0.0);
+        this->mat1_3d.setAxisOffset(1, 1.0);
+        this->mat1_3d.setAxisOffset(2, 1.0);
 
-        mat1_3d.setAxisScale(0, 2.0);
-        mat1_3d.setAxisScale(1, 0.5);
-        mat1_3d.setAxisScale(2, 5.0);
-        mat1_3d.setValueUnit("mm");
-        mat1_3d.setValueDescription("val");
-        mat1_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
+        this->mat1_3d.setAxisScale(0, 2.0);
+        this->mat1_3d.setAxisScale(1, 0.5);
+        this->mat1_3d.setAxisScale(2, 5.0);
+        this->mat1_3d.setValueUnit("mm");
+        this->mat1_3d.setValueDescription("val");
+        this->mat1_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
 
 
-        mat2_3d = ito::DataObject(1,3,3,ito::getDataType2<_Tp*>());
-        mat2_3d.setTag("testTag1", "test");
-        mat2_3d.setTag("testTag2", 0.0);
-        mat2_3d.setTag("testTag3", 1.0);
+        this->mat2_3d = ito::DataObject(1,3,3,ito::getDataType2<_Tp*>());
+        this->mat2_3d.setTag("testTag1", "test");
+        this->mat2_3d.setTag("testTag2", 0.0);
+        this->mat2_3d.setTag("testTag3", 1.0);
         
-        mat2_3d.setAxisDescription(0, "z");
-        mat2_3d.setAxisDescription(1, "y");
-        mat2_3d.setAxisDescription(2, "x");
+        this->mat2_3d.setAxisDescription(0, "z");
+        this->mat2_3d.setAxisDescription(1, "y");
+        this->mat2_3d.setAxisDescription(2, "x");
 
-        mat2_3d.setAxisUnit(0, "s");
-        mat2_3d.setAxisUnit(1, "%");
-        mat2_3d.setAxisUnit(2, "mm");
+        this->mat2_3d.setAxisUnit(0, "s");
+        this->mat2_3d.setAxisUnit(1, "%");
+        this->mat2_3d.setAxisUnit(2, "mm");
 
-        mat2_3d.setAxisOffset(0, 0.0);
-        mat2_3d.setAxisOffset(1, 1.0);
-        mat2_3d.setAxisOffset(2, 1.0);
+        this->mat2_3d.setAxisOffset(0, 0.0);
+        this->mat2_3d.setAxisOffset(1, 1.0);
+        this->mat2_3d.setAxisOffset(2, 1.0);
 
-        mat2_3d.setAxisScale(0, 2.0);
-        mat2_3d.setAxisScale(1, 0.5);
-        mat2_3d.setAxisScale(2, 5.0);
-        mat2_3d.setValueUnit("mm");
-        mat2_3d.setValueDescription("val");
-        mat2_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
+        this->mat2_3d.setAxisScale(0, 2.0);
+        this->mat2_3d.setAxisScale(1, 0.5);
+        this->mat2_3d.setAxisScale(2, 5.0);
+        this->mat2_3d.setValueUnit("mm");
+        this->mat2_3d.setValueDescription("val");
+        this->mat2_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
     }
+
     virtual void validTagSpace(const ito::DataObject &base, const ito::DataObject &temp)
     {
         double rotTempMat[9];
@@ -164,6 +165,7 @@ public:
             EXPECT_DOUBLE_EQ(rotMat[i], rotTempMat[i]);
         }   
     }
+
     virtual void validAxisTags(const ito::DataObject &base, const ito::DataObject &temp, bool invertLastDims = false)
     {
         bool vop1;
@@ -267,13 +269,13 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTo_Test)
 {
     ito::DataObject dTempTest;
 
-    mat1_3d.copyTo(dTempTest);
-    validTagSpace(mat1_3d, dTempTest);
-    validAxisTags(mat1_3d, dTempTest);
+    this->mat1_3d.copyTo(dTempTest);
+    this->validTagSpace(this->mat1_3d, dTempTest);
+    this->validAxisTags(this->mat1_3d, dTempTest);
 
-    mat1_2d.copyTo(dTempTest);
-    validTagSpace(mat1_2d, dTempTest);
-    validAxisTags(mat1_2d, dTempTest);
+    this->mat1_2d.copyTo(dTempTest);
+    this->validTagSpace(this->mat1_2d, dTempTest);
+    this->validAxisTags(this->mat1_2d, dTempTest);
 
 };
 
@@ -283,26 +285,26 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTo_Test)
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTagSpaces_Test)
 {
-    ito::DataObject dTempTest(mat1_3d.getDims(), mat1_3d.getSize(), mat1_3d.getType());
+    ito::DataObject dTempTest(this->mat1_3d.getDims(), this->mat1_3d.getSize(), this->mat1_3d.getType());
 
-    mat1_3d.copyTagMapTo(dTempTest);
-    mat1_3d.copyAxisTagsTo(dTempTest);
-    validTagSpace(mat1_3d, dTempTest);
-    validAxisTags(mat1_3d, dTempTest);
+    this->mat1_3d.copyTagMapTo(dTempTest);
+    this->mat1_3d.copyAxisTagsTo(dTempTest);
+    this->validTagSpace(this->mat1_3d, dTempTest);
+    this->validAxisTags(this->mat1_3d, dTempTest);
 
-    dTempTest = ito::DataObject(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest = ito::DataObject(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    mat1_2d.copyTagMapTo(dTempTest);
-    mat1_2d.copyAxisTagsTo(dTempTest);
-    validTagSpace(mat1_2d, dTempTest);
-    validAxisTags(mat1_2d, dTempTest);
+    this->mat1_2d.copyTagMapTo(dTempTest);
+    this->mat1_2d.copyAxisTagsTo(dTempTest);
+    this->validTagSpace(this->mat1_2d, dTempTest);
+    this->validAxisTags(this->mat1_2d, dTempTest);
 
-    dTempTest = ito::DataObject(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest = ito::DataObject(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    mat1_3d.copyTagMapTo(dTempTest);
-    mat1_3d.copyAxisTagsTo(dTempTest);
-    validTagSpace(mat1_3d, dTempTest);
-    validAxisTags(mat1_3d, dTempTest);
+    this->mat1_3d.copyTagMapTo(dTempTest);
+    this->mat1_3d.copyAxisTagsTo(dTempTest);
+    this->validTagSpace(this->mat1_3d, dTempTest);
+    this->validAxisTags(this->mat1_3d, dTempTest);
 
 };
 
@@ -314,14 +316,14 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_convertTo_Test)
 {
     ito::DataObject dTempTest1;
     
-    mat1_2d.convertTo(dTempTest1, mat1_2d.getType());
-    validTagSpace(mat1_2d, dTempTest1);
-    validAxisTags(mat1_2d, dTempTest1);
+    this->mat1_2d.convertTo(dTempTest1, this->mat1_2d.getType());
+    this->validTagSpace(this->mat1_2d, dTempTest1);
+    this->validAxisTags(this->mat1_2d, dTempTest1);
 
     ito::DataObject dTempTest2;
-    mat1_2d.convertTo(dTempTest2, mat1_2d.getType(), 2.0, 1.0);
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2);
+    this->mat1_2d.convertTo(dTempTest2, this->mat1_2d.getType(), 2.0, 1.0);
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2);
 
 };
 
@@ -331,14 +333,14 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_convertTo_Test)
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copySallow_Test)
 {
-    ito::DataObject dTempTest1 = mat1_2d;
+    ito::DataObject dTempTest1 = this->mat1_2d;
     
-    validTagSpace(mat1_2d, dTempTest1);
-    validAxisTags(mat1_2d, dTempTest1);
+    this->validTagSpace(this->mat1_2d, dTempTest1);
+    this->validAxisTags(this->mat1_2d, dTempTest1);
 
-    ito::DataObject dTempTest2(mat1_2d);
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2);
+    ito::DataObject dTempTest2(this->mat1_2d);
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2);
 
 };
 
@@ -350,12 +352,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_assignedScalar_Test)
 {
     ito::DataObject dTempTest1;
     
-    mat1_2d.copyTo(dTempTest1);
+    this->mat1_2d.copyTo(dTempTest1);
 
     dTempTest1 = 11;
 
-    validTagSpace(mat1_2d, dTempTest1);
-    validAxisTags(mat1_2d, dTempTest1);
+    this->validTagSpace(this->mat1_2d, dTempTest1);
+    this->validAxisTags(this->mat1_2d, dTempTest1);
 
 };
 
@@ -367,24 +369,24 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_add_Test)
 {
     ito::DataObject dTempTest1;
     
-    mat1_2d.copyTo(dTempTest1);
+    this->mat1_2d.copyTo(dTempTest1);
 
     dTempTest1 += 11;
 
-    validTagSpace(mat1_2d, dTempTest1);
-    validAxisTags(mat1_2d, dTempTest1);
+    this->validTagSpace(this->mat1_2d, dTempTest1);
+    this->validAxisTags(this->mat1_2d, dTempTest1);
 
-    ito::DataObject dTempTest2 = mat1_2d + 10;
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2);
+    ito::DataObject dTempTest2 = this->mat1_2d + 10;
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2);
 
     dTempTest1 = ito::DataObject();
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    ito::DataObject dTempTest3 = mat1_2d + dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    ito::DataObject dTempTest3 = this->mat1_2d + dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
 };
 
@@ -396,24 +398,24 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_sub_Test)
 {
     ito::DataObject dTempTest1;
     
-    mat1_2d.copyTo(dTempTest1);
+    this->mat1_2d.copyTo(dTempTest1);
 
     dTempTest1 -= 11;
 
-    validTagSpace(mat1_2d, dTempTest1);
-    validAxisTags(mat1_2d, dTempTest1);
+    this->validTagSpace(this->mat1_2d, dTempTest1);
+    this->validAxisTags(this->mat1_2d, dTempTest1);
 
-    ito::DataObject dTempTest2 = mat1_2d - 10;
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2);
+    ito::DataObject dTempTest2 = this->mat1_2d - 10;
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2);
 
     dTempTest1 = ito::DataObject();
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    ito::DataObject dTempTest3 = mat1_2d - dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    ito::DataObject dTempTest3 = this->mat1_2d - dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
 };
 
@@ -425,49 +427,49 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_mul_Test)
 {
     ito::DataObject dTempTest1;
     
-    mat2_2d.copyTo(dTempTest1);
+    this->mat2_2d.copyTo(dTempTest1);
 
     dTempTest1 *= 11;
 
-    validTagSpace(mat2_2d, dTempTest1);
-    validAxisTags(mat2_2d, dTempTest1);
+    this->validTagSpace(this->mat2_2d, dTempTest1);
+    this->validAxisTags(this->mat2_2d, dTempTest1);
 
-    ito::DataObject dTempTest2 = mat2_2d * 10;
-    validTagSpace(mat2_2d, dTempTest2);
-    validAxisTags(mat2_2d, dTempTest2);
+    ito::DataObject dTempTest2 = this->mat2_2d * 10;
+    this->validTagSpace(this->mat2_2d, dTempTest2);
+    this->validAxisTags(this->mat2_2d, dTempTest2);
 
-    if(mat2_2d.getType() == ito::tFloat32 || mat2_2d.getType() == ito::tFloat64)
+    if(this->mat2_2d.getType() == ito::tFloat32 || this->mat2_2d.getType() == ito::tFloat64)
     {
         dTempTest1 = ito::DataObject();
-        dTempTest1.ones(mat2_2d.getDims(), mat2_2d.getSize(), mat2_2d.getType());
-        mat2_2d = 2;
-        ito::DataObject dTempTest3 = mat2_2d * dTempTest1;
-        validTagSpace(mat2_2d, dTempTest3);
-        validAxisTags(mat2_2d, dTempTest3);
-        invalid(dTempTest1, dTempTest3);
+        dTempTest1.ones(this->mat2_2d.getDims(), this->mat2_2d.getSize(), this->mat2_2d.getType());
+        this->mat2_2d = 2;
+        ito::DataObject dTempTest3 = this->mat2_2d * dTempTest1;
+        this->validTagSpace(this->mat2_2d, dTempTest3);
+        this->validAxisTags(this->mat2_2d, dTempTest3);
+        this->invalid(dTempTest1, dTempTest3);
 
     }
     else
     {
         ito::DataObject dTempTest3;
         dTempTest1 = ito::DataObject();
-        dTempTest1.ones(mat2_2d.getDims(), mat2_2d.getSize(), mat2_2d.getType());
-        mat2_2d = 2;
-        EXPECT_ANY_THROW(dTempTest3 = mat2_2d * dTempTest1);
+        dTempTest1.ones(this->mat2_2d.getDims(), this->mat2_2d.getSize(), this->mat2_2d.getType());
+        this->mat2_2d = 2;
+        EXPECT_ANY_THROW(dTempTest3 = this->mat2_2d * dTempTest1);
         
     }
     
     dTempTest2 = ito::DataObject();
     dTempTest1 = ito::DataObject();
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    dTempTest2 = mat1_2d.mul(dTempTest1);
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2);
-    invalid(dTempTest1, dTempTest2);
+    dTempTest2 = this->mat1_2d.mul(dTempTest1);
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2);
+    this->invalid(dTempTest1, dTempTest2);
 
-    dTempTest2 = dTempTest1.mul(mat1_2d);
-    invalid(mat1_2d, dTempTest2);
+    dTempTest2 = dTempTest1.mul(this->mat1_2d);
+    this->invalid(this->mat1_2d, dTempTest2);
     
 };
 
@@ -482,18 +484,18 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_div_Test)
     ito::DataObject dTempTest3;
 
     dTempTest1 = ito::DataObject();
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    mat1_2d.copyTo(dTempTest2);
+    this->mat1_2d.copyTo(dTempTest2);
     dTempTest2 = 1;
 
     dTempTest3 = dTempTest2.mul(dTempTest1);
-    validTagSpace(dTempTest2, dTempTest3);
-    validAxisTags(dTempTest2, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    this->validTagSpace(dTempTest2, dTempTest3);
+    this->validAxisTags(dTempTest2, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
     dTempTest3 = dTempTest1.mul(dTempTest2);
-    invalid(dTempTest2, dTempTest3);
+    this->invalid(dTempTest2, dTempTest3);
 
 };
 
@@ -505,37 +507,37 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_comp_Test)
 {
     ito::DataObject dTempTest1;
 
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    ito::DataObject dTempTest3 = mat1_2d == dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    ito::DataObject dTempTest3 = this->mat1_2d == dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = mat1_2d < dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    dTempTest3 = this->mat1_2d < dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = mat1_2d > dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    dTempTest3 = this->mat1_2d > dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = mat1_2d >= dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    dTempTest3 = this->mat1_2d >= dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = mat1_2d <= dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    dTempTest3 = this->mat1_2d <= dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = mat1_2d != dTempTest1;
-    validTagSpace(mat1_2d, dTempTest3);
-    validAxisTags(mat1_2d, dTempTest3);
-    invalid(dTempTest1, dTempTest3);
+    dTempTest3 = this->mat1_2d != dTempTest1;
+    this->validTagSpace(this->mat1_2d, dTempTest3);
+    this->validAxisTags(this->mat1_2d, dTempTest3);
+    this->invalid(dTempTest1, dTempTest3);
 
 };
 
@@ -547,45 +549,45 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
 {
     ito::DataObject dTempTest1;
 
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
-    mat1_2d.copyAxisTagsTo(dTempTest1);
-    mat1_2d.copyTagMapTo(dTempTest1);
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
+    this->mat1_2d.copyAxisTagsTo(dTempTest1);
+    this->mat1_2d.copyTagMapTo(dTempTest1);
 
-    if(mat1_2d.getType() == ito::tInt8   || 
-       mat1_2d.getType() == ito::tUInt8  ||
-       mat1_2d.getType() == ito::tInt16  || 
-       mat1_2d.getType() == ito::tUInt16 ||
-       mat1_2d.getType() == ito::tInt32  )
+    if(this->mat1_2d.getType() == ito::tInt8   ||
+       this->mat1_2d.getType() == ito::tUInt8  ||
+       this->mat1_2d.getType() == ito::tInt16  ||
+       this->mat1_2d.getType() == ito::tUInt16 ||
+       this->mat1_2d.getType() == ito::tInt32  )
     {
         dTempTest1 <<= 1;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
 
 
-        dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
-        mat1_2d.copyAxisTagsTo(dTempTest1);
-        mat1_2d.copyTagMapTo(dTempTest1);
+        dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
+        this->mat1_2d.copyAxisTagsTo(dTempTest1);
+        this->mat1_2d.copyTagMapTo(dTempTest1);
 
         dTempTest1 >>= 1;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = mat1_2d >> 1;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
+        dTempTest1 = this->mat1_2d >> 1;
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = mat1_2d << 1;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
+        dTempTest1 = this->mat1_2d << 1;
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
     }
     else
     {
         EXPECT_ANY_THROW(dTempTest1 <<= 1;);
         EXPECT_ANY_THROW(dTempTest1 >>= 1;);
-        EXPECT_ANY_THROW(dTempTest1 = mat1_2d >> 1;);
-        EXPECT_ANY_THROW(dTempTest1 = mat1_2d << 1;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d >> 1;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d << 1;);
     }
 };
 
@@ -596,67 +598,67 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_bitwiseCompare_Test)
 {
     ito::DataObject dTempTest1;
-    dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
     ito::DataObject dTempTest2;
-    dTempTest2.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
+    dTempTest2.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
 
-    mat1_2d.copyAxisTagsTo(dTempTest1);
-    mat1_2d.copyTagMapTo(dTempTest1);
+    this->mat1_2d.copyAxisTagsTo(dTempTest1);
+    this->mat1_2d.copyTagMapTo(dTempTest1);
 
-    if(mat1_2d.getType() == ito::tInt8   || 
-       mat1_2d.getType() == ito::tUInt8  ||
-       mat1_2d.getType() == ito::tInt16  || 
-       mat1_2d.getType() == ito::tUInt16 ||
-       mat1_2d.getType() == ito::tInt32  )
+    if(this->mat1_2d.getType() == ito::tInt8   ||
+       this->mat1_2d.getType() == ito::tUInt8  ||
+       this->mat1_2d.getType() == ito::tInt16  ||
+       this->mat1_2d.getType() == ito::tUInt16 ||
+       this->mat1_2d.getType() == ito::tInt32  )
     {
         dTempTest1 &= dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
 
-        dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
-        mat1_2d.copyAxisTagsTo(dTempTest1);
-        mat1_2d.copyTagMapTo(dTempTest1);
+        dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
+        this->mat1_2d.copyAxisTagsTo(dTempTest1);
+        this->mat1_2d.copyTagMapTo(dTempTest1);
         dTempTest1 |= dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
 
-        dTempTest1.ones(mat1_2d.getDims(), mat1_2d.getSize(), mat1_2d.getType());
-        mat1_2d.copyAxisTagsTo(dTempTest1);
-        mat1_2d.copyTagMapTo(dTempTest1);
+        dTempTest1.ones(this->mat1_2d.getDims(), this->mat1_2d.getSize(), this->mat1_2d.getType());
+        this->mat1_2d.copyAxisTagsTo(dTempTest1);
+        this->mat1_2d.copyTagMapTo(dTempTest1);
         dTempTest1 ^= dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = mat1_2d & dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        dTempTest1 = this->mat1_2d & dTempTest2;
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = mat1_2d | dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        dTempTest1 = this->mat1_2d | dTempTest2;
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = mat1_2d ^ dTempTest2;
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
-        invalid(dTempTest1, dTempTest2);
+        dTempTest1 = this->mat1_2d ^ dTempTest2;
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
+        this->invalid(dTempTest1, dTempTest2);
     }
     else
     {
         EXPECT_ANY_THROW(dTempTest1 &= dTempTest2;);
         EXPECT_ANY_THROW(dTempTest1 |= dTempTest2;);
         EXPECT_ANY_THROW(dTempTest1 ^= dTempTest2;);
-        EXPECT_ANY_THROW(dTempTest1 = mat1_2d & dTempTest2;);
-        EXPECT_ANY_THROW(dTempTest1 = mat1_2d | dTempTest2;);
-        EXPECT_ANY_THROW(dTempTest1 = mat1_2d ^ dTempTest2;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d & dTempTest2;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d | dTempTest2;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d ^ dTempTest2;);
     }
 };
 
@@ -667,12 +669,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_bitwiseCompare_Test)
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_conj_Test)
 {
     ito::DataObject dTempTest1;
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128)
     {
         dTempTest1.conj();
-        validTagSpace(mat1_2d, dTempTest1);
-        validAxisTags(mat1_2d, dTempTest1);
+        this->validTagSpace(this->mat1_2d, dTempTest1);
+        this->validAxisTags(this->mat1_2d, dTempTest1);
 
     }
     else
@@ -689,12 +691,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_adj_Test)
 {
     ito::DataObject dTempTest1;
     ito::DataObject dTempTest2;
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128)
     {
         dTempTest2 = dTempTest1.adj();
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2, true);
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2, true);
 
     }
     else
@@ -711,11 +713,11 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_trans_Test)
 {
     ito::DataObject dTempTest1;
     ito::DataObject dTempTest2;
-    mat1_2d.copyTo(dTempTest1);
+    this->mat1_2d.copyTo(dTempTest1);
 
     dTempTest2 = dTempTest1.trans();
-    validTagSpace(mat1_2d, dTempTest2);
-    validAxisTags(mat1_2d, dTempTest2, true);
+    this->validTagSpace(this->mat1_2d, dTempTest2);
+    this->validAxisTags(this->mat1_2d, dTempTest2, true);
 
 
 };
@@ -728,11 +730,11 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 {
     ito::DataObject dTempTest1;
     ito::DataObject dTempTest2;
-    mat2_3d.copyTo(dTempTest1);
+    this->mat2_3d.copyTo(dTempTest1);
 
     dTempTest2 = dTempTest1.squeeze();
-    validTagSpace(mat2_3d, dTempTest2);
-    validAxisTags(mat2_3d, dTempTest2);
+    this->validTagSpace(this->mat2_3d, dTempTest2);
+    this->validAxisTags(this->mat2_3d, dTempTest2);
 
 };
 
@@ -742,20 +744,20 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_toGray_Test)
 {
-    ito::DataObject dTempTest1(mat1_2d.getDims(), mat1_2d.getSize(), ito::tRGBA32);
+    ito::DataObject dTempTest1(this->mat1_2d.getDims(), this->mat1_2d.getSize(), ito::tRGBA32);
     
-    mat1_2d.copyTagMapTo(dTempTest1);
-    mat1_2d.copyAxisTagsTo(dTempTest1);
+    this->mat1_2d.copyTagMapTo(dTempTest1);
+    this->mat1_2d.copyAxisTagsTo(dTempTest1);
 
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128 || mat1_2d.getType() == ito::tRGBA32)
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128 || this->mat1_2d.getType() == ito::tRGBA32)
     {
-        EXPECT_ANY_THROW(dTempTest1.toGray(mat1_2d.getType()););
+        EXPECT_ANY_THROW(dTempTest1.toGray(this->mat1_2d.getType()););
     }
     else
     {
-        ito::DataObject dTempTest2 = dTempTest1.toGray(mat1_2d.getType());
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2);
+        ito::DataObject dTempTest2 = dTempTest1.toGray(this->mat1_2d.getType());
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2);
     }
 
 
@@ -769,14 +771,14 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_makeContinous_Test)
 {
     ito::DataObject dTempTest;
 
-    mat1_3d.copyTo(dTempTest);
+    this->mat1_3d.copyTo(dTempTest);
 
-    EXPECT_EQ(mat1_3d.getContinuous(), false);
+    EXPECT_EQ(this->mat1_3d.getContinuous(), false);
 
     ito::makeContinuous(dTempTest);
 
-    validTagSpace(mat1_3d, dTempTest);
-    validAxisTags(mat1_3d, dTempTest);    
+    this->validTagSpace(this->mat1_3d, dTempTest);
+    this->validAxisTags(this->mat1_3d, dTempTest);
 
 };
 
@@ -789,12 +791,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_real_Test)
     ito::DataObject dTempTest2;
     ito::DataObject dTempTest1;
 
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128)
     {
         dTempTest2 = ito::real(dTempTest1);
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2);
 
     }
     else
@@ -812,12 +814,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_imag_Test)
     ito::DataObject dTempTest2;
     ito::DataObject dTempTest1;
 
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128)
     {
         dTempTest2 = ito::imag(dTempTest1);
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2);
 
     }
     else
@@ -835,12 +837,12 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_arg_Test)
     ito::DataObject dTempTest2;
     ito::DataObject dTempTest1;
 
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tComplex64 || mat1_2d.getType() == ito::tComplex128)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tComplex64 || this->mat1_2d.getType() == ito::tComplex128)
     {
         dTempTest2 = ito::arg(dTempTest1);
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2);
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2);
 
     }
     else
@@ -858,16 +860,16 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_abs_Test)
     ito::DataObject dTempTest2;
     ito::DataObject dTempTest1;
 
-    mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tRGBA32)
+    this->mat1_2d.copyTo(dTempTest1);
+    if(this->mat1_2d.getType() == ito::tRGBA32)
     {
         EXPECT_ANY_THROW(ito::abs(dTempTest1););
     }
     else
     {
         dTempTest2 = ito::abs(dTempTest1);
-        validTagSpace(mat1_2d, dTempTest2);
-        validAxisTags(mat1_2d, dTempTest2);        
+        this->validTagSpace(this->mat1_2d, dTempTest2);
+        this->validAxisTags(this->mat1_2d, dTempTest2);
     }
 
 

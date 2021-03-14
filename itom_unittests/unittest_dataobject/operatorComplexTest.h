@@ -2,7 +2,7 @@
 #define OPERATORCOMPLEXTEST_H
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.

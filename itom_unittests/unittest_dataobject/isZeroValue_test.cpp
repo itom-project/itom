@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 //#include "test_global.h"
@@ -65,34 +65,29 @@ TYPED_TEST_CASE(IsZeroValueComplexTest, ItomComplexDataTypes);
 
 TYPED_TEST(IsZeroValueComplexTest, checkZeroValueComplex_Test)
 {
-    //!< Declaration for complex32 type variables.
-    std::complex<ito::float32> ZeroVal1(0.0,0.0); 
-    std::complex<ito::float32> NonZeroVal1(0.01,0.0);
-    std::complex<ito::float32> NonZeroVal2(0.0,-0.05);
-    std::complex<ito::float32> NonZeroVal3(-0.03,0.01);
 
-    //!< Declaration for complex64 type variables.
-    std::complex<ito::float64> ZeroVal2(0.0,0.0); 
-    std::complex<ito::float64> NonZeroVal4(0.01,0.0);
-    std::complex<ito::float64> NonZeroVal5(0.0,-0.05);
-    std::complex<ito::float64> NonZeroVal6(-0.03,0.01);
-
-    //!< Declaration for zero value variables. 
-    std::complex<ito::float32> epsilon1( std::numeric_limits<ito::float32>::epsilon() ,0.0) ;
-    std::complex<ito::float64> epsilon2( std::numeric_limits<ito::float64>::epsilon() ,0.0) ;
-    if(std::numeric_limits<TypeParam>::is_exact)
+    if(!std::numeric_limits<TypeParam>::is_exact)
     {
+        //!< Declaration for zero value variables.
+        TypeParam epsilon2(100, 0);
 
-    }
-    else
-    {
-        EXPECT_TRUE( ito::isZeroValue<TypeParam>(ZeroVal1, epsilon1 ) );            /*!< Test of isZeroValue() function for real part of Complex Type Variable with zero value.  */
-        EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal1, epsilon1 ) );        /*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero positive value. */    
-        EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal2, epsilon1) );            /*!< Test of isZeroValue() function for Complex Type variable with zero real part and nonzero negative imaginary part. */
-        EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal3, epsilon1 ) );        /*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero negative value. */
+        if (typeid(TypeParam) == typeid(std::complex<ito::float32>))
+        {
+            epsilon2.real(std::numeric_limits<ito::float32>::epsilon());
+        }
+        else
+        {
+            epsilon2.real(std::numeric_limits<ito::float64>::epsilon());
+        }
+
+        //!< Declaration for complex64 type variables.
+        TypeParam ZeroVal2(0.0,0.0);
+        TypeParam NonZeroVal4(0.01,0.0);
+        TypeParam NonZeroVal5(0.0,-0.05);
+        TypeParam NonZeroVal6(-0.03,0.01);
 
         EXPECT_TRUE( ito::isZeroValue<TypeParam>(ZeroVal2, epsilon2 ) );            /*!< Test of isZeroValue() function for real part of Complex Type Variable with zero value.  */
-        EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal4, epsilon2 ) );        /*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero positive value. */    
+        EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal4, epsilon2 ) );        /*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero positive value. */
         EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal5, epsilon2) );            /*!< Test of isZeroValue() function for Complex Type variable with zero real part and nonzero negative imaginary part. */
         EXPECT_FALSE( ito::isZeroValue<TypeParam>(NonZeroVal6, epsilon2 ) );        /*!< Test of isZeroValue() function for real part of Complex Type Variable with nonzero negative value. */
     }

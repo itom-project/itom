@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -65,7 +65,7 @@ TYPED_TEST(at_func_test1, at_Test1)
     {
         for(int j=0; j<10;j++)
         {
-            dObj2.at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
+            this->dObj2.template at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
         }
     }
 
@@ -76,16 +76,16 @@ TYPED_TEST(at_func_test1, at_Test1)
     ranges[0].end =4;
     ranges[1].start = 0;
     ranges[1].end =3;
-    dObj2_test=dObj2.at(ranges);            //!< assigning a part of data object dObj2 to dObj2_test bounded in a range defined in array ranges[] 
-    EXPECT_EQ(dObj2.getDims(), dObj2_test.getDims());        //!< checks if the dimesions of dObj2_test is same as the original data object dObj2 after applying at() function.
-    EXPECT_EQ(cv::saturate_cast<TypeParam>(4),dObj2_test.getSize(0));    //!< checks expected size of 0th dimenstion of data object dObj2_test after applying at() function 
-    EXPECT_EQ(cv::saturate_cast<TypeParam>(3),dObj2_test.getSize(1));    //!< checks expected size of 1st dimenstion of data object dObj2_test after applying at() function 
+    dObj2_test= this->dObj2.at(ranges);            //!< assigning a part of data object dObj2 to dObj2_test bounded in a range defined in array ranges[]
+    EXPECT_EQ(this->dObj2.getDims(), dObj2_test.getDims());        //!< checks if the dimesions of dObj2_test is same as the original data object dObj2 after applying at() function.
+    EXPECT_EQ(cv::saturate_cast<TypeParam>(4), dObj2_test.getSize(0));    //!< checks expected size of 0th dimenstion of data object dObj2_test after applying at() function
+    EXPECT_EQ(cv::saturate_cast<TypeParam>(3), dObj2_test.getSize(1));    //!< checks expected size of 1st dimenstion of data object dObj2_test after applying at() function
     int temp=0;
     for(int i=0;i<4;i++)
     {
         for(int j=0;j<3;j++)
         {
-        EXPECT_EQ(dObj2_test.at<TypeParam>(i,j), check_arry1[temp++]);    //!< checks if the element values of dObj2_test, obtained with at() function applied on data object dObj2, is same as the original data object dObj2.
+        EXPECT_EQ(dObj2_test.template at<TypeParam>(i,j), check_arry1[temp++]);    //!< checks if the element values of dObj2_test, obtained with at() function applied on data object dObj2, is same as the original data object dObj2.
         }
     }
     
@@ -98,7 +98,7 @@ TYPED_TEST(at_func_test1, at_Test1)
         {
             for(int k=0;k<5;k++)
             {
-                dObj3.at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++); //!< Assigning unique value to each element of dObj3.
+                this->dObj3.template at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++); //!< Assigning unique value to each element of dObj3.
             }
         }
     }
@@ -112,8 +112,8 @@ TYPED_TEST(at_func_test1, at_Test1)
     ranges_3d[2].end =3;
     int check_arry2[] = {25,26,27,30,31,32,50,51,52,55,56,57};    //!< expected result array after applying at() function to dObj3
 
-    dObj3_test = dObj3.at(ranges_3d);    //!< assigning a part of data object dObj3 to dObj3_test bounded in a range defined in array ranges_3d[] 
-    EXPECT_EQ(dObj3.getDims(), dObj3_test.getDims());    //!< checks if the dimesions of dObj3_test is same as the original data object dObj3 after applying at() function.
+    dObj3_test = this->dObj3.at(ranges_3d);    //!< assigning a part of data object dObj3 to dObj3_test bounded in a range defined in array ranges_3d[]
+    EXPECT_EQ(this->dObj3.getDims(), dObj3_test.getDims());    //!< checks if the dimesions of dObj3_test is same as the original data object dObj3 after applying at() function.
     EXPECT_EQ(cv::saturate_cast<TypeParam>(2),dObj3_test.getSize(0)); //!< checks expected size of 0th dimenstion of data object dObj3_test after applying at() function 
     EXPECT_EQ(cv::saturate_cast<TypeParam>(2),dObj3_test.getSize(1)); //!< checks expected size of 1st dimenstion of data object dObj3_test after applying at() function 
     EXPECT_EQ(cv::saturate_cast<TypeParam>(3),dObj3_test.getSize(2)); //!< checks expected size of 2nd dimenstion of data object dObj3_test after applying at() function 
@@ -142,7 +142,7 @@ TYPED_TEST(at_func_test1, at_Test2)
     {
         for(int j=0; j<10;j++)
         {
-            dObj2.at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
+            this->dObj2.template at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
         }
     }
 
@@ -153,7 +153,7 @@ TYPED_TEST(at_func_test1, at_Test2)
         {
             for(int k=0;k<5;k++)
             {
-                dObj3.at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);    //!< Assigning unique value to each element of dObj3.
+                this->dObj3.template at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);    //!< Assigning unique value to each element of dObj3.
             }
         }
     }
@@ -164,11 +164,11 @@ TYPED_TEST(at_func_test1, at_Test2)
     ranges1[0] = ito::Range::all();    //!< ranges1[0] element should point to full range of 0th dimension of the related data object
     ranges1[1] = ito::Range::all();    //!< ranges1[1] element should point to full range of 1st dimension of the related data object
 
-    dObj2_test1 = dObj2.at(ranges1);    //!< assigning the full data object dObj2 to dObj2_test1 using full range array defined with range1[]. 
+    dObj2_test1 = this->dObj2.at(ranges1);    //!< assigning the full data object dObj2 to dObj2_test1 using full range array defined with range1[].
 
-    EXPECT_EQ(dObj2.getDims(),dObj2_test1.getDims());    //!< dimension of both data objects should be same after applying at() function
-    EXPECT_EQ(dObj2.getSize(0),dObj2_test1.getSize(0));    //!< checking if the size of 0th dimension is same as the original
-    EXPECT_EQ(dObj2.getSize(1),dObj2_test1.getSize(1));    //!< checking if the size of 1st dimension is same as the original
+    EXPECT_EQ(this->dObj2.getDims(),dObj2_test1.getDims());    //!< dimension of both data objects should be same after applying at() function
+    EXPECT_EQ(this->dObj2.getSize(0),dObj2_test1.getSize(0));    //!< checking if the size of 0th dimension is same as the original
+    EXPECT_EQ(this->dObj2.getSize(1),dObj2_test1.getSize(1));    //!< checking if the size of 1st dimension is same as the original
     for(int i =0; i<10;i++)
     {
         for(int j=0; j<10;j++)
@@ -185,12 +185,12 @@ TYPED_TEST(at_func_test1, at_Test2)
     ranges_3d[0]= ito::Range::all();    //!< ranges_3d[0] element should point to full range of 0th dimension of the related data object.
     ranges_3d[1]= ito::Range::all();    //!< ranges_3d[1] element should point to full range of 1st dimension of the related data object.
     ranges_3d[2]= ito::Range::all();    //!< ranges_3d[2] element should point to full range of 2nd dimension of the related data object.
-     dObj3_test1 = dObj3.at(ranges_3d);    //!< assigning the full data object dObj3 to dObj3_test1 using full range array defined with range_3d[]. 
+     dObj3_test1 = this->dObj3.at(ranges_3d);    //!< assigning the full data object dObj3 to dObj3_test1 using full range array defined with range_3d[].
 
-     EXPECT_EQ(dObj3.getDims(),dObj3_test1.getDims());        //!< dimension of both data objects should be same after applying at() function
-     EXPECT_EQ(dObj3.getSize(0),dObj3_test1.getSize(0));    //!< checking if the size of 0th dimension is same as the original
-     EXPECT_EQ(dObj3.getSize(1),dObj3_test1.getSize(1));    //!< checking if the size of 1st dimension is same as the original
-     EXPECT_EQ(dObj3.getSize(2),dObj3_test1.getSize(2));    //!< checking if the size of 2nd dimension is same as the original
+     EXPECT_EQ(this->dObj3.getDims(), dObj3_test1.getDims());        //!< dimension of both data objects should be same after applying at() function
+     EXPECT_EQ(this->dObj3.getSize(0), dObj3_test1.getSize(0));    //!< checking if the size of 0th dimension is same as the original
+     EXPECT_EQ(this->dObj3.getSize(1), dObj3_test1.getSize(1));    //!< checking if the size of 1st dimension is same as the original
+     EXPECT_EQ(this->dObj3.getSize(2), dObj3_test1.getSize(2));    //!< checking if the size of 2nd dimension is same as the original
 
     temp=0;
     for(int i=0;i<4; i++)
@@ -215,7 +215,7 @@ TYPED_TEST(at_func_test1, at_Test3)
     {
         for(int j=0; j<10;j++)
         {
-            dObj2.at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
+            this->dObj2.template at<TypeParam>(i,j)= cv::saturate_cast<TypeParam>(10*i+j);    //!< Assigning unique value to each element of dObj2.
         }
     }
 
@@ -227,7 +227,7 @@ TYPED_TEST(at_func_test1, at_Test3)
         {
             for(int k=0;k<5;k++)
             {
-                dObj3.at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);    //!< Assigning unique value to each element of dObj3.
+                this->dObj3.template at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);    //!< Assigning unique value to each element of dObj3.
             }
         }
     }
@@ -239,7 +239,7 @@ TYPED_TEST(at_func_test1, at_Test3)
     ranges1[1].start = 0;        //!< Start limit of ranges1[1]
     ranges1[1].end =3;            //!< End limit of ranges1[1]
 
-    EXPECT_ANY_THROW(dObj2_test1 = dObj2.at(ranges1));            //!< Expect an exception to be raised because ranges are outside of original data object size
+    EXPECT_ANY_THROW(dObj2_test1 = this->dObj2.at(ranges1));            //!< Expect an exception to be raised because ranges are outside of original data object size
     
     //!< For 3 dimension Data Objects
     ito::DataObject dObj3_test1;
@@ -250,6 +250,6 @@ TYPED_TEST(at_func_test1, at_Test3)
     ranges_3d[1].end =2;    //!< End limit of ranges_3d[1]
     ranges_3d[2].start =1;    //!< Start limit of ranges_3d[2]
     ranges_3d[2].end =7;    //!< End limit of ranges_3d[2]
-    EXPECT_ANY_THROW(dObj3_test1 = dObj3.at(ranges_3d));        //!< Expect an exception to be raised because ranges are outside of original data object size
+    EXPECT_ANY_THROW(dObj3_test1 = this->dObj3.at(ranges_3d));        //!< Expect an exception to be raised because ranges are outside of original data object size
 }
 

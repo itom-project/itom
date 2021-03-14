@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 )
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -60,19 +60,18 @@ TYPED_TEST_CASE(AddressTest, ItomDataAllTypes);
 TYPED_TEST(AddressTest, checkValues)
 {
     int typeno = ito::getDataType( (const TypeParam *) NULL );
-    EXPECT_EQ ( this->matrix1x1.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
-    EXPECT_EQ ( this->matrix1x1.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
+    EXPECT_EQ ( this->matrix1x1.template at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
+    EXPECT_EQ ( this->matrix1x1.template at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
 
-    EXPECT_EQ ( this->matrix1x2.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
-    EXPECT_EQ ( this->matrix1x2.at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(12));
+    EXPECT_EQ ( this->matrix1x2.template at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
+    EXPECT_EQ ( this->matrix1x2.template at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(12));
 
-    EXPECT_EQ ( this->matrix2x2.at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
-    EXPECT_EQ ( this->matrix2x2.at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(12));
-    EXPECT_EQ ( this->matrix2x2.at<TypeParam>(1,0) , cv::saturate_cast<TypeParam>(21));
-    EXPECT_EQ ( this->matrix2x2.at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(22));
+    EXPECT_EQ ( this->matrix2x2.template at<TypeParam>(0,0) , cv::saturate_cast<TypeParam>(11));
+    EXPECT_EQ ( this->matrix2x2.template at<TypeParam>(0,1) , cv::saturate_cast<TypeParam>(12));
+    EXPECT_EQ ( this->matrix2x2.template at<TypeParam>(1,0) , cv::saturate_cast<TypeParam>(21));
+    EXPECT_EQ ( this->matrix2x2.template at<TypeParam>(1,1) , cv::saturate_cast<TypeParam>(22));
 
-    EXPECT_EQ ( this->matrix1x1x1.at<TypeParam>(0,0,0) , cv::saturate_cast<TypeParam>(111));
-    
+    EXPECT_EQ ( this->matrix1x1x1.template at<TypeParam>(0,0,0) , cv::saturate_cast<TypeParam>(111));
 }
 
 //checkDim

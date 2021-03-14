@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -14,7 +14,7 @@
 /*! \class transposeTest
 */
 template <typename _Tp> class transposeTest : public ::testing::Test 
-    { 
+{
 public:
 
     virtual void SetUp(void)
@@ -26,10 +26,8 @@ public:
     virtual void TearDown(void) 
     {
     };
-    typedef _Tp valueType;
-     
 
-    };
+};
 
 
 TYPED_TEST_CASE(transposeTest, ItomRealDataTypes);

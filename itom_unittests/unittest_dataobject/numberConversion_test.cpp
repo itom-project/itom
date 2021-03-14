@@ -1,12 +1,12 @@
 
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 //#include "test_global.h"
@@ -15,7 +15,6 @@
 template <typename _Tp> class Real_ComplexTest : public ::testing::Test 
 { 
     public:
-    typedef _Tp valueType;
 
 };
 
@@ -201,31 +200,31 @@ TYPED_TEST(Real_ComplexTest, numberConversionRGBAToVALUE_Test)
     ito::Rgba32 rgba_var2= ito::Rgba32::black();
     ito::Rgba32 rgba_var3= ito::Rgba32(255,0,255,0);
 
-    if(typeid(valueType) == typeid(ito::uint32) || typeid(valueType) == typeid(ito::int32))
+    if(typeid(TypeParam) == typeid(ito::uint32) || typeid(TypeParam) == typeid(ito::int32))
     {
-        valueType var1 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1);        //!< Converting float64 type value into int32 type using numberConversion() method.
-        valueType var2 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2);        //!< Converting float64 type value into int32 type using numberConversion() method.
-        valueType var3 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var1 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var1);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var2 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var2);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var3 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var3);        //!< Converting float64 type value into int32 type using numberConversion() method.
 
-        EXPECT_EQ( (valueType)0x00000000, var1 );                        //!< testing if int32_var1 contains the desired original value after conversion.
-        EXPECT_EQ( (valueType)0xFF000000, var2 );                        //!< testing if int32_var2 contains the desired original value after conversion.
-        EXPECT_EQ( (valueType)0xFF00FF00, var3 );                        //!< testing if int32_var3 contains the desired original value after conversion.
+        EXPECT_EQ( (TypeParam)0x00000000, var1 );                        //!< testing if int32_var1 contains the desired original value after conversion.
+        EXPECT_EQ( (TypeParam)0xFF000000, var2 );                        //!< testing if int32_var2 contains the desired original value after conversion.
+        EXPECT_EQ( (TypeParam)0xFF00FF00, var3 );                        //!< testing if int32_var3 contains the desired original value after conversion.
     }
-    else if(typeid(valueType) == typeid(ito::uint8) || typeid(valueType) == typeid(ito::uint16) || typeid(valueType) == typeid(ito::float32)  || typeid(valueType) == typeid(ito::float64))
+    else if(typeid(TypeParam) == typeid(ito::uint8) || typeid(TypeParam) == typeid(ito::uint16) || typeid(TypeParam) == typeid(ito::float32)  || typeid(TypeParam) == typeid(ito::float64))
     {
-        valueType var1 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1);        //!< Converting float64 type value into int32 type using numberConversion() method.
-        valueType var2 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2);        //!< Converting float64 type value into int32 type using numberConversion() method.
-        valueType var3 = ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var1 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var1);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var2 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var2);        //!< Converting float64 type value into int32 type using numberConversion() method.
+        TypeParam var3 = ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var3);        //!< Converting float64 type value into int32 type using numberConversion() method.
 
-        EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var1.gray()), var1 );                        //!< testing if int32_var1 contains the desired original value after conversion.
-        EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var2.gray()), var2 );                        //!< testing if int32_var2 contains the desired original value after conversion.
-        EXPECT_EQ( cv::saturate_cast<valueType>(rgba_var3.gray()), var3 );                        //!< testing if int32_var3 contains the desired original value after conversion.    
+        EXPECT_EQ( cv::saturate_cast<TypeParam>(rgba_var1.gray()), var1 );                        //!< testing if int32_var1 contains the desired original value after conversion.
+        EXPECT_EQ( cv::saturate_cast<TypeParam>(rgba_var2.gray()), var2 );                        //!< testing if int32_var2 contains the desired original value after conversion.
+        EXPECT_EQ( cv::saturate_cast<TypeParam>(rgba_var3.gray()), var3 );                        //!< testing if int32_var3 contains the desired original value after conversion.
     }
     else
     {
-        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var1));
-        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var2));
-        EXPECT_ANY_THROW(ito::numberConversion<valueType>(ito::tRGBA32, &rgba_var3));
+        EXPECT_ANY_THROW(ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var1));
+        EXPECT_ANY_THROW(ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var2));
+        EXPECT_ANY_THROW(ito::numberConversion<TypeParam>(ito::tRGBA32, &rgba_var3));
     }
 }
 

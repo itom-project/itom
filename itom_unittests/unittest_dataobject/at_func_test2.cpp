@@ -1,12 +1,11 @@
 #include <iostream>
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
 
-#include "opencv2\opencv.hpp"
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -61,11 +60,11 @@ TYPED_TEST_CASE(at_func_test2, ItomRealDataTypes);
 TYPED_TEST(at_func_test2, at_Test4)
 {    
 TypeParam *rowPtr1= NULL;    //!< Row pointer for dObj4 to access each element in each row of dObj4
-int dim1 = dObj4.getSize(0);    
-int dim2 = dObj4.getSize(1);
-int dim3 = dObj4.getSize(2);
-int dim4 = dObj4.getSize(3);
-int dim5 = dObj4.getSize(4);    
+int dim1 = this->dObj4.getSize(0);
+int dim2 = this->dObj4.getSize(1);
+int dim3 = this->dObj4.getSize(2);
+int dim4 = this->dObj4.getSize(3);
+int dim5 = this->dObj4.getSize(4);
 int dataIdx = 0;
 int temp=0;
     for(int i=0; i<dim1; i++)
@@ -78,11 +77,11 @@ int temp=0;
 
                 for(int l=0; l<dim4;l++)
                 {        
-                    rowPtr1= (TypeParam*)dObj4.rowPtr(dataIdx,l);
+                    rowPtr1= (TypeParam*)this->dObj4.rowPtr(dataIdx,l);
 
                     for(int m=0; m<dim5;m++)
                     {
-                        rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.    
+                        rowPtr1[m] = cv::saturate_cast<TypeParam>(this->calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.
                     }
                 }
             }
@@ -97,7 +96,7 @@ ranges1[2] = ito::Range::all();
 ranges1[3] = ito::Range::all();
 ranges1[4] = ito::Range::all();
 
-dObj4_test1 = dObj4.at(ranges1);    //!< assigning the full data object dObj4 to dObj4_test1 using full range array defined with ranges1[]. 
+dObj4_test1 = this->dObj4.at(ranges1);    //!< assigning the full data object dObj4 to dObj4_test1 using full range array defined with ranges1[].
 
     unsigned int idx[] = {0,0,0,0,0};
     for(int i=0; i<dim1; i++)
@@ -115,7 +114,7 @@ dObj4_test1 = dObj4.at(ranges1);    //!< assigning the full data object dObj4 to
                     for(int m=0; m<dim5;m++)
                     {
                         idx[4] = m;
-                        EXPECT_EQ(dObj4.at<TypeParam>(idx),dObj4_test1.at<TypeParam>(idx));            //!< Checking values of  5 dimensional data object dObj4 after applying adjustROI().
+                        EXPECT_EQ(this->dObj4.template at<TypeParam>(idx),dObj4_test1.at<TypeParam>(idx));            //!< Checking values of  5 dimensional data object dObj4 after applying adjustROI().
                     }
                 }
             }
@@ -131,11 +130,11 @@ dObj4_test1 = dObj4.at(ranges1);    //!< assigning the full data object dObj4 to
 TYPED_TEST(at_func_test2, at_Test5)
 {
     TypeParam *rowPtr1= NULL; 
-    int dim1 = dObj4.getSize(0);
-    int dim2 = dObj4.getSize(1);
-    int dim3 = dObj4.getSize(2);
-    int dim4 = dObj4.getSize(3);
-    int dim5 = dObj4.getSize(4);    
+    int dim1 = this->dObj4.getSize(0);
+    int dim2 = this->dObj4.getSize(1);
+    int dim3 = this->dObj4.getSize(2);
+    int dim4 = this->dObj4.getSize(3);
+    int dim5 = this->dObj4.getSize(4);
     int dataIdx = 0;
     int temp=0;
     for(int i=0; i<dim1; i++)
@@ -147,10 +146,10 @@ TYPED_TEST(at_func_test2, at_Test5)
                 dataIdx = i*(dim2*dim3) + j*dim3 + k;
                 for(int l=0; l<dim4;l++)
                 {        
-                    rowPtr1= (TypeParam*)dObj4.rowPtr(dataIdx,l);
+                    rowPtr1= (TypeParam*)this->dObj4.rowPtr(dataIdx,l);
                     for(int m=0; m<dim5;m++)
                     {
-                        rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.    
+                        rowPtr1[m] = cv::saturate_cast<TypeParam>(this->calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.
                     }
                 }
             }
@@ -173,7 +172,7 @@ TYPED_TEST(at_func_test2, at_Test5)
     ranges1[4].start = 2;
     ranges1[4].end = 3;
     int test_res5d[] = {12,22,112,122,212,222,312,322,412,422};        //!< Expected result vector after applying at() function on dObj4.
-    dObj4_test1 = dObj4.at(ranges1);    //!< assigning the full data object dObj4 to dObj4_test1 using limited range array defined with ranges1[]. 
+    dObj4_test1 = this->dObj4.at(ranges1);    //!< assigning the full data object dObj4 to dObj4_test1 using limited range array defined with ranges1[].
     dim1 = dObj4_test1.getSize(0);
     dim2 = dObj4_test1.getSize(1);
     dim3 = dObj4_test1.getSize(2);
@@ -215,11 +214,11 @@ TYPED_TEST(at_func_test2, at_Test5)
 TYPED_TEST(at_func_test2, at_Test6)
 {
     TypeParam *rowPtr1= NULL; 
-    int dim1 = dObj4.getSize(0);
-    int dim2 = dObj4.getSize(1);
-    int dim3 = dObj4.getSize(2);
-    int dim4 = dObj4.getSize(3);
-    int dim5 = dObj4.getSize(4);    
+    int dim1 = this->dObj4.getSize(0);
+    int dim2 = this->dObj4.getSize(1);
+    int dim3 = this->dObj4.getSize(2);
+    int dim4 = this->dObj4.getSize(3);
+    int dim5 = this->dObj4.getSize(4);
     int dataIdx = 0;
     for(int i=0; i<dim1; i++)
     {
@@ -230,10 +229,10 @@ TYPED_TEST(at_func_test2, at_Test6)
                 dataIdx = i*(dim2*dim3) + j*dim3 + k;
                 for(int l=0; l<dim4;l++)
                 {        
-                    rowPtr1= (TypeParam*)dObj4.rowPtr(dataIdx,l);
+                    rowPtr1= (TypeParam*)this->dObj4.rowPtr(dataIdx,l);
                     for(int m=0; m<dim5;m++)
                     {
-                        rowPtr1[m] = cv::saturate_cast<TypeParam>(calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.    
+                        rowPtr1[m] = cv::saturate_cast<TypeParam>(this->calcUniqueValue5D(i,j,k,l,m));        //!< Assigning unique value to each element of dObj4.
                     }
                 }
             }
@@ -255,5 +254,5 @@ TYPED_TEST(at_func_test2, at_Test6)
     ranges1[3].end = 25;
     ranges1[4].start = 2;
     ranges1[4].end = 3;
-    EXPECT_ANY_THROW(dObj4_test1 = dObj4.at(ranges1));    //!< Expect an exception to be raised because ranges are outside of original data object size
+    EXPECT_ANY_THROW(dObj4_test1 = this->dObj4.at(ranges1));    //!< Expect an exception to be raised because ranges are outside of original data object size
 }

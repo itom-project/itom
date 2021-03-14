@@ -119,5 +119,5 @@ TEST(AddInManagerTest, General)
     EXPECT_NE(dummyMot == NULL, 1);
 
     addInMgrInst->closeInstance();
-}
+};
 

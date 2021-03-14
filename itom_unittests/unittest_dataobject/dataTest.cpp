@@ -1,10 +1,10 @@
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 //opencv
 #pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
-#pragma once
-#include "opencv2\opencv.hpp"
+
+#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
 #include "gtest/gtest.h"
 #include "commonChannel.h"
@@ -127,8 +127,8 @@ public:
         matrices2.push_back( MatrixContainer2(2,4,4) );
         matrices2.push_back( MatrixContainer2(3,1,1,1));
     };
-     virtual void TearDown(void) {};
-      typedef _Tp valueType;    
+
+     virtual void TearDown(void) {};   
     };
 
 TYPED_TEST_CASE(dataTest, ItomDataAllTypes);
@@ -139,12 +139,11 @@ TYPED_TEST_CASE(dataTest, ItomDataAllTypes);
 */
 TYPED_TEST(dataTest, checkZeros)
 {
-    MatrixContainer *temp;
     ito::DataObject tempDObj;
     
     for(size_t i=0 ; i< this->matrices.size() ; i++)
     {
-        temp = &matrices[i];    
+        auto temp = &this->matrices[i];
         temp->matrix.copyTo(tempDObj);
         EXPECT_EQ ( tempDObj.getDims() , temp->m_nrOfDimensions );
 
@@ -190,12 +189,11 @@ TYPED_TEST(dataTest, checkZeros)
 */
 TYPED_TEST(dataTest, checkIdentity)
 {
-    MatrixContainer1 *temp1;
     ito::DataObject tempDObj1;
     
     for(size_t i=0 ; i< this->matrices1.size() ; i++)
     {
-        temp1 = &matrices1[i];
+        auto temp1 = &this->matrices1[i];
         temp1->matrix.copyTo(tempDObj1);
 
             for(int r=0; r<temp1->m_eyeSize; r++)
@@ -218,12 +216,11 @@ TYPED_TEST(dataTest, checkIdentity)
 */
 TYPED_TEST(dataTest, checkOnes)
 {
-    MatrixContainer2 *temp2;
     ito::DataObject tempDObj2;
 
     TypeParam tarValue;
 
-    if(typeid(valueType) == typeid(ito::Rgba32))
+    if(typeid(TypeParam) == typeid(ito::Rgba32))
     {
         tarValue = (ito::uint32)0xFFFFFFFF;
     }
@@ -234,7 +231,7 @@ TYPED_TEST(dataTest, checkOnes)
     
     for(size_t i=0 ; i< this->matrices2.size() ; i++)
     {
-        temp2 = &matrices2[i];
+        auto temp2 = &this->matrices2[i];
         temp2->matrix.copyTo(tempDObj2);
         EXPECT_EQ ( tempDObj2.getDims() , temp2->m_nrOfDimensions );
 
