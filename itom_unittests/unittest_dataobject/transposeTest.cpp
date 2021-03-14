@@ -2,37 +2,30 @@
 
 #include "../../common/sharedStructures.h"
 
-//opencv
-#pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
+// opencv
+#pragma warning(disable : 4996) // C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This
+                                // function or variable may be unsafe. Consider using fopen_s instead.
 
-#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
-#include "gtest/gtest.h"
 #include "commonChannel.h"
-
+#include "opencv2/opencv.hpp"
+#include "gtest/gtest.h"
 
 /*! \class transposeTest
-*/
-template <typename _Tp> class transposeTest : public ::testing::Test 
+ */
+template <typename _Tp> class transposeTest : public ::testing::Test
 {
-public:
+  public:
+    virtual void SetUp(void){
 
-    virtual void SetUp(void)
-    {
-     
-    };
- 
-
-    virtual void TearDown(void) 
-    {
     };
 
+    virtual void TearDown(void){};
 };
-
 
 TYPED_TEST_CASE(transposeTest, ItomRealDataTypes);
 
-//CVTransTest
+// CVTransTest
 /*!
     Currently, this test only checks the behaviour of the tranpose operation in OpenCV.
     If an original 4x3 matrix is created, the step vector is [3,1]. If this
@@ -49,7 +42,8 @@ TYPED_TEST(transposeTest, CVTransTest)
     cv::Mat matrix_transpose = matrix.t();
     cv::Mat matrix_transpose2;
     cv::transpose(matrix, matrix_transpose2);
-    std::cout << matrix_transpose.step[0] << ";" << matrix_transpose.step[1] << "\n" << std::endl; //returns [4,1] for OpenCV 2.4.10
-    std::cout << matrix_transpose2.step[0] << ";" << matrix_transpose2.step[1] << "\n" << std::endl; //returns [4,1] for OpenCV 2.4.10
+    std::cout << matrix_transpose.step[0] << ";" << matrix_transpose.step[1] << "\n"
+              << std::endl; // returns [4,1] for OpenCV 2.4.10
+    std::cout << matrix_transpose2.step[0] << ";" << matrix_transpose2.step[1] << "\n"
+              << std::endl; // returns [4,1] for OpenCV 2.4.10
 }
-

@@ -1,30 +1,30 @@
 
 #include "../../common/sharedStructures.h"
 
-//opencv
-#pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
+// opencv
+#pragma warning(disable : 4996) // C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This
+                                // function or variable may be unsafe. Consider using fopen_s instead.
 
-#include "opencv2/opencv.hpp"
 #include "../../DataObject/dataobj.h"
-#include "gtest/gtest.h"
 #include "commonChannel.h"
+#include "opencv2/opencv.hpp"
+#include "gtest/gtest.h"
 
-template <typename _Tp> class DataObjectFreeCreate_Test : public ::testing::Test 
-    { 
-public:
-
+template <typename _Tp> class DataObjectFreeCreate_Test : public ::testing::Test
+{
+  public:
     virtual void SetUp(void)
     {
-        
     }
-    
-    virtual void TearDown(void){}
+
+    virtual void TearDown(void)
+    {
+    }
 };
-    
 
 TYPED_TEST_CASE(DataObjectFreeCreate_Test, ItomDataAllTypes);
 
-//shallowCopyConvertCrash_Test
+// shallowCopyConvertCrash_Test
 /*!
     This test causes a crash for dataObject version <= 1.5.0.0 since the
     reference counter has not been set to zero if the data object was freed
