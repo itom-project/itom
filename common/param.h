@@ -189,7 +189,7 @@ namespace ito
         inline bool isNumericArray(void) const
         {
             static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-            return (m_type & (numericTypeMask | ito::ParamBase::Pointer)) > 0;
+            return (m_type & numericTypeMask) && (m_type & ito::ParamBase::Pointer);
         }
 
         //! returns whether Param contains a valid type (true) or is an empty parameter (false, type == 0). The default tParam-constructor is always an invalid tParam.

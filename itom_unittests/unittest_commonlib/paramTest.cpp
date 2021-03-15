@@ -154,122 +154,120 @@ TEST(ParamTest, Constructor)
 
     ito::ParamBase pbC3(paramName, paramType, paramValueChar);
     checkChar(pbC3, paramName, paramType, paramValueChar, true, true, true);
-
-    //    ito::ParamBase pbC4(paramBaInt, ito::ParamBase::DoubleArray, paramValueDouble);
-    //    checkDouble(pbC4, paramName, paramType, paramValueDouble, true, true, true);
-
-    /*    ito::ParamBase pb02("pbInt02", );
-
-            ParamBase(const char *name);                                                               // type-less
-       ParamBase with name only ParamBase(const char *name, const uint32 type); // constructor with type and name
-            ParamBase(const char *name, const uint32 type, const char *val);                              // constructor
-       with name and type, char val ParamBase(const char *name, const uint32 type, const double val); // constructor
-       with name and type, double val and optional info ParamBase(const char *name, const uint32 type, const int val);
-       // constructor with name and type, int val and optional info ParamBase(const ByteArray &name, const uint32 type,
-       const char *val);                              // constructor with name and type, char val ParamBase(const
-       ByteArray &name, const uint32 type, const double val);                             // constructor with name and
-       type, double val and optional info ParamBase(const ByteArray &name, const uint32 type, const int val); //
-       constructor with name and type, int val and optional info ParamBase(const char *name, const uint32 type, const
-       unsigned int size, const char *values);  // array constructor with name and type, size and array ParamBase(const
-       char *name, const uint32 type, const unsigned int size, const int *values);   // array constructor with name and
-       type, size and array ParamBase(const char *name, const uint32 type, const unsigned int size, const double
-       *values);// array constructor with name and type, size and array EXPECT_EQ(ba1, helloWorldStr);
-        EXPECT_EQ(ba1.size(), strlen(helloWorldStr));
-        EXPECT_EQ(ba1.length(), strlen(helloWorldStr));
-        EXPECT_STREQ(ba1.data(), helloWorldStr);
-        EXPECT_STREQ(helloWorldStr, ba1.data());
-        EXPECT_STRNE("no", ba1.data());
-        EXPECT_STRNE(ba1.data(), "no");
-
-        ito::ByteArray ba2;
-        EXPECT_EQ(ba2.size(),0);
-        EXPECT_EQ(ba2.length(),0);
-        EXPECT_STREQ(ba2.data(), "\0");
-        EXPECT_STREQ("\0", ba2.data());
-        EXPECT_STRNE("no", ba2.data());
-        EXPECT_STRNE(ba2.data(), "no");
-
-        EXPECT_NE(ba1,ba2);
-        EXPECT_EQ(ba1.empty(),false);
-        EXPECT_EQ(ba2.empty(),true);*/
 }
 
-/*
-TEST(ByteArrayTest, CopyConstructor)
+TEST(ParamTest, EqualOperator)
 {
-    ito::ByteArray ba1("hello world");
-    ito::ByteArray ba2(ba1);
-    ito::ByteArray *ba3 = new ito::ByteArray(ba1);
+    ito::ParamBase p1;
+    ito::ParamBase p2;
+    ito::ParamBase p3("p3", ito::ParamBase::Int, 5);
+    ito::ParamBase p4("p4", ito::ParamBase::Int, 5);
+    int values1[] = { 2, 3 };
+    ito::ParamBase p5("p5", ito::ParamBase::IntArray, 2, values1);
+    int values2[] = { 2, 3, 4 };
+    ito::ParamBase p6("p6", ito::ParamBase::IntArray, 3, values2);
+    EXPECT_TRUE(p1 == p2);
+    EXPECT_TRUE(p1 == p1);
+    EXPECT_FALSE(p1 == p3);
+    EXPECT_TRUE(p3 == p3);
+    EXPECT_TRUE(p3 == p4);
+    EXPECT_TRUE(p5 == p5);
+    EXPECT_FALSE(p5 == p4);
+    EXPECT_FALSE(p4 == p5);
+    EXPECT_TRUE(p6 == p6);
+    EXPECT_FALSE(p5 == p6);
+    EXPECT_FALSE(p6 == p5);
 
-    EXPECT_EQ(ba1, ba2);
-    EXPECT_EQ(ba1.size(), ba2.size());
-    EXPECT_EQ(ba1.length(), ba2.length());
-    EXPECT_EQ(ba1.empty(),false);
-    EXPECT_EQ(ba2.empty(),false);
+    ito::ParamBase p7("p7", ito::ParamBase::String, "test");
+    ito::ParamBase p8("p8", ito::ParamBase::String, "test");
+    ito::ParamBase p9("p9", ito::ParamBase::String, "test_");
+    EXPECT_TRUE(p7 == p8);
+    EXPECT_FALSE(p7 == p9);
+    EXPECT_TRUE(p9 == p9);
 
-    EXPECT_EQ(ba1, *ba3);
-    EXPECT_EQ(ba1.size(), ba3->size());
-    EXPECT_EQ(ba1.length(), ba3->length());
-    EXPECT_EQ(ba3->empty(),false);
+    ito::ParamBase p3d("p3d", ito::ParamBase::Double, 5.0);
+    ito::ParamBase p4d("p4d", ito::ParamBase::Double, 5.0);
+    int values1d[] = { 2.0, 3.0 };
+    ito::ParamBase p5d("p5d", ito::ParamBase::DoubleArray, 2, values1d);
+    int values2d[] = { 2.0, 3.0, 4.0 };
+    ito::ParamBase p6d("p6d", ito::ParamBase::DoubleArray, 3, values2d);
+    ito::ParamBase p7d("p7d", ito::ParamBase::DoubleArray, 2, values2d);
+    EXPECT_TRUE(p3d == p4d);
+    EXPECT_FALSE(p3d == p3);
+    EXPECT_TRUE(p5d == p5d);
+    EXPECT_FALSE(p5d == p6d);
+    EXPECT_TRUE(p5d == p7d);
 
-    delete ba3;
+    ito::ParamBase p3c("p3c", ito::ParamBase::Complex, 5.0);
+    ito::ParamBase p4c("p4c", ito::ParamBase::Complex, 5.0);
+    std::complex<double> values1c[] = {std::complex<double>(2, 3.123579567945), std::complex<double>(3, -5.5)};
+    ito::ParamBase p5c("p5c", ito::ParamBase::ComplexArray, 2, values1c);
+    std::complex<double> values2c[] = {std::complex<double>(2, 3.123579567945), std::complex<double>(3, -5.5), std::complex<double>(0, 0) };
+    ito::ParamBase p6c("p6c", ito::ParamBase::ComplexArray, 3, values2c);
+    ito::ParamBase p7c("p7c", ito::ParamBase::ComplexArray, 2, values2c);
+    ito::ParamBase p8c("p8c", ito::ParamBase::ComplexArray);
+    EXPECT_TRUE(p3c == p4c);
+    EXPECT_FALSE(p3c == p3);
+    EXPECT_TRUE(p5c == p5c);
+    EXPECT_FALSE(p5c == p6c);
+    EXPECT_TRUE(p5c == p7c);
+    EXPECT_FALSE(p1 == p8c);
+    EXPECT_TRUE(p8c == p8c);
+
+    EXPECT_FALSE(p3d == p3);
+    EXPECT_FALSE(p3d == p8);
 }
 
-TEST(ByteArrayTest, Assignment)
+TEST(ParamTest, UnequalOperator)
 {
-    ito::ByteArray ba1("hello world");
-    ito::ByteArray ba2 = ba1;
-    ito::ByteArray ba3 = "test";
-
-    EXPECT_EQ(ba1, ba2);
-    EXPECT_EQ(ba1.size(), ba2.size());
-    EXPECT_EQ(ba1.length(), ba2.length());
-    EXPECT_EQ(ba1.empty(),false);
-    EXPECT_EQ(ba2.empty(),false);
-    EXPECT_EQ(ba3, "test");
-    EXPECT_STREQ(ba3.data(), "test");
-    EXPECT_EQ(ba3.size(), 4);
+    ito::ParamBase p1;
+    ito::ParamBase p2;
+    ito::ParamBase p3("p3", ito::ParamBase::Int, 5);
+    ito::ParamBase p4("p4", ito::ParamBase::Int, 5);
+    int values1[] = { 2, 3 };
+    ito::ParamBase p5("p5", ito::ParamBase::IntArray, 2, values1);
+    int values2[] = { 2, 3, 4 };
+    ito::ParamBase p6("p6", ito::ParamBase::IntArray, 3, values2);
+    EXPECT_FALSE(p1 != p2);
+    EXPECT_FALSE(p1 != p1);
+    EXPECT_TRUE(p1 != p3);
+    EXPECT_FALSE(p3 != p3);
+    EXPECT_FALSE(p3 != p4);
+    EXPECT_FALSE(p5 != p5);
+    EXPECT_TRUE(p5 != p4);
+    EXPECT_TRUE(p4 != p5);
+    EXPECT_FALSE(p6 != p6);
+    EXPECT_TRUE(p5 != p6);
+    EXPECT_TRUE(p6 != p5);
 }
 
-TEST(ByteArrayTest, Accessing)
+TEST(ParamTest, NumericTest)
 {
-    ito::ByteArray ba1("hello world");
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::Char).isNumeric());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::Int).isNumeric());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::Double).isNumeric());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::Complex).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::CharArray).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::IntArray).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::DoubleArray).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::ComplexArray).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::String).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::HWRef).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::DObjPtr).isNumeric());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::PointCloudPtr).isNumeric());
 
-    EXPECT_EQ(ba1[0], 'h');
-    EXPECT_EQ(ba1[2], 'l');
-
-    int i = 0;
-    unsigned j = 0;
-
-    EXPECT_EQ(ba1[i], 'h');
-    EXPECT_EQ(ba1[j], 'h');
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::Char).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::Int).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::Double).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::Complex).isNumericArray());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::CharArray).isNumericArray());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::IntArray).isNumericArray());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::DoubleArray).isNumericArray());
+    EXPECT_TRUE(ito::ParamBase("p1", ito::ParamBase::ComplexArray).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::String).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::HWRef).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::DObjPtr).isNumericArray());
+    EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::PointCloudPtr).isNumericArray());
 }
 
-TEST(ByteArrayTest, Append)
-{
-    ito::ByteArray ba1("hello world");
-    ba1.append(".");
-    ito::ByteArray ba2(ba1);
-    ba2.append(",");
 
-    EXPECT_EQ(ba1, "hello world.");
-    EXPECT_EQ(ba2, "hello world.,");
-
-    //check short appends (realloc without new starting pointer)
-    for (int i = 0; i < 10; i++)
-    {
-        ba2.append("x");
-        EXPECT_EQ(ba2.size(), ba1.size() + 2 + i);
-    }
-
-    ba2 = "start";
-    const char *a = "hello world hello world";
-    //check longer appends (realloc with possibly new starting pointer)
-    for (int i = 0; i < 100; i++)
-    {
-        ba2.append(a);
-        EXPECT_EQ(ba2.size(), 5 + (i+1)*strlen(a));
-    }
-
-    EXPECT_EQ(ba2[5], 'h');
-}*/
