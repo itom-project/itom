@@ -270,4 +270,28 @@ TEST(ParamTest, NumericTest)
     EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::PointCloudPtr).isNumericArray());
 }
 
+TEST(ParamTest, ScalarComplexTest)
+{
+    ito::complex128 val(-2.2, 30.5);
+    ito::ParamBase scalarComplex("scalarComplex", ito::ParamBase::Complex, val);
+    EXPECT_TRUE(scalarComplex.isValid());
+    EXPECT_STREQ(scalarComplex.getName(), "scalarComplex");
+    EXPECT_EQ(scalarComplex.getLen(), 1);
+
+    EXPECT_DOUBLE_EQ(scalarComplex.getVal<ito::float64>(), val.real());
+    EXPECT_EQ(scalarComplex.getVal<ito::int32>(), (ito::int32)val.real());
+    auto val2 = scalarComplex.getVal<ito::complex128>();
+    EXPECT_DOUBLE_EQ(val.real(), val2.real());
+    EXPECT_DOUBLE_EQ(val.imag(), val2.imag());
+
+    scalarComplex.setVal<ito::float64>(-3.2);
+    EXPECT_DOUBLE_EQ(scalarComplex.getVal<ito::float64>(), -3.2);
+
+    ito::complex128 newVal(1.0, -2.6);
+    scalarComplex.setVal<ito::complex128>(newVal);
+    val2 = scalarComplex.getVal<ito::complex128>();
+    EXPECT_DOUBLE_EQ(newVal.real(), val2.real());
+    EXPECT_DOUBLE_EQ(newVal.imag(), val2.imag());
+}
+
 

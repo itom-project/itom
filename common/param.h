@@ -941,7 +941,7 @@ namespace ito
     template<>
     struct ItomParamHelper<complex128>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, complex128 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &/*iVal*/, complex128_ &dVal, complex128 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
