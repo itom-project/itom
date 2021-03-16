@@ -729,6 +729,8 @@ bool ParamBase::operator == (const ParamBase &rhs) const
     {
         switch (m_type & paramTypeMask)
         {
+        case 0:
+            return true; // both are invalid ParamBase objects.
         case Int & ito::paramTypeMask:
         case Char & ito::paramTypeMask:
             return (m_iVal == rhs.m_iVal);
@@ -758,17 +760,17 @@ bool ParamBase::operator == (const ParamBase &rhs) const
             }
 
         case IntArray & paramTypeMask:
-            if (m_iVal > 0 && rhs.m_iVal > 0)
+            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
             {
                 return (memcmp(m_cVal, rhs.m_cVal, m_iVal * sizeof(int32)) == 0);
             }
             else
             {
-                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+                return (m_iVal == rhs.m_iVal);
             }
 
         case DoubleArray & paramTypeMask:
-            if (m_iVal > 0 && rhs.m_iVal > 0)
+            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
             {
                 for (int i = 0; i < m_iVal; ++i)
                 {
@@ -781,11 +783,11 @@ bool ParamBase::operator == (const ParamBase &rhs) const
             }
             else
             {
-                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+                return (m_iVal == rhs.m_iVal);
             }
 
         case ComplexArray & paramTypeMask:
-            if (m_iVal > 0 && rhs.m_iVal > 0)
+            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
             {
                 for (int i = 0; i < m_iVal; ++i)
                 {
@@ -798,7 +800,7 @@ bool ParamBase::operator == (const ParamBase &rhs) const
             }
             else
             {
-                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+                return (m_iVal == rhs.m_iVal);
             }
         
         case StringList & paramTypeMask:

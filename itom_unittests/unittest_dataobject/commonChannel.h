@@ -1,7 +1,7 @@
 #ifndef COMMONCHANNEL_H
 #define COMMONCHANNEL_H
 
-#include "../../Common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 #include "gtest/gtest.h"
 //#include "test_global.h"
 //commonChannel

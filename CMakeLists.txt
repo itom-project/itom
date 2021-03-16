@@ -79,7 +79,7 @@ add_subdirectory(iconThemes)
 
 if(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
-    add_subdirectory(gtest-1.6.0)
+    add_subdirectory(gtest-1.10.0)
     add_subdirectory(itom_unittests)
 endif()
 

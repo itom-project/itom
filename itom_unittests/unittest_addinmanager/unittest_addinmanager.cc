@@ -20,18 +20,15 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-
-
-#include <iostream>
 #include "gtest/gtest.h"
+#include <iostream>
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 
-    ::testing::InitGoogleTest(&argc, argv);  //Initializing the google test.
+    ::testing::InitGoogleTest(&argc, argv); // Initializing the google test.
 
-    RUN_ALL_TESTS();   // To start Test check
+    RUN_ALL_TESTS(); // To start Test check
 
     std::system("pause");
     return 0;
