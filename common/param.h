@@ -160,7 +160,7 @@ namespace ito
         //--------------------------------------------------------------------------------------------
         //  ASSIGNMENT AND OPERATORS
         //--------------------------------------------------------------------------------------------
-        const ParamBase operator [] (const int num) const;     //!< braces operator for element-wise access in arrays
+        const ParamBase operator [] (const int index) const;     //!< braces operator for element-wise access in arrays
         ParamBase& operator = (const ParamBase &rhs);          //!< assignment operator (sets values of lhs to values of rhs Param, strings are copied)
         ito::RetVal copyValueFrom(const ito::ParamBase *rhs);  //!< just copies the value from the right-hand-side tParam (rhs) to this tParam.
 
@@ -212,6 +212,9 @@ namespace ito
    
         //! returns parameter name (returned string is no copy, do not delete it)
         inline const char* getName(void) const { return m_name.data(); }
+
+        //! return the name, where an integer index is appended with bracket squares, e.g. myArray becomes myArray[2].
+        ito::ByteArray getNameWithIndexSuffix(int index) const;
 
         //! returns content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
@@ -541,7 +544,7 @@ namespace ito
             //--------------------------------------------------------------------------------------------
             //  ASSIGNMENT AND OPERATORS
             //--------------------------------------------------------------------------------------------
-            const Param operator [] (const int num) const;    //!< braces operator for element-wise access in arrays
+            const Param operator [] (const int index) const;    //!< braces operator for element-wise access in arrays
             Param& operator = (const Param &rhs);             //!< assignment operator (sets values of lhs to values of rhs Param, strings are copied)
             ito::RetVal copyValueFrom(const ParamBase *rhs);  //!< just copies the value from the right-hand-side ParamBase (rhs) to this tParam.
 
