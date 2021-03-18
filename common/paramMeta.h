@@ -135,6 +135,8 @@ namespace ito
         //! constructor with minimum and maximum value
 
         explicit CharMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
+        CharMeta(const CharMeta &copy);
+        CharMeta& operator =(const CharMeta &rhs);
         static CharMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of CharMeta, where the min and max are set to the full range available for char. The caller has to take care of memory.
         inline char getMin() const { return m_minVal; }         //!< returns minimum value
         inline char getMax() const { return m_maxVal; }         //!< returns maximum value
@@ -185,6 +187,8 @@ namespace ito
     public:
 
         explicit IntMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
+        IntMeta(const IntMeta &copy);
+        IntMeta& operator =(const IntMeta &rhs);
         static IntMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers. The caller has to take care of memory.
         inline int32 getMin() const { return m_minVal; }              //!< returns minimum value
         inline int32 getMax() const { return m_maxVal; }              //!< returns maximum value
@@ -246,6 +250,8 @@ namespace ito
         //! constructor with minimum and maximum value
 
         explicit DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0 /*0.0 means no specific step size*/, ito::ByteArray category = ito::ByteArray());
+        DoubleMeta(const DoubleMeta &copy);
+        DoubleMeta& operator =(const DoubleMeta &rhs);
         static DoubleMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double. The caller has to take care of memory.
         inline float64 getMin() const { return m_minVal; }        //!< returns minimum value
         inline float64 getMax() const { return m_maxVal; }        //!< returns maximum value

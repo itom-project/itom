@@ -955,6 +955,16 @@ int ParamBase::getLen(void) const
     }
 }
 
+//-------------------------------------------------------------------------------------
+ito::ByteArray ParamBase::getNameWithIndexSuffix(int index) const
+{
+    char suffix[16];
+    sprintf_s(suffix, 16, "[%i]", index);
+    ByteArray newName = m_name;
+    newName.append(suffix);
+    return newName;
+}
+
 
 //--------------------------------------------------------------------------------------------
 //  ASSIGNMENT AND OPERATORS
@@ -967,43 +977,47 @@ int ParamBase::getLen(void) const
 *
 *   returns the value of the index num from the array
 */
-const ParamBase ParamBase::operator [] (const int num) const
+const ParamBase ParamBase::operator [] (const int index) const
 {
-    if ((typeFilter(m_type) == CharArray) 
-        || (typeFilter(m_type) == IntArray) 
-        || (typeFilter(m_type) == DoubleArray)
-        || (typeFilter(m_type) == ComplexArray)
-        || (typeFilter(m_type) == StringList))
+    int typeFiltered = getType();
+
+    if ((typeFiltered == CharArray)
+        || (typeFiltered == IntArray)
+        || (typeFiltered == DoubleArray)
+        || (typeFiltered == ComplexArray)
+        || (typeFiltered == StringList))
     {
-        if (num > m_iVal)
+        if (index >= m_iVal || index < 0)
         {
             return ParamBase();
         }
         else
         {
             int len = 0;
-            switch (m_type & ~Pointer)
+            ito::ByteArray newName = getNameWithIndexSuffix(index);
+
+            switch (typeFiltered & ~Pointer)
             {
                 case Char:
-                    return ParamBase(m_name, Char,  (getVal<char *>(len))[num]);
+                    return ParamBase(newName, Char,  (getVal<char *>(len))[index]);
                 break;
 
                 case Int:
-                    return ParamBase(m_name, Int, (getVal<int32 *>(len))[num]);
+                    return ParamBase(newName, Int, (getVal<int32 *>(len))[index]);
                 break;
 
                 case Double:
-                    return ParamBase(m_name, Double, (getVal<float64 *>(len))[num]);
+                    return ParamBase(newName, Double, (getVal<float64 *>(len))[index]);
                 break;
 
                 case Complex:
-                    return ParamBase(m_name, Complex, (getVal<complex128 *>(len))[num]);
+                    return ParamBase(newName, Complex, (getVal<complex128 *>(len))[index]);
                 break;
 
                 case String:
                 {
                     const ByteArray *ba = getVal<ByteArray*>(len);
-                    return ParamBase(m_name, String, ba[num].data());
+                    return ParamBase(m_name, String, ba[index].data());
                 }
 
                 default:
@@ -1461,7 +1475,7 @@ Param::Param(const Param &copyConstr) : ParamBase(copyConstr), m_pMeta(nullptr),
 //--------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const Param Param::operator [] (const int num) const
+const Param Param::operator [] (const int index) const
 {
     if ((typeFilter(m_type) == CharArray) 
         || (typeFilter(m_type) == IntArray) 
@@ -1469,17 +1483,14 @@ const Param Param::operator [] (const int num) const
         || (typeFilter(m_type) == ComplexArray)
         || (typeFilter(m_type) == StringList))
     {
-        if (num > getLen())
+        if (index >= getLen() || index < 0)
         {
             return Param();
         }
         else
         {
-            int len = 0;
-            char suffix[15];
-            sprintf_s(suffix, 15, "[%i]", num);
-            ByteArray newName = m_name;
-            newName.append(suffix);
+            ito::ByteArray newName = getNameWithIndexSuffix(index);
+            int len;
 
             switch ((m_type & ~Pointer) & paramTypeMask)
             {
@@ -1487,51 +1498,61 @@ const Param Param::operator [] (const int num) const
                     {
                     
                     CharMeta *cMeta = nullptr;
-                    if (m_pMeta->getType() == ParamMeta::rttiCharArrayMeta)
+
+                    if (m_pMeta && m_pMeta->getType() == ParamMeta::rttiCharArrayMeta)
                     {
                         const CharArrayMeta *caMeta = static_cast<const CharArrayMeta*>(m_pMeta);
                         cMeta = new CharMeta(caMeta->getMin(), caMeta->getMax(), caMeta->getStepSize());
                     }
-                    return Param(newName.data(), m_type & ~Pointer, (getVal<char*>(len))[num], cMeta, m_info.data());
+                    return Param(newName.data(), m_type & ~Pointer, (getVal<char*>(len))[index], cMeta, m_info.data());
                     }
                 break;
 
                 case Int:
                     {
                     IntMeta *iMeta = nullptr;
-                    if (m_pMeta->getType() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType() == ParamMeta::rttiIntervalMeta || m_pMeta->getType() == ParamMeta::rttiRangeMeta)
+
+                    if (m_pMeta && 
+                        (m_pMeta->getType() == ParamMeta::rttiIntArrayMeta 
+                        || m_pMeta->getType() == ParamMeta::rttiIntervalMeta 
+                        || m_pMeta->getType() == ParamMeta::rttiRangeMeta))
                     {
                         const IntMeta *iaMeta = static_cast<const IntMeta*>(m_pMeta);
                         iMeta = new IntMeta(*iaMeta);
                     }
+
                     //no conversion from RectMeta to single valued met
-                    return Param(newName, m_type & ~Pointer, (getVal<int32*>(len))[num], iMeta, m_info.data());
+                    return Param(newName, m_type & ~Pointer, (getVal<int32*>(len))[index], iMeta, m_info.data());
                     }
                 break;
 
                 case Double:
                     {
                     DoubleMeta *dMeta = nullptr;
-                    if (m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta || m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta)
+
+                    if (m_pMeta && (
+                        m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta 
+                        || m_pMeta->getType() == ParamMeta::rttiDoubleArrayMeta))
                     {
                         const DoubleMeta *daMeta = static_cast<const DoubleMeta*>(m_pMeta);
                         dMeta = new DoubleMeta(*daMeta);
                     }
-                    return Param(newName, m_type & ~Pointer, (getVal<float64*>(len))[num], dMeta, m_info.data());
+
+                    return Param(newName, m_type & ~Pointer, (getVal<float64*>(len))[index], dMeta, m_info.data());
                     }
                 break;
 
                 case Complex:
                     {
                         //complex has no meta, since no min or max comparison is defined for complex values
-                    return Param(newName, m_type & ~Pointer, (getVal<complex128*>(len))[num], nullptr, m_info.data());
+                    return Param(newName, m_type & ~Pointer, (getVal<complex128*>(len))[index], nullptr, m_info.data());
                     }
                 break;
 
                 case StringList:
                 {
                     // no meta up to now
-                    return Param(newName, String, (getVal<ByteArray*>(len))[num].data(), m_info.data());
+                    return Param(newName, String, (getVal<ByteArray*>(len))[index].data(), m_info.data());
                 }
 
                 default:
