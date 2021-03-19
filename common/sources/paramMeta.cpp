@@ -86,6 +86,28 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    CharMeta::CharMeta(const CharMeta &copy) :
+        ParamMeta(rttiCharMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    CharMeta& CharMeta::operator =(const CharMeta &rhs)
+    {
+        m_type = rttiCharMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_representation = rhs.m_representation;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     CharMeta* CharMeta::all(ito::ByteArray category /*= ito::ByteArray()*/)
     { 
         return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max(), 1, category); 
@@ -160,6 +182,28 @@ namespace ito
             throw std::logic_error("stepSize of IntMeta must be >= 1");
         }
 #endif
+    }
+
+    //---------------------------------------------------------------------------------
+    IntMeta::IntMeta(const IntMeta &copy) :
+        ParamMeta(rttiIntMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    IntMeta& IntMeta::operator =(const IntMeta &rhs)
+    {
+        m_type = rttiIntMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_representation = rhs.m_representation;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------
@@ -238,6 +282,32 @@ namespace ito
             throw std::logic_error("stepSize of DoubleMeta must be >= 0.0");
         }
 #endif
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleMeta::DoubleMeta(const DoubleMeta &copy) :
+        ParamMeta(rttiDoubleMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_displayNotation(copy.m_displayNotation),
+        m_displayPrecision(copy.m_displayPrecision),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleMeta& DoubleMeta::operator =(const DoubleMeta &rhs)
+    {
+        m_type = rttiDoubleMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_displayNotation = rhs.m_displayNotation;
+        m_displayPrecision = rhs.m_displayPrecision;
+        m_representation = rhs.m_representation;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------
