@@ -29,8 +29,10 @@
 #include "../helper/guiHelper.h"
 #include "plot/AbstractDObjFigure.h"
 #include "plot/AbstractDObjPCLFigure.h"
+#include "../common/addInGrabber.h"
 
 #include <qlayoutitem.h>
+
 
 
 namespace ito {
@@ -441,25 +443,35 @@ RetVal FigureWidget::liveImage(
         bool setDepth = false;
         bool isLine = false;
         ito::AutoInterval bitRange (0.0, 1.0);
-        QSharedPointer<ito::Param> bpp = getParamByInvoke(cam.data(), "bpp", retval);
 
+		int bpp = 0;
+		if (qobject_cast<AddInMultiChannelGrabber*>(cam))
+		{
+			QSharedPointer<ito::Param> paramFormat = getParamByInvoke(cam.data(), "pixelFormat", retval);
+			const char * pixelFormat = paramFormat->getVal<const char*>();
+			bpp = AddInAbstractGrabber::pixelFormatStringToBpp(pixelFormat);
+		}
+		else
+		{
+			bpp = getParamByInvoke(cam.data(), "bpp", retval)->getVal<int>();
+		}
         if (!retval.containsError())
         {
-            if (bpp->getVal<int>() == 8)
+            if (bpp == 8)
             {
                 setDepth = true;
                 bitRange.setMaximum(255.0);
             }
-            else if (bpp->getVal<int>() < 17)
+            else if (bpp < 17)
             {
                 setDepth = true;
-                bitRange.setMaximum((float)((1 << bpp->getVal<int>())-1));
+                bitRange.setMaximum((float)((1 << bpp)-1));
             }
-            else if (bpp->getVal<int>() == 32)
+            else if (bpp == 32)
             {
                 // ToDo define float32 and int32 behavior!
             }
-            else if (bpp->getVal<int>() == 64)
+            else if (bpp == 64)
             {
                 // ToDo define float64 behavior!
             }

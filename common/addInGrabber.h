@@ -74,8 +74,7 @@ namespace ito
 
     protected:
 
-		int pixelFormatStringToBpp(char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
-		int pixelFormatStringToEnum(char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
+
 
         void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
 
@@ -123,6 +122,8 @@ namespace ito
         }  
 
     public:
+		static int pixelFormatStringToBpp(const char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
+		static int pixelFormatStringToEnum(const char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
         AddInAbstractGrabber();
         ~AddInAbstractGrabber();
 

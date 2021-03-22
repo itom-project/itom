@@ -78,7 +78,7 @@ namespace ito
 
 	//----------------------------------------------------------------------------------------------------------------------------------
 	//! this method returns the size of a pixel for a given pixelFormat.
-	int AddInAbstractGrabber::pixelFormatStringToBpp(char* val)
+	int AddInAbstractGrabber::pixelFormatStringToBpp(const char* val)
 	{
 		bool ok;
 		int format = pixelFormatStringToEnum(val, &ok);
@@ -115,7 +115,7 @@ namespace ito
 	This function maps a string to a pixel format by using QMetaType.
 	*/
 
-	int AddInAbstractGrabber::pixelFormatStringToEnum(char* val, bool* ok)
+	int AddInAbstractGrabber::pixelFormatStringToEnum(const char* val, bool* ok)
 	{
 #if QT_VERSION >= 0x050500
 		const QMetaObject mo = staticMetaObject;
