@@ -2,7 +2,7 @@
 
 .. _gui-editor:
 
-Script-Editor
+Script Editor
 **************
 
 The script editor is one of the main windows of |itom| and allows creating, 

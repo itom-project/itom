@@ -162,9 +162,9 @@ TEST(ParamTest, EqualOperator)
     ito::ParamBase p2;
     ito::ParamBase p3("p3", ito::ParamBase::Int, 5);
     ito::ParamBase p4("p4", ito::ParamBase::Int, 5);
-    int values1[] = { 2, 3 };
+    int values1[] = {2, 3};
     ito::ParamBase p5("p5", ito::ParamBase::IntArray, 2, values1);
-    int values2[] = { 2, 3, 4 };
+    int values2[] = {2, 3, 4};
     ito::ParamBase p6("p6", ito::ParamBase::IntArray, 3, values2);
     EXPECT_TRUE(p1 == p2);
     EXPECT_TRUE(p1 == p1);
@@ -187,9 +187,9 @@ TEST(ParamTest, EqualOperator)
 
     ito::ParamBase p3d("p3d", ito::ParamBase::Double, 5.0);
     ito::ParamBase p4d("p4d", ito::ParamBase::Double, 5.0);
-    int values1d[] = { 2.0, 3.0 };
+    int values1d[] = {2.0, 3.0};
     ito::ParamBase p5d("p5d", ito::ParamBase::DoubleArray, 2, values1d);
-    int values2d[] = { 2.0, 3.0, 4.0 };
+    int values2d[] = {2.0, 3.0, 4.0};
     ito::ParamBase p6d("p6d", ito::ParamBase::DoubleArray, 3, values2d);
     ito::ParamBase p7d("p7d", ito::ParamBase::DoubleArray, 2, values2d);
     EXPECT_TRUE(p3d == p4d);
@@ -202,7 +202,8 @@ TEST(ParamTest, EqualOperator)
     ito::ParamBase p4c("p4c", ito::ParamBase::Complex, 5.0);
     std::complex<double> values1c[] = {std::complex<double>(2, 3.123579567945), std::complex<double>(3, -5.5)};
     ito::ParamBase p5c("p5c", ito::ParamBase::ComplexArray, 2, values1c);
-    std::complex<double> values2c[] = {std::complex<double>(2, 3.123579567945), std::complex<double>(3, -5.5), std::complex<double>(0, 0) };
+    std::complex<double> values2c[] = {std::complex<double>(2, 3.123579567945), std::complex<double>(3, -5.5),
+                                       std::complex<double>(0, 0)};
     ito::ParamBase p6c("p6c", ito::ParamBase::ComplexArray, 3, values2c);
     ito::ParamBase p7c("p7c", ito::ParamBase::ComplexArray, 2, values2c);
     ito::ParamBase p8c("p8c", ito::ParamBase::ComplexArray);
@@ -224,9 +225,9 @@ TEST(ParamTest, UnequalOperator)
     ito::ParamBase p2;
     ito::ParamBase p3("p3", ito::ParamBase::Int, 5);
     ito::ParamBase p4("p4", ito::ParamBase::Int, 5);
-    int values1[] = { 2, 3 };
+    int values1[] = {2, 3};
     ito::ParamBase p5("p5", ito::ParamBase::IntArray, 2, values1);
-    int values2[] = { 2, 3, 4 };
+    int values2[] = {2, 3, 4};
     ito::ParamBase p6("p6", ito::ParamBase::IntArray, 3, values2);
     EXPECT_FALSE(p1 != p2);
     EXPECT_FALSE(p1 != p1);
@@ -270,4 +271,131 @@ TEST(ParamTest, NumericTest)
     EXPECT_FALSE(ito::ParamBase("p1", ito::ParamBase::PointCloudPtr).isNumericArray());
 }
 
+TEST(ParamTest, ParamBaseScalarComplexTest)
+{
+    ito::complex128 val(-2.2, 30.5);
+    ito::ParamBase scalarComplex("scalarComplex", ito::ParamBase::Complex, val);
+    EXPECT_TRUE(scalarComplex.isValid());
+    EXPECT_STREQ(scalarComplex.getName(), "scalarComplex");
+    EXPECT_EQ(scalarComplex.getLen(), 1);
 
+    EXPECT_DOUBLE_EQ(scalarComplex.getVal<ito::float64>(), val.real());
+    EXPECT_EQ(scalarComplex.getVal<ito::int32>(), (ito::int32)val.real());
+    auto val2 = scalarComplex.getVal<ito::complex128>();
+    EXPECT_DOUBLE_EQ(val.real(), val2.real());
+    EXPECT_DOUBLE_EQ(val.imag(), val2.imag());
+
+    scalarComplex.setVal<ito::float64>(-3.2);
+    EXPECT_DOUBLE_EQ(scalarComplex.getVal<ito::float64>(), -3.2);
+
+    ito::complex128 newVal(1.0, -2.6);
+    scalarComplex.setVal<ito::complex128>(newVal);
+    val2 = scalarComplex.getVal<ito::complex128>();
+    EXPECT_DOUBLE_EQ(newVal.real(), val2.real());
+    EXPECT_DOUBLE_EQ(newVal.imag(), val2.imag());
+}
+
+TEST(ParamTest, ParamBaseIndexingOperator)
+{
+    // scalar types
+    int scalarType[] = {ito::ParamBase::Char, ito::ParamBase::Int, ito::ParamBase::Double, ito::ParamBase::Complex,
+                        ito::ParamBase::String};
+    for (int t : scalarType)
+    {
+        ito::ParamBase intParam("scalar", t);
+        EXPECT_FALSE(intParam[0].isValid());
+    }
+
+    // array types
+    ito::int32 intArr[] = { 5, 6, 7 };
+    ito::ParamBase intArrayParam("array", ito::ParamBase::IntArray, 3, intArr);
+    ito::float64 dblArr[] = { 5.0, 5.6, 7.0 };
+    ito::ParamBase dblArrayParam("array", ito::ParamBase::DoubleArray, 3, dblArr);
+    ito::complex128 cmplxArr[] = { ito::complex128(5.0, 1.7), ito::complex128(-4.5, 6.7), ito::complex128(7.0, 5.6) };
+    ito::ParamBase cmplxArrayParam("array", ito::ParamBase::ComplexArray, 3, cmplxArr);
+
+    ito::ParamBase params[] = { intArrayParam, dblArrayParam, cmplxArrayParam };
+
+    for (auto p : params)
+    {
+        ito::ParamBase p0 = p[0];
+        EXPECT_TRUE(p0.isValid());
+        EXPECT_STREQ(p0.getName(), "array[0]");
+        EXPECT_DOUBLE_EQ(p0.getVal<ito::float64>(), 5);
+
+        ito::ParamBase p2 = p[2];
+        EXPECT_TRUE(p2.isValid());
+        EXPECT_STREQ(p2.getName(), "array[2]");
+        EXPECT_DOUBLE_EQ(p2.getVal<ito::float64>(), 7);
+
+        ito::ParamBase pm1 = p[-1];
+        EXPECT_FALSE(pm1.isValid());
+
+        ito::ParamBase p3 = p[3];
+        EXPECT_FALSE(p3.isValid());
+
+    }
+}
+
+
+TEST(ParamTest, ParamIndexingOperator)
+{
+    // scalar types
+    int scalarType[] = { ito::ParamBase::Char, ito::ParamBase::Int, ito::ParamBase::Double, ito::ParamBase::Complex,
+                        ito::ParamBase::String };
+    for (int t : scalarType)
+    {
+        ito::Param intParam("scalar", t);
+        EXPECT_FALSE(intParam[0].isValid());
+    }
+
+    // array types
+    ito::int32 intArr[] = { 5, 6, 7 };
+    ito::Param intArrayParam("array", ito::ParamBase::IntArray, 3, intArr, "info");
+    ito::float64 dblArr[] = { 5.0, 5.6, 7.0 };
+    ito::Param dblArrayParam("array", ito::ParamBase::DoubleArray, 3, dblArr, "info");
+    ito::complex128 cmplxArr[] = { ito::complex128(5.0, 1.7), ito::complex128(-4.5, 6.7), ito::complex128(7.0, 5.6) };
+    ito::Param cmplxArrayParam("array", ito::ParamBase::ComplexArray, 3, cmplxArr, "info");
+
+    ito::Param params[] = { intArrayParam, dblArrayParam, cmplxArrayParam };
+
+    for (auto p : params)
+    {
+        ito::Param p0 = p[0];
+        EXPECT_TRUE(p0.isValid());
+        EXPECT_STREQ(p0.getName(), "array[0]");
+        EXPECT_DOUBLE_EQ(p0.getVal<ito::float64>(), 5);
+        EXPECT_STREQ(p0.getInfo(), "info");
+        EXPECT_EQ(p0.getMeta(), nullptr);
+
+        ito::Param p2 = p[2];
+        EXPECT_TRUE(p2.isValid());
+        EXPECT_STREQ(p2.getName(), "array[2]");
+        EXPECT_DOUBLE_EQ(p2.getVal<ito::float64>(), 7);
+        EXPECT_STREQ(p2.getInfo(), "info");
+        EXPECT_EQ(p2.getMeta(), nullptr);
+
+        ito::Param pm1 = p[-1];
+        EXPECT_FALSE(pm1.isValid());
+
+        ito::Param p3 = p[3];
+        EXPECT_FALSE(p3.isValid());
+
+    }
+
+    intArrayParam.setMeta(new ito::IntArrayMeta(0, 100, 2, "category"), true);
+    ito::Param p1 = intArrayParam[1];
+    EXPECT_TRUE(p1.getMeta() != nullptr);
+    ito::IntMeta *m = p1.getMetaT<ito::IntMeta>();
+    EXPECT_TRUE(m != nullptr);
+    EXPECT_TRUE(m->getType() == ito::ParamMeta::rttiIntMeta);
+    EXPECT_TRUE(m->getMax() == 100);
+
+    dblArrayParam.setMeta(new ito::DoubleArrayMeta(0.0, 100.0, 2.0, "category"), true);
+    ito::Param p2 = dblArrayParam[1];
+    EXPECT_TRUE(p2.getMeta() != nullptr);
+    ito::DoubleMeta *m2 = p2.getMetaT<ito::DoubleMeta>();
+    EXPECT_TRUE(m2 != nullptr);
+    EXPECT_TRUE(m2->getType() == ito::ParamMeta::rttiDoubleMeta);
+    EXPECT_DOUBLE_EQ(m2->getMax(), 100.0);
+}

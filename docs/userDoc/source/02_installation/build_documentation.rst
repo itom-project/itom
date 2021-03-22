@@ -52,12 +52,16 @@ installed on your computer:
 
 Run doxygen
 ---------------
+.. doxygenLabel:
 
 In your build-directory of |itom|, you will find a folder **docs**. Open its 
 subfolder **doxygen**. There you will find a document
 **itom_doxygen.dox**. This document contains absolute paths to the source 
 directories of |itom|'s sources. Run doxygen with this document
 in order to create the source code documentation. 
+
+You can also run the **create_doc.py** script explained in :ref:`sphinxLabel` section. 
+First of all it will ask you if you want to run doxygen, too. 
 
 On Windows computers, the easiest way to do this is open **itom_doxygen.dox** 
 with the tool **doxywizard** that is located in the **bin**-folder 
@@ -72,8 +76,12 @@ click on the *run*-button.
 After the build process, a folder **xml** is created in the **doxygen** 
 sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 
+
+.. sphinxLabel:
+
 Run Sphinx
 --------------
+
 
 Now, open |itom| and execute the script **create_doc.py** in the folder **docs/userDoc** 
 of the build-directory. The default-builder of the
