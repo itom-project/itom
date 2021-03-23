@@ -878,6 +878,70 @@ namespace ito
         return ((m_heightMeta == other_->m_heightMeta) && \
             (m_widthMeta == other_->m_widthMeta));
     }
+
+    //---------------------------------------------------------------------------------
+    StringListMeta::StringListMeta(tType type, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/,
+        ito::ByteArray category /*= ito::ByteArray()*/) :
+        StringMeta(type),
+        m_numMin(numMin),
+        m_numMax(numMax),
+        m_numStep(numStepSize)
+    {
+        if (!category.empty())
+        {
+            setCategory(category);
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    StringListMeta::StringListMeta(tType type, const char *val, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/,
+        ito::ByteArray category /*= ito::ByteArray()*/) :
+        StringMeta(type, val, category),
+        m_numMin(numMin),
+        m_numMax(numMax),
+        m_numStep(numStepSize)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    StringListMeta::StringListMeta(tType type, const ito::ByteArray &val, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/,
+        ito::ByteArray category /*= ito::ByteArray()*/) :
+        StringMeta(type, val, category),
+        m_numMin(numMin),
+        m_numMax(numMax),
+        m_numStep(numStepSize)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    StringListMeta::StringListMeta(const StringListMeta &cpy) :
+        StringMeta(cpy),
+        m_numMin(cpy.m_numMin),
+        m_numMax(cpy.m_numMax),
+        m_numStep(cpy.m_numStep)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    StringListMeta::~StringListMeta()
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    bool StringListMeta::operator==(const ParamMeta& other) const
+    {
+        if (!StringMeta::operator==(other))
+            return false;
+
+        const StringListMeta *other_ = (const StringListMeta*)(&other);
+        return ((m_numMin == other_->m_numMin) && \
+            (m_numMax == other_->m_numMax) && \
+            (m_numStep == other_->m_numStep));
+    }
         
 
 } //end namespace ito

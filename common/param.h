@@ -77,7 +77,7 @@ namespace ito
     private:
         complex128_ m_dVal;    //!< internal value for float64 and complex128 typed values
         ito::int32 m_iVal;         //!< internal value for integer typed values
-        char *m_cVal;         //!< internal pointer for pointer type values (also strings and string lists)
+        char* m_cVal;         //!< internal pointer for pointer type values (also strings and string lists)
 
         void freeMemory(); //!< free allocated memory, if memory has been allocated.
 
@@ -146,7 +146,7 @@ namespace ito
         //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
         //--------------------------------------------------------------------------------------------
         //! default constructor, creates "empty" ParamBase
-        ParamBase() : m_type(0), m_name(NULL), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(NULL) {}
+        ParamBase() : m_type(0), m_name(nullptr), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr) {}
         ParamBase(const ByteArray &name);                                                                  // type-less ParamBase with name only
         ParamBase(const ByteArray &name, const uint32 type);                                               // constructor with type and name
         ParamBase(const ByteArray &name, const uint32 type, const char *val);                              // constructor with name and type and char val
@@ -183,50 +183,36 @@ namespace ito
         //--------------------------------------------------------------------------------------------
 
         //! returns true if Param is of type char, int, double or complex
-        inline bool isNumeric(void) const
-        {
-            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-            return ((m_type & numericTypeMask) > 0) && !(m_type & ito::ParamBase::Pointer);
-        }
+        bool isNumeric(void) const;
 
         //! returns true if Param is of type char array, int array, double array or complex array
-        inline bool isNumericArray(void) const
-        {
-            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-            return (m_type & numericTypeMask) && (m_type & ito::ParamBase::Pointer);
-        }
+        bool isNumericArray(void) const;
 
         //! returns whether Param contains a valid type (true) or is an empty parameter (false, type == 0). The default tParam-constructor is always an invalid tParam.
-        inline bool isValid(void) const { return m_type != 0; }
+        bool isValid(void) const;
 
         //! returns parameter type (autosave flag and other flags (like in, out or readonly) are only included if filterFlags is set false)
-        inline uint32 getType(bool filterFlags = true) const
-        {
-            if (filterFlags)
-                return m_type & paramTypeMask;
-            else
-                return m_type;
-        }
+        uint32 getType(bool filterFlags = true) const;
 
         //! returns parameter flags
-        inline uint32 getFlags(void) const { return m_type & paramFlagMask; }
+        uint32 getFlags(void) const;
         
         //! sets parameter flagsfor possible flags see \ref tParamType
-        inline void setFlags(const uint32 flags) { m_type = getType() | (flags & paramFlagMask); }
+        void setFlags(const uint32 flags);
    
         //! returns parameter name (returned string is no copy, do not delete it)
-        inline const char* getName(void) const { return m_name.data(); }
+        const char* getName(void) const;
 
         //! return the name, where an integer index is appended with bracket squares, e.g. myArray becomes myArray[2].
         ito::ByteArray getNameWithIndexSuffix(int index) const;
 
         //! returns content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline bool getAutosave(void) const { return (m_type & NoAutosave) > 0; }
+        bool getAutosave(void) const;
 
         //! sets content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline void setAutosave(const bool autosave) { m_type = autosave ? (m_type | NoAutosave) : (m_type & ~NoAutosave); }
+        void setAutosave(const bool autosave);
 
         //! returns length of array parameters or -1 if no array is given. For string parameter returns length of string or 0 if not given, for number parameters return 1. In all other cases -1.
         int getLen(void) const;
@@ -651,7 +637,8 @@ namespace ito
                         char *cVal_ = cVal;
                         if (val)
                         {
-                            cVal = _strdup((const char*)val);
+                            cVal = new char[strlen(val) + 1];
+                            memcpy(cVal, val, strlen(val) + 1);
                             iVal = static_cast<int>(strlen(cVal));
                         }
                         else
@@ -659,9 +646,10 @@ namespace ito
                             cVal = 0;
                             iVal = -1;
                         }
+
                         if (cVal_)
                         {
-                            free(cVal_);
+                            delete[] cVal_;
                         }
                     }
                     return ito::retOk;
@@ -671,18 +659,19 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(char));
+                            cVal = (char*)new char[len];
                             memcpy(cVal, val, len * sizeof(char));
                             iVal = len;
                         }
                         else
                         {
-                            cVal = NULL;
+                            cVal = nullptr;
                             iVal = -1;
                         }
+
                         if (cVal_)
                         {
-                            free(cVal_);
+                            delete[] cVal_;
                         }
                     }
                     return ito::retOk;
@@ -692,18 +681,19 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(ito::int32));
+                            cVal = (char*)new ito::int32[len];
                             memcpy(cVal, val, len * sizeof(ito::int32));
                             iVal = len;
                         }
                         else
                         {
-                            cVal = NULL;
+                            cVal = nullptr;
                             iVal = -1;
                         }
+
                         if (cVal_)
                         {
-                            free(cVal_);
+                            delete[] cVal_;
                         }
                     }
                     return ito::retOk;
@@ -713,18 +703,19 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(ito::float64));
+                            cVal = (char*)new ito::float64[len];
                             memcpy(cVal, val, len * sizeof(ito::float64));
                             iVal = len;
                         }
                         else
                         {
-                            cVal = NULL;
+                            cVal = nullptr;
                             iVal = -1;
                         }
+
                         if (cVal_)
                         {
-                            free(cVal_);
+                            delete[] cVal_;
                         }
                     }
                     return ito::retOk;
@@ -732,23 +723,55 @@ namespace ito
                 case ito::ParamBase::ComplexArray & ito::paramTypeMask:
                     {
                         char *cVal_ = cVal;
+
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(ito::complex128));
+                            cVal = (char*)new ito::complex128[len];
                             memcpy(cVal, val, len * sizeof(ito::complex128));
                             iVal = len;
                         }
                         else
                         {
-                            cVal = NULL;
+                            cVal = nullptr;
                             iVal = -1;
                         }
+
                         if (cVal_)
                         {
-                            free(cVal_);
+                            delete[] cVal_;
                         }
                     }
                     return ito::retOk;
+
+                case ito::ParamBase::StringList & ito::paramTypeMask:
+                {
+                    char *cVal_ = cVal;
+
+                    if ((val) && (len > 0))
+                    {
+                        ito::ByteArray *dest = new ito::ByteArray[len];
+                        cVal = (char*)dest;
+                        memset(cVal, 0, len * sizeof(ito::ByteArray));
+
+                        for (int i = 0; i < len; ++i)
+                        {
+                            dest[i] = val[i]; //operator=
+                        }
+
+                        iVal = len;
+                    }
+                    else
+                    {
+                        cVal = nullptr;
+                        iVal = -1;
+                    }
+
+                    if (cVal_)
+                    {
+                        delete[] cVal_;
+                    }
+                }
+                return ito::retOk;
 
                 default:
                     return ito::RetVal(ito::retError, 0, "_Tp parameter of setVal<_Tp> does not match the type of the parameter");
@@ -775,6 +798,7 @@ namespace ito
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
                 case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+                case ito::ParamBase::StringList & ito::paramTypeMask:
                     if (cVal)
                     {
                         len = iVal;

@@ -187,9 +187,9 @@ TEST(ParamTest, EqualOperator)
 
     ito::ParamBase p3d("p3d", ito::ParamBase::Double, 5.0);
     ito::ParamBase p4d("p4d", ito::ParamBase::Double, 5.0);
-    int values1d[] = {2.0, 3.0};
+    ito::float64 values1d[] = {2.0, 3.0};
     ito::ParamBase p5d("p5d", ito::ParamBase::DoubleArray, 2, values1d);
-    int values2d[] = {2.0, 3.0, 4.0};
+    ito::float64 values2d[] = {2.0, 3.0, 4.0};
     ito::ParamBase p6d("p6d", ito::ParamBase::DoubleArray, 3, values2d);
     ito::ParamBase p7d("p7d", ito::ParamBase::DoubleArray, 2, values2d);
     EXPECT_TRUE(p3d == p4d);
@@ -313,6 +313,8 @@ TEST(ParamTest, ParamBaseIndexingOperator)
     ito::ParamBase dblArrayParam("array", ito::ParamBase::DoubleArray, 3, dblArr);
     ito::complex128 cmplxArr[] = { ito::complex128(5.0, 1.7), ito::complex128(-4.5, 6.7), ito::complex128(7.0, 5.6) };
     ito::ParamBase cmplxArrayParam("array", ito::ParamBase::ComplexArray, 3, cmplxArr);
+    ito::ByteArray strList[] = { ito::ByteArray("hello"), ito::ByteArray("no 123"), ito::ByteArray("-123.5") };
+    ito::ParamBase strListParam("stringList", ito::ParamBase::StringList, 3, strList);
 
     ito::ParamBase params[] = { intArrayParam, dblArrayParam, cmplxArrayParam };
 
@@ -333,8 +335,79 @@ TEST(ParamTest, ParamBaseIndexingOperator)
 
         ito::ParamBase p3 = p[3];
         EXPECT_FALSE(p3.isValid());
-
     }
+
+    // string list
+    {
+        ito::ParamBase p0 = strListParam[0];
+        EXPECT_TRUE(p0.isValid());
+        EXPECT_STREQ(p0.getName(), "stringList[0]");
+        EXPECT_STREQ(p0.getVal<const char*>(), strList[0].data());
+
+        ito::ParamBase p2 = strListParam[2];
+        EXPECT_TRUE(p2.isValid());
+        EXPECT_STREQ(p2.getName(), "stringList[2]");
+        EXPECT_STREQ(p2.getVal<const char*>(), strList[2].data());
+
+        ito::ParamBase pm1 = strListParam[-1];
+        EXPECT_FALSE(pm1.isValid());
+
+        ito::ParamBase p3 = strListParam[3];
+        EXPECT_FALSE(p3.isValid());
+    }
+}
+
+TEST(ParamTest, ParamCopyOperator)
+{
+    char charArr[] = { -127 , 0, 127 };
+    ito::int32 intArr[] = { 5, -6, 7 };
+    ito::float64 dblArr[] = { 5.0, 5.6, -7.0 };
+    ito::complex128 cmplxArr[] = { ito::complex128(5.0, 1.7), ito::complex128(-4.5, 6.7), ito::complex128(7.0, 5.6) };
+    ito::ByteArray strList[] = { ito::ByteArray("hello"), ito::ByteArray("no 123"), ito::ByteArray("-123.5") };
+
+    ito::ParamBase params[] = {
+        ito::ParamBase("char", ito::ParamBase::Char, 5),
+        ito::ParamBase("int", ito::ParamBase::Int, -5),
+        ito::ParamBase("double", ito::ParamBase::Double, -5.78),
+        ito::ParamBase("complex", ito::ParamBase::Complex, ito::complex128(5, -3.2)),
+        ito::ParamBase("charArray", ito::ParamBase::CharArray, 3, charArr),
+        ito::ParamBase("intArray", ito::ParamBase::IntArray, 3, intArr),
+        ito::ParamBase("doubleArray", ito::ParamBase::DoubleArray, 3, dblArr),
+        ito::ParamBase("complexArray", ito::ParamBase::ComplexArray, 3, cmplxArr),
+        ito::ParamBase("string", ito::ParamBase::String, "test string 123"),
+        ito::ParamBase("stringList", ito::ParamBase::StringList, 3, strList),
+        ito::ParamBase("hwref", ito::ParamBase::HWRef, nullptr)
+    };
+
+    for (const auto &p1 : params)
+    {
+        ito::ParamBase p2(p1);
+
+        EXPECT_TRUE(p1 == p2) << p1.getName();
+
+        ito::ParamBase p3;
+        p3 = p1;
+
+        EXPECT_TRUE(p1 == p3) << p1.getName();
+    }
+}
+
+TEST(ParamTest, ParamAssignmentOperator)
+{
+    char charArr[] = { -127 , 0, 127 };
+    ito::int32 intArr[] = { 5, -6, 7 };
+    ito::float64 dblArr[] = { 5.0, 5.6, -7.0 };
+    ito::complex128 cmplxArr[] = { ito::complex128(5.0, 1.7), ito::complex128(-4.5, 6.7), ito::complex128(7.0, 5.6) };
+    ito::ByteArray strList[] = { ito::ByteArray("hello"), ito::ByteArray("no 123"), ito::ByteArray("-123.5") };
+
+    ito::ParamBase param("stringList", ito::ParamBase::StringList, 3, strList);
+    EXPECT_EQ(param.getVal<const ito::ByteArray*>()[1], strList[1]);
+
+    param = ito::ParamBase("intArray", ito::ParamBase::IntArray, 3, intArr);
+    EXPECT_EQ(param.getVal<const ito::int32*>()[2], intArr[2]);
+
+    param = ito::ParamBase("string", ito::ParamBase::String, "hello");
+    EXPECT_STREQ(param.getVal<const char*>(), "hello");
 }
 
 
