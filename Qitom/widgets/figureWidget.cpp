@@ -451,7 +451,7 @@ RetVal FigureWidget::liveImage(
 			const char * pixelFormat = paramFormat->getVal<const char*>();
 			bpp = AddInAbstractGrabber::pixelFormatStringToBpp(pixelFormat);
 		}
-		else
+		else // fall back for AddInGrabber
 		{
 			bpp = getParamByInvoke(cam.data(), "bpp", retval)->getVal<int>();
 		}

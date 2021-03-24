@@ -550,7 +550,7 @@ namespace ito
 				retValue += apiGetParamFromMapByKey(m_channels[suffix].m_channelParam, key, it, false);
 				if (retValue.containsError())
 				{
-					retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\".Maybe this is a non channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
+					retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\". Maybe this is a channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
 				}
 			}
 			else
@@ -598,7 +598,14 @@ namespace ito
 			}
 			else
 			{
-				retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+				if (suffix.isEmpty())
+				{
+					retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+				}
+				else
+				{
+					retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(suffix).toLatin1().data());
+				}
 			}
 		}
 		if (!retValue.containsError())
@@ -614,29 +621,29 @@ namespace ito
 				if (key == "defaultChannel")
 				{
 					QString previousChannel = m_params["defaultChannel"].getVal<char*>();
-					retValue += it->copyValueFrom(&(*val));
-					if (m_channels.find(it->getVal<char*>()) != m_channels.end())
+					
+					if (m_channels.find(val->getVal<char*>()) != m_channels.end())
 					{
-						m_params["defaultChannel"].setVal<char*>(it->getVal<char*>());
+						retValue += it->copyValueFrom(&(*val));
 						retValue += synchronizeParamswithChannelParams(previousChannel);
 					}
 					else
 					{
-						retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(it->getVal<char*>()).toLatin1().data());
+						retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(val->getVal<char*>()).toLatin1().data());
 					}
 				}
-				if (key == "roi")
+				else if (key == "roi")
 				{
-						if (!hasIndex)
-						{
-							retValue += it->copyValueFrom(&(*val));
-							list << "roi";
-						}
-						else
-						{
-							it->getVal<int*>()[index] = val->getVal<int>();
-							list << "roi";
-						}
+					if (!hasIndex)
+					{
+						retValue += it->copyValueFrom(&(*val));
+						list << "roi";
+					}
+					else
+					{
+						it->getVal<int*>()[index] = val->getVal<int>();
+						list << "roi";
+					}
 					
 				}
 				else
@@ -644,7 +651,7 @@ namespace ito
 					retValue += it->copyValueFrom(&(*val)); // it seems that the plugin does not process the param therefore it is copied here
 					if (m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam.contains(key))
 					{
-						list << key;
+					list << key;
 					}
 				}
 			}
@@ -652,8 +659,11 @@ namespace ito
 			{
 				updateSizeXY();				
 			}
-			applyParamsToChannelParams(list);
-			checkData();
+			if (!retValue.containsError())
+			{
+				applyParamsToChannelParams(list);
+				checkData();
+			}
 		}
 		if (!retValue.containsError())
 		{

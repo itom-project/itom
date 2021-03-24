@@ -16,6 +16,7 @@ import dataobject_makecontinuous
 import dataobject_scale_offset
 import plot_test
 import shape_test
+import multichannel_test
 if pyversion >= "3.6":
     import itom_stubs_generator
     import itom_jedilib
@@ -34,6 +35,7 @@ def suite():
     suite.addTest(unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))
     suite.addTest(unittest.makeSuite(plot_test.PlotTest))
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
+    suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
     if pyversion >= "3.6":
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
