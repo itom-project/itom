@@ -40,19 +40,20 @@ namespace ito
         static tCompareResult compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret);
         static tCompareResult compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret);
 
-        static ito::RetVal validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory = false, const char* name = NULL);
-        static ito::RetVal validateDoubleMeta(const ito::DoubleMeta *meta, double value, const char* name = NULL);
-        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding = true, const char* name = NULL);
-        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding = true, const char* name = NULL);
-        static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value, const char* name = NULL);
-        static ito::RetVal validateCharMeta(const ito::CharMeta *meta, char value, const char* name = NULL);
-        static ito::RetVal validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len, const char* name = NULL);
-        static ito::RetVal validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len, const char* name = NULL);
-        static ito::RetVal validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len, const char* name = NULL);
-        static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false, const char* name = NULL);
+        static ito::RetVal validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory = false, const char* name = nullptr);
+        static ito::RetVal validateDoubleMeta(const ito::DoubleMeta *meta, double value, const char* name = nullptr);
+        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding = true, const char* name = nullptr);
+        static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding = true, const char* name = nullptr);
+        static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value, const char* name = nullptr);
+        static ito::RetVal validateCharMeta(const ito::CharMeta *meta, char value, const char* name = nullptr);
+        static ito::RetVal validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len, const char* name = nullptr);
+        static ito::RetVal validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len, const char* name = nullptr);
+        static ito::RetVal validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len, const char* name = nullptr);
+        static ito::RetVal validateStringListMeta(const ito::ParamMeta *meta, const ito::ByteArray* values, size_t len, const char* name = nullptr);
+        static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false, const char* name = nullptr);
         static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false);
         static ito::RetVal validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict = true, bool mandatory = false, bool roundToSteps = false);
-        static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = NULL);
+        static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = nullptr);
         static ito::RetVal getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly);
         static ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
@@ -65,8 +66,8 @@ namespace ito
         static bool fitToDoubleStepSize(double min, double step, double val);
         static QString parseNamePrefix(const char *name);
 
-        ParamHelper(){};
-        ~ParamHelper(){};
+        ParamHelper() = delete;
+        ~ParamHelper() = delete;
     };
 } //end namespace ito
 

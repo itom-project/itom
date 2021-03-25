@@ -637,8 +637,9 @@ namespace ito
                         char *cVal_ = cVal;
                         if (val)
                         {
-                            cVal = new char[strlen(val) + 1];
-                            memcpy(cVal, val, strlen(val) + 1);
+                            size_t len = strlen(reinterpret_cast<const char*>(val));
+                            cVal = new char[len + 1];
+                            memcpy(cVal, val, len + 1);
                             iVal = static_cast<int>(strlen(cVal));
                         }
                         else
@@ -752,10 +753,11 @@ namespace ito
                         ito::ByteArray *dest = new ito::ByteArray[len];
                         cVal = (char*)dest;
                         memset(cVal, 0, len * sizeof(ito::ByteArray));
+                        const ito::ByteArray *src = (const ito::ByteArray*)val;
 
                         for (int i = 0; i < len; ++i)
                         {
-                            dest[i] = val[i]; //operator=
+                            dest[i] = src[i]; //operator=
                         }
 
                         iVal = len;
