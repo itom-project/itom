@@ -1650,22 +1650,22 @@ ito::RetVal ParamHelper::validateParam(const ito::Param &templateParam, const it
         break;
         case ito::ParamBase::CharArray: {
             retVal +=
-                validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char *>(), param.getLen(), name);
+                validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char *>(), std::max(0, param.getLen()), name);
         }
         break;
         case ito::ParamBase::StringList: {
             retVal +=
-                validateStringListMeta(templateParam.getMeta(), param.getVal<ito::ByteArray*>(), param.getLen(), name);
+                validateStringListMeta(templateParam.getMeta(), param.getVal<ito::ByteArray*>(), std::max(0, param.getLen()), name);
         }
                                         break;
         case ito::ParamBase::IntArray: {
             // check intArray, range, interval and rect
-            retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int *>(), param.getLen(), name);
+            retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int *>(), std::max(0, param.getLen()), name);
         }
         break;
         case ito::ParamBase::DoubleArray: {
             retVal +=
-                validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double *>(), param.getLen(), name);
+                validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double *>(), std::max(0, param.getLen()), name);
         }
         break;
         case ito::ParamBase::String: {

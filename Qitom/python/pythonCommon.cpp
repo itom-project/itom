@@ -183,6 +183,24 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
+    case ito::ParamBase::StringList & ito::paramTypeMask:
+    {
+        bool ok;
+        QVector<ito::ByteArray> v = PythonQtConversion::PyObjGetByteArrayList(pyObj, false, ok);
+
+        if (ok)
+        {
+            *set = 1;
+            outParam.setVal<ito::ByteArray*>(v.data(), v.size());
+        }
+        else
+        {
+            return ito::retError;
+        }
+    }
+    break;
+
+
     case ito::ParamBase::String & ito::paramTypeMask:
         if (PyUnicode_Check(pyObj))
         {
