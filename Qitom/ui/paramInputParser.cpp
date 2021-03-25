@@ -150,9 +150,17 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
                 m_lblType->setText(tr("[HW-Instance]"));
                 m_content = renderTypeHWRef(param, i, parent);
                 break;
+            case ito::ParamBase::ComplexArray:
+                m_lblType->setText(tr("[ComplexArray]"));
+                m_content = new QLabel(tr(" - - no editing - - "), parent);
+                break;
+            case ito::ParamBase::StringList:
+                m_lblType->setText(tr("[StringList]"));
+                m_content = renderTypeStringList(param, i, parent);
+                break;
             default:
                 m_lblType->setText(tr("[unknown]"));
-                m_content = new QLabel(tr(" - - error - - "),parent);
+                m_content = new QLabel(tr(" - - error - - "), parent);
                 break;
         }
 
@@ -526,7 +534,13 @@ QWidget* ParamInputParser::renderTypeCharArray(const ito::Param & /*param*/, int
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent, const QString name)
+QWidget* ParamInputParser::renderTypeStringList(const ito::Param &param, int virtualIndex, QWidget *parent)
+{
+    return renTypeArray(virtualIndex, parent, "ListString");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent, const QString &name)
 {
     QWidget *container = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout();

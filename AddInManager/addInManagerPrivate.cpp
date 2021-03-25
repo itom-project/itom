@@ -501,6 +501,11 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                 DELETE_AND_SET_NULL(loader);
             }
         }
+        catch (std::logic_error &exc)
+        {
+            retValue += ito::RetVal(ito::retError, 0, 
+                tr("Caught exception during loading of plugin: %1. Error: %2.").arg(filename).arg(exc.what()).toLatin1().data());
+        }
         catch (...)
         {
             retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1").arg(filename).toLatin1().data());

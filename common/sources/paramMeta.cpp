@@ -887,6 +887,8 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
+        m_type = rttiStringListMeta;
+
         if (!category.empty())
         {
             setCategory(category);
@@ -901,7 +903,7 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
-
+        m_type = rttiStringListMeta;
     }
 
     //---------------------------------------------------------------------------------
@@ -912,6 +914,7 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
+        m_type = rttiStringListMeta;
 
     }
 
@@ -922,6 +925,7 @@ namespace ito
         m_numMax(cpy.m_numMax),
         m_numStep(cpy.m_numStep)
     {
+        m_type = rttiStringListMeta;
 
     }
 

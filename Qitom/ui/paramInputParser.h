@@ -50,15 +50,16 @@ public:
     inline int getItemSize() const { return m_params.size(); };
 
 protected:
-    QWidget* renderTypeInt(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeChar(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeDouble(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeString(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeHWRef(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeIntArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeDoubleArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renderTypeCharArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
-    QWidget* renTypeArray(const int virtualIndex, QWidget *parent, const QString name);
+    QWidget* renderTypeInt(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeChar(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeDouble(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeString(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeHWRef(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeIntArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeDoubleArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeCharArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renderTypeStringList(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
+    QWidget* renTypeArray(const int virtualIndex, QWidget *parent, const QString &name);
 
     ito::RetVal getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
