@@ -31,6 +31,7 @@
 #include "ui_paramInputDialog.h"
 
 #include "common/paramMeta.h"
+#include "common/param.h"
 
 #include <qdialog.h>
 #include <qstyleditemdelegate.h>
@@ -40,33 +41,24 @@ class QListWidgetItem;
 
 namespace ito {
 
-enum tParamType
-{
-    none        = 0x0,
-    intArray    = 0x1,
-    doubleArray = 0x2,
-    charArray   = 0x4
-};
 
-//-------------------------------------------------------------------------------------
+//! declaration of delegate class
 class LineEditDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit LineEditDelegate(const double minVal, const double maxVal, const tParamType paramType, QObject *parent = 0);
+    explicit LineEditDelegate(const ito::ParamMeta *meta, int paramType, QObject *parent = 0);
 
-    QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 private:
-    ito::ParamMeta m_meta;
-    double m_minVal;
-    double m_maxVal;
-    tParamType m_paramType;
+    QSharedPointer<ito::ParamMeta> m_meta;
+    int m_paramType;
 };
 
 //-------------------------------------------------------------------------------------
@@ -75,16 +67,12 @@ class ParamInputDialog: public QDialog
     Q_OBJECT
 
 public:
-    explicit ParamInputDialog(const QStringList &stringList, const ito::ParamMeta *meta, const tParamType paramType, QWidget *parent);
+    explicit ParamInputDialog(const Param& param, QWidget *parent = nullptr);
     ~ParamInputDialog();
 
-    QListWidget *listWidget() const { return ui.listWidget; }
-    void setNewItemText(const QString &tpl) { m_newItemText = tpl; }
-    QString newItemText() const { return m_newItemText; }
-    void setCurrentIndex(int idx);
-    QStringList getStringList();
-    QRegExp m_RegExp;
-    LineEditDelegate *m_lineEditDel;
+    //QStringList getStringList();
+    Param getItems(RetVal &retValue) const;
+    
 
 private slots:
     void on_newListItemButton_clicked();
@@ -98,6 +86,7 @@ private slots:
 protected:
     virtual void setItemData(int role, const QVariant &v);
     virtual QVariant getItemData(int role) const;
+    QStringList getStringList(const ito::Param &param) const;
 
 private:
     void updateEditor();
@@ -107,8 +96,9 @@ private:
     size_t m_minSize;
     size_t m_maxSize;
     size_t m_stepSize;
-    double m_minVal;
-    double m_maxVal;
+    Param m_param;
+    QRegExp m_RegExp;
+    LineEditDelegate *m_lineEditDel;
 };
 
 } //end namespace ito

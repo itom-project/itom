@@ -36,7 +36,7 @@
 
 namespace ito {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ParamInputParser::ParamInputParser(QWidget *canvas) :
     QObject(canvas)
 {
@@ -44,17 +44,17 @@ ParamInputParser::ParamInputParser(QWidget *canvas) :
     m_iconInfo = QIcon(":/plugins/icons/info.png");
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ParamInputParser::~ParamInputParser()
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
 {
     ito::RetVal retValue;
     QWidget *parent = m_canvas.data();
-    if (parent == NULL)
+    if (parent == nullptr)
     {
         return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
     }
@@ -69,10 +69,10 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
     parent->setLayout(vLayout);
     QGridLayout *gridLayout = new QGridLayout();
 
-    QLabel *m_lblInfo = NULL;
-    QLabel *m_lblName = NULL;
-    QLabel *m_lblType = NULL;
-    QWidget *m_content = NULL;
+    QLabel *m_lblInfo = nullptr;
+    QLabel *m_lblName = nullptr;
+    QLabel *m_lblType = nullptr;
+    QWidget *m_content = nullptr;
     int i = 0;
 
     m_internalData.resize(params.size());
@@ -86,6 +86,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
         m_lblInfo->setPixmap(m_iconInfo.pixmap(16 * dpiFactor, 16));
 
         QString info = QLatin1String(param.getInfo());
+
         if (info == "")
         {
             m_lblInfo->setToolTip(tr("[no description]"));
@@ -189,23 +190,24 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue, bool showMessages /*= false*/)
 {
     QWidget *parent = m_canvas.data();
-    if (parent == NULL)
+
+    if (parent == nullptr)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
         return false;
     }
 
     int i = 0;
-    QGridLayout *gridLayout = NULL;
+    QGridLayout *gridLayout = nullptr;
     ito::ParamBase tempParam;
     QVBoxLayout *temp = qobject_cast<QVBoxLayout*>(parent->layout());
     gridLayout = qobject_cast<QGridLayout*>(temp->itemAt(0)->layout());
 
-    if (gridLayout == NULL)
+    if (gridLayout == nullptr)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toLatin1().data());
         return false;
@@ -231,13 +233,9 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
             retValue += getStringValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
             break;
         case ito::ParamBase::IntArray:
-            retValue += getIntArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
-            break;
         case ito::ParamBase::DoubleArray:
-            retValue += getDoubleArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
-            break;
         case ito::ParamBase::CharArray:
-            retValue += getCharArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
+        case ito::ParamBase::StringList:
             break;
         case ito::ParamBase::HWRef & ito::paramTypeMask:
             retValue += getHWValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
@@ -251,10 +249,12 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
             if (showMessages)
             {
                 QString text = QString(tr("The parameter '%1' is invalid.")).arg(param.getName());
+
                 if (retValue.hasErrorMessage())
                 {
                     text.append("\n\n").append(QLatin1String(retValue.errorMessage()));
                 }
+
                 QMessageBox::critical(parent, tr("Invalid input"), text);
             }
             else
@@ -274,19 +274,20 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
 {
     ito::RetVal retValue;
     QWidget *parent = m_canvas.data();
-    if (parent == NULL)
+
+    if (parent == nullptr)
     {
         return ito::RetVal(ito::retError, 0, tr("Canvas widget does not exist any more").toLatin1().data());
     }
 
     int i = 0;
-    QGridLayout *gridLayout = NULL;
+    QGridLayout *gridLayout = nullptr;
     ito::ParamBase tempParam;
     QVBoxLayout *temp = qobject_cast<QVBoxLayout*>(parent->layout());
     gridLayout = qobject_cast<QGridLayout*>(temp->itemAt(0)->layout());
     params.clear();
     
-    if (gridLayout == NULL)
+    if (gridLayout == nullptr)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("QT error: Grid layout could not be identified").toLatin1().data());
         return retValue;
@@ -312,13 +313,10 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
             retValue += getStringValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
             break;
         case ito::ParamBase::IntArray:
-            retValue += getIntArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
-            break;
         case ito::ParamBase::DoubleArray:
-            retValue += getDoubleArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
-            break;
         case ito::ParamBase::CharArray:
-            retValue += getCharArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
+        case ito::ParamBase::StringList:
+            tempParam = param;
             break;
         case ito::ParamBase::HWRef & ito::paramTypeMask:
             retValue += getHWValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
@@ -338,6 +336,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
 QWidget* ParamInputParser::renderTypeInt(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     const ito::IntMeta *meta = static_cast<const ito::IntMeta*>(param.getMeta());
+
     if (meta && meta->getMin() == 0 && meta->getMax() == 1)
     {
         //special case, we use a checkbox instead of the spinbox
@@ -365,7 +364,7 @@ QWidget* ParamInputParser::renderTypeInt(const ito::Param &param, int /*virtualI
             box->setToolTip(tr("unlimited"));
         }
 
-        box->setValue(const_cast<ito::Param&>(param).getVal<int>());
+        box->setValue(param.getVal<int>());
 
         return box;
     }
@@ -377,6 +376,7 @@ QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtual
     QSpinBox *box = new QSpinBox(parent);
     
     const ito::CharMeta *meta = static_cast<const ito::CharMeta*>(param.getMeta());
+
     if (meta)
     {
         box->setMinimum((int)meta->getMin());
@@ -392,7 +392,7 @@ QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtual
         box->setToolTip(tr("unlimited"));
     }
 
-    box->setValue(const_cast<ito::Param&>(param).getVal<int>());
+    box->setValue(param.getVal<int>());
 
     return box;
 }
@@ -402,12 +402,13 @@ QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtu
 {
     QDoubleSpinBox *box = new QDoubleSpinBox(parent);
     box->setDecimals(4);
-    
     const ito::DoubleMeta *meta = static_cast<const ito::DoubleMeta*>(param.getMeta());
+
     if (meta)
     {
         box->setMinimum(meta->getMin());
         box->setMaximum(meta->getMax());
+
         if (meta->getStepSize() != 0.0)
         {
             box->setSingleStep(meta->getStepSize());
@@ -425,7 +426,7 @@ QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtu
         box->setToolTip(tr("unlimited"));
     }
 
-    box->setValue(const_cast<ito::Param&>(param).getVal<double>());
+    box->setValue(param.getVal<double>());
 
     return box;
 }
@@ -439,24 +440,28 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
     {
         QComboBox *cmb = new QComboBox(parent);
         int cur = -1;
+
         for (int i = 0; i < meta->getLen(); i++)
         {
             cmb->addItem(QLatin1String(meta->getString(i)));
-            if (param.getVal<char*>() && (QLatin1String(param.getVal<char*>()) == QLatin1String(meta->getString(i))))
+
+            if (param.getVal<const char*>() && (QLatin1String(param.getVal<const char*>()) == QLatin1String(meta->getString(i))))
             {
                 cur = i;
             }
         }
+
         if (cur >= 0)
         {
             cmb->setCurrentIndex(cur);
         }
+
         return cmb;
     }
     else
     {
         QLineEdit *txt = new QLineEdit(parent);
-        QString value = QLatin1String(const_cast<ito::Param&>(param).getVal<char*>());
+        QString value = QLatin1String(param.getVal<const char*>());
         value.replace('\r', "\\r");
         value.replace('\n', "\\n");
         value.replace('\t', "\\t");
@@ -489,13 +494,13 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & param, int virtualIndex, QWidget *parent)
 {
     QWidget *container = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout();
     QLineEdit *txt = new QLineEdit(container);
-    txt->setObjectName(QString("HWRef_%1").arg(virtualIndex));
+    txt->setObjectName(arrayTypeObjectName(param.getType(), virtualIndex));
     txt->setText(tr("[None]"));
     txt->setEnabled(false);
 
@@ -515,40 +520,152 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
     return container;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeIntArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+//-------------------------------------------------------------------------------------
+QString ParamInputParser::getTypeGenericArrayPreview(const ito::Param &param) const
 {
-    return renTypeArray(virtualIndex, parent, "ArrayInt");
+    const int maxNum = 10;
+
+    QStringList items;
+    int num = param.getLen();
+
+    switch (param.getType())
+    {
+    case ito::ParamBase::CharArray:
+    {
+        auto vals = param.getVal<const char*>();
+        for (int i = 0; i < std::min(maxNum, num); ++i)
+        {
+            items.append(QString::number(vals[i]));
+        }
+        break;
+    }
+    case ito::ParamBase::IntArray:
+    {
+        auto vals = param.getVal<const int*>();
+        for (int i = 0; i < std::min(maxNum, num); ++i)
+        {
+            items.append(QString::number(vals[i]));
+        }
+        break;
+    }
+    case ito::ParamBase::DoubleArray:
+    {
+        auto vals = param.getVal<const double*>();
+        for (int i = 0; i < std::min(maxNum, num); ++i)
+        {
+            items.append(QString::number(vals[i], 'g', 4));
+        }
+        break;
+    }
+    case ito::ParamBase::ComplexArray:
+    {
+        auto vals = param.getVal<const ito::complex128*>();
+        for (int i = 0; i < std::min(maxNum, num); ++i)
+        {
+            if (vals[i].imag() >= 0)
+            {
+                items.append(QString::number(vals[i].real(), 'g', 4) + "+" + QString::number(vals[i].imag(), 'g', 4) + "i");
+            }
+            else
+            {
+                items.append(QString::number(vals[i].real(), 'g', 4) + "-" + QString::number(vals[i].imag(), 'g', 4) + "i");
+            }
+            
+        }
+        break;
+    }
+    case ito::ParamBase::StringList:
+    {
+        auto vals = param.getVal<const ito::ByteArray*>();
+        QString s;
+
+        for (int i = 0; i < std::min(maxNum, num); ++i)
+        {
+            s = QLatin1String(vals[i].data());
+            
+            if (s.size() > 20)
+            {
+                s = s.left(17) + "...";
+            }
+
+            items.append(s);
+        }
+        break;
+    }
+    default:
+        return QString();
+    }
+
+    QString content;
+
+    if (num > maxNum)
+    {
+        content = items.join(";") + ";...";
+    }
+    else
+    {
+        content = items.join(";");
+    }
+
+    return QString("[%1]").arg(content);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeDoubleArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeIntArray(const ito::Param& param, int virtualIndex, QWidget *parent)
 {
-    return renTypeArray(virtualIndex, parent, "ArrayDbl");
+    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::IntArray);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeCharArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeDoubleArray(const ito::Param& param, int virtualIndex, QWidget *parent)
 {
-    return renTypeArray(virtualIndex, parent, "ArrayChar");
+    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::DoubleArray);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeStringList(const ito::Param &param, int virtualIndex, QWidget *parent)
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeCharArray(const ito::Param& param, int virtualIndex, QWidget *parent)
 {
-    return renTypeArray(virtualIndex, parent, "ListString");
+    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::CharArray);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent, const QString &name)
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeStringList(const ito::Param& param, int virtualIndex, QWidget *parent)
+{
+    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::StringList);
+}
+
+//-------------------------------------------------------------------------------------
+QString ParamInputParser::arrayTypeObjectName(int paramType, int index) const
+{
+    //do not translate these strings
+    switch (paramType & paramTypeMask)
+    {
+    case ParamBase::CharArray:
+        return QString("ArrayChar_%1").arg(index);
+    case ParamBase::IntArray:
+        return QString("ArrayInt_%1").arg(index);
+    case ParamBase::DoubleArray:
+        return QString("ArrayDbl_%1").arg(index);
+    case ParamBase::ComplexArray:
+        return QString("ArrayCmplx_%1").arg(index);
+    case ParamBase::StringList:
+        return QString("ListString_%1").arg(index);
+    case ParamBase::HWRef:
+        return QString("HWRef_%1").arg(index);
+    default:
+        return "";
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeGenericArray(const ito::Param &param, const int virtualIndex, QWidget *parent, int paramType)
 {
     QWidget *container = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout();
-    QLineEdit *txt = new QLineEdit(container);
-    QString string = name + QString("_%1").arg(virtualIndex);
-    txt->setObjectName(name + QString("_%1").arg(virtualIndex));
-//    txt->setText("");
-//    txt->setEnabled(false);
+    QLineEdit *lineEdit = new QLineEdit(container);
+    lineEdit->setObjectName(arrayTypeObjectName(paramType, virtualIndex));
+    lineEdit->setReadOnly(true);
+    lineEdit->setText(getTypeGenericArrayPreview(param));
 
     QToolButton *tool = new QToolButton(container);
     tool->setIcon(QIcon(":/application/icons/list.png"));
@@ -556,7 +673,7 @@ QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent,
         browseArrayPicker(virtualIndex);
     });
 
-    layout->addWidget(txt);
+    layout->addWidget(lineEdit);
     layout->addWidget(tool);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -571,31 +688,31 @@ ito::RetVal ParamInputParser::getIntValue(ito::ParamBase &param, const ito::Para
 {
     ito::RetVal retVal;
     QSpinBox *box = qobject_cast<QSpinBox*>(contentWidget);
-    if (box == NULL)
+    int value = 0.0;
+
+    if (box)
+    {
+        value = box->value();
+    }
+    else
     {
         QCheckBox *c = qobject_cast<QCheckBox*>(contentWidget);
+
         if (c)
         {
-            int val = c->isChecked() ? 1 : 0;
-            retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()), val);
-            if (!retVal.containsError())
-            {
-                param.setVal<int>(val);
-            }
+            value = c->isChecked() ? 1 : 0;
         }
         else
         {
             return ito::RetVal(ito::retError, 0, tr("Qt error: Spin box widget could not be found").toLatin1().data());
         }
     }
-    else
-    {
-        retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()), box->value());
 
-        if (!retVal.containsError())
-        {
-            param.setVal<int>(box->value());
-        }
+    retVal += ito::ParamHelper::validateIntMeta(static_cast<const ito::IntMeta*>(orgParam.getMeta()), value);
+
+    if (!retVal.containsError())
+    {
+        param.setVal<int>(value);
     }
 
     return retVal;
@@ -606,7 +723,8 @@ ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Par
 {
     ito::RetVal retVal;
     QSpinBox *box = qobject_cast<QSpinBox*>(contentWidget);
-    if (box == NULL)
+
+    if (box == nullptr)
     {
         return ito::RetVal(ito::retError, 0, tr("Qt error: Spin box widget could not be found").toLatin1().data());
     }
@@ -626,7 +744,8 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
 {
     ito::RetVal retVal;
     QDoubleSpinBox *box = qobject_cast<QDoubleSpinBox*>(contentWidget);
-    if (box == NULL)
+
+    if (box == nullptr)
     {
         return ito::RetVal(ito::retError, 0, tr("Qt error: Double spin box widget could not be found").toLatin1().data());
     }
@@ -647,13 +766,16 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
     ito::RetVal retVal;
     QString string;
     QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget);
-    if (txt == NULL)
+
+    if (txt == nullptr)
     {
         QComboBox *cmb = qobject_cast<QComboBox*>(contentWidget);
-        if (cmb == NULL)
+
+        if (cmb == nullptr)
         {
             return ito::RetVal(ito::retError, 0, tr("Qt error: String input widget could not be found").toLatin1().data());
         }
+
         string = cmb->currentText();
     }
     else
@@ -691,172 +813,9 @@ ito::RetVal ParamInputParser::getHWValue(ito::ParamBase &param, const ito::Param
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ParamInputParser::getIntArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* /*internalData*/, bool /*mandatory*/)
-{
-    ito::RetVal retVal;
-    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
-
-    if (txt == NULL)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Qt error: IntArray widget could not be found").toLatin1().data());
-    }
-    else
-    {
-        QString string = txt->text();
-
-        if (string != "")
-        {
-            QStringList list = string.split(";");
-
-            int size = list.size();
-            int *intArr = new int[size];
-            int value;
-            int i = 0;
-            bool ok;
-            foreach (QString s, list)
-            {
-                s = s.trimmed();
-                value = s.toInt(&ok);
-                if (!ok)
-                {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value '%2' at position %3 is no integer number.") \
-                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
-                    break;
-                }
-
-                intArr[i++] = value;
-            }
-
-            if (!retVal.containsError())
-            {
-                retVal += ito::ParamHelper::validateIntArrayMeta(orgParam.getMeta(), intArr, size, orgParam.getName());
-            }
-
-            if (!retVal.containsError())
-            {
-                param.setVal<int*>(intArr, size);
-            }
-
-            DELETE_AND_SET_NULL_ARRAY(intArr);
-        }
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ParamInputParser::getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* internalData, bool mandatory)
-{
-    ito::RetVal retVal;
-    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
-
-    if (txt == NULL)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Qt error: DoubleArray widget could not be found").toLatin1().data());
-    }
-    else
-    {
-        QString string = txt->text();
-
-        if (string != "")
-        {
-            QStringList list = string.split(";");
-
-            int size = list.size();
-            double *dblArr = new double[size];
-            double value;
-            int i = 0;
-            bool ok;
-            foreach (QString s, list)
-            {
-                s = s.trimmed();
-                value = s.toDouble(&ok);
-                if (!ok)
-                {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid double list of parameter '%1': Value '%2' at position %3 is no double number.") \
-                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
-                    break;
-                }
-
-                dblArr[i++] = value;
-            }
-
-            if (!retVal.containsError())
-            {
-                retVal += ito::ParamHelper::validateDoubleArrayMeta(orgParam.getMeta(), dblArr, size, orgParam.getName());
-            }
-
-            if (!retVal.containsError())
-            {
-                param.setVal<double*>(dblArr, size);
-            }
-
-            DELETE_AND_SET_NULL_ARRAY(dblArr);
-        }
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ParamInputParser::getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* /*internalData*/, bool /*mandatory*/)
-{
-    ito::RetVal retVal;
-    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
-
-    if (txt == NULL)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Qt error: CharArray widget could not be found").toLatin1().data());
-    }
-    else
-    {
-        QString string = txt->text();
-
-        if (string != "")
-        {
-            QStringList list = string.split(";");
-
-            int size = list.size();
-            char *charArr = new char[size];
-            int value;
-            int i = 0;
-            bool ok;
-            foreach (QString s, list)
-            {
-                s = s.trimmed();
-                value = s.toInt(&ok);
-                if (!ok)
-                {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value '%2' at position %3 is no integer number.") \
-                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
-                    break;
-                }
-
-                charArr[i++] = value;
-            }
-
-            if (!retVal.containsError())
-            {
-                retVal += ito::ParamHelper::validateCharArrayMeta(orgParam.getMeta(), charArr, size, orgParam.getName());
-            }
-
-            if (!retVal.containsError())
-            {
-                param.setVal<char*>(charArr, size);
-            }
-
-            DELETE_AND_SET_NULL_ARRAY(charArr);
-        }
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void ParamInputParser::browsePluginPicker(int i)
 {
-    ito::AddInBase *aib = NULL;
-    aib = (ito::AddInBase*)(m_internalData[i]);
+    ito::AddInBase *aib = (ito::AddInBase*)(m_internalData[i]);
 
     ito::Param p;
     p = m_params[i];
@@ -864,6 +823,7 @@ void ParamInputParser::browsePluginPicker(int i)
     ito::HWMeta* hwmeta = static_cast<ito::HWMeta*>(p.getMeta());
     QString pluginName = QString();
     int minimumPluginType = 0x0;
+
     if (hwmeta)
     {
         if (!hwmeta->getHWAddInName().empty())
@@ -874,6 +834,7 @@ void ParamInputParser::browsePluginPicker(int i)
     }
 
     QWidget *canvas = m_canvas.data();
+
     if (canvas)
     {
         DialogPluginPicker *dialog = new DialogPluginPicker(true, aib, minimumPluginType, pluginName, canvas);
@@ -883,8 +844,9 @@ void ParamInputParser::browsePluginPicker(int i)
             aib = dialog->getSelectedInstance();
             m_internalData[i] = (void*)aib;
 
-            QString name = QString("HWRef_%1").arg(i);
+            QString name = arrayTypeObjectName(ParamBase::HWRef, i);
             QLineEdit *le = canvas->findChild<QLineEdit*>(name);
+
             if (le && aib)
             {
                 if (aib->getIdentifier() != "")
@@ -906,147 +868,42 @@ void ParamInputParser::browsePluginPicker(int i)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ParamInputParser::browseArrayPicker(int i)
 {
-    ito::AddInBase *aib = NULL;
-    aib = (ito::AddInBase*)(m_internalData[i]);
+    const ito::Param p = m_params[i];
+    QString leString;
+    QLineEdit *lineEdit = nullptr;
 
-    tParamType paramType = none;
-    ito::Param p = m_params[i];
-    QString leString = QString();
-    QLineEdit *le;
-
-    QWidget *canvas = m_canvas.data();
-    if (canvas)
+    if (m_canvas)
     {
-        QString name = QString("ArrayInt_%1").arg(i);
-        le = canvas->findChild<QLineEdit*>(name);
-        if (le)
-        {
-            leString = le->text();
-            paramType = intArray;
-        }
-        else
-        {
-            QString name = QString("ArrayDbl_%1").arg(i);
-            le = canvas->findChild<QLineEdit*>(name);
-            if (le)
-            {
-                leString = le->text();
-                paramType = doubleArray;
-            }
-            else
-            {
-                QString name = QString("ArrayChar_%1").arg(i);
-                le = canvas->findChild<QLineEdit*>(name);
-                if (le)
-                {
-                    leString = le->text();
-                    paramType = charArray;
-                }
-            }
-        }
+        QString name = arrayTypeObjectName(p.getType(), i);
+        lineEdit = m_canvas->findChild<QLineEdit*>(name);
     }
 
-    QStringList list;
-    bool ok = true;
-
-    // IntArray
-    if ((paramType == intArray) || (paramType == charArray))
+    if (lineEdit)
     {
-        ito::IntArrayMeta* arrMeta = static_cast<ito::IntArrayMeta*>(p.getMeta());
-
-        if (leString != "")
-        {
-            list = leString.split(";");
-            int i = 0;
-            int value;
-
-            while (i < list.size())
-            {
-                list[i] = list[i].trimmed();
-                if (list[i] != "")
-                {
-                    value = list[i].toInt(&ok);
-                    if (!ok)
-                    {
-                        QMessageBox msgBox;
-                        msgBox.setText(tr("Invalid integer list: Value '%1' at position %2 is no integer number.").arg(list[i]).arg(i));
-                        msgBox.setIcon(QMessageBox::Critical);
-                        msgBox.exec();
-                        break;
-                    }
-                }
-
-                i++;
-            }
-        }
-    }
-    // DoubleArray
-    else if (paramType == doubleArray)
-    {
-        ito::DoubleArrayMeta* arrMeta = static_cast<ito::DoubleArrayMeta*>(p.getMeta());
-
-        if (leString != "")
-        {
-            list = leString.split(";");
-            int i = 0;
-            double value;
-
-            while (i < list.size())
-            {
-                list[i] = list[i].trimmed();
-                if (list[i] != "")
-                {
-                    value = list[i].toDouble(&ok);
-                    if (!ok)
-                    {
-                        QMessageBox msgBox;
-                        msgBox.setText(tr("Invalid double list: Value '%1' at position %2 is no double number.").arg(list[i]).arg(i));
-                        msgBox.setIcon(QMessageBox::Critical);
-                        msgBox.exec();
-                        break;
-                    }
-                }
-
-                i++;
-            }
-        }
-    }
-    else
-    {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Unknown paramType: %1").arg(paramType));
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-        ok = false;
-    }
-
-    if (ok)
-    {
-        ParamInputDialog *dialog = new ParamInputDialog(list, p.getMeta(), paramType, canvas);
+        ParamInputDialog *dialog = new ParamInputDialog(p, m_canvas.data());
 
         if (dialog->exec() == 1) //accepted
         {
-            QStringList retList = dialog->getStringList();
-            if (retList.size() == 0)
+            RetVal retValue;
+            Param newParam = dialog->getItems(retValue);
+            
+            if (retValue.containsError())
             {
-                le->setText("");
+                QMessageBox msgBox;
+                msgBox.setWindowTitle(tr("Invalid input"));
+                msgBox.setText(retValue.errorMessage());
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.exec();
+            }
+            else
+            {
+                m_params[i].copyValueFrom(&newParam);
             }
 
-            QString s = "";
-
-            for (int i = 0; i < retList.size(); ++i)
-            {
-                if (s != "")
-                {
-                    s.append("; ");
-                }
-                s.append(retList[i]);
-            }
-
-            le->setText(s);
+            lineEdit->setText(getTypeGenericArrayPreview(m_params[i]));
         }
 
         DELETE_AND_SET_NULL(dialog);

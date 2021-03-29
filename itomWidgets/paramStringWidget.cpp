@@ -128,18 +128,18 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
 
             if (lineedit)
             {
-                if (metaChanged && metaNew)
+                if (metaChanged && metaNew && metaNew->getLen() > 0)
                 {
                     switch (metaNew->getStringType())
                     {
                     case ito::StringMeta::String:
-                        d->m_pLineEdit->setValidator(NULL);
+                        d->m_pLineEdit->setValidator(nullptr);
                         break;
                     case ito::StringMeta::Wildcard:
                         {
-                            QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
-                            d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
-                            break;
+                        QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
+                        d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
+                        break;
                         }
                     case ito::StringMeta::RegExp:
                         {
@@ -151,7 +151,7 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
                 }
 				else
 				{
-					d->m_pLineEdit->setValidator(NULL);
+					d->m_pLineEdit->setValidator(nullptr);
 				}
                 
                 if (valChanged)
@@ -166,6 +166,7 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
                 if (metaChanged)
                 {
                     d->m_pComboBox->clear();
+
                     for (int i = 0; i < metaNew->getLen(); ++i)
                     {
                         d->m_pComboBox->addItem(metaNew->getString(i));

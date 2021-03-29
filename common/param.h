@@ -606,7 +606,9 @@ namespace ito
             //! sets a new ParamMeta-instance as meta information for this Param
             /*!
                 \param meta is the pointer to any instance derived from ParamMeta
-                \param takeOwnership (default: false) defines, whether this Param should take the ownership of the ParamMeta-instance
+                \param takeOwnership (default: false) defines if this Param should take 
+                    the ownership of the given meta object. If false, a deep copy
+                    of the meta object is stored in this param.
                 \sa ito::ParamMeta
             */
             void setMeta(ParamMeta* meta, bool takeOwnership = false);
@@ -694,7 +696,7 @@ namespace ito
 
                         if (cVal_)
                         {
-                            delete[] cVal_;
+                            delete[] (ito::int32*)cVal_;
                         }
                     }
                     return ito::retOk;
@@ -716,7 +718,7 @@ namespace ito
 
                         if (cVal_)
                         {
-                            delete[] cVal_;
+                            delete[] (ito::float64*)cVal_;
                         }
                     }
                     return ito::retOk;
@@ -739,7 +741,7 @@ namespace ito
 
                         if (cVal_)
                         {
-                            delete[] cVal_;
+                            delete[] (ito::complex128*)cVal_;
                         }
                     }
                     return ito::retOk;
@@ -752,7 +754,7 @@ namespace ito
                     {
                         ito::ByteArray *dest = new ito::ByteArray[len];
                         cVal = (char*)dest;
-                        memset(cVal, 0, len * sizeof(ito::ByteArray));
+                        //memset(cVal, 0, len * sizeof(ito::ByteArray));
                         const ito::ByteArray *src = (const ito::ByteArray*)val;
 
                         for (int i = 0; i < len; ++i)
@@ -770,7 +772,7 @@ namespace ito
 
                     if (cVal_)
                     {
-                        delete[] cVal_;
+                        delete[] (ito::ByteArray*)cVal_;
                     }
                 }
                 return ito::retOk;

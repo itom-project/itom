@@ -36,8 +36,8 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::AddInInterfaceBase* aib, bool allowSendToPython) :
     QDialog(),
-    m_pMandParser(NULL),
-    m_pOptParser(NULL)
+    m_pMandParser(nullptr),
+    m_pOptParser(nullptr)
 {
     ui.setupUi(this);
 

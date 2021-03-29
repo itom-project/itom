@@ -432,6 +432,10 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                     type = ("seq. of complex");
                 break;
 
+                case ito::ParamBase::StringList & ito::paramTypeMask:
+                    type = "seq. of str";
+                break;
+
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef) & ito::paramTypeMask):
                     type = ("dataIO|actuator");
                 break;
@@ -628,7 +632,8 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					case ito::ParamBase::CharArray & ito::paramTypeMask:
 					{
 						int len = p.getLen();
-						char *ptr = p.getVal<char*>();
+						auto ptr = p.getVal<const char*>();
+
 						switch (len)
 						{
 						case 0:
@@ -665,7 +670,8 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					case ito::ParamBase::IntArray & ito::paramTypeMask:
 					{
 						int len = p.getLen();
-						int *ptr = p.getVal<int*>();
+						auto ptr = p.getVal<const int*>();
+
 						switch (len)
 						{
 						case 0:
@@ -702,7 +708,8 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					case ito::ParamBase::DoubleArray & ito::paramTypeMask:
 					{
 						int len = p.getLen();
-						double *ptr = p.getVal<double*>();
+						auto ptr = p.getVal<const double*>();
+
 						switch (len)
 						{
 						case 0:
@@ -735,6 +742,44 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 						Py_DECREF(item);
 					}
 					break;
+
+                    case ito::ParamBase::StringList & ito::paramTypeMask:
+                    {
+                        int len = p.getLen();
+                        auto ptr = p.getVal<const ito::ByteArray*>();
+
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                            temp = QString("[%1]").arg(ptr[0].data());
+                            values["values"].append(temp);
+                            break;
+                        case 2:
+                            temp = QString("[%1,%2]").arg(ptr[0].data()).arg(ptr[1].data());
+                            values["values"].append(temp);
+                            break;
+                        case 3:
+                            temp = QString("[%1,%2,%3]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
+                            values["values"].append(temp);
+                            break;
+                        case 4:
+                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
+                            values["values"].append(temp);
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(len);
+                            values["values"].append(temp);
+                            break;
+                        }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
+                    }
+                    break;
 
 					case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef) & ito::paramTypeMask) :
 					case (ito::ParamBase::Pointer & ito::paramTypeMask) :

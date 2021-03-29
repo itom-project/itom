@@ -59,16 +59,19 @@ protected:
     QWidget* renderTypeDoubleArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
     QWidget* renderTypeCharArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
     QWidget* renderTypeStringList(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
-    QWidget* renTypeArray(const int virtualIndex, QWidget *parent, const QString &name);
+    QWidget* renderTypeGenericArray(const ito::Param &param, const int virtualIndex, QWidget *parent, int paramType);
+    QString getTypeGenericArrayPreview(const ito::Param &param) const;
+
+    QString arrayTypeObjectName(int paramType, int index) const;
 
     ito::RetVal getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getDoubleValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getStringValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getHWValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getIntArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
-    ito::RetVal getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    //ito::RetVal getIntArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    //ito::RetVal getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    //ito::RetVal getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
 
     QVector<ito::Param> m_params;
     QVector<void*> m_internalData;
