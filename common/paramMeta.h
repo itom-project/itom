@@ -507,9 +507,13 @@ class ITOMCOMMON_EXPORT HWMeta : public ParamMeta
     {
     }
 
+    //!< copy constructor
     HWMeta(const HWMeta &cpy) : ParamMeta(cpy), m_minType(cpy.m_minType), m_HWName(cpy.m_HWName)
     {
     }
+
+    //!< assignment operator
+    HWMeta &operator=(const HWMeta &rhs);
 
     //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
     inline uint32 getMinType() const
@@ -617,6 +621,10 @@ class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
         : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim)
     {
     }
+
+    //!< assignment operator
+    DObjMeta &operator=(const DObjMeta &rhs);
+
     inline int getAllowedTypes() const
     {
         return m_allowedTypes;
@@ -659,6 +667,9 @@ class ITOMCOMMON_EXPORT CharArrayMeta : public CharMeta
     explicit CharArrayMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray());
     explicit CharArrayMeta(char minVal, char maxVal, char stepSize, size_t numMin, size_t numMax,
                            size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
+
+    //! copy constructor
+    CharArrayMeta(const CharArrayMeta &cpy);
     
     //!< returns minimum number of values
     inline size_t getNumMin() const
@@ -724,6 +735,9 @@ class ITOMCOMMON_EXPORT IntArrayMeta : public IntMeta
     explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize = 1, ito::ByteArray category = ito::ByteArray());
     explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize, size_t numMin, size_t numMax,
                           size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
+
+    //! copy constructor
+    IntArrayMeta(const IntArrayMeta &cpy);
 
     //!< returns minimum number of values
     inline size_t getNumMin() const
@@ -792,6 +806,9 @@ class ITOMCOMMON_EXPORT DoubleArrayMeta : public DoubleMeta
     explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax,
                              size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
 
+    //! copy constructor
+    DoubleArrayMeta(const DoubleArrayMeta &cpy);
+
     //!< returns minimum number of values
     inline size_t getNumMin() const
     {
@@ -858,6 +875,9 @@ class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
                                 ito::ByteArray category = ito::ByteArray());
     explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax,
                                 float64 sizeStep = 0.0, ito::ByteArray category = ito::ByteArray());
+
+    //! copy constructor
+    DoubleIntervalMeta(const DoubleIntervalMeta &cpy);
     
     //!< returns minimum size of range
     inline float64 getSizeMin() const
@@ -1032,6 +1052,9 @@ class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
     explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 sizeMin, int32 sizeMax,
                           int32 intervalStep = 1, ito::ByteArray category = ito::ByteArray());
+
+    //! copy constructor
+    IntervalMeta(const IntervalMeta &cpy);
     
     //!< returns minimum size of interval or range
     inline int getSizeMin() const
@@ -1112,6 +1135,9 @@ class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
     explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
     explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep = 1,
                        ito::ByteArray category = ito::ByteArray());
+
+    //! copy constructor
+    RangeMeta(const RangeMeta &cpy);
 };
 
 /*!
@@ -1130,10 +1156,12 @@ class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
   public:
     explicit RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta,
                       ito::ByteArray category = ito::ByteArray());
+
     inline const ito::RangeMeta &getWidthRangeMeta() const
     {
         return m_widthMeta;
     }
+
     inline const ito::RangeMeta &getHeightRangeMeta() const
     {
         return m_heightMeta;

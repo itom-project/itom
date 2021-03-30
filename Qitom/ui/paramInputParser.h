@@ -55,10 +55,6 @@ protected:
     QWidget* renderTypeDouble(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
     QWidget* renderTypeString(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
     QWidget* renderTypeHWRef(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
-    QWidget* renderTypeIntArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
-    QWidget* renderTypeDoubleArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
-    QWidget* renderTypeCharArray(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
-    QWidget* renderTypeStringList(const ito::Param &param, int virtualIndex, QWidget *parent = nullptr);
     QWidget* renderTypeGenericArray(const ito::Param &param, const int virtualIndex, QWidget *parent, int paramType);
     QString getTypeGenericArrayPreview(const ito::Param &param) const;
 

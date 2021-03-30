@@ -137,15 +137,15 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
                 break;
             case ito::ParamBase::IntArray:
                 m_lblType->setText(tr("[IntArray]"));
-                m_content = renderTypeIntArray(param, i, parent);
+                m_content = renderTypeGenericArray(param, i, parent, ParamBase::IntArray);
                 break;
             case ito::ParamBase::DoubleArray:
                 m_lblType->setText(tr("[DoubleArray]"));
-                m_content = renderTypeDoubleArray(param, i, parent);
+                m_content = renderTypeGenericArray(param, i, parent, ParamBase::DoubleArray);
                 break;
             case ito::ParamBase::CharArray:
                 m_lblType->setText(tr("[CharArray]"));
-                m_content = renderTypeCharArray(param, i, parent);
+                m_content = renderTypeGenericArray(param, i, parent, ParamBase::CharArray);
                 break;
             case ito::ParamBase::HWRef & ito::paramTypeMask:
                 m_lblType->setText(tr("[HW-Instance]"));
@@ -153,11 +153,11 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
                 break;
             case ito::ParamBase::ComplexArray:
                 m_lblType->setText(tr("[ComplexArray]"));
-                m_content = new QLabel(tr(" - - no editing - - "), parent);
+                m_content = renderTypeGenericArray(param, i, parent, ParamBase::ComplexArray);
                 break;
             case ito::ParamBase::StringList:
                 m_lblType->setText(tr("[StringList]"));
-                m_content = renderTypeStringList(param, i, parent);
+                m_content = renderTypeGenericArray(param, i, parent, ParamBase::StringList);
                 break;
             default:
                 m_lblType->setText(tr("[unknown]"));
@@ -608,30 +608,6 @@ QString ParamInputParser::getTypeGenericArrayPreview(const ito::Param &param) co
     }
 
     return QString("[%1]").arg(content);
-}
-
-//-------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeIntArray(const ito::Param& param, int virtualIndex, QWidget *parent)
-{
-    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::IntArray);
-}
-
-//-------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeDoubleArray(const ito::Param& param, int virtualIndex, QWidget *parent)
-{
-    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::DoubleArray);
-}
-
-//-------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeCharArray(const ito::Param& param, int virtualIndex, QWidget *parent)
-{
-    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::CharArray);
-}
-
-//-------------------------------------------------------------------------------------
-QWidget* ParamInputParser::renderTypeStringList(const ito::Param& param, int virtualIndex, QWidget *parent)
-{
-    return renderTypeGenericArray(param, virtualIndex, parent, ParamBase::StringList);
 }
 
 //-------------------------------------------------------------------------------------

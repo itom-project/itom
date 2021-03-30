@@ -97,9 +97,9 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    CharMeta& CharMeta::operator =(const CharMeta &rhs)
+    CharMeta& CharMeta::operator=(const CharMeta &rhs)
     {
-        m_type = rttiCharMeta;
+        ParamMeta::operator=(rhs);
         m_minVal = rhs.m_minVal;
         m_maxVal = rhs.m_maxVal;
         m_stepSize = rhs.m_stepSize;
@@ -196,9 +196,9 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntMeta& IntMeta::operator =(const IntMeta &rhs)
+    IntMeta& IntMeta::operator=(const IntMeta &rhs)
     {
-        m_type = rttiIntMeta;
+        ParamMeta::operator=(rhs);
         m_minVal = rhs.m_minVal;
         m_maxVal = rhs.m_maxVal;
         m_stepSize = rhs.m_stepSize;
@@ -298,9 +298,9 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    DoubleMeta& DoubleMeta::operator =(const DoubleMeta &rhs)
+    DoubleMeta& DoubleMeta::operator=(const DoubleMeta &rhs)
     {
-        m_type = rttiDoubleMeta;
+        ParamMeta::operator=(rhs);
         m_minVal = rhs.m_minVal;
         m_maxVal = rhs.m_maxVal;
         m_stepSize = rhs.m_stepSize;
@@ -393,6 +393,15 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    HWMeta& HWMeta::operator=(const HWMeta &rhs)
+    {
+        ParamMeta::operator=(rhs);
+        m_HWName = rhs.m_HWName;
+        m_minType = rhs.m_minType;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     StringMeta::StringMeta(tType type, ito::ByteArray category /*= ito::ByteArray()*/) 
         : ParamMeta(rttiStringMeta, category), 
         p(new StringMetaPrivate(type))
@@ -442,7 +451,7 @@ namespace ito
     /*virtual*/ StringMeta::~StringMeta()
     {
         delete p;
-        p = NULL;
+        p = nullptr;
     }
 
     //---------------------------------------------------------------------------------
@@ -496,19 +505,22 @@ namespace ito
     //---------------------------------------------------------------------------------
     StringMeta & StringMeta::operator = (const StringMeta &rhs)
     {
+        ParamMeta::operator=(rhs);
+
         if (rhs.p)
         {
             p->m_items = rhs.p->m_items;
             p->m_len = rhs.p->m_len;
             p->m_stringType = rhs.p->m_stringType;
         }
+
         return *this;
     }
 
     //---------------------------------------------------------------------------------
     const char* StringMeta::getString(int idx /*= 0*/) const 
     { 
-        return (idx >= p->m_len) ? NULL : p->m_items[idx].data();
+        return (idx >= p->m_len) ? nullptr : p->m_items[idx].data();
     }
 
     //---------------------------------------------------------------------------------
@@ -546,6 +558,16 @@ namespace ito
             (m_maxDim == other_->m_maxDim));
     }
 
+    //---------------------------------------------------------------------------------
+    DObjMeta& DObjMeta::operator=(const DObjMeta &rhs)
+    {
+        ParamMeta::operator=(rhs);
+        m_maxDim = rhs.m_maxDim;
+        m_minDim = rhs.m_minDim;
+        m_allowedTypes = rhs.m_allowedTypes;
+        return *this;
+    }
+
 
     //---------------------------------------------------------------------------------
     CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
@@ -565,7 +587,20 @@ namespace ito
         m_numStep(numStepSize)
     {
         if (m_numMax < m_numMin)
+        {
             m_numMax = m_numMin;
+        }
+
+        m_type = rttiCharArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    CharArrayMeta::CharArrayMeta(const CharArrayMeta &cpy) :
+        CharMeta(cpy),
+        m_numMin(cpy.m_numMin),
+        m_numMax(cpy.m_numMax),
+        m_numStep(cpy.m_numStep)
+    {
         m_type = rttiCharArrayMeta;
     }
 
@@ -621,7 +656,20 @@ namespace ito
         m_numStep(numStepSize)
     {
         if (m_numMax < m_numMin)
+        {
             m_numMax = m_numMin;
+        }
+
+        m_type = rttiIntArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    IntArrayMeta::IntArrayMeta(const IntArrayMeta &cpy) :
+        IntMeta(cpy),
+        m_numMin(cpy.m_numMin),
+        m_numMax(cpy.m_numMax),
+        m_numStep(cpy.m_numStep)
+    {
         m_type = rttiIntArrayMeta;
     }
 
@@ -676,7 +724,20 @@ namespace ito
         m_numStep(numStepSize)
     {
         if (m_numMax < m_numMin)
+        {
             m_numMax = m_numMin;
+        }
+
+        m_type = rttiDoubleArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleArrayMeta::DoubleArrayMeta(const DoubleArrayMeta &cpy) :
+        DoubleMeta(cpy),
+        m_numMin(cpy.m_numMin),
+        m_numMax(cpy.m_numMax),
+        m_numStep(cpy.m_numStep)
+    {
         m_type = rttiDoubleArrayMeta;
     }
 
@@ -741,6 +802,17 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    IntervalMeta::IntervalMeta(const IntervalMeta &cpy) :
+        IntMeta(cpy),
+        m_sizeMin(cpy.m_sizeMin),
+        m_sizeMax(cpy.m_sizeMax),
+        m_sizeStep(cpy.m_sizeStep),
+        m_isIntervalNotRange(cpy.m_isIntervalNotRange)
+    {
+        m_type = rttiIntervalMeta;
+    }
+
+    //---------------------------------------------------------------------------------
     void IntervalMeta::setIntervalMin(int32 val)
     {
         m_sizeMin = val; 
@@ -789,6 +861,14 @@ namespace ito
         m_isIntervalNotRange = false;
     }
 
+    //---------------------------------------------------------------------------------
+    RangeMeta::RangeMeta(const RangeMeta &cpy) :
+        IntervalMeta(cpy)
+    {
+        m_isIntervalNotRange = false;
+        m_type = rttiRangeMeta;
+    }
+
     
 
 
@@ -810,7 +890,20 @@ namespace ito
         m_sizeStep(sizeStep)
     {
         if (m_sizeMax < m_sizeMin)
+        {
             m_sizeMax = m_sizeMin;
+        }
+
+        m_type = rttiDoubleIntervalMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleIntervalMeta::DoubleIntervalMeta(const DoubleIntervalMeta &cpy) :
+        DoubleMeta(cpy),
+        m_sizeMin(cpy.m_sizeMin),
+        m_sizeMax(cpy.m_sizeMax),
+        m_sizeStep(cpy.m_sizeStep)
+    {
         m_type = rttiDoubleIntervalMeta;
     }
 
