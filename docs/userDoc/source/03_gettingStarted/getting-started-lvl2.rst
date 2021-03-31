@@ -20,10 +20,12 @@ The main components are highlighted with different colors and numbers. These com
 
 1. The menu bar gives you access to the script management, the :ref:`script execution and debugging <gui-editor>`, the windowing system and help features. You can :ref:`add your own menus <toolbar-createmenu>` to this bar.
 2. The most common commands are also accessible via the main toolbar of |itom|. :ref:`Add your own toolbars <toolbar-addtoolbar>` and connect them with user defined scripts to adapt |itom| to your personal needs.
-3. The :ref:`file system toolbox <gui-filesystem>` gives you access to script files (written in Python 3) or other files that can be loaded with |itom| (e.g. bmp, png, gif, tif, Matlab files... - depending on the installed plugins)
-4. The :ref:`console (command line) <console>` allows you directly executing single or multiline script commands.
-5. The current set of global (or local) variables in the Python workspace is listed in the :ref:`corresponding toolboxes <gui-workspace>`.
-6. All available hardware and software plugins are listed in the :ref:`plugin toolbox <gui-plugins>`. Use this toolbox to connect to your cameras or actuators or get informed about available software filters or algorithms. If you miss a plugin whose library file exists, check the menu **file >> loaded plugins...** so see if the library has been found and / or why this library could not been loaded.
+3. The :ref:`Command History DockWidget <gui-commandhistory>` show the history of commands executed via the command line. 
+4. The :ref:`File System Toolbox <gui-filesystem>` gives you access to script files (written in Python 3) or other files that can be loaded with |itom| (e.g. bmp, png, gif, tif, Matlab files... - depending on the installed plugins)
+5. The :ref:`Script Editor DockWidget <gui-editor>` allows working on one or several python scripts. No script is displayed after the first start. Open a Python script that can be docked above the command line as shown here. 
+6. The :ref:`Console (command line) <console>` allows you directly executing single or multiline script commands.
+7. The current set of global (or local) variables in the Python workspace is listed in the :ref:`corresponding toolboxes <gui-workspace>`.
+8. All available hardware and software plugins are listed in the :ref:`plugin toolbox <gui-plugins>`. Use this toolbox to connect to your cameras or actuators or get informed about available software filters or algorithms. If you miss a plugin whose library file exists, check the menu **file >> loaded plugins...** so see if the library has been found and / or why this library could not been loaded.
 
 Connected hardware components can be operated either by script commands or directly by the GUI. The following sections show you examples for both approaches.
 
