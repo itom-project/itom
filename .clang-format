@@ -1,0 +1,18 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: Microsoft
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: false
+AlignTrailingComments: false
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping: 
+  AfterNamespace: false
+BreakConstructorInitializersBeforeComma: true
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 100
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+PointerAlignment: Left
+...
