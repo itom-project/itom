@@ -29,6 +29,7 @@
 
 #include "../global.h"
 #include "itomWidgets/doubleSpinBox.h"
+#include "AddInManager/paramHelper.h"
 
 #include <QtWidgets/qmessagebox.h>
 #include <qcombobox.h>
@@ -434,19 +435,6 @@ QStringList ParamInputDialog::getStringList(const ito::Param &param) const
 }
 
 //-------------------------------------------------------------------------------------
-//QStringList ParamInputDialog::getStringList()
-//{
-//    QStringList stringlist;
-//
-//    for (int i = 0; i < ui.listWidget->count(); ++i)
-//    {
-//        stringlist.append(ui.listWidget->item(i)->data(Qt::DisplayRole).toString());
-//    }
-//
-//    return stringlist;
-//}
-
-//-------------------------------------------------------------------------------------
 Param ParamInputDialog::getItems(RetVal &retValue) const
 {
     Param result = m_param;
@@ -625,6 +613,11 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
         delete[] arr;
     }
     break;
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += ito::ParamHelper::validateParam(result, result, true);
     }
 
     return result;

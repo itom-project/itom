@@ -70,10 +70,8 @@ public:
     explicit ParamInputDialog(const Param& param, QWidget *parent = nullptr);
     ~ParamInputDialog();
 
-    //QStringList getStringList();
     Param getItems(RetVal &retValue) const;
     
-
 private slots:
     void on_newListItemButton_clicked();
     void on_deleteListItemButton_clicked();

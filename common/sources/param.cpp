@@ -1234,7 +1234,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case CharArray & paramTypeMask:
             if (m_cVal)
             {
-                DELETE_AND_SET_NULL_ARRAY(m_cVal); //must have been an int-array, too
+                delete[]((char*)m_cVal); //must have been an int-array, too
+                m_cVal = nullptr;
             }
 
             m_iVal = rhs->m_iVal;
@@ -1253,7 +1254,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case IntArray & paramTypeMask:
             if (m_cVal)
             {
-                DELETE_AND_SET_NULL_ARRAY(m_cVal); //must have been an int-array, too
+                delete[]((int*)m_cVal); //must have been an int-array, too
+                m_cVal = nullptr;
             }
 
             m_iVal = rhs->m_iVal;
@@ -1272,7 +1274,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case DoubleArray & paramTypeMask:
             if (m_cVal)
             {
-                DELETE_AND_SET_NULL_ARRAY(m_cVal); //must have been a double-array, too
+                delete[]((double*)m_cVal); //must have been a double-array, too
+                m_cVal = nullptr;
             }
 
             m_iVal = rhs->m_iVal;
@@ -1291,7 +1294,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case ComplexArray & paramTypeMask:
             if (m_cVal)
             {
-                DELETE_AND_SET_NULL_ARRAY(m_cVal); //must have been a double-array, too
+                delete[]((ito::complex128*)m_cVal); //must have been a double-array, too
+                m_cVal = nullptr;
             }
 
             m_iVal = rhs->m_iVal;
@@ -1310,7 +1314,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case StringList & paramTypeMask:
             if (m_cVal)
             {
-                DELETE_AND_SET_NULL_ARRAY(m_cVal); //must have been a string list, too
+                delete[]((ito::ByteArray*)m_cVal); //must have been a string list, too
+                m_cVal = nullptr;
             }
 
             m_iVal = rhs->m_iVal;

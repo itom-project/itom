@@ -1657,7 +1657,7 @@ ito::RetVal ParamHelper::validateParam(const ito::Param &templateParam, const it
             retVal +=
                 validateStringListMeta(templateParam.getMeta(), param.getVal<ito::ByteArray*>(), std::max(0, param.getLen()), name);
         }
-                                        break;
+        break;
         case ito::ParamBase::IntArray: {
             // check intArray, range, interval and rect
             retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int *>(), std::max(0, param.getLen()), name);
@@ -1677,6 +1677,9 @@ ito::RetVal ParamHelper::validateParam(const ito::Param &templateParam, const it
             retVal += validateHWMeta(dynamic_cast<const ito::HWMeta *>(templateParam.getMeta()),
                                      (ito::AddInBase *)param.getVal<void *>(), mandatory, name);
         }
+        break;
+        default:
+            retVal += ito::RetVal(ito::retError, 0, "Validation of parameter failed due to unsupported type.");
         break;
         }
     }
