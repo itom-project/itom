@@ -958,6 +958,9 @@ endif()
 if(MSVC)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
+    
+    # configuration file for the Google Test Adapter as Visual Studio Extension
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.gta.runsettings.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.gta.runsettings )
 endif()
 
 #Configure a RC file for MS visual studio to add version information in explorer to exe file

@@ -8,10 +8,11 @@
 //  // TestWithParam<T>.
 //};
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    //::testing::FLAGS_gtest_filter = "iterator_test/*.iterator_test_2d"; //To Perform perticular subtest check, give
-    //the Path of Perticular test. Comment this statement to perform whole test check.
+    //::testing::FLAGS_gtest_filter = "iterator_test/*.iterator_test_2d"; //To Perform perticular
+    //subtest check, give the Path of Perticular test. Comment this statement to perform whole test
+    // check.
     //::testing::FLAGS_gtest_filter = "const_iterator_test/*.*";
     //::testing::FLAGS_gtest_filter = "dataTest/*checkIdentity*";
 
@@ -19,13 +20,25 @@ int main(int argc, char *argv[])
 
     RUN_ALL_TESTS(); // To start Test check
 
-    // ito::DataObject mat1_1d = ito::DataObject(3,getTypeNumber<ito::int8>());
-    //
-    // int itrer=0;
-    // bool valBool;
-    // valBool = ito::isZeroValue<ito::int8>(itrer,0) ;
-    // std::cout<<valBool<<std::endl;
-    // cv::DataType<float>::type;
-    std::system("pause");
+    bool executedByGoogleTestAdapter = false;
+
+    for (int i = 0; i < argc; ++i)
+    {
+        const char* arg = argv[i];
+
+        if (strcmp(arg, "-googletestadapter") == 0)
+        {
+            executedByGoogleTestAdapter = true;
+            break;
+        }
+    }
+
+    if (!executedByGoogleTestAdapter)
+    {
+        // execute this only, if the unittest is directly executed.
+        // If it is executed by the VS Google Test Adapter extension,
+        // no keyboard interaction must be implemented.
+        std::system("pause");
+    }
     return 0;
 }
