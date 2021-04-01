@@ -77,7 +77,7 @@ namespace ito
     private:
         complex128_ m_dVal;    //!< internal value for float64 and complex128 typed values
         ito::int32 m_iVal;         //!< internal value for integer typed values
-        char* m_cVal;         //!< internal pointer for pointer type values (also strings and string lists)
+        void* m_cVal;         //!< internal pointer for pointer type values (also strings and string lists)
 
         void freeMemory(); //!< free allocated memory, if memory has been allocated.
 
@@ -621,7 +621,7 @@ namespace ito
     template<typename _Tp>
     struct ItomParamHelper
     {
-        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex128_ &/*dVal*/, const _Tp val, int len = 0)
+        static ito::RetVal setVal(uint32 type, void *&cVal, int32 &iVal, complex128_ &/*dVal*/, const _Tp val, int len = 0)
         {
             switch (type & paramTypeMask)
             {
@@ -631,7 +631,7 @@ namespace ito
                 case ito::ParamBase::PointPtr & paramTypeMask:
                 case ito::ParamBase::PolygonMeshPtr & paramTypeMask:
 //                case ito::ParamBase::Pointer & paramTypeMask:
-                    cVal = (char*)(reinterpret_cast<const char*>(val));
+                    cVal = (void*)(reinterpret_cast<const void*>(val));
                     return ito::retOk;
 
                 case ito::ParamBase::String & paramTypeMask:
@@ -652,7 +652,7 @@ namespace ito
 
                         if (cVal_)
                         {
-                            delete[] cVal_;
+                            delete[] (char*)cVal_;
                         }
                     }
                     return ito::retOk;
@@ -662,7 +662,7 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)new char[len];
+                            cVal = new char[len];
                             memcpy(cVal, val, len * sizeof(char));
                             iVal = len;
                         }
@@ -674,7 +674,7 @@ namespace ito
 
                         if (cVal_)
                         {
-                            delete[] cVal_;
+                            delete[] (char*)cVal_;
                         }
                     }
                     return ito::retOk;
@@ -684,7 +684,7 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)new ito::int32[len];
+                            cVal = new ito::int32[len];
                             memcpy(cVal, val, len * sizeof(ito::int32));
                             iVal = len;
                         }
@@ -706,7 +706,7 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)new ito::float64[len];
+                            cVal = new ito::float64[len];
                             memcpy(cVal, val, len * sizeof(ito::float64));
                             iVal = len;
                         }
@@ -729,7 +729,7 @@ namespace ito
 
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)new ito::complex128[len];
+                            cVal = new ito::complex128[len];
                             memcpy(cVal, val, len * sizeof(ito::complex128));
                             iVal = len;
                         }
@@ -753,7 +753,7 @@ namespace ito
                     if ((val) && (len > 0))
                     {
                         ito::ByteArray *dest = new ito::ByteArray[len];
-                        cVal = (char*)dest;
+                        cVal = dest;
                         //memset(cVal, 0, len * sizeof(ito::ByteArray));
                         const ito::ByteArray *src = (const ito::ByteArray*)val;
 
@@ -782,15 +782,15 @@ namespace ito
             }
         }
 
-        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex128_ &/*dVal*/, int &len)
+        static _Tp getVal(const uint32 type, const void *cVal, const int32 &iVal, const complex128_ &/*dVal*/, int &len)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::String & paramTypeMask:
                     if (cVal)
                     {
-                        len = static_cast<int>(strlen(cVal));
-                        return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
+                        len = static_cast<int>(strlen((const char*)cVal));
+                        return reinterpret_cast<_Tp>((char*)cVal);
                     }
                     else
                     {
@@ -806,7 +806,7 @@ namespace ito
                     if (cVal)
                     {
                         len = iVal;
-                        return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
+                        return reinterpret_cast<_Tp>((char*)cVal);
                     }
                     else
                     {
@@ -819,7 +819,7 @@ namespace ito
                 case ito::ParamBase::PointCloudPtr & paramTypeMask:
                 case ito::ParamBase::PointPtr & paramTypeMask:
                 case ito::ParamBase::PolygonMeshPtr & paramTypeMask:
-                    return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
+                    return reinterpret_cast<_Tp>((char*)cVal);
 
                 default:
                     throw std::logic_error("Param::getVal<_Tp>: Non-matching type!");
@@ -830,7 +830,7 @@ namespace ito
     template<>
     struct ItomParamHelper<float64>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, float64 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, void *&/*cVal*/, int32 &iVal, complex128_ &dVal, float64 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -850,7 +850,7 @@ namespace ito
             }
         }
 
-        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
+        static float64 getVal(const uint32 type, const void* /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -871,7 +871,7 @@ namespace ito
     template<>
     struct ItomParamHelper<int32>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, int32 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, void *&/*cVal*/, int32 &iVal, complex128_ &dVal, int32 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -891,7 +891,7 @@ namespace ito
             }
         }
 
-        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
+        static int32 getVal(const uint32 type, const void * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -915,7 +915,7 @@ namespace ito
     template<>
     struct ItomParamHelper<char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, void *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -935,7 +935,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const void * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -959,7 +959,7 @@ namespace ito
     template<>
     struct ItomParamHelper<unsigned char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, void *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -979,7 +979,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const void * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -1003,7 +1003,7 @@ namespace ito
     template<>
     struct ItomParamHelper<complex128>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &/*iVal*/, complex128_ &dVal, complex128 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, void *&/*cVal*/, int32 &/*iVal*/, complex128_ &dVal, complex128 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -1017,7 +1017,7 @@ namespace ito
             }
         }
 
-        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
+        static complex128 getVal(const uint32 type, const void* /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {

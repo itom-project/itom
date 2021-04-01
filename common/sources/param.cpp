@@ -95,7 +95,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const char *val) 
         {
             m_cVal = new char[strlen(val) + 1];
             memcpy(m_cVal, val, strlen(val) + 1);
-            m_iVal = static_cast<int>(strlen(m_cVal));
+            m_iVal = static_cast<int>(strlen((char*)m_cVal));
         }
         else
         {
@@ -259,7 +259,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const uint32 size
             buf[i] = ByteArray(values[i]);
         }
 
-        m_cVal = (char*)buf;
+        m_cVal = buf;
         break;
     }
     default:
@@ -301,7 +301,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
             case String & paramTypeMask:
                 m_cVal = new char[strlen(values) + 1];
                 memcpy(m_cVal, values, strlen(values) + 1);
-                m_iVal = static_cast<int>(strlen(m_cVal));
+                m_iVal = static_cast<int>(strlen((char*)m_cVal));
             break;
 
             case CharArray & paramTypeMask:
@@ -321,7 +321,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new int32[size];
+                    m_cVal = new int32[size];
                     memcpy(m_cVal, values, size * sizeof(int32));
                 }
                 else
@@ -334,7 +334,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new float64[size];
+                    m_cVal = new float64[size];
                     memcpy(m_cVal, values, size * sizeof(float64));
                 }
                 else
@@ -347,7 +347,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new complex128[size];
+                    m_cVal = new complex128[size];
                     memcpy(m_cVal, values, size * sizeof(complex128));
                 }
                 else
@@ -411,7 +411,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new int32[size];
+                    m_cVal = new int32[size];
                     memcpy(m_cVal, values, size * sizeof(int32));
                 }
                 else
@@ -423,7 +423,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new float64[size];
+                    m_cVal = new float64[size];
                     memcpy(m_cVal, values, size * sizeof(float64));
                 }
                 else
@@ -435,7 +435,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new complex128[size];
+                    m_cVal = new complex128[size];
                     memcpy(m_cVal, values, size * sizeof(complex128));
                 }
                 else
@@ -484,7 +484,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new float64[size];
+                    m_cVal = new float64[size];
                     memcpy(m_cVal, values, size * sizeof(float64));
                 }
                 else
@@ -496,7 +496,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new complex128[size];
+                    m_cVal = new complex128[size];
                     for (unsigned int n = 0; n < size; n++)
                         reinterpret_cast<complex128*>(m_cVal)[n] = static_cast<complex128>(values[n]);
                 }
@@ -556,7 +556,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
                 m_iVal = size;
                 if (m_iVal > 0)
                 {
-                    m_cVal = (char*)new complex128[size];
+                    m_cVal = new complex128[size];
                     memcpy(m_cVal, values, size * sizeof(complex128));
                 }
                 else
@@ -597,7 +597,7 @@ void ParamBase::freeMemory()
         {
         case String:
         case CharArray:
-            delete[] ((char*)m_cVal);
+            delete[]((char*)m_cVal);
             break;
         case DoubleArray:
             delete[]((ito::float64*)m_cVal);
@@ -637,15 +637,15 @@ ParamBase::ParamBase(const ParamBase &copyConstr) :
         case String & paramTypeMask:
             if (copyConstr.m_cVal)
             {
-                m_cVal = (char*)new char[strlen(copyConstr.m_cVal) + 1];
-                memcpy(m_cVal, copyConstr.m_cVal, strlen(copyConstr.m_cVal) + 1);
+                m_cVal = new char[strlen((char*)copyConstr.m_cVal) + 1];
+                memcpy(m_cVal, copyConstr.m_cVal, strlen((char*)copyConstr.m_cVal) + 1);
             }
         break;
 
         case CharArray & paramTypeMask:
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new char[m_iVal];
+                m_cVal = new char[m_iVal];
                 memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(char));
             }
         break;
@@ -653,7 +653,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) :
         case IntArray & paramTypeMask:
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new int32[m_iVal];
+                m_cVal = new int32[m_iVal];
                 memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(int32));
             }
         break;
@@ -661,7 +661,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) :
         case DoubleArray & paramTypeMask:
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new float64[m_iVal];
+                m_cVal = new float64[m_iVal];
                 memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(float64));
             }
         break;
@@ -669,7 +669,7 @@ ParamBase::ParamBase(const ParamBase &copyConstr) :
         case ComplexArray & paramTypeMask:
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new complex128[m_iVal];
+                m_cVal = new complex128[m_iVal];
                 memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(complex128));
             }
         break;
@@ -677,11 +677,12 @@ ParamBase::ParamBase(const ParamBase &copyConstr) :
         case StringList & paramTypeMask:
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new ByteArray[m_iVal];
+                m_cVal = new ByteArray[m_iVal];
                 for (int i = 0; i < m_iVal; ++i)
                 {
                     ((ByteArray*)(m_cVal))[i] = ((ByteArray*)(copyConstr.m_cVal))[i];
-                }            }
+                }            
+            }
         break;
 
         case HWRef & paramTypeMask:
@@ -718,7 +719,7 @@ bool ParamBase::operator == (const ParamBase &rhs) const
         case String & paramTypeMask:
             if (m_cVal && rhs.m_cVal)
             {
-                return (strcmp(m_cVal, rhs.m_cVal) == 0);
+                return (strcmp((char*)m_cVal, (char*)rhs.m_cVal) == 0);
             }
             else
             {
@@ -782,8 +783,8 @@ bool ParamBase::operator == (const ParamBase &rhs) const
         case StringList & paramTypeMask:
             if (m_iVal > 0 && rhs.m_iVal > 0)
             {
-                ByteArray* list1 = (ByteArray*)m_cVal;
-                ByteArray* list2 = (ByteArray*)rhs.m_cVal;
+                const ByteArray* list1 = (ByteArray*)m_cVal;
+                const ByteArray* list2 = (ByteArray*)rhs.m_cVal;
 
                 for (int i = 0; i < m_iVal; ++i)
                 {
@@ -914,7 +915,7 @@ int ParamBase::getLen(void) const
         case String:
             if (m_cVal)
             {
-                return static_cast<int>(strlen(m_cVal));
+                return static_cast<int>(strlen((char*)m_cVal));
             }
             else
             {
@@ -1099,8 +1100,8 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
         case String & paramTypeMask:
             if (rhs.m_cVal)
             {
-                m_cVal = new char[strlen(rhs.m_cVal) + 1];
-                memcpy(m_cVal, rhs.m_cVal, strlen(rhs.m_cVal) + 1);
+                m_cVal = new char[strlen((char*)rhs.m_cVal) + 1];
+                memcpy(m_cVal, rhs.m_cVal, strlen((char*)rhs.m_cVal) + 1);
             }
             else
             {
@@ -1125,7 +1126,7 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
             m_iVal = rhs.m_iVal;
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new int32[m_iVal];
+                m_cVal = new int32[m_iVal];
                 memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(int32));
             }
             else
@@ -1138,7 +1139,7 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
             m_iVal = rhs.m_iVal;
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new float64[m_iVal];
+                m_cVal = new float64[m_iVal];
                 memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(float64));
             }
             else
@@ -1151,7 +1152,7 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
             m_iVal = rhs.m_iVal;
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new complex128[m_iVal];
+                m_cVal = new complex128[m_iVal];
                 memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(complex128));
             }
             else
@@ -1164,11 +1165,11 @@ ParamBase& ParamBase::operator = (const ParamBase &rhs)
             m_iVal = rhs.m_iVal;
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new ByteArray[m_iVal];
+                m_cVal = new ByteArray[m_iVal];
 
                 for (int i = 0; i < m_iVal; ++i)
                 {
-                    ((ByteArray*)m_cVal)[i] = ((ByteArray*)rhs.m_cVal)[i];
+                    ((ByteArray*)m_cVal)[i] = ((const ByteArray*)rhs.m_cVal)[i];
                 }
             }
             else
@@ -1222,8 +1223,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
             if (rhs->m_cVal)
             {
-                m_cVal = new char[strlen(rhs->m_cVal) + 1];
-                memcpy(m_cVal, rhs->m_cVal, strlen(rhs->m_cVal) + 1);
+                m_cVal = new char[strlen((char*)(rhs->m_cVal)) + 1];
+                memcpy(m_cVal, rhs->m_cVal, strlen((char*)(rhs->m_cVal)) + 1);
             }
             else
             {
@@ -1254,7 +1255,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case IntArray & paramTypeMask:
             if (m_cVal)
             {
-                delete[]((int*)m_cVal); //must have been an int-array, too
+                delete[]((int32*)m_cVal); //must have been an int-array, too
                 m_cVal = nullptr;
             }
 
@@ -1262,7 +1263,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new int32[m_iVal];
+                m_cVal = new int32[m_iVal];
                 memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(int32));
             }
             else
@@ -1274,7 +1275,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
         case DoubleArray & paramTypeMask:
             if (m_cVal)
             {
-                delete[]((double*)m_cVal); //must have been a double-array, too
+                delete[]((float64*)m_cVal); //must have been a double-array, too
                 m_cVal = nullptr;
             }
 
@@ -1282,7 +1283,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new float64[m_iVal];
+                m_cVal = new float64[m_iVal];
                 memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(float64));
             }
             else
@@ -1302,7 +1303,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new complex128[m_iVal];
+                m_cVal = new complex128[m_iVal];
                 memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(complex128));
             }
             else
@@ -1322,7 +1323,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase *rhs)
 
             if (m_iVal > 0)
             {
-                m_cVal = (char*)new ByteArray[m_iVal];
+                m_cVal = new ByteArray[m_iVal];
 
                 for (int i = 0; i < m_iVal; ++i)
                 {
