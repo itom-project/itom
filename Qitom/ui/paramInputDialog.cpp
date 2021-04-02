@@ -35,6 +35,7 @@
 #include <qcombobox.h>
 #include <qicon.h>
 #include <qlineedit.h>
+#include <qlabel.h>
 #include <qlistwidget.h>
 #include <qsharedpointer.h>
 #include <qspinbox.h>
@@ -168,8 +169,35 @@ QWidget *LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     }
     else if (m_paramType == ParamBase::ComplexArray)
     {
-        //todo
-        assert(false);
+        // DoubleSpinBox is not directly derived from QDoubleSpinBox, therefore selectAll is not directly called for
+        // this by Qt. We have to do it by a 0-ms timer, to verify that the widget is properly initialized.
+        DoubleSpinBox *spinboxReal = new DoubleSpinBox(parent);
+        spinboxReal->setFocusProxy(spinboxReal->spinBox());
+        spinboxReal->setMinimum(-std::numeric_limits<double>::max());
+        spinboxReal->setMaximum(std::numeric_limits<double>::max());
+
+        DoubleSpinBox *spinboxImag = new DoubleSpinBox(parent);
+        spinboxImag->setFocusProxy(spinboxImag->spinBox());
+        spinboxImag->setMinimum(-std::numeric_limits<double>::max());
+        spinboxImag->setMaximum(std::numeric_limits<double>::max());
+        spinboxImag->setSuffix("i");
+
+        QLabel *label = new QLabel(parent);
+        label->setText("+");
+
+        QTimer::singleShot(0, spinboxReal->spinBox(), &QDoubleSpinBox::selectAll);
+
+        QWidget *widget = new QWidget(parent);
+        QHBoxLayout *layout = new QHBoxLayout();
+        layout->addWidget(spinboxReal);
+        layout->addWidget(label);
+        layout->addWidget(spinboxImag);
+        widget->setLayout(layout);
+        widget->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(1);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        return widget;
     }
     else if (m_paramType == ParamBase::StringList)
     {
@@ -229,7 +257,7 @@ void LineEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 
     if ((m_paramType == ParamBase::IntArray) || (m_paramType == ParamBase::CharArray))
     {
-        int val = index.model()->data(index, Qt::EditRole).toInt(&ok);
+        int val = index.model()->data(index, Qt::UserRole).toInt(&ok);
         if (ok)
         {
             QSpinBox *spinbox = qobject_cast<QSpinBox *>(editor);
@@ -238,7 +266,7 @@ void LineEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
     }
     else if (m_paramType == ParamBase::DoubleArray)
     {
-        double val = index.model()->data(index, Qt::EditRole).toDouble(&ok);
+        double val = index.model()->data(index, Qt::UserRole).toDouble(&ok);
         if (ok)
         {
             DoubleSpinBox *spinbox = qobject_cast<DoubleSpinBox *>(editor);
@@ -247,7 +275,7 @@ void LineEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
     }
     else if (m_paramType == ParamBase::StringList)
     {
-        QByteArray val = index.model()->data(index, Qt::EditRole).toByteArray();
+        QByteArray val = index.model()->data(index, Qt::UserRole).toByteArray();
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
@@ -262,8 +290,20 @@ void LineEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
     }
     else if (m_paramType == ParamBase::ComplexArray)
     {
-        //todo
-        assert(false);
+        ito::complex128 value = index.model()->data(index, Qt::UserRole).value<ito::complex128>();
+        auto layout = editor->layout();
+
+        if (layout && layout->count() > 2)
+        {
+            DoubleSpinBox *spinboxReal = qobject_cast<DoubleSpinBox *>(layout->itemAt(0)->widget());
+            DoubleSpinBox *spinboxImag = qobject_cast<DoubleSpinBox *>(layout->itemAt(2)->widget());
+
+            if (spinboxReal && spinboxImag)
+            {
+                spinboxReal->setValue(value.real());
+                spinboxImag->setValue(value.imag());
+            }
+        }
     }
 }
 
@@ -273,17 +313,43 @@ void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
     if ((m_paramType == ParamBase::IntArray) || (m_paramType == ParamBase::CharArray))
     {
         QSpinBox *spinbox = qobject_cast<QSpinBox *>(editor);
-        model->setData(index, spinbox->value(), Qt::EditRole);
+        model->setData(index, spinbox->value(), Qt::UserRole);
+        model->setData(index, QString::number(spinbox->value()), Qt::DisplayRole);
     }
     else if (m_paramType == ParamBase::DoubleArray)
     {
         DoubleSpinBox *spinbox = qobject_cast<DoubleSpinBox *>(editor);
-        model->setData(index, spinbox->value(), Qt::EditRole);
+        model->setData(index, spinbox->value(), Qt::UserRole);
+        model->setData(index, QString::number(spinbox->value(), 'g', 4), Qt::DisplayRole);
     }
     else if (m_paramType == ParamBase::ComplexArray)
     {
-        //todo
-        assert(false);
+        auto layout = editor->layout();
+
+        if (layout && layout->count() > 2)
+        {
+            DoubleSpinBox *spinboxReal = qobject_cast<DoubleSpinBox *>(layout->itemAt(0)->widget());
+            DoubleSpinBox *spinboxImag = qobject_cast<DoubleSpinBox *>(layout->itemAt(2)->widget());
+
+            if (spinboxReal && spinboxImag)
+            {
+                auto cmplx = ito::complex128(spinboxReal->value(), spinboxImag->value());
+                auto value = QVariant::fromValue<ito::complex128>(cmplx);
+                model->setData(index, value, Qt::UserRole);
+                QString s;
+
+                if (cmplx.imag() >= 0)
+                {
+                    s = QString::number(cmplx.real(), 'g', 4) + "+" + QString::number(cmplx.imag(), 'g', 4) + "i";
+                }
+                else
+                {
+                    s = QString::number(cmplx.real(), 'g', 4) + "-" + QString::number(std::abs(cmplx.imag()), 'g', 4) + "i";
+                }
+
+                model->setData(index, s, Qt::DisplayRole);
+            }
+        }
     }
     else if (m_paramType == ParamBase::StringList)
     {
@@ -292,12 +358,14 @@ void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 
         if (lineEdit)
         {
-            model->setData(index, lineEdit->text(), Qt::EditRole);
+            model->setData(index, lineEdit->text(), Qt::UserRole);
         }
         else
         {
-            model->setData(index, comboBox->currentText(), Qt::EditRole);
+            model->setData(index, comboBox->currentText(), Qt::UserRole);
         }
+
+        model->setData(index, model->data(index, Qt::UserRole).toString(), Qt::DisplayRole);
     }
 }
 
@@ -341,9 +409,10 @@ ParamInputDialog::ParamInputDialog(const Param &param, QWidget *parent /*= nullp
     m_lineEditDel = new LineEditDelegate(param.getMeta(), param.getType(), ui.listWidget);
     ui.listWidget->setItemDelegate(m_lineEditDel);
 
-    foreach (const QString &stringItem, getStringList(param))
+    foreach (const auto value, parseListItems(param))
     {
-        QListWidgetItem *item = new QListWidgetItem(stringItem);
+        QListWidgetItem *item = new QListWidgetItem(value.first);
+        item->setData(Qt::UserRole, value.second);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         item->setSizeHint(QSize(item->sizeHint().width(), 20));
         ui.listWidget->addItem(item);
@@ -366,9 +435,9 @@ ParamInputDialog::~ParamInputDialog()
 }
 
 //-------------------------------------------------------------------------------------
-QStringList ParamInputDialog::getStringList(const ito::Param &param) const
+QList<QPair<QString, QVariant>> ParamInputDialog::parseListItems(const ito::Param &param) const
 {
-    QStringList items;
+    QList<QPair<QString, QVariant>> items;
     int num = param.getLen();
 
     switch (param.getType())
@@ -378,7 +447,12 @@ QStringList ParamInputDialog::getStringList(const ito::Param &param) const
         auto vals = param.getVal<const char*>();
         for (int i = 0; i < num; ++i)
         {
-            items.append(QString::number(vals[i]));
+            items.append(
+                qMakePair(
+                    QString::number(vals[i]),
+                    vals[i]
+                )
+            );
         }
         break;
     }
@@ -387,7 +461,12 @@ QStringList ParamInputDialog::getStringList(const ito::Param &param) const
         auto vals = param.getVal<const int*>();
         for (int i = 0; i < num; ++i)
         {
-            items.append(QString::number(vals[i]));
+            items.append(
+                qMakePair(
+                    QString::number(vals[i]),
+                    vals[i]
+                )
+            );
         }
         break;
     }
@@ -396,23 +475,37 @@ QStringList ParamInputDialog::getStringList(const ito::Param &param) const
         auto vals = param.getVal<const double*>();
         for (int i = 0; i < num; ++i)
         {
-            items.append(QString::number(vals[i], 'g', 4));
+            items.append(
+                qMakePair(
+                    QString::number(vals[i], 'g', 4),
+                    vals[i]
+                )
+            );
         }
         break;
     }
     case ito::ParamBase::ComplexArray:
     {
         auto vals = param.getVal<const ito::complex128*>();
+        QString s;
+
         for (int i = 0; i < num; ++i)
         {
             if (vals[i].imag() >= 0)
             {
-                items.append(QString::number(vals[i].real(), 'g', 4) + "+" + QString::number(vals[i].imag(), 'g', 4) + "i");
+                s = QString::number(vals[i].real(), 'g', 4) + "+" + QString::number(vals[i].imag(), 'g', 4) + "i";
             }
             else
             {
-                items.append(QString::number(vals[i].real(), 'g', 4) + "-" + QString::number(vals[i].imag(), 'g', 4) + "i");
+                s = QString::number(vals[i].real(), 'g', 4) + "-" + QString::number(std::abs(vals[i].imag()), 'g', 4) + "i";
             }
+
+            items.append(
+                qMakePair(
+                    s,
+                    QVariant::fromValue<ito::complex128>(vals[i])
+                )
+            );
 
         }
         break;
@@ -420,12 +513,16 @@ QStringList ParamInputDialog::getStringList(const ito::Param &param) const
     case ito::ParamBase::StringList:
     {
         auto vals = param.getVal<const ito::ByteArray*>();
-        QString s;
 
         for (int i = 0; i < num; ++i)
         {
-            s = QLatin1String(vals[i].data());
-            items.append(s);
+            const char* s = vals[i].data();
+            items.append(
+                qMakePair(
+                    QLatin1String(s),
+                    QByteArray(s)
+                )
+            );
         }
         break;
     }
@@ -439,7 +536,6 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
 {
     Param result = m_param;
     int num = ui.listWidget->count();
-    QString s;
     bool ok;
 
     switch (m_param.getType())
@@ -451,8 +547,7 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
 
         for (int i = 0; i < num; ++i)
         {
-            s = ui.listWidget->item(i)->data(Qt::DisplayRole).toString();
-            val = s.toInt(&ok);
+            val = ui.listWidget->item(i)->data(Qt::UserRole).toInt(&ok);
 
             if (!ok || val < std::numeric_limits<char>::min() || val > std::numeric_limits<char>::max())
             {
@@ -480,8 +575,7 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
 
         for (int i = 0; i < num; ++i)
         {
-            s = ui.listWidget->item(i)->data(Qt::DisplayRole).toString();
-            val = s.toInt(&ok);
+            val = ui.listWidget->item(i)->data(Qt::UserRole).toInt(&ok);
 
             if (!ok)
             {
@@ -509,8 +603,7 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
 
         for (int i = 0; i < num; ++i)
         {
-            s = ui.listWidget->item(i)->data(Qt::DisplayRole).toString();
-            val = s.toDouble(&ok);
+            val = ui.listWidget->item(i)->data(Qt::UserRole).toDouble(&ok);
 
             if (!ok)
             {
@@ -534,11 +627,12 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
     case ParamBase::StringList:
     {
         ByteArray *arr = new ByteArray[num];
+        QByteArray val;
 
         for (int i = 0; i < num; ++i)
         {
-            s = ui.listWidget->item(i)->data(Qt::DisplayRole).toString();
-            arr[i] = ByteArray(s.toLatin1().data());
+            val = ui.listWidget->item(i)->data(Qt::UserRole).toByteArray();
+            arr[i] = ByteArray(val.constData());
         }
 
         result.setVal<ByteArray*>(arr, num);
@@ -549,64 +643,12 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
     case ParamBase::ComplexArray:
     {
         auto arr = new ito::complex128[num];
-        int signPos, iPos;
-        QString strReal, strImag;
-        double valReal, valImag;
+        ito::complex128 val;
 
         for (int i = 0; i < num; ++i)
         {
-            s = ui.listWidget->item(i)->data(Qt::DisplayRole).toString();
-            signPos = std::min(s.indexOf("+"), s.indexOf("-"));
-            iPos = s.indexOf("i");
-            
-            if (signPos > 0 && iPos > signPos)
-            {
-                strReal = s.left(signPos);
-                strImag = s.mid(signPos + 1).replace("i", "");
-            }
-            else if (signPos > 0)
-            {
-                strReal = s.left(signPos).replace("i", "");
-                strImag = s.mid(signPos + 1);
-            }
-            else if (iPos == -1)
-            {
-                strReal = s;
-                strImag = "0.0";
-            }
-            else
-            {
-                strReal = "0.0";
-                strImag = s.replace("i", "");
-            }
-
-            valReal = strReal.toDouble(&ok);
-
-            if (!ok)
-            {
-                retValue += ito::RetVal::format(
-                    ito::retError,
-                    0,
-                    tr("The %i.th value in the list cannot be parsed to a complex value.").toLatin1().data(),
-                    i);
-            }
-            else
-            {
-                valImag = strImag.toDouble(&ok);
-
-                if (!ok)
-                {
-                    retValue += ito::RetVal::format(
-                        ito::retError,
-                        0,
-                        tr("The %i.th value in the list cannot be parsed to a complex value.").toLatin1().data(),
-                        i);
-                }
-                else
-                {
-                    arr[i] = ito::complex128(valReal, valImag);
-                }
-            }
+            val = ui.listWidget->item(i)->data(Qt::UserRole).value<ito::complex128>();
+            arr[i] = ito::complex128(val);
         }
 
         result.setVal<ito::complex128*>(arr, num);

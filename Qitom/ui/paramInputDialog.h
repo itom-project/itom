@@ -35,6 +35,11 @@
 
 #include <qdialog.h>
 #include <qstyleditemdelegate.h>
+#include <qmetatype.h>
+#include <qlist.h>
+#include <qpair.h>
+
+Q_DECLARE_METATYPE(ito::complex128)
 
 //-------------------------------------------------------------------------------------
 class QListWidgetItem;
@@ -84,7 +89,7 @@ private slots:
 protected:
     virtual void setItemData(int role, const QVariant &v);
     virtual QVariant getItemData(int role) const;
-    QStringList getStringList(const ito::Param &param) const;
+    QList<QPair<QString, QVariant>> parseListItems(const ito::Param &param) const;
 
 private:
     void updateEditor();
