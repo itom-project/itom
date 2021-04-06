@@ -29,12 +29,14 @@
 #include <qsharedpointer.h>
 #include <qheaderview.h>
 
+#include "commonWidgets.h"
+
 class QKeyEvent;
 class QContextMenuEvent;
 class DataObjectModel;
 class DataObjectDelegate;
 
-class DataObjectTable : public QTableView
+class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
 {
     Q_OBJECT
 
