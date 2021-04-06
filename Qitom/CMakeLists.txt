@@ -225,8 +225,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
 )
  
 set(qitom_HEADERS_NOMOC
