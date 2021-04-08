@@ -461,6 +461,12 @@ namespace ito
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
 
+        //! copy constructor
+        CharArrayMeta(const CharArrayMeta &cpy);
+
+        //!< assignment operator
+        CharArrayMeta &operator=(const CharArrayMeta &rhs);
+
         //! sets the minimum number of values
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
@@ -507,6 +513,12 @@ namespace ito
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
 
+        //! copy constructor
+        IntArrayMeta(const IntArrayMeta &cpy);
+
+        //!< assignment operator
+        IntArrayMeta &operator=(const IntArrayMeta &rhs);
+
         //! sets the minimum number of values
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
@@ -552,6 +564,12 @@ namespace ito
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
+
+        //! copy constructor
+        DoubleArrayMeta(const DoubleArrayMeta &cpy);
+
+        //!< assignment operator
+        DoubleArrayMeta &operator=(const DoubleArrayMeta &rhs);
 
         //! sets the minimum number of values
         /*!
@@ -600,6 +618,12 @@ namespace ito
         inline float64 getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of range
         inline float64 getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of range
         inline float64 getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of range
+
+        //! copy constructor
+        DoubleIntervalMeta(const DoubleIntervalMeta &cpy);
+
+        //!< assignment operator
+        DoubleIntervalMeta &operator=(const DoubleIntervalMeta &rhs);
 
         //! sets the minimum size of the interval (= max-min)
         /*!
@@ -651,6 +675,12 @@ namespace ito
         inline int getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of interval or range
         inline bool isIntervalNotRange() const { return m_isIntervalNotRange; }
 
+        //! copy constructor
+        IntervalMeta(const IntervalMeta &cpy);
+
+        //!< assignment operator
+        IntervalMeta &operator=(const IntervalMeta &rhs);
+
         //! sets the minimum size of the interval (= max-min)
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
@@ -701,6 +731,12 @@ namespace ito
     public:
         explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
         explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep = 1, ito::ByteArray category = ito::ByteArray());
+
+        //! copy constructor
+        RangeMeta(const RangeMeta &cpy);
+
+        //!< assignment operator
+        RangeMeta &operator=(const RangeMeta &rhs);
     };
 
 
