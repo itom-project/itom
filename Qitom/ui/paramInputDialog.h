@@ -10,11 +10,6 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
-    In addition, as a special exception, the Institut fuer Technische
-    Optik (ITO) gives you certain additional rights.
-    These rights are described in the ITO LGPL Exception version 1.0,
-    which can be found in the file LGPL_EXCEPTION.txt in this package.
 
     itom is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef STRINGLISTDIALOG_H
-#define STRINGLISTDIALOG_H
+#pragma once
 
 #include "ui_paramInputDialog.h"
 
@@ -90,6 +84,7 @@ protected:
     virtual void setItemData(int role, const QVariant &v);
     virtual QVariant getItemData(int role) const;
     QList<QPair<QString, QVariant>> parseListItems(const ito::Param &param) const;
+    void updateButtonState();
 
 private:
     void updateEditor();
@@ -105,5 +100,3 @@ private:
 };
 
 } //end namespace ito
-
-#endif // STRINGLISTDIALOG_H

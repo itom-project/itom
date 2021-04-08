@@ -11,11 +11,6 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
-    Optik (ITO) gives you certain additional rights.
-    These rights are described in the ITO LGPL Exception version 1.0,
-    which can be found in the file LGPL_EXCEPTION.txt in this package.
-
     itom is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
@@ -185,7 +180,7 @@ QWidget *LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
         QLabel *label = new QLabel(parent);
         label->setText("+");
 
-        QTimer::singleShot(0, spinboxReal->spinBox(), &QDoubleSpinBox::selectAll);
+        //QTimer::singleShot(0, spinboxReal->spinBox(), &QDoubleSpinBox::selectAll);
 
         QWidget *widget = new QWidget(parent);
         QHBoxLayout *layout = new QHBoxLayout();
@@ -426,6 +421,8 @@ ParamInputDialog::ParamInputDialog(const Param &param, QWidget *parent /*= nullp
     {
         updateEditor();
     }
+
+    updateButtonState();
 }
 
 //-------------------------------------------------------------------------------------
@@ -529,6 +526,23 @@ QList<QPair<QString, QVariant>> ParamInputDialog::parseListItems(const ito::Para
     }
 
     return items;
+}
+
+//-------------------------------------------------------------------------------------
+void ParamInputDialog::updateButtonState()
+{
+    ito::ListMeta* listMeta = dynamic_cast<ito::ListMeta*>(m_param.getMeta());
+
+    if (listMeta)
+    {
+        ui.newListItemButton->setEnabled(
+            ui.listWidget->count() < listMeta->getNumMax()
+        );
+
+        ui.deleteListItemButton->setEnabled(
+            ui.listWidget->count() > listMeta->getNumMin()
+        );
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -666,14 +680,6 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
 }
 
 //-------------------------------------------------------------------------------------
-//void ParamInputDialog::setCurrentIndex(int idx)
-//{
-//    m_updating = true;
-//    ui.listWidget->setCurrentRow(idx);
-//    m_updating = false;
-//}
-
-//-------------------------------------------------------------------------------------
 void ParamInputDialog::on_newListItemButton_clicked()
 {
     int row = ui.listWidget->currentRow() + 1;
@@ -681,6 +687,7 @@ void ParamInputDialog::on_newListItemButton_clicked()
     QListWidgetItem *item = new QListWidgetItem(m_newItemText);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setSizeHint(QSize(item->sizeHint().width(), 20));
+
     if (row < ui.listWidget->count())
     {
         ui.listWidget->insertItem(row, item);
@@ -692,6 +699,7 @@ void ParamInputDialog::on_newListItemButton_clicked()
 
     ui.listWidget->setCurrentItem(item);
     ui.listWidget->editItem(item);
+    updateButtonState();
 }
 
 //-------------------------------------------------------------------------------------
@@ -708,6 +716,7 @@ void ParamInputDialog::on_deleteListItemButton_clicked()
     {
         row--;
     }
+
     if (row < 0)
     {
         updateEditor();
@@ -716,6 +725,8 @@ void ParamInputDialog::on_deleteListItemButton_clicked()
     {
         ui.listWidget->setCurrentRow(row);
     }
+
+    updateButtonState();
 }
 
 //-------------------------------------------------------------------------------------
