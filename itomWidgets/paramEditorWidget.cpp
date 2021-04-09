@@ -42,8 +42,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 class ParamEditorWidgetPrivate
 {
-	//Q_DECLARE_PUBLIC(ParamEditorWidget);
-
 public:
     ParamEditorWidgetPrivate()
         : m_pBrowser(NULL),

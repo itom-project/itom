@@ -656,7 +656,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -694,7 +694,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -732,7 +732,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -742,6 +742,55 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 						Py_DECREF(item);
 					}
 					break;
+
+                    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+                    {
+                        int len = p.getLen();
+                        auto ptr = p.getVal<const ito::complex128*>();
+
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        {
+                            QStringList items;
+
+                            for (int i = 0; i < std::min(len, 4); ++i)
+                            {
+                                if (ptr[i].imag() >= 0)
+                                {
+                                    items.append(
+                                        QString::number(ptr[i].real(), 'g', 4) + "+" +
+                                        QString::number(ptr[i].imag(), 'g', 4) + "i");
+                                }
+                                else
+                                {
+                                    items.append(
+                                        QString::number(ptr[i].real(), 'g', 4) + "-" +
+                                        QString::number(ptr[i].imag(), 'g', 4) + "i");
+                                }
+                            }
+
+                            temp = QString("[%1]").arg(items.join(","));
+                            values["values"].append(temp);
+                        }
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(std::max(0, len));
+                            values["values"].append(temp);
+                            break;
+                        }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
+                    }
+                    break;
 
                     case ito::ParamBase::StringList & ito::paramTypeMask:
                     {
@@ -770,7 +819,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                             values["values"].append(temp);
                             break;
                         default:
-                            temp = QString("%1 elements").arg(len);
+                            temp = QString("%1 elements").arg(std::max(0, len));
                             values["values"].append(temp);
                             break;
                         }
