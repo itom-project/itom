@@ -119,7 +119,9 @@ ParamCharWidget::ParamCharWidget(QWidget *parent /*= NULL*/) :
 
     Q_D(ParamCharWidget);
 
-    d->m_param = ito::Param("", ito::ParamBase::Char, INT_MIN, INT_MAX, 0, "");
+    char minChar = std::numeric_limits<char>::min();
+    char maxChar = std::numeric_limits<char>::max();
+    d->m_param = ito::Param("", ito::ParamBase::Char, minChar, maxChar, (char)0, "");
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(0);
