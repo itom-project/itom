@@ -893,6 +893,16 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
 endif()
 
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+endif()
+
 # copy some folders and files during generate
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../demo                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.. PATTERN ".svn" EXCLUDE PATTERN "__pycache__" EXCLUDE)
