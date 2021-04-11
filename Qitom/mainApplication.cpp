@@ -584,7 +584,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         {
             // test the base color of the color palette of a widget (here: the splashscreen)
             // and set the dark theme, if the lightness of this color is < 0.5.
-            QColor bgColor = m_pSplashScreen->palette().background().color();
+            QColor bgColor = m_pSplashScreen->palette().window().color();
 
             if (bgColor.toHsv().lightnessF() < 0.5)
             {
