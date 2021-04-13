@@ -22,6 +22,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonStatePublisher.h"
 
 #include "mainWindow.h"
 
@@ -77,7 +78,6 @@ MainWindow::MainWindow() :
 	m_callStackDock(NULL),
 	m_fileSystemDock(NULL),
 	m_pAIManagerWidget(NULL),
-	m_userDefinedSignalMapper(NULL),
 	m_appFileNew(NULL),
 	m_appFileOpen(NULL),
 	m_aboutQt(NULL),
@@ -96,10 +96,7 @@ MainWindow::MainWindow() :
 	m_pythonInWaitingMode(false),
 	m_isFullscreen(false),
 	m_userDefinedActionCounter(0),
-	m_lastFilesMapper(NULL),
-    m_plastFilesMenu(NULL),
-	m_openScriptsMapper(NULL),
-    m_openFigureMapper(NULL)
+    m_plastFilesMenu(NULL)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -111,6 +108,7 @@ MainWindow::MainWindow() :
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
     // general windows settings
     if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
@@ -259,9 +257,13 @@ MainWindow::MainWindow() :
     }
 
     // connections
-    if (pyEngine != NULL)
+    if (pyEngine)
     {
-        connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        if (pyStatePublisher)
+        {
+            connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
+                this, &MainWindow::pythonStateChanged);
+        }
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
@@ -272,7 +274,10 @@ MainWindow::MainWindow() :
         if (m_console)
         {
             connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
-            connect(pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)));
+            connect(
+                pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), 
+                m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*))
+            );
         }
     }
     else
@@ -285,22 +290,8 @@ MainWindow::MainWindow() :
     }
 
     // signal mapper for user defined actions
-    m_userDefinedSignalMapper = new QSignalMapper(this);
-    connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
-
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
     connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
-//    connect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
-
-    // Signalmapper for dynamic lastFile Menu
-    m_lastFilesMapper = new QSignalMapper(this);
-    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
-
-    m_openScriptsMapper = new QSignalMapper(this);
-    connect(m_openScriptsMapper, SIGNAL(mapped(const QString &)), this, SLOT(openScript(const QString &)));
-
-    m_openFigureMapper = new QSignalMapper(this);
-    connect(m_openFigureMapper, SIGNAL(mapped(int)), this, SLOT(raiseFigureByHandle(int)));
 
     //
     createActions();
@@ -355,7 +346,8 @@ MainWindow::MainWindow() :
 
     settings.endGroup();
 
-    //if restore state set some dock widgets inherited from abstractDockWidget to a top level state, it must be converted to a windows style using the following method:
+    // if restore state set some dock widgets inherited from abstractDockWidget 
+    // to a top level state, it must be converted to a windows style using the following method:
     if (m_fileSystemDock)
     {
         m_fileSystemDock->restoreState("itomFileSystemDockWidget");
@@ -425,7 +417,6 @@ MainWindow::~MainWindow()
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
-    //settings->setValue("geometry", saveGeometry());
     
     QByteArray state = saveState();
     settings->setValue("state", state);
@@ -433,13 +424,17 @@ MainWindow::~MainWindow()
 
     delete settings;
 
-    //QByteArray ba = storeDockWidgetStatus();
-
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
-    if (pyEngine != NULL)
+    if (pyEngine)
     {
-        disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
+        if (pyStatePublisher)
+        {
+            disconnect(pyEngine, &PythonEngine::pythonStateChanged,
+                this, &MainWindow::pythonStateChanged);
+        }
+
         disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
 
@@ -494,8 +489,6 @@ MainWindow::~MainWindow()
         ++it2;
     }
     m_userDefinedRootMenus.clear();
-
-    DELETE_AND_SET_NULL(m_userDefinedSignalMapper);
 
     if (m_pHelpSystem)
     {
@@ -950,10 +943,11 @@ void MainWindow::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new QAction(QIcon(":/icons/filePython.png"), displayedPath, this);
+                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
-                    connect(a, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(a, path);
+                    connect(a, &QAction::triggered, [=]() {
+                        lastFileOpen(path);
+                    });
                 }
             }
         }
@@ -994,7 +988,7 @@ void MainWindow::mnuFigureAboutToShow()
         }
         else
         {
-            qSort(*widgetNames);
+            std::sort(widgetNames->begin(), widgetNames->end());
             
             foreach(val, *widgetNames)
             {
@@ -1002,10 +996,10 @@ void MainWindow::mnuFigureAboutToShow()
                 QMetaObject::invokeMethod(uiOrga, "getPlotWindowTitlebyHandle", Q_ARG(unsigned int, val), Q_ARG(QSharedPointer<QString>, title), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
                 
                 a = new QAction(*title, this);
-                
                 m_pShowOpenFigure->addAction(a);
-                connect(a, SIGNAL(triggered()), m_openFigureMapper, SLOT(map()));
-                m_openFigureMapper->setMapping(a, val);
+                connect(a, &QAction::triggered, [=]() {
+                    raiseFigureByHandle(val);
+                });
             }
         }
 
@@ -1045,8 +1039,9 @@ void MainWindow::mnuViewAboutToShow()
                     IOHelper::elideFilepathMiddle(filenameElided, 200);
                     a = new QAction(QIcon(":/files/icons/filePython.png"), filenameElided, this);
                     m_pMenuView->addAction(a);
-                    connect(a, SIGNAL(triggered()), m_openScriptsMapper, SLOT(map()));
-                    m_openScriptsMapper->setMapping(a, filename);
+                    connect(a, &QAction::triggered, [=]() {
+                        openScript(filename);
+                    });
                 }
             }
             else if (m_plastFilesMenu)
@@ -1529,8 +1524,10 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
 
-    connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-    m_userDefinedSignalMapper->setMapping(action, pythonCode);
+    connect(action, &QAction::triggered, [=]() {
+        userDefinedActionTriggered(pythonCode);
+    });
+
     toolbar->addAction(action);
 
     *buttonHandle = m_userDefinedActionCounter;
@@ -1544,32 +1541,38 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QString &buttonName, QSharedPointer<size_t> buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+//-------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(
+    const QString &toolbarName, 
+    const QString &buttonName, 
+    QSharedPointer<QVector<size_t> > buttonHandles, 
+    bool showMessage /*= true*/, 
+    ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-    QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.find(toolbarName);
+    auto it = m_userDefinedToolBars.constFind(toolbarName);
     QAction* tempAction;
     bool found = false;
-    *buttonHandle = (size_t)NULL;
+    
+    buttonHandles->clear();
 
-    if (it != m_userDefinedToolBars.end())
+    if (it != m_userDefinedToolBars.constEnd())
     {
         foreach(tempAction, (*it)->actions())
         {
-            if (tempAction->text() == buttonName)
+            if (tempAction->text() == buttonName || buttonName == "")
             {
                 (*it)->removeAction(tempAction);
-                *buttonHandle = (size_t)(tempAction->property("itom__buttonHandle").toUInt()); //0 if invalid
+                buttonHandles->append((size_t)(tempAction->property("itom__buttonHandle").toUInt())); //0 if invalid
                 DELETE_AND_SET_NULL(tempAction);
                 found = true;
-                break;
             }
         }
         
-        if ((*it)->actions().size() == 0) //remove this toolbar
+        if ((*it)->actions().size() == 0) 
         {
+            //remove this toolbar
             QString tmpName = it.key();
             removeToolBar(*it);
             m_userDefinedToolBars.remove(tmpName);
@@ -1577,12 +1580,23 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
 
         if (!found)
         {
-            retval += ito::RetVal::format(ito::retError, 0, tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), buttonName.toLatin1().data(), toolbarName.toLatin1().data());
+            retval += ito::RetVal::format(
+                ito::retError,
+                0, 
+                tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), 
+                buttonName.toLatin1().data(), 
+                toolbarName.toLatin1().data()
+            );
         }
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("The toolbar '%s' could not be found.").toLatin1().data(), toolbarName.toLatin1().data());
+        retval += ito::RetVal::format(
+            ito::retError, 
+            0, 
+            tr("The toolbar '%s' could not be found.").toLatin1().data(), 
+            toolbarName.toLatin1().data()
+        );
     }
 
     if (waitCond)
@@ -1601,8 +1615,11 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+//-------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(
+    const size_t buttonHandle, 
+    bool showMessage /*= true*/, 
+    ItomSharedSemaphore *waitCond /*= nullptr*/)
 {
     //buttonHandle is the pointer-address to the QAction of the button
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1611,7 +1628,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
     bool found = false;
 
-    for (QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin(); !found && it != m_userDefinedToolBars.end(); ++it)
+    for (auto it = m_userDefinedToolBars.constBegin(); !found && it != m_userDefinedToolBars.constEnd(); ++it)
     {
         foreach (tempAction, (*it)->actions())
         {
@@ -1635,7 +1652,11 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("The button (%i) could not be found.").toLatin1().data(), buttonHandle);
+        retval += ito::RetVal::format(
+            ito::retError, 
+            0, 
+            tr("The button (%1) could not be found.").toLatin1().data(), 
+            buttonHandle);
     }
 
     if (waitCond)
@@ -1745,8 +1766,11 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
                     act->setData(current_key);
-                    connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-                    m_userDefinedSignalMapper->setMapping(act, code);
+
+                    connect(act, &QAction::triggered, [=]() {
+                        userDefinedActionTriggered(code);
+                    });
+
                     *menuHandle = m_userDefinedActionCounter;
                 }
                 else if (typeID == 2 /*MENU*/)
@@ -1923,7 +1947,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%i' could not be found").toLatin1().data(), menuHandle);
+        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%1' could not be found").toLatin1().data(), menuHandle);
     }
 
     if (waitCond)

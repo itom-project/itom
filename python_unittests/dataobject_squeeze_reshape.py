@@ -8,9 +8,9 @@ class DataObjectResize(unittest.TestCase):
         pass
     
     def test_reshape_uint16(self):
-        obj = dataObject.randN([100,30,20,90],'uint16')
+        obj = dataObject.randN([10,30,20,90],'uint16')
         obj_list = [i for i in obj]
-        shapes = [[3000,20,90],[2,30,50,20,90],[100,15,10,360]]
+        shapes = [[300,20,90],[2,30,5,20,90],[100,15,1,360]]
         for shape in shapes:
             b = obj.reshape(shape)
             self.assertEqual([i for i in b], obj_list)

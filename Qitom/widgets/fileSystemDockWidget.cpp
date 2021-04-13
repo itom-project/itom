@@ -58,8 +58,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pLblFilter(NULL),
     m_pCmbFilter(NULL),
     m_pFileSystemModel(NULL),
-    m_newDirSelectedMapper(NULL),
-    baseDirectory(QString::Null()),
+    baseDirectory(QString()),
     m_pColumnWidth(NULL),
     m_pActMoveCDUp(NULL),
     m_pActSelectCD(NULL),
@@ -84,12 +83,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     QString actDir = "";
     QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
 
-    m_newDirSelectedMapper = new QSignalMapper(this);
-    connect(m_newDirSelectedMapper, SIGNAL(mapped(const QString &)), this, SLOT(newDirSelected(const QString &)));
-
     m_pShowDirListMenu = new QMenu(tr("Last used directories"), this);
     m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.png"));
-    connect(m_pShowDirListMenu->menuAction(), SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
 
     m_pShowDirListMenu->installEventFilter(this);
 
@@ -123,8 +118,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
             act->setData(actDir);
             act->setCheckable(false);
             act->setWhatsThis(actCheckedStr);
-            connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
-            m_newDirSelectedMapper->setMapping(act, actDir);
+            connect(act, &QAction::triggered, [=]() {
+                newDirSelected(actDir);
+            });
             count++;
         }
     }
@@ -307,7 +303,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pLblFilter);
     DELETE_AND_SET_NULL(m_pCmbFilter);
     DELETE_AND_SET_NULL(m_pFileSystemModel);
-    DELETE_AND_SET_NULL(m_newDirSelectedMapper);
     DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
     DELETE_AND_SET_NULL(m_pActMoveCDUp);
     DELETE_AND_SET_NULL(m_pActSelectCD);
@@ -669,8 +664,9 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
             act->setWhatsThis("");
             act->setIcon(QIcon(":/application/icons/empty.png"));
             act->setCheckable(false);
-            connect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
-            m_newDirSelectedMapper->setMapping(act, baseDirectory);
+            connect(act, &QAction::triggered, [=]() {
+                newDirSelected(baseDirectory);
+            });
         }
 
         if (m_pShowDirListMenu->actions().count() > 0)
@@ -1313,7 +1309,6 @@ void FileSystemDockWidget::mnuToggleView()
 void FileSystemDockWidget::removeActionFromDirList(const int &pos)
 {
     QAction *act = m_pShowDirListMenu->actions()[pos];
-    disconnect(act, SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
     m_pShowDirListMenu->removeAction(act);
     DELETE_AND_SET_NULL(act);
 }
@@ -1330,13 +1325,8 @@ void FileSystemDockWidget::processError(QProcess::ProcessError error)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
 {
-#if QT_VERSION >= 0x040800
-    if (link.isLocalFile()) //this method has been introduced in Qt 4.8
+    if (link.isLocalFile())
     {
-#else
-    if (link.scheme().compare(QLatin1String("file"), Qt::CaseInsensitive) == 0)
-    {
-#endif
         QString dir = link.toLocalFile();
 
         if (dir.size() == 2)

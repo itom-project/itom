@@ -59,7 +59,7 @@ itom
 * update of *autoreload.py* (based on https://github.com/ipython/ipython/blob/master/IPython/extensions/autoreload.py).
 * info messages are shown if syntax check, auto completion, calltips or 'goto definition' is enabled in properties but pyflakes, frosted+pies or jedi+parso are not available
 * :py:meth:`itom.dataObject.dstack` (ito::DataObject::dstack) always returns a dataObject with a higher number of dimensions. (`issue #79 <https://bitbucket.org/itom/itom/issues/79/>`_)
-* performance improvements in console widget, if a lot of text should be printed: added an internal intermediate buffer, wrap long lines (optional) into several lines, each starting with **... **.
+* performance improvements in console widget, if a lot of text should be printed: added an internal intermediate buffer, wrap long lines (optional) into several lines, each starting with ``... ``.
 * added actuator error and endswitch[no] flags
 * python syntax highlighting is now disabled for stream (out and err) output in command line. There is a special style type for these stream outputs (see editor style properties)
 * *ito::actuator::getStatus(int axis)* introduced to obtain the status of one single axis

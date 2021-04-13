@@ -74,12 +74,16 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 
             \param [in] numberOfListeners (default: 1) are the number of different methods in other threads which should release this semaphore before the caller can go on.
         */
-        inline ItomSharedSemaphore(int numberOfListeners = 1) : m_numOfListeners(numberOfListeners), m_instCounter(numberOfListeners + 1), m_enableDelete(false), m_callerStillWaiting(true), returnValue(ito::retOk)
+        inline ItomSharedSemaphore(int numberOfListeners = 1) : 
+                m_numOfListeners(numberOfListeners), 
+                m_instCounter(numberOfListeners + 1), 
+                m_enableDelete(false), 
+                m_callerStillWaiting(true), 
+                returnValue(ito::retOk)
         {
-            internalMutex.lock();
+            QMutexLocker mutexLocker(&internalMutex);
             m_pSemaphore = new QSemaphore(m_numOfListeners);
             m_pSemaphore->acquire(m_numOfListeners);
-            internalMutex.unlock();
         }
 
         //! destructor (do not call directly, instead free the semaphore by ItomSharedSemaphore::deleteSemaphore

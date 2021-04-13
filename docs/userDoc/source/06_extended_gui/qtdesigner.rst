@@ -83,30 +83,30 @@ shows an initialization dialog, where you can select the base type of the user i
 Basically you have the choice between three different base layouts:
 
 1. **Dialog**. A Dialog is usually displayed on top of the main window and only has got one close-button in its title bar. 
-  Often, dialogs are used for configuration dialogs where the user finally closes the dialog using one of the standard 
-  buttons (OK, Cancel, Apply...) in order to confirm or reject the current changes in the dialog. A dialog cannot have its 
-  own toolbar, menu or status bar. To open and use such a dialog within |itom|, see :ref:`this section <qtdesigner-typewindow>`.
+   Often, dialogs are used for configuration dialogs where the user finally closes the dialog using one of the standard 
+   buttons (OK, Cancel, Apply...) in order to confirm or reject the current changes in the dialog. A dialog cannot have its 
+   own toolbar, menu or status bar. To open and use such a dialog within |itom|, see :ref:`this section <qtdesigner-typewindow>`.
 2. **Main Window**. A main window is a fully equipped main window, which can be minimized, maximized, can have toolbars, 
-  menus and a status bar. Therefore it is recommended to use this type of user interface for the main window of your 
-  measurement system. Like a dialog, it is possible to show the main window on top of |itom| (as sub-window of |itom|) or 
-  as independent window, which has its own icon in the windows tray. To open and use such a window within |itom|, see 
-  :ref:`this section <qtdesigner-typewindow>`.
+   menus and a status bar. Therefore it is recommended to use this type of user interface for the main window of your 
+   measurement system. Like a dialog, it is possible to show the main window on top of |itom| (as sub-window of |itom|) or 
+   as independent window, which has its own icon in the windows tray. To open and use such a window within |itom|, see 
+   :ref:`this section <qtdesigner-typewindow>`.
 3. **Widget**. A widget is the base class for all control elements provided by |Qt|. Therefore a widget does not have any 
-  title bar or windows frame. Nevertheless there are three use cases where it makes sense to choose this type
-  of base layout:
-  
-  * |itom| is able to put a widget base layout into a default dialog layout, that can optionally show some default buttons 
-    on the right side or at the bottom of the dialog. This is the easiest way the generate a configuration dialog in |itom|,
-    since you do not need to script the necessary methods handling clicks on one of these buttons. In this case, |itom| 
-    automatically gets full information about the close status and type of closing of the dialog (accepted, rejected...).
-    For more information how to use this within |itom|, see :ref:`this section <qtdesigner-typedialog>`.
-  * Since **itom 4.0** it is possible to place a customized widget as central widget in the center of the main window
-    of itom or as toolbox (denoted as dock widget), in one of the four toolbox areas of the main window of |itom|.
-    The toolbox can be docked or undocked and moved from one allowed area to another one. For using a widget as central
-    widget, see :ref:`this section <qtdesigner-typecentralwidget>`, for a usage as toolbox see 
-    :ref:`here <qtdesigner-typedockwidet`.
-  * Since **itom 4.1** it is further possible to add such a customized widget base layout to one **layout** of another
-    customized user interface. For more information about this, see :ref:`this section <qtdesigner-extentlayouts>`.
+   title bar or windows frame. Nevertheless there are three use cases where it makes sense to choose this type
+   of base layout:
+   
+   * |itom| is able to put a widget base layout into a default dialog layout, that can optionally show some default buttons 
+     on the right side or at the bottom of the dialog. This is the easiest way the generate a configuration dialog in |itom|,
+     since you do not need to script the necessary methods handling clicks on one of these buttons. In this case, |itom| 
+     automatically gets full information about the close status and type of closing of the dialog (accepted, rejected...).
+     For more information how to use this within |itom|, see :ref:`this section <qtdesigner-typedialog>`.
+   * Since **itom 4.0** it is possible to place a customized widget as central widget in the center of the main window
+     of itom or as toolbox (denoted as dock widget), in one of the four toolbox areas of the main window of |itom|.
+     The toolbox can be docked or undocked and moved from one allowed area to another one. For using a widget as central
+     widget, see :ref:`this section <qtdesigner-typecentralwidget>`, for a usage as toolbox see 
+     :ref:`here <qtdesigner-typedockwidet`.
+   * Since **itom 4.1** it is further possible to add such a customized widget base layout to one **layout** of another
+     customized user interface. For more information about this, see :ref:`this section <qtdesigner-extentlayouts>`.
 
 After having chosen one of these base layouts (types), your surface is displayed in the middle of the **Qt Designer** and 
 you can start to drag elements from the **widget library panel** onto your surface. If the **Qt Designer** is started 
@@ -319,6 +319,7 @@ Possible values for *dockWidgetArea* are:
     * ui.RIGHTDOCKWIDGETAREA = 2
     * ui.TOPDOCKWIDGETAREA = 4
     * ui.BOTTOMDOCKWIDGETAREA = 8
+
 
 .. _qtdesigner-typecentralwidget:
 
@@ -661,6 +662,19 @@ exceptions are contained in the list below. Their call syntax is as follows::
 The class names in the following list corresponds to the Qt class name of the widget, where the slot can be
 applied to. It is not part of the call statement in |Python|.
 
+.. py:function:: QObject.blockSignals(block: bool)
+
+    defines if the widget / object should emit any signals or not.
+    
+    *New in itom 4.1*
+
+.. py:function:: QObject.signalsBlocked() -> bool
+
+    Returns ``True``, if possible signals of this widget / object are
+    emitted, or blocked (``False``).
+    
+    *New in itom 4.1*
+
 .. py:function:: QWidget.resize(width: int, height: int)
 
     resizes the widget to width / height.
@@ -695,7 +709,7 @@ applied to. It is not part of the call statement in |Python|.
     
     returns a tuple of all selected row indices
 
-.. py:function:: Tuple[str] QListWidget.selectedTexts()
+.. py:function:: QListWidget.selectedTexts() -> Tuple[str]
     
     returns a tuple of all selected values
 
@@ -716,30 +730,28 @@ applied to. It is not part of the call statement in |Python|.
     
     sets the text of the item from the given row or raises an exception if the item does not exist
     
-    *New in **itom** > 3.2.1*
+    *New in itom > 3.2.1*
 
 .. py:function:: QListWidget.checkState(row: int) -> int[Qt.CheckState]
     
     returns the check state of the item from the given row (0: unchecked, 1: partially checked, 2: checked) or raises an 
-    exception if the item does not exist. For possible values of flags, see the enumeration `Qt::ItemFlags 
-    <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
+    exception if the item does not exist. For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
 .. py:function:: QListWidget.setCheckState(row: int, state: Qt.CheckState)
     
     set the check state of the item in the given row (0: unchecked, 1: partially checked, 2: checked) - set the flags 
-    properly before changing the state. For possible values of flags, see the enumeration `Qt::ItemFlags 
-    <https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/>`_.
+    properly before changing the state. For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
 .. py:function:: QListWidget.flags(row: int) -> int[Qt.ItemFlags]
     
     returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
-    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+    For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
 .. py:function:: QListWidget.setFlags(row: int, flags: Qt.ItemFlags)
     
     set the flags of the item in the given row based on the flags bitmask (use an integer). 
     You have to set the flags properly before changing the state.
-    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+    For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
 .. py:function:: QComboBox.addItem(item: str)
     
@@ -787,7 +799,7 @@ applied to. It is not part of the call statement in |Python|.
     adds a new toolbar with the given name to the main window and returns its reference as :py:class:`~itom.uiItem`.
     If objectName is a nonempty string, it is used as internal object name of the new toolbar.
     
-    *New in itom 3.2
+    *New in itom 3.2*
 
 .. py:function:: QTableWidget.setHorizontalHeaderLabels(labels: Sequence[str])
     
@@ -826,13 +838,40 @@ applied to. It is not part of the call statement in |Python|.
 .. py:function:: QTableWidget.flags(row: int, column: int) -> int[Qt.ItemFlags]
     
     returns the flags used to describe this item (e.g. checkable, tristate, editable, selectable...).
-    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+    For possible values of flags, see the enumeration `Qt::ItemFlags`_.
 
 .. py:function:: QTableWidget.setFlags(row: int, column: int, flags: Qt.ItemFlags)
     
     set the flags of the item in the given row and column based on the flags bitmask (use an integer). 
     You have to set the flags properly before changing the state.
-    For possible values of flags, see the enumeration `Qt::ItemFlags <https://doc.qt.io/qt-5/qt.html#ItemFlag-enum/>`_.
+    For possible values of flags, see the enumeration `Qt::ItemFlags`_.
+
+.. py:function:: QTableWidget.sortItems(column: int, sortOrder: Qt.SortOrder)
+    
+    Sorts all the rows in the table widget based on a given column index
+    and the sort order. For possible values of the sort order, see the 
+    enumeration `Qt::SortOrder`_.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualColumn(logicalColumn: int) -> int
+    
+    Returns the visual column of the given ``logicalColumn``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.visualRow(row: int) -> int
+    
+    Returns the visual row of the given ``logicalRow``.
+    
+    **New in itom 4.1**
+
+.. py:function:: QTableWidget.setCurrentCell(row: int, column: int)
+    
+    Sets the current cell to be the cell at position (row, column).
+    Depending on the current selection mode, the cell may also be selected.
+    
+    **New in itom 4.1**
 
 .. py:function:: QTableView.horizontalHeader() -> uiItem
     
@@ -2055,3 +2094,5 @@ must always be run in the main thread of an application (this is a restriction o
 classes :py:class:`itom.ui` and :py:class:`itom.uiItem`, both problems are properly handled. All methods in 
 :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization 
 structure, that runs in the main thread of |itom|, in order to interact with all dialogs.
+
+.. _Qt::ItemFlags: https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/

@@ -26,21 +26,22 @@
 #include "abstractDockWidget.h"
 #include "itomQWidgets.h"
 #include "scriptEditorWidget.h"
+#include "tabSwitcherWidget.h"
+#include "outlineSelectorWidget.h"
 
 #include <qaction.h>
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qcombobox.h>
 #include <qpointer.h>
+#include <qsharedpointer.h>
 
-#include "../models/classNavigatorItem.h"
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <qevent.h>
 
 #include "../ui/widgetFindWord.h"
-
-class QSignalMapper; //forward declaration
 
 namespace ito {
 
@@ -84,16 +85,21 @@ public:
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
+    void activeTabShowLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
+    const QTabWidget* tabWidget() const { return m_tab;  }
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
+
+    //!< return all outlines in the tabs of this script dock widget
+    QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(int &activeIndex) const;
 
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;
     ScriptEditorWidget* getCurrentEditor() const;
 
     int getIndexByEditor(const ScriptEditorWidget* sew) const;
-
+    void tabFilenameOrModificationChanged(int index);
 
     void createActions();
     //void deleteActions();
@@ -114,6 +120,15 @@ private:
     BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
+
+    //!< indices of the tabs. The most recently activated tab index is at the front.
+    /*
+    This list is used to initialize the tabSwitcherWidget if Ctrl+Tab is pressed.
+    */
+    QList<int> m_stackHistory; 
+
+    QSharedPointer<TabSwitcherWidget> m_tabSwitcherWidget;
+    QSharedPointer<OutlineSelectorWidget> m_outlineSelectorWidget;
 
     // ACTIONS
     ShortcutAction *m_tabMoveLeftAction;
@@ -140,6 +155,8 @@ private:
     ShortcutAction *m_uncommentAction;
     ShortcutAction *m_indentAction;
     ShortcutAction *m_unindentAction;
+    ShortcutAction *m_autoCodeFormatAction;
+    ShortcutAction *m_pyDocstringGeneratorAction;
     ShortcutAction *m_scriptRunAction;
     ShortcutAction *m_scriptRunSelectionAction;
     ShortcutAction *m_scriptDebugAction;
@@ -157,6 +174,7 @@ private:
     
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
+    ShortcutAction *m_findSymbols;
 
     ScriptEditorActions m_commonActions;
 
@@ -169,22 +187,21 @@ private:
     QMenu *m_winMenu;
     QMenu *m_bookmark;
 
-    QSignalMapper *m_lastFilesMapper;
-
     QToolBar* m_fileToolBar;
     QToolBar* m_editToolBar;
     QToolBar* m_scriptToolBar;
     QToolBar* m_bookmarkToolBar;
 
+    QString m_autoCodeFormatCmd;
+
     // ClassNavigator
     QWidget *m_classMenuBar;
     QComboBox *m_classBox;
     QComboBox *m_methodBox;
-    bool m_classNavigatorEnabled;
-    void fillClassBox(const ClassNavigatorItem *parent, const QString &prefix);
-    void fillMethodBox(const ClassNavigatorItem *parent);
-    void showClassNavigator(bool show);
-    QMap<int, ClassNavigatorItem*> m_rootElements;
+    bool m_outlineShowNavigation;
+    void fillNavigationClassComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
+    void fillNavigationMethodComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
+    void showOutlineNavigationBar(bool show);
 
     static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 
@@ -261,20 +278,25 @@ private slots:
     void mnuToggleBookmark();
     void mnuInsertCodec();
     void mnuCopyFilename();
+    void mnuPyCodeFormatting();
+    void mnuPyDocstringGenerator();
+    
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
 
     // Class Navigator
-    void classChosen(const QString &text);
-    void methodChosen(const QString &text);
+    void navigatorClassSelected(int row);
+    void navigatorMethodSelected(int row);
 
     void loadSettings();
     void findWordWidgetFinished();
 
 public slots:
     void editorMarginChanged();
-    void updateCodeNavigation(ScriptEditorWidget *editor);
+    void updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
+    void tabChangedRequest();
+    void mnuFindSymbolsShow();
 };
 
 } //end namespace ito

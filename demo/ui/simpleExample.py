@@ -1,26 +1,33 @@
-'''
+"""
 This script shows an example how to integrate the user interface
 "simpleExampleui" into itom, connect it with the necessary methods
 and show it
-'''
+"""
 
-#create dialog instance, that represents the user interface
+# create dialog instance, that represents the user interface
 # - our ui-file is a simple widget, that should be embedded in an auto-created
 # window, that itom provides for us (type: ui.TYPEDIALOG)
 # - We want to have an auto-created vertical button bar at the right side (dialogButtonBar = ui.BUTTONBAR_VERTICAL)
 # - The button bar should consist of one OK button, therefore its role is "AcceptRole"
 #
-mainWin = ui("simpleExample.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, {"AcceptRole":"OK"})
+mainWin = ui(
+    "simpleExample.ui",
+    ui.TYPEDIALOG,
+    ui.BUTTONBAR_VERTICAL,
+    {"AcceptRole": "OK"},
+)
 
 # 1. first group box: show text of textfield in a message box
 # -----------------------------------------------------------
 
 
 # set default text of TextField with name txtMessage
-field = mainWin.txtMessage #you can get an instance (class uiItem) of any sub-element of your user interface
+field = (
+    mainWin.txtMessage
+)  # you can get an instance (class uiItem) of any sub-element of your user interface
 field["text"] = "hello world"
 
-#the same can be done directly:
+# the same can be done directly:
 mainWin.txtMessage["text"] = "hello world"
 
 # now we want to connect the clicked-signal of the button with the method 'showMessage'
@@ -34,23 +41,28 @@ mainWin.txtMessage["text"] = "hello world"
 #     This method needs to have the same number of arguments than the signal (here: 0)
 def showMessage():
     text = mainWin.txtMessage["text"]
-    ui.msgInformation("your text", text, parent = mainWin)
-    
+    ui.msgInformation("your text", text, parent=mainWin)
+
+
 mainWin.btnShowText.connect("clicked()", showMessage)
 
 
 # 2. second group box: show getDirectory-dialog and print the chosen directory in the text field
 # -----------------------------------------------------------
 
+
 def showGetDirectory():
-    directory = ui.getExistingDirectory("chose directory", itom.getCurrentPath(), parent = mainWin)
-    if(directory is None):
+    directory = ui.getExistingDirectory(
+        "chose directory", itom.getCurrentPath(), parent=mainWin
+    )
+    if directory is None:
         pass
-        #cancel has been clicked
+        # cancel has been clicked
     else:
         mainWin.txtDirectory["text"] = directory
 
-#connect the clicked-signal of toolSelectDir with showGetDirectory
+
+# connect the clicked-signal of toolSelectDir with showGetDirectory
 mainWin.toolSelectDir.connect("clicked()", showGetDirectory)
 
 # if txtDirectory has the property 'readOnly' set to true, the button btnReadOnly should be 'checked'.
@@ -60,25 +72,29 @@ mainWin.btnReadOnly["checked"] = mainWin.txtDirectory["readOnly"]
 def btnReadOnlyToggled(checked):
     mainWin.txtDirectory["readOnly"] = checked
 
+
 mainWin.btnReadOnly.connect("clicked(bool)", btnReadOnlyToggled)
-    
 
 
 # 3. At first, the third group box should be hidden. If the checkbox checkShowThirdExample is clicked, the visibility should change
 # -----------------------------------------------------------
 
+
 def checkShowThirdExample_clicked(checked):
     # we have two possibilities: 1. change visible-property of group3, 2. use the slot (special, accessible method of any widget, that can be addressed by python)
     # 'hide' or 'show' from group3 (the slots are part of any widget) in order to show or hide the element.
     # Here: we want to call the slots
-    if(checked):
+    if checked:
         mainWin.group3.call("show")
     else:
         mainWin.group3.call("hide")
 
-mainWin.checkShowThirdExample.connect("clicked(bool)", checkShowThirdExample_clicked)
 
-#initially, hide group3
+mainWin.checkShowThirdExample.connect(
+    "clicked(bool)", checkShowThirdExample_clicked
+)
+
+# initially, hide group3
 mainWin.group3.call("hide")
 
 
@@ -93,25 +109,27 @@ listBox = mainWin.listWidget
 #  a slot. In case of a listWidget, this is 'addItem', 'addItems'
 #  this is used, to add the names of all radio buttons to the list:
 listBox.call("addItem", mainWin.radio1["text"])
-listBox.call("addItems", [ mainWin.radio2["text"], mainWin.radio3["text"] ])
+listBox.call("addItems", [mainWin.radio2["text"], mainWin.radio3["text"]])
 
-#let us pre-select the second radio button and the second list item
+# let us pre-select the second radio button and the second list item
 mainWin.radio2["checked"] = True
 listBox["currentRow"] = 1
 
+
 def listCurrentChanged(row):
-    if(row == 0):
+    if row == 0:
         mainWin.radio1["checked"] = True
-    elif(row == 1):
+    elif row == 1:
         mainWin.radio2["checked"] = True
     else:
         mainWin.radio3["checked"] = True
-        
-#if the current item in the list is changed, the corresponding radio button should be checked
+
+
+# if the current item in the list is changed, the corresponding radio button should be checked
 listBox.connect("currentRowChanged(int)", listCurrentChanged)
 
 
-#show dialog
+# show dialog
 # you have three options.
 # 1. show dialog in a non-modal form (user can still click something else in itom)
 #     >> mainWin.show(0) or mainWin.show()
@@ -122,7 +140,3 @@ listBox.connect("currentRowChanged(int)", listCurrentChanged)
 # 3. show dialog in a model form, python script execution continues, you don't have access to the return value
 #     >> mainWin.show(2)
 mainWin.show(1)
-
-
-
-

@@ -255,7 +255,7 @@ namespace ito
         };
 
 
-        template<uint8 _COLOR> class RGBChannel : Rgba32
+        template<uint8 _COLOR> class RGBChannel : public Rgba32
         {
         public:
             RGBChannel()  /*! < Constructor for basic values */

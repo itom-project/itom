@@ -144,7 +144,9 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
     }
     else if (m_disablingKeys.contains(e->key())) 
     {
-        QToolTip::hideText();
+        //QToolTip::hideText();
+        ToolTip::hideText();
+        //m_toolTipWidget->hide();
     }
 }
 
@@ -152,6 +154,7 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
     PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
+
     if (pyEng && (m_requestCount == 0))
     {
         ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
@@ -194,6 +197,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
     tc.setPosition(tc.position());
     tc.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
     QString l = tc.selectedText();
+
     if (l.size() > 0)
     {
         QChar lastChar = l[l.size() - 1];
@@ -208,6 +212,37 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
 }
 
 //--------------------------------------------------------------------------------
+QString parseCalltip(const ito::JediCalltip &tip)
+{
+    if (tip.m_calltipParams.size() == 0)
+    {
+        return QString("<p><nobr>%1()</nobr></p>").arg(tip.m_calltipMethodName);
+    }
+    else
+    {
+        int paramLength = 0;
+
+        foreach(const QString &p, tip.m_calltipParams)
+        {
+            paramLength += 2 + p.size();
+        }
+
+        if (paramLength + tip.m_calltipMethodName.size() + 2 < (2 * 88))
+        {
+            return QString("<p><nobr>%1(%2)</nobr></p>")
+                .arg(tip.m_calltipMethodName)
+                .arg(tip.m_calltipParams.join(", "));
+        }
+        else
+        {
+            return QString("<p><nobr>%1(<br>&nbsp;&nbsp;&nbsp;&nbsp;%2)</nobr></p>")
+                .arg(tip.m_calltipMethodName)
+                .arg(tip.m_calltipParams.join(",<br>&nbsp;&nbsp;&nbsp;&nbsp;"));
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------
 void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
 {
      m_requestCount--;
@@ -217,48 +252,37 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
         return;
     }
 
-    JediCalltip calltip = calltips[0];
+    JediCalltip first_calltip = calltips[0];
 
-    /*
-    int index = args["call.index"].toInt();
-    int col = args["column"].toInt();
+    QString text;
 
-    // create a formatted calltip (current index appear in bold)
-    QString calltip = QString("<p style='white-space:pre'>%1.%2(").arg(args["call.module.name"].toString()).arg(args["call.call_name"].toString());
-    QStringList callParams = args["call.params"].toString().split(";;");
-    for (int i = 0; i < callParams.size(); ++i)
+    if (calltips.size() > 0)
+    {        
+        foreach(const JediCalltip &tip, calltips)
+        {
+            // newline not necessary, since each calltip is in a <p>...</p> block
+            text.append(parseCalltip(tip));
+        }
+    }
+    else
     {
-        QString param = callParams[i];
-        if ((i < callParams.size() - 1) && !param.endsWith(','))
-        {
-            param += ", ";
-        }
-        if (param.endsWith(','))
-        {
-            param += " ";  // pep8 calltip
-        }
-        if (i == index)
-        {
-            calltip += "<b>";
-        }
-        calltip += param;
-        if (i == index)
-        {
-            calltip += "</b>";
-        }
-    calltip += ")</p>";
-    */
+        text = parseCalltip(first_calltip);
+    }
 
     // set tool tip position at the start of the bracket
     int char_width = editor()->fontMetrics().width('A');
-    int w_offset = (calltip.m_column - calltip.m_bracketStartCol) * char_width;
+    int w_offset = (first_calltip.m_column - first_calltip.m_bracketStartCol) * char_width;
+    QRect cursorRect = editor()->cursorRect();
     QPoint position(
-        editor()->cursorRect().x() - w_offset,
-        editor()->cursorRect().y() + char_width +
+        cursorRect.x() - w_offset + editor()->panels()->marginSize(ito::Panel::Left),
+        cursorRect.y() + char_width + //cursorRect.height() + 
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
+
+    //position = QPoint(0, 0);
+
     // show tooltip
-    QToolTip::showText(position, calltip.m_calltipText, editor());
+    ToolTip::showText(position, text, editor(), QRect());
 }
 
 } //end namespace ito

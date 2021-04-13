@@ -114,8 +114,21 @@ void WidgetPropGeneralStyles::readSettings()
         ui.comboPredefinedStyle->setCurrentIndex(-1);
     }
 
-    QString iconTheme = settings.value("iconTheme", "bright").toString();
-    ui.comboIconTheme->setCurrentIndex(iconTheme.compare("bright", Qt::CaseInsensitive) == 0 ? 0 : 1);
+    QString iconTheme = settings.value("iconTheme", "auto").toString();
+
+    if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
+    {
+        ui.comboIconTheme->setCurrentIndex(0);
+    }
+    else if (iconTheme.compare("bright", Qt::CaseInsensitive) == 0)
+    {
+        ui.comboIconTheme->setCurrentIndex(1);
+    }
+    else
+    {
+        ui.comboIconTheme->setCurrentIndex(2);
+    }
+    
     settings.endGroup();
 }
 
@@ -179,7 +192,19 @@ void WidgetPropGeneralStyles::writeSettings()
         }
     }
 
-    settings.setValue("iconTheme", ui.comboIconTheme->currentIndex() == 0 ? "bright" : "dark");
+    switch (ui.comboIconTheme->currentIndex())
+    {
+    default:
+        settings.setValue("iconTheme", "auto");
+        break;
+    case 1:
+        settings.setValue("iconTheme", "bright");
+        break;
+    case 2:
+        settings.setValue("iconTheme", "dark");
+        break;
+    }
+    
     settings.endGroup();
 }
 

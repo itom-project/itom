@@ -54,11 +54,6 @@ class StyleItem : public QObject
 {
     Q_OBJECT
 
-#if QT_VERSION < 0x050500
-    //for >= Qt 5.5.0 see Q_ENUM definition below
-    Q_ENUMS(StyleType)
-#endif
-
 public:
     enum StyleGroup
     {
@@ -81,7 +76,7 @@ public:
         KeyDecorator = 15,
 
         KeyBackground = 1000, /*special style: directly set by settings*/
-        KeyHighlight,
+        KeyHighlight, /* not used any more, should be there to keep ids in settings. */
         KeyNamespace,
         KeyType,
         KeyKeywordReserved,
@@ -98,11 +93,9 @@ public:
         KeyStreamError
     };
 
-#if QT_VERSION >= 0x050500
     //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
     //values are always accessible.
     Q_ENUM(StyleType)
-#endif
 
     StyleItem() : m_valid(false) {}
 
@@ -158,8 +151,6 @@ public:
 
     QColor background() const;
     void setBackground(const QColor &color);
-
-    QColor highlight() const;
 
 private:
     QMap<int, StyleItem> m_formats;

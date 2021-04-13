@@ -43,6 +43,7 @@ the current availabe software versions.
 * `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
 * `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
 
+
 .. warning::
 
     **Qt WebEngine**, **Qt WebEngineWidgets** are only available under VS 2017 as it is shown in the figure below! 
@@ -192,6 +193,12 @@ QHullxxxx.x
       or check with 
       :ref:`build_dependencies_flann_qhull`
 
+VTKx.x.x
+>>>>>>>>>>>>>>>>>>
+    * Copy the output of the compilation process to this folder
+      :ref:`build_dependencies_vtk`
+
+
 PCLx.x.x
 >>>>>>>>>>>>>>>>>>>
     * Copy the output of the compilation process to this folder
@@ -199,10 +206,7 @@ PCLx.x.x
 
 
 
-VTKx.x.x
->>>>>>>>>>>>>>>>>>
-    * Copy the output of the compilation process to this folder
-      :ref:`build_dependencies_vtk`
+
 
 
 
@@ -232,7 +236,7 @@ paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull*
 Check in the function **installNumpy**, if the numpy whl file names are right. 
 
 .. figure:: images/all-in-one-create/Setup_numpy_file.PNG
-   :width: 100%
+   :width: 631px
    :align: center
 
 Check in the function **upgradePip**, **installPyflakes**, **installJedi** the filenames of the whl-files. 

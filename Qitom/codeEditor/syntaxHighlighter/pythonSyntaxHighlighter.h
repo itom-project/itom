@@ -40,12 +40,7 @@
 
 #include "syntaxHighlighterBase.h"
 
-#define MIN_QT_REGULAREXPRESSION_VERSION 0x050100
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
-    #include <qregularexpression.h>
-#endif
-
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qtextformat.h>
 
 namespace ito {
@@ -62,12 +57,16 @@ class PythonSyntaxHighlighter : public SyntaxHighlighterBase
 {
     Q_OBJECT
 public:
+    enum State //!< Syntax highlighting states (from one text block to another):
+    {
+        Normal = 0,
+        InsideSq3String = 1, // the line is within a '''....''' multiline comment
+        InsideDq3String = 2, // the line is within a """....""" multiline comment
+        InsideSqString = 3, // the line is within a '...' string
+        InsideDqString = 4 // the line is within a "..." string
+    };
 
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
     typedef QRegularExpression QQRegExp;
-#else
-    typedef QRegExp QQRegExp;
-#endif
 
     PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", QSharedPointer<CodeEditorStyle> editorStyle = QSharedPointer<CodeEditorStyle>());
 
@@ -86,14 +85,6 @@ public:
     virtual void rehighlight();
 
 private:
-    enum State //!< Syntax highlighting states (from one text block to another):
-    {
-        Normal = 0,
-        InsideSq3String = 1,
-        InsideDq3String = 2,
-        InsideSqString = 3,
-        InsideDqString = 4
-    };
 
     struct NamedRegExp
     {

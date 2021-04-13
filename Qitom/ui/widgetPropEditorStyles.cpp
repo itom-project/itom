@@ -37,8 +37,8 @@ namespace ito
 {
 
 const int PAPERCOLOR = 1;
-const int FOLDMARGINCOLOR = 2;
-const int MARGINCOLOR = 3;
+// const int FOLDMARGINCOLOR = 2; -> does not exist any more, changed via stylesheet
+// const int MARGINCOLOR = 3; -> doest not exist any more, changed via stylesheet
 const int WHITESPACECOLOR = 4;
 const int UNMATCHEDBRACECOLOR = 5;
 const int MATCHEDBRACECOLOR = 6;
@@ -89,8 +89,6 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
 
     ui.listWidget->addItem(new QListWidgetItem(tr("Paper color"), NULL, PAPERCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Caret color (Foreground: cursor color, Background: color of current line)"), NULL, CARETCOLOR));
-    ui.listWidget->addItem(new QListWidgetItem(tr("Fold margin color"), NULL, FOLDMARGINCOLOR));
-    ui.listWidget->addItem(new QListWidgetItem(tr("Margin color"), NULL, MARGINCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Whitespace color (if whitespace characters are visible)"), NULL, WHITESPACECOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Unmatched brace color"), NULL, UNMATCHEDBRACECOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Matched brace color"), NULL, MATCHEDBRACECOLOR));
@@ -147,13 +145,9 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
 
     settings.beginGroup("CodeEditor");
     settings.setValue("paperBackgroundColor", m_paperBgcolor);
-    settings.setValue("marginBackgroundColor", m_marginBgcolor);
-    settings.setValue("marginForegroundColor", m_marginFgcolor);
     settings.setValue("caretBackgroundColor", m_caretBgcolor);
     settings.setValue("caretForegroundColor", m_caretFgcolor);
     settings.setValue("caretBackgroundShow", ui.checkShowCaretBackground->isChecked());
-    settings.setValue("foldMarginBackgroundColor", m_foldMarginBgcolor);
-    settings.setValue("foldMarginForegroundColor", m_foldMarginFgcolor);
     settings.setValue("markerScriptErrorBackgroundColor", m_markerScriptErrorBgcolor);
     settings.setValue("markerCurrentBackgroundColor", m_markerCurrentBgcolor);
     settings.setValue("markerInputForegroundColor", m_markerInputBgcolor);
@@ -184,17 +178,18 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
         m_styles[i].m_backgroundColor.setAlpha(settings.value("backgroundColorAlpha", m_styles[i].m_backgroundColor.alpha()).toInt());
         m_styles[i].m_foregroundColor = QColor(settings.value("foregroundColor", m_styles[i].m_foregroundColor.name()).toString());
         m_styles[i].m_foregroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
-        m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
+        m_styles[i].m_font = QFont(
+            settings.value("fontFamily", m_styles[i].m_font.family()).toString(), 
+            settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), 
+            settings.value("weight", m_styles[i].m_font.weight()).toInt(), 
+            settings.value("italic", m_styles[i].m_font.italic()).toBool()
+        );
         settings.endGroup();
     }
 
     settings.beginGroup("CodeEditor");
     //the following default values are also written in on_btnReset_clicked()
     m_paperBgcolor = QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
-    m_marginBgcolor = QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString());
-    m_marginFgcolor = QColor(settings.value("marginForegroundColor", QColor(Qt::black)).toString());
-    m_foldMarginBgcolor = QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString());
-    m_foldMarginFgcolor = QColor(settings.value("foldMarginForegroundColor", QColor(233, 233, 233)).toString());
     m_markerScriptErrorBgcolor = QColor(settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString());
     m_markerCurrentBgcolor = QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString());
     m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
@@ -306,16 +301,6 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 bg = m_paperBgcolor;
                 ui.btnForegroundColor->setEnabled(false);
                 break;
-            case FOLDMARGINCOLOR:
-                bg = m_foldMarginBgcolor;
-                fg = m_foldMarginFgcolor;
-                ui.btnForegroundColor->setEnabled(true);
-                break;
-            case MARGINCOLOR:
-                bg = m_marginBgcolor;
-                fg = m_marginFgcolor;
-                ui.btnForegroundColor->setEnabled(true);
-                break;
             case WHITESPACECOLOR:
                 fg = m_whitespaceFgcolor;
                 bg = m_whitespaceBgcolor;
@@ -421,12 +406,6 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_colorChanged(QColor color)
             case PAPERCOLOR:
                 m_paperBgcolor = color;
                 break;
-            case FOLDMARGINCOLOR:
-                m_foldMarginBgcolor = color;
-                break;
-            case MARGINCOLOR:
-                m_marginBgcolor = color;
-                break;
             case UNMATCHEDBRACECOLOR:
                 m_unmatchedBraceBgcolor = color;
                 break;
@@ -483,12 +462,6 @@ void WidgetPropEditorStyles::on_btnForegroundColor_colorChanged(QColor color)
         {
             switch (current->type())
             {
-            case FOLDMARGINCOLOR:
-                m_foldMarginFgcolor = color;
-                break;
-            case MARGINCOLOR:
-                m_marginFgcolor = color;
-                break;
             case WHITESPACECOLOR:
                 m_whitespaceFgcolor = color;
                 break;
@@ -613,10 +586,6 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     }
 
     m_paperBgcolor = QColor(Qt::white);
-    m_marginBgcolor = QColor(224, 224, 224);
-    m_marginFgcolor = QColor(Qt::black);
-    m_foldMarginBgcolor = QColor(Qt::white);
-    m_foldMarginFgcolor = QColor(233, 233, 233);
     m_markerSameStringBgcolor = QColor(255, 192, 192);
     m_markerCurrentBgcolor = QColor(255, 255, 128);
     m_markerInputBgcolor = QColor(179, 222, 171);
@@ -817,20 +786,11 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Line number margin")
                             {
-                                m_marginBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
-                                m_marginFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                                // pass
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Fold margin")
                             {
-                                if (attr.hasAttribute("bgColor") && !attr.value("bgColor").isEmpty())
-                                {
-                                    m_foldMarginBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
-                                }
-                                else
-                                {
-                                    m_foldMarginBgcolor = m_marginBgcolor;
-                                }
-                                m_foldMarginFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                                // pass
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Brace highlight style")
                             {
@@ -898,7 +858,6 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         mapIdx[StyleItem::KeyFunction] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyOperator] = 10; //Operator
                         mapIdx[StyleItem::KeyDecorator] = 15; //Decorator
-                        //mapIdx[StyleItem::KeyHighlight] = 0; //Default
                         mapIdx[StyleItem::KeyNamespace] = 5; //Keyword
                         mapIdx[StyleItem::KeyType] = 0; //Default
                         mapIdx[StyleItem::KeyKeywordReserved] = 0; //Default

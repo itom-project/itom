@@ -1070,6 +1070,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
+
         if (dObj->dataObject && dObj->base == NULL)
         {
             ok = true;
@@ -1079,6 +1080,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         {
             ok = true;
             ito::DataObject *dObj2 = new ito::DataObject();
+
             if (dObj->dataObject->copyTo(*dObj2, true) == ito::retOk)
             {
                 return dObj2;
@@ -1090,6 +1092,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
                 return NULL;
             }
         }
+
         ok = false;
         return NULL;
     }
@@ -3136,10 +3139,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     switch(textEncoding)
     {
     case utf_8:
-        return PyUnicode_DecodeUTF8(byteArray,len,errors);
+        return PyUnicode_DecodeUTF8(byteArray, len, errors);
     case latin_1:
     case iso_8859_1:
-        return PyUnicode_DecodeLatin1(byteArray,len,errors);
+        return PyUnicode_DecodeLatin1(byteArray, len, errors);
 #if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS)
     case mbcs:
         return PyUnicode_DecodeMBCS(byteArray, len, errors);
@@ -3174,8 +3177,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonQtConversion::PyUnicodeToPyByteObject(PyObject *unicode, const char *errors /*= "replace"*/)
 {
-    int bo;
-
     if (!PyUnicode_Check(unicode)) 
     {
         PyErr_BadArgument();
@@ -3194,23 +3195,19 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         return PyUnicode_AsMBCSString(unicode);
 #endif
     case ascii:
-            return PyUnicode_AsASCIIString(unicode);
+        return PyUnicode_AsASCIIString(unicode);
     case utf_16:
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, 0);
+        return PyUnicode_AsEncodedString(unicode, "utf_16", errors);
     case utf_16_LE:
-            bo = -1;
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_16_le", errors);
     case utf_16_BE:
-            bo = 1;
-            return PyUnicode_EncodeUTF16(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_16_be", errors);
     case utf_32:
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, 0);
+        return PyUnicode_AsEncodedString(unicode, "utf_32", errors);
     case utf_32_LE:
-            bo = -1;
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_32_le", errors);
     case utf_32_BE:
-            bo = 1;
-            return PyUnicode_EncodeUTF32(PyUnicode_AS_UNICODE(unicode), PyUnicode_GET_SIZE(unicode), errors, bo);
+        return PyUnicode_AsEncodedString(unicode, "utf_32_be", errors);
     case other:
     default:
         {
@@ -3224,7 +3221,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 // the following method is only called by baseObjectDeleterDataObject within a QtConcurrent::run worker thread
 void safeDecrefPyObject(PyObject *obj)
 {
-#if (PY_VERSION_HEX >= 0x03040000)
     if (PyGILState_Check())
     {
         Py_DECREF(obj);
@@ -3235,10 +3231,6 @@ void safeDecrefPyObject(PyObject *obj)
         Py_DECREF(obj);
         PyGILState_Release(gstate);
     }
-#else
-    //we don't know if we need to acquire the GIL here, or not.
-    Py_DECREF(obj);
-#endif
 }
 
 
@@ -3250,7 +3242,6 @@ void safeDecrefPyObject(PyObject *obj)
     {
         if (i.value())
         {
-#if (PY_VERSION_HEX >= 0x03040000)
             if (PyGILState_Check())
             {
                 Py_DECREF(i.value());
@@ -3263,11 +3254,6 @@ void safeDecrefPyObject(PyObject *obj)
                 //lead to a dead-lock. Therefore, we open a worker thread to finally delete the guarded base object!
                 QtConcurrent::run(safeDecrefPyObject, i.value());
             }
-#else
-            //we don't know if we need to acquire the GIL here, or not.
-            Py_DECREF(i.value());
-#endif
-
         }
 
         m_pyBaseObjectStorage.erase(i);

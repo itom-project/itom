@@ -45,14 +45,16 @@ namespace ito
     struct JediCalltip
     {
         JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1) {};
-        JediCalltip(const QString &calltip, int column, int bracketStartLine, int bracketStartCol) :
-            m_calltipText(calltip), 
+        JediCalltip(const QString &methodName, const QStringList &params, int column, int bracketStartLine, int bracketStartCol) :
+            m_calltipMethodName(methodName),
+            m_calltipParams(params),
             m_column(column),
             m_bracketStartCol(bracketStartCol),
             m_bracketStartLine(bracketStartLine)
         {}
 
-        QString m_calltipText;
+        QString m_calltipMethodName;
+        QStringList m_calltipParams;
         int m_column;
         int m_bracketStartCol;
         int m_bracketStartLine;
@@ -75,17 +77,17 @@ namespace ito
     struct JediCompletion
     {
         JediCompletion() {};
-        JediCompletion(const QString &name, const QString &tooltip, const QString &icon = QString(), const QString &docstring = QString()) :
+        JediCompletion(const QString &name, const QStringList &tooltips, const QString &icon = QString(), const QString &description = QString()) :
             m_name(name),
-            m_tooltip(tooltip),
+            m_tooltips(tooltips),
             m_icon(icon),
-            m_docstring(docstring)
+            m_description(description)
         {}
 
         QString m_name;
-        QString m_tooltip;
+        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
         QString m_icon;
-        QString m_docstring;
+        QString m_description;
     };
 
     //--------------------------------------------------------------------------------------
@@ -117,10 +119,35 @@ namespace ito
         QString m_fullName; //assignement full name
     };
 
+    //--------------------------------------------------------------------------------------
+    struct JediGetHelpRequest
+    {
+        QString m_source;
+        int m_line;
+        int m_col;
+        QString m_path;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
+    struct JediGetHelp
+    {
+        JediGetHelp() {};
+        JediGetHelp(const QString &description, const QStringList &tooltips) :
+            m_description(description),
+            m_tooltips(tooltips)
+        {}
+
+        QString m_description;
+        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+    };
+
 } //end namespace ito
 
 Q_DECLARE_METATYPE(ito::JediCalltip)
 Q_DECLARE_METATYPE(ito::JediCompletion)
 Q_DECLARE_METATYPE(ito::JediAssignment)
+Q_DECLARE_METATYPE(ito::JediGetHelp)
 
 #endif

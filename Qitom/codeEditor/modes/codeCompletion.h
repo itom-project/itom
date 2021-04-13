@@ -42,6 +42,7 @@
 #include "../../python/pythonJedi.h"
 
 #include "../utils/utils.h"
+#include "../toolTip.h"
 #include "../mode.h"
 #include <qevent.h>
 #include <qobject.h>
@@ -51,6 +52,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qregexp.h>
 #include <qcompleter.h>
+#include <qsharedpointer.h>
 
 class QStandardItemModel;
 
@@ -182,19 +184,26 @@ protected:
     
     void handleCompleterEvents(QKeyEvent *e);
     bool isPopupVisible() const;
-    void resetSyncData();
+    void resetSyncDataAndHidePopup();
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
     void showPopup(int index = 0);
     void showCompletions(const QVector<JediCompletion> &completions);
     QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
+
+    /*
+    \returns (stringlist os signatures, docstring)
+    */
+    QPair<QStringList, QString> parseTooltipDocstring(const QString &docstring) const;
     
     static bool isNavigationKey(QKeyEvent *e);
 
 private:
     QObject *m_pPythonEngine;
     int m_requestCount;
-    QMap<QString, QString> m_tooltips;
+
+    /* maps the completion name to a a list of (string list of signatures and a docstring) */
+    QMap<QString, QList<QPair<QStringList, QString>>> m_tooltips;
     bool m_showTooltips;
     QCompleter *m_pCompleter;
     QString m_completionPrefix;

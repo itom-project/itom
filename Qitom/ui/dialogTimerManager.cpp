@@ -23,167 +23,98 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "dialogTimerManager.h"
 #include "../AppManagement.h"
 #include "../organizer/uiOrganizer.h"
+#include "../models/timerModel.h"
 
 namespace ito
 {
-	DialogTimerManager::DialogTimerManager(QWidget *parent /*= NULL*/) :
-		QDialog(parent)
-	{
-		ui.setupUi(this);
-		connect(ui.btnOk, SIGNAL(clicked()), this, SLOT(close()));
-		updateTimerList();
-		on_listWidget_itemSelectionChanged();
-	}
-	//----------------------------------------------------------------------------------------------------------------------------------
-	DialogTimerManager::~DialogTimerManager()
-	{
 
-	}
-	//----------------------------------------------------------------------------------------------------------------------------------
-	void DialogTimerManager::updateTimerList()
-	{
+//-------------------------------------------------------------------------------------
+DialogTimerManager::DialogTimerManager(QWidget *parent /*= nullptr*/) :
+	QDialog(parent),
+    m_pModel(nullptr)
+{
+	ui.setupUi(this);
+    
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
-		ui.listWidget->clear();
-		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-		int i;
-		for (i = 0; i<list.length(); ++i)
-		{
-			if (!list.at(i).timer->isSingleShot())
-			{
-				if (list.at(i).timer->isActive())
-				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QString("TimerID: %1; Interval: %2 ms").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
-				}
-				else
-				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QString("TimerID: %1; Interval: %2 ms").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
-				}
-				}
-			else
-			{
-				if (list.at(i).timer->isActive())
-				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QString("TimerID: %1; Interval: %2 ms (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
-				}
-				else
-				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QString("TimerID: %1; Interval: %2 ms (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
-				}
+    if (uiOrg)
+    {
+        m_pModel = uiOrg->getTimerModel();
+        ui.listView->setModel(m_pModel);
+        m_pModel->autoUpdateModel(true);
 
-				}
-		}
-
-
-	}
-//----------------------------------------------------------------------------------------------------------------------------------
-	void DialogTimerManager::on_btnStop_clicked()
-	{
-		QList<QListWidgetItem*> selection = ui.listWidget->selectedItems();
-		QListWidgetItem* item;
-		int row;
-		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-		foreach(item, selection)
-		{
-			row = ui.listWidget->row(item);
-			list.at(row).timer->stop();
-			item->setData(Qt::DecorationRole, QIcon((":/application/icons/timerStop.png")));
-			
-		}
-		ui.btnStart->setEnabled(true);
-		ui.btnStop->setEnabled(false);
-
-	}
-//----------------------------------------------------------------------------------------------------------------------------------
-	void DialogTimerManager::on_btnStart_clicked()
-	{
-		QList<QListWidgetItem*> selection = ui.listWidget->selectedItems();
-		QListWidgetItem* item;
-		int row;
-		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-		foreach(item, selection)
-		{
-
-			row = ui.listWidget->row(item);
-			QMetaObject::invokeMethod(list.at(row).timer.data(), "start");
-			item->setData(Qt::DecorationRole, QIcon((":/application/icons/timerRun.png")));
-		}
-		ui.btnStart->setEnabled(false);
-		ui.btnStop->setEnabled(true);
-	}
-//----------------------------------------------------------------------------------------------------------------------------------
-	void DialogTimerManager::on_btnStopAll_clicked()
-	{
-		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-		int i;
-		for (i = 0; i < list.length(); ++i)
-		{
-			list.at(i).timer -> stop();
-			ui.listWidget->item(i)->setData(Qt::DecorationRole, QIcon((":/application/icons/timerStop.png")));
-
-		}
-		ui.btnStart->setEnabled(true);
-		ui.btnStop->setEnabled(false);
-	}
-//----------------------------------------------------------------------------------------------------------------------------------
-	void DialogTimerManager::on_listWidget_itemSelectionChanged()
-	{
-
-		bool sameState(true); //marks if the whole selection has the same state
-		bool first(false);
-		bool state;
-		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-		QList<QListWidgetItem*> selection(ui.listWidget->selectedItems());
-		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
-		QListWidgetItem* item;
-
-		if (selection.size() > 0)
-		{
-			foreach(item, selection)
-			{
-				if (first)
-				{
-					if (list.at(ui.listWidget->row(item)).timer->isActive() != state)
-					{
-						sameState = false;
-					}
-				}
-				first = true;
-				state = list.at(ui.listWidget->row(item)).timer->isActive();
-			}
-
-			if (sameState && first)//first as arguument to avoid crash if no item is selected
-			{
-				if (state)
-				{
-					ui.btnStart->setEnabled(false);
-					ui.btnStop->setEnabled(true);
-				}
-				else
-				{
-					ui.btnStart->setEnabled(true);
-					ui.btnStop->setEnabled(false);
-
-				}
-			}
-			else
-			{
-				ui.btnStart->setEnabled(true);
-				ui.btnStop->setEnabled(true);
-			}
-		}
-		else
-		{
-			ui.btnStart->setEnabled(false);
-			ui.btnStop->setEnabled(false);
-				
-		}
-
-		ui.btnStopAll->setEnabled(list.size() > 0);
-	}
-	
+        QItemSelectionModel *selectionModel = ui.listView->selectionModel();
+        connect(selectionModel, &QItemSelectionModel::currentChanged,
+            this, &DialogTimerManager::listView_currentChanged);
+        connect(m_pModel, &QAbstractItemModel::dataChanged,
+            this, &DialogTimerManager::listView_dataChanged);
+    }
+    
+    ui.btnStart->setEnabled(false);
+    ui.btnStop->setEnabled(false);
+    ui.btnStopAll->setEnabled(false);
 }
+
+//-------------------------------------------------------------------------------------
+DialogTimerManager::~DialogTimerManager()
+{
+    if (m_pModel)
+    {
+        m_pModel->autoUpdateModel(false);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void DialogTimerManager::on_btnStop_clicked()
+{
+    if (m_pModel)
+    {
+        m_pModel->timerStop(ui.listView->currentIndex());
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void DialogTimerManager::on_btnStart_clicked()
+{
+    if (m_pModel)
+    {
+        m_pModel->timerStart(ui.listView->currentIndex());
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void DialogTimerManager::on_btnStopAll_clicked()
+{
+    if (m_pModel)
+    {
+        m_pModel->timerStopAll();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void DialogTimerManager::listView_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
+{
+    if (m_pModel && current.isValid())
+    {
+        bool active = m_pModel->data(current, Qt::UserRole).toBool();
+        ui.btnStart->setEnabled(!active);
+        ui.btnStop->setEnabled(active);
+    }
+    else
+    {
+        ui.btnStart->setEnabled(false);
+        ui.btnStop->setEnabled(false);
+    }
+
+    ui.btnStopAll->setEnabled(m_pModel->rowCount() > 0);
+}
+
+//-------------------------------------------------------------------------------------
+void DialogTimerManager::listView_dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
+{
+    QModelIndex idx = ui.listView->currentIndex();
+    listView_currentChanged(idx, QModelIndex());
+}
+	
+} //end namespace ito
 

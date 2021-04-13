@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -27,6 +27,6 @@
 
 #define COMMON_VERSION_MAJOR 1
 #define COMMON_VERSION_MINOR 8
-#define COMMON_VERSION_PATCH 4
+#define COMMON_VERSION_PATCH 6
 #define COMMON_VERSION_REVISION 0
-#define COMMON_VERSION_STRING  "1.8.4.0"
+#define COMMON_VERSION_STRING  "1.8.6.0"

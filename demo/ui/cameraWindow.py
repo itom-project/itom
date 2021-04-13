@@ -1,21 +1,24 @@
-#open dummy camera
+# open dummy camera
 cam = dataIO("DummyGrabber")
 
-win = ui("cameraWindow.ui", ui.TYPEWINDOW, childOfMainWindow = True)
+win = ui("cameraWindow.ui", ui.TYPEWINDOW, childOfMainWindow=True)
+
 
 def integrationTime_changed():
-    if(win.radioInt1["checked"]):
+    if win.radioInt1["checked"]:
         cam.setParam("integration_time", 0.005)
-    elif(win.radioInt2["checked"]):
+    elif win.radioInt2["checked"]:
         cam.setParam("integration_time", 0.010)
     else:
         cam.setParam("integration_time", 0.060)
 
+
 def autoGrabbing_changed(checked):
-    if(checked):
+    if checked:
         cam.enableAutoGrabbing()
     else:
         cam.disableAutoGrabbing()
+
 
 def snap():
     d = dataObject()
@@ -25,14 +28,16 @@ def snap():
     cam.acquire()
     cam.getVal(d)
     win.plot["source"] = d
-    if(autoGrabbingStatus):
+    if autoGrabbingStatus:
         cam.enableAutoGrabbing()
     cam.stopDevice()
+
 
 def live():
     win.plot["camera"] = cam
 
-#initialize all signal/slots
+
+# initialize all signal/slots
 win.radioInt1.connect("clicked()", integrationTime_changed)
 win.radioInt2.connect("clicked()", integrationTime_changed)
 win.radioInt3.connect("clicked()", integrationTime_changed)
@@ -42,10 +47,8 @@ win.btnLive.connect("clicked()", live)
 
 win.checkAutoGrabbing.connect("clicked(bool)", autoGrabbing_changed)
 
-#initialize gui elements
+# initialize gui elements
 win.checkAutoGrabbing["checked"] = cam.getAutoGrabbing()
 win.radioInt1["checked"] = True
 
 win.show(0)
-
-    

@@ -69,8 +69,6 @@ protected:
     ito::RetVal getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
 
-    QSignalMapper *m_pSignalMapper_browsePluginPicker;
-    QSignalMapper *m_pSignalMapper_browseArrayPicker;
     QVector<ito::Param> m_params;
     QVector<void*> m_internalData;
     QPointer<QWidget> m_canvas;

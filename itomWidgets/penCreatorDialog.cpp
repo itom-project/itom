@@ -24,14 +24,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QPen>
 #include <QMetaEnum>
 #include <QDebug>
-#if QT_VERSION < 0x050500
-//workaround for qt_getEnumMetaObject
-//see: https://forum.qt.io/topic/644/global-qmetaobject/2
-struct StaticQtMetaObject : public QObject
-{
-    static inline const QMetaObject& get() { return staticQtMetaObject; }
-};
-#endif
 
 PenCreatorDialog::PenCreatorDialog(QPen &inputPen,bool colorEditable, QWidget *parent) :
 QDialog(parent),
@@ -44,12 +36,7 @@ pen(inputPen)
 
     //fill the combo boxes of the gui
 
-#if QT_VERSION >= 0x050500
         const QMetaObject *mo = qt_getEnumMetaObject(Qt::DashLine);//pen style
-#else
-        const QMetaObject mo_ = StaticQtMetaObject::get();
-        const QMetaObject *mo = &mo_;
-#endif
         QMetaEnum me = mo->enumerator(mo->indexOfEnumerator("PenStyle"));
 
         int i;
@@ -57,18 +44,17 @@ pen(inputPen)
         {
             ui.styleCombo->addItem(me.key(i), me.value(i)); //add pen styles
         }
-#if QT_VERSION >= 0x050500
+
         mo = qt_getEnumMetaObject(Qt::SquareCap); //cap style
-#endif
         me = mo->enumerator(mo->indexOfEnumerator("PenCapStyle"));
         for (i = 0; i < me.keyCount(); ++i)
         {
             ui.capCombo->addItem(me.key(i), me.value(i)); //add cap styles
         }
-#if QT_VERSION >= 0x050500
+
         mo = qt_getEnumMetaObject(Qt::BevelJoin); //join style
-#endif
         me = mo->enumerator(mo->indexOfEnumerator("PenJoinStyle"));
+
         for (i = 0; i < me.keyCount(); ++i)
         {
             ui.joinCombo->addItem(me.key(i), me.value(i)); //add join styles

@@ -74,7 +74,7 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
     m_pContextMenu(NULL),
     m_firstCurrentItem(NULL),
     m_actClearAll(NULL),
-    m_firstCurrentItemKey(QString::Null())
+    m_firstCurrentItemKey(QString())
 {
     m_pWorkspaceWidget = new WorkspaceWidget(m_globalNotLocal, this);
     m_pWorkspaceWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -344,7 +344,7 @@ void WorkspaceDockWidget::mnuExportItem()
             }
         }
 
-        RetVal retValue = IOHelper::uiExportPyWorkspaceVars(m_globalNotLocal, keyList, compatibleParamBaseTypes, QString::Null(), this);
+        RetVal retValue = IOHelper::uiExportPyWorkspaceVars(m_globalNotLocal, keyList, compatibleParamBaseTypes, QString(), this);
         if (retValue.containsError())
         {
             const char *errorMsg = retValue.errorMessage();
@@ -364,7 +364,7 @@ void WorkspaceDockWidget::mnuExportItem()
 */
 void WorkspaceDockWidget::mnuImportItem()
 {
-    RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll, QString::Null(), this);
+    RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll, QString(), this);
     if (retValue.containsError())
     {
         const char *errorMsg = retValue.errorMessage();
@@ -388,7 +388,7 @@ void WorkspaceDockWidget::mnuRenameItem()
     }
     else
     {
-        m_firstCurrentItemKey = QString::Null();
+        m_firstCurrentItemKey = QString();
     }
 }
 
@@ -771,7 +771,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 
             QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItem->data(0, WorkspaceWidget::RoleFullName).toString()), Q_ARG(QString, newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-            m_firstCurrentItemKey = QString::Null();
+            m_firstCurrentItemKey = QString();
 
             if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
             {
@@ -809,13 +809,8 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
         //check files
         foreach (const QUrl &url, urls)
         {
-#if QT_VERSION >= 0x040800
-            if (url.isLocalFile() == false) //this method has been introduced in Qt 4.8
+            if (url.isLocalFile() == false)
             {
-#else
-            if (url.scheme().compare(QLatin1String("file"), Qt::CaseInsensitive) != 0)
-            {
-#endif
                 return;
             }
 

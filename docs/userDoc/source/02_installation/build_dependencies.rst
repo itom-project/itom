@@ -15,20 +15,21 @@ Software packages
 
 **Required Software-Packages**
 
-- IDE, Compiler (e.g. Visual Studio 2015 Professional, QtCreator...)
+- IDE (e.g. Visual Studio 2015 Professional, QtCreator...)
+- Compiler: The C++ compiler must support at least the **C++11** standard.
 - CMake (recommended 3.1 or higher)
-- Qt-framework (>= 5.6 recommended)
+- Qt5-framework (>= 5.5 required, >= 5.6 recommended)
 - OpenCV 3.2 or higher (3.x recommended)
-- Python 3.2 or higher
+- Python 3.5 or higher, 3.6 or higher recommended
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
 - Python-Package: NumPy
 
 **Optional Software-Packages**
 
-- PointCloudLibrary 1.6 or higher (>= 1.7 recommended, optional)
+- PointCloudLibrary 1.6 or higher (>= 1.9 recommended, optional)
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
-- Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
+- Python-Packages: SciPy, Sphinx + numpydoc + breathe (user documentation generation), scikit-image, matplotlib...
 
 Detailed information
 ----------------------
@@ -45,9 +46,14 @@ It is also possible to use the free express edition of Visual Studio.
 
 .. note::
     
-    Please consider that you need to install the Service Pack 1 for Visual Studio 2015+ Professional 
-    when compiling a 64bit version of |itom|. It is even recommended to install the service
+    Please consider that you need to install the Service Pack 1 if you want to
+    use Visual Studio 2015 Professional to compile a 64bit version of |itom|.
+    It is even recommended to install the service
     pack for a 32bit compilation.
+
+.. note::
+    
+    The C++ compiler must support at least the **C++11** standard.
     
 
 **CMake** (mandatory)
@@ -62,7 +68,7 @@ files for your compiler, IDE and platform.
 **Qt-framework** (mandatory)
 ''''''''''''''''''''''''''''''''
 
-Download the **Qt-framework** ( >= 5.6 recommended) 
+Download the **Qt5-framework** (>= 5.5 required, >= 5.6 recommended) 
 from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler, 
 you can directly install it. Otherwise, you need to configure and build **Qt** 
 on your computer - see box below. Either download the ready-to-use binaries from 
@@ -192,8 +198,8 @@ Changes to the environment variable only become active after a re-login to windo
 :ref:`build_dependencies_opencv`
 
 
-**PointCloudLibrary** (optional, 1.6 or higher)
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+**PointCloudLibrary** (optional, >= 1.6, 1.9 or higher recommended)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 The PointCloud-Library is a sister-project of OpenCV and is able to work with 
 large point clouds. You can compile |itom| with support for the point cloud library. 
@@ -225,11 +231,11 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 :ref:`build_dependencies_vtk`
 
-**Python** (mandatory, 3.2 or higher, 3.4 or higher recommended)
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+**Python** (mandatory, 3.5 or higher, 3.6 or higher is recommended)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in 
-version 3.2 or higher. You can simultaneously run different versions of python.
+version 3.5 or higher. You can simultaneously run different versions of python.
 
 **NumPy** (mandatory)
 ''''''''''''''''''''''''''
@@ -271,17 +277,39 @@ from the internet and install it::
 For upgrading **sphinx**, type::
     
     pip install sphinx --upgrade
+
+Next to **Sphinx** also install the **numpydoc** package if you want to build
+the user documentation.
+
+**jedi** (optional)
+'''''''''''''''''''''
+
+For auto completion, calltips, goto definition features etc. install the
+Python package **jedi** using pip::
     
-**frosted** (optional)
+    pip install jedi
+
+**flake8** (optional)
+''''''''''''''''''''''
+
+**flake8** provides extended code checker functionalities, that is
+integrated into the GUI of itom. **flake8** combines the code checker
+functionalities of the packages **pyflakes**, **pycodestyle** and **mccabe**.
+It can further be extended by other packages / plugins. Install **flake8**
+via pip::
+    
+    pip install flake8
+
+**pyflakes** (optional)
 '''''''''''''''''''''''''''
 
-The Python package **frosted** can be installed in order to enable a code syntax 
-checker in |itom|. If installed, your scripts are automatically checked for syntax 
-errors that are marked
+Instead of **flake8**, it is also possible to only install **pyflakes**
+for a reduced set of code checker functionality. If installed, your scripts 
+are automatically checked for syntax errors that are marked
 as bug symbols in each line. The detailed messages are displayed as tool tip texts 
 of the bug symbol. Use pip to install this package::
     
-    pip install frosted
+    pip install pyflakes
 
 
 **Other python packages** (optional)

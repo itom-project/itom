@@ -35,7 +35,7 @@ Adding elements to the GUI
 You can add buttons and menus to the itom GUI. 
     
 .. automodule:: itom
-    :members: addButton, removeButton, addMenu, removeMenu, dumpButtonsAndMenus
+    :members: MENU, BUTTON, SEPARATOR, addButton, removeButton, addMenu, removeMenu, dumpButtonsAndMenus
 
 For more information about using these methods, see :ref:`toolbar-start`.
 
@@ -67,36 +67,3 @@ Some further commands.
 
 .. automodule:: itom
     :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList, showHelpViewer, getQtToolPath, registerResource, unregisterResource, clearAll
-      
-
-.. Defines
-.. automodule:: itom
-..    :members: DATA, FILE
-    
-
-Another possibility to add methods to this page is to use the auto-summary function.
-Since, the default-role property in conf.py  is set to 'autolink' and the auto-summary module is included,
-small pages will be automatically created for each method in the following list and a hyperlink to this site is created:
-
-.. currentmodule:: itom
-
-.. With method signature:
-
-.. .. autosummary::
-    :toctree: generated
-    
-    generated/itom.widgetHelp.rst
-    generated/itom.pluginHelp.rst
-    generated/itom.filterHelp.rst
-
-.. Without method signature:
-    
-.. .. autosummary::
-    :toctree: generated
-    :nosignatures:
-    
-    generated/itom.liveImage.rst
-    generated/itom.plot.rst
-    generated/itom.plot1.rst
-    generated/itom.plot2.rst
-    generated/itom.plot25.rst

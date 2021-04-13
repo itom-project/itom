@@ -87,7 +87,6 @@ const QTextCharFormat PythonSyntaxHighlighter::getTextCharFormat(const QString &
 }
 
 
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
 QList<QPair<QRegularExpressionMatch, QStringList> >::const_iterator
 hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches, QString &captureGroup)
 {
@@ -116,7 +115,6 @@ hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches,
 
     return it_dest;
 }
-#endif
 
 
 void PythonSyntaxHighlighter::default_highlight_block(const QString &text, bool outputNotError)
@@ -185,7 +183,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
     int end;
     QString value;
 
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
     QList<QPair<QRegularExpressionMatch, QStringList> > matches;
     QList<QPair<QRegularExpressionMatch, QStringList> >::const_iterator match_iter;
 
@@ -214,36 +211,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
             start = std::max(0, start + offset);
             end = std::max(0, end + offset);
             length = match_iter->first.capturedLength(key);
-
-#else
-    QList<NamedRegExp>::const_iterator it = PythonSyntaxHighlighter::regExpProg.constBegin();
-    pos = 0;
-    bool found = true;
-    int pos_;
-
-    while (found && (pos < text2.size()))
-    {
-        found = false;
-        pos_ = pos;
-        while (it != PythonSyntaxHighlighter::regExpProg.constEnd())
-        {
-            key = it->groupNames.first();
-            start = it->regExp.indexIn(text2, pos_);
-            if (start == -1)
-            {
-                ++it;
-                continue;
-            }
-
-            found = true;
-            length = it->regExp.matchedLength();
-            value = text2.mid(start, length);
-            end = start + length;
-            pos = std::max(pos, end);
-            start = std::max(0, start + offset);
-            end = std::max(0, end + offset);
-            ++it;
-#endif
 
             //qDebug() << key << start << end << value.toHtmlEscaped() << QString::number(value.right(1)[0].cell(),16) << QString::number(value.right(1)[0].row(),16);
 
@@ -377,7 +344,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     }
                 }
             }
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
         }
 
         for (int i = 0; i < regExpProg.size(); ++i)
@@ -385,10 +351,6 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
             matches[i].first = regExpProg[i].regExp.match(text2, pos);
         }
     }
-#else
-        }
-    }
-#endif
 
     Utils::TextBlockHelper::setState(block, state);
 }
@@ -413,12 +375,8 @@ QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(StyleItem::StyleType
 //----------------------------------------------------------------
 QString any(const QString &name, const QStringList &alternates)
 {
-#if QT_VERSION >= MIN_QT_REGULAREXPRESSION_VERSION
     //Return a named group pattern matching list of alternates.
     return QString("(?<%1>%2)").arg(name).arg(alternates.join("|"));
-#else
-    return QString("(%1)").arg(alternates.join("|"));
-#endif
 }
 
 
@@ -509,7 +467,7 @@ QString any(const QString &name, const QStringList &alternates)
     //some fixes: 1. numbers with postfix l or L does not exist any more in python 3;
     // 2. the order of the following number entries is relevant
     // 3. if dots are included in the regex, no \\b can be used, since the dot is also a word boundary
-#if QT_VERSION > MIN_QT_REGULAREXPRESSION_VERSION
+
     //using lookbehind
     // trailing +/- is not part of the number
     QString number = any("number", QStringList() <<
@@ -521,21 +479,6 @@ QString any(const QString &name, const QStringList &alternates)
             "\\b0(?:_?0)*")                 // decimal integer (zero)
         + "\\b";
                 
-    //hint: maybe, the first 0-9 range in the lookbehind of the next-to-last expression is not 'necessary' for  Qt < 5.9. 
-    //test it by typing a2000 in python. The correct version should identify the entire string as string, not number (even not the zeros as number)
-#else
-    QString number = any("number", QStringList() << \
-            "\\b0[xX][0-9A-Fa-f_]+\\b" <<
-            "\\b0[oO][0-7_]+\\b" <<
-            "\\b0[bB][01_]+\\b" <<
-            "[\\+\\-]0[xX][0-9A-Fa-f_]+\\b" <<
-            "[\\+\\-]0[oO][0-7_]+\\b" <<
-            "[\\+\\-]0[bB][01_]+\\b" <<
-            "[\\+\\-]?\\.[0-9]+(?:[eE][+-]?[0-9]+)?[jJ]?" <<
-            "[\\+\\-]?[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?[jJ]?" <<
-            "[0-9]+[jJ]?\\b" <<
-            "[\\+\\-][0-9]+[jJ]?\\b"     ); //todo was: \\b[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?[jJ]?\\b
-#endif
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
     QString sqstring =     QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";

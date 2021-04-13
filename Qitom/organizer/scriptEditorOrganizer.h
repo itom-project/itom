@@ -24,11 +24,12 @@
 #define SCRIPTEDITORORGANIZER_H
 
 #include "../widgets/scriptDockWidget.h"
+#include "../widgets/outlineSelectorWidget.h"
 #include "../common/sharedStructuresQt.h"
 #include "../models/bookmarkModel.h"
 
 #include <qsignalmapper.h>
-
+#include <qlist.h>
 
 namespace ito
 {
@@ -56,9 +57,16 @@ public:
     inline const ScriptEditorActions& getScriptEditorActions() const { return m_commonScriptEditorActions; }
 
     QStringList openedScripts() const;
-    bool m_dockedNewWidget;
+    
+    inline BookmarkModel* getBookmarkModel() const 
+    { 
+        return m_pBookmarkModel; 
+    }
 
-    inline BookmarkModel* getBookmarkModel() const { return m_pBookmarkModel; }
+    ScriptDockWidget* activateOpenedScriptByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
+
+    //!< returns the outlines of all opened scripts
+    QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(const ScriptDockWidget *currentScriptDockWidget, int &currentIndex) const;
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
@@ -67,23 +75,22 @@ protected:
     void updateGoBackNavigationActions();
 
 private:
-    ScriptDockWidget* getFirstDockedElement();
-    ScriptDockWidget* getFirstUndockedElement();
-    ScriptDockWidget* getActiveDockWidget();
+    ScriptDockWidget* getFirstDockedElement() const;
+    ScriptDockWidget* getFirstUndockedElement() const;
+    ScriptDockWidget* getActiveDockWidget() const;
 
     BookmarkModel *m_pBookmarkModel;
 
     QList<ScriptDockWidget*> m_scriptDockElements;    //! list with references to all ScriptDockWidgets (docked or windows-style)
     QSet<QString> m_usedObjectNames;               //! currently used objectNames for script windows
     bool m_dockAvailable;                             //! true if docking mode is available, else: false
-
-    QMutex m_scriptStackMutex;                        //! mutex locking any changes to m_scriptDockElements
+    bool m_dockedNewWidget;
+    mutable QMutex m_scriptStackMutex; //! mutex locking any changes to m_scriptDockElements. This mutex can also be changed in const methods
 
     QStringList m_recentlyUsedFiles;
 
     ScriptEditorActions m_commonScriptEditorActions;
     QMenu *m_pGoBackNavigationMenu; //! menu for the backward items
-    QSignalMapper *m_pGoBackNavigationMapper;
     QList<GoBackNavigationItem> m_goBackNavigationHistory; //! history of go back navigation items. Newer items are at the end of the list. The list is limited to a number of maximum items.
     int m_goBackNavigationIndex;                           //! current position of script editors in goBackNavigationHistory. If equal to m_goBackNavigationHistory.size(), the current position is at the end.
     static const int MaxGoBackNavigationEntries;               //! maximum number of entries in the go back navigation history.

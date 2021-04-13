@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetPropEditorDocstringGenerator</class>
+ <widget class="QWidget" name="WidgetPropEditorDocstringGenerator">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>399</width>
+    <height>111</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Docstring Style</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="comboDocstringStyle">
+     <item>
+      <property name="text">
+       <string>Google Style</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Numpy Style</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Docstring Quotes</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="comboDocstringQuote">
+     <item>
+      <property name="text">
+       <string>&quot;&quot;&quot;...&quot;&quot;&quot;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>'''...'''</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

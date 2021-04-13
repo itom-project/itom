@@ -42,6 +42,7 @@
 
 #if WIN32
 #include <Windows.h>
+#include <VersionHelpers.h>
 #endif
 
 //#include "benchmarks.h"
@@ -133,12 +134,9 @@ int main(int argc, char *argv[])
 {
     int ret = 0;
 #if linux
-    //qt>4.8 should always be true by now...
-    //#if (((QT_VERSION & 0xFF0000) >= 0x40000) && ((QT_VERSION & 0X00FF0) >= 0x800))
-        // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
-        QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
-        bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
-    //#endif
+    // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
+    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+    bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
 #endif
     //startBenchmarks();
 
@@ -251,12 +249,12 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     newpath += "path=";
 
-#if WINVER > 0x0502
-    if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
-    {
-        SetDllDirectoryA(libDir.toLatin1().data());
-    }
-#endif
+    #if WINVER > 0x0502
+        if (IsWindowsVistaOrGreater())
+        {
+            SetDllDirectoryA(libDir.toLatin1().data());
+        }
+    #endif
 #else
 #endif
     newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable

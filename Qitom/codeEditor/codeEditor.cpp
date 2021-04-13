@@ -70,17 +70,14 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_fontFamily("Verdana"),
     m_selectLineOnCopyEmpty(true),
     m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "),
-    m_dirty(false),
-    m_cleaning(false),
     m_pPanels(NULL),
     m_pDecorations(NULL),
     m_pModes(NULL),
-    m_saveOnFocusOut(false),
     m_lastMousePos(QPoint(0,0)),
     m_prevTooltipBlockNbr(-1),
     m_pTooltipsRunner(NULL),
     m_edgeMode(EdgeNone),
-    m_edgeColumn(79),
+    m_edgeColumn(88),
     m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true),
     m_indentationGuidesColor(Qt::darkGray),
@@ -93,7 +90,6 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
 
     // connect slots
-    connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(update()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(update()));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(update()));
@@ -121,9 +117,9 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
-    foreach (TextBlockUserData *tbud, m_textBlockUserDataList)
+    foreach(auto item, m_textBlockUserDataList)
     {
-        tbud->removeCodeEditorRef();
+        item->removeCodeEditorRef();
     }
 
     delete m_pPanels;
@@ -135,9 +131,12 @@ CodeEditor::~CodeEditor()
     delete m_pModes;
     m_pModes = NULL;
 
-    m_pTooltipsRunner->cancelRequests();
-    delete m_pTooltipsRunner;
-    m_pTooltipsRunner = NULL;
+    if (m_pTooltipsRunner)
+    {
+        m_pTooltipsRunner->cancelRequests();
+        delete m_pTooltipsRunner;
+        m_pTooltipsRunner = NULL;
+    }
 
     delete m_pContextMenu;
     m_pContextMenu = NULL;
@@ -492,21 +491,6 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
 }
 
 //-----------------------------------------------------------
-/*
-Automatically saves editor content on focus out.
-Default is False.
-*/
-bool CodeEditor::saveOnFocusOut() const
-{
-    return m_saveOnFocusOut;
-}
-
-void CodeEditor::setSaveOnFocusOut(bool value)
-{
-    m_saveOnFocusOut = value;
-}
-
-//-----------------------------------------------------------
 QList<VisibleBlock> CodeEditor::visibleBlocks() const
 {
     return m_visibleBlocks;
@@ -516,18 +500,6 @@ QList<VisibleBlock> CodeEditor::visibleBlocks() const
 void CodeEditor::emitDirtyChanged(bool state)
 {
     emit dirtyChanged(state);
-}
-
-//-----------------------------------------------------------
-void CodeEditor::onTextChanged()
-{
-    // Adjust dirty flag depending on editor's content
-    if (!m_cleaning)
-    {
-        int line, column;
-        cursorPosition(line, column);
-        m_modifiedLines << line;
-    }
 }
 
 //-----------------------------------------------------------
@@ -615,6 +587,7 @@ void CodeEditor::setWhitespacesFlags(bool show)
         options.setFlags(
             options.flags() & ~QTextOption::ShowTabsAndSpaces);
     }
+
     doc->setDefaultTextOption(options);
 
     updateTabStopAndIndentationWidth();
@@ -773,6 +746,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
             //deny soft line break. not desired in editor.
             e->accept(); //do not further process this key
         }
+        else if ((e->modifiers() & Qt::AltModifier) 
+            && (e->modifiers() & Qt::ControlModifier) 
+            && (e->key() == Qt::Key_D))
+        {
+            // ignore this key, even if the generate docstring action is currently disabled.
+            e->accept();
+        }
 
         if (!e->isAccepted())
         {
@@ -844,11 +824,6 @@ void CodeEditor::focusInEvent(QFocusEvent *e)
 */
 void CodeEditor::focusOutEvent(QFocusEvent *e)
 {
-    if (m_saveOnFocusOut && m_dirty ) //todo:  && this->file.path)
-    {
-        //TODO
-        //file.save();
-    }
     QPlainTextEdit::focusOutEvent(e);
 }
 
@@ -967,8 +942,13 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
                 args << mapToGlobal(position);
                 args << itPtr->tooltip().left(1024);
                 args << QVariant::fromValue(*it);
-                DELAY_JOB_RUNNER(m_pTooltipsRunner, CodeEditor, void(CodeEditor::*)(QList<QVariant>))->requestJob( \
-                    this, &CodeEditor::showTooltipDelayJobRunner, args);
+
+                if (m_pTooltipsRunner)
+                {
+                    DELAY_JOB_RUNNER(m_pTooltipsRunner, CodeEditor, void(CodeEditor::*)(QList<QVariant>))->requestJob(\
+                        this, &CodeEditor::showTooltipDelayJobRunner, args);
+                }
+
                 m_prevTooltipBlockNbr = cursor.blockNumber();
             }
             blockFound = true;
@@ -982,7 +962,11 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
     {
         QToolTip::hideText();
         m_prevTooltipBlockNbr = -1;
-        m_pTooltipsRunner->cancelRequests();
+        
+        if (m_pTooltipsRunner)
+        {
+            m_pTooltipsRunner->cancelRequests();
+        }
     }
 
     emit mouseMoved(e);
@@ -1392,7 +1376,7 @@ QString CodeEditor::currentLineText() const
 
 //------------------------------------------------------------
 /*
-Extends setPlainText to force the user to setup an encoding and amime type.
+Extends setPlainText to force the user to setup an encoding and a mime type.
 
 Emits the new_text_set signal.
 
@@ -1403,9 +1387,6 @@ Emits the new_text_set signal.
 */
 void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= ""*/, const QString &encoding /*= ""*/)
 {
-    //TODO: mimeType, encoding
-    m_modifiedLines.clear();
-
     QPlainTextEdit::setPlainText(text);
     emit newTextSet();
     setRedoAvailable(false);
@@ -1664,24 +1645,27 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
     }
 
     int pos = block.text().size() - 1;
-    QTextLayout *layout = block.layout();
+    const QTextLayout *layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
-        QList<QTextLayout::FormatRange> additional_formats = layout->additionalFormats();
-        SyntaxHighlighterBase *sh = syntaxHighlighter();
+        auto additional_formats = layout->formats();
+        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
+
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
+                    is_user_obj = (r.format.objectType() == StyleItem::GroupCommentOrString);
+
                     foreach (StyleItem::StyleType fmtType, formats_)
                     {
-                        is_user_obj = (r.format.objectType() == StyleItem::GroupCommentOrString);
-                        if ((ref_formats->format(fmtType) == r.format) && is_user_obj)
+                        if (is_user_obj && (ref_formats->format(fmtType) == r.format))
                         {
                             return true;
                         }
@@ -1690,6 +1674,7 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
             }
         }
     }
+
     return false;
 }
 
@@ -1717,22 +1702,25 @@ Checks if a block/cursor is a number (int, float, complex...).
 bool CodeEditor::isNumber(const QTextBlock &block) const
 {
     int pos = block.text().size() - 1;
-    QTextLayout *layout = block.layout();
+    const QTextLayout *layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
-        QList<QTextLayout::FormatRange> additional_formats = layout->additionalFormats();
-        SyntaxHighlighterBase *sh = syntaxHighlighter();
+        auto additional_formats = layout->formats();
+        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
+
             foreach (const QTextLayout::FormatRange &r, additional_formats)
             {
+                is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
+
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
-                    is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
-                    if ((ref_formats->format(StyleItem::KeyNumber) == r.format) && is_user_obj)
+                    if (is_user_obj && (ref_formats->format(StyleItem::KeyNumber) == r.format))
                     {
                         return true;
                     }

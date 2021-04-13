@@ -44,11 +44,11 @@ QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > ito::PythonUi::me
 
 namespace ito
 {
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 //
 //  pyUiItem
 //
-// -------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_dealloc(PyUiItem* self)
 {
     Py_XDECREF(self->baseItem);
@@ -65,7 +65,7 @@ void PythonUi::PyUiItem_dealloc(PyUiItem* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PyUiItem* self = (PyUiItem *)type->tp_alloc(type, 0);
@@ -83,33 +83,58 @@ PyObject* PythonUi::PyUiItem_new(PyTypeObject *type, PyObject * /*args*/, PyObje
     return (PyObject *)self;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInit_doc,"uiItem(...) -> base class representing any widget of a graphical user interface \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemInit_doc,"uiItem(objectID, objName, widgetClassName, parentObj = None) -> uiItem \\\n\
+uiItem(parentObj, objName) -> uiItem \n\
 \n\
-This class represents any widget (graphical, interactive element like a button or checkbox) on a graphical user interface. \n\
-An instance of this class provides many functionalities given by the underlying Qt system. For instance, it is posible to \n\
-call a public slot of the corresponding widget, connect signals to specific python methods or functions or change properties \n\
-of the widget represeted by the instance. \n\
+Base class that represents any widget or layout of an user interface. \n\
 \n\
-The overall dialog or window as main element of a graphical user interface itself are instances of the class *ui*. However, \n\
-they are derived from *uiItem*, since dialogs or windows internally are widgets as well. \n\
+This class represents any widget (graphical, interactive element like a button or \n\
+checkbox) on a graphical user interface. An object of this class provides many \n\
+functionalities given by the underlying Qt system. For instance, it is posible to \n\
+call a public slot of the corresponding widget, connect signals to specific python \n\
+methods or functions or change properties of the widget represeted by this object. \n\
 \n\
-Widgets placed at a user interface using the Qt Designer can be referenced by an *uiItem* instance by their specific objectName, \n\
-assigned in the Qt Designer as well. As an example, a simple dialog with one button is created and the text of the button (objectName: btn) \n\
-is set to OK: :: \n\
+The overall dialog or window as main element of a graphical user interface itself are \n\
+instances of the class :class:`ui`. However, they are derived from :class:`uiItem`, \n\
+since dialogs or windows internally are widgets as well. \n\
+\n\
+Widgets, placed at a user interface using the Qt Designer, can be referenced by an \n\
+:class:`uiItem` object by their specific ``objectName``, assigned in the Qt Designer \n\
+as well. As an example, a simple dialog with one button is created and the text of \n\
+the button (objectName: btn) is set to OK: :: \n\
     \n\
     dialog = ui('filename.ui', type=ui.TYPEDIALOG) \n\
     button = dialog.btn #here the reference to the button is obtained \n\
     button[\"text\"] = \"OK\" #set the property text of the button \n\
     \n\
-Information about available properties, signals and slots can be obtained using the method **info()** of *uiItem*. \n\
+Information about available properties, signals and slots can be obtained using the \n\
+method :meth:`uiItem.info`. For more information about creating customized user \n\
+interfaces, reference widgets and layouts etc, see the section :ref:`qtdesigner`. \n\
+\n\
+Parameters \n\
+---------- \n\
+objectID : int \n\
+    is the itom internal identifier number for the widget or layout to be wrapped. \n\
+objName : str \n\
+    is the ``objectName`` property of the wrapped widget or layout. \n\
+widgetClassName : str \n\
+    is the Qt class name of the wrapped widget or layout (see :meth:`getClassName`). \n\
+parentObj : uiItem \n\
+    is the parent :class:`uiItem` of this wrapped widget or layout. \n\
+\n\
+Returns \n\
+------- \n\
+uiItem \n\
+    is the new :class:`uiItem` object that wraps the indicated widget or layout. \n\
 \n\
 Notes \n\
 ------ \n\
-It is not intended to directly instantiate this class. Either create a user interface using the class *ui* or obtain \n\
-a reference to an existing widget (this is then an instance of *uiItem*) using the dot-operator of a \n\
-parent widget or the entire user interface.");
-int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
+It is not intended to directly instantiate this class. Either create a user interface \n\
+using the class :class:`ui` or obtain a reference to an existing widget (this is then \n\
+an instance of :class:`uiItem`) using the dot-operator of a parent widget or the entire \n\
+user interface.");
+int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject *kwds)
 {
     ito::RetVal retValue = retOk;
     QSharedPointer<unsigned int> objectID(new unsigned int());
@@ -120,20 +145,23 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     PyObject *parentObj = NULL;
     PythonUi::PyUiItem *parentItem = NULL;
 
-    if(PyArg_ParseTuple(args,"Iss|O!",&(*objectID),&objName,&widgetClassName,&PythonUi::PyUiItemType,&parentObj))
+    const char *kwlist1[] = { "objectID", "objName", "widgetClassName", "parentObj", NULL };
+    const char *kwlist2[] = { "parentObj", "objName" , NULL };
+
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "Iss|O!", const_cast<char**>(kwlist1), &(*objectID), &objName, &widgetClassName, &PythonUi::PyUiItemType, &parentObj))
     {
         self->baseItem = parentObj;
         Py_XINCREF(self->baseItem); //if parent available increment its reference
         DELETE_AND_SET_NULL_ARRAY(self->objName);
-        self->objName = new char[strlen(objName)+1];
-        strcpy_s(self->objName, strlen(objName)+1, objName);
+        self->objName = new char[strlen(objName) + 1];
+        strcpy_s(self->objName, strlen(objName) + 1, objName);
         DELETE_AND_SET_NULL_ARRAY(self->widgetClassName);
         self->widgetClassName = new char[strlen(widgetClassName)+1];
         strcpy_s(self->widgetClassName, strlen(widgetClassName)+1, widgetClassName);
         self->objectID = *objectID;
         *widgetClassNameBA = widgetClassName;
     }
-    else if(PyErr_Clear(), PyArg_ParseTuple(args, "O!s", &PythonUi::PyUiItemType, &parentObj, &objName))
+    else if(PyErr_Clear(), PyArg_ParseTupleAndKeywords(args, kwds, "O!s", const_cast<char**>(kwlist2), &PythonUi::PyUiItemType, &parentObj, &objName))
     {
         UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
@@ -145,6 +173,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         parentItem = (PythonUi::PyUiItem*)parentObj;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
         QMetaObject::invokeMethod(
             uiOrga,
             "getChildObject3",
@@ -152,7 +181,8 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
             Q_ARG(QString, QString(objName)),
             Q_ARG(QSharedPointer<uint>, objectID),
             Q_ARG(QSharedPointer<QByteArray>, widgetClassNameBA),
-            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+        ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         locker.getSemaphore()->wait(-1);
         retValue += locker.getSemaphore()->returnValue;
@@ -200,7 +230,7 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_repr(PyUiItem *self)
 {
     if(self->objName && self->widgetClassName)
@@ -213,18 +243,21 @@ PyObject* PythonUi::PyUiItem_repr(PyUiItem *self)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetClassName_doc, "getClassName() -> returns the Qt class name of this uiItem (widget or layout).  \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetClassName_doc, "getClassName() -> str \n\
 \n\
-Every ui item wraps a widget or layout of the user interface. This method returns \n\
-the class name of this item, as it is given by the Qt framework. \n\
+Returns the Qt class name of this uiItem (widget or layout).  \n\
+\n\
+Every :class:`uiItem` wraps a widget or layout of the user interface. \n\
+This method returns the class name of this item, as it is given by the \n\
+Qt framework. \n\
 \n\
 New in itom 4.1. \n\
 \n\
 Returns \n\
 ----------- \n\
-className : {str} \n\
-    The class name of the uiItem.");
+className : str \n\
+    The class name of this :class:`uiItem`.");
 PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
 {
     if (self->widgetClassName)
@@ -243,11 +276,13 @@ PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
 int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return 0;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -273,7 +308,8 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
         Q_ARG(QSharedPointer<int>, enumeratorCount),
         Q_ARG(QSharedPointer<int>, methodCount),
         Q_ARG(QSharedPointer<int>, propertiesCount),
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -296,25 +332,29 @@ int PythonUi::PyUiItem_mappingLength(PyUiItem* self)
     return *propertiesCount; //nr of properties in the corresponding QMetaObject
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
 {
     QStringList propNames;
     bool ok = false;
-    QString propName = PythonQtConversion::PyObjGetString(key,false,ok);
+    QString propName = PythonQtConversion::PyObjGetString(key, false, ok);
+
     if(!ok)
     {
         PyErr_SetString(PyExc_RuntimeError, "property name string could not be parsed.");
         return NULL;
     }
+
     propNames << propName;
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return NULL;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -325,6 +365,7 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     ito::RetVal retValue = retOk;
 
     QSharedPointer<QVariantMap> retPropMap(new QVariantMap());
+
     for(int i = 0 ; i < propNames.count() ; i++)
     {
         (*retPropMap)[propNames.at(i)] = QVariant();
@@ -335,7 +376,8 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
         "readProperties", 
         Q_ARG(uint, self->objectID), 
         Q_ARG(QSharedPointer<QVariantMap>, retPropMap),
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -344,12 +386,13 @@ PyObject* PythonUi::PyUiItem_mappingGetElem(PyUiItem* self, PyObject* key)
     }
 
     retValue += locker.getSemaphore()->returnValue;
+
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
     return PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames[0]));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* value)
 {
     QString keyString;
@@ -366,6 +409,7 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     }
 
     valueV = PythonQtConversion::PyObjToQVariant(value);
+
     if(valueV.isValid())
     {
         propMap[keyString] = valueV;
@@ -377,11 +421,13 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     } 
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
         return -1;
     }
+
     if(self->objectID <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
@@ -396,7 +442,8 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
         "writeProperties", 
         Q_ARG(uint, self->objectID), 
         Q_ARG(QVariantMap, propMap), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -405,42 +452,47 @@ int PythonUi::PyUiItem_mappingSetElem(PyUiItem* self, PyObject* key, PyObject* v
     }
 
     retValue += locker.getSemaphore()->returnValue;
+
     if(!PythonCommon::transformRetValToPyException(retValue)) return -1;
 
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemCall_doc,"call(slotOrPublicMethod, *args) -> calls any public slot of this widget or any accessible public method.  \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemCall_doc,"call(publicSlotName, *args) \n\
 \n\
-This method invokes (calls) a method of the underlying widget that is marked as public slot. Besides slots there are some public methods of specific \n\
-widget classes that are wrapped by itom and therefore are callable by this method, too. \n\
+Calls any public slot or other accessible public method of the widget or layout, referenced by this uiItem. \n\
 \n\
-If only method is available, all arguments are tried to be cast to the requested types and the slot is called on conversion success. If the method has \n\
-multiple overloaded possibilities in the underlying C++ classes, at first, it is intended to find the variant where all arguments can be strictly casted \n\
-from Python types to the necessary C-types. If this fails, the next variant with a non-strict conversion is chosen. \n\
+This method calls a public or a 'wrapped' slot (see section :ref:`qtdesigner-wrappedslots`) \n\
+of the widget or layout, that is referenced by this :class:`uiItem`. \n\
+\n\
+If only one slot with the given ``publicSlotName`` is available, all arguments ``*args`` \n\
+are tried to be cast to the requested types and the slot is called then. If the \n\
+designated slot has multiple possible overloads, at first, it is intended to find the \n\
+overload where all arguments can be strictly cast from Python types to the indicated \n\
+C-types. If this fails, the next overload with a successful, non-strict conversion is \n\
+chosen. \n\
+\n\
+Information about all possible slots of this :class:`uiItem` can be obtained by the \n\
+official Qt help or the method :meth:`uiItem.info`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-slotOrPublicMethod : {str} \n\
-    name of the slot or method \n\
-*args : {various types}, optional\n\
-    Variable length argument list, that is passed to the called slot or method. The type of each value must be \n\
-    convertible to the requested C++ based argument type of the slot.\n\
-\n\
-Notes \n\
------ \n\
-If you want to know all possible slots of a specific widget, see the Qt help or call the member *info()* of the widget. \n\
+publicSlotName : str \n\
+    name of the public slot or a specially wrapped slot of the widget or layout. \n\
+*args : Any, optional\n\
+    Variable length argument list, that is passed to the called slot. The type of each \n\
+    value must be convertible to the requested C++ based argument type of the slot \n\
+    (see section :ref:`qtdesigner-datatypes`).\n\
 \n\
 See Also \n\
 --------- \n\
-info()");
+info");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
     int argsSize = PyTuple_Size(args);
     int nrOfParams = argsSize - 1;
     bool ok;
-    FctCallParamContainer *paramContainer;
 
     if(argsSize < 1)
     {
@@ -470,7 +522,12 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    if(!loadMethodDescriptionList(self)) return NULL;
+    if (!loadMethodDescriptionList(self))
+    {
+        return NULL;
+    }
+
+    QSharedPointer<FctCallParamContainer> paramContainer;
 
     //scan for method
     //step 1: check if method exists
@@ -491,24 +548,33 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     }
 
     //create function container
-    paramContainer = new FctCallParamContainer(nrOfParams);
+    paramContainer = QSharedPointer<FctCallParamContainer>(new FctCallParamContainer(nrOfParams));
     void *ptr = NULL;
     int typeNr = 0;
     bool found = false;
     QByteArray possibleSignatures = "";
     const MethodDescription *foundMethod = NULL;
 
-    if (possibleMethods.count() > 1) //if more than one possible method is availabe, at first, try to strictly cast all parameters...
+    // if more than one possible method is availabe,
+    // at first, try to strictly cast all parameters...
+    if (possibleMethods.count() > 1) 
     {
         foreach(const MethodDescription *method, possibleMethods)
         {
             ok = true;
-            if(method->checkMethod(slotName, nrOfParams))
+
+            if (method->checkMethod(slotName, nrOfParams))
             {
-                for(int j=0;j<nrOfParams;j++)
+                for (int j = 0; j < nrOfParams; j++)
                 {
-                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
+                    // first try to find strict conversions only (in order to 
+                    // better handle methods with different possible argument types
+                    if (PythonQtConversion::PyObjToVoidPtr(
+                        PyTuple_GetItem(args,j + 1),  //GetItem is a borrowed reference
+                        &ptr, 
+                        &typeNr, 
+                        method->argTypes()[j], 
+                        true))
                     {
                         paramContainer->setParamArg(j, ptr, typeNr);
                     }
@@ -519,9 +585,10 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
                     }
                 }
 
-                if(ok)
+                if (ok)
                 {
-                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+                    // init retArg after all other parameters fit to requirements
+                    paramContainer->initRetArg(method->retType()); 
 
                     found = true;
                     foundMethod = method;
@@ -540,23 +607,35 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             }
         }
     }
-    else //... directly allow the non-strict conversion of all parameters (ok = false enters the next if case ;) )
+    else 
     {
+        // ... directly allow the non-strict conversion of 
+        // all parameters (ok = false enters the next if case ;) )
         ok = false;
     }
 
-    if (!ok) //until now, there is no possibility to directly, strictly cast all parameters to available signatures. Therefore try now also to not-strictly cast
+    // until now, there is no possibility to directly, strictly cast all 
+    // parameters to available signatures. Therefore try now also to not-strictly cast
+    if (!ok) 
     {
-        foreach(const MethodDescription *method, possibleMethods)
+        foreach (const MethodDescription *method, possibleMethods)
         {
             ok = true;
-            if(method->checkMethod(slotName, nrOfParams))
+
+            if (method->checkMethod(slotName, nrOfParams))
             {
                 ok = true;
-                for(int j=0;j<nrOfParams;j++)
+
+                for (int j = 0; j < nrOfParams; j++)
                 {
-                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], false)) //GetItem is a borrowed reference
+                    // first try to find strict conversions only (in order 
+                    // to better handle methods with different possible argument types
+                    if (PythonQtConversion::PyObjToVoidPtr(
+                        PyTuple_GetItem(args,j + 1), //GetItem is a borrowed reference
+                        &ptr,
+                        &typeNr,
+                        method->argTypes()[j],
+                        false)) 
                     {
                         paramContainer->setParamArg(j, ptr, typeNr);
                     }
@@ -567,9 +646,10 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
                     }
                 }
 
-                if(ok)
+                if (ok)
                 {
-                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+                    // init retArg after all other parameters fit to requirements
+                    paramContainer->initRetArg(method->retType()); 
 
                     found = true;
                     foundMethod = method;
@@ -588,57 +668,73 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         }
     }
 
-    if(!found)
+    if (!found)
     {
-        DELETE_AND_SET_NULL(paramContainer);
-        PyErr_Format(PyExc_RuntimeError, "None of the following possible signatures fit to the given set of parameters: %s", possibleSignatures.data());
+        PyErr_Format(
+            PyExc_RuntimeError, 
+            "None of the following possible signatures fit to the given set of parameters: %s", 
+            possibleSignatures.data()
+        );
         return NULL;
     }
 
-    QSharedPointer<FctCallParamContainer> sharedParamContainer(paramContainer); //from now on, do not directly delete paramContainer any more
-    ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+    ItomSharedSemaphoreLocker waitForInvokationEnd(new ItomSharedSemaphore());
+    int method_type = foundMethod->type();
 
-    if(foundMethod->type() == QMetaMethod::Slot)
+    if (method_type == QMetaMethod::Slot || method_type == QMetaMethod::Method)
     {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,true), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(
+            uiOrga, 
+            "callSlotOrMethod", 
+            Q_ARG(bool, method_type == QMetaMethod::Slot),
+            Q_ARG(uint, self->objectID), 
+            // 'unsigned int' leads to overhead and is automatically 
+            // transformed to uint in invokeMethod command
+            Q_ARG(int, foundMethod->methodIndex()), 
+            Q_ARG(QSharedPointer<FctCallParamContainer>, paramContainer),
+            Q_ARG(ItomSharedSemaphore*, waitForInvokationEnd.getSemaphore()));
     }   
-    else if(foundMethod->type() == QMetaMethod::Method)
-    {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,false), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "unknown method type.");
+        PyErr_SetString(PyExc_RuntimeError, 
+            QString("unknown method type: %1").arg(method_type).toLatin1().data());
         return NULL;
     }
 
-    if(!locker2.getSemaphore()->wait(50000))
+    if (!waitForInvokationEnd.getSemaphore()->wait(50000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while calling slot");
         return NULL;
     }
 
-    if(PythonCommon::transformRetValToPyException( locker2.getSemaphore()->returnValue ) == false) return NULL;
-
-    if(sharedParamContainer->getRetType() > 0)
+    if (PythonCommon::transformRetValToPyException(
+        waitForInvokationEnd.getSemaphore()->returnValue) == false)
     {
-        if(sharedParamContainer->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
+        return NULL;
+    }
+
+    if (paramContainer->getRetType() > 0)
+    {
+        if (paramContainer->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
         {
-            ito::PythonQObjectMarshal *m = (ito::PythonQObjectMarshal*)sharedParamContainer->args()[0];
+            ito::PythonQObjectMarshal *m = (ito::PythonQObjectMarshal*)paramContainer->args()[0];
 
             PyObject *newArgs = PyTuple_New(4);
-            PyTuple_SetItem(newArgs,0, PyLong_FromLong(m->m_objectID));
-            PyTuple_SetItem(newArgs,1, PyUnicode_FromString( m->m_objName.data() ));
-            PyTuple_SetItem(newArgs,2, PyUnicode_FromString( m->m_className.data() ));
+            PyTuple_SetItem(newArgs, 0, PyLong_FromLong(m->m_objectID));
+            PyTuple_SetItem(newArgs, 1, PyUnicode_FromString( m->m_objName.data() ));
+            PyTuple_SetItem(newArgs, 2, PyUnicode_FromString( m->m_className.data() ));
             Py_INCREF(self);
-            PyTuple_SetItem(newArgs,3, (PyObject*)self);
+            PyTuple_SetItem(newArgs, 3, (PyObject*)self);
             PyObject *newUiItem = PyObject_CallObject((PyObject *) &PythonUi::PyUiItemType, newArgs);
             Py_DECREF(newArgs);
             return newUiItem;
         }
         else
         {
-            return PythonQtConversion::ConvertQtValueToPythonInternal(sharedParamContainer->getRetType(), sharedParamContainer->args()[0]);
+            return PythonQtConversion::ConvertQtValueToPythonInternal(
+                paramContainer->getRetType(),
+                paramContainer->args()[0]
+            );
         }
     }
 
@@ -646,26 +742,59 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemConnect_doc,"connect(signalSignature, callableMethod, minRepeatInterval = 0) -> connects the signal of the widget with the given callable python method \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemConnect_doc, "connect(signalSignature, callableMethod, minRepeatInterval = 0) \n\
 \n\
-This instance of *uiItem* wraps a widget, that is defined by a C++-class, that is finally derived from *QWidget*. See Qt-help for more information \n\
-about the capabilities of every specific widget. Every widget can send various signals. Use this method to connect any signal to any \n\
-callable python method (bounded or unbounded). This method must have the same number of arguments than the signal and the types of the \n\
-signal definition must be convertable into a python object. \n\
+Connects a signal of this widget or layout with the given Python callback method. \n\
+\n\
+The widget or layout class, referenced by an :class:`uiItem` object, can emit \n\
+different signals whenever a certain event occurs. See the official Qt help \n\
+about a list of all possible signals or use the method :meth:`info` to get a \n\
+print-out of a list of possible signals. This method is used to connect a certain \n\
+callable Python callback method or function to a specific signal. The callable \n\
+function can be bounded as well as unbounded. \n\
+\n\
+The connection is described by the string signature of the signal (hence the source of \n\
+the connection). Such a signature is the name of the signal, followed by the types of \n\
+its arguments (the original C++ types). An example is ``clicked(bool)``, \n\
+emitted if a button has been clicked. This signal can be connected to a callback function \n\
+with one argument, that will then contain the boolean click state of this signal. \n\
+In case of a bounded method, the ``self`` argument must be given in any case. \n\
+\n\
+If the signal should have further arguments with specific datatypes, they are transformed \n\
+into corresponding Python data types. A table of supported conversions is given in section \n\
+:ref:`qtdesigner-datatypes`. In general, a ``callableMethod`` must be a method or \n\
+function with the same number of parameters than the signal has (besides the \n\
+``self`` argument). \n\
+\n\
+If a signal is emitted very often, it can be necessary to limit the call of the callback \n\
+function to a certain minimum time interval. This can be given by the ``minRepeatInterval`` \n\
+parameter. \n\
 \n\
 Parameters \n\
 ----------- \n\
-signalSignature : {str} \n\
-    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
-callableMethod : {python method or function} \n\
+signalSignature : str \n\
+    This must be the valid signature, known from the Qt-method *connect* \n\
+    (e.g. ``targetChanged(QVector<double>)``) \n\
+callableMethod : callable \n\
     valid method or function that is called if the signal is emitted. \n\
-minRepeatInterval : {int}, optional \n\
-    If > 0, the same signal only invokes a slot once within the given interval (in ms). Default: 0 (all signals will invoke the callable python method. \n\
+minRepeatInterval : int, optional \n\
+    If > 0, the same signal only invokes a slot once within the given interval (in ms). \n\
+    Default: 0 (all signals will invoke the callable python method. \n\
+\n\
+Notes \n\
+----- \n\
+The Python callback method can only be executed if Python is in an idle state. Else, \n\
+the trigger is postponed to the next possible time. However, if you want for instance \n\
+to have a button that interrupts a long Python operation, it is not possible to use \n\
+this :meth:`connect` method to bind the click signal of this button with any \n\
+Python script interruption, since the callback method will only be called if the long \n\
+operation has finished. For these cases it is recommenden to connect the triggering \n\
+signal (e.g. `clicked()`) by the :meth:`invokeKeyboardInterrupt` method. \n\
 \n\
 See Also \n\
 --------- \n\
-disconnect, invokeKeyboardInterrupt");
+disconnect, info, invokeKeyboardInterrupt");
 PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
     const char *kwlist[] = { "signalSignature", "callableMethod", "minRepeatInterval", NULL };
@@ -721,7 +850,8 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *k
         Q_ARG(QSharedPointer<int>, sigId),
         Q_ARG(QSharedPointer<QObject*>, objPtr),
         Q_ARG(QSharedPointer<IntList>, argTypes),
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -753,18 +883,21 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *k
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) \n\
+\n\
+Connects the given signal with the immediate invokation of a Python interrupt signal. \n\
+\n\
+If you use the connect method to link a signal with a python method or function, this \n\
+method can only be executed if Python is in an idle status. However, if you want to \n\
+immediately raise the Python interrupt signal, use this method to establish the \n\
+connection instead of the :meth:`uiItem.connect` command. \n\
 \n\
 Parameters \n\
 ----------- \n\
-signalSignature : {str} \n\
-    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
-\n\
-Notes \n\
------ \n\
-If you use the connect method to link a signal with a python method or function, this method can only be executed if python is in an idle status. \n\
-However, if you want to immediately raise the python interrupt signal, use this method to establish the connection instead of the uiItem.connect command. \n\
+signalSignature : str \n\
+    This must be the valid signature, known from the Qt-method *connect* \n\
+    (e.g. 'clicked(bool)') \n\
 \n\
 See Also \n\
 --------- \n\
@@ -798,7 +931,12 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "connectWithKeyboardInterrupt", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QByteArray, signature), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -806,23 +944,34 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
         return NULL;
     }
 
-    if(!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue)) return NULL;
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature : str, observer : itom.progressObserver) -> connects the given signal with a slot immediately setting the cancellation flag of the given progressObserver. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemConnectProgressObserverInterrupt_doc,"invokeProgressObserverCancellation(signalSignature, observer) \n\
 \n\
-This method immediately calls the 'requestCancellation' slot of the given observer if the given signal is emitted (independent on \n\
-the current state of the Python script execution). \n\
+Connects the given signal to a slot immediately setting the cancellation flag of this object. \n\
+\n\
+This method immediately calls the ``requestCancellation`` slot of the given observer \n\
+if the signal with the ``signalSignature`` is emitted (independent on the current \n\
+state of the Python script execution). \n\
+\n\
+For more information about the class :class:`requestCancellation`, see also this \n\
+section: :ref:`filter_interruptible`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-signalSignature : {str} \n\
-    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
-observer : {itom.progressObserver} \n\
-    This must be an itom.progressObserver object. The given signal is connected to the slot 'requestCancellation' of this progressObserver.\n\
+signalSignature : str \n\
+    This must be the valid signature, known from the Qt-method *connect* \n\
+    (e.g. 'clicked(bool)') \n\
+observer : progressObserver \n\
+    This must be a :class:`progressObserver` object. The given signal is connected \n\
+    to the slot ``requestCancellation`` of this progressObserver.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -865,11 +1014,14 @@ PyObject* PythonUi::PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, Py
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-
-    QMetaObject::invokeMethod(uiOrga, "connectProgressObserverInterrupt", 
-        Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), 
-        Q_ARG(QPointer<QObject>, QPointer<QObject>(obs.data())), Q_ARG(ItomSharedSemaphore*, 
-        locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "connectProgressObserverInterrupt", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command 
+        Q_ARG(QByteArray, signature), 
+        Q_ARG(QPointer<QObject>, QPointer<QObject>(obs.data())), 
+        Q_ARG(ItomSharedSemaphore*, 
+        locker.getSemaphore())); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -877,25 +1029,31 @@ PyObject* PythonUi::PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, Py
         return NULL;
     }
 
-    if(!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue)) return NULL;
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemDisconnect_doc,"disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemDisconnect_doc, "disconnect(signalSignature, callableMethod) \n\
+\n\
+Disconnects a connection which must have been established before with exactly the same parameters.\n\
 \n\
 Parameters \n\
 ----------- \n\
-signalSignature : {str} \n\
-    This must be the valid signature, known from the Qt-method *connect* (e.g. 'clicked(bool)') \n\
-callableMethod : {python method or function} \n\
-    valid method or function, that should not be called any more, if the given signal is emitted. \n\
+signalSignature : str \n\
+    This must be the valid signature, known from the Qt-method *connect* \n\
+    (e.g. ``clicked(bool)``) \n\
+callableMethod : callable \n\
+    valid method or function, that should not be called any more if the \n\
+    given signal is emitted. \n\
 \n\
 See Also \n\
 --------- \n\
-connect \n\
-");
+connect, info");
 PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
     const char *kwlist[] = { "signalSignature", "callableMethod", NULL };
@@ -945,7 +1103,8 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
         Q_ARG(QSharedPointer<int>, sigId), 
         Q_ARG(QSharedPointer<QObject*>, objPtr), 
         Q_ARG(QSharedPointer<IntList>, argTypes), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -978,33 +1137,38 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName) -> returns tuple of requested properties (single property or tuple of properties)\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetProperty_doc,"getProperty(propertyName) -> Union[Any, List[Any]] \n\
+n\
+Returns the requested property or a list of values for a sequence of requested properties. \n\
 \n\
-Use this method or the operator [] in order to get the value of one specific property of this widget or of multiple properties. \n\
-Multiple properties are given by a tuple or list of property names. For one single property, its value is returned as it is. \n\
-If the property names are passed as sequence, a sequence of same size is returned with the corresponding values. \n\
+Use this method or the operator [] in order to get the value of one specific property \n\
+of this widget or layout or of multiple properties. \n\
+\n\
+Multiple properties are given by a tuple or list of property names. For one single \n\
+property, its value is returned as it is. If the property names are passed as sequence, \n\
+a list of same size is returned with the corresponding values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-property : {str, sequence of str} \n\
-    Name of one property or sequence (tuple,list...) of property names \n\
+propertyName : str or list of str or tuple of str \n\
+    Name of one property or sequence (tuple, list...) of property names. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {variant, sequence of variants} \n\
-    the value of one single property of a list of values, if a sequence of names is given as parameter. \n\
+value : Any or list of Any \n\
+    the value of one single property of a list of values, if a sequence of ``propertyNames`` \n\
+    is given as parameter. \n\
 \n\
 See Also \n\
 --------- \n\
-setProperty \n\
-");
+setProperty");
 PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 {
     PyObject *propertyNames = NULL;
     QStringList propNames;
     bool ok = false;
-    bool returnTuple = true;
+    bool returnList = true;
 
     if(!PyArg_ParseTuple(args, "O", &propertyNames))
     {
@@ -1014,9 +1178,10 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     if(PyBytes_Check(propertyNames) || PyUnicode_Check(propertyNames))
     {
         QString temp = PythonQtConversion::PyObjGetString(propertyNames, true, ok);
+
         if(ok)
         {
-            returnTuple = false;
+            returnList = false;
             propNames << temp;
         }
         else
@@ -1028,6 +1193,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     else if(PySequence_Check(propertyNames))
     {
         propNames = PythonQtConversion::PyObjToStringList(propertyNames, true, ok);
+
         if(!ok)
         {
             PyErr_SetString(PyExc_RuntimeError, "list or tuple of property names could not be converted to a list of strings");
@@ -1041,6 +1207,7 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1062,7 +1229,12 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
         (*retPropMap)[propNames.at(i)] = QVariant();
     }
 
-    QMetaObject::invokeMethod(uiOrga, "readProperties", Q_ARG(unsigned int, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "readProperties",
+        Q_ARG(unsigned int, self->objectID),
+        Q_ARG(QSharedPointer<QVariantMap>, retPropMap),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1071,15 +1243,21 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
-    if(returnTuple)
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
+
+    if(returnList)
     {
         PyObject *retObj = PyList_New(propNames.count());
+
         for(int i = 0 ; i < propNames.count() ; i++)
         {
             PyList_SetItem(retObj,i, PythonQtConversion::QVariantToPyObject(retPropMap->value(propNames.at(i))));
         }
+
         return retObj;
     }
     else
@@ -1088,18 +1266,22 @@ PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemSetProperty_doc,"setProperty(propertyDict) \n\
+\n\
+Each property in the ``propertyDict`` is set to the dictionaries value. \n\
+\n\
+As an alternative, a single property can also be set using the operator []. \n\
 \n\
 Parameters \n\
 ----------- \n\
-propertyDict : {dict}\n\
-    Dictionary with properties (keyword) and the values that should be set.\n\
+propertyDict : dict\n\
+    Dictionary with properties (the keys are the property names) and the values \n\
+    that should be set.\n\
 \n\
 See Also \n\
 --------- \n\
-getProperty \n\
-");
+getProperty");
 PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 {
     PyObject *propDict = NULL;
@@ -1120,6 +1302,7 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     {
         keyS = PythonQtConversion::PyObjGetString(key,true,ok);
         valueV = PythonQtConversion::PyObjToQVariant(value);
+
         if(valueV.isValid())
         {
             propMap[keyS] = valueV;
@@ -1133,6 +1316,7 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1148,10 +1332,13 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QElapsedTimer t;
-    t.start();
-
-    QMetaObject::invokeMethod(uiOrga, "writeProperties", Q_ARG(uint, static_cast<unsigned int>(self->objectID)), Q_ARG(QVariantMap, propMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "writeProperties",
+        Q_ARG(uint, static_cast<unsigned int>(self->objectID)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QVariantMap, propMap),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1159,39 +1346,49 @@ PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
         return NULL;
     }
 
-    if (t.elapsed() > 500)
-    {
-        int i = 1;
-    }
-
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo(propertyName = None) -> returns information about the property 'propertyName' of this widget or all properties, if None or no name indicated.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetPropertyInfo_doc,"getPropertyInfo(propertyName = None) -> Union[dict, List[str]] \n\
+\n\
+Returns a list of all available property names or a dict of meta information of one given ``propertyName``. \n\
+\n\
+if ``propertyName`` is ``None``, a list of all property names is returned. Else, \n\
+a ``Dict[str, Any]`` is returned with meta information about this property. \n\
+The structure of this dictionary is as follows: \n\
+\n\
+* **name**: Name of the property (str). \n\
+* **valid**: ``True`` if this property is valid (readable), otherwise ``False``. \n\
+* **readable**: ``True`` if this property is readable, otherwise ``False``. \n\
+* **writable**: ``True`` if this property can be set to another value, otherwise ``False``. \n\
+* **resettable**: ``True`` if this property can be reset to a default value; otherwise returns ``False``. \n\
+* **final**: ``True`` if this property is final and cannot be overwritten in derived classes, otherwise ``False``.\n\
+* **constant**: ``True`` if this property is constant, otherwise ``False``.\n\
 \n\
 Parameters \n\
 ----------- \n\
-propertyName : {tuple}, optional \n\
-    The name of the property whose detailed information should be returned or None, if a list of all property names should be returned. \n\
-    Instead of None, the method can also be called without any arguments.\n\
+propertyName : str, optional \n\
+    The name of the property whose detailed information should be returned or \n\
+    ``None``, if a list of all property names should be returned. \n\
 \n\
 Returns \n\
 ------- \n\
-A list of all available property names, if None or no argument is given. \n\
-\n\
-OR:\n\
-\n\
-A read-only dictionary with further settings of the requested property. This dictionary contains\n\
-of the following entries:\n\
-\n\
-name, valid, readable, writeable, resettable, final, constant");
+names : list of str \n\
+    A list of all available property names. \n\
+information : dict \n\
+    The dictionary with meta information about this property (see above).");
 PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 {
     const char *propertyName = NULL;
+
     if(!PyArg_ParseTuple(args, "|s", &propertyName))
     {
         PyErr_SetString(PyExc_RuntimeError, "argument only accepts one optional name of a property (string, optional)");
@@ -1199,6 +1396,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1209,7 +1407,13 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     ito::RetVal retValue = retOk;
 
     QSharedPointer<QVariantMap> retPropMap(new QVariantMap());
-    QMetaObject::invokeMethod(uiOrga, "getPropertyInfos", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<QVariantMap>, retPropMap), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "getPropertyInfos",
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QSharedPointer<QVariantMap>, retPropMap),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1270,6 +1474,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
         PyObject *proxyDict = PyDictProxy_New(retObj);
         Py_DECREF(retObj);
+
         return proxyDict;
     }
     else
@@ -1277,36 +1482,38 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
         PyErr_SetString(PyExc_RuntimeError, QString("the property '%1' does not exist.").arg(propNameString).toUtf8().data());
         return NULL;
     }
-
-    Py_RETURN_NONE;
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetAttribute_doc,"getAttribute(attributeNumber) -> bool \n\
 \n\
-Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
-Qt::WidgetAttribute. Use this method to query the current status of one specific attributes. \n\
+Returns if a specific WidgetAttribute is set for the referenced widget. \n\
+\n\
+Widgets have specific attributes that influence their behaviour. These attributes \n\
+are contained in the Qt-enumeration ``Qt::WidgetAttribute``. Use this method to \n\
+query if the requested ``attributeNumber`` is set / enabled for the referenced widget. \n\
 \n\
 Important attributes are: \n\
 \n\
-* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is only hidden [default] \n\
+* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is only \n\
+  hidden [default] \n\
 * Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled \n\
 \n\
 Parameters \n\
 ----------- \n\
-attributeNumber : {int} \n\
-    Number of the attribute of the widget to query (enum Qt::WidgetAttribute) \n\
+attributeNumber : int \n\
+    Number of the attribute of the widget to query (see Qt enumeration \n\
+    ``Qt::WidgetAttribute``) \n\
 \n\
 Returns \n\
 ------- \n\
-out : {bool} \n\
-    True if attribute is set, else False \n\
+bool \n\
+    ``True`` if attribute is set (enabled), otherwise ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
-setAttribute\n\
-");
+setAttribute");
 PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 {
     int attributeNumber;
@@ -1317,6 +1524,7 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     }
     
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1333,7 +1541,14 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     ito::RetVal retValue = retOk;
     QSharedPointer<bool> value(new bool);
 
-    QMetaObject::invokeMethod(uiOrga, "getAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(QSharedPointer<bool>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "getAttribute", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(int, attributeNumber), 
+        Q_ARG(QSharedPointer<bool>, value), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1342,9 +1557,13 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
-    if(*value)
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
+
+    if (*value)
     {
         Py_RETURN_TRUE;
     }
@@ -1354,28 +1573,31 @@ PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemSetAttribute_doc,"setAttribute(attributeNumber, value) \n\
 \n\
-Widgets have specific attributes that influence their behaviour. These attributes are contained in the Qt-enumeration \n\
-Qt::WidgetAttribute. Use this method to enable/disable one specific attribute.\n\
+Enables or disables the attribute of the referenced widget.\n\
+\n\
+Widgets have specific attributes that influence their behaviour. These attributes \n\
+are contained in the Qt-enumeration ``Qt::WidgetAttribute``. Use this method to \n\
+enable or disable the requested widget attribute, given by its ``attributeNumber``. \n\
 \n\
 Important attributes are: \n\
 \n\
-* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is only hidden [default] \n\
-* Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled \n\
+* Qt::WA_DeleteOnClose (55) -> deletes the widget when it is closed, else it is \n\
+  only hidden [default]. \n\
+* Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled. \n\
 \n\
 Parameters \n\
 ----------- \n\
-attributeNumber : {int} \n\
-    Number of the attribute of the widget to set (enum Qt::WidgetAttribute) \n\
-value : {bool} \n\
-    True if attribute should be enabled, else False \n\
+attributeNumber : int \n\
+    Number of the attribute of the widget to set (enum ``Qt::WidgetAttribute``). \n\
+value : bool \n\
+    ``True`` if attribute should be enabled, else ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
 getAttribute");
-
 PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 {
     int attributeNumber;
@@ -1387,6 +1609,7 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
     }
     
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1402,7 +1625,14 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "setAttribute", Q_ARG(uint, self->objectID), Q_ARG(int, attributeNumber), Q_ARG(bool, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "setAttribute", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(int, attributeNumber), 
+        Q_ARG(bool, value), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1411,41 +1641,56 @@ PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) -> set window flags of corresponding widget.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemSetWindowFlags_doc,"setWindowFlags(flags) \n\
 \n\
-The window flags are used to set the type of a widget, dialog or window including further hints to the window system. \n\
-This method is used to set the entire or-combination of all flags, contained in the Qt-enumeration Qt::WindowType. \n\
+Set the window flags of the referenced widget.\n\
+\n\
+The window flags are used to set the type of a widget, dialog or window including \n\
+further hints to the window system. This method is used to set the entire \n\
+or-combination of all ``flags``, contained in the Qt-enumeration ``Qt::WindowType``. \n\
+\n\
+Please consider, that you have to set all values in ``flags``, that should be \n\
+active in the referenced widget. It is possible to get the current flags value of \n\
+this widget using :meth:`getWindowFlags``, set or unset some enum values (bits) \n\
+and set it again using this method. \n\
 \n\
 The most important types are: \n\
 \n\
 * Qt::Widget (0) -> default type for widgets \n\
-* Qt::Window (1) -> the widget looks and behaves like a windows (title bar, window frame...) \n\
+* Qt::Window (1) -> the widget looks and behaves like a windows (title bar, window \n\
+  frame...) \n\
 * Qt::Dialog (3) -> window decorated as dialog (no minimize or maximize button...) \n\
 \n\
 Further hints can be (among others): \n\
 \n\
-* Qt::FramelessWindowHint (0x00000800) -> borderless window (user cannot move or resize the window) \n\
+* Qt::FramelessWindowHint (0x00000800) -> borderless window (user cannot move or \n\
+  resize the window) \n\
 * Qt::WindowTitleBar (0x00001000) -> gives the window a title bar \n\
-* Qt::WindowMinimizeButtonHint (0x00004000) -> adds a minimize button to the title bar \n\
-* Qt::WindowMaximizeButtonHint (0x00008000) -> adds a maximize button to the title bar \n\
+* Qt::WindowMinimizeButtonHint (0x00004000) -> adds a minimize button to the \n\
+  title bar \n\
+* Qt::WindowMaximizeButtonHint (0x00008000) -> adds a maximize button to the \n\
+  title bar \n\
 * Qt::WindowCloseButtonHint (0x00010000) -> adds a close button. \n\
-* Qt::WindowStaysOnTopHint (0x00040000) -> this ui element always stays on top of other windows \n\
-* Qt::WindowCloseButtonHint (0x08000000) -> remove this flag in order to disable the close button \n\
-\n\
-If you simply want to change one hint, get the current set of flags using **getWindowFlags**, change the necessary bitmask and \n\
-set it again using this method. \n\
+* Qt::WindowStaysOnTopHint (0x00040000) -> this ui element always stays on top of \n\
+  other windows \n\
+* Qt::WindowCloseButtonHint (0x08000000) -> remove this flag in order to disable the \n\
+  close button \n\
 \n\
 Parameters \n\
 ----------- \n\
-flags : {int} \n\
-    window flags to set (or-combination, see Qt::WindowFlags) \n\
+flags : int \n\
+    window flags to set (or-combination, see ``Qt::WindowFlags``). \n\
 \n\
 See Also \n\
 ---------- \n\
@@ -1460,6 +1705,7 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
     }
     
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1475,7 +1721,13 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "setWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(int, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "setWindowFlags", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(int, value), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1484,20 +1736,28 @@ PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetWindowFlags_doc,"getWindowFlags(flags) -> gets window flags of corresponding widget. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetWindowFlags_doc,"getWindowFlags() -> int \n\
 \n\
-The flags-value is an or-combination of the enumeration Qt::WindowType. See Qt documentation for more information. \n\
+Gets the window flags of the referenced widget. \n\
+\n\
+The returned ``flags`` value is an or-combination, hence bitmask, of enumeration \n\
+values of the Qt enumeration ``Qt::WindowType``. \n\
 \n\
 Returns \n\
 -------- \n\
-flags {int}: \n\
-    or-combination of Qt::WindowType describing the type and further hints of the user interface \n\
+flags : int \n\
+    or-combination of ``Qt::WindowType`` describing the type and further hints \n\
+    of the referenced widget. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -1505,6 +1765,7 @@ setWindowFlags");
 PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1521,7 +1782,12 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     ito::RetVal retValue = retOk;
     QSharedPointer<int> value(new int);
 
-    QMetaObject::invokeMethod(uiOrga, "getWindowFlags", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<int>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "getWindowFlags", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QSharedPointer<int>, value), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1530,20 +1796,26 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     return Py_BuildValue("i", *value);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) \n\
+\n\
+Prints information about properties, public accessible slots and signals of the wrapped widget. \n\
 \n\
 Parameters \n\
 ----------- \n\
-verbose : {int} \n\
-    0: only properties, slots and signals that do not come from Qt-classes are printed (default) \n\
-    1: properties, slots and signals are printed up to Qt GUI base classes \n\
-    2: all properties, slots and signals are printed");
+verbose : int \n\
+    * ``0``: only properties, slots and signals that do not come from Qt-classes are \n\
+      printed (default) \n\
+    * ``1``: properties, slots and signals are printed up to Qt GUI base classes \n\
+    * ``2``: all properties, slots and signals are printed");
 /*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self, PyObject *args)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1568,22 +1840,27 @@ verbose : {int} \n\
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-//    QSharedPointer< QVariantMap > value(new QVariantMap );
 
     //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
-//    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(bool, true), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    if (showAll >= 2)
+    int type = UiOrganizer::infoShowAllInheritance;
+
+    if (showAll == 1)
     {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowAllInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        type = UiOrganizer::infoShowInheritanceUpToWidget;
     }
-    else if (showAll == 1)
+    else if (showAll < 1)
     {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowInheritanceUpToWidget), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        type = UiOrganizer::infoShowItomInheritance;
     }
-    else
-    {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowItomInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    }
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "getObjectInfo", 
+        Q_ARG(uint, self->objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(int, type), Q_ARG(bool, true), 
+        Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1592,7 +1869,11 @@ verbose : {int} \n\
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if (showAll < 2)
     {
@@ -1604,8 +1885,15 @@ verbose : {int} \n\
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists, else false.");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> bool \n\
+\n\
+Returns True if the widget or layout still exists, otherwise False. \n\
+\n\
+Returns \n\
+------- \n\
+bool \n\
+    ``True`` if the referenced widget or layout still exists, otherwise ``False``.");
 /*static*/ PyObject* PythonUi::PyUiItem_exists(PyUiItem *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1626,7 +1914,12 @@ PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists
     QSharedPointer< bool > exists(new bool );
 
     //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
-    QMetaObject::invokeMethod(uiOrga, "exists", Q_ARG(uint, self->objectID), Q_ARG(QSharedPointer<bool>,exists), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "exists", 
+        Q_ARG(uint, self->objectID), 
+        Q_ARG(QSharedPointer<bool>,exists), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1635,25 +1928,44 @@ PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if (*exists)
     {
         Py_RETURN_TRUE;
     }
+
     Py_RETURN_FALSE;
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemChildren_doc,"children(recursive = False) -> returns dict with widget-based child items of this uiItem. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemChildren_doc,"children(recursive = False) -> Dict[str, str] \n\
 \n\
-Each key -> value pair is object-name -> class-name). Objects with no object-name are omitted. \n\
+Returns a dict with all child items of the referenced widget. \n\
+\n\
+Each widget in an user interface can have multiple child items, like radio buttons \n\
+within a group box or widgets within a layout. This method returns information about \n\
+all child items of this :class:`uiItem`. A dictionary is returned with key-value \n\
+pairs, where the key is the ``objectName`` of the child item, and the value its \n\
+Qt class name (see :meth:`getClassName`). \n\
+\n\
+Child items without valid ``objectName`` are not contained in the returned dict. \n\
 \n\
 Parameters \n\
 ----------- \n\
-recursive : {bool} \n\
-    True: all objects including sub-widgets of widgets are returned, False: only children of this uiItem are returned (default)");
+recursive : bool \n\
+    ``True``: all objects including sub-widgets of widgets are returned, \n\
+    ``False``: only children of this :class:`uiItem` are returned (default). \n\
+\n\
+Returns \n\
+------- \n\
+dict \n\
+    All child items of this item are returned.");
 /*static*/ PyObject* PythonUi::PyUiItem_children(PyUiItem *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"recursive", NULL};
@@ -1665,6 +1977,7 @@ recursive : {bool} \n\
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -1699,7 +2012,11 @@ recursive : {bool} \n\
     }
 
     retValue += locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     PyObject *dict = PyDict_New();
     PyObject *value = NULL;
@@ -1715,15 +2032,27 @@ recursive : {bool} \n\
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetChild_doc, "getChild(widgetName) -> returns the uiItem of the child widget with the given widgetName. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetChild_doc, "getChild(widgetName) -> uiItem \n\
 \n\
-This call is equal to self.__attributes__[widgetName] or self.widgetName \n\
+Returns the uiItem of the child widget with the given ``widgetName``. \n\
+\n\
+This call is equal to ``self.widgetName``, where ``self`` is this :class:`uiItem`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-widgetName : {str} \n\
-    Object name of the desired child widget.");
+widgetName : str \n\
+    ``objectName`` of the requested child widget or layout. \n\
+\n\
+Returns \n\
+------- \n\
+item : uiItem \n\
+    The reference to the searched sub-widget (or layout).\n\
+\n\
+Raises \n\
+------ \n\
+AttributeError \n\
+    if no widget / layout with ``widgetName`` as ``objectName`` exists.");
 /*static*/ PyObject* PythonUi::PyUiItem_getChild(PyUiItem *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "widgetName", NULL };
@@ -1738,13 +2067,22 @@ widgetName : {str} \n\
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemGetLayout_doc, "getLayout() -> returns the uiItem of the layout item of this widget (or None). \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemGetLayout_doc, "getLayout() -> Optional[uiItem] \n\
 \n\
-Container widgets, like group boxes, tab widgets etc. as well as top level widgets of a custom user interface \n\
-can have layouts, that are responsible to arrange possible child widgets. \n\
+Returns the uiItem of the layout item of this widget (or None). \n\
 \n\
-If this uiItem has such a layout, its reference is returned as uiItem, too. Else None is returned.");
+Container widgets, like group boxes, tab widgets etc. as well as top level widgets \n\
+of a custom user interface can have layouts, that are responsible to arrange \n\
+possible child widgets. \n\
+\n\
+If this uiItem has such a layout, its reference is returned as :class:`uiItem`, too. \n\
+Else ``None`` is returned. \n\
+\n\
+Returns \n\
+------- \n\
+layout : None or uiItem \n\
+    The reference to the searched layout, or ``None`` if no such a layout exists.");
 /*static*/ PyObject* PythonUi::PyUiItem_getLayout(PyUiItem *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -1809,7 +2147,7 @@ If this uiItem has such a layout, its reference is returned as uiItem, too. Else
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
     if(self->methodList == NULL)
@@ -1860,7 +2198,7 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 {
     //UiItem has no __dict__ and __slots__ attribute and this is no widget either, therefore filter it out and raise an exception
@@ -1872,10 +2210,10 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
     {
         return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '__dict__'.", self->objName);
     }
-	else if (PyUnicode_CompareWithASCIIString(name, "__getstate__") == 0)
-	{
-		return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U' (e.g. it cannot be pickled).", self->objName, name);
-	}
+    else if (PyUnicode_CompareWithASCIIString(name, "__getstate__") == 0)
+    {
+        return PyErr_Format(PyExc_AttributeError, "'%.50s' object has no attribute '%U' (e.g. it cannot be pickled).", self->objName, name);
+    }
 
     PyObject *ret = PyObject_GenericGetAttr((PyObject*)self,name); //new reference
 
@@ -1933,7 +2271,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
     return (PyObject*)pyUiItem;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 {
     return PyObject_GenericSetAttr( (PyObject*)self, name, value );
@@ -1958,7 +2296,7 @@ int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
     return NULL;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"call", (PyCFunction)PyUiItem_call, METH_VARARGS, PyUiItemCall_doc},
         {"connect", (PyCFunction)PyUiItem_connect, METH_KEYWORDS | METH_VARARGS, PyUiItemConnect_doc},
@@ -1981,12 +2319,12 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonUi::PyUiItem_members[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonUi::PyUiItemModule = {
         PyModuleDef_HEAD_INIT,
         "uiItem",
@@ -1995,12 +2333,12 @@ PyModuleDef PythonUi::PyUiItemModule = {
         NULL, NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonUi::PyUiItem_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonUi::PyUiItemType = {
         PyVarObject_HEAD_INIT(NULL, 0)
         "itom.uiItem",             /* tp_name */
@@ -2042,14 +2380,14 @@ PyTypeObject PythonUi::PyUiItemType = {
         PyUiItem_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMappingMethods PythonUi::PyUiItem_mappingProtocol = {
     (lenfunc)PyUiItem_mappingLength,
     (binaryfunc)PyUiItem_mappingGetElem,
     (objobjargproc)PyUiItem_mappingSetElem
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonUi::PyUiItem_addTpDict(PyObject * /*tp_dict*/)
 {
     //nothing
@@ -2059,7 +2397,7 @@ void PythonUi::PyUiItem_addTpDict(PyObject * /*tp_dict*/)
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------OK
+//-------------------------------------------------------------------------------------
 void PythonUi::PyUi_dealloc(PyUi* self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -2068,12 +2406,16 @@ void PythonUi::PyUi_dealloc(PyUi* self)
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         ito::RetVal retValue = retOk;
 
-        QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(
+            uiOrga, 
+            "deleteDialog", 
+            Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+        ); 
     
         if(!locker.getSemaphore()->wait(PLUGINWAIT))
         {
             std::cerr << "timeout while closing dialog" << std::endl;
-            //PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
         }
     }
 
@@ -2084,10 +2426,11 @@ void PythonUi::PyUi_dealloc(PyUi* self)
     PyUiItemType.tp_dealloc( (PyObject*)self );
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwds)
 {
     PyUi *self = (PyUi*)PyUiItemType.tp_new(type,args,kwds);
+
     if(self != NULL)
     {
         self->uiHandle = -1; //default: invalid
@@ -2110,45 +2453,93 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
     return (PyObject *)self;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiInit_doc,"ui(filename, type = ui.TYPEDIALOG, dialogButtonBar = ui.BUTTONBAR_NO, dialogButtons = {}, childOfMainWindow = True, deleteOnClose = False, dockWidgetArea = ui.TOPDOCKWIDGETAREA) -> ui \n\
 \n\
-The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
-chose *ui.TYPEWINDOW* as type, if the user interface is a widget (simplest case), chose *ui.TYPEDIALOG* and your widget \n\
-will be embedded in a dialog, provided by *itom*. This dialog can be equiped with a button bar, whose buttons are already \n\
-connected to *itom* internal methods. If you then show your dialog in a modal mode, *itom* knows which button has been \n\
-clicked in order to accept or reject the dialog. \n\
+Loads a user interface file (`ui`) and references this loaded interface by the new ui object. \n\
+\n\
+If the ui file is created in the `QtDesigner`, you can choose from which base type \n\
+you would like to create the user interface (e.g. from a dialog, a window or a widget). \n\
+This together with the argument ``type`` will mainly define the kind of user interface \n\
+that is actually displayed in `itom`. \n\
+\n\
+If you want to add a customized user interface as toolbox or into the central part of \n\
+the main window of `itom`, it is either recommended to design the interface from a \n\
+widget or a main window. The latter has the advantage, that an individual menu or toolbar \n\
+can be added. \n\
+\n\
+If you want to create a standalone window, it is recommended to already design the \n\
+user interface from a main window, such that menus, toolbars as well as access to \n\
+the statusbar is possible (if desired). \n\
+\n\
+For the creation of (modal) dialogs, where the user should configure settings or pass \n\
+some inputs, it is recommended to either design the interface from a dialog on, or \n\
+it is also possible to create a simple widget. In the latter case, itom will put \n\
+this interface into a dialog (for ``type = ui.TYPEDIALOG``) and add optional buttons \n\
+(like the ``OK`` and ``Cancel`` button). These buttons are then already configured \n\
+to work. If you design a dialog from a dialog as base element, you have to connect \n\
+buttons for instance with the ``accept()`` or ``reject()`` slot of the dialog by hand. \n\
+\n\
+For more information see also the section :ref:`qtdesigner` of the user documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-filename : {str} \n\
-    path to user interface file (*.ui), absolute or relative to current directory \n\
-type : {int}, optional \n\
-    display type: \n\
+filename : str \n\
+    path to the user interface file (.ui), absolute or relative to current directory. \n\
+type : int, optional \n\
+    This ``type`` defines how the loaded user interface is displayed: \n\
     \n\
-        * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
-        * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
-        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area, \n\
-        * 3 (ui.TYPECENTRALWIDGET): ui-file must be a widget or mainWindow and is included in the central area of itom, above the command line \n\
-dialogButtonBar :  {int}, optional \n\
-    Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    * ``ui.TYPEDIALOG`` (0): The ui-file is the content of a dialog window or, if the \n\
+      file already defines a `QDialog`, this dialog is shown as it is. \n\
+      This is recommended for the creation of modal dialogs, like settings... \n\
+    * ``ui.TYPEWINDOW`` (1): The ui-file must be a `QMainWindow` or its outer widget \n\
+      is turned into a main window. This window is then shown. This is recommended \n\
+      for \"standalone\" windows, that should be able to be minimized, maximized, contain \n\
+      menus or toolbars etc. \n\
+    * ``ui.TYPEDOCKWIDGET`` (2): The loaded widget is the content of a dock widget (toolbox) \n\
+      and is added to the indicated ``dockWidgetArea`` of the main window of `itom`. \n\
+    * ``ui.TYPECENTRALWIDGET`` (3): The loaded ui-file must define a `QWidget` or \n\
+      `QMainWindow` and is then added to the central area of `itom`, above the command line. \n\
+      It is not allowed to choose this type if the user interface is created from \n\
+      a `QDialog`. \n\
     \n\
-        * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
-        * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
-        * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
-dialogButtons : {dict}, optional \n\
-    every dictionary-entry is one button. key is the role, value is the button text \n\
-childOfMainWindow :  {bool}, optional \n\
-    for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
-deleteOnClose : {bool}, optional \n\
-    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
-dockWidgetArea : {int}, optional \n\
-    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+dialogButtonBar : int, optional \n\
+    This argument is only used if ``type == ui.TYPEDIALOG`` and defines if a button bar \n\
+    with buttons, given by ``dialogButtons`` should be automatically added to the dialog. \n\
+    If this is the case, the role of the buttons is considered, such that clicking the \n\
+    ``OK`` or ``Cancel`` button  will automatically close the dialog and return the \n\
+    role to the :meth:`show` method (if the dialog is displayed modal). Allowed values: \n\
     \n\
-        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
-        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
-        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
-        * 8 (ui.BOTTOMDOCKWIDGETAREA)");
+    * ``ui.BUTTONBAR_NO`` (0): do not add any button bar and buttons (default), \n\
+    * ``ui.BUTTONBAR_HORIZONTAL`` (1): add a horizontal button bar at the bottom, \n\
+    * ``ui.BUTTONBAR_VERTICAL`` (2): add vertical button bar on the right side. \n\
+    \n\
+dialogButtons : dict, optional \n\
+    Only relevant if ``dialogButtonBar`` is not ``ui.BUTTONBAR_NO``: This dictionary \n\
+    contains all buttons, that should be added to the button bar. For every entry, \n\
+    the key is the role name of the button (enum ``QDialogButtonBox::ButtonRole``, \n\
+    e.g. 'AcceptRole', 'RejectRole', 'ApplyRole', 'YesRole', 'NoRole'). The value is \n\
+    the text of the button. \n\
+childOfMainWindow : bool, optional \n\
+    For type ``ui.TYPEDIALOG`` and ``ui.TYPEWINDOW`` only: Indicates if the window \n\
+    should be a child of the itom main window. If ``False``, this window has its own \n\
+    icon in the taskbar of the operating system. \n\
+deleteOnClose : bool, optional \n\
+    Indicates if the widget / window / dialog should be deleted if the user closes it \n\
+    or if it is hidden. If it is hidden, it can be shown again using :meth:`show`. \n\
+dockWidgetArea : int, optional \n\
+    Only for ``type == ui.TYPEDOCKWIDGET (2)``. Indicates the position where the \n\
+    dock widget should be placed: \n\
+    \n\
+    * 1 : ``ui.LEFTDOCKWIDGETAREA`` \n\
+    * 2 : ``ui.RIGHTDOCKWIDGETAREA`` \n\
+    * 4 : ``ui.TOPDOCKWIDGETAREA`` \n\
+    * 8 : ``ui.BOTTOMDOCKWIDGETAREA`` \n\
+\n\
+Returns \n\
+------- \n\
+window : ui \n\
+    A :class:`ui` object, that references the loaded ui-file.");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL};
@@ -2164,7 +2555,17 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         return 0;
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bbi", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose, &dockWidgetArea))
+    if(!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "O&|iiO!bbi", 
+        const_cast<char**>(kwlist), 
+        &PyUnicode_FSConverter, &bytesFilename, 
+        &self->winType, 
+        &self->buttonBarType, 
+        &PyDict_Type, &dialogButtons, 
+        &self->childOfMainWindow, 
+        &self->deleteOnClose, &dockWidgetArea))
     {
         return -1;
     }
@@ -2172,14 +2573,18 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     //check values:
     if(self->winType < 0 || self->winType > 3)
     {
-        PyErr_SetString(PyExc_ValueError,"Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1), TYPEDOCKWIDGET (2) or TYPECENTRALWIDGET (3)");
+        PyErr_SetString(
+            PyExc_ValueError,
+            "Argument 'type' must have one of the values TYPEDIALOG (0), TYPEWINDOW (1), TYPEDOCKWIDGET (2) or TYPECENTRALWIDGET (3)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
 
     if(self->buttonBarType < 0 || self->buttonBarType > 2)
      {
-        PyErr_SetString(PyExc_ValueError,"Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
+        PyErr_SetString(
+            PyExc_ValueError,
+            "Argument 'dialogButtonBar' must have one of the values BUTTONBAR_NO (0), BUTTONBAR_HORIZONTAL (1) or BUTTONBAR_VERTICAL (2)");
         Py_XDECREF(bytesFilename);
         return -1;
     }
@@ -2235,7 +2640,17 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     int uiDescription = UiOrganizer::createUiDescription(self->winType, self->buttonBarType, self->childOfMainWindow, self->deleteOnClose, dockWidgetArea);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
-    QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "createNewDialog",
+        Q_ARG(QString,QString(self->filename)), 
+        Q_ARG(int, uiDescription), 
+        Q_ARG(StringMap, dialogButtonMap), 
+        Q_ARG(QSharedPointer<uint>, dialogHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(QSharedPointer<QByteArray>, className), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
 
     if(!locker.getSemaphore()->wait(60000))
@@ -2245,7 +2660,11 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     }
     
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return -1;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return -1;
+    }
 
     self->uiHandle = static_cast<int>(*dialogHandle);
     DELETE_AND_SET_NULL( self->signalMapper );
@@ -2261,10 +2680,11 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_repr(PyUi *self)
 {
     PyObject *result;
+
     if(self->uiHandle < 0)
     {
         result = PyUnicode_FromFormat("Ui(empty)");
@@ -2289,7 +2709,13 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QSharedPointer<bool> exist(new bool);
 
-            QMetaObject::invokeMethod(uiOrga, "handleExist", Q_ARG(uint, self->uiHandle), Q_ARG(QSharedPointer<bool>, exist), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(
+                uiOrga, 
+                "handleExist", 
+                Q_ARG(uint, self->uiHandle), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+                Q_ARG(QSharedPointer<bool>, exist), 
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+            ); 
 
             if (!locker.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -2332,27 +2758,30 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows the window or dialog. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiShow_doc,"show(modal = 0) -> Optional[int] \n\
+\n\
+Shows the window or dialog. \n\
 \n\
 Parameters \n\
 ----------- \n\
-modal : {int}, optional \n\
+modal : int, optional \n\
     * 0: non-modal, the opened GUI does not block other windows of itom (default)\n\
     * 1: modal (python waits until dialog is hidden)\n\
     * 2: modal (python returns immediately)\n\
 \n\
 Returns \n\
 ---------- \n\
-Usually the value -1 is returned. Only if a dialog is shown with ``modal=1``, \n\
-the exit code of the shown dialog is returned, once this dialog is closed again. \n\
-This code is: 1 if the dialog has been accepted (e.g. by closing it by an OK button \n\
-or 0 if the dialog has been rejected (Cancel button or directly closing the dialog \n\
-via the close icon in its title bar. \n\
+None or int \n\
+    Usually the value -1 is returned. Only if a dialog is shown with ``modal = 1``, \n\
+    the exit code of the shown dialog is returned, once this dialog is closed again. \n\
+    This code is: ``1`` if the dialog has been accepted (e.g. by closing it by an OK button \n\
+    or ``0`` if the dialog has been rejected (Cancel button or directly closing the dialog \n\
+    via the close icon in its title bar. \n\
 \n\
 See Also \n\
 --------- \n\
-hide()");
+hide");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
     int modalLevel = 0;
@@ -2388,7 +2817,8 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
         Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , 
         Q_ARG(int,modalLevel), 
         Q_ARG(QSharedPointer<int>, retCodeIfModal), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(modalLevel == 1)
     {
@@ -2420,14 +2850,16 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized user interface \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiHide_doc, "hide() \n\
 \n\
-A hidden window or dialog can be shown again via the method :py:meth:`~itom.ui.show`.\n\
+Hides the user interface reference by this ui object. \n\
+\n\
+A hidden window or dialog can be shown again via the method :py:meth:`show`.\n\
 \n\
 See Also \n\
 --------- \n\
-show(modal)");
+show");
 PyObject* PythonUi::PyUi_hide(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -2460,18 +2892,24 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     }
     
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns True if dialog is still visible\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> bool \n\
+\n\
+Returns ``True`` if the referenced window or dialog is still visible. \n\
 \n\
 Returns \n\
 ------- \n\
-visibility : {bool} \n\
-    True if user interface is visible, False if it is hidden");
+visible : bool \n\
+    ``True`` if user interface is visible, ``False`` if it is hidden.");
 PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -2492,7 +2930,13 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
     *visible = false;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "isVisible", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(QSharedPointer<bool>, visible), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "isVisible", 
+        Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QSharedPointer<bool>, visible), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -2553,32 +2997,37 @@ int PyUiItem_Converter(PyObject *object, PythonUi::PyUiItem **address)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3, parent]) -> shows a dialog to get a double value from the user\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue, min = -2147483647.0, max = 2147483647.0, decimals = 1, parent = None) -> Tuple[float, bool] \n\
+\n\
+Shows a dialog to get a float value from the user. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the dialog title \n\
-label : {str}\n\
-    is the label above the spin box \n\
-defaultValue : {double}, optional\n\
-    is the default value in the spin box \n\
-min : {double}, optional\n\
-    default = -2147483647.0\n\
-    is the allowed minimal value\n\
-max : {double}, optional\n\
-    default = 2147483647.0\n\
-    is the allowed maximal value\n\
-decimals : {int}, optional\n\
-    the maximum number of decimal places (default: 1) \n\
-parent : {uiItem or derived classes}, optional\n\
-    is a parent dialog or window, this dialog becomes modal.\n\
+title : str\n\
+    is the title of the dialog. \n\
+label : str \n\
+    is the label above the input box. \n\
+defaultValue : float \n\
+    is the default value in the input box. \n\
+min : float, optional \n\
+    is the allowed minimal value. \n\
+max : float, optional \n\
+    is the allowed maximal value. \n\
+decimals : int, optional \n\
+    the maximum number of decimal places. \n\
+parent : uiItem, optional \n\
+    the dialog is modal with respect to ``parent`` or with respect to the \n\
+    main window of `itom`, if ``None``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {tuple (double, bool)} \n\
-    A tuple where the first value contains the current double value. The second value is True if the dialog has been accepted, else False. \n\
+value : float \n\
+    The entered float value. \n\
+success : bool \n\
+    ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2594,11 +3043,10 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     double minValue = -2147483647;
     double maxValue = 2147483647;
     int decimals = 1;
-	PythonUi::PyUiItem *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals,&PyUiItem_Converter, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (double), min (double, optional), max (double, optional), decimals (int, optional), parent(uiItem or derived classes, optional)");
         return NULL;
     }
 
@@ -2631,10 +3079,11 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     *retOk = false;
     QSharedPointer<double> retDblValue(new double);
     *retDblValue = defaultValue;
-	unsigned int objectID= parentItem ? parentItem->objectID : 0;
+    unsigned int objectID= parentItem ? parentItem->objectID : 0;
 
     QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -2642,23 +3091,28 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
-    while(!locker.getSemaphore()->wait(100))
+    int counter = 0;
+    int c = 0;
+
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -2670,30 +3124,37 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step=1, parent]) -> shows a dialog to get an integer value from the user\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue, min = -2147483647, max = 2147483647, step = 1, parent = None) -> Tuple[int, bool] \n\
+\n\
+Shows a dialog to get an integer value from the user. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the dialog title \n\
-label : {str}\n\
-    is the label above the spinbox \n\
-defaultValue : {int}, optional\n\
-    is the default value in the spinbox \n\
-min : {int}, optional\n\
-    is the allowed minimal value (default: -2147483647) \n\
-max : {int}, optional\n\
-    is the allowed maximal value (default: 2147483647) \n\
-step : {int}, optional\n\
-    is the step size if user presses the up/down arrow (default: 1)\n\
-parent : {uiItem or derived classes}, optional\n\
-    is a parent dialog or window, this dialog becomes modal.\n\
+title : str\n\
+    is the title of the dialog. \n\
+label : str\n\
+    is the label above the input box. \n\
+defaultValue : int\n\
+    is the default value in the input box. \n\
+min : int, optional\n\
+    is the allowed minimal value. \n\
+max : int, optional\n\
+    is the allowed maximal value. \n\
+step : int, optional\n\
+    is the step size if user presses the up/down arrow. \n\
+parent : uiItem, optional \n\
+    the dialog is modal with respect to ``parent`` or with respect to the \n\
+    main window of `itom`, if ``None``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {tuple (int, bool)} \n\
-    A tuple where the first value contains the current integer value. The second value is True if the dialog has been accepted, else False. \n\
+value : int \n\
+    The entered integer value. \n\
+success : bool \n\
+    ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2709,16 +3170,16 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     int minValue = -2147483647;
     int maxValue = 2147483647;
     int step = 1;
-	PythonUi::PyUiItem *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOi|iiiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &step, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (int), min (int, optional), max (int, optional), step (int, optional), parent(uiItem or derived calasses, optional)");
         return NULL;
     }
 
     bool ok;
     title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "title must be a string.");
@@ -2726,6 +3187,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     }
 
     label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "label must be a string.");
@@ -2733,6 +3195,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -2746,10 +3209,23 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     *retOk = false;
     QSharedPointer<int> retIntValue(new int);
     *retIntValue = defaultValue;
-	unsigned int objectID = parentItem ? parentItem->objectID : 0;
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showInputDialogGetInt", 
+        Q_ARG(uint, objectID), 
+        Q_ARG(QString, title), 
+        Q_ARG(QString, label), 
+        Q_ARG(int, defaultValue), 
+        Q_ARG(QSharedPointer<bool>, retOk), 
+        Q_ARG(QSharedPointer<int>, retIntValue), 
+        Q_ARG(int,minValue), 
+        Q_ARG(int,maxValue), 
+        Q_ARG(int,step), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -2757,25 +3233,30 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
-    while(!locker.getSemaphore()->wait(100))
+    int counter = 0;
+    int c = 0;
+
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
-    if(*retOk == true)
+    if (*retOk == true)
     {
         return Py_BuildValue("iO", *retIntValue, Py_True );
     }
@@ -2785,28 +3266,35 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex=0, editable=True, parent]) -> shows a dialog to let the user select an item from a string list\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList, currentIndex = 0, editable = False, parent = None) -> Tuple[str, bool] \n\
+\n\
+Shows a dialog to let the user select an item from a string list. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the dialog title \n\
-label : {str}\n\
-    is the label above the text box \n\
-stringList : {tuple or list}, optional \n\
-    is a list or tuple of possible string values \n\
-currentIndex : {int}, optional\n\
-    defines the preselected value index (default: 0)\n\
-editable : {bool}, optional\n\
-    defines whether new entries can be added (True) or not (False, default)\n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+title : str \n\
+    is the title of the dialog.\n\
+label : str \n\
+    is the label above the text box. \n\
+stringList : list of str or tuple of str \n\
+    is a list or tuple of possible string values. \n\
+currentIndex : int, optional\n\
+    defines the pre-selected value index from ``stringList``. \n\
+editable : bool, optional\n\
+    defines whether new entries can be added (``True``) or not (``False``) \n\
+parent : uiItem, optional\n\
+    the dialog is modal with respect to ``parent`` or with respect to the \n\
+    main window of `itom`, if ``None``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {tuple (str, bool)} \n\
-    A tuple where the first value contains the current active or typed string value. The second value is True if the dialog has been accepted, else False. \n\
+value : str \n\
+    The currently selected or entered string value. \n\
+success : bool \n\
+    ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2823,7 +3311,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     bool editable = false;
     QStringList stringListQt;
     QString temp;
-	PythonUi::PyUiItem *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|ibO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &stringList, &currentIndex, &editable, &PyUiItem_Converter ,&parentItem))
     {
@@ -2832,6 +3320,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     bool ok;
     title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "title must be a string.");
@@ -2839,6 +3328,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 
     label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "label must be a string.");
@@ -2855,11 +3345,13 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
         Py_ssize_t length = PySequence_Size(stringList);
         PyObject *stringListItem = NULL;
         bool ok = false;
+
         for(Py_ssize_t i = 0 ; i < length ; i++)
         {
             stringListItem = PySequence_GetItem(stringList,i); //new reference
             temp = PythonQtConversion::PyObjGetString(stringListItem,true,ok);
             Py_XDECREF(stringListItem);
+
             if(!temp.isNull()) 
             {
                 stringListQt << temp;
@@ -2873,6 +3365,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -2881,15 +3374,25 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-
     QSharedPointer<bool> retOk(new bool);
     *retOk = false;
-    
     QSharedPointer<QString> retString(new QString());
-    
-	unsigned int objectID = parentItem ? parentItem->objectID : 0;
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem",Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-    
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showInputDialogGetItem",
+        Q_ARG(uint, objectID), 
+        Q_ARG(QString, title), 
+        Q_ARG(QString, label), 
+        Q_ARG(QStringList, stringListQt), 
+        Q_ARG(QSharedPointer<bool>, retOk), 
+        Q_ARG(QSharedPointer<QString>, retString), 
+        Q_ARG(int, currentIndex), 
+        Q_ARG(bool, editable), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+  
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -2899,9 +3402,11 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     int timeout = -1; //set the real timeout here (ms)
     int counter = 0; 
     int c=0;
+
     while(!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
@@ -2914,6 +3419,9 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -2925,23 +3433,31 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString [,parent]) -> opens a dialog in order to ask the user for a string \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString, parent = None) -> Tuple[str, bool] \n\
+\n\
+Opens a dialog to ask the user for a string value. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
+\n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the dialog title \n\
-label : {str}\n\
-    is the label above the text box \n\
-defaultString : {str}\n\
-    is the default string in the text box\n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+title : str \n\
+    is the title of the dialog. \n\
+label : str \n\
+    is the label above the text box. \n\
+defaultString : str \n\
+    is the default string in the text box. \n\
+parent : uiItem, optional \n\
+    the dialog is modal with respect to ``parent`` or with respect to the \n\
+    main window of `itom`, if ``None``. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {tuple (str, bool)} \n\
-    A tuple where the first value contains the current string value. The second value is True if the dialog has been accepted, else False. \n\
+value : str \n\
+    The entered string value. \n\
+success : bool \n\
+    ``True`` if dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2955,16 +3471,16 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     QString title;
     QString label;
     QString defaultString;
-	PythonUi::PyUiItem *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|O&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultObj, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default string (string)[,parent(uiItem or derived calss]");
         return NULL;
     }
 
     bool ok;
     title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "title must be a string.");
@@ -2972,6 +3488,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 
     label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "label must be a string.");
@@ -2979,6 +3496,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 
     defaultString = PythonQtConversion::PyObjGetString(defaultObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "default string must be a string.");
@@ -2986,6 +3504,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -2994,13 +3513,23 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-
     QSharedPointer<bool> retOk(new bool);
     *retOk = false;
     QSharedPointer<QString> retStringValue(new QString(defaultString));
-	unsigned int objectID = parentItem ? parentItem->objectID : 0;
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText",Q_ARG(uint,objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QString, defaultString), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showInputDialogGetText",
+        Q_ARG(uint,objectID), 
+        Q_ARG(QString, title), 
+        Q_ARG(QString, label), 
+        Q_ARG(QString, defaultString), 
+        Q_ARG(QSharedPointer<bool>, retOk), 
+        Q_ARG(QSharedPointer<QString>, retStringValue), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3008,23 +3537,28 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
-    while(!locker.getSemaphore()->wait(100))
+    int counter = 0;
+    int c = 0;
+
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
             PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
     
     if(*retOk == true)
     {
@@ -3036,21 +3570,35 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiMsgInformation_doc,"msgInformation(title, text [, buttons, defaultButton, parent]) -> opens an information message box \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiMsgInformation_doc,"msgInformation(title, text, buttons = ui.MsgBoxOk, defaultButton = 0, parent = None) -> Tuple[int, str] \n\
+\n\
+Opens an information message box. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the message box title \n\
-text : {str}\n\
+title : str \n\
+    is the title of the message box. \n\
+text : str \n\
     is the message text \n\
-buttons : {int}, optional\n\
-    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-defaultButton : {int}, optional\n\
-    is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+buttons : int, optional \n\
+    is a flag value (bitmask) of the constants ``ui.MsgBoxXYZ``, where ``XYZ`` is \n\
+    a placeholder for different values. Each selected constant indicates the \n\
+    corresponding button to display (combine values be the | operator). \n\
+defaultButton : int, optional \n\
+    is the button constant (see ``buttons``, that should be set as default. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
+\n\
+Returns \n\
+------- \n\
+buttonID : int \n\
+    constant of the button that has been clicked to close the message box. \n\
+buttonText : str \n\
+    caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3060,21 +3608,35 @@ PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kw
     return PyUi_msgGeneral(self,args,kwds,1);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiMsgQuestion_doc,"msgQuestion(title, text [, buttons, defaultButton, parent]) -> opens a question message box \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiMsgQuestion_doc,"msgQuestion(title, text, buttons = ui.MsgBoxOk, defaultButton = 0, parent = None) -> Tuple[int, str] \n\
+\n\
+Opens a question message box. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the message box title \n\
-text : {str}\n\
+title : str \n\
+    is the title of the message box. \n\
+text : str \n\
     is the message text \n\
-buttons : {int}, optional\n\
-    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-defaultButton : {int}, optional\n\
-    is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+buttons : int, optional \n\
+    is a flag value (bitmask) of the constants ``ui.MsgBoxXYZ``, where ``XYZ`` is \n\
+    a placeholder for different values. Each selected constant indicates the \n\
+    corresponding button to display (combine values be the | operator). \n\
+defaultButton : int, optional \n\
+    is the button constant (see ``buttons``, that should be set as default. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
+\n\
+Returns \n\
+------- \n\
+buttonID : int \n\
+    constant of the button that has been clicked to close the message box. \n\
+buttonText : str \n\
+    caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3084,21 +3646,35 @@ PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,2);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiMsgWarning_doc,"msgWarning(title, text [, buttons, defaultButton, parent]) -> opens a warning message box \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiMsgWarning_doc,"msgWarning(title, text, buttons = ui.MsgBoxOk, defaultButton = 0, parent = None) -> Tuple[int, str] \n\
+\n\
+Opens a warning message box. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the message box title \n\
-text : {str}\n\
+title : str \n\
+    is the title of the message box. \n\
+text : str \n\
     is the message text \n\
-buttons : {int}, optional\n\
-    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-defaultButton : {int}, optional\n\
-    is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+buttons : int, optional \n\
+    is a flag value (bitmask) of the constants ``ui.MsgBoxXYZ``, where ``XYZ`` is \n\
+    a placeholder for different values. Each selected constant indicates the \n\
+    corresponding button to display (combine values be the | operator). \n\
+defaultButton : int, optional \n\
+    is the button constant (see ``buttons``, that should be set as default. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
+\n\
+Returns \n\
+------- \n\
+buttonID : int \n\
+    constant of the button that has been clicked to close the message box. \n\
+buttonText : str \n\
+    caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3108,21 +3684,35 @@ PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,3);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiMsgCritical_doc,"msgCritical(title, text [, buttons, defaultButton, parent]) -> opens a critical message box \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiMsgCritical_doc,"msgCritical(title, text, buttons = ui.MsgBoxOk, defaultButton = 0, parent = None) -> Tuple[int, str] \n\
+\n\
+Opens a critical message box. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-title : {str}\n\
-    is the message box title \n\
-text : {str}\n\
+title : str \n\
+    is the title of the message box. \n\
+text : str \n\
     is the message text \n\
-buttons : {int}, optional\n\
-    is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
-defaultButton : {int}, optional\n\
-    is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent dialog of the message box.\n\
+buttons : int, optional \n\
+    is a flag value (bitmask) of the constants ``ui.MsgBoxXYZ``, where ``XYZ`` is \n\
+    a placeholder for different values. Each selected constant indicates the \n\
+    corresponding button to display (combine values be the | operator). \n\
+defaultButton : int, optional \n\
+    is the button constant (see ``buttons``, that should be set as default. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
+\n\
+Returns \n\
+------- \n\
+buttonID : int \n\
+    constant of the button that has been clicked to close the message box. \n\
+buttonText : str \n\
+    caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3132,7 +3722,7 @@ PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
     return PyUi_msgGeneral(self,args,kwds,4);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *kwds, int type)
 {
     const char *kwlist[] = {"title", "text", "buttons", "defaultButton", "parent", NULL};
@@ -3146,12 +3736,12 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO&", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of type uiItem or derived types)");
         return NULL;
     }
 
     bool ok;
     title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "title must be a string.");
@@ -3159,6 +3749,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     }
 
     text = PythonQtConversion::PyObjGetString(textObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "text must be a string.");
@@ -3166,6 +3757,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3174,13 +3766,26 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-
     QSharedPointer<int> retButton(new int);
     *retButton = QMessageBox::Escape;
     QSharedPointer<QString> retButtonText(new QString());
     unsigned int objectID = parentItem ? parentItem->objectID : 0;
-    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, objectID), Q_ARG(int, type), Q_ARG(QString, title), Q_ARG(QString, text), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showMessageBox", 
+        Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(int, type), 
+        Q_ARG(QString, title), 
+        Q_ARG(QString, text), 
+        Q_ARG(int, buttons), 
+        Q_ARG(int, defaultButton), 
+        Q_ARG(QSharedPointer<int>, retButton), 
+        Q_ARG(QSharedPointer<QString>, retButtonText), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
+#if QT_VERSION < 0x050600
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
     //therefore we implemented this special while-wait-combination. The simple
@@ -3188,52 +3793,68 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     //counter is incremented in both cases in order to avoid that this case
     //is deleted in optimized release compilation
     int timeout = -1; //set the real timeout here (ms)
-    int counter = 0; 
-    int c=0;
-    while(!locker.getSemaphore()->wait(100))
+    int counter = 0;
+    int c = 0;
+
+    while (!locker.getSemaphore()->wait(100))
     {
         counter++;
+
         if (QCoreApplication::hasPendingEvents())
         {
             c++; //dummy action
             //QCoreApplication::processEvents(); //it is not necessary to call this here
         }
 
-        if (timeout >= 0 && counter > (timeout / 100) && c>=0)
+        if (timeout >= 0 && counter > (timeout / 100) && c >= 0)
         {
-            PyErr_SetString(PyExc_RuntimeError, "timeout while showing message box");
+            PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
             return NULL;
         }
     }
+#else
+    locker.getSemaphore()->wait(-1);
+#endif
 
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
     
     return Py_BuildValue("iN", *retButton, PythonQtConversion::QStringToPyObject(*retButtonText)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory [, options, parent]) -> opens a dialog to choose an existing directory \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetExistingDirectory_doc,"getExistingDirectory(caption, startDirectory, options = 0, parent = None) -> Optional[str] \n\
+\n\
+Opens a dialog to choose an existing directory. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-caption : {str}\n\
-    is the caption of this dialog \n\
-startDirectory : {str}\n\
-    is the start directory \n\
-options : {int}, optional\n\
-    is an or-combination of the following options (see 'QFileDialog::Option'): \n\
+caption : str \n\
+    is the caption of this dialog. \n\
+startDirectory : str \n\
+    is the start directory, visible in the dialog. \n\
+options : int, optional\n\
+    is a flag value (bitmask) of the following options (see ``QFileDialog::Option``): \n\
     \n\
-        * 1: ShowDirsOnly [default] \n\
-        * 2: DontResolveSymlinks \n\
-        * ... (for others see Qt-Help) \n\
-parent : {uiItem or derived classes}, optional\n\
-    is a parent dialog or window, this dialog becomes modal.\n\
+    * 1: ShowDirsOnly [default] \n\
+    * 2: DontResolveSymlinks \n\
+    * ... (for others see Qt-Help) \n\
+    \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {str, None} \n\
-    The selected directory is returned as absolute path or None if the dialog has been rejected. \n\
+directory : None or str \n\
+    The absolute path of the selected directory is returned or ``None`` if the dialog \n\
+    has been rejected. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3248,7 +3869,6 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     int options = 1; //QFileDialog::ShowDirsOnly
     PythonUi::PyUiItem *parentItem = NULL;
 
-
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &options, &PyUiItem_Converter, &parentItem))
     {
         return NULL;
@@ -3256,6 +3876,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 
     bool ok;
     caption = PythonQtConversion::PyObjGetString(captionObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
@@ -3263,6 +3884,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
 
     directory = PythonQtConversion::PyObjGetString(directoryObj, true, ok);
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
@@ -3270,6 +3892,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3278,11 +3901,17 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-
     unsigned int objectID = parentItem ? parentItem->objectID : 0;
     QSharedPointer<QString> sharedDir(new QString(directory));
 
-    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showFileDialogExistingDir", 
+        Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command 
+        Q_ARG(QString, caption), 
+        Q_ARG(QSharedPointer<QString>, sharedDir), 
+        Q_ARG(int, options), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3291,7 +3920,11 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if(sharedDir->isEmpty() || sharedDir->isNull())
     {
@@ -3299,39 +3932,47 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
     else
     {
-        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*sharedDir)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
+        return PythonQtConversion::QStringToPyObject(*sharedDir);
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetOpenFileNames_doc, "getOpenFileNames([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing existing files. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetOpenFileNames_doc, 
+"getOpenFileNames(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[List[str]] \n\
+\n\
+Shows a dialog for chosing one or multiple file names. The selected file(s) must exist. \n\
+\n\
+This method creates a modal file dialog to let the user select one or multiple file \n\
+names used for opening these files. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-caption : {str}, optional\n\
-    This is the optional title of the dialog, default: no title \n\
-startDirectory {str}, optional\n\
-    optional, if not indicated currentDirectory will be taken\n\
-filters : {str}, optional\n\
-    default = 0\n\
-    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-    selectedFilterIndex : {int}, optional \n\
-    is the index of filters which is set by default (0 is first entry) \n\
-options : {int}, optional\n\
-    default =  0 \n\
-    or-combination of enum values QFileDialog::Options \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent widget of this dialog \n\
+caption : str, optional \n\
+    This is the title of the dialog. \n\
+startDirectory : str, optional \n\
+    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    directory will be taken. \n\
+filters : str, optional \n\
+    Possible filter list or allowed file types / suffixes etc. The entries should be \n\
+    separated by ``;;``, for example ``Images (*.png *.jpg);;Text files (*.txt)``. \n\
+selectedFilterIndex : int, optional \n\
+    The index of the currently selected filter from ``filters``. \n\
+options : int, optional\n\
+    This corresponds to the Qt flag ``QFileDialog::Options``. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {strlist, None} \n\
-    filenames as stringList or None if dialog has been aborted.\n\
+selectedFileNames : None or list of str \n\
+    The selected file pathes or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
 --------- \n\
-getOpenFileName,\n\
-getSaveFileName"); 
+getOpenFileName, getSaveFileName"); 
 PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL };
@@ -3345,13 +3986,25 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     int options = 0;
     PythonUi::PyUiItem *parentItem = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(
+        args,
+        kwds,
+        "|OOOiiO&",
+        const_cast<char**>(kwlist),
+        &captionObj,
+        &directoryObj,
+        &filtersObj,
+        &selectedFilterIndex,
+        &options,
+        &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
 
     bool ok = true;
+
     caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
@@ -3359,6 +4012,7 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
 
     directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
@@ -3366,6 +4020,7 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
 
     filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "filters must be a string.");
@@ -3373,19 +4028,29 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if (uiOrga == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available.");
         return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
     unsigned int objectID = parentItem ? parentItem->objectID : 0;
-
     QSharedPointer<QStringList> files(new QStringList());
-    //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFilesOpenDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QStringList>, files), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    
+    QMetaObject::invokeMethod(
+        uiOrga,
+        "showFilesOpenDialog",
+        Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QString, caption), 
+        Q_ARG(QString, directory),
+        Q_ARG(QString, filters),
+        Q_ARG(QSharedPointer<QStringList>, files),
+        Q_ARG(int, selectedFilterIndex),
+        Q_ARG(int, options),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(-1))
     {
@@ -3394,7 +4059,11 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if (files->isEmpty())
     {
@@ -3402,39 +4071,46 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
     }
     else
     {
-        return Py_BuildValue("N", PythonQtConversion::QStringListToPyObject(*files)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
+        return PythonQtConversion::QStringListToPyObject(*files);
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetOpenFileName_doc,"getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetOpenFileName_doc,
+"getOpenFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
+\n\
+Shows a dialog for chosing a file name. The selected file must exist. \n\
+\n\
+This method creates a modal file dialog to let the user select a file name used for opening a file. \n\
+\n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
 ----------- \n\
-caption : {str}, optional\n\
-    This is the optional title of the dialog, default: no title \n\
-startDirectory {str}, optional\n\
-    optional, if not indicated currentDirectory will be taken\n\
-filters : {str}, optional\n\
-    default = 0\n\
-    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-selectedFilterIndex : {int}, optional \n\
-    is the index of filters which is set by default (0 is first entry) \n\
-options : {int}, optional\n\
-    default =  0 \n\
-    or-combination of enum values QFileDialog::Options \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent widget of this dialog \n\
+caption : str, optional \n\
+    This is the title of the dialog. \n\
+startDirectory : str, optional \n\
+    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    directory will be taken. \n\
+filters : str, optional \n\
+    Possible filter list or allowed file types / suffixes etc. The entries should be \n\
+    separated by ``;;``, for example ``Images (*.png *.jpg);;Text files (*.txt)``. \n\
+selectedFilterIndex : int, optional \n\
+    The index of the currently selected filter from ``filters``. \n\
+options : int, optional\n\
+    This corresponds to the Qt flag ``QFileDialog::Options``. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {str, None} \n\
-    filename as string or None if dialog has been aborted.\n\
+selectedFileName : None or str \n\
+    The selected file path or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
 --------- \n\
-getOpenFileNames,\n\
-getSaveFileName");
+getOpenFileNames, getSaveFileName");
 PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     
@@ -3449,13 +4125,24 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     int options = 0;
     PythonUi::PyUiItem *parentItem = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "|OOOiiO&", 
+        const_cast<char**>(kwlist), 
+        &captionObj, 
+        &directoryObj, 
+        &filtersObj, 
+        &selectedFilterIndex, 
+        &options, 
+        &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
 
     bool ok = true;
     caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
@@ -3463,6 +4150,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
@@ -3470,6 +4158,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "filters must be a string.");
@@ -3477,6 +4166,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3486,10 +4176,20 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
     unsigned int objectID = parentItem ? parentItem->objectID : 0;
-
     QSharedPointer<QString> file(new QString());
-    //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showFileOpenDialog", 
+        Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QString, caption), 
+        Q_ARG(QString, directory), 
+        Q_ARG(QString, filters), 
+        Q_ARG(QSharedPointer<QString>, file), 
+        Q_ARG(int, selectedFilterIndex), 
+        Q_ARG(int, options), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3498,7 +4198,11 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if(file->isEmpty() || file->isNull())
     {
@@ -3506,36 +4210,42 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*file)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
+        return PythonQtConversion::QStringToPyObject(*file);
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetSaveFileName_doc,"getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetSaveFileName_doc,
+"getSaveFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
+\n\
+Shows a dialog for chosing a file name. The selected file must not exist. \n\
 \n\
 This method creates a modal file dialog to let the user select a file name used for saving a file. \n\
 \n\
+For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
+\n\
 Parameters \n\
 ----------- \n\
-caption : {str}, optional\n\
-    This is the title of the dialog \n\
-startDirectory : {String}, optional\n\
-    if not indicated, the current working directory will be taken\n\
-filters : {str}, optional\n\
-    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
-selectedFilterIndex : {int}, optional\n\
-    default = 0\n\
-    is the index of filters which is set by default (0 is first entry) \n\
-options : {int}, optional\n\
-    default = 0\n\
-    or-combination of enum values QFileDialog::Options \n\
-parent : {uiItem or derived classes}, optional\n\
-    is the parent widget of this dialog\n\
+caption : str, optional \n\
+    This is the title of the dialog. \n\
+startDirectory : str, optional \n\
+    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    directory will be taken. \n\
+filters : str, optional \n\
+    Possible filter list or allowed file types / suffixes etc. The entries should be \n\
+    separated by ``;;``, for example ``Images (*.png *.jpg);;Text files (*.txt)``. \n\
+selectedFilterIndex : int, optional \n\
+    The index of the currently selected filter from ``filters``. \n\
+options : int, optional\n\
+    This corresponds to the Qt flag ``QFileDialog::Options``. \n\
+parent : uiItem, optional \n\
+    If not ``None``, the dialog will be shown modal to this ``parent`` window. \n\
+    Else, it is modal with respect to the main window of `itom`. \n\
 \n\
 Returns \n\
 ------- \n\
-out : {str, None} \n\
-    filename as string or None if dialog has been aborted.\n\
+selectedFileName : None or str \n\
+    The selected file path or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -3554,14 +4264,25 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     int options = 0;
     PythonUi::PyUiItem *parentItem = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "|OOOiiO&", 
+        const_cast<char**>(kwlist), 
+        &captionObj, 
+        &directoryObj, 
+        &filtersObj, 
+        &selectedFilterIndex, 
+        &options, 
+        &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
 
-    bool ok;
+    bool ok = true;
 
     caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
@@ -3569,6 +4290,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
@@ -3576,6 +4298,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
+
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "filters must be a string.");
@@ -3583,6 +4306,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3592,10 +4316,20 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
     unsigned int objectID = parentItem ? parentItem->objectID : 0;
-
     QSharedPointer<QString> file(new QString());
-    //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showFileSaveDialog", 
+        Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        Q_ARG(QString, caption), 
+        Q_ARG(QString, directory), 
+        Q_ARG(QString, filters), 
+        Q_ARG(QSharedPointer<QString>, file), 
+        Q_ARG(int, selectedFilterIndex), 
+        Q_ARG(int, options), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+    ); 
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3604,7 +4338,11 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     if(file->isEmpty() || file->isNull())
     {
@@ -3612,46 +4350,68 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*file)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
+        return PythonQtConversion::QStringToPyObject(*file);
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiCreateNewPluginWidget_doc, "createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiCreateNewPluginWidget_doc, "createNewPluginWidget(widgetName, *args, **kwds) -> ui \n\
 \n\
-This static class method initializes an instance of class ui from a widget, window, dialog or dockWidget that is implemented in an algorithm plugin. \n\
-Compared to the more detailed method 'createNewPluginWidget2', this method uses the following defaults for the windows appearance: \n\
+Loads a widget, defined in an itom algorithm plugin, and returns the :class:`ui` object, that references this widget. \n\
 \n\
-    * the type of the widget is derived from the widget itself and cannot be adjusted \n\
-    * deleteOnClose = false, the widget or windows will only be hidden if the user clicks the close button \n\
-    * childOfMainWindow = true, the widget or windows is a child of the main window without own symbol in the task bar \n\
-    * dockWidgetArea = ui.TOPDOCKWIDGETAREA, if the widget is derived from QDockWidget, the dock widget is docked at that location \n\
-    * buttonBarType = ui.BUTTONBAR_NO, if a dialog is created (if the plugin delivers a widget and no windows, dialog or dock widget), the dialog has no automatically generated OK, Cancel, ... buttons \n\
+Itom algorithm plugins cannot only contain algorithms, callable by Python, but also \n\
+methods, that return a customized user-interface, widget etc. Use this method to \n\
+initialize such an user-interface and returns its corresponding :class:`ui` object. \n\
 \n\
-If you want to have other default parameters than these ones, call 'createNewPluginWidget2'. \n\
+For a list of available widget methods, see :meth:`widgetHelp`. Compared to the more \n\
+detailed method :meth:`createNewPluginWidget2`, this method uses the following defaults \n\
+for the windows appearance: \n\
+\n\
+* The ``type`` of the widget is derived from the widget itself and cannot be adjusted, \n\
+* ``deleteOnClose = False``: The widget or windows will only be hidden if the user \n\
+  clicks the close button, \n\
+* ``childOfMainWindow = True``: The widget or windows is a child of the main window \n\
+  without own symbol in the taskbar, \n\
+* ``dockWidgetArea = ui.TOPDOCKWIDGETAREA``: If the widget is derived from `QDockWidget`, \n\
+  the dock widget is docked at that location \n\
+* ``buttonBarType = ui.BUTTONBAR_NO``, if a dialog is created (if the plugin delivers a \n\
+  widget and no windows, dialog or dock widget), the dialog has no automatically \n\
+  generated ``OK``, ``Cancel``, ``...`` buttons \n\
+\n\
+If you want to have other default parameters than these ones, call :meth:`createNewPluginWidget2`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-widgetName : {str} \n\
-    name of algorithm widget \n\
-mandparams, optparams : {arbitrary} \n\
-    parameters to pass to the plugin. The parameters are parsed and unnamed parameters are used in their \
-    incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
-    with name as well but after the first named parameter no more unnamed parameters are allowed.\n\
+widgetName : str \n\
+    Name of algorithm widget method. \n\
+*args \n\
+    Further positional arguments, that are parsed and passed to the widget creation method. \n\
+    These arguments are used first to initialize all mandatory parameters, followed by \n\
+    the optional ones. \n\
+**kwds \n\
+    Keyword-based arguments, that are parsed and passed together with the positional \n\
+    arguments to the widget creation method. If one argument is given by its keyword, \n\
+    no further positional arguments can follow. For this, the mandatory and optional \n\
+    parameters of the widget creation method can be considered to be in one list, where \n\
+    the optional parameters follow after the mandatory ones. \n\
 \n\
 Returns \n\
 ------- \n\
-instance of type 'ui'. The type of the ui is mainly defined by the type of the widget. If it is derived from QMainWindow, a window is opened; if \n\
-it is derived from QDockWidget a dock widget at the top dock widget area is created, in all other cases a dialog is created. \n\
+ui \n\
+    :class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
+    the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
+    a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
+    all other cases a dialog is created. \n\
 \n\
 Notes \n\
 ----- \n\
-Unlike it is the case at the creation of ui's from ui files, you can not directly parameterize behaviours like the \n\
-deleteOnClose flag. This can however be done using setAttribute. \n\
+Unlike it is the case at the creation of ui's from ui files, you can not directly \n\
+parameterize behaviours like the ``deleteOnClose`` flag. This can however be done using \n\
+:meth:`setAttribute`. \n\
 \n\
 See Also \n\
 --------- \n\
-createNewPluginWidget2");
+createNewPluginWidget2, widgetHelp");
 PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     int length = PyTuple_Size(args);
@@ -3668,9 +4428,10 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     PyObject *pnameObj = NULL;
     PyObject *params = NULL;
     QString algoWidgetName;
-    bool ok;
+    bool ok = true;
 
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
@@ -3679,6 +4440,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
     pnameObj = PyTuple_GetItem(args, 0);
     algoWidgetName = PythonQtConversion::PyObjGetString(pnameObj, true, ok);
+
     if(!ok)
     {
         PyErr_SetString(PyExc_TypeError, QObject::tr("the first parameter must contain the widget name as string").toUtf8().data());
@@ -3686,6 +4448,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     }
 
     const ito::AddInAlgo::AlgoWidgetDef *def = AIM->getAlgoWidgetDef( algoWidgetName );
+
     if(def == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toUtf8().data());
@@ -3693,6 +4456,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     }
 
     const ito::FilterParams *filterParams = AIM->getHashedFilterParams(def->m_paramFunc);
+
     if(!filterParams)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
@@ -3700,6 +4464,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     }
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args)); //new reference
+
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)
     {
         Py_XDECREF(params);
@@ -3731,7 +4496,19 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     QSharedPointer<QByteArray> className(new QByteArray());
     *dialogHandle = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtons), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "loadPluginWidget", 
+        Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), 
+        Q_ARG(int, uiDescription), 
+        Q_ARG(StringMap, dialogButtons), 
+        Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), 
+        Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), 
+        Q_ARG(QSharedPointer<uint>, dialogHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(QSharedPointer<QByteArray>, className), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3740,7 +4517,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     PythonUi::PyUi *dialog;
 
@@ -3753,7 +4534,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
         if(*dialogHandle)
         {
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(
+                uiOrga, 
+                "deleteDialog", 
+                Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+                Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); 
     
             if(!locker2.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -3780,63 +4565,92 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiCreateNewPluginWidget2_doc, "createNewPluginWidget2(widgetName [, paramsArgs, paramsDict, type = -1, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiCreateNewPluginWidget2_doc, 
+"createNewPluginWidget2(widgetName, paramsArgs = [], paramsDict = {}, type = 0xFF, dialogButtonBar = ui.BUTTONBAR_NO, dialogButtons = {}, childOfMainWindow = True, deleteOnClose = False, dockWidgetArea = ui.TOPDOCKWIDGETAREA) -> ui \n\
+\n\
+Loads a widget, defined in an itom algorithm plugin, and returns the :class:`ui` object, that references this widget. \n\
+\n\
+Itom algorithm plugins cannot only contain algorithms, callable by Python, but also \n\
+methods, that return a customized user-interface, widget etc. Use this method to \n\
+initialize such an user-interface and returns its corresponding :class:`ui` object. \n\
+\n\
+For a list of available widget methods, see :meth:`widgetHelp`. \n\
 \n\
 Parameters \n\
 ----------- \n\
-widgetName : {str} \n\
-    name of algorithm widget \n\
-paramsArgs : {tuple of arbitrary parameters} \n\
-    see paramsDict \n\
-paramsDict : {dict of arbitrary parameters} \n\
-    The widget creation method in the plugin can depend on several mandatory or optional parameters. \n\
-    For their initialization, the mandatory and optional parameters are considered to be stacked together. \n\
-    At first, the paramsArgs sequence is used to assign a certain number of parameters beginning at \n\
-    the mandatory ones. If all paramsArgs values are assigned, the keyword-based values in paramsDict \n\
-    are tried to be assigned to not yet used mandatory or optional parameters. All mandatory parameters \n\
-    must be given (use widgetHelp(widgetName) to obtain information about all required parameters. \n\
-type : {int}, optional \n\
-    display type: \n\
+widgetName : str \n\
+    Name of algorithm widget method. \n\
+paramsArgs : tuple \n\
+    See ``paramsDict``. \n\
+paramsDict : dict \n\
+    The widget creation method in the algorithm plugin can depend on several mandatory \n\
+    and / or optional parameters. For their initialization, the mandatory and optional \n\
+    parameters are considered to be stacked together. At first, the ``paramsArgs`` \n\
+    sequence is used to assign a certain number of parameters beginning with the \n\
+    mandatory ones. If all ``paramsArgs`` values are assigned, the keyword-based \n\
+    values in ``paramsDict`` are tried to be assigned to not yet used mandatory or \n\
+    optional parameters. All mandatory parameters must be given (see \n\
+    ``widgetHelp(widgetName)`` to obtain information about all required parameters. \n\
+type : int, optional \n\
+    Desired type of the newly created widget (a widget can also be a standalone dialog, \n\
+    dockwidget or window): \n\
     \n\
-        * 255 (default) : type is derived from type of widget, \n\
-        * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
-        * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
-        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
-        * 3 (ui.TYPECENTRALWIDGET): ui-file must be a widget or mainWindow and is included in the central area of itom, above the command line \n\
-dialogButtonBar :  {int}, optional \n\
-    Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    * 255 (default) : the type is derived from the original type of the widget, \n\
+    * 0 (``ui.TYPEDIALOG``): the ui-file is embedded in auto-created dialog, \n\
+    * 1 (``ui.TYPEWINDOW``): the ui-file is handled as main window, \n\
+    * 2 (``ui.TYPEDOCKWIDGET``): the ui-file is handled as dock-widget and appended \n\
+        to the main-window dock area, \n\
+    * 3 (``ui.TYPECENTRALWIDGET``): the ui-file must be a widget or main window \n\
+        and is included in the central area of itom, above the command line. \n\
     \n\
-        * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
-        * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
-        * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
-    dialogButtons : {dict}, optional \n\
-    every dictionary-entry is one button. key is the role, value is the button text \n\
-childOfMainWindow :  {bool}, optional \n\
-    for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
-deleteOnClose : {bool}, optional \n\
-    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
-dockWidgetArea : {int}, optional \n\
-    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+dialogButtonBar : int, optional \n\
+    Only for ``type`` ``ui.TYPEDIALOG (0)``: Indicates if buttons should be automatically \n\
+    added to the dialog: \n\
     \n\
-        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
-        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
-        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
-        * 8 (ui.BOTTOMDOCKWIDGETAREA) \n\
+    * 0 (``ui.BUTTONBAR_NO``): do not add any buttons (default), \n\
+    * 1 (``ui.BUTTONBAR_HORIZONTAL``): add a horizontal button bar, \n\
+    * 2 (``ui.BUTTONBAR_VERTICAL``): add a vertical button bar. \n\
+    \n\
+dialogButtons : dict, optional \n\
+    Only relevant if ``dialogButtonBar`` is not ``ui.BUTTONBAR_NO``: This dictionary \n\
+    contains all buttons, that should be added to the button bar. For every entry, \n\
+    the key is the role name of the button (enum ``QDialogButtonBox::ButtonRole``, \n\
+    e.g. 'AcceptRole', 'RejectRole', 'ApplyRole', 'YesRole', 'NoRole'). The value is \n\
+    the text of the button. \n\
+childOfMainWindow : bool, optional \n\
+    For type ``ui.TYPEDIALOG`` and ``ui.TYPEWINDOW`` only: Indicates if the window \n\
+    should be a child of the itom main window. If ``False``, this window has its own \n\
+    icon in the taskbar of the operating system. \n\
+deleteOnClose : bool, optional \n\
+    Indicates if the widget / window / dialog should be deleted if the user closes it \n\
+    or if it is hidden. If it is hidden, it can be shown again using :meth:`show`. \n\
+dockWidgetArea : int, optional \n\
+    Only for ``type`` ``ui.TYPEDOCKWIDGET (2)``. Indicates the position where the \n\
+    dock widget should be placed: \n\
+    \n\
+    * 1 : ``ui.LEFTDOCKWIDGETAREA`` \n\
+    * 2 : ``ui.RIGHTDOCKWIDGETAREA`` \n\
+    * 4 : ``ui.TOPDOCKWIDGETAREA`` \n\
+    * 8 : ``ui.BOTTOMDOCKWIDGETAREA`` \n\
 \n\
 Returns \n\
 ------- \n\
-instance of type 'ui'. The type of the ui is mainly defined by the type of the widget. If it is derived from QMainWindow, a window is opened; if \n\
-it is derived from QDockWidget a dock widget at the top dock widget area is created, in all other cases a dialog is created. \n\
+ui \n\
+    :class:`ui` object, that represents the loaded widget, dialog or window. The type of \n\
+    the ui is mainly defined by the type of the widget. If it is derived from `QMainWindow`, \n\
+    a window is opened; if it is derived from `QDockWidget` a dock widget is created, in \n\
+    all other cases a dialog is created. \n\
 \n\
 Notes \n\
 ----- \n\
-Unlike it is the case at the creation of ui's from ui files, you can not directly parameterize behaviours like the \n\
-deleteOnClose flag. This can however be done using setAttribute. \n\
+Unlike it is the case at the creation of ui's from ui files, you can not directly \n\
+parameterize behaviours like the ``deleteOnClose`` flag. This can however be done using \n\
+:meth:`setAttribute`. \n\
 \n\
 See Also \n\
 --------- \n\
-createNewPluginWidget");
+createNewPluginWidget, widgetHelp");
 PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = { "widgetName", "paramsArgs", "paramsDict", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL };
@@ -3855,7 +4669,20 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
         return 0;
     }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|O!O!iiO!bbi", const_cast<char**>(kwlist), &widgetName, &PyTuple_Type, &paramsArgs, &PyDict_Type, &paramsDict, &winType, &buttonBarType, &PyDict_Type, &dialogButtons, &childOfMainWindow, &deleteOnClose, &dockWidgetArea))
+    if (!PyArg_ParseTupleAndKeywords(
+        args, 
+        kwds, 
+        "s|O!O!iiO!bbi", 
+        const_cast<char**>(kwlist), 
+        &widgetName, 
+        &PyTuple_Type, &paramsArgs, 
+        &PyDict_Type, &paramsDict, 
+        &winType, 
+        &buttonBarType, 
+        &PyDict_Type, &dialogButtons, 
+        &childOfMainWindow, 
+        &deleteOnClose, 
+        &dockWidgetArea))
     {
         return NULL;
     }
@@ -3864,6 +4691,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     QString algoWidgetName = widgetName;
 
     ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
@@ -3871,6 +4699,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     }
 
     const ito::AddInAlgo::AlgoWidgetDef *def = AIM->getAlgoWidgetDef(algoWidgetName);
+
     if (def == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toUtf8().data());
@@ -3878,6 +4707,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     }
 
     const ito::FilterParams *filterParams = AIM->getHashedFilterParams(def->m_paramFunc);
+
     if (!filterParams)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
@@ -3891,6 +4721,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if (uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3912,6 +4743,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
         {
             keyString = PythonQtConversion::PyObjGetString(key, true, ok);
             valueString = PythonQtConversion::PyObjGetString(value, true, ok);
+
             if (keyString.isNull() || valueString.isNull())
             {
                 std::cout << "Warning while parsing dialogButtons-dictionary. At least one element does not contain a string as key and value\n" << std::endl;
@@ -3925,13 +4757,24 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QSharedPointer<QByteArray> className(new QByteArray());
     *dialogHandle = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "loadPluginWidget", 
+        Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), 
+        Q_ARG(int, uiDescription), 
+        Q_ARG(StringMap, dialogButtonMap), 
+        Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), 
+        Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), 
+        Q_ARG(QSharedPointer<uint>, dialogHandle), 
+        Q_ARG(QSharedPointer<uint>, objectID), 
+        Q_ARG(QSharedPointer<QByteArray>, className), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(-1))
     {
@@ -3940,7 +4783,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     }
 
     retValue = locker.getSemaphore()->returnValue;
-    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (!PythonCommon::transformRetValToPyException(retValue))
+    {
+        return NULL;
+    }
 
     PythonUi::PyUi *dialog;
 
@@ -3953,7 +4800,11 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
         if (*dialogHandle)
         {
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(
+                uiOrga, 
+                "deleteDialog", 
+                Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+                Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); 
 
             if (!locker2.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -3980,11 +4831,21 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiAvailableWidgets_doc, "availableWidgets() -> return a list of currently available widgets (that can be directly loaded in ui-files at runtime)");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiAvailableWidgets_doc, "availableWidgets() -> List[str] \n\
+\n\
+List of class names of all available widgets that can be directly loaded in an ui-file at runtime. \n\
+\n\
+Returns \n\
+------- \n\
+list of str \n\
+    A list of the class names of all widgets, that can be directly loaded in an \n\
+    user interface at runtime. These widgets can be built-in widgets of Qt as well \n\
+    as additional widgets from designer plugins (like itom plots or other itom widgets.");
 PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
     if (uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
@@ -3995,7 +4856,11 @@ PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
     ito::RetVal retValue = retOk;
 
     QSharedPointer<QStringList> widgetNames(new QStringList);
-    QMetaObject::invokeMethod(uiOrga, "getAvailableWidgetNames",  Q_ARG(QSharedPointer<QStringList>, widgetNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "getAvailableWidgetNames",  
+        Q_ARG(QSharedPointer<QStringList>, widgetNames), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(5000))
     {
@@ -4007,7 +4872,7 @@ PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUi_methods[] = {
         {"show", (PyCFunction)PyUi_show,     METH_VARARGS, pyUiShow_doc},
         {"hide", (PyCFunction)PyUi_hide, METH_NOARGS, pyUiHide_doc},
@@ -4031,12 +4896,12 @@ PyMethodDef PythonUi::PyUi_methods[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMemberDef PythonUi::PyUi_members[] = {
         {NULL}  /* Sentinel */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonUi::PyUiModule = {
         PyModuleDef_HEAD_INIT,
         "ui",
@@ -4045,7 +4910,7 @@ PyModuleDef PythonUi::PyUiModule = {
         NULL, NULL, NULL, NULL, NULL
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonUi::PyUi_getseters[] = {
     {NULL}  /* Sentinel */
 };
@@ -4091,7 +4956,7 @@ PyTypeObject PythonUi::PyUiType = {
         PyUi_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
@@ -4124,7 +4989,7 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
     value = Py_BuildValue("i", 2);
     PyDict_SetItemString(tp_dict, "TYPEDOCKWIDGET", value);
     Py_DECREF(value);
-	value = Py_BuildValue("i", 3);
+    value = Py_BuildValue("i", 3);
     PyDict_SetItemString(tp_dict, "TYPECENTRALWIDGET", value);
     Py_DECREF(value);
 

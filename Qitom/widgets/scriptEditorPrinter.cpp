@@ -54,7 +54,7 @@ ScriptEditorPrinter::~ScriptEditorPrinter()
 QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRect& area, int pageNumber, int pageCount)
 {
     painter.save();
-    painter.setFont(QFont("Helvetica", 10, QFont::Normal, false));
+    painter.setFont(QFont("Verdana", 10, QFont::Normal, false));
     painter.setPen(QColor(Qt::black)); 
 
     QString filename = this->docName();

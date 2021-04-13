@@ -45,30 +45,30 @@
 #include <QTemporaryFile>
 #include <QDir>
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 
 namespace ito
 {
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //fix since PCL 1.8.0 changed its definition for the detailed error messages of their exception class from std::string to const char*
 /*static*/ void PythonPCL::PythonPCL_SetString(PyObject *exception, const char *string)
 {
     PyErr_SetString(exception, string);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //fix since PCL 1.8.0 changed its definition for the detailed error messages of their exception class from std::string to const char*
 /*static*/ void PythonPCL::PythonPCL_SetString(PyObject *exception, const std::string &string)
 {
     PyErr_SetString(exception, string.c_str());
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPointCloud_addTpDict(PyObject * /*tp_dict*/)
 {
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPointCloud_dealloc(PyPointCloud* self)
 {
     DELETE_AND_SET_NULL(self->data);
@@ -77,7 +77,7 @@ void PythonPCL::PyPointCloud_dealloc(PyPointCloud* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyPointCloud* self = reinterpret_cast<PyPointCloud *>(type->tp_alloc(type, 0));
@@ -90,38 +90,51 @@ PyObject* PythonPCL::PyPointCloud_new(PyTypeObject *type, PyObject* /*args*/, Py
     return reinterpret_cast<PyObject *>(self);
 };
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pointCloudInit_doc,"pointCloud(type = point.PointInvalid | pointCloud, indices = None | width, height, point = None | point) -> creates new point cloud.  \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pointCloudInit_doc,"pointCloud(type = point.PointInvalid) -> pointCloud \\\n\
+pointCloud(pointCloud, indices = None) -> pointCloud \\\n\
+pointCloud(width, height, point = None) -> pointCloud \\\n\
+pointCloud(singlePoint) -> pointCloud  \n\
+\n\
+Creates new point cloud. \n\
+\n\
+Possible point types of this point cloud are: \n\
+\n\
+* ``point.PointXYZ`` \n\
+* ``point.PointXYZI`` \n\
+* ``point.PointXYZRGBA`` \n\
+* ``point.PointXYZNormal`` \n\
+* ``point.PointXYZINormal`` \n\
+* ``point.PointXYZRGBNormal`` \n\
 \n\
 Parameters \n\
 ----------- \n\
-type : point-type (e.g. point.PointXYZ, see Notes) \n\
-pointCloud : {pointCloud} \n\
-    another pointCloud instance which is appended at this point cloud \n\
-indices : {sequence}, optional \n\
-    only the indices of the given pointCloud will be appended to this point cloud \n\
-width : {int} \n\
-    width of the new point cloud \n\
-height : {int} \n\
-    height of the new point cloud (the point cloud is dense if height > 1) \n\
-point : {point} \n\
-    single point instance. This point cloud is filled up with elements of this point. If width and height \n\
-    are given, every element is set to this point, else the point cloud only consists of this single point. \n\
+type : int, optional \n\
+    The type of this point cloud. \n\
+pointCloud : pointCloud \n\
+    Creates a point cloud from this ``pointCloud``. \n\
+indices : sequence of int or iterable of int, optional \n\
+    Only the indices of the given ``pointCloud`` are used to create this cloud object. \n\
+width : int \n\
+    Width of the new point cloud. \n\
+height : int \n\
+    Height of the new point cloud (the point cloud is ``dense`` if height > 1). \n\
+point : point, optional \n\
+    If a ``width`` and / or ``height`` is given, this optional ``point`` is used \n\
+    to initialize every point in the cloud with this value. If the constructor \n\
+    overload with one ``point`` argument is used, this cloud only consists of this \n\
+    one point. If no ``point`` is given, by a ``width`` and ``height``, an invalid \n\
+    cloud type will be initialized. \n\
+singlePoint : point \n\
+    Creates a point cloud with this ``singlePoint``. The type is also derived \n\
+    from the type of the ``singlePoint``. \n\
 \n\
-Notes \n\
------- \n\
-Possible types: \n\
-\n\
-* point.PointXYZ \n\
-* point.PointXYZI \n\
-* point.PointXYZRGBA \n\
-* point.PointXYZNormal \n\
-* point.PointXYZINormal \n\
-* point.PointXYZRGBNormal\n\
-");
-int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * /*kwds*/)
+Returns \n\
+-------\n\
+cloud : pointCloud \n\
+    the initialized point cloud");
+int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
-
     int pclType = ito::pclInvalid;
     PyObject *copyConstr = NULL;
     PyObject *singlePoint = NULL;
@@ -129,33 +142,24 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
     unsigned int width, height;
     bool done = false;
 
-    //0. check for call without arguments
+    static const char *kwlist1[] = { "type", NULL };
+    static const char *kwlist2[] = { "pointCloud", "indices", NULL };
+    static const char *kwlist3[] = { "singlePoint", NULL };
+    static const char *kwlist3depr[] = { "point", NULL };
+    static const char *kwlist4[] = { "width", "height", "point", NULL };
+
+    //0. check for args == NULL
     if (args == NULL)
     {
-        try
-        {
-            self->data = new ito::PCLPointCloud();
-        }
-        catch(std::bad_alloc &/*ba*/)
-        {
-            self->data = NULL;
-            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
-            return -1;
-        }
-        catch(...)
-        {
-            self->data = NULL;
-            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
-            return -1;
-        }
-
         done = true;
+        self->data = new ito::PCLPointCloud(ito::pclInvalid);
     }
 
     //1. check for type only
-    if (!done && PyArg_ParseTuple(args,"|i", &pclType))
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "|i", const_cast<char **>(kwlist1), &pclType))
     {
         done = true;
+
         switch(pclType)
         {
         case ito::pclInvalid:
@@ -194,9 +198,11 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 
     //2. check for copy constructor
     PyErr_Clear();
-    if (!done && PyArg_ParseTuple(args, "O!|O", &PythonPCL::PyPointCloudType, &copyConstr, &pySeq))
+
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!|O", const_cast<char **>(kwlist2), &PythonPCL::PyPointCloudType, &copyConstr, &pySeq))
     {
         PyPointCloud *copyConstr2 = reinterpret_cast<PyPointCloud*>(copyConstr);
+
         if (copyConstr2->data != NULL)
         {
             if (pySeq == NULL)
@@ -334,9 +340,11 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
 
     //3. check for width_, height_, value
     PyErr_Clear();
-    if (!done && PyArg_ParseTuple(args, "II|O!", &width, &height, &PythonPCL::PyPointType, &singlePoint))
+
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "II|O!", const_cast<char **>(kwlist4), &width, &height, &PythonPCL::PyPointType, &singlePoint))
     {
-        ito::PCLPoint point;
+        ito::PCLPoint point; // invalid
+
         if (singlePoint != NULL)
         {
             PyPoint *pyPoint = (PyPoint*)singlePoint;
@@ -363,11 +371,13 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
     }
 
-    //4. check for single point
+    //4. check for single point (with keyword "singlePoint", since itom 4.1)
     PyErr_Clear();
-    if (!done && PyArg_ParseTuple(args, "O!", &PythonPCL::PyPointType, &singlePoint))
+
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char **>(kwlist3), &PythonPCL::PyPointType, &singlePoint))
     {
         ito::PCLPoint point;
+
         if (singlePoint != NULL)
         {
             PyPoint *pyPoint = (PyPoint*)singlePoint;
@@ -394,31 +404,66 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         }
     }
 
-    if (done == false)
+    //5. check for single point (with deprecated keyword "point", itom <= 4.0)
+    PyErr_Clear();
+
+    if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char **>(kwlist3depr), &PythonPCL::PyPointType, &singlePoint))
     {
-        PyErr_SetString(PyExc_RuntimeError, "arguments for constructor must be a type value, another instance of point cloud, an instance of point or width, height and an instance of point");
+        ito::PCLPoint point;
+
+        if (singlePoint != NULL)
+        {
+            PyPoint *pyPoint = (PyPoint*)singlePoint;
+            point = *(pyPoint->point);
+        }
+
+        done = true;
+
+        try
+        {
+            self->data = new ito::PCLPointCloud(1, 1, point.getType(), point);
+        }
+        catch (std::bad_alloc &/*ba*/)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+            return -1;
+        }
+        catch (...)
+        {
+            self->data = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+            return -1;
+        }
+    }
+
+    if (!done)
+    {
+        PyErr_SetString(
+            PyExc_RuntimeError, 
+            "arguments for constructor must be a type value, another instance of "
+            "point cloud, an instance of point or width, height and an instance of point"
+        );
+
         return -1;
     }
 
     return 0;
 };
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point cloud [read-only]\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudType_doc,
+"int : Gets the point type of this point cloud. \n\
 \n\
 Point types can be: \n\
 \n\
-* pointCloud.PointInvalid \n\
-* pointCloud.PointXYZ \n\
-* pointCloud.PointXYZI \n\
-* pointCloud.PointXYZRGBA \n\
-* pointCloud.PointXYZNormal \n\
-* pointCloud.PointXYZINormal \n\
-* pointCloud.PointXYZRGBNormal \n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+* ``point.PointInvalid`` = 0x00 \n\
+* ``point.PointXYZ`` = 0x01 \n\
+* ``point.PointXYZI`` = 0x02 \n\
+* ``point.PointXYZRGBA`` = 0x04 \n\
+* ``point.PointXYZNormal`` = 0x08 \n\
+* ``point.PointXYZINormal`` = 0x10 \n\
+* ``point.PointXYZRGBNormal`` 0x20");
 PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -478,12 +523,9 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudSize_doc,"returns total number of points in point cloud\n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudSize_doc,
+"int : Gets the total number of points in this point cloud");
 PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -505,16 +547,15 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
     return Py_BuildValue("i", size);
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudHeight_doc,"returns height of point cloud if organized as regular grid (organized == true), else 1. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudHeight_doc,
+"int : Gets the height of this point cloud if it is organized as regular grid, else 1. \n\
 \n\
-The height of a point cloud is equal to 1, if the points in the point cloud are not organized. If it is organized, \n\
-all points are assumed to lie on a regular grid, such that neighbouring points in the grid are adjacent in space, too. \n\
-In this case, height is the number of rows in this grid. The total number of points is then height * width. \n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+The height of a point cloud is equal to ``1``, if the points in the point cloud are \n\
+not organized. If the cloud is organized, all points are assumed to lie on a regular \n\
+grid, such that neighbouring points in the grid are adjacent in space, too. \n\
+In this case, the height is the number of rows in this grid. The total number of \n\
+points is then ``height * width``.");
 PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -537,16 +578,15 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
     return Py_BuildValue("I", height);
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudWidth_doc,"returns width of point cloud if organized as regular grid (organized == true), else equal to size \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudWidth_doc,
+"int : Gets the width of point cloud (if the cloud is not organized, since is equal to ``size``). \n\
 \n\
-The width of a point cloud is equal to the number of total points, if the points in the point cloud are not organized. If it is organized, \n\
-all points are assumed to lie on a regular grid, such that neighbouring points in the grid are adjacent in space, too. \n\
-In this case, width is the number of columns in this grid. The total number of points is then height * width. \n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+The width of a point cloud is equal to the number of total points, if the points in the \n\
+point cloud are not organized. If it is organized, all points are assumed to lie on a \n\
+regular grid, such that neighbouring points in the grid are adjacent in space, too. \n\
+In this case, the width is the number of columns in this grid. The total number of \n\
+points is then ``height * width``.");
 PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -569,12 +609,9 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
     return Py_BuildValue("I", width);
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudEmpty_doc,"returns whether this point cloud is empty (size == 0)\n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudEmpty_doc,
+"bool : Returns ``true`` if this cloud is empty (``size`` = 0).");
 PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -594,20 +631,22 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
         return NULL;
     }
 
-    if (empty) Py_RETURN_TRUE;
+    if (empty)
+    {
+        Py_RETURN_TRUE;
+    }
+
     Py_RETURN_FALSE;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudOrganized_doc,"returns True if this point cloud is organized, else False\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudOrganized_doc,
+"bool : returns ``True`` if this point cloud is organized, else ``False``. \n\
 \n\
-Points in an organized point cloud are assumed to lie on a regular grid, defined by height and width. \n\
-Neighbouring points in this grid are the neighbours in space, too. An unorganized point cloud has \n\
-always a height equal to 1 and width equal to the total number of points. \n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+Points in an organized point cloud are assumed to lie on a regular grid, defined \n\
+by ``height`` and ``width``. Neighbouring points in this grid are the neighbours \n\
+in space, too. An unorganized point cloud has always a height equal to ``1`` and \n\
+``width`` equal to the total number of points.");
 PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -631,8 +670,9 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
     Py_RETURN_FALSE;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudDense_doc,"specifies if all the data in points is finite (true), or whether it might contain Inf/NaN values (false)");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudDense_doc,
+"bool : Gets or sets if all points have finite coordinates (``True``), or if some might contain Inf / NaN values (``False``).");
 PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -696,14 +736,12 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFields_doc,"get available field names of point cloud\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudFields_doc,
+"list of str : Gets a list of all available field names of this point cloud. \n\
 \n\
-This property returns a list of field names that are contained in this cloud, e.g. ['x', 'y', 'z']. \n\
-\n\
-Notes \n\
------ \n\
-This attribute is readonly");
+This property returns a list of field names that are contained in this cloud, \n\
+e.g. ['x', 'y', 'z'].");
 PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -737,17 +775,19 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     return result;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudScaleXYZ_doc, "scaleXYZ(x = 1.0, y = 1.0, z = 1.0) -> scale the x, y and z components of every point by the given values . \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudScaleXYZ_doc, "scaleXYZ(x = 1.0, y = 1.0, z = 1.0) \n\
+\n\
+Scales the x, y and z components of every point by the given values. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {float}, optional \n\
-    scaling factor for x-component (default: 1.0) \n\
-y : {float}, optional \n\
-    scaling factor for y-component (default: 1.0) \n\
-z : {float}, optional \n\
-    scaling factor for z-component (default: 1.0)");
+x : float, optional \n\
+    scaling factor for the ``x``-component. \n\
+y : float, optional \n\
+    scaling factor for the ``y``-component. \n\
+z : float, optional \n\
+    scaling factor for the ``z``-component.");
 PyObject* PythonPCL::PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
     if (self->data == NULL)
@@ -773,17 +813,19 @@ PyObject* PythonPCL::PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, P
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudMoveXYZ_doc, "moveXYZ(x = 0.0, y = 0.0, z = 0.0) -> move the x, y and z components of every point by the given values. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudMoveXYZ_doc, "moveXYZ(x = 0.0, y = 0.0, z = 0.0) \n\
+\n\
+Moves the x, y and z components of every point by the given offsets. \n\
 \n\
 Parameters \n\
 ----------- \n\
-x : {float}, optional \n\
-    offset value for x-component (default: 0.0) \n\
-y : {float}, optional \n\
-    offset value for y-component (default: 0.0) \n\
-z : {float}, optional \n\
-    offset value for z-component (default: 0.0)");
+x : float, optional \n\
+    offset value for the ``x``-component \n\
+y : float, optional \n\
+    offset value for the ``y``-component \n\
+z : float, optional \n\
+    offset value for the ``z``-component");
 PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
     if (self->data == NULL)
@@ -808,18 +850,52 @@ PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, Py
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudAppend_doc,"append(point) -> appends point or all points from a given point cloud to the end of the point cloud. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudAppend_doc,"append(pointCloud) -> None \\\n\
+append(point) -> None \\\n\
+append(xyz) -> None \\\n\
+append(xyzi) -> None \\\n\
+append(xyz, rgba) -> None \\\n\
+append(xyz_normal_curvature) -> None \\\n\
+append(xyz_i_normal_curvature) -> None \\\n\
+append(xyz_normal_curvature, rgba) -> None \n\
+\n\
+Appends another point cloud or a point, e.g. given by its coordinates etc., to this cloud. \n\
+\n\
+In all cases, the type of the point or pointCloud, or the correct overload must \n\
+fit to the type of this point cloud. Else a ``RuntimeError`` is thrown. \n\
+If this cloud has an invalid type and a :class:`point` or a :class:`pointCloud` is \n\
+given, the type of this arguments is used to initialize this point cloud. \n\
 \n\
 Parameters \n\
 ----------- \n\
-point : {point or pointCloud} \n\
-    point or points from pointCloud that should be appended at the list of points of this pointCloud. \n\
-\n\
-Notes \n\
------ \n\
-The type of point must fit to the type of the point cloud. If the point cloud is \n\
-invalid, its type is set to the type of the point.");
+pointCloud : pointCloud \n\
+    is another pointCloud, appended to this cloud. If this cloud was uninitialized \n\
+    yet (``type`` = ``pointCloud.PointInvalid``), the type of the given ``pointCloud`` \n\
+    is used. \n\
+point : point \n\
+    is another :class:`point`, appended to this cloud. If this cloud was uninitialized \n\
+    yet (``type`` = ``pointCloud.PointInvalid``), the type of the given ``point`` \n\
+    is used. \n\
+xyz : sequence of float or iterable of float \n\
+    Only possible if ``type = pointCloud.PointXYZ`` or ``pointCloud.PointXYZRGBA``: \n\
+    A point with the given ``(x, y, z)`` tuple, list, sequence, array... is added \n\
+    to this point cloud. \n\
+xyzi : sequence of float or iterable of float \n\
+    Only possible if ``type = pointCloud.PointXYZI``: A point with the given \n\
+    ``(x, y, z, intensity)`` tuple, list, sequence, array... is added to this point cloud. \n\
+xyz_normal_curvature : sequence of float or iterable of float \n\
+    Only possible if ``type = pointCloud.PointXYZNormal`` or \n\
+    ``pointCloud.PointXYZRGBNormal``: A point with the given \n\
+    ``(x, y, z, nx, ny, nz, curvature)`` tuple, list, sequence, array... is added to \n\
+    this point cloud. \n\
+xyz_i_normal_curvature : sequence of float or iterable of float \n\
+    Only possible if ``type = pointCloud.PointXYZINormal``: A point with the given \n\
+    ``(x, y, z, intensity, nx, ny, nz, curvature)`` tuple, list, sequence, array... \n\
+    is added to this point cloud. \n\
+rgba : sequence of float or iterable of float \n\
+    Only possible if ``type = pointCloud.PointXYZRGBA`` or ``pointCloud.PointXYZRGBNormal``: \n\
+    The added point gets the color defined by this ``(red, green, blue, alpha)`` tuple...");
 PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyObject *kwds)
 {
     if (self->data == NULL)
@@ -828,14 +904,20 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         return NULL;
     }
 
-        //check if args contains only one point cloud
+    //check if args contains only one point cloud
     static const char *kwlist0[] = {"pointCloud", NULL};
     static const char *kwlist1[] = {"point", NULL};
     PyObject *pclObj = NULL;
-    if (PyArg_ParseTupleAndKeywords(args,kwds,"O!",const_cast<char**>(kwlist0),
-                 &PyPointCloudType, &pclObj))
+
+    if (PyArg_ParseTupleAndKeywords(
+        args,
+        kwds,
+        "O!",
+        const_cast<char**>(kwlist0),
+        &PyPointCloudType, &pclObj))
     {
         PyPointCloud *pcl = (PyPointCloud*)pclObj;
+
         if (pcl == NULL || pcl->data == NULL)
         {
             PyErr_SetString(PyExc_RuntimeError, "argument is of type pointCloud, but this point cloud or the underlying point cloud structure is NULL");
@@ -845,8 +927,14 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
         *(self->data) += *(pcl->data);
 
     }
-    else if (PyErr_Clear(), PyArg_ParseTupleAndKeywords(args,kwds,"O!",const_cast<char**>(kwlist1),
-                 &PyPointType, &pclObj))
+    else if (
+        PyErr_Clear(), 
+        PyArg_ParseTupleAndKeywords(
+            args,
+            kwds,
+            "O!",
+            const_cast<char**>(kwlist1),
+            &PyPointType, &pclObj))
     {
         PyPoint *point = (PyPoint*)pclObj;
         if (point == NULL || point->point == NULL)
@@ -854,11 +942,13 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
             PyErr_SetString(PyExc_RuntimeError, "argument is of type point, but this point or the underlying point structure is NULL");
             return NULL;
         }
+
         if (self->data->getType() != point->point->getType() && self->data->getType() != ito::pclInvalid)
         {
             PyErr_SetString(PyExc_RuntimeError, "point cloud and this point do not have the same type");
             return NULL;
         }
+
         self->data->push_back(*(point->point));
     }
     else
@@ -921,7 +1011,7 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZ_append(PyPointCloud *self, PyObject *xyzObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZ)
@@ -942,6 +1032,7 @@ PyObject* PythonPCL::PyPointCloud_XYZ_append(PyPointCloud *self, PyObject *xyzOb
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr pclPtr = self->data->toPointXYZ();
     pclPtr->reserve(pclPtr->size() + n);
+
     for (npy_intp i = 0 ; i < n; i++)
     {
         pclPtr->push_back(pcl::PointXYZ(xyz[0][i],xyz[1][i],xyz[2][i]));
@@ -954,7 +1045,7 @@ PyObject* PythonPCL::PyPointCloud_XYZ_append(PyPointCloud *self, PyObject *xyzOb
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZI_append(PyPointCloud *self, PyObject *xyziObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZI)
@@ -989,7 +1080,7 @@ PyObject* PythonPCL::PyPointCloud_XYZI_append(PyPointCloud *self, PyObject *xyzi
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *xyzObj, PyObject *rgbaObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZI)
@@ -1048,7 +1139,7 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBA_append(PyPointCloud *self, PyObject *x
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZNormal_append(PyPointCloud *self, PyObject *xyz_nxnynz_curvObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZNormal)
@@ -1070,6 +1161,7 @@ PyObject* PythonPCL::PyPointCloud_XYZNormal_append(PyPointCloud *self, PyObject 
     pcl::PointCloud<pcl::PointNormal>::Ptr pclPtr = self->data->toPointXYZNormal();
     pclPtr->reserve(pclPtr->size() + n);
     pcl::PointNormal p;
+
     for (npy_intp i = 0 ; i < n; i++)
     {
         p.x = xyznxnynzc[0][i]; p.y = xyznxnynzc[1][i]; p.z = xyznxnynzc[2][i];
@@ -1085,7 +1177,7 @@ PyObject* PythonPCL::PyPointCloud_XYZNormal_append(PyPointCloud *self, PyObject 
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZINormal_append(PyPointCloud *self, PyObject *xyz_i_nxnynz_curvObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZINormal)
@@ -1122,7 +1214,7 @@ PyObject* PythonPCL::PyPointCloud_XYZINormal_append(PyPointCloud *self, PyObject
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObject *xyz_i_nxnynz_curvObj, PyObject *rgbaObj)
 {
     if (self->data == NULL || self->data->getType() != ito::pclXYZRGBNormal)
@@ -1184,13 +1276,21 @@ PyObject* PythonPCL::PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObje
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudName_doc, "name() -> str \n\
+\n\
+Returns the name of this object. \n\
+\n\
+Returns \n\
+------- \n\
+str \n\
+    returns the name of this object: ``PointCloud``.");
 PyObject* PythonPCL::PyPointCloud_name(PyPointCloud* /*self*/)
 {
     return PyUnicode_FromString("PointCloud");
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
 {
     if (self->data)
@@ -1225,8 +1325,10 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudClear_doc,"clear() -> clears the whole point cloud");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudClear_doc,"clear() \n\
+\n\
+Clears the whole point cloud.");
 PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
 {
     if (self->data == NULL)
@@ -1248,7 +1350,7 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 Py_ssize_t PythonPCL::PyPointCloud_seqLength(PyPointCloud *self)
 {
     size_t s = 0;
@@ -1266,7 +1368,7 @@ Py_ssize_t PythonPCL::PyPointCloud_seqLength(PyPointCloud *self)
     return s;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) //returns new reference
 {
     if (Py_TYPE(rhs) != &PyPointCloudType)
@@ -1304,7 +1406,7 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)//returns new reference
 {
     if (self->data)
@@ -1339,7 +1441,7 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) //returns new reference
 {
     if (self->data)
@@ -1351,6 +1453,7 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
         }
 
         PyPoint *result = (PyPoint*)PyObject_Call((PyObject*)&PyPointType, NULL, NULL); //new reference
+
         if (result)
         {
             try
@@ -1370,11 +1473,12 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
             return NULL;
         }
     }
+
     PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyObject *point)
 {
     if (self->data == NULL)
@@ -1400,6 +1504,7 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
             PyErr_SetString(PyExc_TypeError, "assigned value must be of type point");
             return -1;
         }
+
         PyPoint *point_ = reinterpret_cast<PyPoint*>(point);
 
         try
@@ -1416,7 +1521,7 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject *rhs) //returns new reference
 {
     if (Py_TYPE(rhs) != &PyPointCloudType)
@@ -1426,6 +1531,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
     }
 
     PyPointCloud *rhs_ = (PyPointCloud*)rhs;
+
     if (self->data && rhs_->data)
     {
         try
@@ -1441,24 +1547,25 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         Py_INCREF(self);
         return reinterpret_cast<PyObject*>(self);
     }
+
     PyErr_SetString(PyExc_RuntimeError, "this point cloud is empty");
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_seqInplaceRepeat(PyPointCloud * /*self*/, Py_ssize_t /*size*/)//returns new reference
 {
     PyErr_SetString(PyExc_NotImplementedError, "not implemented yet");
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 Py_ssize_t PythonPCL::PyPointCloud_mappingLength(PyPointCloud *self)
 {
     return PyPointCloud_seqLength(self);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *key)
 {
     if (self->data == NULL)
@@ -1538,7 +1645,7 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPointCloud_mappingSetElem(PyPointCloud *self, PyObject *key, PyObject *value)
 {
     if (self->data == NULL)
@@ -1626,19 +1733,25 @@ int PythonPCL::PyPointCloud_mappingSetElem(PyPointCloud *self, PyObject *key, Py
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudInsert_doc,"insert(index, values) -> inserts a single point or a sequence of points before position given by index\n\
+PyDoc_STRVAR(pyPointCloudInsert_doc,"insert(index, values) \n\
 \n\
-By this method, an itom.point or a sequence of points is inserted into the existing point cloud. \n\
+Inserts a single point or a sequence of points before position given by index. \n\
+\n\
+By this method, a :class:`point` or a sequence of points is inserted into the existing \n\
+:class:`pointCloud`. \n\
+\n\
 The new points are inserted before the existing value at the index-th position. \n\
 \n\
 The type of the inserted points must fit to the type of the point cloud. \n\
 \n\
 Parameters \n\
 ----------- \n\
-index : {int}\n\
-    the new point(s) is / are inserted before the existing value at the index-th position. index must be in range [0, size of point cloud - 1]. Negative values signify a count from the end of the existing cloud. \n\
-values : {point, seq. of point}\n\
-    itom.point or sequence of itom.point that should be inserted.");
+index : int \n\
+    the new point(s) is / are inserted before the existing value at the index-th \n\
+    position. index must be in range ``[0, size of point cloud - 1]``. Negative values \n\
+    signify a count from the end of the existing cloud. \n\
+values : point or sequence of point\n\
+    :class:`point` or sequence of :class:`point` that should be inserted.");
 PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
 {
     if (self->data == NULL)
@@ -1650,22 +1763,24 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
     PyObject *index = NULL;
     PyObject *points = NULL;
     Py_ssize_t start = 0;
-    if (!PyArg_ParseTuple(args,"OO", &index, &points))
+
+    if (!PyArg_ParseTuple(args,"nO", &index, &points))
     {
         PyErr_SetString(PyExc_RuntimeError, "argument must be an fixed-point index number followed by a single point or a sequence of points");
         return NULL;
     }
 
-    if (PyLong_Check(index))
-    {
-        start = PyLong_AsLong(index);
-        if (start < 0) start = self->data->size() + start;
+    start = PyLong_AsLong(index);
 
-        if (start < 0 || start > static_cast<Py_ssize_t>(self->data->size()))
-        {
-            PyErr_Format(PyExc_TypeError, "index exceeds dimensions of point cloud [0,%d]", self->data->size());
-            return NULL;
-        }
+    if (start < 0)
+    {
+        start = self->data->size() + start;
+    }
+
+    if (start < 0 || start > static_cast<Py_ssize_t>(self->data->size()))
+    {
+        PyErr_Format(PyExc_TypeError, "index exceeds dimensions of point cloud [0,%d]", self->data->size());
+        return NULL;
     }
 
     if (Py_TYPE(points) == &PyPointType)
@@ -1707,6 +1822,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
                 return NULL;
             }
         }
+
         Py_DECREF(sequence);
     }
 
@@ -1714,16 +1830,18 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudErase_doc,"erase(indices) -> erases the points in point clouds indicated by indices (single number of slice) \n\
+PyDoc_STRVAR(pyPointCloudErase_doc,"erase(indices) \n\
+\n\
+Erases the points in point clouds indicated by indices. \n\
 \n\
 Parameters \n\
 ----------- \n\
-indices : {int or slice}\n\
+indices : int or slice\n\
     Single index or slice of indices whose corresponding points should be deleted. \n\
 \n\
 Notes \n\
 ----- \n\
-This method is the same than command 'del pointCloudVariable[indices]'");
+This method is the same than typing ``del myPointCloud[indices]``.");
 PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
 {
     PyObject *indices = NULL;
@@ -1739,18 +1857,26 @@ PyObject* PythonPCL::PyPointCloud_erase(PyPointCloud *self, PyObject *args)
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudToDataObject_doc,"toDataObject() -> returns a PxN data object, where P is determined by the point type in the point cloud. N is the number of points.\n\
+PyDoc_STRVAR(pyPointCloudToDataObject_doc,"toDataObject() -> dataObject \n\
 \n\
-The output has at least 3 elements per column. Onr got each coordinate (xyz). These will always be the first 3 elements. \n\
-If the pointcloud type has normals defined, these will be added in the next 4 columns as [nx, ny, nz, curvature]. \n\
-If the pointcloud type has an intensity, these will be added in the next 1 column as [intensity]. \n\
-If the pointcloud type has an RGB(A)-intensity, these will be added in the next 4 column as [r, g, b, a]. \n\
-Hence following combinations are possible [x,y,z], [x,y,z,i], [x,y,z,r,g,b,a], [x,y,z,nx,ny,nz, curvature], [x,y,z,nx,ny,nz, curvature, i], ...\n\
+Returns a ``P x N`` float32 dataObject with all point data, where P depends on the point type and N is the number of points. \n\
+\n\
+The output has at least 3 components per point. The first three rows contain always \n\
+the ``(x, y, z)`` coordinates of each point. \n\
+\n\
+If this cloud has normals defined, these will be added in the next 4 rows as \n\
+``(nx, ny, nz, curvature)``. For types, that contain intensity values, the next \n\
+row contains this ``intensity`` value. Point types, that contain colour \n\
+information for each point will put this information in the upcoming 4 rows, as \n\
+``(red, green, blue, alpha)``. \n\
+\n\
+To sum up, row column patterns are: ``(x,y,z)``, ``(x,y,z,intensity)``, ``(x,y,z,r,g,b,a)``, \n\
+``(x,y,z,nx,ny,nz,curvature)``, ``(x,y,z,nx,ny,nz,curvature,intensity]``, among others.\n\
 \n\
 Returns \n\
 ------- \n\
-dObj : {dataObject}\n\
-    A dataObject with P (cols) by N elements (Points), where the elements per column depend on the point cloud type");
+dObj : dataObject\n\
+    A ``float32`` :class:`dataObject` of size ``P x N`` (``N`` is equal to ``self.size``).");
 /*static*/ PyObject* PythonPCL::PyPointCloud_toDataObject(PyPointCloud *self)
 {
     if (self->data)
@@ -1765,6 +1891,7 @@ dObj : {dataObject}\n\
             pyDObj = NULL;
             return NULL;
         }
+
         return (PyObject*)pyDObj;
     }
     else
@@ -1774,12 +1901,14 @@ dObj : {dataObject}\n\
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudCopy_doc,"copy() -> returns a deep copy of this point cloud.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudCopy_doc,"copy() -> pointCloud \n\
+\n\
+Returns a deep copy of this point cloud.\n\
 \n\
 Returns \n\
 ------- \n\
-cloud : {pointCloud}\n\
+cloud : pointCloud \n\
     An exact copy if this point cloud.");
 /*static*/ PyObject* PythonPCL::PyPointCloud_copy(PyPointCloud *self)
 {
@@ -1793,7 +1922,7 @@ cloud : {pointCloud}\n\
     return (PyObject*)result;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/)
 {
     if (self->data == NULL)
@@ -1902,7 +2031,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
     return tempOut;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 {
     PyObject *data = NULL;
@@ -1988,53 +2117,96 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZ_doc,"fromXYZ(X, Y, Z, deleteNaN = False | XYZ, deleteNaN = False) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZ_doc,
+"fromXYZ(X, Y, Z, deleteNaN = False) -> pointCloud \\\n\
+fromXYZ(XYZ, deleteNaN = False) -> pointCloud \n\
 \n\
-The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+Creates a point cloud from three X,Y,Z dataObjects or from one 3xMxN or Mx3 dataObject. \n\
+\n\
+The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or \n\
+``Inf`` values are within the :class:`pointCloud`. :attr:`dense` is ``True`` forever, if \n\
+``deleteNaN = True``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-X,Y,Z : {MxN data objects} \n\
-    Three 2D data objects with the same size.\n\
-XYZ : {3xMxN or Mx3 data object} \n\
-    either 3xMxN data object, such that the first plane is X, the second is Y and the third is Z, \n\
-    or: Mx3 data object, such that the point cloud consists of M points where every coordinate is given by the three values in each row. \n\
-deleteNaN : {bool} \n\
-    default = false\n\
-    if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
+X : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the x-coordinates of all points. \n\
+Y : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the y-coordinates of all points. \n\
+Z : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the z-coordinates of all points. \n\
+XYZ : dataObject \n\
+    Either a ``3 x M x N`` `float32` :class:`dataObject`, where the first plane ``[0,:,:]`` \n\
+    contains the x-coordiantes, the 2nd plane ``[1,:,:]`` the y-coordinates and \n\
+    the 3rd plane the z-coordinates. Or a ``M x 3`` `float32` :class:`dataObject`, \n\
+    where each row represents one point, that consists of the x-, y- and z-coordinates. \n\
+deleteNaN : bool \n\
+    if ``True`` all points, whose coordinate has at least one ``NaN`` component, will \n\
+    be skipped. Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
+\n\
+Notes \n\
+------ \n\
+The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` are recommended to have the ``dtype`` \n\
+`float32`. However, it is possible to pass any real data type, that is then implicitly \n\
+converted to `float32`. \n\
 \n\
 Returns \n\
 ------- \n\
-pointCloud.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZ(PyPointCloud * /*self*/, PyObject *args)
+pointCloud \n\
+    The newly created point cloud of the type ``point.PointXYZ``.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZ(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objX = NULL;
     PyObject *objY = NULL;
     PyObject *objZ = NULL;
     bool deleteNaN = false;
-
     QSharedPointer<ito::DataObject> X, Y, Z, XYZ;
     bool ok = true;
     ito::RetVal retval = ito::retOk;
 
-    if (!PyArg_ParseTuple(args,"OOO|b", &objX, &objY, &objZ, &deleteNaN))
+    static const char *kwlist0[] = { "X", "Y", "Z", "deleteNaN", NULL };
+    static const char *kwlist1[] = { "XYZ", "deleteNaN", NULL };
+    PyObject *pclObj = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|b", const_cast<char**>(kwlist0), &objX, &objY, &objZ, &deleteNaN))
     {
-        if (!PyArg_ParseTuple(args, "O|b", &objX, &deleteNaN))
+        PyErr_Clear();
+
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|b", const_cast<char**>(kwlist1), &objX, &deleteNaN))
         {
             return NULL;
         }
         else
         {
             XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
             if (!ok)
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
 
-            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(
+                XYZ.data(), 
+                "XYZ", 
+                3, 
+                3, 
+                1, 
+                std::numeric_limits<int>::max(), 
+                1, 
+                std::numeric_limits<int>::max(), 
+                1, 
+                ito::tFloat32);
+
             if (tmpRetval.containsWarningOrError() && XYZ.data()->getDims() == 2)
             {
-                retval += ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                retval += ito::dObjHelper::verify2DDataObject(
+                    XYZ.data(), 
+                    "XYZ", 
+                    1, 
+                    std::numeric_limits<int>::max(), 
+                    3, 
+                    3, 
+                    ito::tFloat32);
 
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
@@ -2077,18 +2249,21 @@ pointCloud.");
     else
     {
         X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2096,6 +2271,7 @@ pointCloud.");
     }
 
     PyPointCloud *cloud = createEmptyPyPointCloud();
+
     if (cloud != NULL)
     {
         cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
@@ -2115,27 +2291,46 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZI_doc,"fromXYZI(X, Y, Z, I, deleteNaN = False | XYZ, I, deleteNaN = False) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZI_doc, 
+"fromXYZI(X, Y, Z, I, deleteNaN = False) -> pointCloud \\\n\
+fromXYZI(XYZ, I, deleteNaN = False) -> pointCloud \n\
 \n\
-The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+Creates a point cloud from four X, Y, Z, I dataObjects or from one 3xMxN or Mx3 dataObject and one I dataObject. \n\
+\n\
+The created point cloud is not organized (``height = 1``) and ``dense``, if no ``NaN`` or \n\
+``Inf`` values are within the :class:`pointCloud`. :attr:`dense` is ``True`` forever, if \n\
+``deleteNaN = True``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-X,Y,Z,I : {MxN data objects} \n\
-    Four 2D data objects with the same size.\n\
-OR \n\
-XYZ : {3xMxN data object} \n\
-    3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
-I : {MxN data object} \n\
-    MxN data object with the same size than the single X,Y or Z planes \n\
-deleteNaN : {bool} \n\
-    default = false\n\
-    if True all NaN values in X, Y or Z data objects are skipped, hence, the resulting point cloud is not dense any more\n\
+X : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the x-coordinates of all points. \n\
+Y : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the y-coordinates of all points. \n\
+Z : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the z-coordinates of all points. \n\
+XYZ : dataObject \n\
+    Either a ``3 x M x N`` `float32` :class:`dataObject`, where the first plane ``[0,:,:]`` \n\
+    contains the x-coordiantes, the 2nd plane ``[1,:,:]`` the y-coordinates and \n\
+    the 3rd plane the z-coordinates. Or a ``M x 3`` `float32` :class:`dataObject`, \n\
+    where each row represents one point, that consists of the x-, y- and z-coordinates. \n\
+I : dataObject \n\
+    A ``M x N`` `float32` :class:`dataObject` with the intensity values of all points. \n\
+deleteNaN : bool \n\
+    if ``True`` all points, whose coordinate has at least one ``NaN`` component, will \n\
+    be skipped. Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
+\n\
+Notes \n\
+------ \n\
+The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` and ``I`` are recommended to have the ``dtype`` \n\
+`float32`. However, it is possible to pass any real data type, that is then implicitly \n\
+converted to `float32`. \n\
 \n\
 Returns \n\
 ------- \n\
-pointCloud.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZI(PyPointCloud * /*self*/, PyObject *args)
+pointCloud \n\
+    The newly created point cloud of the type ``point.PointXYZI``.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZI(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objX = NULL;
     PyObject *objY = NULL;
@@ -2147,24 +2342,33 @@ pointCloud.");
     bool ok = true;
     ito::RetVal retval = ito::retOk;
 
-    if (!PyArg_ParseTuple(args,"OOOO|b", &objX, &objY, &objZ, &objI, &deleteNaN))
+    static const char *kwlist0[] = { "X", "Y", "Z", "I", "deleteNaN", NULL };
+    static const char *kwlist1[] = { "XYZ", "I", "deleteNaN", NULL };
+    PyObject *pclObj = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOOO|b", const_cast<char**>(kwlist0), &objX, &objY, &objZ, &objI, &deleteNaN))
     {
-        if (!PyArg_ParseTuple(args, "OO|b", &objX, &objI, &deleteNaN))
+        PyErr_Clear();
+
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|b", const_cast<char**>(kwlist1), &objX, &objI, &deleteNaN))
         {
             return NULL;
         }
         else
         {
             XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
             if (!ok)
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
 
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+
             if (tmpRetval.containsWarningOrError())
             {
                 ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
                     return NULL;
@@ -2196,6 +2400,7 @@ pointCloud.");
             }
 
             I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
+
             if (!ok)
             {
                 return PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2205,24 +2410,28 @@ pointCloud.");
     else
     {
         X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2246,27 +2455,46 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZRGBA_doc,"fromXYZRGBA(X, Y, Z, color, deleteNaN = False | XYZ, color, deleteNaN = False) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object\n\
+PyDoc_STRVAR(pyPointCloudFromXYZRGBA_doc,
+"fromXYZRGBA(X, Y, Z, color, deleteNaN = False) -> pointCloud \\\n\
+fromXYZRGBA(XYZ, color, deleteNaN = False) -> pointCloud \n\
 \n\
-The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+Creates a point cloud from three X, Y, Z, color dataObjects or from one 3xMxN or Mx3 dataObject and one color dataObject. \n\
+\n\
+The created point cloud is not organized(``height = 1``) and ``dense``, if no ``NaN`` or \n\
+``Inf`` values are within the : class :`pointCloud`. : attr : `dense` is ``True`` forever, if \n\
+``deleteNaN = True``. \n\
 \n\
 Parameters \n\
------------ \n\
-X,Y,Z,color : {MxN data objects} \n\
-    Four 2D data objects with the same size. X,Y,Z must have the same type, color must be rgba32.\n\
-OR \n\
-XYZ : {3xMxN data object} \n\
-    3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
-color : {MxN data object} \n\
-    MxN data object with the same size than the single X,Y or Z planes, type: rgba32 \n\
-deleteNaN : {bool} \n\
-    default = false\n\
-    if True all NaN or Inf values are skipped, hence, the resulting point cloud does not contain this values\n\
+---------- - \n\
+X : dataObject \n\
+    A ``M x N`` `float32` :class :`dataObject` with the x - coordinates of all points. \n\
+Y : dataObject \n\
+    A ``M x N`` `float32` :class :`dataObject` with the y - coordinates of all points. \n\
+Z : dataObject \n\
+    A ``M x N`` `float32` :class :`dataObject` with the z - coordinates of all points. \n\
+XYZ : dataObject \n\
+    Either a ``3 x M x N`` `float32` :class :`dataObject`, where the first plane ``[0, :, : ]`` \n\
+    contains the x - coordiantes, the 2nd plane ``[1, :, : ]`` the y - coordinates and \n\
+    the 3rd plane the z - coordinates.Or a ``M x 3`` `float32` :class :`dataObject`, \n\
+    where each row represents one point, that consists of the x - , y - and z - coordinates. \n\
+color : dataObject \n\
+    ``M x N`` :class:`dataObject` with the colors for each point, type: `rgba32`. \n\
+deleteNaN : bool \n\
+    if ``True`` all points, whose coordinate has at least one ``NaN`` component, will \n\
+    be skipped.Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
+\n\
+Notes \n\
+------ \n\
+The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` are recommended to have the ``dtype`` \n\
+`float32`. However, it is possible to pass any real data type, that is then implicitly \n\
+converted to `float32`. \n\
 \n\
 Returns \n\
 ------- \n\
-pointCloud.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZRGBA(PyPointCloud * /*self*/, PyObject *args)
+pointCloud \n\
+    The newly created point cloud of the type ``point.PointXYZRGBA``.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZRGBA(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objX = NULL;
     PyObject *objY = NULL;
@@ -2278,24 +2506,44 @@ pointCloud.");
     bool ok = true;
     ito::RetVal retval = ito::retOk;
 
-    if (!PyArg_ParseTuple(args,"OOOO|b", &objX, &objY, &objZ, &objColor, &deleteNaN))
+    static const char *kwlist0[] = { "X", "Y", "Z", "color", "deleteNaN", NULL };
+    static const char *kwlist1[] = { "XYZ", "color", "deleteNaN", NULL };
+    PyObject *pclObj = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOOO|b", const_cast<char**>(kwlist0), &objX, &objY, &objZ, &objColor, &deleteNaN))
     {
-        if (!PyArg_ParseTuple(args, "OO|b", &objX, &objColor, &deleteNaN))
+        PyErr_Clear();
+
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|b", const_cast<char**>(kwlist1), &objX, &objColor, &deleteNaN))
         {
             return NULL;
         }
         else
         {
             XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
             if (!ok)
             {
                 return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
 
-            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(
+                XYZ.data(), 
+                "XYZ", 
+                3, 
+                3, 
+                1, 
+                std::numeric_limits<int>::max(), 
+                1, 
+                std::numeric_limits<int>::max(), 
+                1, 
+                ito::tFloat32
+            );
+
             if (tmpRetval.containsWarningOrError())
             {
                 ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
                     return NULL;
@@ -2327,6 +2575,7 @@ pointCloud.");
             }
 
             color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
+
             if (!ok)
             {
                 return PyErr_Format(PyExc_RuntimeError, "color argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2336,24 +2585,28 @@ pointCloud.");
     else
     {
         X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
         color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
+
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "color argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2377,47 +2630,83 @@ pointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity, intensity = None, deleteNaN = False, color = None) -> creates a point cloud from a given topography dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity, intensity = None, deleteNaN = False, color = None) -> pointCloud \n\
 \n\
-Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
-values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+Creates a point cloud from a given topography dataObject.\n\
 \n\
-This method is deprecated and has been renamed to 'fromTopography' due to the wrong usage of the name topography in this case. \n\
+Creates a point cloud from the 2.5D data set given by the topography :class:`dataObject`. \n\
+The x and y-components of each point are taken from the regular grid, spanned by the \n\
+coordinate system of ``topography`` (considering the scaling and offset of the object). \n\
+The corresponding z-value is the topography's value itself. \n\
+\n\
+This method is deprecated. Use the method :meth:`fromTopography` with the same arguments \n\
+instead. \n\
 \n\
 Parameters \n\
 ----------- \n\
-disparity : {MxN data object, float32} \n\
-    The values of this dataObject represent the z-components.\n\
-intensity : {MxN data object, float32}, optional \n\
-    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
-deleteNaN : {bool}, optional \n\
-    If true (default: false), NaN or Inf-values (z) in the topography map will not be copied into the point cloud (the point cloud is not organized any more).\n\
-color : {MxN data object, rgba32}, optional \n\
-    If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
+disparity : dataObject \n\
+    ``M x N``, `float32`:class:`dataObject` are the disparity values. \n\
+intensity : dataObject, optional \n\
+    a ``M x N``, `float32` :class:`dataObject`. If given, a ``point.PointXYZI`` \n\
+    :class:`pointCloud` is created whose intensity values are determined by \n\
+    this argument (cannot be used together with ``color``). \n\
+deleteNaN : bool, optional \n\
+    If ``True``, ``NaN`` or ``Inf`` z-coordiantes in the ``disparity`` object will \n\
+    not be copied into the point cloud (the point cloud is not organized any more).\n\
+color : dataObject, optional \n\
+    a ``M x N``, `rgba32` :class:`dataObject`. If given, a ``point.PointXYZRGBA`` \n\
+    :class:`pointCloud` is created whose color values are determined by \n\
+    this argument (cannot be used together with ``intensity``). \n\
 \n\
 Returns \n\
 ------- \n\
-pointCloud.");
+pointCloud \n\
+    the newly created :class:`pointCloud` (either of type ``point.POINTXYZI`` \n\
+    or ``point.PointXYZRGBA``.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args, PyObject *kwds)
+{
+    if (PyErr_WarnEx(
+        PyExc_DeprecationWarning,
+        "fromDisparity is deprecated. Use fromTopography with the same arguments instead.", 1) == -1)
+    {
+        //exception is raised instead of warning (depending on user defined warning levels)
+        return NULL;
+    }
+
+    return PyPointCloud_fromTopography(self, args, kwds);
+}
+
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography, intensity = None, deleteNaN = False, color = None) -> creates a point cloud from a given topography dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography, intensity = None, deleteNaN = False, color = None) -> pointCloud \n\
 \n\
-Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
-values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+Creates a point cloud from a given topography dataObject.\n\
+\n\
+Creates a point cloud from the 2.5D data set given by the topography :class:`dataObject`. \n\
+The x and y-components of each point are taken from the regular grid, spanned by the \n\
+coordinate system of ``topography`` (considering the scaling and offset of the object). \n\
+The corresponding z-value is the topography's value itself. \n\
 \n\
 Parameters \n\
 ----------- \n\
-topography : {MxN data object, float32} \n\
-    The values of this dataObject represent the topography values.\n\
-intensity : {MxN data object, float32}, optional \n\
-    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
-deleteNaN : {bool}, optional \n\
-    If true (default: false), NaN or Inf-values (z) in the disparity map will not be copied into the point cloud (the point cloud is not organized any more).\n\
-color : {MxN data object, rgba32}, optional \n\
-    If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
+topography : dataObject \n\
+    ``M x N``, `float32`:class:`dataObject` are the topography values. \n\
+intensity : dataObject, optional \n\
+    a ``M x N``, `float32` :class:`dataObject`. If given, a ``point.PointXYZI`` \n\
+    :class:`pointCloud` is created whose intensity values are determined by \n\
+    this argument (cannot be used together with ``color``). \n\
+deleteNaN : bool, optional \n\
+    If ``True``, ``NaN`` or ``Inf`` z-coordiantes in the ``topography`` object will \n\
+    not be copied into the point cloud (the point cloud is not organized any more).\n\
+color : dataObject, optional \n\
+    a ``M x N``, `rgba32` :class:`dataObject`. If given, a ``point.PointXYZRGBA`` \n\
+    :class:`pointCloud` is created whose color values are determined by \n\
+    this argument (cannot be used together with ``intensity``). \n\
 \n\
 Returns \n\
 ------- \n\
-PointCloud.");
+pointCloud \n\
+    the newly created :class:`pointCloud` (either of type ``point.POINTXYZI`` \n\
+    or ``point.PointXYZRGBA``.");
 /*static*/ PyObject* PythonPCL::PyPointCloud_fromTopography(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objDisp = NULL;
@@ -2530,7 +2819,7 @@ PyGetSetDef PythonPCL::PyPointCloud_getseters[] = {
 
 //---------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPointCloud_methods[] = {
-    {"name",          (PyCFunction)PyPointCloud_name, METH_NOARGS, "name"},
+    {"name",          (PyCFunction)PyPointCloud_name, METH_NOARGS, pyPointCloudName_doc},
     {"scaleXYZ",      (PyCFunction)PyPointCloud_scaleXYZ, METH_KEYWORDS | METH_VARARGS, pyPointCloudScaleXYZ_doc },
     {"moveXYZ",      (PyCFunction)PyPointCloud_moveXYZ, METH_KEYWORDS | METH_VARARGS, pyPointCloudMoveXYZ_doc },
     {"append",        (PyCFunction)PyPointCloud_append, METH_KEYWORDS | METH_VARARGS, pyPointCloudAppend_doc},
@@ -2541,10 +2830,10 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"__reduce__",    (PyCFunction)PyPointCloud_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__",  (PyCFunction)PyPointCloud_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
 
-    {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
-    {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
-    {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
-    {"fromDisparity", (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
+    {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
+    {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
+    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
     {"fromTopography",  (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromTopography_doc },
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
@@ -2668,7 +2957,7 @@ PyObject* PythonPCL::parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, n
     return arr;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy_intp &n, uint8_t **elemRows)
 {
     if (mRequired < 1 || mRequired > 4)
@@ -2722,7 +3011,7 @@ PyObject* PythonPCL::parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy
 //---------------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPoint_dealloc(PyPoint* self)
 {
     Py_XDECREF(self->base);
@@ -2730,7 +3019,7 @@ void PythonPCL::PyPoint_dealloc(PyPoint* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPoint_new(PyTypeObject *type, PyObject* /*args*/, PyObject * /*kwds*/)
 {
     PyPoint* self = (PyPoint *)type->tp_alloc(type, 0);
@@ -2743,23 +3032,49 @@ PyObject* PythonPCL::PyPoint_new(PyTypeObject *type, PyObject* /*args*/, PyObjec
     return (PyObject *)self;
 };
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pointInit_doc,"point(type = point.PointInvalid, xyz = None, intensity = None, rgba = None, normal = None, curvature = None) -> creates new point used for class 'pointCloud'.  \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pointInit_doc,"point(type = point.PointInvalid, xyz = None, intensity = None, rgba = None, normal = None, curvature = None) -> point \n\
+\n\
+Creates new point object, for instance used for class :class:`pointCloud`.  \n\
+\n\
+One point can be of different ``types``. Possible types are: \n\
+\n\
+* ``point.PointInvalid``: an invalid, uninitialized point. \n\
+* ``point.PointXYZ``: this point only contains the 3D coordinates ``(X, Y, Z)``. \n\
+* ``point.PointXYZI``: like ``PointXYZ``, but with an additional intensity value. \n\
+* ``point.PointXYZRGBA``: like ``PointXYZ``, but with an additional colour value. \n\
+* ``point.PointXYZNormal``: like ``PointXYZ``, but with an additional normal vector \n\
+  ``(NX, NY, NZ)`` and scalar curvature value. \n\
+* ``point.PointXYZINormal``: like ``PointXYZNormal``, but with an additional intensity \n\
+  value. \n\
+* ``point.PointXYZRGBNormal``: like ``PointXYZNormal``, but with an additional \n\
+  colour value ``(R, G, B, A)``. \n\
 \n\
 Parameters \n\
 ------------ \n\
-type : {int} \n\
-    the desired type of this point (default: point.PointInvalid). Depending on the type, some of the following parameters must be given: \n\
-xyz : {seq}, all types besides PointInvalid \n\
-    sequence with three floating point elements (x,y,z) \n\
-intensity : {float}, only PointXYZI or PointXYZINormal \n\
-    is a floating point value for the intensity \n\
-rgba, {seq. of uint8, three or four values}, only PointXYZRGBA or PointXYZRGBNormal \n\
-    a uint8-sequence with either three or four values (r,g,b,a). If alpha value is not given, 255 is assumed \n\
-normal : {seq}, only PointXYZNormal, PointXYZINormal and PointXYZRGBNormal \n\
-    is a sequence with three floating point elements (nx, ny, nz) \n\
-curvature : {float}, only PointXYZNormal, PointXYZINormal and PointXYZRGBNormal \n\
-    is the curvature value for the normal (float)");
+type : int, optional \n\
+    the desired type of this point. Depending on this type, some of the following \n\
+    parameters must be or must not be given. \n\
+xyz : tuple of float \n\
+    is only allowed for ``type != point.PointInvalid`` and gives a tuple with the \n\
+    coordinates ``(X, Y, Z)`` of this point. \n\
+intensity : float, optional \n\
+    is only allowed for  ``type = point.PointXYZI`` and ``type = point.PointXYZINormal``. \n\
+    It is the float intensity value. \n\
+rgba : tuple of int, optional \n\
+    is only allowed for ``type = point.PointXYZRBA`` or ``type = point.PointXYZRGBNormal``. \n\
+    It must be a tuple of four integer values ``(R, G, B, A)``, all in the range ``[0, 255]``. \n\
+normal : tuple of float, optional \n\
+    is only allowed for ``Normal``-based ``types`` and is a tuple ``(NX, NY, NZ)`` with \n\
+    the three components of the normal vector to this point. \n\
+curvature : float, optional \n\
+    is only allowed for ``Normal``-based ``type`` and gives the curvature value of \n\
+    the normal. \n\
+\n\
+Returns \n\
+------- \n\
+point \n\
+    the newly created :class:`point` object.");
 int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
 {
     int pclType = ito::pclInvalid;
@@ -2889,13 +3204,21 @@ int PythonPCL::PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds)
     return 0;
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointName_doc, "name() -> str \n\
+\n\
+Name of this class. \n\
+\n\
+Returns \n\
+-------- \n\
+str \n\
+    the name of this object (``Point``).");
 PyObject* PythonPCL::PyPoint_name(PyPoint* /*self*/)
 {
     return PyUnicode_FromString("Point");
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPoint_repr(PyPoint *self)
 {
     if (self->point == NULL)
@@ -2952,7 +3275,7 @@ PyObject* PythonPCL::PyPoint_repr(PyPoint *self)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
 {
     if (self->point == NULL)
@@ -3112,7 +3435,7 @@ PyObject* PythonPCL::PyPoint_mappingGetElem(PyPoint* self, PyObject* key)
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_mappingSetElem(PyPoint* self, PyObject* key, PyObject* value)
 {
     if (self->point == NULL)
@@ -3309,8 +3632,9 @@ end:
     return -1; //error
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointGetType_doc,"returns type-object for this point");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointGetType_doc,
+"int : gets the type of this point as one of the constants ``point.PointXYZ...``.");
 PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
 {
     PyObject *type = NULL;
@@ -3325,12 +3649,13 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
     {
         dict = PythonPCL::PyPointType.tp_dict;
         int pType = self->point->getType();
+
         switch(pType)
         {
         default:
             PyErr_SetString(PyExc_ValueError, "point type is not defined");
         case ito::pclInvalid:
-            type = PyDict_GetItemString(dict, "PointInvalid");
+            type = PyDict_GetItemString(dict, "PointInvalid"); //borrowed
             break;
         case ito::pclXYZ:
             type = PyDict_GetItemString(dict, "PointXYZ");
@@ -3351,6 +3676,7 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
             type = PyDict_GetItemString(dict, "PointXYZRGBNormal");
             break;
         }
+
         Py_XINCREF(type);
         return type;
     }
@@ -3361,8 +3687,9 @@ PyObject* PythonPCL::PyPoint_GetType(PyPoint *self, void * /*closure*/)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointXYZ_doc,"get or set x,y,z-values of point as tuple (x,y,z)");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointXYZ_doc,
+"tuple of float : Gets or sets the ``(x, y, z)`` coordinates tuple of this point.");
 PyObject* PythonPCL::PyPoint_GetXYZ(PyPoint *self, void * /*closure*/)
 {
     if (self->point == NULL)
@@ -3381,7 +3708,7 @@ PyObject* PythonPCL::PyPoint_GetXYZ(PyPoint *self, void * /*closure*/)
     return Py_BuildValue("(fff)",x,y,z);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetXYZ(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
@@ -3408,12 +3735,13 @@ int PythonPCL::PyPoint_SetXYZ(PyPoint *self, PyObject *value, void * /*closure*/
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointIntensity_doc,"gets or sets intensity if type of point supports intensity values \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointIntensity_doc,
+"float : gGts or sets intensity if type of point supports intensity values. \n\
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support an intensity value.");
 PyObject* PythonPCL::PyPoint_GetIntensity(PyPoint *self, void * /*closure*/)
 {
@@ -3433,7 +3761,7 @@ PyObject* PythonPCL::PyPoint_GetIntensity(PyPoint *self, void * /*closure*/)
     return Py_BuildValue("f",i);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetIntensity(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
@@ -3460,12 +3788,13 @@ int PythonPCL::PyPoint_SetIntensity(PyPoint *self, PyObject *value, void * /*clo
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointRgb_doc,"gets or sets rgb-values as tuple (r,g,b), where each color component is in range [0, 255]\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointRgb_doc,
+"tuple of float : Gets or sets rgb-values as tuple ``(r,g,b)``, where each color component is in range [0, 255].\n\
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support r,g,b values.");
 PyObject* PythonPCL::PyPoint_GetRgb(PyPoint *self, void * /*closure*/)
 {
@@ -3485,7 +3814,7 @@ PyObject* PythonPCL::PyPoint_GetRgb(PyPoint *self, void * /*closure*/)
     return Py_BuildValue("(hhh)",r,g,b);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetRgb(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
@@ -3513,12 +3842,13 @@ int PythonPCL::PyPoint_SetRgb(PyPoint *self, PyObject *value, void * /*closure*/
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointRgba_doc,"gets or sets rgba-values as tuple (r,g,b), where each color component is in range [0, 255]\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointRgba_doc,
+"tuple of float : Gets or sets rgba-values as tuple ``(r,g,b,a)``, where each color component is in range [0, 255].\n\
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support r,g,b,a values.");
 PyObject* PythonPCL::PyPoint_GetRgba(PyPoint *self, void * /*closure*/)
 {
@@ -3538,7 +3868,7 @@ PyObject* PythonPCL::PyPoint_GetRgba(PyPoint *self, void * /*closure*/)
     return Py_BuildValue("(hhhh)",r,g,b,a);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetRgba(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
@@ -3565,12 +3895,13 @@ int PythonPCL::PyPoint_SetRgba(PyPoint *self, PyObject *value, void * /*closure*
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCurvature_doc,"gets or sets curvature value\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCurvature_doc,
+"float : Gets or sets the curvature value.\n\
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support a curvature value.");
 PyObject* PythonPCL::PyPoint_GetCurvature(PyPoint *self, void * /*closure*/)
 {
@@ -3587,14 +3918,16 @@ PyObject* PythonPCL::PyPoint_GetCurvature(PyPoint *self, void * /*closure*/)
         PyErr_SetString(PyExc_ValueError, "could not read curvature");
         return NULL;
     }
-    return Py_BuildValue("f",c);
+
+    return Py_BuildValue("f", c);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetCurvature(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
     float curvature;
+
     if (self->point == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "point is NULL");
@@ -3603,10 +3936,12 @@ int PythonPCL::PyPoint_SetCurvature(PyPoint *self, PyObject *value, void * /*clo
 
     PyObject *tuple = PyTuple_New(1);
     PyTuple_SetItem(tuple,0,value);
+
     if (PyArg_ParseTuple(tuple, "f", &curvature))
     {
         ok = self->point->setCurvature(curvature);
     }
+
     Py_DECREF(tuple);
 
     if (!ok)
@@ -3614,15 +3949,17 @@ int PythonPCL::PyPoint_SetCurvature(PyPoint *self, PyObject *value, void * /*clo
         if (!PyErr_Occurred()) PyErr_SetString(PyExc_ValueError, "curvature could not be assigned");
         return -1;
     }
+
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointNormal_doc,"gets or sets normal vector as tuple (nx,ny,nz)\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointNormal_doc,
+"tuple of float : Gets or sets the normal vector of this point as tuple ``(nx,ny,nz)``.\n\
 \n\
 Raises \n\
 -------- \n\
-ValueError : \n\
+ValueError \n\
     if type of point does not support normal vector data.");
 PyObject* PythonPCL::PyPoint_GetNormal(PyPoint *self, void * /*closure*/)
 {
@@ -3642,7 +3979,7 @@ PyObject* PythonPCL::PyPoint_GetNormal(PyPoint *self, void * /*closure*/)
     return Py_BuildValue("(fff)",nx,ny,nz);
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int PythonPCL::PyPoint_SetNormal(PyPoint *self, PyObject *value, void * /*closure*/)
 {
     bool ok = false;
@@ -3669,7 +4006,7 @@ int PythonPCL::PyPoint_SetNormal(PyPoint *self, PyObject *value, void * /*closur
     return 0;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPoint_getseters[] = {
     {"type", (getter)PyPoint_GetType, NULL, pyPointGetType_doc, NULL},
     {"xyz", (getter)PyPoint_GetXYZ, (setter)PyPoint_SetXYZ, pyPointXYZ_doc, NULL},
@@ -3681,26 +4018,26 @@ PyGetSetDef PythonPCL::PyPoint_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPoint_methods[] = {
-    {"name", (PyCFunction)PyPoint_name, METH_NOARGS, "name"},
+    {"name", (PyCFunction)PyPoint_name, METH_NOARGS, pyPointName_doc},
     {NULL}  /* Sentinel */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonPCL::PyPointModule = {
     PyModuleDef_HEAD_INIT, "Point", "wrapper for PCL points", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMappingMethods PythonPCL::PyPoint_mappingProtocol = {
     (lenfunc)NULL,
     (binaryfunc)PyPoint_mappingGetElem,
     (objobjargproc)PyPoint_mappingSetElem
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonPCL::PyPointType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
     "itom.point",             /* tp_name */
@@ -3742,7 +4079,7 @@ PyTypeObject PythonPCL::PyPointType = {
     PythonPCL::PyPoint_new         /* tp_new */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPoint_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
@@ -3782,7 +4119,7 @@ void PythonPCL::PyPoint_addTpDict(PyObject *tp_dict)
 //
 //---------------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPolygonMesh_dealloc(PyPolygonMesh* self)
 {
     Py_XDECREF(self->base);
@@ -3790,7 +4127,7 @@ void PythonPCL::PyPolygonMesh_dealloc(PyPolygonMesh* self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_new(PyTypeObject *type, PyObject* /*args*/, PyObject * /*kwds*/)
 {
     PyPolygonMesh* self = (PyPolygonMesh *)type->tp_alloc(type, 0);
@@ -3803,20 +4140,32 @@ PyObject* PythonPCL::PyPolygonMesh_new(PyTypeObject *type, PyObject* /*args*/, P
     return (PyObject *)self;
 };
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh(mesh = None, polygons = None) -> creates a polygon mesh.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(polygonMeshInit_doc,"polygonMesh(mesh = None, polygons = None) -> polygonMesh \n\
 \n\
-This constructor either creates an empty polygon mesh, a shallow copy of another polygon mesh (mesh parameter only) or a deep copy of \n\
-another polygon mesh where only the polygons, given by the list of indices in the parameter 'polygons', are taken. \n\
-In this case, the containing cloud is reduced and no longer organized (height=1, dense=false) \n\
+Constructor for a polygon mesh. \n\
+\n\
+This constructor either creates an empty polygon mesh, a shallow copy of another \n\
+polygon mesh (``mesh`` parameter only) or a deep copy of another polygon mesh where \n\
+only the polygons, given by the list of indices in the parameter ``polygons``, are taken. \n\
+In this case, the containing cloud is reduced and no longer organized \n\
+(``height = 1``, ``dense = False``). \n\
 \n\
 Parameters \n\
 ----------- \n\
-mesh : {polygonMesh}, optional \n\
-    another polygon mesh instance (shallow or deep copy depending on polygons-parameter)\n\
-polygons : {sequence or array-like}, optional \n\
-    If given, polygons must be a sequence or one-dimensional array-like structure, where all values can be transformed into unsigned integer values. \n\
-    Polygons must contain a list of indices pointing to all polygon from the given mesh that should be copied to this new instance.");
+mesh : polygonMesh, optional \n\
+    another polygon mesh instance (shallow or deep copy depending on argument \n\
+    ``polygons``).\n\
+polygons : sequence of int or array-like, optional \n\
+    If given, ``polygons`` must be any object, that can be converted to an \n\
+    one-dimensional array-like structure with a data type ``uint32``. \n\
+    This polygon mesh is then created from the given ``mesh`` with the polygons \n\
+    only, whose index is contained in this ``polygons`` sequence. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if ``polygons`` is given, but ``mesh`` is ``None``. This is not possible.");
 int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObject * kwds)
 {
     const char *kwlist[] = {"mesh", "polygons", NULL};
@@ -3899,13 +4248,22 @@ int PythonPCL::PyPolygonMesh_init(PyPolygonMesh * self, PyObject * args, PyObjec
     return 0;
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshName_doc,
+"name() -> str \n\
+\n\
+Returns the name of this object. \n\
+\n\
+Returns \n\
+------- \n\
+str \n\
+    the name of this object: ``PolygonMesh``.");
 PyObject* PythonPCL::PyPolygonMesh_name(PyPolygonMesh* /*self*/)
 {
     return PyUnicode_FromString("PolygonMesh");
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
 {
     if (self->polygonMesh == NULL || self->polygonMesh->polygonMesh().get() == NULL)
@@ -3914,11 +4272,19 @@ PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
     }
     else
     {
-        return PyUnicode_FromFormat("PolygonMesh (%u polygons, [%u x %u] points, fields: %s)", self->polygonMesh->polygonMesh()->polygons.size(), self->polygonMesh->height(), self->polygonMesh->width(), self->polygonMesh->getFieldsList().data());
+        return PyUnicode_FromFormat(
+            "PolygonMesh (%u polygons, [%u x %u] points, fields: %s)", 
+            self->polygonMesh->polygonMesh()->polygons.size(), 
+            self->polygonMesh->height(), 
+            self->polygonMesh->width(), 
+            self->polygonMesh->getFieldsList().data());
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshData_doc, "data() \n\
+\n\
+Prints out data of this mesh to the command line.");
 PyObject* PythonPCL::PyPolygonMesh_data(PyPolygonMesh *self)
 {
     if (self->polygonMesh)
@@ -3933,7 +4299,7 @@ PyObject* PythonPCL::PyPolygonMesh_data(PyPolygonMesh *self)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args*/)
 {
     if (self->polygonMesh == NULL)
@@ -4009,7 +4375,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
     return tempOut;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
 {
     PyObject *data = NULL;
@@ -4070,7 +4436,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PythonPCL::PyPolygonMesh* PythonPCL::createEmptyPyPolygonMesh()
 {
     PyObject *args = PyTuple_New(0);
@@ -4091,7 +4457,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_mappingGetElem(PyPolygonMesh* self, PyObject* key)
 {
     ito::PCLPolygonMesh *pm = self->polygonMesh;
@@ -4114,7 +4480,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     return Py_NotImplemented;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ int PythonPCL::PyPolygonMesh_mappingLength(PyPolygonMesh* self)
 {
     if (self->polygonMesh)
@@ -4127,28 +4493,32 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
     }
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //PyDoc_STRVAR(pyPolygonMeshGetCloud_doc,"cloud -> ");
 ///*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, void *closure)
 //{
 //    return NULL;
 //}
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_get(PyPolygonMesh *self, PyObject *args, PyObject *kwds)
 {
     return NULL;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshGetCloud_docs,"getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.\n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshGetCloud_docs,"getCloud(newPointType = point.PointInvalid) -> pointCloud \n\
 \n\
-If the pointType is not given or point.PointInvalid, the type of the internal pointCloud is guessed with respect to available types. \n\
+Returns the point cloud of this polygon mesh converted to the desired type ``newPointType``.\n\
+\n\
+If the ``newPointType`` is not given or ``point.PointInvalid``, the type of the \n\
+internal :class:`pointCloud` is guessed with respect to available types. \n\
 \n\
 Parameters \n\
 ----------- \n\
-pointType : {int, enum point.PointXXX}, optional \n\
-    the point type value of the desired type, the point cloud should be converted too (default: point.PointInvalid)");
+newPointType : int, optional \n\
+    the point type value of the desired type, the point cloud should be converted \n\
+    too (default: point.PointInvalid)");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getCloud(PyPolygonMesh *self, PyObject *args)
 {
     int pointType = ito::pclInvalid;
@@ -4171,7 +4541,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
         ito::tPCLPointType t = ito::pclHelper::guessPointType(pm->polygonMesh()->cloud);
         if (t == pclInvalid)
         {
-            PyErr_SetString(PyExc_RuntimeError, "The native pointType of the given polygon mesh cannot be guessed.");
+            PyErr_SetString(PyExc_RuntimeError, "The native newPointType of the given polygon mesh cannot be guessed.");
             return NULL;
         }
         else
@@ -4197,13 +4567,23 @@ pointType : {int, enum point.PointXXX}, optional \n\
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "The given pointType is unknown");
+        PyErr_SetString(PyExc_RuntimeError, "The given newPointType is unknown");
         return NULL;
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 dataObject with the polygon description. M is the number of polygons and N is the biggest number of vertices.");
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs, "getPolygons() -> dataObject \n\
+\n\
+Returns a dataObject with the relevant information of the polygons in this mesh. \n\
+\n\
+Returns \n\
+------- \n\
+polygons \n\
+    is a ``M x N`` `int32` :class:`dataObject` with the description of the polygons. \n\
+    ``M`` is the number of polygons, ``N`` the biggest number of vertices. Hence, \n\
+    each polygon is passed in one row of this object. The point indices (vertices), \n\
+    that describe this polygon.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getPolygons(PyPolygonMesh *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, ""))
@@ -4254,15 +4634,25 @@ PyDoc_STRVAR(pyPolygonMeshGetPolygons_docs,"getPolygons() -> returns MxN int32 d
     return (PyObject*)dataObj;
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud, polygons) -> polygonMesh \n\
+\n\
+Creates a polygon mesh from a given cloud and polygons. \n\
 \n\
 Parameters \n\
 ----------- \n\
-cloud : {pointCloud} \n\
-    the input point cloud \n\
-polygons : {array-like, MxN} \n\
-    an array-like matrix with the indices of the polygons. The array contains M polygons and every row gives the indices of the vertices of the cloud belonging to the polygon.");
+cloud : pointCloud \n\
+    is the input point cloud. \n\
+polygons : array-like or dataObject \n\
+    is an ``M x N`` `int32` array-like array with the indices of the polygons. The array \n\
+    contains information about ``M`` polygons. Every row gives the indices of the \n\
+    vertices of the cloud belonging to this polygon (usually in counter-clockwise order, \n\
+    if one looks on the polygon from outside. \n\
+\n\
+Returns \n\
+------- \n\
+polygonMesh \n\
+    is the newly created :class:`polygonMesh` from the point cloud and the polygons.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromCloudAndPolygons(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
@@ -4318,18 +4708,38 @@ polygons : {array-like, MxN} \n\
     }
 }
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography, triangulationType = 1) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography, triangulationType = 1) -> polygonMesh \n\
 \n\
-The polygons are created either as rectangles (quads) or triangles. Some other algorithms only support meshes with triangles. \n\
-This method is the same than calling polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography)). \n\
+Creates a polygon mesh from a ``topography`` dataObject whose values are the z-components. \n\
+\n\
+The polygons are created either as rectangles (quads) or triangles. \n\
+However, some mesh processing methods only support meshes with triangles. \n\
+\n\
+This method is the same than calling \n\
+``polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography))``. \n\
 \n\
 Parameters \n\
 ----------- \n\
-topography : {dataObject} \n\
-    the input data object. The grid of the data object including its axisScales and axisOffsets value indicate the X and Y values whereas the Z values are given by the data object \n\
-triangulationType : {int} \n\
-    type of triangulation. 0: quads, 1: triangles [default]");
+topography : dataObject \n\
+    the topography data object. The grid of the data object, defined by its size, \n\
+    the ``axisScales`` and ``axisOffsets`` values indicate the x- and y-coordinates \n\
+    of each point, while the z-coordinate is given by the corresponding value of this \n\
+    object. This polygon mesh is then created based on these points by adding \n\
+    polygons between either 3 neighbouring points (``triangulationType = 1``), or \n\
+    four points (``triangulationType = 0``). \n\
+triangulationType : int, optional \n\
+    is the type of the mesh triangulation: 0: each polygon consists of quads (four \n\
+    corner points), 1: each polygon is described by a triangle and three corner points. \n\
+\n\
+Returns \n\
+------- \n\
+polygonMesh \n\
+    is the newly created :class:`polygonMesh` from the ``topography`` object.\n\
+\n\
+See Also \n\
+-------- \n\
+fromOrganizedCloud, pointCloud.fromTopography");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromTopography(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PythonDataObject::PyDataObject *topography = NULL;
@@ -4360,17 +4770,33 @@ triangulationType : {int} \n\
 }
 
 
-//------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud, triangulationType = 1) -> creates a polygon mesh from an organized cloud using triangles. \n\
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud, triangulationType = 1) -> polygonMesh \n\
 \n\
-The polygons are created as triangles. Triangles are also created for non-finite points. \n\
+Creates a polygon mesh from an organized cloud. \n\
+\n\
+Since the input ``cloud`` is organized, the neighbouring points in space are \n\
+known in all directions. This allows automatically defining the vertices for \n\
+polygons, such that a closed polygon mesh can be created, that is the hull of \n\
+this given ``cloud``. This is done by this method. \n\
 \n\
 Parameters \n\
 ----------- \n\
-cloud : {pointCloud} \n\
-    the input point cloud (must be organized, see attribute organized of a cloud) \n\
-triangulationType : {int} \n\
-    type of triangulation. 0: quads, 1 : triangles [default]");
+cloud : pointCloud \n\
+    is the input point cloud (must be organized, see attribute :attr:`organized`). \n\
+triangulationType : int \n\
+    is the type of the mesh triangulation: 0: each polygon consists of quads (four \n\
+    corner points), 1: each polygon is described by a triangle and three corner points. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if ``cloud`` is not organized (see :attr:`organized`). \n\
+\n\
+Returns \n\
+------- \n\
+polygonMesh \n\
+    is the newly created :class:`polygonMesh` from the given organized cloud.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromOrganizedCloud(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
@@ -4444,13 +4870,14 @@ triangulationType : {int} \n\
         }
     }
 
-
     PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
     mesh->polygonMesh = new ito::PCLPolygonMesh(*(cloud->data), p);
     return (PyObject*)mesh;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonNrOfPolygons_doc,
+"int : Gets the number of polygons in this mesh.");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void * /*closure*/)
 {
     ito::PCLPolygonMesh *pm = self->polygonMesh;
@@ -4469,20 +4896,19 @@ triangulationType : {int} \n\
     return Py_BuildValue("i", pm->polygonMesh()->polygons.size());
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyGetSetDef PythonPCL::PyPolygonMesh_getseters[] = {
     //{"cloud", (getter)PyPolygonMesh_getCloud, NULL, pyPolygonMeshGetCloud_doc, NULL},
-    {"nrOfPolygons", (getter)PyPolygonMesh_getNrOfPolygons, NULL,
-    "returns the number of polygons in this mesh", NULL},
+    {"nrOfPolygons", (getter)PyPolygonMesh_getNrOfPolygons, NULL, pyPolygonNrOfPolygons_doc, NULL},
     {NULL}  /* Sentinel */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
-    {"name", (PyCFunction)PyPolygonMesh_name, METH_NOARGS, "name"},
+    {"name", (PyCFunction)PyPolygonMesh_name, METH_NOARGS, pyPolygonMeshName_doc},
     {"__reduce__", (PyCFunction)PyPolygonMesh_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyPolygonMesh_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-    {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, "prints content of polygon mesh"},
+    {"data", (PyCFunction)PyPolygonMesh_data, METH_NOARGS, pyPolygonMeshData_doc},
     //{"get", (PyCFunction)PyPolygonMesh_get, METH_VARARGS | METH_KEYWORDS, pyPolygonMeshGet_docs},
     {"getCloud", (PyCFunction)PyPolygonMesh_getCloud, METH_VARARGS, pyPolygonMeshGetCloud_docs},
     {"getPolygons", (PyCFunction)PyPolygonMesh_getPolygons, METH_VARARGS, pyPolygonMeshGetPolygons_docs},
@@ -4492,13 +4918,13 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyModuleDef PythonPCL::PyPolygonMeshModule = {
     PyModuleDef_HEAD_INIT, "PolygonMesh", "wrapper for PCL polygon mesh", -1,
     NULL, NULL, NULL, NULL, NULL
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyTypeObject PythonPCL::PyPolygonMeshType = {
     PyVarObject_HEAD_INIT(NULL,0) /* here has been NULL,0 */
     "itom.polygonMesh",             /* tp_name */
@@ -4540,19 +4966,19 @@ PyTypeObject PythonPCL::PyPolygonMeshType = {
     PythonPCL::PyPolygonMesh_new         /* tp_new */
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 PyMappingMethods PythonPCL::PyPolygonMesh_mappingProtocol = {
     (lenfunc)PyPolygonMesh_mappingLength,
     (binaryfunc)PyPolygonMesh_mappingGetElem,
     NULL
 };
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PythonPCL::PyPolygonMesh_addTpDict(PyObject * /*tp_dict*/)
 {
 }
 
-//------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 } //end namespace ito
 
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0

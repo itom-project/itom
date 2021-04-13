@@ -24,7 +24,7 @@
 #include "uiOrganizer.h"
 #include "widgetWrapper.h"
 
-
+#include <qdebug.h>
 #include <qlistwidget.h>
 #include <qcombobox.h>
 #include <qmainwindow.h>
@@ -64,7 +64,7 @@ namespace ito
     initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed 
     for instance from the python-method "call".
 
-    \sa PythonUiDialog, UiOrganizer
+    \sa UiOrganizer
 */
 WidgetWrapper::WidgetWrapper(UiOrganizer *uiOrganizer) : 
     m_initialized(false),
@@ -103,6 +103,12 @@ void WidgetWrapper::initMethodHash()
     if(!m_initialized)
     {
         bool ok;
+
+        //QObject
+        MethodDescriptionList qObjectList;
+        qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("blockSignals(bool)"), "void", 1, ok);
+        qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("signalsBlocked()"), "bool", 2, ok);
+        m_methodHash["QObject"] = qObjectList;
         
         //QWidget
         MethodDescriptionList qWidgetList;
@@ -164,6 +170,10 @@ void WidgetWrapper::initMethodHash()
 		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setCheckState(int,int,Qt::CheckState)"), "void", 6008, ok);
 		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("flags(int,int)"), "Qt::ItemFlags", 6009, ok);
 		qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setFlags(int,int,Qt::ItemFlags)"), "void", 6010, ok);
+        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setCurrentCell(int,int)"), "void", 6011, ok);
+        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("visualColumn(int)"), "int", 6012, ok);
+        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("visualRow(int)"), "int", 6013, ok);
+        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("sortItems(int,Qt::SortOrder)"), "void", 6014, ok);
         m_methodHash["QTableWidget"] = qTableWidget;
 
         //QTableView
@@ -293,22 +303,29 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
     if(retType != "" && QString::compare(retType, "void", Qt::CaseInsensitive) != 0)
     {
         retTypeInt = QMetaType::type(retType.toLatin1().data());
-        if(retTypeInt == 0)
+        if (retTypeInt == 0)
+        {
+            qDebug() << "Error building wrapped slot " << signature << ": Meta type of return type unknown.";
             return MethodDescription(); //error
+        }
     }
 
     int start = signature.indexOf("(");
     int end = signature.lastIndexOf(")");
-    if(end<=start)
+
+    if(end <= start)
     {
+        qDebug() << "Error building wrapped slot " << signature << ": No valid opening and/or closing brackets.";
         return MethodDescription(); //error
     }
     QString params = signature.mid(start+1, end-start-1);
     QStringList paramList;
+
     if(params != "")
     {
         paramList = params.split(",");
     }
+
     QByteArray name = signature.left(start);
     int nrOfArgs = paramList.size();
     int* args = new int[nrOfArgs];
@@ -319,8 +336,10 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
     foreach(const QString& param, paramList)
     {
         type = QMetaType::type( param.trimmed().toLatin1().data() );
+
         if(type == 0)
         {
+            qDebug() << "Error building wrapped slot " << signature << ": Meta type of argument" << param << "unknown.";
             ok2 = false;
             break;
         }
@@ -365,42 +384,48 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     while( tempMetaObject != NULL )
     {
         className = tempMetaObject->className();
-        if(QString::compare(className, "QListWidget", Qt::CaseInsensitive) == 0)
+
+        if (QString::compare(className, "QObject", Qt::CaseInsensitive) == 0)
+        {
+            QObject *obj = qobject_cast<QObject*>(object);
+            retVal = callObject(obj, methodIndex, _a);
+        }
+        else if (QString::compare(className, "QListWidget", Qt::CaseInsensitive) == 0)
         {
             QListWidget *listWidget = qobject_cast<QListWidget*>(object);
             retVal = callListWidget(listWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QComboBox", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QComboBox", Qt::CaseInsensitive) == 0)
         {
             QComboBox *comboBox = qobject_cast<QComboBox*>(object);
             retVal = callComboBox(comboBox, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTabWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTabWidget", Qt::CaseInsensitive) == 0)
         {
             QTabWidget *tabWidget = qobject_cast<QTabWidget*>(object);
             retVal = callTabWidget(tabWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
         {
             QMainWindow *mainWindow = qobject_cast<QMainWindow*>(object);
             retVal = callMainWindow(mainWindow, methodIndex, _a);
         }
-        else if(QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
         {
             QWidget *widget = qobject_cast<QWidget*>(object);
             retVal = callWidget(widget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTableWidget", Qt::CaseInsensitive) == 0)
         {
             QTableWidget *tableWidget = qobject_cast<QTableWidget*>(object);
             retVal = callTableWidget(tableWidget, methodIndex, _a);
         }
-        else if(QString::compare(className, "QTableView", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(className, "QTableView", Qt::CaseInsensitive) == 0)
         {
             QTableView *tableView = qobject_cast<QTableView*>(object);
             retVal = callTableView(tableView, methodIndex, _a);
         }
-		else if(QString::compare(className, "QSplitter", Qt::CaseInsensitive) == 0)
+		else if (QString::compare(className, "QSplitter", Qt::CaseInsensitive) == 0)
         {
             QSplitter *splitter = qobject_cast<QSplitter*>(object);
             retVal = callSplitter(splitter, methodIndex, _a);
@@ -451,6 +476,31 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
     }
 
     return retVal;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal WidgetWrapper::callObject(QObject *object, int methodIndex, void **_a)
+{
+    if (object == NULL)
+        return ito::RetVal(ito::retError, 0, QObject::tr("QObject object is null").toLatin1().data());
+
+    switch (methodIndex)
+    {
+    case 1: //blockSignals
+        object->blockSignals((*reinterpret_cast<const bool(*)>(_a[1])));
+        return ito::retOk;
+        break;
+
+    case 2: //signalsBlocked
+    {
+        bool blocked = object->signalsBlocked();
+        (*reinterpret_cast<bool*>(_a[0])) = blocked;
+        return ito::retOk;
+        break;
+    }
+    }
+
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -707,7 +757,7 @@ ito::RetVal WidgetWrapper::callTabWidget(QTabWidget *tabWidget, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -732,7 +782,7 @@ ito::RetVal WidgetWrapper::callTableView(QTableView *tableView, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -775,7 +825,7 @@ ito::RetVal WidgetWrapper::callSplitter(QSplitter *splitter, int methodIndex, vo
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -802,7 +852,7 @@ ito::RetVal WidgetWrapper::callStatusBar(QStatusBar *statusBar, int methodIndex,
     }
     }
 
-    return ito::RetVal(ito::retError, 0, QObject::tr("Slot or widget not found").toLatin1().data());
+    return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1021,6 +1071,66 @@ ito::RetVal WidgetWrapper::callTableWidget(QTableWidget *tableWidget, int method
         }
     }
     return ito::retOk;
+    break;
+
+    case 6011: //setCurrentCell
+    {
+        int row = (*reinterpret_cast<const int(*)>(_a[1]));
+        int col = (*reinterpret_cast<const int(*)>(_a[2]));
+
+        if (row < 0 || row >= tableWidget->rowCount())
+        {
+            return ito::RetVal(ito::retError, 0, "row index if out of range.");
+        }
+
+        if (col < 0 || col >= tableWidget->columnCount())
+        {
+            return ito::RetVal(ito::retError, 0, "column index is out of range.");
+        }
+
+        tableWidget->setCurrentCell(row, col);
+        return ito::retOk;
+    }
+
+    case 6012: //visualColumn
+    {
+        int col = (*reinterpret_cast<const int(*)>(_a[1]));
+
+        if (col < 0 || col >= tableWidget->columnCount())
+        {
+            return ito::RetVal(ito::retError, 0, "column index is out of range.");
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = tableWidget->visualColumn(col);
+        return ito::retOk;
+    }
+
+    case 6013: //visualRow
+    {
+        int row = (*reinterpret_cast<const int(*)>(_a[1]));
+
+        if (row < 0 || row >= tableWidget->rowCount())
+        {
+            return ito::RetVal(ito::retError, 0, "row index is out of range.");
+        }
+
+        (*reinterpret_cast<int*>(_a[0])) = tableWidget->visualRow(row);
+        return ito::retOk;
+    }
+
+    case 6014: //sortItems
+    {
+        int col = (*reinterpret_cast<const int(*)>(_a[1]));
+
+        if (col < 0 || col >= tableWidget->columnCount())
+        {
+            return ito::RetVal(ito::retError, 0, "column index is out of range.");
+        }
+        Qt::SortOrder sortOrder = *reinterpret_cast<const Qt::SortOrder(*)>(_a[2]);
+        tableWidget->sortItems(col, sortOrder);
+        return ito::retOk;
+    }
+
     }
 
     return ito::RetVal::format(ito::retError, m_methodIndexNotFound, "invalid method index %i.", methodIndex);

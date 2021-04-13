@@ -32,7 +32,7 @@ itom
 * New interface :py:meth:`~itom.dataIO.stop` as well as ito::DataIO::stop() to allow stopping continuous acquisition or write operations for ADDA (I/O) devices.
 * Refactoring of all CMake files to follow the new CMake style guide rules of itom (see :ref:`cmake-style-guide`). The CMake files for the itom SDK are now in a **cmake** subfolder. Macros in **ItomBuildMacros.cmake** are now renamed and start all with the prefix *itom*. The minimum CMake version is now 3.1. Many unused preprocessors, useless things etc. removed from CMake files.
 * CMake: Plugins will now try to automatically detect the ITOM SDK in some standard directories and read some 3rd party libraries from the CMakeCache.txt file of itom (if possible).
-* :py:meth:`uiItem.getChild`(widgetName) added as alternative for **uiItem.<widgetName>**, since the first method can also be used if the widgetName is a variable of type str.
+* :py:meth:`uiItem.getChild` (widgetName) added as alternative for **uiItem.<widgetName>**, since the first method can also be used if the widgetName is a variable of type str.
 * Widget wrapper 'setItemText' for QListWidget added. gui.listWidget.call("setItemText", 0, "new text") changes the text of the first item in the given list widget.
 * The script reference window (help viewer) of itom is now renamed to "plugin help viewer" and only shows information about plugins. The former script reference, based on offline database, hosted at sourceforge.net/p/itom, has been removed since the live script reference (using the python package jedi) fully replaces this technique. OpenSSL is no more needed now.
 * Modifications of the license information of itom, add of the new licenses folder in the itom sources with all major 3rd party projects that are used in the core as well as commonly used plugins/designer plugins of itom.
@@ -116,7 +116,13 @@ Plugins
 
 * all plugins: 
     - adaptations for OpenCV 4
-    - CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, such that also CMake policies are globally set. ITOM_SDK_DIR is now "auto"-detected in the overall CMakeLists.txt file.
+    - ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style guide of itom 
+      (see documentation/13_contributing/cmake_style_guide.rst). General settings 
+      of itom libraries as well as plugin and   designer plugin libraries are now 
+      added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
+      ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
+      such that also CMake policies are globally set. ITOM_SDK_DIR is now 
+      "auto"-detected in the overall CMakeLists.txt file.
     - adapted to new CMake macros / structure of itom SDK
     - Qt4 support removed
 
@@ -157,7 +163,13 @@ Designer Plugins
 
 (more than 58 commits in designerPlugins repository)
 
-* general: CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, such that also CMake policies are globally set. ITOM_SDK_DIR is now "auto"-detected in the overall CMakeLists.txt file.
+* general: ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style 
+  guide of itom (see documentation/13_contributing/cmake_style_guide.rst). 
+  General settings of itom libraries as well as plugin and designer plugin libraries 
+  are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
+  ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
+  such that also CMake policies are globally set. ITOM_SDK_DIR is now 
+  "auto"-detected in the overall CMakeLists.txt file.
 * general: Remove Qt4 support and compiler switches within CMake scripts and source code
 * general: Merged in algorithmInterrupt (pull request #8)
 * general: plugin version numbers of plot designer plugins incremented

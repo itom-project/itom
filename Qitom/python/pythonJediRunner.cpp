@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "pythonQtConversion.h"
 
 #include <qmetaobject.h>
 #include <qdebug.h>
@@ -41,6 +42,7 @@ namespace ito
 /*static*/ unsigned char CompletionRunnable::mostRecentId = 0;
 /*static*/ unsigned char GoToAssignmentRunnable::mostRecentId = 0;
 /*static*/ unsigned char CalltipRunnable::mostRecentId = 0;
+/*static*/ unsigned char GetHelpRunnable::mostRecentId = 0;
 /*static*/ QMutex JediRunnable::m_mutex;
 
 //-------------------------------------------------------------------------------------
@@ -178,6 +180,26 @@ void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest &req
     }
 }
 
+//-------------------------------------------------------------------------------------
+void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest &request)
+{
+    if (!m_threadPool.isNull())
+    {
+        GetHelpRunnable *runnable = new GetHelpRunnable(
+            additionalImportString(),
+            m_pyModJedi,
+            request
+        );
+
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Calltip request enqueued. ID:"
+            << runnable->getCurrentId();*/
+
+        m_threadPool->start(runnable);
+    }
+}
+
 
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
@@ -228,9 +250,9 @@ void CompletionRunnable::run()
         {
             PyObject *pycompletion = NULL;
             const char* calltip;
-            const char* tooltip;
+            const char* description;
             const char* icon;
-            const char* docstring;
+            PyObject *tooltips = NULL;
 
             for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
             {
@@ -238,14 +260,17 @@ void CompletionRunnable::run()
 
                 if (PyTuple_Check(pycompletion))
                 {
-                    if (PyArg_ParseTuple(pycompletion, "ssss", &calltip, &tooltip, &icon, &docstring))
+                    if (PyArg_ParseTuple(pycompletion, "sssO!", &calltip, &description, &icon, &PyList_Type, &tooltips))
                     {
+                        bool ok;
+                        QStringList tooltipList = PythonQtConversion::PyObjToStringList(tooltips, false, ok);
+
                         completions.append(
                             ito::JediCompletion(
                                 QLatin1String(calltip),
-                                QLatin1String(tooltip),
+                                tooltipList,
                                 QLatin1String(icon),
-                                QLatin1String(docstring))
+                                QLatin1String(description))
                         );
                     }
                     else
@@ -466,7 +491,8 @@ void CalltipRunnable::run()
     if (result && PyList_Check(result))
     {
         PyObject *pycalltip = NULL;
-        const char* calltip;
+        const char* calltipMethodName;
+        PyObject *pyparams = NULL;
         int column;
         int bracketStartCol;
         int bracketStartLine;
@@ -477,14 +503,26 @@ void CalltipRunnable::run()
 
             if (PyTuple_Check(pycalltip))
             {
-                if (PyArg_ParseTuple(pycalltip, "siii", &calltip, &column, &bracketStartLine, &bracketStartCol))
+                if (PyArg_ParseTuple(pycalltip, "sO!iii", &calltipMethodName, &PyList_Type, &pyparams, &column, &bracketStartLine, &bracketStartCol))
                 {
-                    calltips.append(ito::JediCalltip(
-                        QLatin1String(calltip), 
-                        column, 
-                        bracketStartLine - lineOffset, 
-                        bracketStartCol)
-                    );
+                    bool ok;
+                    QStringList params = PythonQtConversion::PyObjToStringList(pyparams, false, ok);
+
+                    if (ok)
+                    {
+                        calltips.append(ito::JediCalltip(
+                            QLatin1String(calltipMethodName),
+                            params,
+                            column,
+                            bracketStartLine - lineOffset,
+                            bracketStartCol)
+                        );
+                    }
+                    else
+                    {
+                        PyErr_Clear();
+                        std::cerr << "Error in param string list of calltip: invalid format of tuple\n" << std::endl;
+                    }
                 }
                 else
                 {
@@ -520,6 +558,118 @@ void CalltipRunnable::run()
             s, 
             m_request.m_callbackFctName.constData(),
             Q_ARG(QVector<ito::JediCalltip>, calltips)
+        );
+
+    }
+
+    endRun();
+};
+
+//-------------------------------------------------------------------------------------
+void GetHelpRunnable::run()
+{
+    startRun();
+
+    if (isOutdated())
+    {
+        return;
+    }
+
+    QVector<ito::JediGetHelp> helps;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    int lineOffset = 0;
+    PyObject *result = nullptr;
+
+    if (m_additionalImportString != "")
+    {
+        lineOffset = 1;
+        //add from itom import * as first line (this is afterwards removed from results)
+        result = PyObject_CallMethod(
+            m_pPyModJedi,
+            "get_help",
+            "siis",
+            (m_additionalImportString + "\n" + m_request.m_source).toUtf8().constData(),
+            m_request.m_line + 1,
+            m_request.m_col,
+            m_request.m_path.toUtf8().constData()
+        ); //new ref
+    }
+    else
+    {
+        result = PyObject_CallMethod(
+            m_pPyModJedi,
+            "get_help",
+            "siis",
+            m_request.m_source.toUtf8().constData(),
+            m_request.m_line,
+            m_request.m_col,
+            m_request.m_path.toUtf8().constData()
+        ); //new ref
+    }
+
+    if (result && PyList_Check(result))
+    {
+        PyObject *pygethelp = nullptr;
+        const char* description;
+        PyObject *pytooltips = nullptr;
+
+        for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
+        {
+            pygethelp = PyList_GetItem(result, idx); //borrowed ref
+
+            if (PyTuple_Check(pygethelp))
+            {
+                if (PyArg_ParseTuple(pygethelp, "sO!", &description, &PyList_Type, &pytooltips))
+                {
+                    bool ok;
+                    QStringList tooltips = PythonQtConversion::PyObjToStringList(pytooltips, false, ok);
+
+                    if (ok)
+                    {
+                        helps.append(
+                            ito::JediGetHelp(
+                                description,
+                                tooltips)
+                        );
+                    }
+                }
+                else
+                {
+                    PyErr_Clear();
+                    std::cerr << "Error in jedi get_help: invalid format of tuple\n" << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Error in jedi get_help: list of tuples required\n" << std::endl;
+            }
+        }
+
+        Py_DECREF(result);
+    }
+
+    else
+    {
+        Py_XDECREF(result);
+#ifdef _DEBUG
+        std::cerr << "Error when getting help from jedi\n" << std::endl;
+        PyErr_PrintEx(0);
+#endif
+    }
+
+
+
+    PyGILState_Release(gstate);
+
+    QObject *s = m_request.m_sender.data();
+    if (s && m_request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(
+            s,
+            m_request.m_callbackFctName.constData(),
+            Q_ARG(QVector<ito::JediGetHelp>, helps)
         );
 
     }

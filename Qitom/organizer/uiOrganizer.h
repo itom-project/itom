@@ -64,6 +64,7 @@ class QUiLoader; //forward declaration
 namespace ito
 {
 class WidgetWrapper; //forward declaration
+class TimerModel; //forward declaration
 
 /*!
     \class UiContainer
@@ -288,25 +289,7 @@ struct ClassInfoContainer
 
 } // namespace ito
 
-QT_BEGIN_NAMESPACE
-template <>
-class QT_DEPRECATED_X("Use std::less") qLess<ito::ClassInfoContainer>
-{
-public:
-    inline bool operator()(const ito::ClassInfoContainer &t1, const ito::ClassInfoContainer &t2) const
-    {
-        return (t1.m_name < t2.m_name);
-    }
-};
-QT_END_NAMESPACE
-
 namespace ito {
-
-struct TimerContainer
-{
-	QPointer<QTimer> timer;
-	QString name;
-};
 
 class UiOrganizer : public QObject
 {
@@ -388,7 +371,7 @@ public:
     //!< loads a widget from an ui file (including its optional translation) and returns it.
     QWidget* loadUiFile(const QString &filename, RetVal &retValue, QWidget *parent = NULL, const QString &objectNameSuffix = QString());
 
-	QList<TimerContainer> getRegisteredTimers();
+    TimerModel* getTimerModel() const;
 
 protected:
 
@@ -428,7 +411,7 @@ private:
     //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
     QUiLoader *m_pUiLoader;
     QHash<QString, QTranslator*> m_transFiles;
-	QList<TimerContainer> m_timers;
+    TimerModel *m_pTimerModel;
 
 signals:
 
@@ -519,7 +502,7 @@ public slots:
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 
-	RetVal registerActiveTimer(const QPointer<QTimer> &timer, const QString &name, ItomSharedSemaphore *semaphore = NULL);
+	RetVal registerActiveTimer(const QWeakPointer<QTimer> &timer, const QString &name);
 
 
 
@@ -527,7 +510,6 @@ public slots:
 
 private slots:
     void watcherThreadFinished();
-	RetVal unregisterActiveTimer(ItomSharedSemaphore *semaphore = NULL);
 
 };
 

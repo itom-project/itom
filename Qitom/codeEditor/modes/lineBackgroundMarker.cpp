@@ -46,10 +46,14 @@
 
 namespace ito {
 
-LineBackgroundMarkerMode::LineBackgroundMarkerMode(const QString &name, const QColor &bgcolor, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
-    Mode(name, description),
-    QObject(parent),
-    m_color(bgcolor)
+LineBackgroundMarkerMode::LineBackgroundMarkerMode(
+    const QString &name, 
+    const QColor &bgcolor, 
+    const QString &description /*= ""*/, 
+    QObject *parent /*= NULL*/) :
+        Mode(name, description),
+        QObject(parent),
+        m_color(bgcolor)
 {
 }
 
@@ -123,6 +127,7 @@ void LineBackgroundMarkerMode::clearAllMarkers()
 {
     foreach (TextDecoration::Ptr deco, m_decorations)
     {
+        //qDebug() << "remove marker " << deco->format.background().color();
         editor()->decorations()->remove(deco);
     }
 

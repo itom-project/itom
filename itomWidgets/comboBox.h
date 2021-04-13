@@ -65,11 +65,6 @@ class ITOMWIDGETS_EXPORT ComboBox : public QComboBox
   /// Current item's user data as string (Qt::UserRole role)
   Q_PROPERTY(QString currentUserDataAsString READ currentUserDataAsString WRITE setCurrentUserDataAsString)
 
-#if QT_VERSION < 0x050500
-  //for >= Qt 5.5.0 see Q_ENUM definition below
-  Q_ENUMS(ScrollEffect);
-#endif
-
 public:
   /// Constructor, build a ComboBox that behaves like QComboBox.
   explicit ComboBox(QWidget* parent = 0);
@@ -108,11 +103,9 @@ public:
     ScrollWithNoVScrollBar
   };
 
-#if QT_VERSION >= 0x050500
   //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
   //values are always accessible.
   Q_ENUM(ScrollEffect);
-#endif
 
   /// Return the scrollWheelEffect property value.
   /// \sa scrollEffect

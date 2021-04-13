@@ -30,8 +30,6 @@
 
 namespace ito 
 {
-    class MethodDescription;
-    typedef QList<MethodDescription> MethodDescriptionList;
 
     struct PythonQObjectMarshal
     {
@@ -66,7 +64,16 @@ class MethodDescription
 {
 public:
     MethodDescription();
-    MethodDescription(QByteArray &name, QByteArray &signature, QMetaMethod::MethodType type, QMetaMethod::Access access, int methodIndex, int retType, int nrOfArgs, int *argTypes);
+    MethodDescription(
+        QByteArray &name, 
+        QByteArray &signature, 
+        QMetaMethod::MethodType type, 
+        QMetaMethod::Access access, 
+        int methodIndex, 
+        int retType, 
+        int nrOfArgs, 
+        int *argTypes
+    );
     MethodDescription(QMetaMethod &method);
     MethodDescription(const MethodDescription &copy);
     ~MethodDescription();
@@ -96,6 +103,8 @@ private:
     int *m_argTypes;                 /*!< integer-array with size m_nrOfArgs containing the type-id of every argument (see QMetaType) */
 
 };
+
+typedef QList<MethodDescription> MethodDescriptionList;
 
 /*!
     \class FctCallParamContainer
@@ -186,7 +195,7 @@ public:
 
 private:
     //! copy constructor is not accessible
-    FctCallParamContainer( const FctCallParamContainer & /*copy*/ ) { /* forbidden */ };
+    FctCallParamContainer( const FctCallParamContainer & /*copy*/ ) = delete;
     int m_nrOfParams;  /*!<  number of arguments (hence \ref m_sizeArgs - 1) */
     int m_sizeArgs;  /*!< number of arguments + 1 (for return value), hence length of \ref m_args and \ref m_argTypes */
     void** m_args;   /*!< void*-array containing the data of each parameter, NULL if the parameter is not available / filled (yet) */

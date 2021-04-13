@@ -49,6 +49,7 @@ void WidgetPropEditorCalltips::readSettings()
     settings.beginGroup("CodeEditor");
 
     ui.checkCallTips->setChecked( settings.value("calltipsEnabled", true).toBool());
+    ui.checkHelpTooltip->setChecked(settings.value("helpTooltipEnabled", true).toBool());
 
     settings.endGroup();
 }
@@ -59,6 +60,7 @@ void WidgetPropEditorCalltips::writeSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
     settings.setValue("calltipsEnabled", ui.checkCallTips->isChecked());
+    settings.setValue("helpTooltipEnabled", ui.checkHelpTooltip->isChecked());
     settings.endGroup();
 }
 

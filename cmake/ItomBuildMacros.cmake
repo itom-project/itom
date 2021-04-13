@@ -92,6 +92,9 @@ macro(itom_init_plugin_common_vars)
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
     set(ITOM_APP_DIR NOTFOUND CACHE PATH "base path to itom build / install folder")
     set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
+    set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as \
+        hex string, if all methods that have been deprecated before this version, \
+        should raise a compiler error.")
     
     # Set a default build type if none was specified
     if(NOT CMAKE_CONFIGURATION_TYPES)
@@ -103,6 +106,10 @@ macro(itom_init_plugin_common_vars)
     endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #core libraries are build as shared libraries
+    
+    if (BUILD_QT_DISABLE_DEPRECATED_BEFORE)
+        add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=${BUILD_QT_DISABLE_DEPRECATED_BEFORE})
+    endif()
     
     #try to enable OpenMP (e.g. not available with VS Express)
     find_package(OpenMP QUIET)
@@ -257,6 +264,9 @@ macro(itom_init_plugin_library target)
     
     message(STATUS "\n<--- PLUGIN ${target} --->")
     
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    
     project(${target})
     
     itom_init_plugin_common_vars()
@@ -312,6 +322,9 @@ macro(itom_init_designerplugin_library target)
                           "${multiValueArgs}" ${ARGN} )
                           
     message(STATUS "\n<--- DESIGNERPLUGIN ${target} --->")
+    
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
     
     project(${target})
     
@@ -498,33 +511,30 @@ macro(itom_find_package_qt SET_AUTOMOC)
         
     if(DETECT_QT5)
         #TRY TO FIND QT5
-        find_package(Qt5 COMPONENTS Core QUIET)
+        find_package(Qt5 5.5 COMPONENTS Core QUIET)
         
         if(${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
             #maybe Qt5.0 is installed that does not support the overall FindQt5 script
-            find_package(Qt5Core QUIET)
+            find_package(Qt5Core 5.5 REQUIRED)
+            
             if(NOT Qt5Core_FOUND)
-                if(${BUILD_QTVERSION} STREQUAL "auto")
-                    set(DETECT_QT5 FALSE)
-                else()
-                    message(SEND_ERROR "Qt5 could not be found on this computer")
-                endif()
-            else(NOT Qt5Core_FOUND)
+                message(SEND_ERROR "Qt5 (>= 5.5) could not be found on this computer")
+            else()
                 set(QT5_FOUND TRUE)
                 
                 if(WIN32)
                     find_package(WindowsSDK REQUIRED)
                     set(CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
                     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-                endif(WIN32)
+                endif()
                 
                 set(QT5_FOUND TRUE)
                 
                 if(${SET_AUTOMOC})
                     set(CMAKE_AUTOMOC ON)
-                else(${SET_AUTOMOC})
+                else()
                     set(CMAKE_AUTOMOC OFF)
-                endif(${SET_AUTOMOC})
+                endif()
                 
                 foreach(comp ${Components})
                     message(STATUS "FIND_PACKAGE FOR COMPONENT ${comp}")
@@ -538,9 +548,9 @@ macro(itom_find_package_qt SET_AUTOMOC)
                         set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
                     endif()
                 endforeach(comp)
-            endif(NOT Qt5Core_FOUND)
+            endif()
             
-        else(${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+        else()
             #QT5 could be found with component based find_package command
             if(WIN32)
               find_package(WindowsSDK REQUIRED)
@@ -568,7 +578,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
                 endif()  
             endforeach(comp)
             
-        endif(${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+        endif() 
         
         if(Qt5Core_FOUND)
             # These variables are not defined with Qt5 CMake modules
@@ -581,7 +591,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     add_definitions(${QT_DEFINITIONS})
     
     if(NOT QT5_FOUND)
-        message(SEND_ERROR "Qt5 could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
+        message(SEND_ERROR "Qt5 (>= 5.5) could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
     endif()
 endmacro()
 
@@ -656,7 +666,7 @@ macro(itom_library_translation qm_files)
     # also support cmakes findpackage qt using virtual targets... 
     # https://doc.qt.io/qt-5/cmake-variable-reference.html#module-variables
     if(NOT (QT5_FOUND OR Qt5Core_FOUND))
-        message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
+        message(SEND_ERROR "Qt5 (>= 5.5) not found. Currently only Qt5 is supported.")
     endif()
     
     if(${ITOM_UPDATE_TRANSLATIONS})
@@ -1277,7 +1287,7 @@ macro(PLUGIN_TRANSLATION qm_files target force_translation_update existing_trans
     message(WARNING "Deprecated call to 'PLUGIN_TRANSLATION'. Call 'itom_library_translation' instead. Be careful: The arguments changed in this case.")
     
     if(NOT QT5_FOUND)
-        message(SEND_ERROR "Qt5 not found. Currently only Qt5 is supported.")
+        message(SEND_ERROR "Qt5 (>= 5.5) not found. Currently only Qt5 is supported.")
     endif()
     
     if(${force_translation_update})

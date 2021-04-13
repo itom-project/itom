@@ -66,6 +66,7 @@ class PythonPlugins
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
            PythonQtSignalMapper *signalMapper;
+           bool userMutexLocked; //!< true if the user mutex has been recently locked by Python
        }
        PyActuatorPlugin;
 
@@ -76,6 +77,7 @@ class PythonPlugins
            PyObject* base;
            PyObject *weakreflist; /* List of weak references */
            PythonQtSignalMapper *signalMapper;
+           bool userMutexLocked; //!< true if the user mutex has been recently locked by Python
        }
        PyDataIOPlugin;
        
@@ -110,6 +112,9 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_getPos(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setPosAbs(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setPosRel(PyActuatorPlugin *self, PyObject *args);
+
+       static PyObject *PyActuatorPlugin_userMutex_tryLock(PyActuatorPlugin* self, PyObject* args, PyObject* kwds);
+       static PyObject *PyActuatorPlugin_userMutex_unlock(PyActuatorPlugin* self);
 
        static PyObject* PyActuatorPlugin_getCurrentStatus(PyActuatorPlugin *self, void *closure);
        static PyObject* PyActuatorPlugin_getCurrentPositions(PyActuatorPlugin *self, void *closure);
@@ -152,7 +157,7 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_stop(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *args);
-       static PyObject *PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, PyObject *args);
@@ -162,6 +167,9 @@ class PythonPlugins
        static PyObject *PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* args);
+
+       static PyObject *PyDataIOPlugin_userMutex_tryLock(PyDataIOPlugin* self, PyObject* args, PyObject* kwds);
+       static PyObject *PyDataIOPlugin_userMutex_unlock(PyDataIOPlugin* self);
        
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];

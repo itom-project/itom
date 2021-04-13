@@ -58,6 +58,7 @@ namespace Utils
         QTextCursor cursor(block);
         cursor.movePosition(QTextCursor::StartOfBlock);
         int pos = text.indexOf(character, 0);
+
         if (pos >= 0)
         {
             cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
@@ -71,13 +72,16 @@ namespace Utils
                 ParenthesisInfo info(pos, character);
                 symbols.append(info);
             }
+
             pos = text.indexOf(character, pos + 1);
             cursor.movePosition(QTextCursor::StartOfBlock);
+
             if (pos >= 0)
             {
                 cursor.setPosition(cursor.position() + pos, QTextCursor::MoveAnchor);
             }
         }
+
         return symbols;
     }
 
@@ -96,16 +100,20 @@ namespace Utils
     void getBlockSymbolData(CodeEditor *editor, const QTextBlock &block, QList<ParenthesisInfo> &parentheses, QList<ParenthesisInfo> &squareBrackets, QList<ParenthesisInfo> &braces)
     {
         parentheses = listSymbols(editor, block, '(') + listSymbols(editor, block, ')');
-        qSort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
+        std::sort(parentheses.begin(), parentheses.end(), sortParenthesisInfo);
         squareBrackets = listSymbols(editor, block, '[') + listSymbols(editor, block, ']');
-        qSort(squareBrackets.begin(), squareBrackets.end(), sortParenthesisInfo);
+        std::sort(squareBrackets.begin(), squareBrackets.end(), sortParenthesisInfo);
         braces = listSymbols(editor, block, '{') + listSymbols(editor, block, '}');
-        qSort(braces.begin(), braces.end(), sortParenthesisInfo);
+        std::sort(braces.begin(), braces.end(), sortParenthesisInfo);
     }
 
     //-------------------------------------------------------------
     /*
     Gets the user state, generally used for syntax highlighting.
+
+    The user state is limited to the bits 0xFFFF of the
+    32bit integer state. The higher level bits 0xFFFF0000
+    are used by the fold detection.
 
     :param block: block to access
     :return: The block state
@@ -116,17 +124,24 @@ namespace Utils
         {
             return -1;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             return state;
         }
+
         return state & 0x0000FFFF;
     }
 
     //-------------------------------------------------------------
     /*
     Sets the user state, generally used for syntax highlighting.
+
+    The `state` is limited to 0xFFFF and stored in the
+    user state of the block. The higher level bits 0xFFFF0000
+    are kept and are used by the fold detection.
 
     :param block: block to modify
     :param state: new state value.
@@ -138,11 +153,14 @@ namespace Utils
         {
             return;
         }
+
         int user_state = block.userState();
+
         if (user_state == -1)
         {
             user_state = 0;
         }
+
         int higher_part = user_state & 0x7FFF0000;
         state &= 0x0000FFFF;
         state |= higher_part;
@@ -162,11 +180,14 @@ namespace Utils
         {
             return 0;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             state = 0;
         }
+
         return (state & 0x03FF0000) >> 16;
     }
 
@@ -211,11 +232,14 @@ namespace Utils
         {
             return false;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             state = 0;
         }
+
         return (bool)(state & 0x04000000);
     }
 
@@ -233,11 +257,14 @@ namespace Utils
         {
             return;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             state = 0;
         }
+
         state &= 0x7BFFFFFF;
         state |= int(val) << 26;
         block.setUserState(state);
@@ -256,11 +283,14 @@ namespace Utils
         {
             return false;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             state = 0;
         }
+
         return (bool)(state & 0x08000000);
     }
 
@@ -277,11 +307,14 @@ namespace Utils
         {
             return;
         }
+
         int state = block.userState();
+
         if (state == -1)
         {
             state = 0;
         }
+
         state &= 0x77FFFFFF;
         state |= int(val) << 27;
         block.setUserState(state);
@@ -374,6 +407,161 @@ namespace Utils
         text.replace("\r\n", "\n");
         text.replace("\r", "\n");
         return text.split("\n");
+    }
+
+    QString signatureWordWrapCropString(const QString &str, int totalMaxLineWidth)
+    {
+        if (totalMaxLineWidth > 0)
+        {
+            if (str.size() > totalMaxLineWidth)
+            {
+                return str.left(totalMaxLineWidth - 3) + "...";
+            }
+        }
+
+        return str;
+    }
+
+    //---------------------------------------------------------------------------
+    /* Wraps a signature by its arguments, separated by ', ' into
+    multiple lines, where each line has a maximum length of 'width'. 
+    Each following line is indented by four spaces.*/
+    QString signatureWordWrap(QString signature, int width, int totalMaxLineWidth /*= -1*/)
+    {
+        QString result;
+        int j, i;
+        bool firstWrap = true;
+
+        for (;;)
+        {
+            i = std::min(width, signature.length());
+            j = signature.lastIndexOf(", ", i);
+
+            if (j == -1)
+            {
+                j = signature.indexOf(", ", i);
+            }
+
+            if (j > 0)
+            {
+                result += signatureWordWrapCropString(signature.left(j), totalMaxLineWidth);
+                result += ",\n    ";
+                signature = signature.mid(j + 2);
+
+                if (firstWrap)
+                {
+                    firstWrap = false;
+                    width -= 4;
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            if (width >= signature.length())
+            {
+                break;
+            }
+        }
+
+        return result + signatureWordWrapCropString(signature, totalMaxLineWidth);
+    }
+
+    //---------------------------------------------------------------------------
+    /*
+    the signature is represented as <code> monospace section.
+    this requires much more space than ordinary letters. 
+    Therefore reduce the maximum line length to 88/2.
+    */
+    QStringList parseStyledTooltipsFromSignature(
+        const QStringList &signatures, 
+        const QString &docstring,
+        int maxLineLength /*= 44*/,
+        int maxDocStrLength /*= -1*/)
+    {
+        QStringList styledTooltips;
+        QStringList defs = signatures;
+
+        for (int i = 0; i < defs.size(); ++i)
+        {
+            if (defs[i].size() > maxLineLength)
+            {
+                defs[i] = Utils::signatureWordWrap(defs[i], maxLineLength, 3 * maxLineLength);
+            }
+        }
+
+        // sometimes one element of a signature is still very long. Then cut
+        if (defs.size() > 20)
+        {
+            QStringList newDefs;
+
+            for (int i = 0; i < 10; ++i)
+            {
+                newDefs << defs[i];
+            }
+
+            newDefs << "...";
+
+            for (int i = defs.size() - 10; i < defs.size(); ++i)
+            {
+                newDefs << defs[i];
+            }
+
+            defs = newDefs;
+        }
+
+        QString sigs = defs.join("\n");
+        sigs = sigs.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+
+        // search for the last occurence of ") ->" and replaces the arrow
+        // by a real arrow, since the -> arrow will be wrapped (although <nobr>).
+        const QString pattern(") -&gt; ");
+        int idx = sigs.lastIndexOf(pattern);
+
+        if (idx >= 0)
+        {
+            sigs = sigs.replace(idx, pattern.size(), ") &#8594; ");
+        }
+
+        QStringList s = sigs.split('\n', QString::SkipEmptyParts);
+
+        // for unbreakable paragraphs, do not use <nobr>, but <p style=...>
+        // see also: https://bugreports.qt.io/browse/QTBUG-1135
+        const QString pstart = "<p style=\"white-space:pre; padding-bottom:0px; margin-bottom:0px;\">";
+        const QString br = "<br>";
+
+        if (s.size() > 0)
+        {
+            sigs = pstart + s.join(br) + "</p>";
+        }
+        else
+        {
+            sigs = "";
+        }
+
+        QString docstr = docstring.toHtmlEscaped().replace('\n', br);
+
+        if (maxDocStrLength > 3 && docstr.size() > maxDocStrLength)
+        {
+            docstr = docstr.left(maxDocStrLength - 3) + "...";
+        }
+
+        if (sigs != "" && docstr != "")
+        {
+            styledTooltips.append(QString("<code>%1</code><hr>%2%3</p>")
+                .arg(sigs).arg(pstart).arg(docstr));
+        }
+        else if (sigs != "")
+        {
+            styledTooltips.append(QString("<code>%1</code>").arg(sigs));
+        }
+        else if (docstr != "")
+        {
+            styledTooltips.append(QString("%1%2</p>").arg(pstart).arg(docstr));
+        }
+
+        return styledTooltips;
     }
 };
 

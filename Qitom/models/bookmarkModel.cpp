@@ -185,9 +185,9 @@ RetVal BookmarkModel::addBookmark(const BookmarkItem &item)
 }
 
 //-------------------------------------------------------------------------------------------------------
-//! delete bookmark given by its QModelIndex
+//! delete a given bookmark
 /*!
-    emits bookmarkDeleted if deletion has been successfull.
+    emits bookmarkDeleted if deletion has been successful.
 
     \param index QModelIndex of bookmark which should be deleted
     \return retOk in case of success, if QModelIndex not valid retError
@@ -205,6 +205,34 @@ RetVal BookmarkModel::deleteBookmark(const BookmarkItem &item)
 
         updateActions();
     }
+
+    return retOk;
+}
+
+//-------------------------------------------------------------------------------------------------------
+//! delete the given bookmarks
+/*!
+    emits bookmarkDeleted if deletion has been successful.
+
+    \param index QModelIndex of bookmark which should be deleted
+    \return retOk in case of success, if QModelIndex not valid retError
+*/
+RetVal BookmarkModel::deleteBookmarks(const QList<BookmarkItem> &items)
+{
+    foreach(const BookmarkItem &item, items)
+    {
+        QModelIndex index = modelIndexFromItem(item);
+
+        if (index.isValid())
+        {
+            beginRemoveRows(parent(index), index.row(), index.row());
+            emit bookmarkDeleted(item);
+            m_bookmarks.removeAt(index.row());
+            endRemoveRows();
+        }
+    }
+    
+    updateActions();
 
     return retOk;
 }
