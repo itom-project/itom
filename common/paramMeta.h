@@ -113,6 +113,10 @@ public:
     //!< constructor used by derived classes to indicate their real type
     explicit ParamMeta(MetaRtti type, ito::ByteArray category = ito::ByteArray()); 
 
+    ParamMeta(const ParamMeta &copy);
+
+    ParamMeta &operator=(const ParamMeta &rhs);
+
     //!< destructor
     virtual ~ParamMeta();
 
@@ -595,6 +599,9 @@ class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
     {
     }
 
+    //! copy constructor
+    DObjMeta(const DObjMeta &cpy);
+
     //!< assignment operator
     DObjMeta &operator=(const DObjMeta &rhs);
 
@@ -936,6 +943,9 @@ class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     //! copy constructor
     IntervalMeta(const IntervalMeta &cpy);
 
+    //!< assignment operator
+    IntervalMeta &operator=(const IntervalMeta &rhs);
+
     virtual bool operator==(const ParamMeta &other) const;
     
     //!< returns minimum size of interval or range
@@ -1018,6 +1028,9 @@ class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
 
     //! copy constructor
     RangeMeta(const RangeMeta &cpy);
+
+    //!< assignment operator
+    RangeMeta &operator=(const RangeMeta &rhs);
 };
 
 /*!
@@ -1037,12 +1050,18 @@ class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
     explicit RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta,
                       ito::ByteArray category = ito::ByteArray());
 
-    inline const ito::RangeMeta &getWidthRangeMeta() const
+    //! copy constructor
+    RectMeta(const RectMeta &cpy);
+
+    //!< assignment operator
+    RectMeta &operator=(const RectMeta &rhs);
+
+    inline const ito::RangeMeta& getWidthRangeMeta() const
     {
         return m_widthMeta;
     }
 
-    inline const ito::RangeMeta &getHeightRangeMeta() const
+    inline const ito::RangeMeta& getHeightRangeMeta() const
     {
         return m_heightMeta;
     }
@@ -1057,10 +1076,7 @@ class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
     } 
 
     //!< sets unit string of this parameter
-    inline void setUnit(const ito::ByteArray &unit)
-    {
-        m_heightMeta.setUnit(unit);
-    } 
+    void setUnit(const ito::ByteArray &unit);
 
     virtual bool operator==(const ParamMeta &other) const;
 

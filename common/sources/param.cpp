@@ -894,7 +894,7 @@ void ParamBase::inOutCheck()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int ParamBase::getLen(void) const
+int ParamBase::getLen() const
 {
     switch (m_type & paramTypeMask)
     {
@@ -909,7 +909,7 @@ int ParamBase::getLen(void) const
             }
             else
             {
-                return -1;
+                return 0; //changed in itom 5.0 (was -1 before)
             }
 
         case String:
@@ -1603,7 +1603,7 @@ const Param Param::operator [] (const int index) const
                     }
                 break;
 
-                case StringList:
+                case StringList & ~Pointer:
                 {
                     // no meta up to now
                     return Param(newName, String, (getVal<ByteArray*>(len))[index].data(), m_info.data());

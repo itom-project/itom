@@ -28,16 +28,13 @@ template <typename _Tp> void AssignmentAndCopyConstrImpl(_Tp meta, _Tp altMeta, 
     meta3 = meta;
     EXPECT_FALSE(meta3 == altMeta) << text;
 
-    std::vector<ito::ParamMeta> vector;
-    vector.push_back(meta);
-    vector.push_back(altMeta);
-    EXPECT_TRUE(vector[0].getType() == meta.getType()) << text;
-    EXPECT_TRUE(vector[1].getType() == meta.getType()) << text;
-
+    // if a ParamMeta object is assigned to any derived object, the rtti type must be Unknown.
     ParamMeta base2;
     EXPECT_TRUE(base2.getType() == ito::ParamMeta::rttiUnknown) << text;
     base2 = meta;
-    EXPECT_TRUE(base2.getType() == meta.getType()) << text;
+    EXPECT_TRUE(base2.getType() == ito::ParamMeta::rttiUnknown) << text;
+    ParamMeta base3(meta);
+    EXPECT_TRUE(base3.getType() == ito::ParamMeta::rttiUnknown) << text;
 }
 
 TEST(ParamMetaTest, AssignmentAndCopyConstructor)

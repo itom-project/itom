@@ -1256,7 +1256,7 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
     PrivateData &data = it.value();
     ito::CharArrayMeta *meta = data.param.getMetaT<ito::CharArrayMeta>();
     const ito::CharArrayMeta *metaNew = param.getMetaT<const ito::CharArrayMeta>();
-    int len = param.getLen();
+    int len = std::max(0, param.getLen());
     const DataType* values = param.getVal<const DataType*>();
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
@@ -1536,7 +1536,7 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
     PrivateData &data = it.value();
     ito::IntArrayMeta *meta = data.param.getMetaT<ito::IntArrayMeta>();
     const ito::IntArrayMeta *metaNew = param.getMetaT<const ito::IntArrayMeta>();
-    int len = param.getLen();
+    int len = std::max(0, param.getLen());
     const DataType* values = param.getVal<const DataType*>();
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
@@ -1813,7 +1813,7 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
     PrivateData &data = it.value();
     ito::DoubleArrayMeta *meta = data.param.getMetaT<ito::DoubleArrayMeta>();
     const ito::DoubleArrayMeta *metaNew = param.getMetaT<const ito::DoubleArrayMeta>();
-    int len = param.getLen();
+    int len = std::max(0, param.getLen());
     const DataType* values = param.getVal<const DataType*>();
 
     int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
@@ -1964,6 +1964,293 @@ ParamDoublePropertyManager *ParamDoubleArrayPropertyManager::subPropertyManager(
 
 
 
+//------------------------------------------------------------------------------
+// ParamStringListPropertyManagerPrivate
+class ParamStringListPropertyManagerPrivate
+{
+    ParamStringListPropertyManager *q_ptr;
+    Q_DECLARE_PUBLIC(ParamStringListPropertyManager)
+public:
+
+    void slotValueChanged(QtProperty *property, const QByteArray &value);
+    void slotPropertyDestroyed(QtProperty *property);
+    void setMeta(QtProperty *property, const ito::StringListMeta &meta);
+
+    ito::ParamStringPropertyManager *m_singleItemPropertyManager;
+    ito::AbstractParamPropertyManagerPrivate *m_d_ptr;
+
+    QMap<const QtProperty*, QList<QtProperty*> > m_propertyToValues;
+    QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
+};
+
+void ParamStringListPropertyManagerPrivate::slotValueChanged(QtProperty *property, const QByteArray &value)
+{
+    if (QtProperty *prop = m_valuesToProperty.value(property, 0))
+    {
+        if (m_propertyToValues.contains(prop))
+        {
+            int index = m_propertyToValues[prop].indexOf(property);
+            int num = m_d_ptr->m_values[prop].param.getLen();
+            if (index >= 0 && index < num)
+            {
+                const ParamStringListPropertyManager::DataType* vals = m_d_ptr->m_values[prop].param.getVal<const ParamStringListPropertyManager::DataType*>();
+                ParamStringListPropertyManager::DataType* newvals = new ParamStringListPropertyManager::DataType[num];
+
+                for (int i = 0; i < num; ++i)
+                {
+                    newvals[i] = vals[i];
+                }
+
+                newvals[index] = value.constData();
+                q_ptr->setValue(prop, num, newvals);
+                delete[] newvals;
+            }
+        }
+    }
+}
+
+void ParamStringListPropertyManagerPrivate::slotPropertyDestroyed(QtProperty *property)
+{
+    if (QtProperty *pointProp = m_valuesToProperty.value(property, 0))
+    {
+        m_propertyToValues[pointProp].removeOne(property);
+        if (m_propertyToValues[pointProp].size() == 0)
+        {
+            m_propertyToValues.remove(pointProp);
+            m_valuesToProperty.remove(property);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ParamStringListPropertyManager::ParamStringListPropertyManager(QObject *parent /*= 0*/) :
+    AbstractParamPropertyManager(parent)
+{
+    d_ptr = new ParamStringListPropertyManagerPrivate;
+    d_ptr->q_ptr = this;
+    d_ptr->m_d_ptr = AbstractParamPropertyManager::d_ptr;
+
+    d_ptr->m_singleItemPropertyManager = new ito::ParamStringPropertyManager(this);
+    connect(d_ptr->m_singleItemPropertyManager, SIGNAL(valueChanged(QtProperty *, QByteArray)),
+        this, SLOT(slotValueChanged(QtProperty *, QByteArray)));
+    connect(d_ptr->m_singleItemPropertyManager, SIGNAL(propertyDestroyed(QtProperty *)),
+        this, SLOT(slotPropertyDestroyed(QtProperty *)));
+}
+
+//------------------------------------------------------------------------------
+ParamStringListPropertyManager::~ParamStringListPropertyManager()
+{
+    delete d_ptr;
+}
+
+//------------------------------------------------------------------------------
+/*!
+\reimp
+*/
+void ParamStringListPropertyManager::initializeProperty(QtProperty *property)
+{
+    DataType *ptr = nullptr;
+    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::StringList, 0, ptr, nullptr, ""));
+}
+
+//------------------------------------------------------------------------------
+/*!
+\reimp
+*/
+void ParamStringListPropertyManager::uninitializeProperty(QtProperty *property)
+{
+    foreach(QtProperty* prop, d_ptr->m_propertyToValues[property])
+    {
+        d_ptr->m_valuesToProperty.remove(prop);
+        delete prop;
+    }
+    d_ptr->m_propertyToValues.remove(property);
+}
+
+//------------------------------------------------------------------------------
+/*!
+Sets the value of the given \a property to \a value.
+
+If the specified \a value is not valid according to the given \a
+property's range, the \a value is adjusted to the nearest valid
+value within the range.
+
+\sa value(), setRange(), valueChanged()
+*/
+void ParamStringListPropertyManager::setParam(QtProperty *property, const ito::Param &param)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = AbstractParamPropertyManager::d_ptr->m_values.find(property);
+    if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
+        return;
+
+    Q_ASSERT(param.getType() == (ito::ParamBase::StringList & ito::paramTypeMask));
+
+    property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
+
+    PrivateData &data = it.value();
+    auto meta = data.param.getMetaT<ito::StringListMeta>();
+    const auto metaNew = param.getMetaT<const ito::StringListMeta>();
+    int len = std::max(0, param.getLen());
+    const auto values = param.getVal<const DataType*>();
+
+    int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
+
+    if (oldSubItems > len)
+    {
+        //remove supernumerous sub-items
+        for (int i = oldSubItems; i = len; --i)
+        {
+            QtProperty *subProp = d_ptr->m_propertyToValues[property][i - 1];
+            property->removeSubProperty(subProp);
+            d_ptr->m_valuesToProperty.remove(subProp);
+            delete subProp;
+            d_ptr->m_propertyToValues[property].removeLast();
+        }
+    }
+
+    if (len > oldSubItems)
+    {
+        //add new sub-items
+        for (int i = oldSubItems; i < len; ++i)
+        {
+            QtProperty *prop = d_ptr->m_singleItemPropertyManager->addProperty();
+            prop->setPropertyName(tr("%1").arg(i));
+            d_ptr->m_singleItemPropertyManager->setValue(prop, "");
+            d_ptr->m_propertyToValues[property].append(prop);
+            d_ptr->m_valuesToProperty[prop] = property;
+            property->addSubProperty(prop);
+        }
+    }
+
+    if ((meta && metaNew && (*meta != *metaNew)) || \
+        (meta && !metaNew) || \
+        (!meta && metaNew))
+    {
+        data.param = param;
+
+        const auto vals = data.param.getVal<const DataType*>();
+        ito::StringMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::StringMeta(*metaNew);
+            ito::Param val("val", ito::ParamBase::String, vals[i].data(), "");
+            val.setMeta(im, true);
+            d_ptr->m_singleItemPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
+        emit metaChanged(property, *metaNew);
+        emit valueChanged(property, len, vals);
+        emit propertyChanged(property);
+    }
+    else if (data.param != param)
+    {
+        data.param.copyValueFrom(&param);
+        const auto vals = data.param.getVal<const DataType*>();
+        ito::StringMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            if (metaNew)
+            {
+                im = new ito::StringMeta(*metaNew);
+            }
+            else
+            {
+                im = NULL;
+            }
+            ito::Param val("val", ito::ParamBase::String, vals[i].data(), "");
+            val.setMeta(im, true);
+            d_ptr->m_singleItemPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
+        emit valueChanged(property, len, data.param.getVal<const DataType*>());
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+void ParamStringListPropertyManager::setValue(QtProperty *property, int num, const ito::ByteArray* values)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = AbstractParamPropertyManager::d_ptr->m_values.find(property);
+    if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
+        return;
+
+    PrivateData &data = it.value();
+    auto vals = data.param.getVal<DataType*>();
+    int len = data.param.getLen();
+    bool changed = len != num;
+
+    if (!changed)
+    {
+        for (int i = 0; i < num; ++i)
+        {
+            changed |= (values[i] != vals[i]);
+        }
+    }
+
+    if (changed)
+    {
+        data.param.setVal<const DataType*>(values, num);
+
+        for (int i = 0; i < d_ptr->m_propertyToValues[property].size(); ++i)
+        {
+            d_ptr->m_singleItemPropertyManager->setValue(d_ptr->m_propertyToValues[property][i], values[i].data());
+        }
+
+        emit valueChanged(property, num, values);
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*!
+\reimp
+*/
+QString ParamStringListPropertyManager::valueText(const QtProperty *property) const
+{
+    const AbstractParamPropertyManagerPrivate::PropertyValueMap::const_iterator it = AbstractParamPropertyManager::d_ptr->m_values.constFind(property);
+    if (it == AbstractParamPropertyManager::d_ptr->m_values.constEnd())
+        return QString();
+
+    const ito::Param &param = it.value().param;
+    int len = param.getLen();
+    const auto vals = param.getVal<const DataType*>();
+
+    switch (len)
+    {
+    case 0:
+        return QString("empty");
+    case 1:
+        return QString("[%1]").arg(QLatin1String(vals[0].data()));
+    case 2:
+        return QString("[%1,%2]").arg(QLatin1String(vals[0].data())).arg(QLatin1String(vals[1].data()));
+    case 3:
+        return QString("[%1,%2,%3]").arg(QLatin1String(vals[0].data())).arg(QLatin1String(vals[1].data())).arg(QLatin1String(vals[2].data()));
+    default:
+        return QString("%1 values").arg(len);
+    }
+}
+
+/*!
+Returns the manager that creates the nested subproperties.
+
+In order to provide editing widgets for the mentioned
+subproperties in a property browser widget, this manager must be
+associated with an editor factory.
+*/
+ParamStringPropertyManager *ParamStringListPropertyManager::subPropertyManager() const
+{
+    return d_ptr->m_singleItemPropertyManager;
+}
 
 
 
@@ -2019,7 +2306,9 @@ void ParamOtherPropertyManager::setParam(QtProperty *property, const ito::Param 
         (param.getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask)) |
         (param.getType() == (ito::ParamBase::PointPtr & ito::paramTypeMask)) |
         (param.getType() == (ito::ParamBase::PointCloudPtr & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask)));
+        (param.getType() == (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask)) |
+        (param.getType() == (ito::ParamBase::ComplexArray & ito::paramTypeMask)) |
+        (param.getType() == ito::ParamBase::Complex));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -2092,6 +2381,26 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
         {
             return QLatin1String("PointCloud");
         }
+        break;
+    case (ito::ParamBase::Complex):
+        {
+            auto val = param.getVal<ito::complex128>();
+            QString s;
+
+            if (val.imag() >= 0)
+            {
+                s = QString::number(val.real(), 'g', 4) + "+" + QString::number(val.imag(), 'g', 4) + "i";
+            }
+            else
+            {
+                s = QString::number(val.real(), 'g', 4) + "-" + QString::number(std::abs(val.imag()), 'g', 4) + "i";
+            }
+
+            return s;
+            break;
+        }
+    case (ito::ParamBase::ComplexArray & ito::paramTypeMask):
+        return tr("%1 complex values").arg(std::max(0, param.getLen()));
         break;
     }
 

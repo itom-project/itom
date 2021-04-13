@@ -288,8 +288,12 @@ public:
     //! automagically saved to xml file when an instance of a plugin class is deleted (closed)
     void setAutosave(const bool autosave);
 
-    //! returns length of array parameters or -1 if no array is given. For string parameter returns
+    //! returns length of array parameters or 0 if no array is given. For string parameter returns
     //! length of string or 0 if not given, for number parameters return 1. In all other cases -1.
+    /* From itom 5.0 the behaviour in case of arrays or string list changed. Before, -1 was
+       returned if the internal array is a nullptr and 0 if the array has zero items. From itom
+       5.0 on, an empty or non-existing array or list always returns 0.    
+    */
     int getLen(void) const;
 
     /** setVal  set parameter value - templated version

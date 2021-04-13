@@ -55,6 +55,22 @@ ParamMeta::~ParamMeta()
 }
 
 //--------------------------------------------------------------------------------
+ParamMeta::ParamMeta(const ParamMeta &copy) :
+    m_category(copy.m_category),
+    m_type(rttiUnknown)
+{
+
+}
+
+//--------------------------------------------------------------------------------
+ParamMeta &ParamMeta::operator=(const ParamMeta &rhs)
+{
+    m_category = rhs.m_category;
+    m_type = rttiUnknown;
+    return *this;
+}
+
+//--------------------------------------------------------------------------------
 void ParamMeta::setCategory(const ito::ByteArray &category)
 {
     m_category = category;
@@ -105,6 +121,7 @@ CharMeta::CharMeta(const CharMeta &copy) :
 CharMeta& CharMeta::operator=(const CharMeta &rhs)
 {
     ParamMeta::operator=(rhs);
+    m_type = rttiCharMeta;
     m_minVal = rhs.m_minVal;
     m_maxVal = rhs.m_maxVal;
     m_stepSize = rhs.m_stepSize;
@@ -211,6 +228,7 @@ IntMeta::IntMeta(const IntMeta &copy) :
 IntMeta& IntMeta::operator=(const IntMeta &rhs)
 {
     ParamMeta::operator=(rhs);
+    m_type = rttiIntMeta;
     m_minVal = rhs.m_minVal;
     m_maxVal = rhs.m_maxVal;
     m_stepSize = rhs.m_stepSize;
@@ -320,6 +338,7 @@ DoubleMeta::DoubleMeta(const DoubleMeta &copy) :
 DoubleMeta& DoubleMeta::operator=(const DoubleMeta &rhs)
 {
     ParamMeta::operator=(rhs);
+    m_type = rttiDoubleMeta;
     m_minVal = rhs.m_minVal;
     m_maxVal = rhs.m_maxVal;
     m_stepSize = rhs.m_stepSize;
@@ -437,7 +456,7 @@ HWMeta::HWMeta(const ito::ByteArray &hwAddInName, ito::ByteArray category /*= it
 //---------------------------------------------------------------------------------
 //!< copy constructor
 HWMeta::HWMeta(const HWMeta &cpy) : 
-    ParamMeta(cpy), 
+    ParamMeta(rttiHWMeta, cpy.m_category), 
     m_minType(cpy.m_minType), 
     m_HWName(cpy.m_HWName)
 {
@@ -458,6 +477,7 @@ bool HWMeta::operator==(const ParamMeta& other) const
 HWMeta& HWMeta::operator=(const HWMeta &rhs)
 {
     ParamMeta::operator=(rhs);
+    m_type = rttiHWMeta;
     m_HWName = rhs.m_HWName;
     m_minType = rhs.m_minType;
     return *this;
@@ -518,8 +538,8 @@ StringMeta::StringMeta(tType type, const ito::ByteArray &val, ito::ByteArray cat
 }
 
 //---------------------------------------------------------------------------------
-StringMeta::StringMeta(const StringMeta& cpy) 
-    : ParamMeta(cpy),
+StringMeta::StringMeta(const StringMeta& cpy) : 
+    ParamMeta(rttiStringMeta, cpy.m_category),
     p(new StringMetaPrivate(*(cpy.p)))
 {
 }
@@ -584,6 +604,8 @@ StringMeta & StringMeta::operator = (const StringMeta &rhs)
 {
     ParamMeta::operator=(rhs);
 
+    m_type = rttiStringMeta;
+
     if (rhs.p)
     {
         p->m_items = rhs.p->m_items;
@@ -636,9 +658,20 @@ bool DObjMeta::operator==(const ParamMeta& other) const
 }
 
 //---------------------------------------------------------------------------------
+//! copy constructor
+DObjMeta::DObjMeta(const DObjMeta &cpy) :
+    ParamMeta(rttiDObjMeta, cpy.m_category),
+    m_allowedTypes(cpy.m_allowedTypes),
+    m_maxDim(cpy.m_maxDim),
+    m_minDim(cpy.m_minDim)
+{
+}
+
+//---------------------------------------------------------------------------------
 DObjMeta& DObjMeta::operator=(const DObjMeta &rhs)
 {
     ParamMeta::operator=(rhs);
+    m_type = rttiDObjMeta;
     m_maxDim = rhs.m_maxDim;
     m_minDim = rhs.m_minDim;
     m_allowedTypes = rhs.m_allowedTypes;
@@ -746,6 +779,7 @@ CharArrayMeta &CharArrayMeta::operator=(const CharArrayMeta &rhs)
 {
     CharMeta::operator=(rhs);
     ListMeta::operator=(rhs);
+    m_type = rttiCharArrayMeta;
     return *this;
 }
   
@@ -795,6 +829,7 @@ IntArrayMeta &IntArrayMeta::operator=(const IntArrayMeta &rhs)
 {
     IntMeta::operator=(rhs);
     ListMeta::operator=(rhs);
+    m_type = rttiIntArrayMeta;
     return *this;
 }
 
@@ -845,6 +880,7 @@ DoubleArrayMeta &DoubleArrayMeta::operator=(const DoubleArrayMeta &rhs)
 {
     DoubleMeta::operator=(rhs);
     ListMeta::operator=(rhs);
+    m_type = rttiDoubleArrayMeta;
     return *this;
 }
 
@@ -854,7 +890,7 @@ IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, i
     m_sizeMin(0),
     m_sizeMax(std::numeric_limits<int32>::max()),
     m_sizeStep(1),
-    m_isIntervalNotRange(false)
+    m_isIntervalNotRange(true)
 {
     m_type = rttiIntervalMeta;
 }
@@ -865,7 +901,7 @@ IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 int
     m_sizeMin(intervalMin),
     m_sizeMax(intervalMax),
     m_sizeStep(intervalStep),
-    m_isIntervalNotRange(false)
+    m_isIntervalNotRange(true)
 {
     if (m_sizeMax < m_sizeMin)
         m_sizeMax = m_sizeMin;
@@ -878,9 +914,22 @@ IntervalMeta::IntervalMeta(const IntervalMeta &cpy) :
     m_sizeMin(cpy.m_sizeMin),
     m_sizeMax(cpy.m_sizeMax),
     m_sizeStep(cpy.m_sizeStep),
-    m_isIntervalNotRange(cpy.m_isIntervalNotRange)
+    m_isIntervalNotRange(true)
 {
     m_type = rttiIntervalMeta;
+}
+
+//---------------------------------------------------------------------------------
+//!< assignment operator
+IntervalMeta &IntervalMeta::operator=(const IntervalMeta &rhs)
+{
+    IntMeta::operator=(rhs);
+    m_sizeMin = rhs.m_sizeMin;
+    m_sizeMax = rhs.m_sizeMax;
+    m_sizeStep = rhs.m_sizeStep;
+    m_isIntervalNotRange = true;
+    m_type = rttiIntervalMeta;
+    return *this;
 }
 
 //---------------------------------------------------------------------------------
@@ -940,6 +989,16 @@ RangeMeta::RangeMeta(const RangeMeta &cpy) :
     m_type = rttiRangeMeta;
 }   
 
+//---------------------------------------------------------------------------------
+//!< assignment operator
+RangeMeta &RangeMeta::operator=(const RangeMeta &rhs)
+{
+    IntervalMeta::operator=(rhs);
+    m_isIntervalNotRange = false;
+    m_type = rttiRangeMeta;
+    return *this;
+}
+
 
 //---------------------------------------------------------------------------------
 DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 0.0*/, ito::ByteArray category /*= ito::ByteArray()*/) :
@@ -977,6 +1036,18 @@ DoubleIntervalMeta::DoubleIntervalMeta(const DoubleIntervalMeta &cpy) :
 }
 
 //---------------------------------------------------------------------------------
+//!< assignment operator
+DoubleIntervalMeta &DoubleIntervalMeta::operator=(const DoubleIntervalMeta &rhs)
+{
+    DoubleMeta::operator=(rhs);
+    m_sizeMin = rhs.m_sizeMin;
+    m_sizeMax = rhs.m_sizeMax;
+    m_sizeStep = rhs.m_sizeStep;
+    m_type = rttiDoubleIntervalMeta;
+    return *this;
+}
+
+//---------------------------------------------------------------------------------
 void DoubleIntervalMeta::setSizeMin(float64 val)
 {
     m_sizeMin = val; 
@@ -1010,23 +1081,33 @@ bool DoubleIntervalMeta::operator==(const ParamMeta& other) const
 }
 
 //---------------------------------------------------------------------------------
-//!< assignment operator
-DoubleIntervalMeta &DoubleIntervalMeta::operator=(const DoubleIntervalMeta &rhs)
-{
-    DoubleMeta::operator=(rhs);
-    m_sizeMin = rhs.m_sizeMin;
-    m_sizeMax = rhs.m_sizeMax;
-    m_sizeStep = rhs.m_sizeStep;
-    return *this;
-}
-
-//---------------------------------------------------------------------------------
 RectMeta::RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta, ito::ByteArray category /*= ito::ByteArray()*/) :
     ParamMeta(rttiRectMeta, category),
     m_widthMeta(widthMeta),
     m_heightMeta(heightMeta)
 {
         
+}
+
+//---------------------------------------------------------------------------------
+//! copy constructor
+RectMeta::RectMeta(const RectMeta &cpy) :
+    ParamMeta(rttiRectMeta, cpy.m_category),
+    m_widthMeta(cpy.m_widthMeta),
+    m_heightMeta(cpy.m_heightMeta)
+{
+    m_type = rttiRectMeta;
+}
+
+//---------------------------------------------------------------------------------
+//!< assignment operator
+RectMeta &RectMeta::operator=(const RectMeta &rhs)
+{
+    ParamMeta::operator=(rhs);
+    m_widthMeta = rhs.m_widthMeta;
+    m_heightMeta = rhs.m_heightMeta;
+    m_type = rttiRectMeta;
+    return *this;
 }
 
 //---------------------------------------------------------------------------------
@@ -1050,6 +1131,13 @@ bool RectMeta::operator==(const ParamMeta& other) const
     const RectMeta *other_ = (const RectMeta*)(&other);
     return ((m_heightMeta == other_->m_heightMeta) && \
         (m_widthMeta == other_->m_widthMeta));
+}
+
+//---------------------------------------------------------------------------------
+//!< sets unit string of this parameter
+void RectMeta::setUnit(const ito::ByteArray &unit)
+{
+    m_heightMeta.setUnit(unit);
 }
 
 //---------------------------------------------------------------------------------
@@ -1120,6 +1208,7 @@ StringListMeta &StringListMeta::operator=(const StringListMeta &rhs)
 {
     StringMeta::operator=(rhs);
     ListMeta::operator=(rhs);
+    m_type = rttiStringListMeta;
     return *this;
 }
         

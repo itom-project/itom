@@ -180,6 +180,7 @@ protected:
     ito::RetVal addParamIntArray(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamCharArray(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamDoubleArray(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamStringList(const ito::Param &param, QtProperty *groupProperty);
 
     ito::RetVal loadPlugin(QPointer<ito::AddInBase> plugin);
 
@@ -199,6 +200,7 @@ private slots:
     void valueChanged(QtProperty* prop, int num, const char* values);
     void valueChanged(QtProperty* prop, int num, const int* values);
     void valueChanged(QtProperty* prop, int num, const double* values);
+    void valueChanged(QtProperty* prop, int num, const ito::ByteArray* values);
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);
