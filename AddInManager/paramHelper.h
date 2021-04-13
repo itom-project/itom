@@ -55,7 +55,7 @@ namespace ito
         static ito::RetVal validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict = true, bool mandatory = false, bool roundToSteps = false);
         static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = nullptr);
         static ito::RetVal getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly);
-        static ito::RetVal parseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
+        static ito::RetVal parseParamName(const QString &key, QString &paramName, bool &hasIndex, int &index, QString &additionalTag);
 
         static ito::RetVal getItemFromArray(const ito::Param &arrayParam, const int index, ito::Param &itemParam);
         static ito::Param getParam(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret);

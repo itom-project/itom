@@ -22,6 +22,7 @@
 
 #include "paramHelper.h"
 #include "../common/addInInterface.h"
+#include "../common/helperCommon.h"
 
 namespace ito {
 
@@ -2487,7 +2488,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
     [4] :ADDITIONALTAG or empty-string if no tag is given
     [5] ADDITIONALTAG or empty-string if no tag is given
 
-    \param [in] name is the raw parameter name
+    \param [in] key is the raw parameter name
     \param [out] paramName is the real parameter name (first part of name; part before the first
    opening bracket ('[') or if not available the first colon (':')) \param [out] hasIndex indicates
    whether the name contains an index part (defined by a number within two brackets (e.g.
@@ -2497,38 +2498,9 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
    index part is taken.
 */
 ito::RetVal ParamHelper::parseParamName(
-    const QString& name, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
+    const QString& key, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
 {
-    ito::RetVal retValue;
-    paramName = QString();
-    hasIndex = false;
-    index = -1;
-    additionalTag = QString();
-
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-    if (rx.indexIn(name) == -1)
-    {
-        retValue +=
-            ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toLatin1().data());
-    }
-    else
-    {
-        QStringList pname = rx.capturedTexts();
-        paramName = pname[1];
-
-        if (pname.size() >= 4)
-        {
-            if (!pname[3].isEmpty())
-            {
-                index = pname[3].toInt(&hasIndex);
-            }
-        }
-        if (pname.size() >= 6)
-        {
-            additionalTag = pname[5];
-        }
-    }
-    return retValue;
+    return ito::parseParamName(key, paramName, hasIndex, index, additionalTag);
 }
 
 //---------------------------------------------------------------------------------
@@ -2549,11 +2521,11 @@ ito::RetVal ParamHelper::parseParamName(
 
     switch (arrayParam.getType())
     {
-    case ito::ParamBase::CharArray& ito::paramTypeMask:
-    case ito::ParamBase::IntArray& ito::paramTypeMask:
-    case ito::ParamBase::DoubleArray& ito::paramTypeMask:
-    case ito::ParamBase::ComplexArray& ito::paramTypeMask:
-    case ito::ParamBase::StringList& ito::paramTypeMask: {
+    case ito::ParamBase::CharArray & ito::paramTypeMask:
+    case ito::ParamBase::IntArray & ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+    case ito::ParamBase::StringList & ito::paramTypeMask: {
         itemParam = arrayParam[index];
         break;
     }

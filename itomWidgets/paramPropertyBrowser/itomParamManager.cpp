@@ -1379,7 +1379,7 @@ QString ParamCharArrayPropertyManager::valueText(const QtProperty *property) con
     switch (len)
     {
     case 0:
-        return QString("empty");
+        return tr("<empty>");
     case 1:
         return QString("[%1]").arg(vals[0]);
     case 2:
@@ -1387,7 +1387,7 @@ QString ParamCharArrayPropertyManager::valueText(const QtProperty *property) con
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%1 values").arg(len);
+        return tr("<%1 values>").arg(len);
     }
 }
 
@@ -1659,7 +1659,7 @@ QString ParamIntArrayPropertyManager::valueText(const QtProperty *property) cons
     switch (len)
     {
     case 0:
-        return QString("empty");
+        return tr("<empty>");
     case 1:
         return QString("[%1]").arg(vals[0]);
     case 2:
@@ -1667,7 +1667,7 @@ QString ParamIntArrayPropertyManager::valueText(const QtProperty *property) cons
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%1 values").arg(len);
+        return tr("<%1 values>").arg(len);
     }
 }
 
@@ -1936,7 +1936,7 @@ QString ParamDoubleArrayPropertyManager::valueText(const QtProperty *property) c
     switch (len)
     {
     case 0:
-        return QString("empty");
+        return tr("<empty>");
     case 1:
         return QString("[%1]").arg(vals[0]);
     case 2:
@@ -1944,7 +1944,7 @@ QString ParamDoubleArrayPropertyManager::valueText(const QtProperty *property) c
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%1 values").arg(len);
+        return tr("<%1 values>").arg(len);
     }
 }
 
@@ -2228,7 +2228,7 @@ QString ParamStringListPropertyManager::valueText(const QtProperty *property) co
     switch (len)
     {
     case 0:
-        return QString("empty");
+        return tr("<empty>");
     case 1:
         return QString("[%1]").arg(QLatin1String(vals[0].data()));
     case 2:
@@ -2236,7 +2236,7 @@ QString ParamStringListPropertyManager::valueText(const QtProperty *property) co
     case 3:
         return QString("[%1,%2,%3]").arg(QLatin1String(vals[0].data())).arg(QLatin1String(vals[1].data())).arg(QLatin1String(vals[2].data()));
     default:
-        return QString("%1 values").arg(len);
+        return tr("<%1 values>").arg(len);
     }
 }
 
