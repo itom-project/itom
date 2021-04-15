@@ -1,9 +1,9 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2018, Institut fuer Technische Optik (ITO), 
-   Universitaet Stuttgart, Germany 
- 
+   Copyright (C) 2021, Institut fuer Technische Optik (ITO),
+   Universitaet Stuttgart, Germany
+
    This file is part of itom.
 
    itom is free software: you can redistribute it and/or modify
@@ -18,16 +18,21 @@
 
    You should have received a copy of the GNU General Public License
    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+   In addition, as a special exception, the Institut fuer Technische
+   Optik (ITO) gives you certain additional rights.
+   These rights are described in the ITO LGPL Exception version 1.0,
+   which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
 #include "dataObjectTable.h"
-#include <qheaderview.h>
-#include <qscrollbar.h>
-#include <qevent.h>
 #include <qapplication.h>
 #include <qclipboard.h>
-#include <qmenu.h>
+#include <qevent.h>
+#include <qheaderview.h>
 #include <qinputdialog.h>
+#include <qmenu.h>
+#include <qscrollbar.h>
 
 #include "dataObjectDelegate.h"
 #include "dataObjectModel.h"
@@ -37,8 +42,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObjectTable::DataObjectTable(QWidget *parent /*= 0*/)
-    : QTableView(parent)
+DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
 {
     m_pModel = new DataObjectModel();
     m_pDelegate = new DataObjectDelegate(this);
@@ -55,7 +59,7 @@ DataObjectTable::DataObjectTable(QWidget *parent /*= 0*/)
     connect(this, SIGNAL(pressed(QModelIndex)), this, SLOT(_pressed(QModelIndex)));
 
     horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    
+
     setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
@@ -170,9 +174,9 @@ void DataObjectTable::setHorizontalLabels(QStringList value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QStringList DataObjectTable::getHorizontalLabels() const 
-{ 
-    return m_pModel->getHorizontalHeaderLabels(); 
+QStringList DataObjectTable::getHorizontalLabels() const
+{
+    return m_pModel->getHorizontalHeaderLabels();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -183,9 +187,9 @@ void DataObjectTable::setVerticalLabels(QStringList value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QStringList DataObjectTable::getVerticalLabels() const 
-{ 
-    return m_pModel->getVerticalHeaderLabels(); 
+QStringList DataObjectTable::getVerticalLabels() const
+{
+    return m_pModel->getVerticalHeaderLabels();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -196,9 +200,9 @@ void DataObjectTable::setSuffixes(QStringList value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QStringList DataObjectTable::getSuffixes() const 
-{ 
-    return m_pModel->getSuffixes(); 
+QStringList DataObjectTable::getSuffixes() const
+{
+    return m_pModel->getSuffixes();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -208,9 +212,9 @@ void DataObjectTable::setDefaultCols(int value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int DataObjectTable::getDefaultCols() const 
-{ 
-    return m_pModel->getDefaultCols(); 
+int DataObjectTable::getDefaultCols() const
+{
+    return m_pModel->getDefaultCols();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -220,9 +224,9 @@ void DataObjectTable::setDefaultRows(int value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int DataObjectTable::getDefaultRows() const 
-{ 
-    return m_pModel->getDefaultRows(); 
+int DataObjectTable::getDefaultRows() const
+{
+    return m_pModel->getDefaultRows();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -240,8 +244,8 @@ void DataObjectTable::setAlignment(Qt::Alignment alignment)
 //----------------------------------------------------------------------------------------------------------------------------------
 QSize DataObjectTable::sizeHint() const
 {
-    QHeaderView *hHeader = horizontalHeader();
-    QHeaderView *vHeader = verticalHeader();
+    QHeaderView* hHeader = horizontalHeader();
+    QHeaderView* vHeader = verticalHeader();
 
     /*QScrollBar *hScrollBar = horizontalScrollBar();
     QScrollBar *vScrollBar = verticalScrollBar();*/
@@ -260,19 +264,19 @@ QSize DataObjectTable::sizeHint() const
         h += hHeader->sizeHint().height();
     }
 
-    //if (vScrollBar->isVisible())
+    // if (vScrollBar->isVisible())
     //{
     //    w += vScrollBar->sizeHint().width();
     //}
-    //if (hScrollBar->isVisible())
+    // if (hScrollBar->isVisible())
     //{
     //    h += hScrollBar->sizeHint().height();
     //}
-    
-    return QSize(w,h);
+
+    return QSize(w, h);
 }
 
-bool sortByRowAndColumn(const QModelIndex &idx1, const QModelIndex &idx2)
+bool sortByRowAndColumn(const QModelIndex& idx1, const QModelIndex& idx2)
 {
     if (idx1.row() == idx2.row())
     {
@@ -283,7 +287,7 @@ bool sortByRowAndColumn(const QModelIndex &idx1, const QModelIndex &idx2)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectTable::keyPressEvent(QKeyEvent *e)
+void DataObjectTable::keyPressEvent(QKeyEvent* e)
 {
     if (e->matches(QKeySequence::Copy))
     {
@@ -297,15 +301,27 @@ void DataObjectTable::keyPressEvent(QKeyEvent *e)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectTable::contextMenuEvent(QContextMenuEvent *event)
+void DataObjectTable::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu contextMenu(this);
-    contextMenu.addAction(QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"), "copy selection", this, SLOT(copySelectionToClipboard()));
-    contextMenu.addAction(QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"), "copy all", this, SLOT(copyAllToClipboard()));
+    contextMenu.addAction(
+        QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"),
+        "copy selection",
+        this,
+        SLOT(copySelectionToClipboard()));
+    contextMenu.addAction(
+        QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"),
+        "copy all",
+        this,
+        SLOT(copyAllToClipboard()));
     contextMenu.addSeparator();
-    contextMenu.addAction(QIcon(":/itomDesignerPlugins/general/icons/decimals.png"), "decimals...", this, SLOT(setDecimalsGUI()));
+    contextMenu.addAction(
+        QIcon(":/itomDesignerPlugins/general/icons/decimals.png"),
+        "decimals...",
+        this,
+        SLOT(setDecimalsGUI()));
     contextMenu.exec(event->globalPos());
-    
+
     event->accept();
 }
 
@@ -320,10 +336,10 @@ void DataObjectTable::copySelectionToClipboard()
     if (selected.size() > 0)
     {
         int firstRow = selected[0].row();
-        int lastRow = selected[selected.size()-1].row();
+        int lastRow = selected[selected.size() - 1].row();
         int firstCol = INT_MAX;
         int lastCol = 0;
-        foreach (const QModelIndex &idx, selected)
+        foreach (const QModelIndex& idx, selected)
         {
             firstCol = std::min(firstCol, idx.column());
             lastCol = std::max(lastCol, idx.column());
@@ -335,7 +351,7 @@ void DataObjectTable::copySelectionToClipboard()
         int currentIdx = 0;
         int lastIdx = 0;
 
-        foreach (const QModelIndex &idx, selected)
+        foreach (const QModelIndex& idx, selected)
         {
             currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
             while (lastIdx < currentIdx)
@@ -356,7 +372,7 @@ void DataObjectTable::copySelectionToClipboard()
         QStringList final;
         for (int i = 0; i < rows; ++i)
         {
-            final.append( QStringList(items.mid(i*cols,cols)).join(";") );
+            final.append(QStringList(items.mid(i * cols, cols)).join(";"));
         }
 
         QApplication::clipboard()->setText(final.join("\n"));
@@ -369,18 +385,20 @@ void DataObjectTable::copyAllToClipboard()
 {
     int rows = m_pModel->rowCount();
     int cols = m_pModel->columnCount();
-    
+
     QStringList colHeaders;
-    colHeaders << ""; //for the top left corner
+    colHeaders << ""; // for the top left corner
     for (int i = 0; i < cols; ++i)
     {
-        colHeaders << QString("\"%1\"").arg(m_pModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
+        colHeaders << QString("\"%1\"").arg(
+            m_pModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
     }
 
     QStringList rowHeaders;
     for (int i = 0; i < rows; ++i)
     {
-        rowHeaders << QString("\"%1\"").arg(m_pModel->headerData(i, Qt::Vertical, Qt::DisplayRole).toString());
+        rowHeaders << QString("\"%1\"").arg(
+            m_pModel->headerData(i, Qt::Vertical, Qt::DisplayRole).toString());
     }
 
     QStringList final;
@@ -393,7 +411,11 @@ void DataObjectTable::copyAllToClipboard()
 
         for (int c = 0; c < cols; ++c)
         {
-            rowData << m_pModel->data(m_pModel->index(r,c), DataObjectModel::preciseDisplayRoleWithoutSuffix).toString();
+            rowData << m_pModel
+                           ->data(
+                               m_pModel->index(r, c),
+                               DataObjectModel::preciseDisplayRoleWithoutSuffix)
+                           .toString();
         }
         final << rowData.join(";");
     }
@@ -406,7 +428,8 @@ void DataObjectTable::setDecimalsGUI()
 {
     bool ok;
     int decimals = getDecimals();
-    int newDecimals = QInputDialog::getInt(this, tr("number of decimals"), tr("set number of decimals"), decimals, 0, 15, 1, &ok);
+    int newDecimals = QInputDialog::getInt(
+        this, tr("number of decimals"), tr("set number of decimals"), decimals, 0, 15, 1, &ok);
 
     if (ok)
     {

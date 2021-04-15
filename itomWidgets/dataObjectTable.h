@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2018, Institut fuer Technische Optik (ITO), 
+   Copyright (C) 2021, Institut fuer Technische Optik (ITO), 
    Universitaet Stuttgart, Germany 
  
    This file is part of itom.
@@ -18,6 +18,11 @@
 
    You should have received a copy of the GNU General Public License
    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+   In addition, as a special exception, the Institut fuer Technische
+   Optik (ITO) gives you certain additional rights.
+   These rights are described in the ITO LGPL Exception version 1.0,
+   which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
 #ifndef DATAOBJECTTABLE_H
