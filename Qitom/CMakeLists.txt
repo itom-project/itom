@@ -225,8 +225,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
 )
  
 set(qitom_HEADERS_NOMOC
@@ -332,6 +332,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.h
@@ -461,6 +462,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
@@ -578,6 +580,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
@@ -891,6 +894,16 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     message(WARNING "SDK/include/plotLegends exists. This folder will be removed.")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
 endif()
 
 # copy some folders and files during generate

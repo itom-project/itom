@@ -179,7 +179,6 @@ Source: "{#SourceDirItomBuild}\SDK\lib\vc14_x86\*.*"; DestDir: "{app}\SDK\lib\vc
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
 
 ; DesignerPlugins
-Source: "{#SourceDirItomBuild}\designer\dataObjectTable.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\evaluateGeometrics.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\qwt.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itomQwtPlotBase.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
