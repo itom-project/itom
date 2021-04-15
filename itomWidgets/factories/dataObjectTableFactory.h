@@ -1,9 +1,9 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2018, Institut fuer Technische Optik (ITO), 
-   Universitaet Stuttgart, Germany 
- 
+   Copyright (C) 2021, Institut fuer Technische Optik (ITO),
+   Universitaet Stuttgart, Germany
+
    This file is part of itom.
 
    itom is free software: you can redistribute it and/or modify
@@ -18,6 +18,11 @@
 
    You should have received a copy of the GNU General Public License
    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+   In addition, as a special exception, the Institut fuer Technische
+   Optik (ITO) gives you certain additional rights.
+   These rights are described in the ITO LGPL Exception version 1.0,
+   which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
 #ifndef DATAOBJECTTABLEFACTORY_H
@@ -29,11 +34,12 @@
 class DataObjectTableFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
-    //Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface"  FILE "pluginMetaData.json")
+    // Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface"  FILE
+    // "pluginMetaData.json")
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    DataObjectTableFactory(QObject *parent = 0);
+    DataObjectTableFactory(QObject* parent = 0);
 
     bool isContainer() const;
     bool isInitialized() const;
@@ -44,8 +50,8 @@ public:
     QString name() const;
     QString toolTip() const;
     QString whatsThis() const;
-    QWidget *createWidget(QWidget *parent);
-    void initialize(QDesignerFormEditorInterface *core);
+    QWidget* createWidget(QWidget* parent);
+    void initialize(QDesignerFormEditorInterface* core);
 
 private:
     bool initialized;

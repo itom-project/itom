@@ -39,6 +39,7 @@ extern "C++" {
 #include "commonWidgets.h"
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpixmap.h>
+#include <QtGui/qpainterpath.h>
 
 class ITOMWIDGETS_EXPORT PlotInfoMarker : public QTreeWidget
 {

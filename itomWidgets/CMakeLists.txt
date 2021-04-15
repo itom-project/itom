@@ -172,6 +172,8 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/dataObjectTableFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
@@ -223,8 +225,6 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.h
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
 )
 
