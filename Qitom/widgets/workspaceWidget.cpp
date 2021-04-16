@@ -25,7 +25,6 @@
 
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
-#include "../ui/dialogVariableDetailDataObject.h"
 
 #include <qstringlist.h>
 #include <qdrag.h>
@@ -476,8 +475,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    DialogVariableDetailDataObject* dlg =
-        new DialogVariableDetailDataObject(name, item->text(2), extendedValue, this);
+    DialogVariableDetail* dlg = new DialogVariableDetail(name, item->text(2), extendedValue, this);
     
 
     dlg->setAttribute(Qt::WA_DeleteOnClose, true);
