@@ -67,6 +67,26 @@ namespace ito
             return true;
     }
 
+    //! Check if a value is equal to zero for complex64
+    template<> inline bool isNotZero<complex64>(complex64 value)
+    {
+        if (fabs(value.real()) < std::numeric_limits<float32>::epsilon() &&
+            fabs(value.imag()) < std::numeric_limits<float32>::epsilon())
+            return false;
+        else
+            return true;
+    }
+
+    //! Check if a value is equal to zero for complex128
+    template<> inline bool isNotZero<complex128>(complex128 value)
+    {
+        if (fabs(value.real()) < std::numeric_limits<float64>::epsilon() &&
+            fabs(value.imag()) < std::numeric_limits<float64>::epsilon())
+            return false;
+        else
+            return true;
+    }
+
     
 	//! method returns whether a given variable is finite.
 	/*!
@@ -101,7 +121,7 @@ namespace ito
     template<> inline bool isFinite<complex64>(complex64 value)
     {
         float32 realVal = value.real();
-        float32 imagVal = value.real();
+        float32 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) != 0x7f || (chreal[2] & 0x80) != 0x80) && ((chimag[3] & 0x7f) != 0x7f || (chimag[2] & 0x80) != 0x80);
@@ -111,7 +131,7 @@ namespace ito
     template<> inline bool isFinite<complex128>(complex128 value)
     {
         float64 realVal = value.real();
-        float64 imagVal = value.real();
+        float64 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) != 0x7f || (chreal[6] & 0xf0) != 0xf0) && ((chimag[7] & 0x7f) != 0x7f || (chimag[6] & 0xf0) != 0xf0);
@@ -149,7 +169,7 @@ namespace ito
     template<> inline bool isNaN<complex64>(complex64 value)
     {
         float32 realVal = value.real();
-        float32 imagVal = value.real();
+        float32 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) == 0x7f && chreal[2] > 0x80) || ((chimag[3] & 0x7f) == 0x7f && chimag[2] > 0x80);
@@ -159,7 +179,7 @@ namespace ito
     template<> inline bool isNaN<complex128>(complex128 value)
     {
         float64 realVal = value.real();
-        float64 imagVal = value.real();
+        float64 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] > 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] > 0xf0);
@@ -198,7 +218,7 @@ namespace ito
     template<> inline bool isInf<complex64>(complex64 value)
     {
         float32 realVal = value.real();
-        float32 imagVal = value.real();
+        float32 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) == 0x7f && chreal[2] == 0x80) || ((chimag[3] & 0x7f) == 0x7f && chimag[2] == 0x80);
@@ -208,7 +228,7 @@ namespace ito
     template<> inline bool isInf<complex128>(complex128 value)
     {
         float64 realVal = value.real();
-        float64 imagVal = value.real();
+        float64 imagVal = value.imag();
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] == 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] == 0xf0);
