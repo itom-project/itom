@@ -121,7 +121,7 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
         ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         if (AIM)
         {
-            m_filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, QString::Null());
+            m_filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, QString());
             for (int i = 0; i < m_filterPlugins.size(); ++i)
             {
                 QString item = m_filterPlugins[i]->m_interfaceMeta;

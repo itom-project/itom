@@ -1,0 +1,21 @@
+
+REM Set the following variables by a CMake configure_file command and
+REM replace placeholders by absolute pathes
+REM SET QT_DEPLOYMENT_FOLDER="C:/itom/build/itom/setup/qt_deployment"
+REM SET QT_BIN="C:/itom/3rdParty/Qt5.9.0/5.9/msvc2015_64/bin"
+REM SET ITOM_BIN="C:/itom/build/itom"
+
+SET QT_DEPLOYMENT_FOLDER="${QT_DEPLOYMENT_FOLDER}"
+SET QT_BIN="${QT_BIN}"
+SET ITOM_BIN="${ITOM_BIN}"
+
+REM Temporarily insertes QT_BIN to the path variable...
+SET PATH=%QT_BIN%;%PATH%
+
+REM ... and start the windeployqt.exe tool to add all relevant qt files to the deployment folder 
+
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %ITOM_BIN%\qitom.exe 
+
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\assistant.exe
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\linguist.exe
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\designer.exe

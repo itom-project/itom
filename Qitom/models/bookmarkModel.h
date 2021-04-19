@@ -89,6 +89,7 @@ public:
 
     RetVal addBookmark(const BookmarkItem &item);
     RetVal deleteBookmark(const BookmarkItem &item);
+    RetVal deleteBookmarks(const QList<BookmarkItem> &items);
     RetVal deleteAllBookmarks();
     RetVal changeBookmark(const BookmarkItem &item, const QString &newFilename, int newLineNo);
 

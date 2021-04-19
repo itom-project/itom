@@ -51,7 +51,8 @@ namespace ito {
 PyDocstringGeneratorMode::PyDocstringGeneratorMode(const QString &name, const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
     Mode(name, description),
     QObject(parent),
-    m_docstringStyle(Style::GoogleStyle)
+    m_docstringStyle(Style::GoogleStyle),
+    m_overwriteEndLineIndex(-1)
 {
 }
 
@@ -106,10 +107,14 @@ void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
                 if ((e->key() == Qt::Key_QuoteDbl && sel == "\"\"") ||
                     (e->key() == Qt::Key_Apostrophe && sel == "''"))
                 {
+
                     QSharedPointer<OutlineItem> item = getOutlineOfLineIdx(lineIdx);
 
                     if (!item.isNull())
                     {
+                        qDebug() << item->m_name << item->m_startLineIdx << item->m_endLineIdx;
+                        m_overwriteEndLineIndex = item->m_endLineIdx;
+
                         if (lastLineIdxOfDefinition(item) == lineIdx - 1)
                         {
                             // the first """ sign in the line right after the 
@@ -154,16 +159,16 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
     {
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
-            cursor.removeSelectedText();
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "\"\"\"");
+            insertDocstring(cursor, "\"\"\"", false, m_overwriteEndLineIndex);
         }
         else if (cursor.selectedText().trimmed() == "'''")
         {
-            cursor.removeSelectedText();
             cursor.movePosition(QTextCursor::PreviousBlock);
-            insertDocstring(cursor, "'''");
+            insertDocstring(cursor, "'''", false, m_overwriteEndLineIndex);
         }
+
+        m_overwriteEndLineIndex = -1;
     }
 }
 
@@ -177,7 +182,7 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
         return QSharedPointer<OutlineItem>();
     }
 
-    auto current = sew->parseOutline();
+    auto current = sew->parseOutline(false);
     auto result = QSharedPointer<OutlineItem>();
     bool found = true;
 
@@ -215,7 +220,18 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
 
 //-------------------------------------------------------------------------------------
-void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const QString &quotes /*= "\"\"\""*/) const
+/*
+overwriteEndLineIdx : If this method is called by the popup menu, the method
+    is currently much longer than in reality, since the three opening quotes
+    create an undesired multiline comment. Therefore, the outline after having
+    added the three quotes is much longer than before having inserted it. Therefore
+    the last line of the outline can be overwritten by this value (if != -1).
+*/
+void PyDocstringGeneratorMode::insertDocstring(
+    const QTextCursor &cursor, 
+    const QString &quotes /*= "\"\"\""*/, 
+    bool insertOpeningQuotes /*= true*/,
+    int overwriteEndLineIdx /*= -1*/) const
 {
     if (cursor.isNull())
     {
@@ -229,6 +245,13 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
         return;
     }
 
+    if (overwriteEndLineIdx >= outline->m_startLineIdx)
+    {
+        // deep copy of outline and replace m_endLineIdx
+        outline = QSharedPointer<ito::OutlineItem>(new ito::OutlineItem(*outline));
+        outline->m_endLineIdx = overwriteEndLineIdx;
+    }
+
     CodeEditor *e = editor();
 
     int lineIdx = lastLineIdxOfDefinition(outline);
@@ -240,6 +263,14 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
 
     QTextCursor insertCursor = e->gotoLine(lineIdx, 0);
     insertCursor.movePosition(QTextCursor::EndOfLine);
+
+    if (!insertOpeningQuotes)
+    {
+        // move one line down and to the end, we expect
+        // the opening quotes to be at the end.
+        insertCursor.movePosition(QTextCursor::NextBlock);
+        insertCursor.movePosition(QTextCursor::EndOfLine);
+    }
 
     // get the indentation for the new docstring
     int initIndent = e->lineIndent(outline->m_startLineIdx);
@@ -261,19 +292,42 @@ void PyDocstringGeneratorMode::insertDocstring(const QTextCursor &cursor, const 
         docstring = generateNumpyDoc(outline, finfo, cursorPos);
     }
 
-    docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
+    if (insertOpeningQuotes)
+    {
+        docstring = QString("%1%2\n%1").arg(quotes).arg(docstring);
+    }
+    else
+    {
+        docstring = QString("%2\n%1").arg(quotes).arg(docstring);
+    }
 
     // add the indentation to all lines of the docstring
     QStringList lines = docstring.split("\n");
 
     for (int i = 0; i < lines.size(); ++i)
     {
+        if (!insertOpeningQuotes && i == 0)
+        {
+            // do not indent the first line, since it is already 
+            // right after the existing opening quotes
+            continue;
+        }
+
         lines[i] = Utils::rstrip(indent + lines[i]);
     }
 
     // insert the docstring
     insertCursor.beginEditBlock();
-    insertCursor.insertText("\n" + lines.join("\n"));
+
+    if (insertOpeningQuotes)
+    {
+        insertCursor.insertText("\n" + lines.join("\n"));
+    }
+    else
+    {
+        insertCursor.insertText(lines.join("\n"));
+    }
+
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);

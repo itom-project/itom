@@ -41,7 +41,7 @@ namespace ito {
 class PickerSortFilterProxyModel : public QSortFilterProxyModel
 {
 public:
-    PickerSortFilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent), m_minimumMask(0x0), m_pluginName(QString::Null()), m_showPluginsWithoutInstance(false) {};
+    PickerSortFilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent), m_minimumMask(0x0), m_pluginName(QString()), m_showPluginsWithoutInstance(false) {};
     ~PickerSortFilterProxyModel() {};
 
     inline void setPluginMinimumMask( const int minimumMask ) 
@@ -97,7 +97,7 @@ protected:
 
 private:
     int m_minimumMask;
-    QString m_pluginName; //default QString::Null()
+    QString m_pluginName; //default QString()
     bool m_showPluginsWithoutInstance;
 };
 
@@ -111,7 +111,7 @@ class DialogPluginPicker : public QDialog
     Q_OBJECT
 
 public:
-    DialogPluginPicker(bool allowNewInstances, ito::AddInBase *currentItem, int minimumPluginTypeMask = 0x0, QString pluginName = QString::Null(), QWidget *parent = NULL );
+    DialogPluginPicker(bool allowNewInstances, ito::AddInBase *currentItem, int minimumPluginTypeMask = 0x0, QString pluginName = QString(), QWidget *parent = NULL );
     ~DialogPluginPicker() {};
 
     ito::AddInBase* getSelectedInstance();

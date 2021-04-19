@@ -78,7 +78,6 @@ MainWindow::MainWindow() :
 	m_callStackDock(NULL),
 	m_fileSystemDock(NULL),
 	m_pAIManagerWidget(NULL),
-	m_userDefinedSignalMapper(NULL),
 	m_appFileNew(NULL),
 	m_appFileOpen(NULL),
 	m_aboutQt(NULL),
@@ -97,10 +96,7 @@ MainWindow::MainWindow() :
 	m_pythonInWaitingMode(false),
 	m_isFullscreen(false),
 	m_userDefinedActionCounter(0),
-	m_lastFilesMapper(NULL),
-    m_plastFilesMenu(NULL),
-	m_openScriptsMapper(NULL),
-    m_openFigureMapper(NULL)
+    m_plastFilesMenu(NULL)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -294,21 +290,8 @@ MainWindow::MainWindow() :
     }
 
     // signal mapper for user defined actions
-    m_userDefinedSignalMapper = new QSignalMapper(this);
-    connect(m_userDefinedSignalMapper, SIGNAL(mapped(const QString &)), this, SLOT(userDefinedActionTriggered(const QString &)));
-
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
     connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
-
-    // Signalmapper for dynamic lastFile Menu
-    m_lastFilesMapper = new QSignalMapper(this);
-    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
-
-    m_openScriptsMapper = new QSignalMapper(this);
-    connect(m_openScriptsMapper, SIGNAL(mapped(const QString &)), this, SLOT(openScript(const QString &)));
-
-    m_openFigureMapper = new QSignalMapper(this);
-    connect(m_openFigureMapper, SIGNAL(mapped(int)), this, SLOT(raiseFigureByHandle(int)));
 
     //
     createActions();
@@ -506,8 +489,6 @@ MainWindow::~MainWindow()
         ++it2;
     }
     m_userDefinedRootMenus.clear();
-
-    DELETE_AND_SET_NULL(m_userDefinedSignalMapper);
 
     if (m_pHelpSystem)
     {
@@ -962,10 +943,11 @@ void MainWindow::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new QAction(QIcon(":/icons/filePython.png"), displayedPath, this);
+                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
-                    connect(a, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(a, path);
+                    connect(a, &QAction::triggered, [=]() {
+                        lastFileOpen(path);
+                    });
                 }
             }
         }
@@ -1006,7 +988,7 @@ void MainWindow::mnuFigureAboutToShow()
         }
         else
         {
-            qSort(*widgetNames);
+            std::sort(widgetNames->begin(), widgetNames->end());
             
             foreach(val, *widgetNames)
             {
@@ -1014,10 +996,10 @@ void MainWindow::mnuFigureAboutToShow()
                 QMetaObject::invokeMethod(uiOrga, "getPlotWindowTitlebyHandle", Q_ARG(unsigned int, val), Q_ARG(QSharedPointer<QString>, title), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
                 
                 a = new QAction(*title, this);
-                
                 m_pShowOpenFigure->addAction(a);
-                connect(a, SIGNAL(triggered()), m_openFigureMapper, SLOT(map()));
-                m_openFigureMapper->setMapping(a, val);
+                connect(a, &QAction::triggered, [=]() {
+                    raiseFigureByHandle(val);
+                });
             }
         }
 
@@ -1057,8 +1039,9 @@ void MainWindow::mnuViewAboutToShow()
                     IOHelper::elideFilepathMiddle(filenameElided, 200);
                     a = new QAction(QIcon(":/files/icons/filePython.png"), filenameElided, this);
                     m_pMenuView->addAction(a);
-                    connect(a, SIGNAL(triggered()), m_openScriptsMapper, SLOT(map()));
-                    m_openScriptsMapper->setMapping(a, filename);
+                    connect(a, &QAction::triggered, [=]() {
+                        openScript(filename);
+                    });
                 }
             }
             else if (m_plastFilesMenu)
@@ -1541,8 +1524,10 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
 
-    connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-    m_userDefinedSignalMapper->setMapping(action, pythonCode);
+    connect(action, &QAction::triggered, [=]() {
+        userDefinedActionTriggered(pythonCode);
+    });
+
     toolbar->addAction(action);
 
     *buttonHandle = m_userDefinedActionCounter;
@@ -1781,8 +1766,11 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
                     act->setData(current_key);
-                    connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
-                    m_userDefinedSignalMapper->setMapping(act, code);
+
+                    connect(act, &QAction::triggered, [=]() {
+                        userDefinedActionTriggered(code);
+                    });
+
                     *menuHandle = m_userDefinedActionCounter;
                 }
                 else if (typeID == 2 /*MENU*/)

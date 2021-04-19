@@ -4,10 +4,6 @@
 <context>
     <name>DialogAboutQItom</name>
     <message>
-        <source>itom logo</source>
-        <translation type="vanished">itom Logo</translation>
-    </message>
-    <message>
         <location filename="../ui/dialogAbout.ui" line="+44"/>
         <location line="+252"/>
         <source>ito logo</source>
@@ -481,10 +477,6 @@ p, li { white-space: pre-wrap; }
         <translation>Als &apos;Sudo&apos; deinstallieren</translation>
     </message>
     <message>
-        <source>Check for updates</source>
-        <translation type="vanished">Auf Updates prüfen</translation>
-    </message>
-    <message>
         <location line="+27"/>
         <source>Reload</source>
         <translation>Neu laden</translation>
@@ -508,10 +500,6 @@ p, li { white-space: pre-wrap; }
         <location line="+14"/>
         <source>Proxy in the form [user:passwd@]proxy.server:port</source>
         <translation>Proxy-Angaben in der Form: [Benutzer:Passwort@]Proxy.Server:Port</translation>
-    </message>
-    <message>
-        <source>[user:passwd]@proxy.server:port</source>
-        <translation type="vanished">[Benutzer:Passwort@]Proxy.Server:Port</translation>
     </message>
     <message>
         <location line="-112"/>
@@ -645,10 +633,6 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <source>Search Python package index for package name, download and install it</source>
         <translation>Python-Paket manuell herunterladen und installieren</translation>
-    </message>
-    <message>
-        <source>Package file or name:</source>
-        <translation type="vanished">Paketdatei oder Paketname:</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -799,18 +783,6 @@ p, li { white-space: pre-wrap; }
         <location line="+35"/>
         <source>Replace with</source>
         <translation>Ersetzen durch</translation>
-    </message>
-    <message>
-        <source>Find in</source>
-        <translation type="vanished">Suchen in</translation>
-    </message>
-    <message>
-        <source>Current Document</source>
-        <translation type="vanished">Aktuelles Dokument</translation>
-    </message>
-    <message>
-        <source>Selection</source>
-        <translation type="vanished">Markierung</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -1002,14 +974,6 @@ p, li { white-space: pre-wrap; }
         <translation>Bild nach Aufnahme speichern</translation>
     </message>
     <message>
-        <source>Save image after snap</source>
-        <translation type="vanished">Bild nach Aufnahme speichern</translation>
-    </message>
-    <message>
-        <source>Data type</source>
-        <translation type="vanished">Dateityp</translation>
-    </message>
-    <message>
         <location line="+16"/>
         <source>Change Folder...</source>
         <translation>Verzeichnis wechseln...</translation>
@@ -1080,10 +1044,6 @@ p, li { white-space: pre-wrap; }
         <translation>Dateiname</translation>
     </message>
     <message>
-        <source>Multiple snapshots</source>
-        <translation type="vanished">Mehrere Aufnahmen</translation>
-    </message>
-    <message>
         <location line="-92"/>
         <source>single</source>
         <translation>Einzel</translation>
@@ -1092,10 +1052,6 @@ p, li { white-space: pre-wrap; }
         <location line="+5"/>
         <source>stack</source>
         <translation>Stapel</translation>
-    </message>
-    <message>
-        <source>Auto grabbing</source>
-        <translation type="vanished">Live-Anzeige</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1113,10 +1069,6 @@ p, li { white-space: pre-wrap; }
         <translation>bild_</translation>
     </message>
     <message>
-        <source>File name</source>
-        <translation type="vanished">Dateiname</translation>
-    </message>
-    <message>
         <location line="+30"/>
         <source>Exit</source>
         <translation>Beenden</translation>
@@ -1129,10 +1081,6 @@ p, li { white-space: pre-wrap; }
         <source>Timer Manager</source>
         <translatorcomment>Timer-Manager</translatorcomment>
         <translation>Timer-Manager</translation>
-    </message>
-    <message>
-        <source>List of all Timers:</source>
-        <translation type="vanished">Liste aller Timer:</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1426,10 +1374,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout while getting Status</source>
-        <translation type="obsolete">Zeitüberschreitung beim Lesen des Status</translation>
-    </message>
-    <message>
         <location line="+98"/>
         <location line="+40"/>
         <source>timeout while getting status</source>
@@ -1470,10 +1414,6 @@ p, li { white-space: pre-wrap; }
         <location line="+13"/>
         <source>Member &apos;setPosRel&apos; of plugin could not be invoked (error in signal/slot connection).</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Itom ActuatorPlugin type in python</source>
-        <translation type="obsolete">Itom ActuatorPlugin-Typ in Python</translation>
     </message>
     <message>
         <location line="+188"/>
@@ -1599,10 +1539,6 @@ p, li { white-space: pre-wrap; }
         <location line="+451"/>
         <source>Itom dataIO plugin object</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Itom DataIOPlugin type in python</source>
-        <translation type="obsolete">Itom DataIOPlugin-Typ in Python</translation>
     </message>
     <message>
         <location filename="../python/pythonPCL.cpp" line="+1975"/>
@@ -2481,10 +2417,6 @@ p, li { white-space: pre-wrap; }
         <translation>%1: %2 (Spalte %3)</translation>
     </message>
     <message>
-        <source>Paper color</source>
-        <translation type="obsolete">Papierfarbe</translation>
-    </message>
-    <message>
         <location filename="../codeEditor/syntaxHighlighter/codeEditorStyle.cpp" line="+57"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
@@ -2765,10 +2697,6 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>WidgetPropConsoleWrap</name>
     <message>
-        <source>Line Wrap</source>
-        <translation type="vanished">Zeilenumbruch</translation>
-    </message>
-    <message>
         <location filename="../ui/widgetPropConsoleWrap.ui" line="+14"/>
         <source>Form</source>
         <translation>Fenster</translation>
@@ -2814,60 +2742,9 @@ p, li { white-space: pre-wrap; }
         <translation>Maximale Zeilenlänge:</translation>
     </message>
     <message>
-        <source>Flag at start of every wrapped line</source>
-        <translation type="vanished">Markierung zu Beginn jeder umgebrochenen Zeile</translation>
-    </message>
-    <message>
-        <source>No wrap flag</source>
-        <translation type="vanished">Keine Markierung</translation>
-    </message>
-    <message>
-        <source>Wrap flag displayed by the text</source>
-        <translation type="vanished">Markierung im Text</translation>
-    </message>
-    <message>
-        <source>Wrap flag displayed by the border</source>
-        <translation type="vanished">Markierung am Rand</translation>
-    </message>
-    <message>
-        <source>Flag at end of every wrapped line</source>
-        <translation type="vanished">Markierung am Ende jeder umgebrochenen Zeile</translation>
-    </message>
-    <message>
         <location line="-41"/>
         <source>Number of characters a wrapped line is indented by</source>
         <translation>Anzahl Zeichen beim Einrücken einer umbegrochenen Zeile</translation>
-    </message>
-    <message>
-        <source>Wrap Indentation Mode</source>
-        <translation type="vanished">Einrückmodus beim Zeilenumbruch</translation>
-    </message>
-    <message>
-        <source>Wrapped sub-lines are indented by the amount indicated above</source>
-        <translation type="vanished">Umgebrochene Unterzeile mit oben angegebenem Wert einrücken</translation>
-    </message>
-    <message>
-        <source>Wrapped sub-lines are indented by the same amount as the first sub-line</source>
-        <translation type="vanished">Folgende Unterzeilen wie die erste Unterzeile einrücken</translation>
-    </message>
-    <message>
-        <source>Wrapped sub-lines are indented by the same amount as the first sub-line plus one mor level of indentation</source>
-        <translation type="vanished">Jede Unterzeilen um einen Einzug mehr einrücken als die Vorherige</translation>
-    </message>
-</context>
-<context>
-    <name>WidgetPropEditorAPI</name>
-    <message>
-        <source>Add API</source>
-        <translation type="vanished">Hinzufügen</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="vanished">Entfernen</translation>
-    </message>
-    <message>
-        <source>Base path: </source>
-        <translation type="vanished">Stammverzeichnis: </translation>
     </message>
 </context>
 <context>
@@ -2980,41 +2857,9 @@ p, li { white-space: pre-wrap; }
         <translation>Tooltips anzeigen</translation>
     </message>
     <message>
-        <source>Use fill-up characters</source>
-        <translation type="vanished">Füllzeichen benutzen</translation>
-    </message>
-    <message>
-        <source>Auto-completion enabled</source>
-        <translation type="vanished">Autovervollständigung einschalten</translation>
-    </message>
-    <message>
         <location line="-85"/>
         <source>Threshold</source>
         <translation>Grenzwert</translation>
-    </message>
-    <message>
-        <source>Replace word right of the cursor if entry from list is selected</source>
-        <translation type="vanished">Ersetze Wörter hinter dem Cursor wenn der Eintrag von der Liste ausgewählt wird</translation>
-    </message>
-    <message>
-        <source>Show single</source>
-        <translation type="vanished">Einzeln anzeigen</translation>
-    </message>
-    <message>
-        <source>Sources for auto-completion</source>
-        <translation type="vanished">Quellen der Autovervollständigung</translation>
-    </message>
-    <message>
-        <source>Use all available sources</source>
-        <translation type="vanished">Alle verfügbaren Quellen nutzen</translation>
-    </message>
-    <message>
-        <source>Use text in the current document as source</source>
-        <translation type="vanished">Den Text im aktuellen Dokument als Quelle nutzen</translation>
-    </message>
-    <message>
-        <source>Use any installed APIs as source</source>
-        <translation type="vanished">Jede installierte API als Quelle nutzen</translation>
     </message>
 </context>
 <context>
@@ -3045,37 +2890,9 @@ p, li { white-space: pre-wrap; }
         <translation>Diese Features benötigen die Python-Pakete jedi und parso.</translation>
     </message>
     <message>
-        <source>Calltips enabled (requires Python packages jedi and parso)</source>
-        <translation type="vanished">Vorschläge aktivieren (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
-    </message>
-    <message>
         <location line="-26"/>
         <source>Calltips enabled</source>
         <translation>Vorschläge aktivieren</translation>
-    </message>
-    <message>
-        <source>Number of calltips</source>
-        <translation type="vanished">Anzahl der Vorschläge</translation>
-    </message>
-    <message>
-        <source>Context display options</source>
-        <translation type="vanished">Optionen der Kontextanzeige</translation>
-    </message>
-    <message>
-        <source>Don&apos;t show context information</source>
-        <translation type="vanished">Kontextinformationen nicht anzeigen</translation>
-    </message>
-    <message>
-        <source>Show context information, if no prior autocompletion</source>
-        <translation type="vanished">Nur Kontextinformationen anzeigen wenn die Autovervollständigung nichts liefert</translation>
-    </message>
-    <message>
-        <source>Show context information</source>
-        <translation type="vanished">Kontextinformationen immer anzeigen</translation>
-    </message>
-    <message>
-        <source>A context is any scope (e.g. Python module) prior to the function/method name</source>
-        <translation type="vanished">Ein Kontext ist jeder Bereich (z. B. Python-Modul) vor dem Namen der Funktion/Methode</translation>
     </message>
 </context>
 <context>
@@ -3392,10 +3209,6 @@ Syntax, Style und weiteres wird geprüft  (hierfür wird das Python-Package &quo
         <translation>Einzugsmarker anzeigen</translation>
     </message>
     <message>
-        <source>Use tabs for indentation</source>
-        <translation type="vanished">Tabs als Einzug verwenden</translation>
-    </message>
-    <message>
         <location line="+7"/>
         <source>Show Whitespace</source>
         <translation>Leerzeichen anzeigen</translation>
@@ -3406,51 +3219,7 @@ Syntax, Style und weiteres wird geprüft  (hierfür wird das Python-Package &quo
         <translation>Einzugsgröße</translation>
     </message>
     <message>
-        <source>Indentation Warning</source>
-        <translation type="vanished">Warnungen beim Einrücken</translation>
-    </message>
-    <message>
-        <source>Indentation is displayed as being bad, if...</source>
-        <translation type="vanished">Warnen wenn...</translation>
-    </message>
-    <message>
-        <source>No warning</source>
-        <translation type="vanished">Keine Warnung</translation>
-    </message>
-    <message>
-        <source>Indentation is made up of a different combination (tabs/spaces) compared to previous line</source>
-        <translation type="vanished">Der Einzug zweier aufeinanderfolgender Zeilen unterschiedlich erstellt wurden (Tabs/Leerzeichen)</translation>
-    </message>
-    <message>
-        <source>Indentation is made up of spaces followed by tabs</source>
-        <translation type="vanished">Der Einzug aus einer Kombination von Leerzeichen und Tabs besteht</translation>
-    </message>
-    <message>
-        <source>Indentation contains spaces</source>
-        <translation type="vanished">Der Einzug Leerzeichen enthält</translation>
-    </message>
-    <message>
-        <source>Indentation contains tabs</source>
-        <translation type="vanished">Der Einzug Tabs enthält</translation>
-    </message>
-    <message>
-        <location line="+109"/>
-        <source>Extra ascent (above each line)</source>
-        <translation>Aufsteigend (über jeder Zeile)</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+30"/>
-        <source> px</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-7"/>
-        <source>Extra descent (below)</source>
-        <translation>Absteigend (unter jeder Zeile)</translation>
-    </message>
-    <message>
-        <location line="-76"/>
+        <location line="+63"/>
         <source>End-of-line (EOL) mode</source>
         <translation>Modus für Zeilenende</translation>
     </message>
@@ -3503,35 +3272,6 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
         <source>Unix</source>
         <translation></translation>
     </message>
-    <message>
-        <location line="+18"/>
-        <source>Line Spacing</source>
-        <translation>Zeilenabstand</translation>
-    </message>
-    <message>
-        <source>Folding Style</source>
-        <translation type="vanished">Gliederungsanzeige</translation>
-    </message>
-    <message>
-        <source>Squares</source>
-        <translation type="vanished">Quadrate</translation>
-    </message>
-    <message>
-        <source>Circles</source>
-        <translation type="vanished">Kreise</translation>
-    </message>
-    <message>
-        <source>Squares + Tree</source>
-        <translation type="vanished">Quadrate + Baum</translation>
-    </message>
-    <message>
-        <source>Circles + Tree</source>
-        <translation type="vanished">Kreise + Baum</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="vanished">Nichts</translation>
-    </message>
 </context>
 <context>
     <name>WidgetPropEditorGotoAssignment</name>
@@ -3544,10 +3284,6 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
         <location line="+6"/>
         <source>Go to definition and assignment enabled (requires Python packages jedi and parso)</source>
         <translation type="unfinished">Gehe zu Definition und Zuweisung aktivieren (hierfür sind die Python-Pakete jedi und parso notwendig)</translation>
-    </message>
-    <message>
-        <source>Check &quot;goto definition&quot; if Ctrl-key is pressed and mouse is moved over word</source>
-        <translation type="obsolete">Prüfe &quot;gehe zu Definition&quot;, wenn bei gedrückter Strg-Taste die Maus über ein Wort bewegt wird (falls eine Zurückverfolgung möglich ist, wird das Wort unterstrichen und kann angeklickt werden)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3608,42 +3344,9 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
         <translation>Fenster</translation>
     </message>
     <message>
-        <source>Python Syntax-Checker (uses Python-Module &quot;frosted&quot;)</source>
-        <translation type="vanished">Python-Syntaxprüfung (mit Python-Modul &quot;frosted&quot;)</translation>
-    </message>
-    <message>
-        <source>Automatically include itom module for syntax checker</source>
-        <translation type="vanished">itom-Modul für die Syntaxprüfung automatisch hinzufügen</translation>
-    </message>
-    <message>
-        <source>Check interval:</source>
-        <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="vanished">Prüfintervall:</translation>
-    </message>
-    <message>
-        <source>[sec]</source>
-        <translation type="vanished">[s]</translation>
-    </message>
-    <message>
-        <source>Python Syntax-Checker (uses Python-Module &quot;pyflakes&quot; or &quot;frosted&quot;)</source>
-        <translation type="vanished">Python-Syntaxprüfung (mit Python-Modul &quot;pyflakes&quot; oder &quot;frosted&quot;)</translation>
-    </message>
-    <message>
         <location line="+34"/>
         <source> s</source>
         <translation> s</translation>
-    </message>
-    <message>
-        <source>Class Navigator</source>
-        <translation type="vanished">Klassennavigator</translation>
-    </message>
-    <message>
-        <source>This feature enables two comboboxes with class- and method-navigation above the editor.</source>
-        <translation type="vanished">Diese Einstellung aktiviert über dem Editor zwei Comboboxen für die Navigation in den Klassen und Methoden.</translation>
-    </message>
-    <message>
-        <source>Activate timer</source>
-        <translation type="vanished">Timer aktivieren</translation>
     </message>
     <message>
         <location line="-28"/>
@@ -3726,16 +3429,12 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     <message>
         <location line="+10"/>
         <source>Background Color</source>
-        <translation>Hintergrundsfarbe</translation>
+        <translation type="unfinished">Hintergrundfarbe</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Font</source>
         <translation>Schriftart</translation>
-    </message>
-    <message>
-        <source>Fill to end of line</source>
-        <translation type="vanished">Bis Zeilenende ausfüllen</translation>
     </message>
     <message>
         <location line="+114"/>
@@ -3770,15 +3469,7 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     <message>
         <location line="+39"/>
         <source>Style Settings</source>
-        <translation>Einstellungen der Ansicht</translation>
-    </message>
-    <message>
-        <source>Foreground color</source>
-        <translation type="vanished">Vordergrundfarbe</translation>
-    </message>
-    <message>
-        <source>Background color</source>
-        <translation type="vanished">Hintergrundfarbe</translation>
+        <translation type="unfinished">Einstellungen des Stils</translation>
     </message>
     <message>
         <location line="+57"/>
@@ -3956,10 +3647,6 @@ transparent anzeigen</translation>
         <translation type="unfinished">Allgemeine Style-Einstellungen </translation>
     </message>
     <message>
-        <source>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides wheter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot).</source>
-        <translation type="vanished">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot).</translation>
-    </message>
-    <message>
         <location line="+91"/>
         <source>Tracker Settings</source>
         <translation type="unfinished">Cursor-Positionsmarker</translation>
@@ -4118,10 +3805,6 @@ transparent anzeigen</translation>
         <translation>Formatvorlagen</translation>
     </message>
     <message>
-        <source>No stylesheet</source>
-        <translation type="vanished">Keine Formatvorlage</translation>
-    </message>
-    <message>
         <location line="+6"/>
         <source>No stylesheet (default style)</source>
         <translation>Kein Stylesheet (Standard)</translation>
@@ -4173,10 +3856,6 @@ transparent anzeigen</translation>
         <translation>Icon-Motiv für helle Hintergründe</translation>
     </message>
     <message>
-        <source>icon theme for bright background [default]</source>
-        <translation type="vanished">Icon-Hintergrund für hellen Hintergrund [standard]</translation>
-    </message>
-    <message>
         <location line="+5"/>
         <source>icon theme for dark background</source>
         <translation>Icon-Motiv für dunkle Hintergründe</translation>
@@ -4195,118 +3874,14 @@ transparent anzeigen</translation>
         <translation>Fenster</translation>
     </message>
     <message>
-        <source>Visible items in help viewer</source>
-        <translation type="obsolete">In der Hilfe angezeigte Elemente</translation>
-    </message>
-    <message>
-        <source>show plugin algorithms</source>
-        <translation type="obsolete">Algorithmus-Plugins anzeigen</translation>
-    </message>
-    <message>
-        <source>show plugin dataIO and actuators</source>
-        <translation type="obsolete">DataIO- und Motor-Plugins anzeigen</translation>
-    </message>
-    <message>
-        <source>show plugin widgets</source>
-        <translation type="obsolete">Widget-Plugins anzeigen</translation>
-    </message>
-    <message>
-        <source>show script references of python packages (see below)</source>
-        <translation type="obsolete">Skript-Referenzen zu Python Paketen anzeigen (siehe unten)</translation>
-    </message>
-    <message>
         <location line="+8"/>
         <source>General options</source>
         <translation>Allgemeine Einstellungen</translation>
     </message>
     <message>
-        <source>Script references of python packages</source>
-        <translation type="obsolete">Verfügbare Skript-Referenzen von Python Paketen</translation>
-    </message>
-    <message>
-        <source>Locate local script reference on disk</source>
-        <translation type="obsolete">Speicherort der lokalen Skript-Referenz öffnen</translation>
-    </message>
-    <message>
-        <source>Remove local script reference</source>
-        <translation type="obsolete">Lokale Skript-Referenz entfernen</translation>
-    </message>
-    <message>
-        <source>Download update</source>
-        <translation type="obsolete">Update herunterladen</translation>
-    </message>
-    <message>
-        <source>Update list of available help databases</source>
-        <translation type="obsolete">Liste verfügbarer Updates der Hilfedatenbank</translation>
-    </message>
-    <message>
-        <source>Timeout:</source>
-        <translation type="obsolete">Zeitüberschreitung:</translation>
-    </message>
-    <message>
-        <source> s</source>
-        <translation type="obsolete"> s</translation>
-    </message>
-    <message>
-        <source>Refresh list</source>
-        <translation type="obsolete">Liste aktualisieren</translation>
-    </message>
-    <message>
-        <source>Local: The .db-file is saved in the help directory of your itom installation. Check an entry to show it in the help viewer (if &apos;show script references for python packages&apos; is selected above).</source>
-        <translation type="obsolete">Lokal: Die Datenbankdatei (.db) liegt im -Unterverzeichnis &apos;help&apos; der itom-Installation. Markierte Einträge werden in der Hilfe angezeigt, sofern der allgemeine Haken bei &apos;Skript-Referenzen zu Python Paketen anzeigen&apos; (oben) gesetzt  ist.</translation>
-    </message>
-    <message>
-        <source>Remote: Available database files for script references of various python packages. Right click an entry and select &apos;download&apos; to get the database and save it locally in the help directory of your itom installation.</source>
-        <translation type="obsolete">Online: Verfügbare Datenbank-Dateien für Skript Referenzen verschiedener Python Pakete. Nach einem Rechts-Klick auf einen Eintrag, kann die Option &apos;Herunterladen&apos; gewählt werden, um die jeweilige Datenbank herunterzuladen und lokal im Unterordner &apos;help&apos; der itom Installation zu speichern.</translation>
-    </message>
-    <message>
-        <source>List of all Modules in help-directory</source>
-        <translation type="vanished">Liste aller Module im Hilfeverzeichnis</translation>
-    </message>
-    <message>
-        <source>Behaviour-Options</source>
-        <translation type="vanished">Verhaltensoptionen</translation>
-    </message>
-    <message>
-        <source>Open external links</source>
-        <translation type="vanished">Externe Links öffnen</translation>
-    </message>
-    <message>
-        <source>Show Modules and Packages</source>
-        <translation type="vanished">Module und Packages anzeigen</translation>
-    </message>
-    <message>
-        <source>Show Algorithms</source>
-        <translation type="vanished">Algorithmus anzeigen</translation>
-    </message>
-    <message>
-        <source>Show Widgets</source>
-        <translation type="vanished">Widget anzeigen</translation>
-    </message>
-    <message>
-        <source>Show DataIO and Actuator</source>
-        <translation type="vanished">DataIO und Motoren anzeigen</translation>
-    </message>
-    <message>
         <location line="+6"/>
         <source>Display Plaintext (html-source)</source>
         <translation>Klartext anzeigen (HTML-Quelle)</translation>
-    </message>
-    <message>
-        <source>Help-Update configuration</source>
-        <translation type="vanished">Konfiguration des Hilfe-Updates</translation>
-    </message>
-    <message>
-        <source>Server:</source>
-        <translation type="obsolete">Server:</translation>
-    </message>
-    <message>
-        <source>Download Timeout in sec:</source>
-        <translation type="vanished">Zeitüberschreitung für Download (Sek.):</translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation type="vanished">Aktualisieren</translation>
     </message>
 </context>
 <context>
@@ -4610,14 +4185,6 @@ transparent anzeigen</translation>
         <location line="+24"/>
         <source>Add new files relative to itom base path: %1</source>
         <translation>Neue Dateien relativ zum itom Hauptverzeichnis laden: %1</translation>
-    </message>
-    <message>
-        <source>Base path: </source>
-        <translation type="vanished">Stammverzeichnis: </translation>
-    </message>
-    <message>
-        <source>To change the order in which the items (files) are loaded, use Drag and Drop</source>
-        <translation type="vanished">Um die Reihenfolger der geladenen Einträge zu ändern, bitte &apos;Drag &amp; Drop&apos; benutzen</translation>
     </message>
 </context>
 <context>
@@ -4994,21 +4561,6 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="vanished">Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="vanished">Nicht inizialisierte Vektoren bei optionalen Parametern!</translation>
-    </message>
-    <message>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="vanished">Nicht inizialisierte Vektoren bei Rückgabeparametern!</translation>
-    </message>
-</context>
-<context>
     <name>ito::BookmarkDockWidget</name>
     <message>
         <location filename="../widgets/bookmarkDockWidget.cpp" line="+125"/>
@@ -5039,7 +4591,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
-        <location line="+222"/>
+        <location line="+250"/>
         <source>%1, Line %2</source>
         <translation>%1, Zeile %2</translation>
     </message>
@@ -5196,18 +4748,6 @@ Meldung: &apos;%1&apos;</translation>
         <source>&amp;Toggle Bookmark</source>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
-    <message>
-        <source>Next Bookmark</source>
-        <translation type="obsolete">Nächstes Lesezeichen</translation>
-    </message>
-    <message>
-        <source>Previous Bookmark</source>
-        <translation type="obsolete">Vorheriges Lesezeichen</translation>
-    </message>
-    <message>
-        <source>Clear All Bookmarks</source>
-        <translation type="obsolete">Alle Lesezeichen löschen</translation>
-    </message>
 </context>
 <context>
     <name>ito::CodeCompletionMode</name>
@@ -5293,25 +4833,9 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
-        <translation type="vanished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
-    </message>
-    <message>
         <location filename="../organizer/designerWidgetOrganizer.cpp" line="+169"/>
         <source>DesignerWidget &apos;%1&apos; successfully loaded</source>
         <translation>Designer-Widget &apos;%1&apos; erfolgreich geladen</translation>
-    </message>
-    <message>
-        <source>The version &apos;ito.AbstractItomDesignerPlugin&apos; in file &apos;%1&apos; does not correspond to the requested version (%2)</source>
-        <translation type="vanished">Die Version von &apos;ito.AbstractItomDesignerPlugin&apos; in der Datei &apos;%1&apos; deckt sich nicht mit der erforderlichen Version (%2)</translation>
-    </message>
-    <message>
-        <source>Plugin in file &apos;%1&apos; is no Qt DesignerWidget inherited from QDesignerCustomWidgetInterface</source>
-        <translation type="vanished">Das Plugin in der Datei &apos;%1&apos; ist kein von Qt DesignerWidget abgeleitetes QDesignerCustomWidgetInterface</translation>
-    </message>
-    <message>
-        <source>Plugin in file &apos;%1&apos; is a Qt Designer widget but no itom plot widget that inherits &apos;ito.AbstractItomDesignerPlugin&apos;</source>
-        <translation type="vanished">Das Plugin in der Datei &apos;%1&apos; ist ein Qt DesignerWidget, aber kein von &apos;ito.AbstractItomDesignerPlugin&apos; abgeleitetes itom-Plot-Widget</translation>
     </message>
     <message>
         <location line="-85"/>
@@ -5903,10 +5427,6 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Editor - Prüfung von Syntax und Style</translation>
     </message>
     <message>
-        <source>Calltips</source>
-        <translation type="vanished">Vorschläge</translation>
-    </message>
-    <message>
         <location line="+2"/>
         <source>Auto Completion</source>
         <translation>Autovervollständigung</translation>
@@ -5930,14 +5450,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+2"/>
         <source>Editor - Scripts</source>
         <translation>Editor - Skripte</translation>
-    </message>
-    <message>
-        <source>Editor - API Files</source>
-        <translation type="vanished">Editor - API-Dateien</translation>
-    </message>
-    <message>
-        <source>Editor - Calltips</source>
-        <translation type="vanished">Editor - Vorschläge</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5967,7 +5479,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Editor - Styles</source>
-        <translation>Editor - Ansicht</translation>
+        <translation type="unfinished">Editor - Formatvorlagen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6150,14 +5662,6 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Anwendung</translation>
     </message>
     <message>
-        <source>Help Viewer</source>
-        <translation type="vanished">Hilfeanzeige</translation>
-    </message>
-    <message>
-        <source>General - Help Viewer</source>
-        <translation type="vanished">Allgemein - Hilfeanzeige</translation>
-    </message>
-    <message>
         <location line="+3"/>
         <source>Styles and Themes</source>
         <translation>Themen und Stile</translation>
@@ -6274,10 +5778,6 @@ Meldung: &apos;%1&apos;</translation>
         <source>Collapse</source>
         <translation>Einfach</translation>
     </message>
-    <message>
-        <source>Collaps</source>
-        <translation type="vanished">Einfach</translation>
-    </message>
 </context>
 <context>
     <name>ito::DialogSelectUser</name>
@@ -6297,10 +5797,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+13"/>
         <source>Wrong password, select another user or try again</source>
         <translation>Falsche Passwort. Bitte einen anderen Benutzer wählen oder das Passwort nochmals eingeben</translation>
-    </message>
-    <message>
-        <source>Wrong password, select user or try again</source>
-        <translation type="obsolete">Falsche Passwort. Bitte einen Benutzer wählen oder das Passwort nochmals eingeben</translation>
     </message>
 </context>
 <context>
@@ -6461,10 +5957,6 @@ Sind Sie sicher?</translation>
         <translation>Name ist leer! Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
-        <source>UserID already exists! Cannot create user!</source>
-        <translation type="vanished">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
-    </message>
-    <message>
         <location line="+7"/>
         <source>User ID already exists! Cannot create user!</source>
         <translation>Die Benutzer-ID existiert bereits! Benutzer kann nicht erstellt werden!</translation>
@@ -6596,17 +6088,6 @@ Sind Sie sicher?</translation>
         <location line="+9"/>
         <source>parameter &apos;%s&apos; is not defined in plugin</source>
         <translation>Parameter &apos;%s&apos; wurde im Plugin nicht definiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::FileDownloader</name>
-    <message>
-        <source>no network reply instance available</source>
-        <translation type="vanished">Fehler beim Herunterladen: Keine Antwort erhalten</translation>
-    </message>
-    <message>
-        <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="vanished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
     </message>
 </context>
 <context>
@@ -6759,14 +6240,6 @@ Sind Sie sicher?</translation>
         <translation>Eines der ausgewählten Objekte kann nicht verschoben oder kopiert werden. Evtl. sollte eine vorhandene Datei überschrieben werden, die zuvor jedoch nicht gelöscht werden konnte.</translation>
     </message>
     <message>
-        <source>Error pasting items</source>
-        <translation type="vanished">Einfügen</translation>
-    </message>
-    <message>
-        <source>The selected items could not be pasted from the clipboard. Maybe their URLs already exist</source>
-        <translation type="vanished">Die markierten Objekte konnten nicht aus der Zwischenablage eingefügt werden. Vielleicht existieren die Objekte bereits</translation>
-    </message>
-    <message>
         <location line="+25"/>
         <location line="+24"/>
         <source>New Folder</source>
@@ -6810,10 +6283,6 @@ Sind Sie sicher?</translation>
         <location line="+3"/>
         <source>collapse tree</source>
         <translation>Baum reduzieren</translation>
-    </message>
-    <message>
-        <source>reload database</source>
-        <translation type="vanished">Datenbank neu laden</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -6997,10 +6466,6 @@ Sind Sie sicher?</translation>
         <translation>Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
     </message>
     <message>
-        <source>actuator</source>
-        <translation type="vanished">Motor</translation>
-    </message>
-    <message>
         <location line="+108"/>
         <source>unknown type</source>
         <translation>Unbekannter Typ</translation>
@@ -7105,24 +6570,6 @@ Sind Sie sicher?</translation>
         <location line="+310"/>
         <source>Help resources are loading...</source>
         <translation type="unfinished">Die Hilfe wird geladen...</translation>
-    </message>
-    <message>
-        <source>Database %s could not be opened</source>
-        <translation type="vanished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
-    </message>
-    <message>
-        <source>Database %s could not be found</source>
-        <translation type="vanished">Datenbank &apos;%s&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>Help database is loading...</source>
-        <translation type="vanished">Die Hilfe-Datenbank wird geladen...</translation>
-    </message>
-    <message>
-        <source>No help database available! 
- go to Properties File -&gt; General -&gt; Helpviewer and check the selection</source>
-        <translation type="vanished">Keine Hilfe-Datenbank erreichbar!
-Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfen</translation>
     </message>
     <message>
         <location line="+496"/>
@@ -7632,10 +7079,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <source>Python Messages</source>
-        <translation type="obsolete">Python-Meldungen</translation>
-    </message>
-    <message>
         <location line="+83"/>
         <source>Call Stack</source>
         <translation>Aufrufliste</translation>
@@ -7659,18 +7102,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+418"/>
         <source>Exit</source>
         <translation>Beenden</translation>
-    </message>
-    <message>
-        <source>close all floatable figures</source>
-        <translation type="obsolete">Alle freien Grafiken schließen</translation>
-    </message>
-    <message>
-        <source>show all floatable figures</source>
-        <translation type="obsolete">Alle freien Grafiken einblenden</translation>
-    </message>
-    <message>
-        <source>minimize all floatable figures</source>
-        <translation type="obsolete">Alle freien Grafiken minimieren</translation>
     </message>
     <message>
         <location line="+59"/>
@@ -7743,10 +7174,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <source>timeout while closing figures</source>
-        <translation type="obsolete">Zeitüberschreitung beim Schließen der Grafiken</translation>
-    </message>
-    <message>
         <location line="+442"/>
         <source>One single menu element must be of type MENU [2]</source>
         <translation>Das Menüelement muss vom Typ &apos;menu&apos; sein [2]</translation>
@@ -7802,17 +7229,9 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Über itom...</translation>
     </message>
     <message>
-        <source>Loaded plugins...</source>
-        <translation type="vanished">Geladene Plugins...</translation>
-    </message>
-    <message>
         <location line="-494"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
-    </message>
-    <message>
-        <source>Help Viewer</source>
-        <translation type="obsolete">Hilfeanzeige</translation>
     </message>
     <message>
         <location line="+101"/>
@@ -7845,10 +7264,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+3"/>
         <source>Minimize All Floatable Figures</source>
         <translation>Alle ausgedockten Plots minimieren</translation>
-    </message>
-    <message>
-        <source>Script Reference</source>
-        <translation type="vanished">Skriptreferenz</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -8069,10 +7484,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Die Toolbar &apos;%s&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
-        <source>The button (%i) could not be found.</source>
-        <translation type="obsolete">Der Button (%i) wurde nicht gefunden.</translation>
-    </message>
-    <message>
         <location line="+204"/>
         <location line="+4"/>
         <source>Add menu element</source>
@@ -8089,10 +7500,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+64"/>
         <source>Remove menu element</source>
         <translation>Menüelement löschen</translation>
-    </message>
-    <message>
-        <source>A user-defined menu with the handle &apos;%i&apos; could not be found</source>
-        <translation type="obsolete">Ein benutzerdefiniertes Menü mit dem Handle &apos;%i&apos; wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+163"/>
@@ -8510,7 +7917,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PyDocstringGeneratorMode</name>
     <message>
-        <location filename="../codeEditor/modes/pyDocstringGenerator.cpp" line="+125"/>
+        <location filename="../codeEditor/modes/pyDocstringGenerator.cpp" line="+130"/>
         <source>Generate docstring</source>
         <translation>Docstring erzeugen</translation>
     </message>
@@ -8523,7 +7930,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Gehe zu Definition</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+1"/>
+        <source>F12</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Go To Assignment</source>
         <translation>Gehe zu Zuweisung</translation>
     </message>
@@ -9072,28 +8485,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
 </context>
 <context>
-    <name>ito::PythonMessageDockWidget</name>
-    <message>
-        <source>Clear List</source>
-        <translation type="obsolete">Liste löschen</translation>
-    </message>
-</context>
-<context>
-    <name>ito::QsciApiManager</name>
-    <message>
-        <source>The python syntax documents have changed. The API has been updated.</source>
-        <translation type="vanished">Die Python Syntaxliste hat sich geändert. Die API wurde aktuallisiert.</translation>
-    </message>
-    <message>
-        <source>The generation of the python syntax API has been cancelled.</source>
-        <translation type="vanished">Die Erstellung der Python-Syntax-API wurde abgebrochen.</translation>
-    </message>
-    <message>
-        <source>The python syntax documents have changed. The API is being updated...</source>
-        <translation type="vanished">Die Python Syntaxliste hat sich geändert. Die API wird aktuallisiert...</translation>
-    </message>
-</context>
-<context>
     <name>ito::ScriptDockWidget</name>
     <message>
         <location filename="../widgets/scriptDockWidget.cpp" line="+939"/>
@@ -9178,10 +8569,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
-        <source>%1 occurrence(s) was replaced</source>
-        <translation type="vanished">%1 Vorkommen ersetzt</translation>
-    </message>
-    <message>
         <location line="-1047"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
@@ -9219,22 +8606,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="-890"/>
         <source>File Open</source>
         <translation>Datei öffnen</translation>
-    </message>
-    <message>
-        <source>File not found</source>
-        <translation type="vanished">Datei nicht gefunden</translation>
-    </message>
-    <message>
-        <source>The file %1 could not be found</source>
-        <translation type="vanished">Die Datei &apos;%1&apos; konnte nicht gefunden werden</translation>
-    </message>
-    <message>
-        <source>Invalid file format</source>
-        <translation type="vanished">Unzulässiges Dateiformat</translation>
-    </message>
-    <message>
-        <source>The file %1 is no python macro</source>
-        <translation type="vanished">Die Datei &apos;%1&apos;  ist kein Python-Makro</translation>
     </message>
     <message>
         <location line="+747"/>
@@ -9470,18 +8841,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
     <message>
-        <source>&amp;Next Bookmark</source>
-        <translation type="vanished">&amp;Nächstes Lesezeichen</translation>
-    </message>
-    <message>
-        <source>&amp;Previous Bookmark</source>
-        <translation type="vanished">&amp;Vorheriges Lesezeichen</translation>
-    </message>
-    <message>
-        <source>&amp;Clear All Bookmarks</source>
-        <translation type="vanished">Alle Lesezeichen &amp;löschen</translation>
-    </message>
-    <message>
         <location line="+3"/>
         <source>&amp;Insert Codec...</source>
         <translation>&amp;Kodierung einfügen...</translation>
@@ -9540,10 +8899,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+14"/>
         <source>Script Toolbar</source>
         <translation>Symbolleiste Skript</translation>
-    </message>
-    <message>
-        <source>Bookmark Toolbar</source>
-        <translation type="vanished">Symbolleiste Lesezeichen</translation>
     </message>
     <message>
         <location line="+797"/>
@@ -9628,12 +8983,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1121"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1176"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
-        <location line="+1413"/>
+        <location line="+1351"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -9643,91 +8998,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <source>&amp;Toggle Bookmark</source>
-        <translation type="vanished">Lesezeichen ein-/aus&amp;schalten</translation>
-    </message>
-    <message>
-        <source>Next Bookmark</source>
-        <translation type="vanished">Nächstes Lesezeichen</translation>
-    </message>
-    <message>
-        <source>Previous Bookmark</source>
-        <translation type="vanished">Vorheriges Lesezeichen</translation>
-    </message>
-    <message>
-        <source>Clear All Bookmarks</source>
-        <translation type="vanished">Alle Lesezeichen löschen</translation>
-    </message>
-    <message>
-        <source>&amp;Toggle Breakpoint</source>
-        <translation type="vanished">Haltepunkt ein-/aus&amp;schalten</translation>
-    </message>
-    <message>
-        <source>&amp;Disable Breakpoint</source>
-        <translation type="vanished">Haltepunkt &amp;deaktivieren</translation>
-    </message>
-    <message>
-        <source>&amp;Edit Condition</source>
-        <translation type="vanished">Bedingungen &amp;bearbeiten</translation>
-    </message>
-    <message>
-        <source>&amp;Next Breakpoint</source>
-        <translation type="vanished">&amp;Nächster Haltepunkt</translation>
-    </message>
-    <message>
-        <source>&amp;Previous Breakpoint</source>
-        <translation type="vanished">&amp;Vorheriger Haltepunkt</translation>
-    </message>
-    <message>
-        <source>&amp;Delete All Breakpoints</source>
-        <translation type="vanished">Alle Haltepunkte &amp;löschen</translation>
-    </message>
-    <message>
-        <source>&amp;Cut</source>
-        <translation type="vanished">&amp;Ausschneiden</translation>
-    </message>
-    <message>
-        <source>Cop&amp;y</source>
-        <translation type="vanished">&amp;Kopieren</translation>
-    </message>
-    <message>
-        <source>&amp;Paste</source>
-        <translation type="vanished">&amp;Einfügen</translation>
-    </message>
-    <message>
-        <source>&amp;Indent</source>
-        <translation type="vanished">Zeileneinzug ver&amp;größern</translation>
-    </message>
-    <message>
-        <source>&amp;Unindent</source>
-        <translation type="vanished">Zeileneinzug ver&amp;kleinern</translation>
-    </message>
-    <message>
-        <source>&amp;Comment</source>
-        <translation type="vanished">&amp;Kommentieren</translation>
-    </message>
-    <message>
-        <source>Unc&amp;omment</source>
-        <translation type="vanished">Kommentierung &amp;aufheben</translation>
-    </message>
-    <message>
-        <source>&amp;Run Script</source>
-        <translation type="vanished">Skript &amp;starten</translation>
-    </message>
-    <message>
-        <source>Run &amp;Selection</source>
-        <translation type="vanished">Aus&amp;wahl starten</translation>
-    </message>
-    <message>
-        <source>&amp;Debug Script</source>
-        <translation type="vanished">Skript im &amp;Debug-Modus starten</translation>
-    </message>
-    <message>
-        <source>Sto&amp;p Script</source>
-        <translation type="vanished">Skript sto&amp;ppen</translation>
-    </message>
-    <message>
-        <location line="-2119"/>
+        <location line="-2063"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -9899,7 +9170,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
-        <location line="+652"/>
+        <location line="+659"/>
         <source>Missing auto code format command</source>
         <translation>Fehlender Befehl</translation>
     </message>
@@ -9912,27 +9183,31 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+21"/>
         <source>The code formatting could not be started:
 %1</source>
-        <translation>Die Code-Formatierung konnte nicht gestartet werden:\n%1</translation>
+        <translation>Die Code-Formatierung konnte nicht gestartet werden:
+%1</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+405"/>
+        <location line="+334"/>
         <source>
 
 Should this feature be deactivated? This can be changed again in the property dialog of itom.</source>
-        <translation>Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
+        <translation>
+
+Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
     </message>
     <message>
-        <location line="-398"/>
+        <location line="-327"/>
         <location line="+26"/>
         <source>Error starting auto code format</source>
         <translation>Fehler beim Start der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+300"/>
         <source>The code formatting failed:
 %1</source>
-        <translation>Die automatische Code-Formatierung ist fehlgeschlagen:\n$1</translation>
+        <translation>Die automatische Code-Formatierung ist fehlgeschlagen:
+%1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -9941,21 +9216,17 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation>Fehler bei der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+1256"/>
+        <location line="+1264"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde durch ein anderes Programm geändert.</translation>
     </message>
     <message>
-        <source>&amp;Enable Breakpoint</source>
-        <translation type="vanished">Haltepunkt &amp;aktivieren</translation>
-    </message>
-    <message>
-        <location line="-1777"/>
+        <location line="-1715"/>
         <source>Insert Codec</source>
         <translation>Kodierung einfügen</translation>
     </message>
     <message>
-        <location line="+540"/>
+        <location line="+470"/>
         <location line="+102"/>
         <location line="+55"/>
         <source>Unsaved Changes</source>
@@ -10000,7 +9271,7 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location line="+715"/>
+        <location line="+723"/>
         <source>Unnamed</source>
         <translation>Unbenannt</translation>
     </message>
@@ -10015,17 +9286,9 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation>Diese Datei im Editor belassen?</translation>
     </message>
     <message>
-        <source>The file &apos;%1&apos; has been modified by another programm.</source>
-        <translation type="vanished">Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
-    </message>
-    <message>
         <location line="+29"/>
         <source>Do you want to reload it?</source>
         <translation>Soll diese neu geladen werden?</translation>
-    </message>
-    <message>
-        <source>{Global Scope}</source>
-        <translation type="vanished">{Globaler Gültigkeitsbereich}</translation>
     </message>
     <message>
         <location filename="../widgets/scriptEditorWidget.h" line="+115"/>
@@ -10084,10 +9347,6 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation type="unfinished">Es wurde kein interner Dialog oder Fenster namens &apos;%1&apos; gefunden.</translation>
     </message>
     <message>
-        <source>ui-file &apos;%1&apos; could not be correctly parsed.</source>
-        <translation type="obsolete">Die UI-Datei &apos;%1&apos; wurde nicht korrekt geparst.</translation>
-    </message>
-    <message>
         <location line="-79"/>
         <source>filename &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Dateiname &apos;%1&apos; existiert nicht</translation>
@@ -10126,10 +9385,6 @@ Should this feature be deactivated? This can be changed again in the property di
         <location line="+46"/>
         <source>dialog handle does not exist</source>
         <translation type="unfinished">Das Dialog-Handle existiert nicht</translation>
-    </message>
-    <message>
-        <source>Dialog or plot handle does (not longer) exist. Maybe it has been closed before.</source>
-        <translation type="obsolete">Das Dialog- oder Plot-Handle existiert nicht (mehr). Vielleicht wurde es zuvor geschlossen.</translation>
     </message>
     <message>
         <location line="+162"/>
@@ -10395,10 +9650,6 @@ Should this feature be deactivated? This can be changed again in the property di
         <translation type="unfinished">Grafikfenster ist nicht länger verfügbar</translation>
     </message>
     <message>
-        <source>handle &apos;%i&apos; is no figure.</source>
-        <translation type="obsolete">Handle &apos;%i&apos; ist keine Grafik.</translation>
-    </message>
-    <message>
         <location line="+12"/>
         <source>handle &apos;0&apos; cannot be assigned.</source>
         <translation type="unfinished">Handle &apos;0&apos; ist ungültig.</translation>
@@ -10592,25 +9843,6 @@ Should this feature be deactivated? This can be changed again in the property di
     </message>
 </context>
 <context>
-    <name>ito::WidgetPropEditorAPI</name>
-    <message>
-        <source>Base path for relative pathes: </source>
-        <translation type="vanished">Basispfad der relativen Pfade: </translation>
-    </message>
-    <message>
-        <source>[does not exist]</source>
-        <translation type="vanished">[existiert nicht]</translation>
-    </message>
-    <message>
-        <source>Load python api file</source>
-        <translation type="vanished">Pyhton API-Dateien laden</translation>
-    </message>
-    <message>
-        <source>Python api file (*.api)</source>
-        <translation type="vanished">Pyhton API-Dateien (*.api)</translation>
-    </message>
-</context>
-<context>
     <name>ito::WidgetPropEditorAutoCodeFormat</name>
     <message>
         <location filename="../ui/widgetPropEditorAutoCodeFormat.cpp" line="+100"/>
@@ -10637,7 +9869,13 @@ Should this feature be deactivated? This can be changed again in the property di
 has been successful formatted to
 
 %2</source>
-        <translation>Der Beispiel-Python Code\n\n%1\n\nwurde erfolgreich formatiert zu\n\n%2</translation>
+        <translation>Der Beispiel-Python Code
+
+%1
+
+wurde erfolgreich formatiert zu
+
+%2</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -10647,7 +9885,12 @@ has been successful formatted to
 
 could not been formatted. Reason:
 %2</source>
-        <translation>Der Beispiel Python Code\n\n%1\n\nkonnte nicht formatiert werden. Grund:\n%2</translation>
+        <translation>Der Beispiel Python Code
+
+%1
+
+konnte nicht formatiert werden. Grund:
+%2</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -10692,14 +9935,6 @@ could not been formatted. Reason:
         <location line="+1"/>
         <source>Caret color (Foreground: cursor color, Background: color of current line)</source>
         <translation>Farbe des Text-Cursors (Fordergrund: Cursor-Farbe, Hintergrund: Farbe der aktuellen Zeile)</translation>
-    </message>
-    <message>
-        <source>Fold margin color</source>
-        <translation type="vanished">Farbe der Gliederungsspalte</translation>
-    </message>
-    <message>
-        <source>Margin color</source>
-        <translation type="vanished">Randfarbe</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -10897,109 +10132,6 @@ could not been formatted. Reason:
     </message>
 </context>
 <context>
-    <name>ito::WidgetPropHelpDock</name>
-    <message>
-        <source>Database</source>
-        <translation type="vanished">Datenbank</translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="vanished">Datum</translation>
-    </message>
-    <message>
-        <source>Updates and Downloads</source>
-        <translation type="vanished">Updates und Downloads</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Abbrechen</translation>
-    </message>
-    <message>
-        <source>Download website seems to be in an temporary offline mode.</source>
-        <translation type="obsolete">Die Download-Seite scheint momentan offline zu sein.</translation>
-    </message>
-    <message>
-        <source>Invalid type attribute of xml file</source>
-        <translation type="vanished">Ungültiges Typen-Attribut der XML-Datei</translation>
-    </message>
-    <message>
-        <source>Type attribute node &apos;database&apos; of xml file is missing.</source>
-        <translation type="vanished">Typen-Attribut des Knotens &apos;database&apos; der XML-Dateien vermisst.</translation>
-    </message>
-    <message>
-        <source>xml parsing error: %1</source>
-        <translation type="vanished">XML-Parserfehler: %1</translation>
-    </message>
-    <message>
-        <source>xml error: node &apos;database&apos; is missing.</source>
-        <translation type="vanished">XML-Fehler: Knoten &apos;database&apos; nicht gefunden.</translation>
-    </message>
-    <message>
-        <source>Up to date</source>
-        <translation type="vanished">Aktuell</translation>
-    </message>
-    <message>
-        <source>Update to version: %1 (%2)</source>
-        <translation type="vanished">Update auf Version: %1 (%2)</translation>
-    </message>
-    <message>
-        <source>Download version: %1 (%2)</source>
-        <translation type="vanished">Download-Version: %1 (%2)</translation>
-    </message>
-    <message>
-        <source>wrong Scheme: %1 (your scheme %2)</source>
-        <translation type="vanished">Falsches Schema: %1 (aktuelles Schema %2)</translation>
-    </message>
-    <message>
-        <source>download error</source>
-        <translation type="vanished">Download-Fehler</translation>
-    </message>
-    <message>
-        <source>Download update</source>
-        <translation type="vanished">Update Download</translation>
-    </message>
-    <message>
-        <source>Locate on disk</source>
-        <translation type="obsolete">Lokal auf die Festplatte</translation>
-    </message>
-    <message>
-        <source>Remove from disk</source>
-        <translation type="obsolete">Von der Festplatte löschen</translation>
-    </message>
-    <message>
-        <source>Remove script reference</source>
-        <translation type="obsolete">Skriptreferenz löschen</translation>
-    </message>
-    <message>
-        <source>Do you really want to delete the file &apos;%s&apos;?</source>
-        <translation type="obsolete">Soll die Datei &apos;%s&apos; wirklich gelöscht werden?</translation>
-    </message>
-    <message>
-        <source>&amp;update</source>
-        <translation type="vanished">&amp;Update</translation>
-    </message>
-    <message>
-        <source>locate on disk</source>
-        <translation type="vanished">Verzeichnis anzeigen</translation>
-    </message>
-    <message>
-        <source>remove from disk</source>
-        <translation type="vanished">Auf der Festplatte löschen</translation>
-    </message>
-    <message>
-        <source>Remote database update...</source>
-        <translation type="vanished">Remote Datenbank-Update...</translation>
-    </message>
-    <message>
-        <source>Timeout: Server is not responding in time</source>
-        <translation type="vanished">Zeitüberschreitung: Server antwortet nicht</translation>
-    </message>
-    <message>
-        <source>Could not delete old local version of Database</source>
-        <translation type="vanished">Die alte Datenbankversion konnte nicht gelöscht werden</translation>
-    </message>
-</context>
-<context>
     <name>ito::WidgetPropPalettes</name>
     <message>
         <location filename="../ui/widgetPropPalettes.cpp" line="+512"/>
@@ -11135,10 +10267,6 @@ could not been formatted. Reason:
 <context>
     <name>ito::WidgetPropPythonStartup</name>
     <message>
-        <source>Base path for relative pathes: </source>
-        <translation type="vanished">Basispfad der relativen Pfade: </translation>
-    </message>
-    <message>
         <location filename="../ui/widgetPropPythonStartup.cpp" line="+99"/>
         <source>Load python script</source>
         <translation>Pyhton-Skript laden</translation>
@@ -11152,7 +10280,7 @@ could not been formatted. Reason:
 <context>
     <name>ito::WordHoverTooltipMode</name>
     <message>
-        <location filename="../codeEditor/modes/wordHoverTooltip.cpp" line="+215"/>
+        <location filename="../codeEditor/modes/wordHoverTooltip.cpp" line="+229"/>
         <source>Loading...</source>
         <translation>Laden...</translation>
     </message>

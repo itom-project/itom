@@ -91,7 +91,6 @@ private:
 
     ScriptEditorActions m_commonScriptEditorActions;
     QMenu *m_pGoBackNavigationMenu; //! menu for the backward items
-    QSignalMapper *m_pGoBackNavigationMapper;
     QList<GoBackNavigationItem> m_goBackNavigationHistory; //! history of go back navigation items. Newer items are at the end of the list. The list is limited to a number of maximum items.
     int m_goBackNavigationIndex;                           //! current position of script editors in goBackNavigationHistory. If equal to m_goBackNavigationHistory.size(), the current position is at the end.
     static const int MaxGoBackNavigationEntries;               //! maximum number of entries in the go back navigation history.

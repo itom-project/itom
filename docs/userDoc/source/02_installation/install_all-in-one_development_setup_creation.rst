@@ -236,7 +236,7 @@ paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull*
 Check in the function **installNumpy**, if the numpy whl file names are right. 
 
 .. figure:: images/all-in-one-create/Setup_numpy_file.PNG
-   :width: 100%
+   :width: 631px
    :align: center
 
 Check in the function **upgradePip**, **installPyflakes**, **installJedi** the filenames of the whl-files. 

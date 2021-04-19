@@ -7,7 +7,7 @@ Finally the shift offsets are determined using cross-correlation
 
 import matplotlib
 
-matplotlib.use("module://mpl_itom.backend_itomagg", False)
+matplotlib.use("module://mpl_itom.backend_itomagg")
 import scipy.misc
 import numpy
 from numpy.fft import fft2

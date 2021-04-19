@@ -540,7 +540,7 @@ are parsed by a syntax highlighter, that visualizes the
 components of the code with different styles.
 
 .. figure:: images/propEditorStyles.png
-    :width: 100%
+    :width: 778px
     :align: center
 
 This property page is divided into the following parts:
@@ -682,7 +682,7 @@ These palettes can also be exported and / or imported, such that a backup of
 user-defined palettes is possible. 
 
 .. figure:: images/propEditorColorPalette.png
-    :width: 100%
+    :width: 778px
     :align: center
 
 An |itom| color palette is defined by an array of 256 colors, which are mainly 

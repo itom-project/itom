@@ -92,6 +92,9 @@ macro(itom_init_plugin_common_vars)
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
     set(ITOM_APP_DIR NOTFOUND CACHE PATH "base path to itom build / install folder")
     set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
+    set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as \
+        hex string, if all methods that have been deprecated before this version, \
+        should raise a compiler error.")
     
     # Set a default build type if none was specified
     if(NOT CMAKE_CONFIGURATION_TYPES)
@@ -103,6 +106,10 @@ macro(itom_init_plugin_common_vars)
     endif()
     
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #core libraries are build as shared libraries
+    
+    if (BUILD_QT_DISABLE_DEPRECATED_BEFORE)
+        add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=${BUILD_QT_DISABLE_DEPRECATED_BEFORE})
+    endif()
     
     #try to enable OpenMP (e.g. not available with VS Express)
     find_package(OpenMP QUIET)

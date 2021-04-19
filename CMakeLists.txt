@@ -1,4 +1,4 @@
-# - itom software
+# - itom software - 
 # URL: http://www.uni-stuttgart.de/ito
 # Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
@@ -19,9 +19,8 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-  
-  project(itom)
-   
+ 
+project(itom)
 message(STATUS "--------------- PROJECT itom -----------------")
 
 set(CMAKE_CXX_STANDARD 11)
@@ -79,11 +78,11 @@ add_subdirectory(iconThemes)
 
 if(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
-    add_subdirectory(gtest-1.6.0)
+    add_subdirectory(gtest-1.10.0)
     add_subdirectory(itom_unittests)
 endif()
 
-if(BUILD_ISSCONFIG)
+if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
 
@@ -131,12 +130,24 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsMandatory.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsOptional.txt)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/start_qt_deployment.bat )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsMandatory.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements/requirementsOptional.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/itom_setup_zipper_x64.py.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/itom_setup_zipper_x64.py @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in
+    ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in COPYONLY)
 
 if(SETUP_ISSCONFIG)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in

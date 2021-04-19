@@ -39,13 +39,10 @@
 #include <qprocess.h>
 #include <qsplitter.h>
 
-#include <qsignalmapper.h>
-
 #include "../organizer/helpSystem.h"
 
 #include <qsharedpointer.h>
 
-class QSignalMapper; //forward declaration
 
 namespace ito {
 
@@ -95,7 +92,6 @@ private:
     BreakPointDockWidget  *m_breakPointDock;
     BookmarkDockWidget    *m_bookmarkDock;
     LastCommandDockWidget *m_lastCommandDock;
-//    PythonMessageDockWidget *m_pythonMessageDock;
     HelpDockWidget        *m_helpDock;
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
@@ -104,13 +100,8 @@ private:
 
     AIManagerWidget* m_pAIManagerWidget;
 
-    QSignalMapper *m_lastFilesMapper;       /*!<  Maps signal from the "last opened files" buttons */
-    QSignalMapper *m_openScriptsMapper;     /*!<  Maps signal from the opened scripts" actions */
-    QSignalMapper *m_openFigureMapper;      /*!<  Maps signal from the opened figure actions */
-
     QMap<QString, QToolBar*> m_userDefinedToolBars;
     QMap<QString, QMenu* > m_userDefinedRootMenus;
-    QSignalMapper *m_userDefinedSignalMapper;
     unsigned int m_userDefinedActionCounter;
 
     QAction *m_appFileNew;

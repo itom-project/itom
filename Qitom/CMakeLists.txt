@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.1)
  
 set(target_name qitom) 
 project(${target_name})
-
+ 
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
@@ -225,8 +225,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
 )
  
 set(qitom_HEADERS_NOMOC
@@ -891,6 +891,16 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     message(WARNING "SDK/include/plotLegends exists. This folder will be removed.")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
 endif()
 
 # copy some folders and files during generate

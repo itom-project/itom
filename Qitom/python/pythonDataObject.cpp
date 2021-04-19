@@ -2894,9 +2894,45 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
             return NULL;
         }
     }
+    else if (PyComplex_Check(other))
+    {
+        if (!PyErr_Occurred())
+        {
+            ito::complex128 cmplxValue = ito::complex128(PyComplex_AsCComplex(other).real, PyComplex_AsCComplex(other).imag);
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_EQ: 
+                    resDataObj = *(self->dataObject) == cmplxValue;
+                    break;
+                case Py_NE: 
+                    resDataObj = *(self->dataObject) != cmplxValue;
+                    break;
+                default: 
+                    PyErr_SetString(PyExc_TypeError, "Not a valid operation for complex values (not orderable, use real, imag, or abs).");
+                    return NULL;
+                }
+            
+            }
+            catch (cv::Exception &exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            resultObject = createEmptyPyDataObject();
+            resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object or real, scalar value.");
+        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no dataObject or scalar value.");
         return NULL;
     }
 }

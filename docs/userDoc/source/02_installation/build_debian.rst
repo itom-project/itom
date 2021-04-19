@@ -39,7 +39,7 @@ Recommended (optional):
 * **PointCloudLibrary** (minimum version 1.6, >= 1.8 recommended.
   see http://pointclouds.org/downloads. The PCL is an optional dependency.)
 * **Scipy** (python3-scipy, python3-scipy-dbg), 
-* **Sphinx** (python3-sphinx), 
+* **Sphinx** (python3-sphinx) + **numpydoc** + **breathe**, 
 * **Matplotlib**
 * **Doxygen** (doxygen, doxygen-gui)
 * Any git client (e.g. SmartGit (requires java) or git-cola or Guitar)

@@ -99,10 +99,6 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_tab->setTabPosition(QTabWidget::South);
     m_tab->setContentsMargins(2,0,2,0);
 
-    // Signalmapper for dynamic lastFile Menu
-    m_lastFilesMapper = new QSignalMapper(this);
-    connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
-
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
     connect(m_tab, SIGNAL(tabContextMenuEvent(QContextMenuEvent*)), this, SLOT(tabContextMenuEvent(QContextMenuEvent*)));
@@ -381,7 +377,7 @@ void methodBoxAddItem(
         ) + "...";
         methodBox->addItem(
             icon, 
-            QString("%1(%2)%3").arg(methPre, methArgsElide, methPost), 
+            QString("%1(%2) -> %3").arg(methPre, methArgsElide, methPost), 
             userData
         );
 
@@ -1452,93 +1448,94 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! updates actions which deal with editor commands
+//! updates actions which deal with editor commands but are not dependent on the state of python.
 void ScriptDockWidget::updateEditorActions()
 {
     int tabCount = m_tab->count();
+    const ScriptEditorWidget* sew = getCurrentEditor();
 
     m_saveAllScriptsAction->setEnabled(false);
+
     for (int i = 0; i < tabCount; i++)
     {
         if (static_cast<ScriptEditorWidget *>(m_tab->widget(i))->isModified())
         {
             m_saveAllScriptsAction->setEnabled(true);
+            break;
         }
     }
 
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    const ScriptEditorWidget *sew = NULL;
-    if (m_actTabIndex > -1)
-    {
-        sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
-    }
-
-    m_saveScriptAction->setEnabled(tabCount>0 && sew != nullptr && sew->isModified());
-    m_saveScriptAsAction->setEnabled(tabCount>0 && sew != nullptr);
-
-    m_cutAction->setEnabled(sew != nullptr && sew->getCanCopy());
+    m_saveScriptAction->setEnabled(tabCount > 0 && sew != nullptr && sew->isModified());
+    m_saveScriptAsAction->setEnabled(tabCount > 0 && sew != nullptr);
     m_copyAction->setEnabled(sew != nullptr && sew->getCanCopy());
-    m_pasteAction->setEnabled(tabCount > 0 && sew != nullptr);
-    m_undoAction->setEnabled(sew != nullptr && sew->isUndoAvailable());
-    m_redoAction->setEnabled(sew != nullptr && sew->isRedoAvailable());
-    m_commentAction->setEnabled(tabCount > 0 && sew != nullptr);
-    m_uncommentAction->setEnabled(tabCount > 0 && sew != nullptr);
-    m_indentAction->setEnabled(tabCount > 0 && sew != nullptr);
-    m_unindentAction->setEnabled(tabCount > 0 && sew != nullptr);
-    m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && tabCount > 0 && sew != nullptr);
-    m_pyDocstringGeneratorAction->setEnabled(
-        pyEngine && 
-        !pyEngine->isPythonBusy() &&
-        tabCount > 0 && 
-        sew != nullptr && sew->currentLineCanHaveDocstring());
-
     m_tabCloseAction->setEnabled(m_actTabIndex > -1);
     m_tabCloseAllAction->setEnabled(m_actTabIndex > -1);
     m_findTextExprAction->setEnabled(m_actTabIndex > -1);
-    m_replaceTextExprAction->setEnabled(m_actTabIndex > -1);
     m_gotoAction->setEnabled(m_actTabIndex > -1);
     m_openIconBrowser->setEnabled(m_actTabIndex > -1);
     m_bookmarkToggle->setEnabled(sew != nullptr);
 
-    m_scriptRunSelectionAction->setEnabled(
-        pyEngine && 
-        sew != nullptr && 
-        sew->getCanCopy() && 
-        (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
-    
     if (m_pWidgetFindWord != nullptr)
     {
         m_pWidgetFindWord->setFindBarEnabled(m_actTabIndex > -1, false);
     }
+
+    updatePythonActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! updates actions which deal with python commands
+//! updates actions which deal with python commands or which are dependent on the python state
+//! Read-only is also python-dependent.
 void ScriptDockWidget::updatePythonActions()
 {
-    int lineFrom = -1;
-    int lineTo = -1;
-    int indexFrom = -1;
-    int indexTo = -1;
-
-    ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew)
-    {
-        sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-    }
-
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const ScriptEditorWidget* sew = getCurrentEditor();
     bool busy1 = pythonBusy();
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
+    int tabCount = m_tab->count();
 
-    m_scriptRunAction->setEnabled(pyEngine && !busy1);
-    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && pyEngine && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
-    m_scriptDebugAction->setEnabled(pyEngine && !busy1);
+    m_scriptRunAction->setEnabled(!busy1);
+    m_scriptRunSelectionAction->setEnabled(sew && sew->getCanCopy() && (!busy1 || pythonInWaitingMode()));
+    m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
     m_scriptStepAction->setEnabled(busy2);
     m_scriptStepOverAction->setEnabled(busy2);
     m_scriptStepOutAction->setEnabled(busy2);
+
+    m_scriptRunSelectionAction->setEnabled(
+        sew != nullptr &&
+        sew->getCanCopy() &&
+        (!pythonBusy() || pythonInWaitingMode()));
+
+    m_replaceTextExprAction->setEnabled(
+        !busy1 &&
+        m_actTabIndex > -1);
+
+    m_cutAction->setEnabled(
+        sew != nullptr && 
+        sew->getCanCopy() && 
+        !busy1);
+
+    m_pasteAction->setEnabled(
+        tabCount > 0 &&
+        !busy1);
+    m_undoAction->setEnabled(!busy1 && sew != nullptr && sew->isUndoAvailable());
+    m_redoAction->setEnabled(!busy1 && sew != nullptr && sew->isRedoAvailable());
+    m_commentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+    m_uncommentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+    m_indentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+    m_unindentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+
+    m_autoCodeFormatAction->setEnabled(
+        !busy1 &&
+        m_autoCodeFormatCmd != "" &&
+        tabCount > 0);
+    
+    m_pyDocstringGeneratorAction->setEnabled(
+        !busy1 &&
+        tabCount > 0 &&
+        sew != nullptr && 
+        sew->currentLineCanHaveDocstring());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1775,14 +1772,15 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
                 ShortcutAction *a;
 
                 // Create new menus
-                foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
+                foreach(const QString &path, sEO->getRecentlyUsedFiles())
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
                     a = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_lastFilesMenu->addAction(a->action());
-                    a->connectTrigger(m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(a->action(), path);
+                    connect(a->action(), &QAction::triggered, [=]() {
+                        lastFileOpen(path);
+                    });
                 }
             }
         }

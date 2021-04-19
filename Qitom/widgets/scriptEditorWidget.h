@@ -132,7 +132,7 @@ public:
     //!< wrapper for undo() or redo() that tries to keep breakpoints and bookmarks
     void startUndoRedo(bool unundoNotRedo);
 
-    QSharedPointer<OutlineItem> parseOutline() const;
+    QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
 
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
@@ -146,11 +146,13 @@ protected:
     void insertFromMimeData(const QMimeData *source);
 
     void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
-    virtual void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
 
@@ -158,7 +160,6 @@ protected:
 
     void replaceSelectionAndKeepBookmarksAndBreakpoints(QTextCursor &cursor, const QString &newString);
     QVector<int> compareTexts(const QString &oldText, const QString &newText);
-    void addBookmarksAndBreakpointsIfNotExist(QList<BookmarkItem> bookmarks, QList<BreakPointItem> breakpoints);
 
     BreakPointModel* getBreakPointModel();
     const BreakPointModel* getBreakPointModel() const;
@@ -200,6 +201,9 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
+    //!< to accept drop events of other files dropped onto this file, the script 
+    //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
+    bool m_wasReadonly; 
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
@@ -226,7 +230,7 @@ private:
     QTimer *m_outlineTimer; //!< timer to recreate the outline model with a certain delay
     bool m_outlineTimerEnabled; //!<
     int m_currentLineIndex; //!< current line index of the cursor
-    QSharedPointer<OutlineItem> m_rootOutlineItem;
+    mutable QSharedPointer<OutlineItem> m_rootOutlineItem; //!< cache for the latest outline items
     mutable bool m_outlineDirty;
     QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
     QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator

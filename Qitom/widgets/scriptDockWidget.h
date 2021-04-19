@@ -43,8 +43,6 @@
 
 #include "../ui/widgetFindWord.h"
 
-class QSignalMapper; //forward declaration
-
 namespace ito {
 
 class DialogReplace; //forward declaration
@@ -188,8 +186,6 @@ private:
     QMenu *m_scriptMenu;
     QMenu *m_winMenu;
     QMenu *m_bookmark;
-
-    QSignalMapper *m_lastFilesMapper;
 
     QToolBar* m_fileToolBar;
     QToolBar* m_editToolBar;

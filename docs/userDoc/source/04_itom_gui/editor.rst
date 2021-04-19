@@ -2,14 +2,14 @@
 
 .. _gui-editor:
 
-Script-Editor
+Script Editor
 **************
 
 The script editor is one of the main windows of |itom| and allows creating, 
 modifying and executing one or several python scripts.
 
 .. figure:: images/scripteditor.png
-    :scale: 100%
+    :scale: 881px
     :align: center
 
 Every script editor window can display one or multiple script files that 
