@@ -28,31 +28,38 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SHAPEDOBJECT_H
 #define SHAPEDOBJECT_H
 
-#include "typeDefs.h"
-#include "../shape/shapeCommon.h"
 #include "../common/shape.h"
+#include "../shape/shapeCommon.h"
+#include "typeDefs.h"
 
 #include "../DataObject/dataobj.h"
 
-#if !defined(Q_MOC_RUN) || defined(ITOMSHAPE_MOC) //only moc this file in itomShapeLib but not in other libraries or executables linking against this itomCommonQtLib
+#if !defined(Q_MOC_RUN) ||                                                                         \
+    defined(ITOMSHAPE_MOC) // only moc this file in itomShapeLib but not in other libraries or
+                           // executables linking against this itomCommonQtLib
 
-namespace ito
+namespace ito {
+class ITOMSHAPE_EXPORT ShapeDObject
 {
-	class ITOMSHAPE_EXPORT ShapeDObject
-    {
-    public:
+public:
+    static ito::DataObject maskFromMultipleShapes(
+        const ito::DataObject& dataObject, const QVector<ito::Shape>& shapes, bool inverse = false);
+    static ito::DataObject mask(
+        const ito::DataObject& dataObject, const ito::Shape& shape, bool inverse = false);
 
-		static ito::DataObject maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse = false);
-		static ito::DataObject mask(const ito::DataObject &dataObject, const ito::Shape &shape, bool inverse = false);
+protected:
+    static void maskHelper(
+        const ito::DataObject& dataObject,
+        ito::DataObject& mask,
+        const ito::Shape& shape,
+        bool inverse = false);
 
-    protected:
-		static void maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, const ito::Shape &shape, bool inverse = false);
+private:
+    static void copyMetaInfoToMask(const ito::DataObject& dataObject, ito::DataObject& mask);
+};
 
-    };
-
-
-}
+} // namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
-#endif //SHAPEDOBJECT_H
+#endif // SHAPEDOBJECT_H
