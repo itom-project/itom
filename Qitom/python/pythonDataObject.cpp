@@ -9580,6 +9580,9 @@ The returned :class:`dataObject` has the same shape than this object and the dat
 ``uint8``. All pixels in this object, that are contained in any of the given :class:`shape` \n\
 will be set to ``255`` in the returned array, otherwise ``0``. \n\
 \n\
+*New in itom 5.0*: always return a 2d dataObject \n\
+(see return value below)\n\
+\n\
 Parameters \n\
 ----------- \n\
 shapes : shape or list of shape or tuple of shape \n\
@@ -9593,11 +9596,9 @@ inverse : bool \n\
 Returns \n\
 ------- \n\
 mask : dataObject \n\
-    uint8 :class:`dataObject` as mask with the same shape, :attr:`axisScales`, \n\
+    uint8 :class:`dataObject` as mask with the shape of the last two axes, :attr:`axisScales`, \n\
     :attr:`axisOffsets`, :attr:`axisDescriptions` and :attr:`axisUnits` than this \n\
-    object.\n\
-    For itom version >= 5.0: A 2-dimensional dataObject is returned \n\
-    considering the shape of the last two dataObject axes.");
+    object.");
 PyObject* PythonDataObject::PyDataObject_createMask(
     PyDataObject* self, PyObject* args, PyObject* kwds)
 {
