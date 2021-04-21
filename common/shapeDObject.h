@@ -54,8 +54,6 @@ protected:
         const ito::Shape& shape,
         bool inverse = false);
 
-private:
-    static void copyMetaInfoToMask(const ito::DataObject& dataObject, ito::DataObject& mask);
 };
 
 } // namespace ito

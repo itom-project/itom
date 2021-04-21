@@ -45,7 +45,7 @@ namespace ito {
             dataObject.getSize()[dataObject.getDims() - 2],
             dataObject.getSize()[dataObject.getDims() - 1],
             ito::tUInt8);
-        ShapeDObject::copyMetaInfoToMask(dataObject, mask);
+        dataObject.copyAxisTagsTo(mask);
 
         if (inverse)
         {
@@ -207,7 +207,7 @@ namespace ito {
             dataObject.getSize()[dataObject.getDims() - 1],
             dataObject.getSize()[dataObject.getDims() - 2],
             ito::tUInt8); // 2d mask dataObject
-        ShapeDObject::copyMetaInfoToMask(dataObject, mask);
+        dataObject.copyAxisTagsTo(mask);
 
         if (inverse)
         {
@@ -221,32 +221,6 @@ namespace ito {
     }
 
     return mask;
-}
-
-void ShapeDObject::copyMetaInfoToMask(const ito::DataObject& dataObject, ito::DataObject& mask)
-{
-    if (dataObject.getDims() == 3)
-    {
-        mask.setAxisOffset(0, dataObject.getAxisOffset(1));
-        mask.setAxisOffset(1, dataObject.getAxisOffset(2));
-
-        mask.setAxisScale(0, dataObject.getAxisScale(1));
-        mask.setAxisScale(1, dataObject.getAxisScale(2));
-
-        bool isvalid = true;
-        mask.setAxisDescription(0, dataObject.getAxisDescription(1, isvalid));
-        mask.setAxisDescription(1, dataObject.getAxisDescription(2, isvalid));
-
-        mask.setAxisUnit(0, dataObject.getAxisUnit(1, isvalid));
-        mask.setAxisUnit(1, dataObject.getAxisUnit(2, isvalid));
-
-        mask.setValueDescription(dataObject.getValueDescription());
-        mask.setValueUnit(dataObject.getValueUnit());
-    }
-    else
-    {
-        dataObject.copyAxisTagsTo(mask);
-    }
 }
 
 } // end namespace ito
