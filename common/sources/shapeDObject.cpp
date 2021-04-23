@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -32,16 +32,19 @@
 
 #include "numeric.h"
 
-namespace ito 
-{
+namespace ito {
 //----------------------------------------------------------------------------------------------
-	/*static*/ ito::DataObject ShapeDObject::mask(const ito::DataObject &dataObject, const ito::Shape &shape, bool inverse /*= false*/)
+/*static*/ ito::DataObject ShapeDObject::mask(
+    const ito::DataObject& dataObject, const ito::Shape& shape, bool inverse /*= false*/)
 {
     ito::DataObject mask;
 
     if (dataObject.getTotal() > 0)
     {
-        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
+        mask.zeros(
+            dataObject.getSize()[dataObject.getDims() - 2],
+            dataObject.getSize()[dataObject.getDims() - 1],
+            ito::tUInt8);
         dataObject.copyAxisTagsTo(mask);
 
         if (inverse)
@@ -49,16 +52,20 @@ namespace ito
             mask.setTo(255);
         }
 
-		maskHelper(dataObject, mask, shape, inverse);
+        maskHelper(dataObject, mask, shape, inverse);
     }
 
     return mask;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ void ShapeDObject::maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, const ito::Shape &shape, bool inverse /*= false*/)
+/*static*/ void ShapeDObject::maskHelper(
+    const ito::DataObject& dataObject,
+    ito::DataObject& mask,
+    const ito::Shape& shape,
+    bool inverse /*= false*/)
 {
-    //only call this via mask or maskFromMultipleShapes
+    // only call this via mask or maskFromMultipleShapes
     int dims = dataObject.getDims();
     int numPlanes = dataObject.getNumPlanes();
 
@@ -67,128 +74,139 @@ namespace ito
         int rows = dataObject.getSize(dims - 2);
         int cols = dataObject.getSize(dims - 1);
 
-		switch (shape.type())
+        switch (shape.type())
         {
-		    case Shape::MultiPointPick:
-		    case Shape::Point:
-		    case Shape::Line:
+        case Shape::MultiPointPick:
+        case Shape::Point:
+        case Shape::Line:
             break;
 
-		    case Shape::Rectangle:
-		    case Shape::Square:
+        case Shape::Rectangle:
+        case Shape::Square: {
+            QPointF p1 = shape.rbasePoints()[0];
+            QPointF p2 = shape.rbasePoints()[1];
+            QPointF p3 = shape.centerPoint();
+
+            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
+            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+
+            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
+            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+
+            p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
+            p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
+
+            cv::Scalar color;
+            if (inverse)
+                color = cv::Scalar(0, 0, 0);
+            else
+                color = cv::Scalar(255, 255, 255);
+
+            double angle = shape.rotationAngleDeg();
+
+            if (angle == 0.0)
             {
-                QPointF p1 = shape.rbasePoints()[0];
-                QPointF p2 = shape.rbasePoints()[1];
-                QPointF p3 = shape.centerPoint();
-
-                p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-                p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-                p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-                p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-                p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
-                p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
-
-                cv::Scalar color;
-                if (inverse)
-                    color = cv::Scalar(0, 0, 0);
-                else
-                    color = cv::Scalar(255, 255, 255);
-
-                double angle = shape.rotationAngleDeg();
-
-                if (angle == 0.0)
-                {
-                    cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
-                        cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), 0.0);
-                    cv::Rect brect = rRect.boundingRect();
-                    cv::rectangle(*mask.getCvPlaneMat(0), brect, color, -1);
-                }
-                else
-                {
-                    cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
-                        cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), angle);
-                    cv::Point2f vertices[4];
-                    rRect.points(vertices);
-                    cv::Point vertices_int[4];
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        vertices_int[i] = cv::Point(qRound(vertices[i].x), qRound(vertices[i].y));
-                    }
-                    cv::fillConvexPoly(*mask.getCvPlaneMat(0), vertices_int, 4, color);
-                }
+                cv::RotatedRect rRect = cv::RotatedRect(
+                    cv::Point2f(p3.x(), p3.y()),
+                    cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())),
+                    0.0);
+                cv::Rect brect = rRect.boundingRect();
+                cv::rectangle(*mask.getCvPlaneMat(0), brect, color, -1);
             }
-            break;
-
-		    case Shape::Polygon:
+            else
             {
-                QPointF p;
-                std::vector<cv::Point> pts;
-                std::vector<std::vector<cv::Point> > cnt;
-
-                QPolygonF vertices = shape.transform().map(shape.basePoints());
-
-                for (int np = 0; np < vertices.size(); np++)
+                cv::RotatedRect rRect = cv::RotatedRect(
+                    cv::Point2f(p3.x(), p3.y()),
+                    cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())),
+                    angle);
+                cv::Point2f vertices[4];
+                rRect.points(vertices);
+                cv::Point vertices_int[4];
+                for (int i = 0; i < 4; ++i)
                 {
-                    p = vertices[np];
-                    p.setX(dataObject.getPhysToPix(dims - 1, p.x()));
-                    p.setY(dataObject.getPhysToPix(dims - 2, p.y()));
-                    pts.push_back(cv::Point(qRound(p.x()), qRound(p.y())));
+                    vertices_int[i] = cv::Point(qRound(vertices[i].x), qRound(vertices[i].y));
                 }
-                cnt.push_back(pts);
-
-                cv::Scalar color;
-                if (inverse)
-                    color = cv::Scalar(0, 0, 0);
-                else
-                    color = cv::Scalar(255, 255, 255);
-                cv::fillPoly(*mask.getCvPlaneMat(0), cnt, color);
+                cv::fillConvexPoly(*mask.getCvPlaneMat(0), vertices_int, 4, color);
             }
-            break;
+        }
+        break;
 
-		    case Shape::Ellipse:
-		    case Shape::Circle:
+        case Shape::Polygon: {
+            QPointF p;
+            std::vector<cv::Point> pts;
+            std::vector<std::vector<cv::Point>> cnt;
+
+            QPolygonF vertices = shape.transform().map(shape.basePoints());
+
+            for (int np = 0; np < vertices.size(); np++)
             {
-                QPointF p1 = shape.rbasePoints()[0];
-                QPointF p2 = shape.rbasePoints()[1];
-                QPointF p3 = shape.centerPoint();
-
-                p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-                p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-                p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-                p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-                p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
-                p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
-
-                cv::Scalar color;
-                if (inverse)
-                    color = cv::Scalar(0, 0, 0);
-                else
-                    color = cv::Scalar(255, 255, 255);
-
-                cv::ellipse(*mask.getCvPlaneMat(0), cv::Point2f(p3.x(), p3.y()), 
-                    cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0)), shape.rotationAngleDeg(), 0, 360,
-                    color, -1);
+                p = vertices[np];
+                p.setX(dataObject.getPhysToPix(dims - 1, p.x()));
+                p.setY(dataObject.getPhysToPix(dims - 2, p.y()));
+                pts.push_back(cv::Point(qRound(p.x()), qRound(p.y())));
             }
-            break;
+            cnt.push_back(pts);
 
-            default:
+            cv::Scalar color;
+            if (inverse)
+                color = cv::Scalar(0, 0, 0);
+            else
+                color = cv::Scalar(255, 255, 255);
+            cv::fillPoly(*mask.getCvPlaneMat(0), cnt, color);
+        }
+        break;
+
+        case Shape::Ellipse:
+        case Shape::Circle: {
+            QPointF p1 = shape.rbasePoints()[0];
+            QPointF p2 = shape.rbasePoints()[1];
+            QPointF p3 = shape.centerPoint();
+
+            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
+            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+
+            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
+            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+
+            p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
+            p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
+
+            cv::Scalar color;
+            if (inverse)
+                color = cv::Scalar(0, 0, 0);
+            else
+                color = cv::Scalar(255, 255, 255);
+
+            cv::ellipse(
+                *mask.getCvPlaneMat(0),
+                cv::Point2f(p3.x(), p3.y()),
+                cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0)),
+                shape.rotationAngleDeg(),
+                0,
+                360,
+                color,
+                -1);
+        }
+        break;
+
+        default:
             break;
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ ito::DataObject ShapeDObject::maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse /*= false*/)
+/*static*/ ito::DataObject ShapeDObject::maskFromMultipleShapes(
+    const ito::DataObject& dataObject, const QVector<ito::Shape>& shapes, bool inverse /*= false*/)
 {
     ito::DataObject mask;
-    
+
     if (dataObject.getTotal() > 0)
     {
-        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
+        mask.zeros(
+            dataObject.getSize()[dataObject.getDims() - 1],
+            dataObject.getSize()[dataObject.getDims() - 2],
+            ito::tUInt8); // 2d mask dataObject
         dataObject.copyAxisTagsTo(mask);
 
         if (inverse)
@@ -196,12 +214,13 @@ namespace ito
             mask.setTo(255);
         }
 
-        foreach(const ito::Shape &shape, shapes)
+        foreach (const ito::Shape& shape, shapes)
         {
-			ShapeDObject::maskHelper(dataObject, mask, shape, inverse);
+            ShapeDObject::maskHelper(dataObject, mask, shape, inverse);
         }
     }
 
     return mask;
 }
-} //end namespace ito
+
+} // end namespace ito
