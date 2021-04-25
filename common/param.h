@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PARAM_H
-#define PARAM_H
+#pragma once
 
 /* includes */
 
@@ -49,7 +48,6 @@
 
 namespace ito {
 class Param;
-class ParamHelper;
 template <typename _Tp> struct ItomParamHelper;
 
 const uint32 paramFlagMask = 0xFFFF0000; //!< bits of type lying within this mask are flags (e.g.
@@ -69,28 +67,37 @@ struct ITOMCOMMON_EXPORT complex128_
 class ITOMCOMMON_EXPORT ParamBase
 {
 protected:
-    uint32 m_type;
-    ByteArray m_name; //!< parameter name
-
     void inOutCheck();
 
-    static inline uint32 typeFilter(uint32 type)
-    {
-        return type & paramTypeMask;
-    }
-
 private:
+    //!< flags, bitmask of the higher level values in ParamBase::Flag
+    uint16 m_flags;
+
+    //!< type, correspond to ParamBase::Type
+    uint16 m_type;
+
+    //!< name of this parameter
+    ByteArray m_name;
+
     complex128_ m_dVal; //!< internal value for float64 and complex128 typed values
-    ito::int32 m_iVal; //!< internal value for integer typed values
+    int32 m_iVal; //!< internal value for integer typed values
     void* m_cVal; //!< internal pointer for pointer type values (also strings and string lists)
 
     void freeMemory(); //!< free allocated memory, if memory has been allocated.
 
-public:
-    enum Type
-    {
-        //!< Flag section (bit 17-32)
+    //!< depending on the type, set the default value for the autosave flag.
+    void setDefaultAutosave();
 
+public:
+    //!< Flag section, new for itom > 4.1. Before it was part of the Type enumeration.
+    /* For compatibility reasons with older versions of itom, values in this enumeration
+       must only set bits in the range 17-32 of an uint32 value, since they can be 
+       used together with values of the Type enum below, using bits 1-16. 
+       Internally, the flags are stored as uint16 object, where these enumeration
+       values are shifted by 16bits. 
+    */
+    enum Flag
+    {
         /* If this bit is set, this parameter should be automatically
         stored if for instance a plugin is closed and if the plugin
         with the same identifier is opened again, the parameter
@@ -109,7 +116,7 @@ public:
         If the Out-flag is set, too, the consumer (e.g. plugin) will read and write the
         value, such that for instance a given dataObject will have another content after having
         called a method of a plugin. Return parameters of a method must never have the In-flag set.
-      */
+        */
         In = 0x040000,
 
         /* Flag to mark this parameter, that the consumer will create or change
@@ -124,34 +131,35 @@ public:
         Plugins can also set or unset this flag
         during the runtime. */
         NotAvailable = 0x100000,
+    };
 
-        //!< Type section (bit 1-16), except for the NoAutosave bit, which is bit 17
-
+    enum Type
+    {
         /* Helper-bit for all types that only contain a pointer to the real value and
         not the value itself. For these types, the caller need to keep the pointed object
         until both caller and called method do not use it any more! */
-        Pointer = 0x000001,
+        Pointer = 0x0001,
 
         //!< character (int8) parameter
-        Char = 0x000002,
+        Char = 0x0002,
 
         //!< integer (int32) parameter
-        Int = 0x000004,
+        Int = 0x0004,
 
         //!< double (float64) parameter
-        Double = 0x000008,
+        Double = 0x0008,
 
         //!< complex (complex128) parameter
-        Complex = 0x000400,
+        Complex = 0x0400,
 
         //!< dataObject parameter (pointer, no auto-save possible)
-        DObjPtr = 0x000010 | Pointer | NoAutosave,
+        DObjPtr = 0x0010 | Pointer,
 
         //!< string parameter
-        String = 0x000020 | Pointer,
+        String = 0x0020 | Pointer,
 
         //!< reference to another plugin instance (pointer, no auto-save possible)
-        HWRef = 0x000040 | Pointer | NoAutosave,
+        HWRef = 0x0040 | Pointer,
 
         //!< array of characters
         CharArray = Char | Pointer,
@@ -166,16 +174,16 @@ public:
         ComplexArray = Complex | Pointer,
 
         //!< point cloud parameter (pointer, no auto-safe possible)
-        PointCloudPtr = 0x000080 | Pointer | NoAutosave,
+        PointCloudPtr = 0x0080 | Pointer,
 
         //!< point parameter (pointer, no auto-safe possible)
-        PointPtr = 0x000100 | Pointer | NoAutosave,
+        PointPtr = 0x0100 | Pointer,
 
         //!< polygon mesh parameter (pointer, no auto-safe possible)
-        PolygonMeshPtr = 0x000200 | Pointer | NoAutosave,
+        PolygonMeshPtr = 0x0200 | Pointer,
 
         //!< list of strings, given as ito::ByteArray
-        StringList = 0x000800 | Pointer
+        StringList = 0x0800 | Pointer
     };
 
 
@@ -183,43 +191,51 @@ public:
     //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
     //--------------------------------------------------------------------------------------------
     //! default constructor, creates "empty" ParamBase
-    ParamBase() : m_type(0), m_name(nullptr), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
-    {
-    }
+    ParamBase();
 
     // type-less ParamBase with name only
     ParamBase(const ByteArray& name);
 
     // constructor with type and name
-    ParamBase(const ByteArray& name, const uint32 type);
+    ParamBase(const ByteArray& name, const uint32 typeAndFlags);
 
     // constructor with name and type and char val
-    ParamBase(const ByteArray& name, const uint32 type, const char* val);
+    ParamBase(const ByteArray& name, const uint32 typeAndFlags, const char* val);
 
     // constructor with name and type and float64 val
-    ParamBase(const ByteArray& name, const uint32 type, const float64 val);
+    ParamBase(const ByteArray& name, const uint32 typeAndFlags, const float64 val);
 
     // constructor with name and type and int32 val
-    ParamBase(const ByteArray& name, const uint32 type, const int32 val);
+    ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int32 val);
 
     // constructor with name and type and complex128 val
-    ParamBase(const ByteArray& name, const uint32 type, const complex128 val);
-
-    // array constructor with name and type, size and array
-    ParamBase(const ByteArray& name, const uint32 type, const uint32 size, const char* values);
-
-    // array constructor with name and type, size and array
-    ParamBase(const ByteArray& name, const uint32 type, const uint32 size, const int32* values);
-
-    // array constructor with name and type, size and array
-    ParamBase(const ByteArray& name, const uint32 type, const uint32 size, const float64* values);
+    ParamBase(const ByteArray& name, const uint32 typeAndFlags, const complex128 val);
 
     // array constructor with name and type, size and array
     ParamBase(
-        const ByteArray& name, const uint32 type, const uint32 size, const complex128* values);
+        const ByteArray& name, const uint32 typeAndFlags, const uint32 size, const char* values);
+
+    // array constructor with name and type, size and array
+    ParamBase(
+        const ByteArray& name, const uint32 typeAndFlags, const uint32 size, const int32* values);
+
+    // array constructor with name and type, size and array
+    ParamBase(
+        const ByteArray& name, const uint32 typeAndFlags, const uint32 size, const float64* values);
+
+    // array constructor with name and type, size and array
+    ParamBase(
+        const ByteArray& name,
+        const uint32 typeAndFlags,
+        const uint32 size,
+        const complex128* values);
 
     // array constructor with name and type, size and string list
-    ParamBase(const ByteArray& name, const uint32 type, const uint32 size, const ByteArray* values);
+    ParamBase(
+        const ByteArray& name,
+        const uint32 typeAndFlags,
+        const uint32 size,
+        const ByteArray* values);
 
     virtual ~ParamBase(); // Destructor
 
@@ -263,14 +279,13 @@ public:
     //! 0). The default tParam-constructor is always an invalid tParam.
     bool isValid(void) const;
 
-    //! returns parameter type (autosave flag and other flags (like in, out or readonly) are only
-    //! included if filterFlags is set false)
-    uint32 getType(bool filterFlags = true) const;
+    //! returns parameter type
+    uint16 getType() const;
 
     //! returns parameter flags
-    uint32 getFlags(void) const;
+    uint32 getFlags() const;
 
-    //! sets parameter flagsfor possible flags see \ref tParamType
+    //! sets parameter flags for possible flags see \ref tParamType
     void setFlags(const uint32 flags);
 
     //! returns parameter name (returned string is no copy, do not delete it)
@@ -282,7 +297,7 @@ public:
 
     //! returns content of autosave flag - this flag determines whether the parameter value gets
     //! automagically saved to xml file when an instance of a plugin class is deleted (closed)
-    bool getAutosave(void) const;
+    bool getAutosave() const;
 
     //! sets content of autosave flag - this flag determines whether the parameter value gets
     //! automagically saved to xml file when an instance of a plugin class is deleted (closed)
@@ -292,7 +307,7 @@ public:
     //! length of string or 0 if not given, for number parameters return 1. In all other cases -1.
     /* From itom 5.0 the behaviour in case of arrays or string list changed. Before, -1 was
        returned if the internal array is a nullptr and 0 if the array has zero items. From itom
-       5.0 on, an empty or non-existing array or list always returns 0.    
+       5.0 on, an empty or non-existing array or list always returns 0.
     */
     int getLen(void) const;
 
@@ -367,7 +382,7 @@ public:
     The type is 0 (invalid).
     The name is empty.
     */
-    Param() : ParamBase(), m_pMeta(NULL), m_info(NULL)
+    Param() : ParamBase(), m_pMeta(nullptr), m_info(nullptr)
     {
     }
 
@@ -378,7 +393,7 @@ public:
 
     \param name is the name of the parameter
     */
-    Param(const ByteArray& name) : ParamBase(name), m_pMeta(NULL), m_info(NULL)
+    Param(const ByteArray& name) : ParamBase(name), m_pMeta(nullptr), m_info(nullptr)
     {
     }
 
@@ -390,8 +405,8 @@ public:
     \type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
     e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
     */
-    Param(const ByteArray& name, const uint32 type) :
-        ParamBase(name, type), m_pMeta(NULL), m_info(NULL)
+    Param(const ByteArray& name, const uint32 typeAndFlags) :
+        ParamBase(name, typeAndFlags), m_pMeta(nullptr), m_info(nullptr)
     {
     }
 
@@ -403,9 +418,9 @@ public:
     \param type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
         e.g. ito::ParamBase::String | ito::ParamBase::In for a read-only input parameter
     \param val is the default string (const char*) of this parameter
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
-    Param(const ByteArray& name, const uint32 type, const char* val, const char* info);
+    Param(const ByteArray& name, const uint32 typeAndFlags, const char* val, const char* info);
 
     //!< Constructor for a char value parameter (int8)
     /*
@@ -418,11 +433,11 @@ public:
     \param minVal is the minimum allowed value (added to meta information)
     \param maxVal is the maximum allowed value (added to meta information)
     \param val is the default int8 value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const char minVal,
         const char maxVal,
         const char val,
@@ -439,11 +454,11 @@ public:
     \param minVal is the minimum allowed value (added to meta information)
     \param maxVal is the maximum allowed value (added to meta information)
     \param val is the default int32 value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const int32 minVal,
         const int32 maxVal,
         const int32 val,
@@ -460,11 +475,11 @@ public:
     \param minVal is the minimum allowed value (added to meta information)
     \param maxVal is the maximum allowed value (added to meta information)
     \param val is the default float64 value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const float64 minVal,
         const float64 maxVal,
         const float64 val,
@@ -479,11 +494,11 @@ public:
         e.g. ito::ParamBase::CharArray | ito::ParamBase::In for a read-only input parameter
     \param size is the size of the given default values array
     \param values is the default int8 array value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const char* values,
         const char* info); // array constructor with name and type, size and array
@@ -497,11 +512,11 @@ public:
         e.g. ito::ParamBase::IntArray | ito::ParamBase::In for a read-only input parameter
     \param size is the size of the given default values array
     \param values is the default int32 array value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const int32* values,
         const char* info);
@@ -515,11 +530,11 @@ public:
         e.g. ito::ParamBase::DoubleArray | ito::ParamBase::In for a read-only input parameter
     \param size is the size of the given default values array
     \param values is the default float64 array value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const float64* values,
         const char* info);
@@ -533,11 +548,11 @@ public:
         e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
     \param size is the size of the given default values array
     \param values is the default complex array value
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const complex128* values,
         const char* info);
@@ -551,11 +566,11 @@ public:
         e.g. ito::ParamBase::ComplexArray | ito::ParamBase::In for a read-only input parameter
     \param size is the size of the given default values array
     \param values is the default ByteArray list
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const ByteArray* values,
         const char* info);
@@ -569,11 +584,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, it has to be an object of ito::CharMeta.
         The ownership is taken by this parameter!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const char val,
         ParamMeta* meta,
         const char* info);
@@ -587,11 +602,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, it has to be an object of ito::IntMeta.
         The ownership is taken by this parameter!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const int32 val,
         ParamMeta* meta,
         const char* info);
@@ -605,11 +620,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, it has to be an object of ito::DoubleMeta.
         The ownership is taken by this parameter!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const float64 val,
         ParamMeta* meta,
         const char* info);
@@ -622,11 +637,11 @@ public:
     \param val is the default value
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         Currently, there is no meta information class for complex value parameters!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const complex128 val,
         ParamMeta* meta,
         const char* info);
@@ -641,11 +656,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, it has to be an object of ito::CharArrayMeta.
         The ownership is taken by this parameter!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const char* values,
         ParamMeta* meta,
@@ -662,11 +677,11 @@ public:
         If a pointer is given, it has to be an object of ito::IntArrayMeta, ito::IntervalMeta,
         ito::RangeMeta or ito::RectMeta.
         The ownership is taken by this parameter!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const int32* values,
         ParamMeta* meta,
@@ -682,11 +697,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, it has to be an object of ito::DoubleArrayMeta or
     ito::DoubleIntervalMeta. The ownership is taken by this parameter! \param info can be a
-    documentation string for this parameter, an empty string or NULL
+    documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const float64* values,
         ParamMeta* meta,
@@ -702,11 +717,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, the ownership is taken by this parameter!
         Currently, there is no meta information class available for complex array parameters!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const complex128* values,
         ParamMeta* meta,
@@ -722,11 +737,11 @@ public:
     \param meta might be nullptr, if no meta information should be passed to this parameter.
         If a pointer is given, the ownership is taken by this parameter!
         Currently, there is no meta information class available for complex array parameters!
-    \param info can be a documentation string for this parameter, an empty string or NULL
+    \param info can be a documentation string for this parameter, an empty string or nullptr
     */
     Param(
         const ByteArray& name,
-        const uint32 type,
+        const uint32 typeAndFlags,
         const unsigned int size,
         const ByteArray* values,
         ParamMeta* meta,
@@ -781,14 +796,14 @@ public:
         return m_pMeta;
     }
 
-    //!< returns pointer to meta-information instance or NULL if not available. Cast this pointer
+    //!< returns pointer to meta-information instance or nullptr if not available. Cast this pointer
     //!< to the right class of the parameter.
     inline ParamMeta* getMeta(void)
     {
         return m_pMeta;
     }
 
-    //!< returns const-pointer to meta-information instance casted to 'const _Tp*' or NULL if not
+    //!< returns const-pointer to meta-information instance casted to 'const _Tp*' or nullptr if not
     //!< available or cast failed.
     /*
     Example: intParam.getMetaT<ito::IntMeta>();
@@ -798,8 +813,8 @@ public:
         return static_cast<const _Tp*>(m_pMeta);
     }
 
-    //!< returns pointer to meta-information instance casted to '_Tp*' or NULL if not available or
-    //!< cast failed.
+    //!< returns pointer to meta-information instance casted to '_Tp*' or nullptr if not available
+    //!< or cast failed.
     /*
     Example: intParam.getMetaT<ito::IntMeta>();
     */
@@ -828,18 +843,18 @@ template <typename _Tp> struct ItomParamHelper
     static ito::RetVal setVal(
         uint32 type, void*& cVal, int32& iVal, complex128_& /*dVal*/, const _Tp val, int len = 0)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case (ito::ParamBase::HWRef & paramTypeMask):
-        case (ito::ParamBase::DObjPtr & paramTypeMask):
-        case ito::ParamBase::PointCloudPtr& paramTypeMask:
-        case ito::ParamBase::PointPtr& paramTypeMask:
-        case ito::ParamBase::PolygonMeshPtr& paramTypeMask:
-            //                case ito::ParamBase::Pointer & paramTypeMask:
+        case ito::ParamBase::HWRef:
+        case ito::ParamBase::DObjPtr:
+        case ito::ParamBase::PointCloudPtr:
+        case ito::ParamBase::PointPtr:
+        case ito::ParamBase::PolygonMeshPtr:
+            //                case ito::ParamBase::Pointer :
             cVal = (void*)(reinterpret_cast<const void*>(val));
             return ito::retOk;
 
-        case ito::ParamBase::String& paramTypeMask: {
+        case ito::ParamBase::String: {
             auto cVal_ = cVal;
             if (val)
             {
@@ -861,7 +876,7 @@ template <typename _Tp> struct ItomParamHelper
         }
             return ito::retOk;
 
-        case ito::ParamBase::CharArray& ito::paramTypeMask: {
+        case ito::ParamBase::CharArray: {
             auto cVal_ = cVal;
             if ((val) && (len > 0))
             {
@@ -882,7 +897,7 @@ template <typename _Tp> struct ItomParamHelper
         }
             return ito::retOk;
 
-        case ito::ParamBase::IntArray& ito::paramTypeMask: {
+        case ito::ParamBase::IntArray: {
             auto cVal_ = cVal;
             if ((val) && (len > 0))
             {
@@ -903,7 +918,7 @@ template <typename _Tp> struct ItomParamHelper
         }
             return ito::retOk;
 
-        case ito::ParamBase::DoubleArray& ito::paramTypeMask: {
+        case ito::ParamBase::DoubleArray: {
             auto cVal_ = cVal;
             if ((val) && (len > 0))
             {
@@ -924,7 +939,7 @@ template <typename _Tp> struct ItomParamHelper
         }
             return ito::retOk;
 
-        case ito::ParamBase::ComplexArray& ito::paramTypeMask: {
+        case ito::ParamBase::ComplexArray: {
             auto cVal_ = cVal;
 
             if ((val) && (len > 0))
@@ -946,7 +961,7 @@ template <typename _Tp> struct ItomParamHelper
         }
             return ito::retOk;
 
-        case ito::ParamBase::StringList& ito::paramTypeMask: {
+        case ito::ParamBase::StringList: {
             auto cVal_ = cVal;
 
             if ((val) && (len > 0))
@@ -991,9 +1006,9 @@ template <typename _Tp> struct ItomParamHelper
         const complex128_& /*dVal*/,
         int& len)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::String& paramTypeMask:
+        case ito::ParamBase::String:
             if (cVal)
             {
                 len = static_cast<int>(strlen((const char*)cVal));
@@ -1005,11 +1020,11 @@ template <typename _Tp> struct ItomParamHelper
                 return 0;
             }
 
-        case ito::ParamBase::CharArray& ito::paramTypeMask:
-        case ito::ParamBase::IntArray& ito::paramTypeMask:
-        case ito::ParamBase::DoubleArray& ito::paramTypeMask:
-        case ito::ParamBase::ComplexArray& ito::paramTypeMask:
-        case ito::ParamBase::StringList& ito::paramTypeMask:
+        case ito::ParamBase::CharArray:
+        case ito::ParamBase::IntArray:
+        case ito::ParamBase::DoubleArray:
+        case ito::ParamBase::ComplexArray:
+        case ito::ParamBase::StringList:
             if (cVal)
             {
                 len = iVal;
@@ -1021,11 +1036,11 @@ template <typename _Tp> struct ItomParamHelper
                 return 0;
             }
 
-        case (ito::ParamBase::HWRef & paramTypeMask):
-        case (ito::ParamBase::DObjPtr & paramTypeMask):
-        case ito::ParamBase::PointCloudPtr& paramTypeMask:
-        case ito::ParamBase::PointPtr& paramTypeMask:
-        case ito::ParamBase::PolygonMeshPtr& paramTypeMask:
+        case ito::ParamBase::HWRef:
+        case ito::ParamBase::DObjPtr:
+        case ito::ParamBase::PointCloudPtr:
+        case ito::ParamBase::PointPtr:
+        case ito::ParamBase::PolygonMeshPtr:
             return reinterpret_cast<_Tp>((char*)cVal);
 
         default:
@@ -1039,16 +1054,16 @@ template <> struct ItomParamHelper<float64>
     static ito::RetVal setVal(
         uint32 type, void*& /*cVal*/, int32& iVal, complex128_& dVal, float64 val, int /*len = 0*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             dVal.real = static_cast<float64>(val);
             dVal.imag = 0.0;
             return ito::retOk;
 
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             iVal = static_cast<int32>(val);
             return ito::retOk;
 
@@ -1067,14 +1082,14 @@ template <> struct ItomParamHelper<float64>
         const complex128_& dVal,
         int& /*len*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             return static_cast<float64>(iVal);
 
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             return dVal.real;
 
         default:
@@ -1088,16 +1103,16 @@ template <> struct ItomParamHelper<int32>
     static ito::RetVal setVal(
         uint32 type, void*& /*cVal*/, int32& iVal, complex128_& dVal, int32 val, int /*len = 0*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             dVal.real = static_cast<float64>(val);
             dVal.imag = 0.0;
             return ito::retOk;
 
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             iVal = val;
             return ito::retOk;
 
@@ -1116,14 +1131,14 @@ template <> struct ItomParamHelper<int32>
         const complex128_& dVal,
         int& /*len*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             return iVal;
 
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             return static_cast<int32>(dVal.real);
 
         case 0:
@@ -1140,16 +1155,16 @@ template <> struct ItomParamHelper<char>
     static ito::RetVal setVal(
         uint32 type, void*& /*cVal*/, int32& iVal, complex128_& dVal, char val, int /*len = 0*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             dVal.real = static_cast<float64>(val);
             dVal.imag = 0.0;
             return ito::retOk;
 
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             iVal = static_cast<char>(val);
             return ito::retOk;
 
@@ -1168,14 +1183,14 @@ template <> struct ItomParamHelper<char>
         const complex128_& dVal,
         int& /*len*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             return static_cast<char>(iVal);
 
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             return static_cast<char>(dVal.real);
 
         case 0:
@@ -1192,16 +1207,16 @@ template <> struct ItomParamHelper<unsigned char>
     static ito::RetVal setVal(
         uint32 type, void*& /*cVal*/, int32& iVal, complex128_& dVal, char val, int /*len = 0*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             dVal.real = static_cast<float64>(val);
             dVal.imag = 0.0;
             return ito::retOk;
 
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             iVal = static_cast<unsigned char>(val);
             return ito::retOk;
 
@@ -1221,14 +1236,14 @@ template <> struct ItomParamHelper<unsigned char>
         const complex128_& dVal,
         int& /*len*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             return static_cast<unsigned char>(iVal);
 
-        case ito::ParamBase::Complex& ito::paramTypeMask:
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
+        case ito::ParamBase::Double:
             return static_cast<unsigned char>(dVal.real);
 
         case 0:
@@ -1250,9 +1265,9 @@ template <> struct ItomParamHelper<complex128>
         complex128 val,
         int /*len = 0*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Complex& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
             dVal.real = val.real();
             dVal.imag = val.imag();
             return ito::retOk;
@@ -1273,16 +1288,16 @@ template <> struct ItomParamHelper<complex128>
         const complex128_& dVal,
         int& /*len*/)
     {
-        switch (type & paramTypeMask)
+        switch (type)
         {
-        case ito::ParamBase::Int& ito::paramTypeMask:
-        case ito::ParamBase::Char& ito::paramTypeMask:
+        case ito::ParamBase::Int:
+        case ito::ParamBase::Char:
             return complex128(iVal, 0.0);
 
-        case ito::ParamBase::Complex& ito::paramTypeMask:
+        case ito::ParamBase::Complex:
             return complex128(dVal.real, dVal.imag);
 
-        case ito::ParamBase::Double& ito::paramTypeMask:
+        case ito::ParamBase::Double:
             return dVal.real;
 
         default:
@@ -1292,5 +1307,3 @@ template <> struct ItomParamHelper<complex128>
 };
 
 } // end namespace ito
-
-#endif

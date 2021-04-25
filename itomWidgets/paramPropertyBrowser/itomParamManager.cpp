@@ -807,7 +807,7 @@ void ParamIntervalPropertyManager::setParam(QtProperty *property, const ito::Par
     if (it == d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -1030,7 +1030,7 @@ void ParamRectPropertyManager::setParam(QtProperty *property, const ito::Param &
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -1249,7 +1249,7 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::CharArray & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::CharArray));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -1529,7 +1529,7 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -1806,7 +1806,7 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::DoubleArray & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::DoubleArray));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -2087,7 +2087,7 @@ void ParamStringListPropertyManager::setParam(QtProperty *property, const ito::P
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == (ito::ParamBase::StringList & ito::paramTypeMask));
+    Q_ASSERT(param.getType() == (ito::ParamBase::StringList));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -2302,12 +2302,12 @@ void ParamOtherPropertyManager::setParam(QtProperty *property, const ito::Param 
     if (it == d_ptr->m_values.end())
         return;
 
-    Q_ASSERT((param.getType() == (ito::ParamBase::HWRef & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::PointPtr & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::PointCloudPtr & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask)) |
-        (param.getType() == (ito::ParamBase::ComplexArray & ito::paramTypeMask)) |
+    Q_ASSERT((param.getType() == (ito::ParamBase::HWRef)) |
+        (param.getType() == (ito::ParamBase::DObjPtr)) |
+        (param.getType() == (ito::ParamBase::PointPtr)) |
+        (param.getType() == (ito::ParamBase::PointCloudPtr)) |
+        (param.getType() == (ito::ParamBase::PolygonMeshPtr)) |
+        (param.getType() == (ito::ParamBase::ComplexArray)) |
         (param.getType() == ito::ParamBase::Complex));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
@@ -2341,7 +2341,7 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
 
     switch (param.getType())
     {
-    case (ito::ParamBase::HWRef & ito::paramTypeMask):
+    case (ito::ParamBase::HWRef):
         {
             ito::AddInBase *aib = param.getVal<ito::AddInBase*>();
             if (aib)
@@ -2354,7 +2354,7 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
             }
         }
         break;
-    case (ito::ParamBase::DObjPtr & ito::paramTypeMask):
+    case (ito::ParamBase::DObjPtr):
         {
             ito::DataObject *obj = param.getVal<ito::DataObject*>();
             if (obj)
@@ -2367,17 +2367,17 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
             }
         }
         break;
-    case (ito::ParamBase::PointPtr & ito::paramTypeMask):
+    case (ito::ParamBase::PointPtr):
         {
             return QLatin1String("Point");
         }
         break;
-    case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
+    case (ito::ParamBase::PolygonMeshPtr):
         {
             return QLatin1String("PolygonMesh");
         }
         break;
-    case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask):
+    case (ito::ParamBase::PointCloudPtr):
         {
             return QLatin1String("PointCloud");
         }
@@ -2399,7 +2399,7 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
             return s;
             break;
         }
-    case (ito::ParamBase::ComplexArray & ito::paramTypeMask):
+    case (ito::ParamBase::ComplexArray):
         return tr("%1 complex values").arg(std::max(0, param.getLen()));
         break;
     }

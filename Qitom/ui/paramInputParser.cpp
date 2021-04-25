@@ -118,7 +118,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param>& params)
         m_lblName = new QLabel(QString(param.getName()).append(":"), parent);
         m_lblType = new QLabel(parent);
 
-        switch (param.getType() & ito::paramTypeMask)
+        switch (param.getType())
         {
         case ito::ParamBase::Int:
             m_lblType->setText(tr("[Integer]"));
@@ -148,7 +148,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param>& params)
             m_lblType->setText(tr("[CharArray]"));
             m_content = renderTypeGenericArray(param, i, parent, ParamBase::CharArray);
             break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask:
+        case ito::ParamBase::HWRef:
             m_lblType->setText(tr("[HW-Instance]"));
             m_content = renderTypeHWRef(param, i, parent);
             break;
@@ -225,7 +225,7 @@ bool ParamInputParser::validateInput(
         // copy orgParams to params
         tempParam = ito::ParamBase(param);
 
-        switch (param.getType() & ito::paramTypeMask)
+        switch (param.getType())
         {
         case ito::ParamBase::Int:
             retValue += getIntValue(
@@ -264,7 +264,7 @@ bool ParamInputParser::validateInput(
         case ito::ParamBase::CharArray:
         case ito::ParamBase::StringList:
             break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask:
+        case ito::ParamBase::HWRef:
             retValue += getHWValue(
                 tempParam,
                 param,
@@ -334,7 +334,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase>& params)
         // copy orgParams to params
         tempParam = ito::ParamBase(param);
 
-        switch (param.getType() & ito::paramTypeMask)
+        switch (param.getType())
         {
         case ito::ParamBase::Int:
             retValue += getIntValue(
@@ -374,7 +374,7 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase>& params)
         case ito::ParamBase::StringList:
             tempParam = param;
             break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask:
+        case ito::ParamBase::HWRef:
             retValue += getHWValue(
                 tempParam,
                 param,
@@ -687,7 +687,7 @@ QString ParamInputParser::getTypeGenericArrayPreview(const ito::Param& param) co
 QString ParamInputParser::arrayTypeObjectName(int paramType, int index) const
 {
     // do not translate these strings
-    switch (paramType & paramTypeMask)
+    switch (paramType)
     {
     case ParamBase::CharArray:
         return QString("ArrayChar_%1").arg(index);

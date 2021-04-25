@@ -1999,7 +1999,7 @@ ito::RetVal ParamHelper::validateParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
@@ -2219,7 +2219,7 @@ ito::RetVal ParamHelper::validateAndCastParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
@@ -2349,12 +2349,12 @@ ito::ParamBase ParamHelper::convertParam(
         *ok = true;
     }
 
-    if (sourceType == (destType & (int)ito::paramTypeMask))
+    if (sourceType == destType)
     {
         return source;
     }
 
-    switch (destType & ito::paramTypeMask)
+    switch (destType)
     {
     case ito::ParamBase::Int: {
         if (source.isNumeric())
@@ -2521,11 +2521,11 @@ ito::RetVal ParamHelper::parseParamName(
 
     switch (arrayParam.getType())
     {
-    case ito::ParamBase::CharArray & ito::paramTypeMask:
-    case ito::ParamBase::IntArray & ito::paramTypeMask:
-    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
-    case ito::ParamBase::StringList & ito::paramTypeMask: {
+    case ito::ParamBase::CharArray:
+    case ito::ParamBase::IntArray:
+    case ito::ParamBase::DoubleArray:
+    case ito::ParamBase::ComplexArray:
+    case ito::ParamBase::StringList: {
         itemParam = arrayParam[index];
         break;
     }
@@ -2548,11 +2548,11 @@ ito::RetVal ParamHelper::parseParamName(
     {
         // check whether param is an array type
         ito::uint32 type = param.getType();
-        if (type == (ito::ParamBase::IntArray & ito::paramTypeMask) ||
-            type == (ito::ParamBase::DoubleArray & ito::paramTypeMask) ||
-            type == (ito::ParamBase::CharArray & ito::paramTypeMask) ||
-            type == (ito::ParamBase::ComplexArray & ito::paramTypeMask) ||
-            type == (ito::ParamBase::StringList & ito::paramTypeMask))
+        if (type == (ito::ParamBase::IntArray) ||
+            type == (ito::ParamBase::DoubleArray) ||
+            type == (ito::ParamBase::CharArray) ||
+            type == (ito::ParamBase::ComplexArray) ||
+            type == (ito::ParamBase::StringList))
         {
             ito::Param p;
             ret += getItemFromArray(param, index, p);

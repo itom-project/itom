@@ -522,3 +522,48 @@ TEST(ParamTest, ParamIndexingOperator)
     EXPECT_STREQ(p3.getVal<const char*>(), "test2");
     EXPECT_TRUE(p3.getType() == ito::ParamBase::String);
 }
+
+
+TEST(ParamTest, FlagTest)
+{
+    ito::ParamBase p1("name", ito::ParamBase::Char | ito::ParamBase::Readonly, 0);
+    EXPECT_TRUE(p1.getFlags() & ito::ParamBase::In);
+    EXPECT_FALSE(p1.getFlags() & ito::ParamBase::NoAutosave);
+    EXPECT_TRUE(p1.getFlags() & ito::ParamBase::Readonly);
+
+    ito::ParamBase p2 = p1;
+    EXPECT_TRUE(p2.getFlags() & ito::ParamBase::In);
+    EXPECT_FALSE(p2.getFlags() & ito::ParamBase::NoAutosave);
+    EXPECT_TRUE(p2.getFlags() & ito::ParamBase::Readonly);
+
+    ito::ParamBase p3(p1);
+    EXPECT_TRUE(p3.getFlags() & ito::ParamBase::In);
+    EXPECT_FALSE(p3.getFlags() & ito::ParamBase::NoAutosave);
+    EXPECT_TRUE(p3.getFlags() & ito::ParamBase::Readonly);
+
+    // check the "no autosave" types
+    ito::uint32 noAutosaveTypes[] = {
+        ito::ParamBase::DObjPtr,
+        ito::ParamBase::HWRef,
+        ito::ParamBase::PointCloudPtr,
+        ito::ParamBase::PointPtr,
+        ito::ParamBase::PolygonMeshPtr};
+
+    for (auto t : noAutosaveTypes)
+    {
+        ito::ParamBase p1("name", t);
+        EXPECT_TRUE(p1.getFlags() & ito::ParamBase::NoAutosave);
+    }
+
+    // check if flags are also copied for indexing operator
+    const char charArray[] = {1, 2, 3, 4, 5};
+    p1 = ito::ParamBase(
+        "name",
+        ito::ParamBase::CharArray | ito::ParamBase::Out | ito::ParamBase::Readonly,
+        5,
+        charArray);
+    auto charArray2 = p1[2];
+    EXPECT_TRUE(charArray2.getFlags() & ito::ParamBase::Readonly);
+    EXPECT_TRUE(charArray2.getFlags() & ito::ParamBase::Out);
+    EXPECT_FALSE(charArray2.getFlags() & ito::ParamBase::In);
+}

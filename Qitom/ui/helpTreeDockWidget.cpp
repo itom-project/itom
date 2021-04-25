@@ -1159,7 +1159,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             }
         }
         break;
-    case ito::ParamBase::CharArray & ito::paramTypeMask:
+    case ito::ParamBase::CharArray:
         {
             type = "list of characters";
             if (param.getMeta() && param.getMeta()->getType() == ito::ParamMeta::rttiCharArrayMeta)
@@ -1169,7 +1169,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         }
 
         break;
-    case ito::ParamBase::IntArray & ito::paramTypeMask:
+    case ito::ParamBase::IntArray:
         {
             const ito::ParamMeta *m = param.getMeta();
             
@@ -1192,7 +1192,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         }
 
         break;
-    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray:
         {
             const ito::ParamMeta *m = param.getMeta();
 
@@ -1207,31 +1207,31 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         }
 
         break;
-    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+    case ito::ParamBase::ComplexArray:
         {
             type = "list of complex128";
         }
 
         break;
-    case ito::ParamBase::DObjPtr & ito::paramTypeMask:
+    case ito::ParamBase::DObjPtr:
         {
             type = "dataObject";
         }
 
         break;
-    case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
+    case ito::ParamBase::PointCloudPtr:
         {
             type = "pointCloud";
         }
 
         break;
-    case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+    case ito::ParamBase::PolygonMeshPtr:
         {
             type = "polygonMesh";
         }
 
         break;
-    case ito::ParamBase::HWRef & ito::paramTypeMask:
+    case ito::ParamBase::HWRef:
         {
             type = "hardware";
             if (param.getMeta() != NULL)

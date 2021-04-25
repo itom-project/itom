@@ -78,7 +78,7 @@ class ITOMCOMMON_EXPORT ByteArray
         struct Data
         {
             int m_ref;               /*!< reference counter for implicit sharing (0: means one reference, ...) */
-            char *m_pData;           /*!< pointer to charcter array that begins at m_buffer */
+            char *m_pData;           /*!< pointer to character array that begins at m_buffer */
             char m_buffer[1];        /*!< start of character array buffer. The real buffer is longer than one char value, therefore no member must be appended after this point. */
             //do not append further members add, only prepend!!!
         };

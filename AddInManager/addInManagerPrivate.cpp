@@ -106,7 +106,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         {
             ito::ParamBase *param = &((*paramsMand)[n]);
                 
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -133,7 +133,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         for (int n = 0; n < paramsOpt->size(); n++)
         {
             ito::ParamBase *param = &((*paramsOpt)[n]);
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -1305,7 +1305,7 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param1));
 
-        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)) && (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
+        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String)) && (param1.getType() != (ito::ParamBase::String)))
         //            {
         //                ret += ito::RetVal(ito::retWarning, 0, "Paramtype not loadable yet");
         //                continue;

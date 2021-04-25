@@ -907,7 +907,7 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
 
     //create a container for the returned parameter. This value is initialized by the full name including the type of the corresponding parameter of the m_params map.
     //Usually, this type is correct, such that setVal can directly used within the plugin. However, the plugin is also allowed to change the type.
-    QSharedPointer<ito::Param> qsParam(new ito::Param(paramName, it->getType(false)));
+    QSharedPointer<ito::Param> qsParam(new ito::Param(paramName, it->getType() | it->getFlags()));
     
     if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {

@@ -4802,7 +4802,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
         {
             switch (value->getType())
             {
-            case (ito::ParamBase::DObjPtr & paramTypeMask) :
+            case (ito::ParamBase::DObjPtr):
             {
                 const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
                 if (obj)
@@ -4819,7 +4819,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             break;
 
 #if ITOM_POINTCLOUDLIBRARY > 0 
-            case (ito::ParamBase::PointCloudPtr & paramTypeMask) :
+            case (ito::ParamBase::PointCloudPtr):
             {
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
                 if (cloud)
@@ -4835,7 +4835,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             }
             break;
 
-            case (ito::ParamBase::PolygonMeshPtr & paramTypeMask) :
+            case (ito::ParamBase::PolygonMeshPtr):
             {
                 const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
                 if (mesh)
@@ -5956,7 +5956,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
         {
             switch (value->getType())
             {
-            case (ito::ParamBase::DObjPtr & paramTypeMask) :
+            case (ito::ParamBase::DObjPtr):
             {
                 const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
                 if (obj)
@@ -5972,7 +5972,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
             }
             break;
 #if ITOM_POINTCLOUDLIBRARY > 0 
-            case (ito::ParamBase::PointCloudPtr & paramTypeMask) :
+            case (ito::ParamBase::PointCloudPtr):
             {
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
                 if (cloud)
@@ -5988,7 +5988,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
             }
             break;
 
-            case (ito::ParamBase::PolygonMeshPtr & paramTypeMask) :
+            case (ito::ParamBase::PolygonMeshPtr):
             {
                 const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
                 if (mesh)

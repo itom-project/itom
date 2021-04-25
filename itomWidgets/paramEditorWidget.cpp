@@ -671,7 +671,7 @@ ito::RetVal ParamEditorWidget::addParam(const ito::Param &param)
     case ito::ParamBase::String:
         retval += addParamString(param, groupProperty);
         break;
-    case ito::ParamBase::IntArray & ito::paramTypeMask:
+    case ito::ParamBase::IntArray:
         if ((metaType == ito::ParamMeta::rttiIntervalMeta) || (metaType == ito::ParamMeta::rttiRangeMeta))
         {
             retval += addParamInterval(param, groupProperty);
@@ -685,22 +685,22 @@ ito::RetVal ParamEditorWidget::addParam(const ito::Param &param)
             retval += addParamIntArray(param, groupProperty);
         }
         break;
-    case ito::ParamBase::CharArray & ito::paramTypeMask:
+    case ito::ParamBase::CharArray:
         retval += addParamCharArray(param, groupProperty);
         break;
-    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray:
         retval += addParamDoubleArray(param, groupProperty);
         break;
-    case ito::ParamBase::StringList & ito::paramTypeMask:
+    case ito::ParamBase::StringList:
         retval += addParamStringList(param, groupProperty);
         break;
-    case (ito::ParamBase::HWRef & ito::paramTypeMask):
-    case (ito::ParamBase::DObjPtr & ito::paramTypeMask):
-    case (ito::ParamBase::PointPtr & ito::paramTypeMask):
-    case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
-    case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask):
+    case (ito::ParamBase::HWRef):
+    case (ito::ParamBase::DObjPtr):
+    case (ito::ParamBase::PointPtr):
+    case (ito::ParamBase::PolygonMeshPtr):
+    case (ito::ParamBase::PointCloudPtr):
     case (ito::ParamBase::Complex):
-    case (ito::ParamBase::ComplexArray & ito::paramTypeMask):
+    case (ito::ParamBase::ComplexArray):
         retval += addParamOthers(param, groupProperty);
         break;
     default:

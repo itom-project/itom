@@ -556,19 +556,19 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
                 UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
                 ito::UiDataContainer dataCont;
 
-                if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+                if (values->at(i)->getType() == (ito::ParamBase::DObjPtr))
                 {
                     obj = (*values)[i]->getVal<const ito::DataObject*>();
                     dataCont = ito::UiDataContainer(QSharedPointer<ito::DataObject>(new ito::DataObject(*obj)));
                 }
 #if ITOM_POINTCLOUDLIBRARY > 0
-                else if (values->at(i)->getType() == (ito::ParamBase::PointCloudPtr & ito::paramTypeMask))
+                else if (values->at(i)->getType() == (ito::ParamBase::PointCloudPtr))
                 {
                     cloud = (*values)[i]->getVal<const ito::PCLPointCloud*>();
                     dataCont = ito::UiDataContainer(QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*cloud)));
                     obj = NULL;
                 }
-                else if (values->at(i)->getType() == (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask))
+                else if (values->at(i)->getType() == (ito::ParamBase::PolygonMeshPtr))
                 {
                     mesh = (*values)[i]->getVal<const ito::PCLPolygonMesh*>();
                     dataCont = ito::UiDataContainer(QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*mesh)));

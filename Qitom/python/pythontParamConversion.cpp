@@ -48,8 +48,8 @@ namespace ito
 
     switch (param.getType())
     {
-    case ito::ParamBase::Char &ito::paramTypeMask:
-    case ito::ParamBase::String &ito::paramTypeMask: {
+    case ito::ParamBase::Char:
+    case ito::ParamBase::String: {
         char *value = param.getVal<char *>();
         if (value)
         {
@@ -65,19 +65,19 @@ namespace ito
 
     break;
 
-    case ito::ParamBase::Int &ito::paramTypeMask:
+    case ito::ParamBase::Int:
         result = PyLong_FromLong(param.getVal<int32>());
         break;
 
-    case ito::ParamBase::Double &ito::paramTypeMask:
+    case ito::ParamBase::Double:
         result = PyFloat_FromDouble(param.getVal<float64>());
         break;
 
-    case ito::ParamBase::Complex &ito::paramTypeMask:
+    case ito::ParamBase::Complex:
         result = PyComplex_FromDoubles(param.getVal<complex128>().real(), param.getVal<complex128>().imag());
         break;
 
-    case (ito::ParamBase::CharArray & ito::paramTypeMask): {
+    case (ito::ParamBase::CharArray): {
         const char *carr = param.getVal<const char *>();
         len = param.getLen();
         if (len < 0)
@@ -86,7 +86,7 @@ namespace ito
     }
     break;
 
-    case (ito::ParamBase::IntArray & ito::paramTypeMask):
+    case (ito::ParamBase::IntArray):
         len = param.getLen();
         if (len > 0)
         {
@@ -103,7 +103,7 @@ namespace ito
         }
         break;
 
-    case (ito::ParamBase::DoubleArray & ito::paramTypeMask):
+    case (ito::ParamBase::DoubleArray):
         len = param.getLen();
         if (len > 0)
         {
@@ -120,7 +120,7 @@ namespace ito
         }
         break;
 
-    case (ito::ParamBase::ComplexArray & ito::paramTypeMask):
+    case (ito::ParamBase::ComplexArray):
         len = param.getLen();
         if (len > 0)
         {
@@ -137,7 +137,7 @@ namespace ito
         }
         break;
 
-    case (ito::ParamBase::StringList & ito::paramTypeMask):
+    case (ito::ParamBase::StringList):
         len = param.getLen();
         if (len > 0)
         {
@@ -155,7 +155,7 @@ namespace ito
         }
         break;
 
-    case (ito::ParamBase::DObjPtr & ito::paramTypeMask): {
+    case (ito::ParamBase::DObjPtr): {
         ito::DataObject *dObj = (ito::DataObject *)(param.getVal<void *>());
         if (dObj)
         {
@@ -179,7 +179,7 @@ namespace ito
     }
     break;
 #if ITOM_POINTCLOUDLIBRARY > 0
-    case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask): {
+    case (ito::ParamBase::PointCloudPtr): {
         ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud *)(param.getVal<void *>());
         if (pointCloud)
         {
@@ -203,7 +203,7 @@ namespace ito
     }
     break;
 
-    case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask): {
+    case (ito::ParamBase::PolygonMeshPtr): {
         ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh *)(param.getVal<void *>());
         if (polygonMesh)
         {
@@ -227,7 +227,7 @@ namespace ito
     }
     break;
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
-    case (ito::ParamBase::HWRef & ito::paramTypeMask): {
+    case (ito::ParamBase::HWRef): {
         void *ptr = param.getVal<void *>();
         if (ptr)
         {
@@ -382,7 +382,7 @@ namespace ito
     }
 
     bool ok = true;
-    switch (paramBaseType & ito::paramTypeMask)
+    switch (paramBaseType)
     {
     case ito::ParamBase::Char: {
         if (obj == Py_False)
@@ -522,7 +522,7 @@ namespace ito
         }
         break;
     }
-    case ito::ParamBase::DObjPtr &ito::paramTypeMask: {
+    case ito::ParamBase::DObjPtr: {
         ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok, &retVal2);
         ok &= (dObj != nullptr);
 
@@ -535,7 +535,7 @@ namespace ito
     }
     break;
 #if ITOM_POINTCLOUDLIBRARY > 0
-    case ito::ParamBase::PointCloudPtr &ito::paramTypeMask: {
+    case ito::ParamBase::PointCloudPtr: {
         ito::PCLPointCloud *p = PythonQtConversion::PyObjGetPointCloudNewPtr(obj, strict, ok);
         ok &= (p != nullptr);
 
@@ -547,7 +547,7 @@ namespace ito
         }
     }
     break;
-    case ito::ParamBase::PolygonMeshPtr &ito::paramTypeMask: {
+    case ito::ParamBase::PolygonMeshPtr: {
         ito::PCLPolygonMesh *m = PythonQtConversion::PyObjGetPolygonMeshNewPtr(obj, strict, ok);
         ok &= (m != nullptr);
 
@@ -603,18 +603,18 @@ namespace ito
     {
         switch (param->getType())
         {
-        case ito::ParamBase::DObjPtr &ito::paramTypeMask: {
+        case ito::ParamBase::DObjPtr: {
             ito::DataObject *d = param->getVal<ito::DataObject *>();
             DELETE_AND_SET_NULL(d);
         }
         break;
 #if ITOM_POINTCLOUDLIBRARY > 0
-        case ito::ParamBase::PointCloudPtr &ito::paramTypeMask: {
+        case ito::ParamBase::PointCloudPtr: {
             ito::PCLPointCloud *d = param->getVal<ito::PCLPointCloud *>();
             DELETE_AND_SET_NULL(d);
         }
         break;
-        case ito::ParamBase::PolygonMeshPtr &ito::paramTypeMask: {
+        case ito::ParamBase::PolygonMeshPtr: {
             ito::PCLPolygonMesh *d = param->getVal<ito::PCLPolygonMesh *>();
             DELETE_AND_SET_NULL(d);
         }
