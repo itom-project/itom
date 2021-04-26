@@ -38,6 +38,7 @@ public:
     DialogVariableDetailDataObject(
         const QString& name,
         const QString& type,
+        const char* dtype,
         QSharedPointer<ito::DataObject> data,
         QWidget* parent);
     ~DialogVariableDetailDataObject(){};

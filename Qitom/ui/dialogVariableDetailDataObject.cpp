@@ -30,10 +30,10 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------
-DialogVariableDetailDataObject::DialogVariableDetailDataObject(
-    const QString& name,
-    const QString& type,
-    QSharedPointer<ito::DataObject> data,
+DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& name,
+                                                               const QString& type,
+                                                               const char* dtype,
+    QSharedPointer<ito::DataObject> dObj,
     QWidget* parent):
     QDialog(parent)
 {
@@ -41,8 +41,9 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     
     ui.txtName->setText(name);
     ui.txtType->setText(type);
-    ui.table->setData(data);
-    ui.table->setReadOnly(true);
+    ui.table->setData(dObj);
+    ui.txtDType->setText(dtype);
+    //ui.table->setReadOnly(true);
     
 }
 
