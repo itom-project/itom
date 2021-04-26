@@ -332,6 +332,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.h
@@ -461,6 +462,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
@@ -578,6 +580,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp

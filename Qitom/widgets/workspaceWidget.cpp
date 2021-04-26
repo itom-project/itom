@@ -25,10 +25,14 @@
 
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
+#include "../ui/dialogVariableDetailDataObject.h"
+
+#include "dataobj.h"
 
 #include <qstringlist.h>
 #include <qdrag.h>
 #include <qsettings.h>
+#include <qsharedpointer.h>
 
 namespace ito
 {
@@ -408,12 +412,16 @@ void WorkspaceWidget::recursivelyDeleteHash(const QString &fullBaseName)
 */
 void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 {
+    RetVal retVal;
     QString extendedValue = "";
     QString name;
     QSharedPointer<QString> tempValue;
     QTreeWidgetItem *tempItem = NULL;
     QString fullName("empty item");
     QByteArray type;
+
+    PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
 
     if (item)
     {
@@ -456,8 +464,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 
     if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that is hasn't been evaluated at runtime before
     {
-        PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
+        
         if (eng)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -475,14 +482,67 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    DialogVariableDetail* dlg = new DialogVariableDetail(name, item->text(2), extendedValue, this);
-    
+    QSharedPointer<ito::ParamBase> value;
+    QStringList key;
+    QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
 
-    dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-    dlg->setModal(false);
-    dlg->show();
-    dlg->raise();
-    dlg->activateWindow();
+    key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+    paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QSharedPointer<SharedParamBasePointerVector> values(new SharedParamBasePointerVector());
+    QMetaObject::invokeMethod(
+        eng,
+        "getParamsFromWorkspace",
+        Q_ARG(bool, m_globalNotLocal),
+        Q_ARG(QStringList, key),
+        Q_ARG(QVector<int>, paramBaseTypes),
+        Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(5000))
+    {
+        retVal +=
+            RetVal(retError, 0, tr("Timeout while getting value from workspace").toLatin1().data());
+    }
+    else
+    {
+        retVal += locker.getSemaphore()->returnValue;
+    }
+
+    QSharedPointer<ito::DataObject> data = nullptr;
+    const ito::DataObject* obj = nullptr;
+    if (!retVal.containsError())
+    {
+        for (int i = 0; i < values->size(); ++i)
+        {
+            if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+            {
+                obj = (*values)[i]->getVal<ito::DataObject*>();
+                data = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
+                break;
+            }
+        }
+    }
+
+    if (obj != nullptr)
+    {
+        DialogVariableDetailDataObject* dlg =
+            new DialogVariableDetailDataObject(name, item->text(2), data, this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        dlg->setModal(false);
+        dlg->show();
+        dlg->raise();
+        dlg->activateWindow();
+    }
+    else
+    {
+        DialogVariableDetail* dlg = new DialogVariableDetail(name, type, value, this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        dlg->setModal(false);
+        dlg->show();
+        dlg->raise();
+        dlg->activateWindow();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
