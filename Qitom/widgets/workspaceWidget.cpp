@@ -412,13 +412,17 @@ void WorkspaceWidget::recursivelyDeleteHash(const QString &fullBaseName)
 */
 void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 {
-    RetVal retVal;
     QString extendedValue = "";
     QString name;
     QSharedPointer<QString> tempValue;
     QTreeWidgetItem *tempItem = NULL;
     QString fullName("empty item");
     QByteArray type;
+    QSharedPointer<ito::ParamBase> value;
+    QStringList key;
+    QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
+    QSharedPointer<ito::DataObject> data = nullptr;
+    const ito::DataObject* obj = nullptr;
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
@@ -482,10 +486,6 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    QSharedPointer<ito::ParamBase> value;
-    QStringList key;
-    QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
-
     key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
     paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
 
@@ -501,30 +501,20 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(5000))
     {
-        retVal +=
-            RetVal(retError, 0, tr("Timeout while getting value from workspace").toLatin1().data());
-    }
-    else
-    {
-        retVal += locker.getSemaphore()->returnValue;
+        extendedValue = tr("timeout while asking python for detailed information");
     }
 
-    QSharedPointer<ito::DataObject> data = nullptr;
-    const ito::DataObject* obj = nullptr;
-    if (!retVal.containsError())
+    for (int i = 0; i < values->size(); ++i)
     {
-        for (int i = 0; i < values->size(); ++i)
+        if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
         {
-            if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
-            {
-                obj = (*values)[i]->getVal<ito::DataObject*>();
-                data = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
-                break;
-            }
+            obj = (*values)[i]->getVal<ito::DataObject*>();
+            data = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
+            break;
         }
     }
 
-    if (obj != nullptr)
+    if (obj != nullptr)  // open dialog for dataObject
     {
         DialogVariableDetailDataObject* dlg =
             new DialogVariableDetailDataObject(name, item->text(2), data, this);
