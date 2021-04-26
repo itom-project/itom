@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonDataObject.h"
 #include "workspaceWidget.h"
 
 #include "../AppManagement.h"
@@ -516,8 +517,8 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 
     if (obj != nullptr)  // open dialog for dataObject
     {
-        DialogVariableDetailDataObject* dlg =
-            new DialogVariableDetailDataObject(name, item->text(2), data, this);
+        DialogVariableDetailDataObject* dlg = new DialogVariableDetailDataObject(
+            name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), data, this);
         dlg->setAttribute(Qt::WA_DeleteOnClose, true);
         dlg->setModal(false);
         dlg->show();
