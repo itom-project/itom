@@ -1503,7 +1503,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
         retValue += RetVal(retError, 1, tr("Main dictionary is empty").toLatin1().data());
     }
-    else if (PyErr_Occurred() == PyExc_SyntaxError)
+    else if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SyntaxError))
     {
         PyErr_PrintEx(0);
         //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
@@ -2058,14 +2058,18 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     //command must be a single-line command. A single-line command only means, that it must only consist of one block (e.g. an if-loop including its content is also a single-line command)
     //if it is not single line, Py_single_input below must be replaced.
 
-    PyObject* result = NULL;
+    PyObject* result = nullptr;
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
-    if (itomDbgInstance == NULL)
+
+    if (itomDbgInstance == nullptr)
     {
         return RetVal(retError);
     }
-    else if (PyErr_Occurred() == PyExc_SyntaxError)
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SyntaxError))
     {
         PyErr_PrintEx(0);
         //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
@@ -2074,14 +2078,14 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     }
     else
     {
-        PyGILState_STATE gstate = PyGILState_Ensure();
-
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
-        if (result == NULL)
+
+        if (result == nullptr)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
+            PyGILState_Release(gstate);
             return RetVal(retError);
         }
 
@@ -2094,10 +2098,12 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+
             if (!result)
             {
                 PyErr_PrintEx(0);
             }
+
             Py_XDECREF(result);
         }
 
@@ -2156,9 +2162,9 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
-
-        PyGILState_Release(gstate);
     }
+
+    PyGILState_Release(gstate);
 
     return retValue;
 }

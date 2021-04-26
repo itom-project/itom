@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
