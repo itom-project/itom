@@ -35,6 +35,7 @@
 #include <qsettings.h>
 #include <qsharedpointer.h>
 
+
 namespace ito
 {
 
@@ -422,7 +423,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QSharedPointer<ito::ParamBase> value;
     QStringList key;
     QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
-    QSharedPointer<ito::DataObject> data = nullptr;
+    QSharedPointer<ito::DataObject> dObj = nullptr;
     const ito::DataObject* obj = nullptr;
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -467,7 +468,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that is hasn't been evaluated at runtime before
+    if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that it hasn't been evaluated at runtime before
     {
         
         if (eng)
@@ -487,44 +488,44 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
-    paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
-
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    QSharedPointer<SharedParamBasePointerVector> values(new SharedParamBasePointerVector());
-    QMetaObject::invokeMethod(
-        eng,
-        "getParamsFromWorkspace",
-        Q_ARG(bool, m_globalNotLocal),
-        Q_ARG(QStringList, key),
-        Q_ARG(QVector<int>, paramBaseTypes),
-        Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values),
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-    if (!locker.getSemaphore()->wait(5000))
+    if (extendedValue.contains("dataObject") || extendedValue.contains("array"))
     {
-        extendedValue = tr("timeout while asking python for detailed information");
-    }
+        key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+        paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
 
-    for (int i = 0; i < values->size(); ++i)
-    {
-        if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<SharedParamBasePointerVector> values(new SharedParamBasePointerVector());
+        QMetaObject::invokeMethod(
+            eng,
+            "getParamsFromWorkspace",
+            Q_ARG(bool, m_globalNotLocal),
+            Q_ARG(QStringList, key),
+            Q_ARG(QVector<int>, paramBaseTypes),
+            Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        if (!locker.getSemaphore()->wait(5000))
         {
-            obj = (*values)[i]->getVal<ito::DataObject*>();
-            data = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
-            break;
+            extendedValue = tr("timeout while asking python for detailed information");
         }
-    }
 
-    if (obj != nullptr)  // open dialog for dataObject
-    {
+        for (int i = 0; i < values->size(); ++i)
+        {
+            if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+            {
+                obj = (*values)[i]->getVal<ito::DataObject*>();
+                dObj = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
+                break;
+            }
+        }
+
         DialogVariableDetailDataObject* dlg = new DialogVariableDetailDataObject(
-            name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), data, this);
+            name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), dObj, this);
         dlg->setAttribute(Qt::WA_DeleteOnClose, true);
         dlg->setModal(false);
         dlg->show();
         dlg->raise();
         dlg->activateWindow();
-    }
+    }    
     else
     {
         DialogVariableDetail* dlg =
