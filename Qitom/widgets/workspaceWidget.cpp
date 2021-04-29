@@ -427,13 +427,13 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     const ito::DataObject* obj = nullptr;
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
+    ito::PyWorkspaceItem* item2 = nullptr;
 
     if (item)
     {
         fullName = item->data(0, RoleFullName).toString();
         type = item->data(0, RoleType).toByteArray();
-        ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName(fullName);
+        item2 = m_workspaceContainer->getItemByFullName(fullName);
         extendedValue = item2->m_extendedValue;
 
         if (item->parent() == NULL)
@@ -488,7 +488,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    if (extendedValue.contains("dataObject") || extendedValue.contains("array"))
+    if (item2->m_compatibleParamBaseType == ito::ParamBase::DObjPtr)
     {
         key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
         paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
