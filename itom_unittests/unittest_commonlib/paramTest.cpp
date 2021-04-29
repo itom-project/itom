@@ -1,6 +1,7 @@
 #include "param.h"
 #include "byteArray.h"
 #include "gtest/gtest.h"
+#include <chrono>
 
 void checkParamBase(
     ito::ParamBase pb,
@@ -566,4 +567,39 @@ TEST(ParamTest, FlagTest)
     EXPECT_TRUE(charArray2.getFlags() & ito::ParamBase::Readonly);
     EXPECT_TRUE(charArray2.getFlags() & ito::ParamBase::Out);
     EXPECT_FALSE(charArray2.getFlags() & ito::ParamBase::In);
+}
+
+TEST(ParamTest, ConstGetValTest)
+{
+    double *dbl = new double[256];
+
+    ito::ParamBase pp("name", ito::ParamBase::DoubleArray, 256, dbl);
+    pp.setVal<double*>(dbl, 5);
+    const double *d = pp.getVal<const double*>();
+
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < 100000; ++i)
+    {
+        ito::ParamBase p("name", ito::ParamBase::Double, 45.4);
+        auto p2(p);
+        auto p3 = p2;
+        double xx = p3.getVal<double>();
+    }
+
+    auto end_time1 = std::chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < 100000; ++i)
+    {
+        ito::ParamBase p("name", ito::ParamBase::DoubleArray, 256, dbl);
+        auto p2(p);
+        auto p3 = p2;
+        const double* xx = p3.getVal<const double*>();
+    }
+
+    auto end_time2 = std::chrono::high_resolution_clock::now();
+
+    delete[] dbl;
+    
+    EXPECT_TRUE(false) << "time:" << (end_time1 - start_time) / std::chrono::milliseconds(1) << ", dbl-array:" << (end_time2 - end_time1) / std::chrono::milliseconds(1);
 }

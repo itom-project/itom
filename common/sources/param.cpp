@@ -52,7 +52,7 @@ constexpr uint32 toFlagsExternal(uint16 flags)
 
 //-------------------------------------------------------------------------------------
 ParamBase::ParamBase() :
-    m_type(0), m_flags(0), m_name(nullptr), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data())
 {
     setDefaultAutosave();
 }
@@ -65,7 +65,7 @@ ParamBase::ParamBase() :
  *   creates a new ParamBase with name "name", string is copied
  */
 ParamBase::ParamBase(const ByteArray& name) :
-    m_type(0), m_flags(0), m_name(name), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data(name))
 {
     inOutCheck();
     setDefaultAutosave();
@@ -80,9 +80,10 @@ ParamBase::ParamBase(const ByteArray& name) :
  *   creates a new Param with name and type, string is copied
  */
 ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags) :
-    m_type(typeAndFlags & ito::paramTypeMask), m_flags(toFlagsInternal(typeAndFlags)), m_name(name),
-    m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
     inOutCheck();
     setDefaultAutosave();
 }
@@ -98,21 +99,23 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags) :
  *   creates a new ParamBase with name, type, string value. Strings are copied
  */
 ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const char* val) :
-    m_type(typeAndFlags & ito::paramTypeMask), m_flags(toFlagsInternal(typeAndFlags)), m_name(name),
-    m_dVal(0.0, 0.0), m_iVal(-1), m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     if (val)
     {
-        if (m_type == String)
+        if (d->type == String)
         {
-            m_cVal = new char[strlen(val) + 1];
-            memcpy(m_cVal, val, strlen(val) + 1);
-            m_iVal = static_cast<int>(strlen((char*)m_cVal));
+            d->data.ptrVal = new char[strlen(val) + 1];
+            memcpy(d->data.ptrVal, val, strlen(val) + 1);
+            d->len = static_cast<int>(strlen((char*)d->data.ptrVal));
         }
         else
         {
-            m_cVal = const_cast<char*>(val);
-            m_iVal = -1;
+            d->data.ptrVal = const_cast<char*>(val);
+            d->len = -1;
         }
     }
 
@@ -130,20 +133,24 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
  *   creates a new ParamBase with name, type and val. Strings are copied.
  */
 ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const float64 val) :
-    m_type(typeAndFlags & ito::paramTypeMask), m_flags(toFlagsInternal(typeAndFlags)), m_name(name),
-    m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data(name))
 {
-    switch (m_type)
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
+    switch (d->type)
     {
     case Char:
-        m_iVal = (char)val;
+        d->data.i8Val = (char)val;
         break;
     case Int:
-        m_iVal = (int)val;
+        d->len = (int)val;
         break;
     case Complex:
+        d->data.c128Val.real = val;
+        break;
     case Double:
-        m_dVal.real = val;
+        d->data.f64Val = val;
         break;
     default:
         throw std::logic_error(
@@ -165,29 +172,33 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const flo
  *   creates a new ParamBase with name, type and val
  */
 ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int32 val) :
-    m_type(typeAndFlags & ito::paramTypeMask), m_flags(toFlagsInternal(typeAndFlags)), m_name(name),
-    m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     inOutCheck();
     setDefaultAutosave();
 
-    switch (m_type)
+    switch (d->type)
     {
     case Char:
-        m_iVal = (char)val;
+        d->data.i8Val = (char)val;
         break;
     case Int:
-        m_iVal = val;
+        d->data.i32Val = val;
         break;
     case Complex:
+        d->data.c128Val.real = (float64)val;
+        break;
     case Double:
-        m_dVal.real = (float64)val;
+        d->data.f64Val = (float64)val;
         break;
     case String:
         if (val == 0)
         {
-            m_iVal = -1;
-            m_cVal = nullptr;
+            d->len = -1;
+            d->data.ptrVal = nullptr;
         }
         else
         {
@@ -198,8 +209,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int
     case HWRef:
         if (val == 0)
         {
-            m_iVal = -1;
-            m_cVal = nullptr;
+            d->len = -1;
+            d->data.ptrVal = nullptr;
         }
         else
         {
@@ -225,14 +236,16 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int
  *   creates a new ParamBase with name, type and val. Strings are copied.
  */
 ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const complex128 val) :
-    m_type(typeAndFlags & ito::paramTypeMask), m_flags(toFlagsInternal(typeAndFlags)), m_name(name),
-    m_dVal(0.0, 0.0), m_iVal(0), m_cVal(nullptr)
+    d(new Data(name))
 {
-    switch (m_type)
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
+    switch (d->type)
     {
     case Complex:
-        m_dVal.real = val.real();
-        m_dVal.imag = val.imag();
+        d->data.c128Val.real = val.real();
+        d->data.c128Val.imag = val.imag();
         break;
     default:
         throw std::logic_error("constructor with complex128 val is only callable for type Complex");
@@ -254,14 +267,15 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const com
  */
 ParamBase::ParamBase(
     const ByteArray& name, const uint32 typeAndFlags, const uint32 size, const ByteArray* values) :
-    m_type(typeAndFlags & ito::paramTypeMask),
-    m_flags(toFlagsInternal(typeAndFlags)), m_name(name), m_dVal(0.0, 0.0), m_iVal(0),
-    m_cVal(nullptr)
+    d(new Data(name))
 {
-    switch (m_type)
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
+    switch (d->type)
     {
     case StringList: {
-        m_iVal = size;
+        d->len = size;
         ByteArray* buf = new ByteArray[size];
 
         for (uint32 i = 0; i < size; ++i)
@@ -269,7 +283,7 @@ ParamBase::ParamBase(
             buf[i] = ByteArray(values[i]);
         }
 
-        m_cVal = buf;
+        d->data.ptrVal = buf;
         break;
     }
     default:
@@ -294,77 +308,78 @@ ParamBase::ParamBase(
  */
 ParamBase::ParamBase(
     const ByteArray& name, const uint32 typeAndFlags, const unsigned int size, const char* values) :
-    m_type(typeAndFlags & ito::paramTypeMask),
-    m_flags(toFlagsInternal(typeAndFlags)), m_name(name), m_dVal(0.0, 0.0), m_iVal(size),
-    m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     inOutCheck();
     setDefaultAutosave();
 
     if (values == nullptr)
     {
-        m_iVal = -1;
-        m_cVal = nullptr;
+        d->len = -1;
+        d->data.ptrVal = nullptr;
     }
     else
     {
-        switch (m_type)
+        switch (d->type)
         {
         case String:
-            m_cVal = new char[strlen(values) + 1];
-            memcpy(m_cVal, values, strlen(values) + 1);
-            m_iVal = static_cast<int>(strlen((char*)m_cVal));
+            d->data.ptrVal = new char[strlen(values) + 1];
+            memcpy(d->data.ptrVal, values, strlen(values) + 1);
+            d->len = static_cast<int>(strlen((char*)d->data.ptrVal));
             break;
 
         case CharArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new char[size];
-                memcpy(m_cVal, values, size * sizeof(char));
+                d->data.ptrVal = new char[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(char));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
 
         case IntArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new int32[size];
-                memcpy(m_cVal, values, size * sizeof(int32));
+                d->data.ptrVal = new int32[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(int32));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
 
         case DoubleArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new float64[size];
-                memcpy(m_cVal, values, size * sizeof(float64));
+                d->data.ptrVal = new float64[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(float64));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
 
         case ComplexArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new complex128[size];
-                memcpy(m_cVal, values, size * sizeof(complex128));
+                d->data.ptrVal = new complex128[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(complex128));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
 
@@ -374,13 +389,13 @@ ParamBase::ParamBase(
         case PointCloudPtr:
         case PointPtr:
         case PolygonMeshPtr:
-            m_cVal = const_cast<char*>(values);
-            m_iVal = -1;
+            d->data.ptrVal = const_cast<char*>(values);
+            d->len = -1;
             break;
 
         default:
-            m_cVal = nullptr;
-            m_iVal = -1;
+            d->data.ptrVal = nullptr;
+            d->len = -1;
             break;
         }
     }
@@ -401,61 +416,62 @@ ParamBase::ParamBase(
     const uint32 typeAndFlags,
     const unsigned int size,
     const int32* values) :
-    m_type(typeAndFlags & ito::paramTypeMask),
-    m_flags(toFlagsInternal(typeAndFlags)), m_name(name), m_dVal(0.0, 0.0), m_iVal(size),
-    m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     inOutCheck();
     setDefaultAutosave();
 
     if ((size <= 0) || (values == nullptr))
     {
-        m_iVal = -1;
-        m_cVal = nullptr;
+        d->len = -1;
+        d->data.ptrVal = nullptr;
     }
     else
     {
-        switch (m_type)
+        switch (d->type)
         {
         case CharArray:
             throw std::invalid_argument("int array cannot be converted to char array");
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             break;
         case IntArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new int32[size];
-                memcpy(m_cVal, values, size * sizeof(int32));
+                d->data.ptrVal = new int32[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(int32));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
         case DoubleArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new float64[size];
-                memcpy(m_cVal, values, size * sizeof(float64));
+                d->data.ptrVal = new float64[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(float64));
             }
             else
             {
-                m_iVal = 0;
+                d->len = 0;
             }
             break;
         case ComplexArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new complex128[size];
-                memcpy(m_cVal, values, size * sizeof(complex128));
+                d->data.ptrVal = new complex128[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(complex128));
             }
             else
             {
-                m_iVal = 0;
+                d->len = 0;
             }
             break;
         }
@@ -477,56 +493,57 @@ ParamBase::ParamBase(
     const uint32 typeAndFlags,
     const unsigned int size,
     const float64* values) :
-    m_type(typeAndFlags & ito::paramTypeMask),
-    m_flags(toFlagsInternal(typeAndFlags)), m_name(name), m_dVal(0.0, 0.0), m_iVal(size),
-    m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     inOutCheck();
     setDefaultAutosave();
 
     if ((size <= 0) || (values == nullptr))
     {
-        m_iVal = -1;
-        m_cVal = nullptr;
+        d->len = -1;
+        d->data.ptrVal = nullptr;
     }
     else
     {
-        switch (m_type)
+        switch (d->type)
         {
         case CharArray:
             throw std::invalid_argument("int32 array cannot be converted to char array");
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             break;
         case DoubleArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new float64[size];
-                memcpy(m_cVal, values, size * sizeof(float64));
+                d->data.ptrVal = new float64[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(float64));
             }
             else
             {
-                m_cVal = 0;
+                d->data.ptrVal = 0;
             }
             break;
         case ComplexArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new complex128[size];
+                d->data.ptrVal = new complex128[size];
                 for (unsigned int n = 0; n < size; n++)
-                    reinterpret_cast<complex128*>(m_cVal)[n] = static_cast<complex128>(values[n]);
+                    reinterpret_cast<complex128*>(d->data.ptrVal)[n] = static_cast<complex128>(values[n]);
             }
             else
             {
-                m_iVal = 0;
+                d->len = 0;
             }
             break;
         case IntArray:
             throw std::invalid_argument("double array cannot be converted to char array");
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             break;
         }
     }
@@ -547,47 +564,48 @@ ParamBase::ParamBase(
     const uint32 typeAndFlags,
     const unsigned int size,
     const complex128* values) :
-    m_type(typeAndFlags & ito::paramTypeMask),
-    m_flags(toFlagsInternal(typeAndFlags)), m_name(name), m_dVal(0.0, 0.0), m_iVal(size),
-    m_cVal(nullptr)
+    d(new Data(name))
 {
+    d->type = typeAndFlags & ito::paramTypeMask;
+    d->flags = toFlagsInternal(typeAndFlags);
+
     inOutCheck();
     setDefaultAutosave();
 
     if ((size <= 0) || (values == nullptr))
     {
-        m_iVal = -1;
-        m_cVal = nullptr;
+        d->len = -1;
+        d->data.ptrVal = nullptr;
     }
     else
     {
-        switch (m_type)
+        switch (d->type)
         {
         case CharArray:
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             throw std::invalid_argument("complex128 array cannot be converted to char array");
             break;
         case DoubleArray:
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             throw std::invalid_argument("complex128 array cannot be converted to float64 array");
             break;
         case ComplexArray:
-            m_iVal = size;
-            if (m_iVal > 0)
+            d->len = size;
+            if (d->len > 0)
             {
-                m_cVal = new complex128[size];
-                memcpy(m_cVal, values, size * sizeof(complex128));
+                d->data.ptrVal = new complex128[size];
+                memcpy(d->data.ptrVal, values, size * sizeof(complex128));
             }
             else
             {
-                m_iVal = 0;
+                d->len = 0;
             }
             break;
         case IntArray:
-            m_iVal = -1;
-            m_cVal = 0;
+            d->len = -1;
+            d->data.ptrVal = 0;
             throw std::invalid_argument("complex128 array cannot be converted to int32 array");
             break;
         }
@@ -601,60 +619,68 @@ ParamBase::ParamBase(
  */
 ParamBase::~ParamBase()
 {
-    // 01.12.16 crash when trying to free a fixed pointer assigned to a paramBase copied to another
-    // via = operator, using broken assignment. Guess we must not free pointers, when ival == -1
-    // int useLim[10] = {1, 0 ,0, 0, 0, 0};
-    // (*param) = ito::ParamBase("useLimits", ito::ParamBase::IntArray, (char*)useLim);
-    // but if we do not free we might provocate memory leaks ... needs review
-    freeMemory();
+    decAndFree(d);
 }
 
 //-------------------------------------------------------------------------------------
 //!< depending on the type, set the default value for the autosave flag.
 void ParamBase::setDefaultAutosave()
 {
-    switch (m_type)
+    ito::uint16 flags = d->flags;
+
+    switch (d->type)
     {
     case ito::ParamBase::DObjPtr:
     case ito::ParamBase::PointCloudPtr:
     case ito::ParamBase::PolygonMeshPtr:
     case ito::ParamBase::PointPtr:
     case ito::ParamBase::HWRef:
-        m_flags |= toFlagsInternal(ito::ParamBase::NoAutosave);
+        flags |= toFlagsInternal(ito::ParamBase::NoAutosave);
         break;
     default:
-        m_flags &= ~toFlagsInternal(ito::ParamBase::NoAutosave);
+        flags &= ~toFlagsInternal(ito::ParamBase::NoAutosave);
         break;
+    }
+
+    if (flags != d->flags)
+    {
+        detach();
+        d->flags = flags;
     }
 }
 
 //-------------------------------------------------------------------------------------
-void ParamBase::freeMemory()
+void ParamBase::freeMemory(Data *data)
 {
-    if (m_cVal)
-    {
-        switch (m_type)
-        {
-        case String:
-        case CharArray:
-            delete[]((char*)m_cVal);
-            break;
-        case DoubleArray:
-            delete[]((ito::float64*)m_cVal);
-            break;
-        case IntArray:
-            delete[]((ito::int32*)m_cVal);
-            break;
-        case ComplexArray:
-            delete[]((ito::complex128*)m_cVal);
-            break;
-        case StringList:
-            delete[]((ito::ByteArray*)m_cVal);
-            break;
-        }
+    bool arrType = true;
 
-        m_cVal = nullptr;
-        m_iVal = 0;
+    switch (data->type)
+    {
+    case String:
+    case CharArray:
+        delete[]((char*)data->data.ptrVal);
+        break;
+    case DoubleArray:
+        delete[]((ito::float64*)data->data.ptrVal);
+        break;
+    case IntArray:
+        delete[]((ito::int32*)data->data.ptrVal);
+        break;
+    case ComplexArray:
+        delete[]((ito::complex128*)data->data.ptrVal);
+        break;
+    case StringList:
+        delete[]((ito::ByteArray*)data->data.ptrVal);
+        break;
+    default:
+        arrType = false;
+        break;
+    }
+
+    if (arrType)
+    {
+        data->data.ptrVal = nullptr;
+        data->len = 0;
     }
 }
 
@@ -666,130 +692,71 @@ void ParamBase::freeMemory()
  *   creates ParamBase according to passed Param, strings are copied
  */
 ParamBase::ParamBase(const ParamBase& copyConstr) :
-    m_type(copyConstr.m_type), m_flags(copyConstr.m_flags), m_name(copyConstr.m_name),
-    m_dVal(copyConstr.m_dVal), m_iVal(copyConstr.m_iVal), m_cVal(nullptr)
+    d(copyConstr.d)
 {
-    switch (copyConstr.m_type)
-    {
-    case String:
-        if (copyConstr.m_cVal)
-        {
-            m_cVal = new char[strlen((char*)copyConstr.m_cVal) + 1];
-            memcpy(m_cVal, copyConstr.m_cVal, strlen((char*)copyConstr.m_cVal) + 1);
-        }
-        break;
-
-    case CharArray:
-        if (m_iVal > 0)
-        {
-            m_cVal = new char[m_iVal];
-            memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(char));
-        }
-        break;
-
-    case IntArray:
-        if (m_iVal > 0)
-        {
-            m_cVal = new int32[m_iVal];
-            memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(int32));
-        }
-        break;
-
-    case DoubleArray:
-        if (m_iVal > 0)
-        {
-            m_cVal = new float64[m_iVal];
-            memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(float64));
-        }
-        break;
-
-    case ComplexArray:
-        if (m_iVal > 0)
-        {
-            m_cVal = new complex128[m_iVal];
-            memcpy(m_cVal, copyConstr.m_cVal, m_iVal * sizeof(complex128));
-        }
-        break;
-
-    case StringList:
-        if (m_iVal > 0)
-        {
-            m_cVal = new ByteArray[m_iVal];
-            for (int i = 0; i < m_iVal; ++i)
-            {
-                ((ByteArray*)(m_cVal))[i] = ((ByteArray*)(copyConstr.m_cVal))[i];
-            }
-        }
-        break;
-
-    case HWRef:
-    case DObjPtr:
-    case Pointer:
-    case PointCloudPtr:
-    case PointPtr:
-    case PolygonMeshPtr:
-        m_cVal = copyConstr.m_cVal;
-        break;
-
-    default:
-        break;
-    }
+    if (d) { ITOM_INCREF(d); }
 }
 
 //-------------------------------------------------------------------------------------
 bool ParamBase::operator==(const ParamBase& rhs) const
 {
-    if ((m_type) == (rhs.m_type))
+    if (d == rhs.d)
     {
-        switch (m_type)
+        return true;
+    }
+
+    if ((d->type) == (rhs.d->type))
+    {
+        switch (d->type)
         {
         case 0:
             return true; // both are invalid ParamBase objects.
         case Int:
         case Char:
-            return (m_iVal == rhs.m_iVal);
+            return (d->len == rhs.d->len);
 
         case Double:
+            return ito::areEqual(d->data.f64Val, rhs.d->data.f64Val);
         case Complex:
-            return ito::areEqual(m_dVal.real, rhs.m_dVal.real) &&
-                ito::areEqual(m_dVal.imag, rhs.m_dVal.imag);
+            return ito::areEqual(d->data.c128Val.real, rhs.d->data.c128Val.real) &&
+                ito::areEqual(d->data.c128Val.imag, rhs.d->data.c128Val.imag);
 
         case String:
-            if (m_cVal && rhs.m_cVal)
+            if (d->data.ptrVal && rhs.d->data.ptrVal)
             {
-                return (strcmp((char*)m_cVal, (char*)rhs.m_cVal) == 0);
+                return (strcmp((char*)d->data.ptrVal, (char*)rhs.d->data.ptrVal) == 0);
             }
             else
             {
-                return m_cVal == rhs.m_cVal;
+                return d->data.ptrVal == rhs.d->data.ptrVal;
             }
 
         case CharArray:
-            if (m_iVal > 0 && rhs.m_iVal > 0)
+            if (d->len > 0 && rhs.d->len > 0)
             {
-                return (memcmp(m_cVal, rhs.m_cVal, m_iVal * sizeof(char)) == 0);
+                return (memcmp(d->data.ptrVal, rhs.d->data.ptrVal, d->len * sizeof(char)) == 0);
             }
             else
             {
-                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+                return (d->len <= 0) && (rhs.d->len <= 0);
             }
 
         case IntArray:
-            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
+            if (d->len > 0 && (d->len == rhs.d->len))
             {
-                return (memcmp(m_cVal, rhs.m_cVal, m_iVal * sizeof(int32)) == 0);
+                return (memcmp(d->data.ptrVal, rhs.d->data.ptrVal, d->len * sizeof(int32)) == 0);
             }
             else
             {
-                return (m_iVal == rhs.m_iVal);
+                return (d->len == rhs.d->len);
             }
 
         case DoubleArray:
-            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
+            if (d->len > 0 && (d->len == rhs.d->len))
             {
-                for (int i = 0; i < m_iVal; ++i)
+                for (int i = 0; i < d->len; ++i)
                 {
-                    if (!ito::areEqual(((float64*)m_cVal)[i], ((float64*)rhs.m_cVal)[i]))
+                    if (!ito::areEqual(((float64*)d->data.ptrVal)[i], ((float64*)rhs.d->data.ptrVal)[i]))
                     {
                         return false;
                     }
@@ -798,15 +765,15 @@ bool ParamBase::operator==(const ParamBase& rhs) const
             }
             else
             {
-                return (m_iVal == rhs.m_iVal);
+                return (d->len == rhs.d->len);
             }
 
         case ComplexArray:
-            if (m_iVal > 0 && (m_iVal == rhs.m_iVal))
+            if (d->len > 0 && (d->len == rhs.d->len))
             {
-                for (int i = 0; i < m_iVal; ++i)
+                for (int i = 0; i < d->len; ++i)
                 {
-                    if (!ito::areEqual(((complex128*)m_cVal)[i], ((complex128*)rhs.m_cVal)[i]))
+                    if (!ito::areEqual(((complex128*)d->data.ptrVal)[i], ((complex128*)rhs.d->data.ptrVal)[i]))
                     {
                         return false;
                     }
@@ -815,16 +782,16 @@ bool ParamBase::operator==(const ParamBase& rhs) const
             }
             else
             {
-                return (m_iVal == rhs.m_iVal);
+                return (d->len == rhs.d->len);
             }
 
         case StringList:
-            if (m_iVal > 0 && rhs.m_iVal > 0)
+            if (d->len > 0 && rhs.d->len > 0)
             {
-                const ByteArray* list1 = (ByteArray*)m_cVal;
-                const ByteArray* list2 = (ByteArray*)rhs.m_cVal;
+                const ByteArray* list1 = (ByteArray*)d->data.ptrVal;
+                const ByteArray* list2 = (ByteArray*)rhs.d->data.ptrVal;
 
-                for (int i = 0; i < m_iVal; ++i)
+                for (int i = 0; i < d->len; ++i)
                 {
                     if (list1[i] != list2[i])
                     {
@@ -835,7 +802,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
             }
             else
             {
-                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+                return (d->len <= 0) && (rhs.d->len <= 0);
             }
 
         case HWRef:
@@ -844,7 +811,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
         case PointCloudPtr:
         case PointPtr:
         case PolygonMeshPtr:
-            return (m_cVal == rhs.m_cVal);
+            return (d->data.ptrVal == rhs.d->data.ptrVal);
 
         default:
             return false;
@@ -869,7 +836,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
     * or will create a new value and set it to a previously empty parameter
       (only if the parameter is a return value of a method) (Out flag only must be set).
       f
-    If no in/out flag is set, the in-flag as default is automatically added to m_type.
+    If no in/out flag is set, the in-flag as default is automatically added to d->type.
 
     \seealso ito::ParamBase::Type
 */
@@ -878,10 +845,12 @@ void ParamBase::inOutCheck()
     const uint16 in_internal = toFlagsInternal(ParamBase::In);
     const uint16 out_internal = toFlagsInternal(ParamBase::Out);
 
-    if ((m_flags & (in_internal | out_internal)) == 0)
+    if ((d->flags & (in_internal | out_internal)) == 0)
     {
+        detach();
+
         // if no direction is set, set at least In...
-        m_flags |= in_internal;
+        d->flags |= in_internal;
     }
 
     // verify that Out-only parameters as part of out-vectors of methods
@@ -889,7 +858,7 @@ void ParamBase::inOutCheck()
     // dataObject, pointCloud, polygonMesh, HWRef, point), since
     // the destruction of the created value inside of the algorithm
     // will usually be earlier than the consumer will read these values.
-    if ((m_flags & out_internal) && !(m_flags & in_internal))
+    if ((d->flags & out_internal) && !(d->flags & in_internal))
     {
         // These types are not allowed to be output-only.
         //        DObjPtr         = 0x000010 | Pointer | NoAutosave,
@@ -897,9 +866,9 @@ void ParamBase::inOutCheck()
         //        PointCloudPtr   = 0x000080 | Pointer | NoAutosave,
         //        PointPtr        = 0x000100 | Pointer | NoAutosave,
         //        PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave
-        // since NoAutosave is not in the type part of m_type it needs to be appended to the
+        // since NoAutosave is not in the type part of d->type it needs to be appended to the
         // comparison mask.
-        switch (m_type)
+        switch (d->type)
         {
         case DObjPtr:
         case PointCloudPtr:
@@ -912,7 +881,7 @@ void ParamBase::inOutCheck()
             // To check the origin of this exception you would need
             // a debugger attached or a call stack at hand.
             assert(
-                m_flags & in_internal &&
+                d->flags & in_internal &&
                 "An out-only param must not be a Ptr-type"); // will always be false!
 
             // do not force the type to be In, too, here, since the
@@ -936,16 +905,16 @@ void ParamBase::inOutCheck()
 //-------------------------------------------------------------------------------------
 int ParamBase::getLen() const
 {
-    switch (m_type)
+    switch (d->type)
     {
     case DoubleArray:
     case IntArray:
     case CharArray:
     case ComplexArray:
     case StringList:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            return m_iVal;
+            return d->len;
         }
         else
         {
@@ -953,9 +922,9 @@ int ParamBase::getLen() const
         }
 
     case String:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            return static_cast<int>(strlen((char*)m_cVal));
+            return static_cast<int>(strlen((char*)d->data.ptrVal));
         }
         else
         {
@@ -977,7 +946,7 @@ ito::ByteArray ParamBase::getNameWithIndexSuffix(int index) const
 {
     char suffix[16];
     sprintf_s(suffix, 16, "[%i]", index);
-    ByteArray newName = m_name;
+    ByteArray newName = d->name;
     newName.append(suffix);
     return newName;
 }
@@ -991,7 +960,7 @@ bool ParamBase::isNumeric(void) const
 {
     static const int numericTypeMask =
         ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-    return ((m_type & numericTypeMask) > 0) && !(m_type & ito::ParamBase::Pointer);
+    return ((d->type & numericTypeMask) > 0) && !(d->type & ito::ParamBase::Pointer);
 }
 
 //-------------------------------------------------------------------------------------
@@ -999,38 +968,39 @@ bool ParamBase::isNumericArray(void) const
 {
     static const int numericTypeMask =
         ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-    return (m_type & numericTypeMask) && (m_type & ito::ParamBase::Pointer);
+    return (d->type & numericTypeMask) && (d->type & ito::ParamBase::Pointer);
 }
 
 //-------------------------------------------------------------------------------------
 bool ParamBase::isValid(void) const
 {
-    return m_type != 0;
+    return d->type != 0;
 }
 
 //-------------------------------------------------------------------------------------
 uint16 ParamBase::getType() const
 {
-    return m_type;
+    return d->type;
 }
 
 
 //-------------------------------------------------------------------------------------
 uint32 ParamBase::getFlags() const
 {
-    return toFlagsExternal(m_flags);
+    return toFlagsExternal(d->flags);
 }
 
 //-------------------------------------------------------------------------------------
 void ParamBase::setFlags(const uint32 flags)
 {
-    m_flags = toFlagsInternal(flags);
+    detach();
+    d->flags = toFlagsInternal(flags);
 }
 
 //-------------------------------------------------------------------------------------
 const char* ParamBase::getName(void) const
 {
-    return m_name.data();
+    return d->name.data();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1047,6 +1017,7 @@ void ParamBase::setAutosave(const bool autosave)
 
     if (f != fnew)
     {
+        detach();
         setFlags(fnew);
     }
 }
@@ -1071,7 +1042,7 @@ const ParamBase ParamBase::operator[](const int index) const
         (type == DoubleArray) || (type == ComplexArray) ||
         (type == StringList))
     {
-        if (index >= m_iVal || index < 0)
+        if (index >= d->len || index < 0)
         {
             return ParamBase();
         }
@@ -1128,114 +1099,72 @@ const ParamBase ParamBase::operator[](const int index) const
  */
 ParamBase& ParamBase::operator=(const ParamBase& rhs)
 {
-    // first clear old ParamBase:
-    freeMemory();
+    auto old_d = d;
 
-    // now set new parameters:
-    m_type = rhs.m_type;
-    m_flags = rhs.m_flags;
-    m_name = rhs.m_name;
-    m_dVal = rhs.m_dVal;
-    m_iVal = rhs.m_iVal;
+    d = rhs.d;
 
-    switch (rhs.m_type)
+    if (d)
     {
-    case String:
-        if (rhs.m_cVal)
-        {
-            m_cVal = new char[strlen((char*)rhs.m_cVal) + 1];
-            memcpy(m_cVal, rhs.m_cVal, strlen((char*)rhs.m_cVal) + 1);
-        }
-        else
-        {
-            m_cVal = nullptr;
-        }
-        break;
-
-    case CharArray:
-        m_iVal = rhs.m_iVal;
-        if (m_iVal > 0)
-        {
-            m_cVal = new char[m_iVal];
-            memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(char));
-        }
-        else
-        {
-            m_cVal = 0;
-        }
-        break;
-
-    case IntArray:
-        m_iVal = rhs.m_iVal;
-        if (m_iVal > 0)
-        {
-            m_cVal = new int32[m_iVal];
-            memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(int32));
-        }
-        else
-        {
-            m_cVal = 0;
-        }
-        break;
-
-    case DoubleArray:
-        m_iVal = rhs.m_iVal;
-        if (m_iVal > 0)
-        {
-            m_cVal = new float64[m_iVal];
-            memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(float64));
-        }
-        else
-        {
-            m_cVal = 0;
-        }
-        break;
-
-    case ComplexArray:
-        m_iVal = rhs.m_iVal;
-        if (m_iVal > 0)
-        {
-            m_cVal = new complex128[m_iVal];
-            memcpy(m_cVal, rhs.m_cVal, m_iVal * sizeof(complex128));
-        }
-        else
-        {
-            m_cVal = 0;
-        }
-        break;
-
-    case StringList:
-        m_iVal = rhs.m_iVal;
-        if (m_iVal > 0)
-        {
-            m_cVal = new ByteArray[m_iVal];
-
-            for (int i = 0; i < m_iVal; ++i)
-            {
-                ((ByteArray*)m_cVal)[i] = ((const ByteArray*)rhs.m_cVal)[i];
-            }
-        }
-        else
-        {
-            m_cVal = nullptr;
-        }
-        break;
-
-    case HWRef:
-    case DObjPtr:
-    case Pointer:
-    case PointCloudPtr:
-    case PointPtr:
-    case PolygonMeshPtr:
-        m_cVal = rhs.m_cVal;
-        break;
-
-    default:
-        m_cVal = rhs.m_cVal;
-        break;
+        ITOM_INCREF(d);
     }
 
+    decAndFree(old_d);
+
     return *this;
+}
+
+//-------------------------------------------------------------------------------------
+void ParamBase::detach() const
+{
+    if (d && d->ref > 0)
+    {
+        auto new_d = new Data(d->name);
+        new_d->type = d->type;
+        new_d->flags = d->flags;
+        new_d->len = d->len;
+        new_d->data = d->data;
+
+        if (d->len > 0)
+        {
+            switch (d->type)
+            {
+            case ParamBase::CharArray:
+                new_d->data.ptrVal = new char[d->len];
+                memcpy(new_d->data.ptrVal, d->data.ptrVal, d->len * sizeof(char));
+                break;
+            case ParamBase::IntArray:
+                new_d->data.ptrVal = new int32[d->len];
+                memcpy(new_d->data.ptrVal, d->data.ptrVal, d->len * sizeof(int32));
+                break;
+            case ParamBase::DoubleArray:
+                new_d->data.ptrVal = new float64[d->len];
+                memcpy(new_d->data.ptrVal, d->data.ptrVal, d->len * sizeof(float64));
+                break;
+            case ParamBase::ComplexArray:
+                new_d->data.ptrVal = new complex128[d->len];
+                memcpy(new_d->data.ptrVal, d->data.ptrVal, d->len * sizeof(complex128));
+                break;
+            case ParamBase::StringList:
+            {
+                new_d->data.ptrVal = new ByteArray[d->len];
+                const ByteArray* src = (const ByteArray*)(d->data.ptrVal);
+                ByteArray* dest = (ByteArray*)(new_d->data.ptrVal);
+                for (int i = 0; i < d->len; ++i)
+                {
+                    dest[i] = src[i];
+                }
+                break;
+            }
+            case ParamBase::String:
+                new_d->data.ptrVal = new char[strlen((char*)(d->data.ptrVal)) + 1];
+                memcpy(new_d->data.ptrVal, d->data.ptrVal, strlen((char*)(d->data.ptrVal)) + 1);
+                break;
+            }
+        }
+
+        ITOM_DECREF(d);
+        d = new_d;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1243,140 +1172,148 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase* rhs)
 {
     if (getType() != rhs->getType())
     {
-        return ito::RetVal(ito::retError, 0, "tParam types are not equal");
+        return ito::RetVal(ito::retError, 0, "param types are not equal");
     }
 
-    switch (m_type)
+    detach();
+
+    switch (d->type)
     {
     case Char:
+        d->data.i8Val = rhs->d->data.i8Val;
+        break;
+
     case Int:
-        m_iVal = rhs->m_iVal;
+        d->data.i32Val = rhs->d->data.i32Val;
         break;
 
     case Double:
+        d->data.f64Val = rhs->d->data.f64Val;
+        break;
+
     case Complex:
-        m_dVal = rhs->m_dVal;
+        d->data.c128Val = rhs->d->data.c128Val;
         break;
 
     case String:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            DELETE_AND_SET_NULL_ARRAY(m_cVal); // must have been a string, too (since no
+            DELETE_AND_SET_NULL_ARRAY(d->data.ptrVal); // must have been a string, too (since no
                                                // type-change)
         }
 
-        if (rhs->m_cVal)
+        if (rhs->d->data.ptrVal)
         {
-            m_cVal = new char[strlen((char*)(rhs->m_cVal)) + 1];
-            memcpy(m_cVal, rhs->m_cVal, strlen((char*)(rhs->m_cVal)) + 1);
+            d->data.ptrVal = new char[strlen((char*)(rhs->d->data.ptrVal)) + 1];
+            memcpy(d->data.ptrVal, rhs->d->data.ptrVal, strlen((char*)(rhs->d->data.ptrVal)) + 1);
         }
         else
         {
-            m_cVal = 0;
+            d->data.ptrVal = 0;
         }
         break;
 
     case CharArray:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            delete[]((char*)m_cVal); // must have been an int-array, too
-            m_cVal = nullptr;
+            delete[]((char*)d->data.ptrVal); // must have been an int-array, too
+            d->data.ptrVal = nullptr;
         }
 
-        m_iVal = rhs->m_iVal;
+        d->len = rhs->d->len;
 
-        if (m_iVal > 0)
+        if (d->len > 0)
         {
-            m_cVal = new char[m_iVal];
-            memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(char));
+            d->data.ptrVal = new char[d->len];
+            memcpy(d->data.ptrVal, rhs->d->data.ptrVal, d->len * sizeof(char));
         }
         else
         {
-            m_cVal = 0;
+            d->data.ptrVal = 0;
         }
         break;
 
     case IntArray:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            delete[]((int32*)m_cVal); // must have been an int-array, too
-            m_cVal = nullptr;
+            delete[]((int32*)d->data.ptrVal); // must have been an int-array, too
+            d->data.ptrVal = nullptr;
         }
 
-        m_iVal = rhs->m_iVal;
+        d->len = rhs->d->len;
 
-        if (m_iVal > 0)
+        if (d->len > 0)
         {
-            m_cVal = new int32[m_iVal];
-            memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(int32));
+            d->data.ptrVal = new int32[d->len];
+            memcpy(d->data.ptrVal, rhs->d->data.ptrVal, d->len * sizeof(int32));
         }
         else
         {
-            m_cVal = 0;
+            d->data.ptrVal = 0;
         }
         break;
 
     case DoubleArray:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            delete[]((float64*)m_cVal); // must have been a double-array, too
-            m_cVal = nullptr;
+            delete[]((float64*)d->data.ptrVal); // must have been a double-array, too
+            d->data.ptrVal = nullptr;
         }
 
-        m_iVal = rhs->m_iVal;
+        d->len = rhs->d->len;
 
-        if (m_iVal > 0)
+        if (d->len > 0)
         {
-            m_cVal = new float64[m_iVal];
-            memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(float64));
+            d->data.ptrVal = new float64[d->len];
+            memcpy(d->data.ptrVal, rhs->d->data.ptrVal, d->len * sizeof(float64));
         }
         else
         {
-            m_iVal = 0;
+            d->len = 0;
         }
         break;
 
     case ComplexArray:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            delete[]((ito::complex128*)m_cVal); // must have been a double-array, too
-            m_cVal = nullptr;
+            delete[]((ito::complex128*)d->data.ptrVal); // must have been a double-array, too
+            d->data.ptrVal = nullptr;
         }
 
-        m_iVal = rhs->m_iVal;
+        d->len = rhs->d->len;
 
-        if (m_iVal > 0)
+        if (d->len > 0)
         {
-            m_cVal = new complex128[m_iVal];
-            memcpy(m_cVal, rhs->m_cVal, m_iVal * sizeof(complex128));
+            d->data.ptrVal = new complex128[d->len];
+            memcpy(d->data.ptrVal, rhs->d->data.ptrVal, d->len * sizeof(complex128));
         }
         else
         {
-            m_iVal = 0;
+            d->len = 0;
         }
         break;
 
     case StringList:
-        if (m_cVal)
+        if (d->data.ptrVal)
         {
-            delete[]((ito::ByteArray*)m_cVal); // must have been a string list, too
-            m_cVal = nullptr;
+            delete[]((ito::ByteArray*)d->data.ptrVal); // must have been a string list, too
+            d->data.ptrVal = nullptr;
         }
 
-        m_iVal = rhs->m_iVal;
+        d->len = rhs->d->len;
 
-        if (m_iVal > 0)
+        if (d->len > 0)
         {
-            m_cVal = new ByteArray[m_iVal];
+            d->data.ptrVal = new ByteArray[d->len];
 
-            for (int i = 0; i < m_iVal; ++i)
+            for (int i = 0; i < d->len; ++i)
             {
-                ((ito::ByteArray*)(m_cVal))[i] = ((ito::ByteArray*)(rhs->m_cVal))[i];
+                ((ito::ByteArray*)(d->data.ptrVal))[i] = ((ito::ByteArray*)(rhs->d->data.ptrVal))[i];
             }
         }
         else
         {
-            m_iVal = 0;
+            d->len = 0;
         }
         break;
 
@@ -1386,7 +1323,7 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase* rhs)
     case PointCloudPtr:
     case PointPtr:
     case PolygonMeshPtr:
-        m_cVal = rhs->m_cVal;
+        d->data.ptrVal = rhs->d->data.ptrVal;
         break;
 
     default:
