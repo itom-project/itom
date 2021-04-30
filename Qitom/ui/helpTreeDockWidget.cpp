@@ -12,6 +12,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
+#include <qcollator.h>
 
 #include <QtConcurrent/qtconcurrentrun.h>
 
@@ -670,15 +671,29 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Algorithms") + ":</p>");
 
                             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+                            QList<QString> algoLinks;
                             while (i != filterHashTable->constEnd())
                             {
                                 if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
                                 {
                                     QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
-                                    extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms" + link.toLatin1().toPercentEncoding("", ".") + "\">" + i.value()->m_name.toLatin1().toPercentEncoding("", ".") + "</a><br><br>");
+                                    algoLinks.append(
+                                        "<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms" +
+                                        link.toLatin1().toPercentEncoding("", ".") + "\">" +
+                                        i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
+                                        "</a><br><br>");
                                 }
                                 ++i;
                             }
+
+                            QCollator collator;
+                            std::sort(algoLinks.begin(), algoLinks.end(), collator);
+
+                            for each (QString algo in algoLinks)
+                            {
+                                extendedInfo.append(algo);
+                            }                            
+
                         }
 
                         if (widgetHashTable->size() > 0)
@@ -686,15 +701,28 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Widgets") + ":</p>");
 
                             QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
+                            QList<QString> widgetList;
                             while (i != widgetHashTable->constEnd())
                             {
                                 if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
                                 {
                                     QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
-                                    extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Widgets" + link.toLatin1().toPercentEncoding("", ".") + "\">" + i.value()->m_name.toLatin1().toPercentEncoding("", ".") + "</a><br><br>");
+                                    widgetList.append(
+                                        "<a id=\"HiLink\" href=\"itom://algorithm.html#Widgets" +
+                                        link.toLatin1().toPercentEncoding("", ".") + "\">" +
+                                        i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
+                                        "</a><br><br>");
                                 }
                                 ++i;
                             }
+
+                            QCollator collator;
+                            std::sort(widgetList.begin(), widgetList.end(), collator);
+
+                            for each (QString widget in widgetList)
+                            {
+                                extendedInfo.append(widget);
+                            } 
                         }
 
                         docString.replace("%INFO%", extendedInfo);

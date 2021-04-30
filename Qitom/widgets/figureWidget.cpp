@@ -207,7 +207,27 @@ RetVal FigureWidget::plot(
 
     if (dwo)
     {
-        plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+        /* className can be
+
+        * an empty string, then the right category is guessed from the dimension of the pointCloud
+        * 2.5D, or 2.5d -> then the default plot of the corresponding category is used
+        * a className, then the className is searched within the category, guessed from the
+        *     dimension of the pointCloud (if not found, a warning is returned and the default of the category is used)
+        * 2.5d:className -> the className is searched within the given category,
+        *     if not found, the default class from the category is used
+        */
+        if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+        }
+        else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(5), retval);
+        }
+        else
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+        }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
 
@@ -215,10 +235,12 @@ RetVal FigureWidget::plot(
         {
             if (destWidget->inherits("ito::AbstractDObjPclFigure"))
             {
-                ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
-                dObjPclFigure = (ito::AbstractDObjPclFigure*)(destWidget);
+                ito::AbstractDObjPclFigure *dObjPclFigure = qobject_cast<ito::AbstractDObjPclFigure*>(destWidget);
                 dObjPclFigure->setPointCloud(pc);
                 *canvasWidget = destWidget;
+
+                connect(dObjPclFigure, &AbstractFigure::windowTitleModified,
+                    [this](QString title) {this->setAdvancedWindowTitle(title);});
             }
             else
             {
@@ -260,7 +282,27 @@ RetVal FigureWidget::plot(
 
     if (dwo)
     {
-        plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+        /* className can be
+
+        * an empty string, then the right category is guessed from the dimension of the polygonMesh
+        * 2.5D, or 2.5d -> then the default plot of the corresponding category is used
+        * a className, then the className is searched within the category, guessed from the 
+        *     dimension of the polygonMesh (if not found, a warning is returned and the default of the category is used)
+        * 2.5d:className -> the className is searched within the given category, 
+        *     if not found, the default class from the category is used
+        */
+        if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+        }
+        else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(5), retval);
+        }
+        else
+        {
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className, retval);
+        }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
 
@@ -268,10 +310,12 @@ RetVal FigureWidget::plot(
         {
             if (destWidget->inherits("ito::AbstractDObjPclFigure"))
             {
-                ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
-                dObjPclFigure = qobject_cast<ito::AbstractDObjPclFigure*>(destWidget);
+                ito::AbstractDObjPclFigure *dObjPclFigure = qobject_cast<ito::AbstractDObjPclFigure*>(destWidget);
                 dObjPclFigure->setPolygonMesh(pm);
                 *canvasWidget = destWidget;
+
+                connect(dObjPclFigure, &AbstractFigure::windowTitleModified,
+                    [this](QString title) {this->setAdvancedWindowTitle(title);});
             }
             else
             {
@@ -344,7 +388,7 @@ RetVal FigureWidget::plot(
         }
         else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
         {
-            plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
+            plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(5), retval);
         }
         else
         {
@@ -363,10 +407,13 @@ RetVal FigureWidget::plot(
         }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
+
         if (!retval.containsError() && destWidget && destWidget->inherits("ito::AbstractFigure"))
         {
-            connect((ito::AbstractFigure*)destWidget, SIGNAL(windowTitleModified(QString)), this, SLOT(setAdvancedWindowTitle(QString)));
+            connect((ito::AbstractFigure*)destWidget, &AbstractFigure::windowTitleModified,
+                [this](QString title) {this->setAdvancedWindowTitle(title);});
         }
+
         if (!retval.containsError() && destWidget)
         {
             if (destWidget->inherits("ito::AbstractDObjFigure"))
@@ -501,7 +548,7 @@ RetVal FigureWidget::liveImage(
             }
             else if (className.startsWith("2.5d:", Qt::CaseInsensitive))
             {
-                plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(3), retval);
+                plotClassName = dwo->getFigureClass("PerspectivePlot", className.mid(5), retval);
             }
             else
             {
@@ -519,10 +566,17 @@ RetVal FigureWidget::liveImage(
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
 
+        if (!retval.containsError() && destWidget && destWidget->inherits("ito::AbstractFigure"))
+        {
+            connect((ito::AbstractFigure*)destWidget, &AbstractFigure::windowTitleModified,
+                [this](QString title) {this->setAdvancedWindowTitle(title);});
+        }
+
         if (!retval.containsError() && destWidget)
         {
             ito::AbstractDObjFigure *dObjFigure = NULL;
             ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
+
             if (destWidget->inherits("ito::AbstractDObjFigure"))
             {
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
