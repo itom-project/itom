@@ -62,6 +62,14 @@ ByteArray &ByteArray::operator=(const ByteArray &rhs)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //doc in header file
+ByteArray &ByteArray::operator=(ByteArray &&rhs)
+{
+    std::swap(d, rhs.d);
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray &ByteArray::operator=(const char *str)
 {
     decAndFree(d);

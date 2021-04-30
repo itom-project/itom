@@ -93,13 +93,26 @@ class ITOMCOMMON_EXPORT ByteArray
         ByteArray(const char *str);
         
         //! copy constructor: the given byte array is implicitely shared between both instances until its content is changed by one of both participating instances.
-        inline ByteArray(const ByteArray& copyConstr) : d(copyConstr.d) { if (d) {BYTEARRAY_INCCREF(d);} }
+        inline ByteArray(const ByteArray& copyConstr) : d(copyConstr.d) 
+        { 
+            if (d) 
+            {
+                BYTEARRAY_INCCREF(d);
+            } 
+        }
+
+        inline ByteArray(ByteArray&& other) : d(other.d) 
+        { 
+            other.d = nullptr; 
+        }
         
         //! destructor: the internal data is deleted if no other instance needs it.
         inline ~ByteArray() { decAndFree(d); }
 
         //! another ByteArray is assigned to this ByteArray. The old content is deleted and the given byte array is implicitely shared between both instances.
         ByteArray &operator=(const ByteArray &rhs);
+
+        ByteArray &operator=(ByteArray &&rhs);
 
         //! a zero-terminated string is assigned to this ByteArray. The given char* is copied.
         ByteArray &operator=(const char *str);
