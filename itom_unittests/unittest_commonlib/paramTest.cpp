@@ -443,12 +443,19 @@ TEST(ParamTest, ParamAssignmentOperator)
 
     ito::ParamBase param("stringList", ito::ParamBase::StringList, 3, strList);
     EXPECT_EQ(param.getVal<const ito::ByteArray*>()[1], strList[1]);
+    int len = 0;
+    param.getVal<const ito::ByteArray*>(len);
+    EXPECT_EQ(len, 3);
 
     param = ito::ParamBase("intArray", ito::ParamBase::IntArray, 3, intArr);
     EXPECT_EQ(param.getVal<const ito::int32*>()[2], intArr[2]);
+    param.getVal<const ito::int32*>(len);
+    EXPECT_EQ(len, 3);
 
     param = ito::ParamBase("string", ito::ParamBase::String, "hello");
     EXPECT_STREQ(param.getVal<const char*>(), "hello");
+    param.getVal<const char*>(len);
+    EXPECT_EQ(len, 5);
 }
 
 
@@ -522,6 +529,11 @@ TEST(ParamTest, ParamIndexingOperator)
     auto p3 = stringlistParam[1];
     EXPECT_STREQ(p3.getVal<const char*>(), "test2");
     EXPECT_TRUE(p3.getType() == ito::ParamBase::String);
+    ito::Param stringlistParam2 = stringlistParam;
+    ito::ByteArray* ba2 = stringlistParam2.getVal<ito::ByteArray*>();
+    ba2[1] = "xxx";
+    EXPECT_STREQ(stringlistParam.getVal<const ito::ByteArray*>()[1].data(), "test2");
+    EXPECT_STREQ(stringlistParam2.getVal<const ito::ByteArray*>()[1].data(), "xxx");
 }
 
 
@@ -571,6 +583,9 @@ TEST(ParamTest, FlagTest)
 
 TEST(ParamTest, ConstGetValTest)
 {
+    ito::ByteArray ba[] = { "blub", "blob" };
+    ito::ParamBase aa("name", ito::ParamBase::StringList, 2, ba);
+
     double *dbl = new double[256];
 
     ito::ParamBase pp("name", ito::ParamBase::DoubleArray, 256, dbl);

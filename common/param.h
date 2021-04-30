@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <atomic>
 
 /* definition and macros */
 /* global variables (avoid) */
@@ -99,7 +100,7 @@ private:
             memset(&data, 0, sizeof(ParamBaseData));
         }
 
-        int ref;               /*!< reference counter for implicit sharing (0: means one reference, ...) */
+        std::atomic_int ref;               /*!< reference counter for implicit sharing (0: means one reference, ...) */
 
         ParamBaseData data;
 
@@ -124,12 +125,21 @@ private:
     //!< shared, this method is a noop.
     void detach() const;
 
-    inline void decAndFree(Data *x)
+    inline void decRefAndFree(Data *x)
     {
-        if (x && !(ITOM_DECREF(x)))
+        if (x && !((--(x->ref))))
         {
             freeMemory(x);
             delete (x);
+            x = nullptr;
+        }
+    }
+
+    inline void incRef(Data *x)
+    {
+        if (x)
+        {
+            (x->ref)++;
         }
     }
 
@@ -289,12 +299,11 @@ public:
 
     virtual ~ParamBase(); // Destructor
 
-    ParamBase(const ParamBase& copyConstr); // Copy-Constructor
+    //!< copy constructor
+    ParamBase(const ParamBase& other);
 
-    inline ParamBase(ParamBase &&other) noexcept : d(other.d)
-    {
-        other.d = new Data();
-    }
+    //!< copy constructor for rvalues
+    ParamBase(ParamBase &&other) noexcept;
 
     //--------------------------------------------------------------------------------------------
     //  ASSIGNMENT AND OPERATORS
