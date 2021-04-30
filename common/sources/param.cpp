@@ -979,7 +979,7 @@ ParamBase& ParamBase::operator=(const ParamBase& rhs)
 }
 
 //-------------------------------------------------------------------------------------
-void ParamBase::detach() const
+void ParamBase::detach()
 {
     if (d && d->ref > 0)
     {
@@ -1022,7 +1022,7 @@ void ParamBase::detach() const
             }
         }
 
-        (d->ref)--;
+        decRefAndFree(d);
         d = new_d;
     }
 }

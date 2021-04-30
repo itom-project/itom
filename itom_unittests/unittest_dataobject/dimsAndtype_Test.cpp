@@ -24,18 +24,13 @@ template <typename _Tp> class DimAndTypeTest : public ::testing::Test
     virtual void SetUp(void)
     {
         // dObj1 = ito::DataObject(0,temp_size1,ito::getDataType2<_Tp*>());
-        int *temp_size1 = new int[1];
-        temp_size1[0] = 10;
+        int temp_size1[] = { 10 };
         dObj1 = ito::DataObject(0, temp_size1, ito::getDataType2<_Tp *>()); //!< Empty Data Object
         dObj2 = ito::DataObject(1, temp_size1, ito::getDataType2<_Tp *>()); //!< 1 dimensional data object
         dObj3 = ito::DataObject(5, 10, ito::getDataType2<_Tp *>());         //!< 2 dimensional data object
         dObj4 = ito::DataObject(2, 3, 4, ito::getDataType2<_Tp *>());       //!< 3 dimensional data object
-        int *temp_size = new int[5];
-        temp_size[0] = 3;
-        temp_size[1] = 4;
-        temp_size[2] = 2;
-        temp_size[3] = 10;
-        temp_size[4] = 10;
+
+        int temp_size[] = { 3,4,2,10,10 };
         dObj5 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>()); //!< 5 dimensional data object
     };
 

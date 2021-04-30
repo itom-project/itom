@@ -123,11 +123,11 @@ private:
     //!< if data is currently shared with another object, detach this
     //!< data d from the shared ones by making a copy. If this data is not
     //!< shared, this method is a noop.
-    void detach() const;
+    void detach();
 
     inline void decRefAndFree(Data *x)
     {
-        if (x && !((--(x->ref))))
+        if (x && (!(x->ref--)))
         {
             freeMemory(x);
             delete (x);
@@ -1079,7 +1079,7 @@ template <typename _Tp> struct ItomParamHelper
 
         if (std::is_pointer<_Tp>::value)
         {
-            param->detach();
+            const_cast<ito::ParamBase*>(param)->detach();
         }
 
         switch (param->d->type)

@@ -22,21 +22,15 @@ template <typename _Tp> class miscellaneousTests : public ::testing::Test
   public:
     virtual void SetUp(void)
     {
-        int *temp_size1 = new int[2];
-        temp_size1[0] = 10;
-        temp_size1[1] = 10;
+        int temp_size1[] = { 10, 10 };
         this->dObj1 = ito::DataObject(0, temp_size1, ito::getDataType2<_Tp *>());
         this->dObj2 = ito::DataObject(2, temp_size1, ito::getDataType2<_Tp *>());
         this->dObj3 = ito::DataObject(3, 3, 10, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[5];
-        temp_size[0] = 3;
-        temp_size[1] = 4;
-        temp_size[2] = 2;
-        temp_size[3] = 10;
-        temp_size[4] = 10;
+
+        int temp_size[] = { 3,4,2,10,10 };
         this->dObj4 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>());
-        int *temp_size2 = new int[1];
-        temp_size2[0] = 3;
+
+        int temp_size2[] = { 3 };
         this->dObj7 = ito::DataObject(1, temp_size2, ito::getDataType2<_Tp *>());
     };
 
