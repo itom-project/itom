@@ -23,6 +23,8 @@
 #include "dialogVariableDetail.h"
 
 #include <qclipboard.h>
+#include <qfont.h>
+#include <qfontdatabase.h>
 
 namespace ito
 {
@@ -33,8 +35,26 @@ DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &t
 {
     ui.setupUi(this);
     
+    // get a default monospace font for the fields
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    ui.txtName->setFont(fixedFont);
+    ui.txtType->setFont(fixedFont);
+    ui.txtValue->setFont(fixedFont);
+    
     ui.txtName->setText(name);
     ui.txtType->setText(type);
+
+    // if the text contains a line break, disable any wrapping, else
+    // wrap at widget level.
+    if (value.contains("\n"))
+    {
+        ui.txtValue->setLineWrapMode(QPlainTextEdit::NoWrap);
+    }
+    else
+    {
+        ui.txtValue->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+    }
+
     ui.txtValue->setPlainText(value);
 }
 
