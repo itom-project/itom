@@ -100,7 +100,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateForward()));
     a->setEnabled(false);
 
-    m_pGoBackNavigationMenu = new QMenu(this);
+    m_pGoBackNavigationMenu = new QMenu();
 
     a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
     connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
@@ -136,6 +136,9 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 
     m_pBookmarkModel->saveState(); //save current set of bookmarks to settings file
     DELETE_AND_SET_NULL(m_pBookmarkModel);
+
+    m_pGoBackNavigationMenu->deleteLater();
+    m_pGoBackNavigationMenu = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
