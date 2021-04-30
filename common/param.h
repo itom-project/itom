@@ -35,13 +35,13 @@
 #include "retVal.h"
 #include "typeDefs.h"
 
+#include <atomic>
 #include <limits>
 #include <stdarg.h>
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <atomic>
 
 /* definition and macros */
 /* global variables (avoid) */
@@ -64,8 +64,7 @@ struct complex128_
     float64 imag;
 };
 
-union ParamBaseData
-{
+union ParamBaseData {
     //!< 1 byte
     int8 i8Val;
 
@@ -90,17 +89,13 @@ protected:
 private:
     struct Data
     {
-        Data(const ByteArray &name_ = "") :
-            ref(0),
-            flags(0),
-            type(0),
-            len(0),
-            name(name_)
+        Data(const ByteArray& name_ = "") : ref(0), flags(0), type(0), len(0), name(name_)
         {
             memset(&data, 0, sizeof(ParamBaseData));
         }
 
-        std::atomic_int ref;               /*!< reference counter for implicit sharing (0: means one reference, ...) */
+        std::atomic_int
+            ref; /*!< reference counter for implicit sharing (0: means one reference, ...) */
 
         ParamBaseData data;
 
@@ -116,16 +111,16 @@ private:
         ByteArray name;
     };
 
-    mutable Data *d;
+    mutable Data* d;
 
-    void freeMemory(Data *data); //!< free allocated memory, if memory has been allocated.
+    void freeMemory(Data* data); //!< free allocated memory, if memory has been allocated.
 
     //!< if data is currently shared with another object, detach this
     //!< data d from the shared ones by making a copy. If this data is not
     //!< shared, this method is a noop.
     void detach();
 
-    inline void decRefAndFree(Data *x)
+    inline void decRefAndFree(Data* x)
     {
         if (x && (!(x->ref--)))
         {
@@ -135,7 +130,7 @@ private:
         }
     }
 
-    inline void incRef(Data *x)
+    inline void incRef(Data* x)
     {
         if (x)
         {
@@ -151,10 +146,10 @@ private:
 public:
     //!< Flag section, new for itom > 4.1. Before it was part of the Type enumeration.
     /* For compatibility reasons with older versions of itom, values in this enumeration
-       must only set bits in the range 17-32 of an uint32 value, since they can be 
-       used together with values of the Type enum below, using bits 1-16. 
+       must only set bits in the range 17-32 of an uint32 value, since they can be
+       used together with values of the Type enum below, using bits 1-16.
        Internally, the flags are stored as uint16 object, where these enumeration
-       values are shifted by 16bits. 
+       values are shifted by 16bits.
     */
     enum Flag
     {
@@ -303,7 +298,7 @@ public:
     ParamBase(const ParamBase& other);
 
     //!< copy constructor for rvalues
-    ParamBase(ParamBase &&other) noexcept;
+    ParamBase(ParamBase&& other) noexcept;
 
     //--------------------------------------------------------------------------------------------
     //  ASSIGNMENT AND OPERATORS
@@ -316,7 +311,7 @@ public:
     //!< values of rhs Param, strings are copied)
     ParamBase& operator=(const ParamBase& rhs);
 
-    inline ParamBase &operator=(ParamBase &&other) noexcept
+    inline ParamBase& operator=(ParamBase&& other) noexcept
     {
         std::swap(d, other.d);
         return *this;
@@ -910,8 +905,7 @@ public:
 //---------------------------------------------------------------------------------------------------------------------
 template <typename _Tp> struct ItomParamHelper
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param, const _Tp val, int len = 0)
+    static ito::RetVal setVal(ito::ParamBase* param, const _Tp val, int len = 0)
     {
         static_assert(std::is_pointer<_Tp>::value, "invalid template type");
 
@@ -932,13 +926,13 @@ template <typename _Tp> struct ItomParamHelper
             if (val)
             {
                 size_t len = strlen(reinterpret_cast<const char*>(val));
-                param->d->data.ptrVal =new char[len + 1];
+                param->d->data.ptrVal = new char[len + 1];
                 memcpy(param->d->data.ptrVal, val, len + 1);
                 param->d->len = static_cast<int>(strlen((char*)param->d->data.ptrVal));
             }
             else
             {
-                param->d->data.ptrVal =0;
+                param->d->data.ptrVal = 0;
                 param->d->len = -1;
             }
 
@@ -980,7 +974,7 @@ template <typename _Tp> struct ItomParamHelper
             }
             else
             {
-                param->d->data.ptrVal =nullptr;
+                param->d->data.ptrVal = nullptr;
                 param->d->len = -1;
             }
 
@@ -995,13 +989,13 @@ template <typename _Tp> struct ItomParamHelper
             auto cVal_ = param->d->data.ptrVal;
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal =new ito::float64[len];
+                param->d->data.ptrVal = new ito::float64[len];
                 memcpy(param->d->data.ptrVal, val, len * sizeof(ito::float64));
                 param->d->len = len;
             }
             else
             {
-                param->d->data.ptrVal =nullptr;
+                param->d->data.ptrVal = nullptr;
                 param->d->len = -1;
             }
 
@@ -1017,13 +1011,13 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal =new ito::complex128[len];
+                param->d->data.ptrVal = new ito::complex128[len];
                 memcpy(param->d->data.ptrVal, val, len * sizeof(ito::complex128));
                 param->d->len = len;
             }
             else
             {
-                param->d->data.ptrVal =nullptr;
+                param->d->data.ptrVal = nullptr;
                 param->d->len = -1;
             }
 
@@ -1040,7 +1034,7 @@ template <typename _Tp> struct ItomParamHelper
             if ((val) && (len > 0))
             {
                 ito::ByteArray* dest = new ito::ByteArray[len];
-                param->d->data.ptrVal =dest;
+                param->d->data.ptrVal = dest;
                 const ito::ByteArray* src = (const ito::ByteArray*)val;
 
                 for (int i = 0; i < len; ++i)
@@ -1052,7 +1046,7 @@ template <typename _Tp> struct ItomParamHelper
             }
             else
             {
-                param->d->data.ptrVal =nullptr;
+                param->d->data.ptrVal = nullptr;
                 param->d->len = -1;
             }
 
@@ -1071,9 +1065,7 @@ template <typename _Tp> struct ItomParamHelper
         }
     }
 
-    static _Tp getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static _Tp getVal(const ito::ParamBase* param, int& len)
     {
         static_assert(std::is_pointer<_Tp>::value, "invalid template type");
 
@@ -1127,9 +1119,47 @@ template <typename _Tp> struct ItomParamHelper
 
 template <> struct ItomParamHelper<const ByteArray*>
 {
-    static const ByteArray* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const ByteArray* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::StringList: {
+            auto cVal_ = param->d->data.ptrVal;
+
+            if ((val) && (len > 0))
+            {
+                ito::ByteArray* dest = new ito::ByteArray[len];
+                param->d->data.ptrVal = dest;
+
+                for (int i = 0; i < len; ++i)
+                {
+                    dest[i] = val[i]; // operator=
+                }
+
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](ito::ByteArray*) cVal_;
+            }
+        }
+        default:
+            return ito::RetVal(
+                ito::retError,
+                0,
+                "setVal<const ByteArray*> does not match the type of the parameter");
+        }
+    }
+
+    static const ByteArray* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1144,9 +1174,62 @@ template <> struct ItomParamHelper<const ByteArray*>
 
 template <> struct ItomParamHelper<const char*>
 {
-    static const char* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const char* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::String: {
+            auto cVal_ = param->d->data.ptrVal;
+            if (val)
+            {
+                size_t len = strlen(val);
+                param->d->data.ptrVal = new char[len + 1];
+                memcpy(param->d->data.ptrVal, val, len + 1);
+                param->d->len = static_cast<int>(strlen((char*)param->d->data.ptrVal));
+            }
+            else
+            {
+                param->d->data.ptrVal = 0;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](char*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        case ito::ParamBase::CharArray: {
+            auto cVal_ = param->d->data.ptrVal;
+            if ((val) && (len > 0))
+            {
+                param->d->data.ptrVal = new char[len];
+                memcpy(param->d->data.ptrVal, val, len * sizeof(char));
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](char*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        default:
+            return ito::RetVal(
+                ito::retError, 0, "setVal<const char*> does not match the type of the parameter");
+        }
+    }
+
+    static const char* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1162,9 +1245,40 @@ template <> struct ItomParamHelper<const char*>
 
 template <> struct ItomParamHelper<const int8*>
 {
-    static const int8* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const int8* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::CharArray: {
+            auto cVal_ = param->d->data.ptrVal;
+            if ((val) && (len > 0))
+            {
+                param->d->data.ptrVal = new int8[len];
+                memcpy(param->d->data.ptrVal, val, len * sizeof(int8));
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](int8*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        default:
+            return ito::RetVal(
+                ito::retError, 0, "setVal<const int8*> does not match the type of the parameter");
+        }
+    }
+
+    static const int8* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1179,9 +1293,40 @@ template <> struct ItomParamHelper<const int8*>
 
 template <> struct ItomParamHelper<const int32*>
 {
-    static const int32* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const int32* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::IntArray: {
+            auto cVal_ = param->d->data.ptrVal;
+            if ((val) && (len > 0))
+            {
+                param->d->data.ptrVal = new int32[len];
+                memcpy(param->d->data.ptrVal, val, len * sizeof(int32));
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](int32*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        default:
+            return ito::RetVal(
+                ito::retError, 0, "setVal<const int32*> does not match the type of the parameter");
+        }
+    }
+
+    static const int32* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1196,9 +1341,42 @@ template <> struct ItomParamHelper<const int32*>
 
 template <> struct ItomParamHelper<const float64*>
 {
-    static const float64* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const float64* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::DoubleArray: {
+            auto cVal_ = param->d->data.ptrVal;
+            if ((val) && (len > 0))
+            {
+                param->d->data.ptrVal = new float64[len];
+                memcpy(param->d->data.ptrVal, val, len * sizeof(float64));
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](float64*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        default:
+            return ito::RetVal(
+                ito::retError,
+                0,
+                "setVal<const float64*> does not match the type of the parameter");
+        }
+    }
+
+    static const float64* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1213,9 +1391,42 @@ template <> struct ItomParamHelper<const float64*>
 
 template <> struct ItomParamHelper<const complex128*>
 {
-    static const complex128* getVal(
-        const ito::ParamBase *param,
-        int& len)
+    static ito::RetVal setVal(ito::ParamBase* param, const complex128* val, int len = 0)
+    {
+        param->detach();
+
+        switch (param->d->type)
+        {
+        case ito::ParamBase::ComplexArray: {
+            auto cVal_ = param->d->data.ptrVal;
+            if ((val) && (len > 0))
+            {
+                param->d->data.ptrVal = new complex128[len];
+                memcpy(param->d->data.ptrVal, val, len * sizeof(complex128));
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = -1;
+            }
+
+            if (cVal_)
+            {
+                delete[](complex128*) cVal_;
+            }
+        }
+            return ito::retOk;
+
+        default:
+            return ito::RetVal(
+                ito::retError,
+                0,
+                "setVal<const complex128*> does not match the type of the parameter");
+        }
+    }
+
+    static const complex128* getVal(const ito::ParamBase* param, int& len)
     {
         switch (param->d->type)
         {
@@ -1230,8 +1441,7 @@ template <> struct ItomParamHelper<const complex128*>
 
 template <> struct ItomParamHelper<float64>
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param, float64 val, int /*len = 0*/)
+    static ito::RetVal setVal(ito::ParamBase* param, float64 val, int /*len = 0*/)
     {
         param->detach();
 
@@ -1258,9 +1468,7 @@ template <> struct ItomParamHelper<float64>
         }
     }
 
-    static float64 getVal(
-        const ito::ParamBase *param,
-        int& /*len*/)
+    static float64 getVal(const ito::ParamBase* param, int& /*len*/)
     {
         switch (param->d->type)
         {
@@ -1280,8 +1488,7 @@ template <> struct ItomParamHelper<float64>
 
 template <> struct ItomParamHelper<int32>
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param, int32 val, int /*len = 0*/)
+    static ito::RetVal setVal(ito::ParamBase* param, int32 val, int /*len = 0*/)
     {
         param->detach();
 
@@ -1308,9 +1515,7 @@ template <> struct ItomParamHelper<int32>
         }
     }
 
-    static int32 getVal(
-        const ito::ParamBase *param,
-        int& /*len*/)
+    static int32 getVal(const ito::ParamBase* param, int& /*len*/)
     {
         switch (param->d->type)
         {
@@ -1333,8 +1538,7 @@ template <> struct ItomParamHelper<int32>
 
 template <> struct ItomParamHelper<int8>
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param, int8 val, int /*len = 0*/)
+    static ito::RetVal setVal(ito::ParamBase* param, int8 val, int /*len = 0*/)
     {
         param->detach();
 
@@ -1361,9 +1565,7 @@ template <> struct ItomParamHelper<int8>
         }
     }
 
-    static int8 getVal(
-        const ito::ParamBase *param,
-        int& /*len*/)
+    static int8 getVal(const ito::ParamBase* param, int& /*len*/)
     {
         switch (param->d->type)
         {
@@ -1386,8 +1588,7 @@ template <> struct ItomParamHelper<int8>
 
 template <> struct ItomParamHelper<char>
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param, char val, int /*len = 0*/)
+    static ito::RetVal setVal(ito::ParamBase* param, char val, int /*len = 0*/)
     {
         param->detach();
 
@@ -1414,9 +1615,7 @@ template <> struct ItomParamHelper<char>
         }
     }
 
-    static char getVal(
-        const ito::ParamBase *param,
-        int& /*len*/)
+    static char getVal(const ito::ParamBase* param, int& /*len*/)
     {
         switch (param->d->type)
         {
@@ -1439,10 +1638,7 @@ template <> struct ItomParamHelper<char>
 
 template <> struct ItomParamHelper<complex128>
 {
-    static ito::RetVal setVal(
-        ito::ParamBase *param,
-        const complex128 val,
-        int /*len = 0*/)
+    static ito::RetVal setVal(ito::ParamBase* param, const complex128 val, int /*len = 0*/)
     {
         param->detach();
 
@@ -1461,9 +1657,7 @@ template <> struct ItomParamHelper<complex128>
         }
     }
 
-    static complex128 getVal(
-        const ito::ParamBase *param,
-        int& /*len*/)
+    static complex128 getVal(const ito::ParamBase* param, int& /*len*/)
     {
         switch (param->d->type)
         {
