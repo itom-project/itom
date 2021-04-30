@@ -100,7 +100,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateForward()));
     a->setEnabled(false);
 
-    m_pGoBackNavigationMenu = new QMenu();
+    m_pGoBackNavigationMenu = new QMenu(this);
 
     a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
     connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
