@@ -51,8 +51,7 @@ constexpr uint32 toFlagsExternal(uint16 flags)
 }
 
 //-------------------------------------------------------------------------------------
-ParamBase::ParamBase() :
-    d(new Data())
+ParamBase::ParamBase() : d(new Data())
 {
     setDefaultAutosaveFlag();
 }
@@ -64,8 +63,7 @@ ParamBase::ParamBase() :
  *
  *   creates a new ParamBase with name "name", string is copied
  */
-ParamBase::ParamBase(const ByteArray& name) :
-    d(new Data(name))
+ParamBase::ParamBase(const ByteArray& name) : d(new Data(name))
 {
     checkAndCorrectInOutFlag();
     setDefaultAutosaveFlag();
@@ -79,8 +77,7 @@ ParamBase::ParamBase(const ByteArray& name) :
  *
  *   creates a new Param with name and type, string is copied
  */
-ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags) :
-    d(new Data(name))
+ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags) : d(new Data(name))
 {
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
@@ -156,8 +153,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const flo
         d->data.f64Val = val;
         break;
     default:
-        throw std::logic_error(
-            "constructor with float64 val is only callable for types Char, Int, Complex and Double");
+        throw std::logic_error("constructor with float64 val is only callable for types Char, Int, "
+                               "Complex and Double");
         break;
     }
 }
@@ -421,8 +418,8 @@ ParamBase::ParamBase(
     }
     else
     {
-        throw std::logic_error(
-            "constructor with const float64* values and size is only callable for type DoubleArray.");
+        throw std::logic_error("constructor with const float64* values and size is only callable "
+                               "for type DoubleArray.");
     }
 }
 
@@ -467,8 +464,8 @@ ParamBase::ParamBase(
     }
     else
     {
-        throw std::logic_error(
-            "constructor with const complex128* values and size is only callable for type ComplexArray.");
+        throw std::logic_error("constructor with const complex128* values and size is only "
+                               "callable for type ComplexArray.");
     }
 }
 
@@ -510,7 +507,7 @@ void ParamBase::setDefaultAutosaveFlag()
 }
 
 //-------------------------------------------------------------------------------------
-void ParamBase::clearData(Data *data)
+void ParamBase::clearData(Data* data)
 {
     bool arrType = true;
 
@@ -551,15 +548,13 @@ void ParamBase::clearData(Data *data)
  *
  *   creates ParamBase according to passed Param, strings are copied
  */
-ParamBase::ParamBase(const ParamBase& other) :
-    d(other.d)
+ParamBase::ParamBase(const ParamBase& other) : d(other.d)
 {
     incRef(d);
 }
 
 //-------------------------------------------------------------------------------------
-ParamBase::ParamBase(ParamBase &&other) noexcept :
-    d(other.d)
+ParamBase::ParamBase(ParamBase&& other) noexcept : d(other.d)
 {
     other.d = nullptr;
 }
@@ -623,7 +618,8 @@ bool ParamBase::operator==(const ParamBase& rhs) const
             {
                 for (int i = 0; i < d->len; ++i)
                 {
-                    if (!ito::areEqual(((float64*)d->data.ptrVal)[i], ((float64*)rhs.d->data.ptrVal)[i]))
+                    if (!ito::areEqual(
+                            ((float64*)d->data.ptrVal)[i], ((float64*)rhs.d->data.ptrVal)[i]))
                     {
                         return false;
                     }
@@ -640,7 +636,8 @@ bool ParamBase::operator==(const ParamBase& rhs) const
             {
                 for (int i = 0; i < d->len; ++i)
                 {
-                    if (!ito::areEqual(((complex128*)d->data.ptrVal)[i], ((complex128*)rhs.d->data.ptrVal)[i]))
+                    if (!ito::areEqual(
+                            ((complex128*)d->data.ptrVal)[i], ((complex128*)rhs.d->data.ptrVal)[i]))
                     {
                         return false;
                     }
@@ -905,9 +902,8 @@ const ParamBase ParamBase::operator[](const int index) const
 {
     auto type = getType();
 
-    if ((type == CharArray) || (type == IntArray) ||
-        (type == DoubleArray) || (type == ComplexArray) ||
-        (type == StringList))
+    if ((type == CharArray) || (type == IntArray) || (type == DoubleArray) ||
+        (type == ComplexArray) || (type == StringList))
     {
         if (index >= d->len || index < 0)
         {
@@ -976,7 +972,7 @@ ParamBase& ParamBase::operator=(const ParamBase& rhs)
 }
 
 //-------------------------------------------------------------------------------------
-void ParamBase::detach()
+void ParamBase::detach(bool allocNewArray /*= true*/)
 {
     if (d && d->ref > 0)
     {
@@ -988,34 +984,49 @@ void ParamBase::detach()
 
         if (d->len > 0)
         {
-            switch (d->type)
+            if (allocNewArray)
             {
-            case ParamBase::CharArray:
-                new_d->data.ptrVal = new char[d->len];
-                std::copy_n((const char*)d->data.ptrVal, d->len, (char*)new_d->data.ptrVal);
-                break;
-            case ParamBase::IntArray:
-                new_d->data.ptrVal = new int32[d->len];
-                std::copy_n((const int32*)d->data.ptrVal, d->len, (int32*)new_d->data.ptrVal);
-                break;
-            case ParamBase::DoubleArray:
-                new_d->data.ptrVal = new float64[d->len];
-                std::copy_n((const float64*)d->data.ptrVal, d->len, (float64*)new_d->data.ptrVal);
-                break;
-            case ParamBase::ComplexArray:
-                new_d->data.ptrVal = new complex128[d->len];
-                std::copy_n((const complex128*)d->data.ptrVal, d->len, (complex128*)new_d->data.ptrVal);
-                break;
-            case ParamBase::StringList:
-            {
-                new_d->data.ptrVal = new ByteArray[d->len];
-                std::copy_n((const ByteArray*)d->data.ptrVal, d->len, (ByteArray*)new_d->data.ptrVal);
-                break;
+                switch (d->type)
+                {
+                case ParamBase::CharArray:
+                    new_d->data.ptrVal = new char[d->len];
+                    std::copy_n((const char*)d->data.ptrVal, d->len, (char*)new_d->data.ptrVal);
+                    break;
+                case ParamBase::IntArray:
+                    new_d->data.ptrVal = new int32[d->len];
+                    std::copy_n((const int32*)d->data.ptrVal, d->len, (int32*)new_d->data.ptrVal);
+                    break;
+                case ParamBase::DoubleArray:
+                    new_d->data.ptrVal = new float64[d->len];
+                    std::copy_n((const float64*)d->data.ptrVal, d->len, (float64*)new_d->data.ptrVal);
+                    break;
+                case ParamBase::ComplexArray:
+                    new_d->data.ptrVal = new complex128[d->len];
+                    std::copy_n(
+                        (const complex128*)d->data.ptrVal, d->len, (complex128*)new_d->data.ptrVal);
+                    break;
+                case ParamBase::StringList: {
+                    new_d->data.ptrVal = new ByteArray[d->len];
+                    std::copy_n(
+                        (const ByteArray*)d->data.ptrVal, d->len, (ByteArray*)new_d->data.ptrVal);
+                    break;
+                }
+                case ParamBase::String:
+                    new_d->data.ptrVal = new char[d->len + 1];
+                    std::copy_n((const char*)d->data.ptrVal, d->len + 1, (char*)new_d->data.ptrVal);
+                    break;
+                }
             }
-            case ParamBase::String:
-                new_d->data.ptrVal = new char[d->len + 1];
-                std::copy_n((const char*)d->data.ptrVal, d->len + 1, (char*)new_d->data.ptrVal);
-                break;
+            else if (
+                (d->type == ParamBase::CharArray) ||
+                (d->type == ParamBase::IntArray) ||
+                (d->type == ParamBase::DoubleArray) ||
+                (d->type == ParamBase::ComplexArray) ||
+                (d->type == ParamBase::StringList) ||
+                (d->type == ParamBase::String))
+            {
+                new_d->data.ptrVal = nullptr;
+                new_d->len = 0;
             }
         }
 
@@ -1097,7 +1108,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase* rhs)
         {
             d->len = rhs->d->len;
             d->data.ptrVal = new complex128[d->len];
-            std::copy_n((const complex128*)(rhs->d->data.ptrVal), d->len, (complex128*)d->data.ptrVal);
+            std::copy_n(
+                (const complex128*)(rhs->d->data.ptrVal), d->len, (complex128*)d->data.ptrVal);
         }
         break;
 
@@ -1106,7 +1118,8 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase* rhs)
         {
             d->len = rhs->d->len;
             d->data.ptrVal = new ByteArray[d->len];
-            std::copy_n((const ByteArray*)(rhs->d->data.ptrVal), d->len, (ByteArray*)d->data.ptrVal);
+            std::copy_n(
+                (const ByteArray*)(rhs->d->data.ptrVal), d->len, (ByteArray*)d->data.ptrVal);
         }
         break;
 
@@ -1393,8 +1406,7 @@ Param::Param(const Param& copyConstr) :
 }
 
 //-------------------------------------------------------------------------------------
-Param::Param(Param&& rvalue) :
-    ParamBase(rvalue), m_pMetaShared(nullptr)
+Param::Param(Param&& rvalue) : ParamBase(rvalue), m_pMetaShared(nullptr)
 {
     std::swap(m_pMetaShared, rvalue.m_pMetaShared);
     std::swap(m_info, rvalue.m_info);
@@ -1408,7 +1420,7 @@ Param::Param(Param&& rvalue) :
 const Param Param::operator[](const int index) const
 {
     auto type = getType();
-    const ito::ParamMeta *pMeta = getMeta();
+    const ito::ParamMeta* pMeta = getMeta();
 
     if ((type == CharArray) || (type == IntArray) || (type == DoubleArray) ||
         (type == ComplexArray) || (type == StringList))
@@ -1451,8 +1463,8 @@ const Param Param::operator[](const int index) const
 
                 if (pMeta &&
                     (pMeta->getType() == ParamMeta::rttiIntArrayMeta ||
-                        pMeta->getType() == ParamMeta::rttiIntervalMeta ||
-                        pMeta->getType() == ParamMeta::rttiRangeMeta))
+                     pMeta->getType() == ParamMeta::rttiIntervalMeta ||
+                     pMeta->getType() == ParamMeta::rttiRangeMeta))
                 {
                     const IntMeta* iaMeta = static_cast<const IntMeta*>(pMeta);
                     iMeta = new IntMeta(*iaMeta);
@@ -1460,7 +1472,11 @@ const Param Param::operator[](const int index) const
 
                 // no conversion from RectMeta to single valued met
                 return Param(
-                    newName, newSingleType, (getVal<const int32*>(len))[index], iMeta, m_info.data());
+                    newName,
+                    newSingleType,
+                    (getVal<const int32*>(len))[index],
+                    iMeta,
+                    m_info.data());
             }
             break;
 
@@ -1469,14 +1485,18 @@ const Param Param::operator[](const int index) const
 
                 if (pMeta &&
                     (pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta ||
-                        pMeta->getType() == ParamMeta::rttiDoubleArrayMeta))
+                     pMeta->getType() == ParamMeta::rttiDoubleArrayMeta))
                 {
                     const DoubleMeta* daMeta = static_cast<const DoubleMeta*>(pMeta);
                     dMeta = new DoubleMeta(*daMeta);
                 }
 
                 return Param(
-                    newName, newSingleType, (getVal<const float64*>(len))[index], dMeta, m_info.data());
+                    newName,
+                    newSingleType,
+                    (getVal<const float64*>(len))[index],
+                    dMeta,
+                    m_info.data());
             }
             break;
 
@@ -1523,11 +1543,15 @@ Param& Param::operator=(const Param& rhs)
 }
 
 //-------------------------------------------------------------------------------------
-Param& Param::operator=(Param&& rvalue)
+Param& Param::operator=(Param&& rvalue) noexcept
 {
-    ParamBase::operator=(rvalue);
-    std::swap(m_info, rvalue.m_info);
-    std::swap(m_pMetaShared, rvalue.m_pMetaShared);
+    if (*this != rvalue)
+    {
+        ParamBase::operator=(std::move(rvalue));
+        std::swap(m_info, rvalue.m_info);
+        std::swap(m_pMetaShared, rvalue.m_pMetaShared);
+    }
+
     return *this;
 }
 
@@ -1550,9 +1574,9 @@ void Param::detachMeta()
 //-------------------------------------------------------------------------------------
 void Param::setMeta(ParamMeta* meta, bool takeOwnership)
 {
-    MetaShared *oldMetaShared = m_pMetaShared;
+    MetaShared* oldMetaShared = m_pMetaShared;
     m_pMetaShared = nullptr;
-    
+
     if (meta)
     {
         ito::ParamMeta::MetaRtti metaType = meta->getType();

@@ -64,6 +64,7 @@ struct complex128_
     float64 imag;
 };
 
+//!< Union for the internal parameter value of class ParamBase.
 union ParamBaseData {
     //!< 1 byte
     int8 i8Val;
@@ -81,6 +82,14 @@ union ParamBaseData {
     void* ptrVal;
 };
 
+//-------------------------------------------------------------------------------------
+//!< \class ParamBase
+/* \brief Base class for parameter container.
+
+   This base class only holds the name of the parameter, the type of the internal value,
+   the value itself and
+   some optional flags.
+ */
 class ITOMCOMMON_EXPORT ParamBase
 {
 public:
@@ -251,6 +260,7 @@ public:
     //!< values of rhs Param, strings are copied)
     ParamBase& operator=(const ParamBase& rhs);
 
+    //!< rvalue assignment operator
     inline ParamBase& operator=(ParamBase&& other) noexcept
     {
         std::swap(d, other.d);
@@ -364,6 +374,7 @@ public:
     }
 
 private:
+    //!< struct used as shared memory of ParamBase
     struct Data
     {
         Data(const ByteArray& name_ = "") : ref(0), flags(0), type(0), len(0), name(name_)
@@ -374,8 +385,10 @@ private:
         /*!< reference counter for implicit sharing (0: means one reference, ...) */
         std::atomic_int ref;
 
+        //!< value as union
         ParamBaseData data;
 
+        //!< length of array if the type is an array type (including string or string list)
         uint32 len;
 
         //!< flags, bitmask of the higher level values in ParamBase::Flag
@@ -388,6 +401,8 @@ private:
         ByteArray name;
     };
 
+
+    //!< shared data container
     mutable Data* d;
 
     //!< clears and frees memory that has been allocated by data. Does not delete
@@ -397,7 +412,13 @@ private:
     //!< if data is currently shared with another object, detach this
     //!< data d from the shared ones by making a copy. If this data is not
     //!< shared, this method is a noop.
-    void detach();
+    /*
+    \param allocNewArray if false, now new arrays, strings or string list
+         memory is allocated and the len is set to 0. This should only be
+         set to false, if it is assured that the memory is allocated by
+         another part of the code.
+    */
+    void detach(bool allocNewArray = true);
 
     //!< decrements the reference counter of data. If it drops below zero
     //!< the allocated memory is cleared.
@@ -811,6 +832,7 @@ public:
     //!< Copy-Constructor
     Param(const Param& copyConstr);
 
+    //!< rvalue copy constructor
     Param(Param&& rvalue);
 
     //--------------------------------------------------------------------------------------------
@@ -824,13 +846,15 @@ public:
     //!< rhs Param, strings are copied)
     Param& operator=(const Param& rhs);
 
-    Param& operator=(Param&& rvalue);
+    //!< rvalue assignment operator
+    Param& operator=(Param&& rvalue) noexcept;
 
     //!< just copies the value from the right-hand-side ParamBase (rhs)
     //!< to this tParam.
     ito::RetVal copyValueFrom(const ParamBase* rhs);
 
 private:
+    //!< struct for the shared container for meta information
     struct MetaShared
     {
         MetaShared(ParamMeta* m) : meta(m), ref(0)
@@ -841,11 +865,17 @@ private:
         std::atomic_int ref;
     };
 
+    //!< shared meta information object
     MetaShared* m_pMetaShared;
 
     //!< description of this parameter
     ByteArray m_info;
 
+    /* call this method, if the internal meta object
+    is likely to be changed. If so, a deep copy of the
+    internal meta object will be done (if it is currently shared),
+    such that other Param objects are not affected by the possible meta
+    change. */
     void detachMeta();
 
     inline void incRefMeta(MetaShared* ms) const
@@ -883,6 +913,7 @@ public:
         m_info = info;
     }
 
+    //!< set the info string (description) to info.
     inline void setInfo(const ByteArray& info)
     {
         m_info = info;
@@ -891,6 +922,13 @@ public:
     //!< returns const-pointer to meta-information instance or nullptr if not available. Cast this
     //!< pointer to the right class of the parameter.
     inline const ParamMeta* getMeta() const
+    {
+        return m_pMetaShared ? m_pMetaShared->meta : nullptr;
+    }
+
+    //!< returns const-pointer to meta-information instance or nullptr if not available. Cast this
+    //!< pointer to the right class of the parameter.
+    inline const ParamMeta* getConstMeta() const
     {
         return m_pMetaShared ? m_pMetaShared->meta : nullptr;
     }
@@ -913,8 +951,25 @@ public:
     //!< available or cast failed.
     /*
     Example: intParam.getMetaT<ito::IntMeta>();
+
+    Usually, it is more explicit to call getConstMetaT instead of this method.
     */
     template <typename _Tp> inline const _Tp* getMetaT(void) const
+    {
+        if (m_pMetaShared)
+        {
+            return static_cast<const _Tp*>(m_pMetaShared->meta);
+        }
+
+        return nullptr;
+    }
+
+    //!< returns const-pointer to meta-information instance casted to 'const _Tp*' or nullptr if not
+    //!< available or cast failed.
+    /*
+    Example: intParam.getMetaT<ito::IntMeta>();
+    */
+    template <typename _Tp> inline const _Tp* getConstMetaT(void) const
     {
         if (m_pMetaShared)
         {
@@ -956,18 +1011,28 @@ public:
     */
     void setMeta(ParamMeta* meta, bool takeOwnership = false);
 
+    //!< get the minimum value of the current meta info.
+    /* The returned value is only valid, if a meta has been set and if it
+    contains a minimum value. Else -Inf is returned. */
     float64 getMin() const;
+
+    //!< get the maximum value of the current meta info.
+    /* The returned value is only valid, if a meta has been set and if it
+    contains a maximum value. Else +Inf is returned. */
     float64 getMax() const;
 };
 
-//---------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//!< \class ItomParamHelper
+/* template helper class (with template specializations) for getting or setting
+   the value of the parameter. These classes must be defined in the header file.
+   This class is a friend of ito::ParamBase.
+ */
 template <typename _Tp> struct ItomParamHelper
 {
     static ito::RetVal setVal(ito::ParamBase* param, const _Tp val, int len = 0)
     {
         static_assert(std::is_pointer<_Tp>::value, "invalid template type");
-
-        param->detach();
 
         switch (param->d->type)
         {
@@ -975,145 +1040,32 @@ template <typename _Tp> struct ItomParamHelper
         case ito::ParamBase::DObjPtr:
         case ito::ParamBase::PointCloudPtr:
         case ito::ParamBase::PointPtr:
-        case ito::ParamBase::PolygonMeshPtr:
+        case ito::ParamBase::PolygonMeshPtr: {
+            param->detach();
             param->d->data.ptrVal = (void*)(reinterpret_cast<const void*>(val));
             return ito::retOk;
-
-        case ito::ParamBase::String: {
-            auto cVal_ = param->d->data.ptrVal;
-            if (val)
-            {
-                size_t len = strlen(reinterpret_cast<const char*>(val));
-                param->d->data.ptrVal = new char[len + 1];
-                memcpy(param->d->data.ptrVal, val, len + 1);
-                param->d->len = static_cast<int>(strlen((char*)param->d->data.ptrVal));
-            }
-            else
-            {
-                param->d->data.ptrVal = 0;
-                param->d->len = -1;
-            }
-
-            if (cVal_)
-            {
-                delete[](char*) cVal_;
-            }
         }
-            return ito::retOk;
 
-        case ito::ParamBase::CharArray: {
-            auto cVal_ = param->d->data.ptrVal;
-            if ((val) && (len > 0))
-            {
-                param->d->data.ptrVal = new char[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(char));
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
-            }
+        case ito::ParamBase::String:
+        case ito::ParamBase::CharArray:
+            return ItomParamHelper<const char*>::setVal(
+                param, reinterpret_cast<const char*>(val), len);
 
-            if (cVal_)
-            {
-                delete[](char*) cVal_;
-            }
-        }
-            return ito::retOk;
+        case ito::ParamBase::IntArray:
+            return ItomParamHelper<const int32*>::setVal(
+                param, reinterpret_cast<const int32*>(val), len);
 
-        case ito::ParamBase::IntArray: {
-            auto cVal_ = param->d->data.ptrVal;
-            if ((val) && (len > 0))
-            {
-                param->d->data.ptrVal = new ito::int32[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(ito::int32));
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
-            }
+        case ito::ParamBase::DoubleArray:
+            return ItomParamHelper<const float64*>::setVal(
+                param, reinterpret_cast<const float64*>(val), len);
 
-            if (cVal_)
-            {
-                delete[](ito::int32*) cVal_;
-            }
-        }
-            return ito::retOk;
+        case ito::ParamBase::ComplexArray:
+            return ItomParamHelper<const complex128*>::setVal(
+                param, reinterpret_cast<const complex128*>(val), len);
 
-        case ito::ParamBase::DoubleArray: {
-            auto cVal_ = param->d->data.ptrVal;
-            if ((val) && (len > 0))
-            {
-                param->d->data.ptrVal = new ito::float64[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(ito::float64));
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
-            }
-
-            if (cVal_)
-            {
-                delete[](ito::float64*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        case ito::ParamBase::ComplexArray: {
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                param->d->data.ptrVal = new ito::complex128[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(ito::complex128));
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
-            }
-
-            if (cVal_)
-            {
-                delete[](ito::complex128*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        case ito::ParamBase::StringList: {
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                ito::ByteArray* dest = new ito::ByteArray[len];
-                param->d->data.ptrVal = dest;
-                const ito::ByteArray* src = (const ito::ByteArray*)val;
-
-                for (int i = 0; i < len; ++i)
-                {
-                    dest[i] = src[i]; // operator=
-                }
-
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
-            }
-
-            if (cVal_)
-            {
-                delete[](ito::ByteArray*) cVal_;
-            }
-        }
-            return ito::retOk;
+        case ito::ParamBase::StringList:
+            return ItomParamHelper<const ByteArray*>::setVal(
+                param, reinterpret_cast<const ByteArray*>(val), len);
 
         default:
             return ito::RetVal(
@@ -1179,11 +1131,10 @@ template <> struct ItomParamHelper<const ByteArray*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const ByteArray* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::StringList: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
 
             if ((val) && (len > 0))
@@ -1201,7 +1152,7 @@ template <> struct ItomParamHelper<const ByteArray*>
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1234,23 +1185,32 @@ template <> struct ItomParamHelper<const char*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const char* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::String: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if (val)
             {
                 size_t len = strlen(val);
-                param->d->data.ptrVal = new char[len + 1];
-                memcpy(param->d->data.ptrVal, val, len + 1);
-                param->d->len = static_cast<int>(strlen((char*)param->d->data.ptrVal));
+
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new char[len + 1];
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len + 1, (char*)param->d->data.ptrVal);
+                param->d->len = len;
             }
             else
             {
                 param->d->data.ptrVal = 0;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1261,17 +1221,27 @@ template <> struct ItomParamHelper<const char*>
             return ito::retOk;
 
         case ito::ParamBase::CharArray: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal = new char[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(char));
-                param->d->len = len;
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new char[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len, (char*)param->d->data.ptrVal);
             }
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1305,22 +1275,30 @@ template <> struct ItomParamHelper<const int8*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const int8* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::CharArray: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal = new int8[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(int8));
-                param->d->len = len;
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new int8[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len, (int8*)param->d->data.ptrVal);
             }
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1353,22 +1331,30 @@ template <> struct ItomParamHelper<const int32*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const int32* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::IntArray: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal = new int32[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(int32));
-                param->d->len = len;
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new int32[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len, (int32*)param->d->data.ptrVal);
             }
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1401,22 +1387,30 @@ template <> struct ItomParamHelper<const float64*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const float64* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::DoubleArray: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal = new float64[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(float64));
-                param->d->len = len;
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new float64[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len, (float64*)param->d->data.ptrVal);
             }
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1451,22 +1445,30 @@ template <> struct ItomParamHelper<const complex128*>
 {
     static ito::RetVal setVal(ito::ParamBase* param, const complex128* val, int len = 0)
     {
-        param->detach();
-
         switch (param->d->type)
         {
         case ito::ParamBase::ComplexArray: {
+            param->detach(false);
             auto cVal_ = param->d->data.ptrVal;
+
             if ((val) && (len > 0))
             {
-                param->d->data.ptrVal = new complex128[len];
-                memcpy(param->d->data.ptrVal, val, len * sizeof(complex128));
-                param->d->len = len;
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new complex128[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n(val, len, (complex128*)param->d->data.ptrVal);
             }
             else
             {
                 param->d->data.ptrVal = nullptr;
-                param->d->len = -1;
+                param->d->len = 0;
             }
 
             if (cVal_)
@@ -1628,13 +1630,13 @@ template <> struct ItomParamHelper<int8>
         switch (param->d->type)
         {
         case ito::ParamBase::Int:
-            return static_cast<char>(param->d->data.i8Val);
+            return static_cast<int8>(param->d->data.i8Val);
         case ito::ParamBase::Char:
-            return static_cast<char>(param->d->data.i32Val);
+            return static_cast<int8>(param->d->data.i32Val);
         case ito::ParamBase::Double:
-            return static_cast<char>(param->d->data.f64Val);
+            return static_cast<int8>(param->d->data.f64Val);
         case ito::ParamBase::Complex:
-            return static_cast<char>(param->d->data.c128Val.real);
+            return static_cast<int8>(param->d->data.c128Val.real);
         case 0:
             throw std::invalid_argument("Param::getVal<int8>: non existent parameter");
 
