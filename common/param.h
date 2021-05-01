@@ -83,66 +83,6 @@ union ParamBaseData {
 
 class ITOMCOMMON_EXPORT ParamBase
 {
-protected:
-    void inOutCheck();
-
-private:
-    struct Data
-    {
-        Data(const ByteArray& name_ = "") : ref(0), flags(0), type(0), len(0), name(name_)
-        {
-            memset(&data, 0, sizeof(ParamBaseData));
-        }
-
-        std::atomic_int
-            ref; /*!< reference counter for implicit sharing (0: means one reference, ...) */
-
-        ParamBaseData data;
-
-        uint32 len;
-
-        //!< flags, bitmask of the higher level values in ParamBase::Flag
-        uint16 flags;
-
-        //!< type, correspond to ParamBase::Type
-        uint16 type;
-
-        //!< name of this parameter
-        ByteArray name;
-    };
-
-    mutable Data* d;
-
-    void freeMemory(Data* data); //!< free allocated memory, if memory has been allocated.
-
-    //!< if data is currently shared with another object, detach this
-    //!< data d from the shared ones by making a copy. If this data is not
-    //!< shared, this method is a noop.
-    void detach();
-
-    inline void decRefAndFree(Data* x)
-    {
-        if (x && (!(x->ref--)))
-        {
-            freeMemory(x);
-            delete (x);
-            x = nullptr;
-        }
-    }
-
-    inline void incRef(Data* x)
-    {
-        if (x)
-        {
-            (x->ref)++;
-        }
-    }
-
-    //!< depending on the type, set the default value for the autosave flag.
-    void setDefaultAutosave();
-
-    template <typename _Tp> friend struct ItomParamHelper;
-
 public:
     //!< Flag section, new for itom > 4.1. Before it was part of the Type enumeration.
     /* For compatibility reasons with older versions of itom, values in this enumeration
@@ -422,6 +362,70 @@ public:
     {
         return ItomParamHelper<_Tp>::getVal(this, len);
     }
+
+private:
+    struct Data
+    {
+        Data(const ByteArray& name_ = "") : ref(0), flags(0), type(0), len(0), name(name_)
+        {
+            memset(&data, 0, sizeof(ParamBaseData));
+        }
+
+        /*!< reference counter for implicit sharing (0: means one reference, ...) */
+        std::atomic_int ref;
+
+        ParamBaseData data;
+
+        uint32 len;
+
+        //!< flags, bitmask of the higher level values in ParamBase::Flag
+        uint16 flags;
+
+        //!< type, correspond to ParamBase::Type
+        uint16 type;
+
+        //!< name of this parameter
+        ByteArray name;
+    };
+
+    mutable Data* d;
+
+    //!< clears and frees memory that has been allocated by data. Does not delete
+    //!< data itself. Usually this method is internally called by decRefAndFree.
+    void clearData(Data* data);
+
+    //!< if data is currently shared with another object, detach this
+    //!< data d from the shared ones by making a copy. If this data is not
+    //!< shared, this method is a noop.
+    void detach();
+
+    //!< decrements the reference counter of data. If it drops below zero
+    //!< the allocated memory is cleared.
+    inline void decRefAndFree(Data* x)
+    {
+        if (x && (!(x->ref--)))
+        {
+            clearData(x);
+            delete (x);
+            x = nullptr;
+        }
+    }
+
+    //!< increments the reference counter of data
+    inline void incRef(Data* x)
+    {
+        if (x)
+        {
+            (x->ref)++;
+        }
+    }
+
+    //!< depending on the type, set the default value for the autosave flag.
+    void setDefaultAutosaveFlag();
+
+    void checkAndCorrectInOutFlag();
+
+    template <typename _Tp> friend struct ItomParamHelper;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -433,10 +437,6 @@ public:
  */
 class ITOMCOMMON_EXPORT Param : public ParamBase
 {
-private:
-    ParamMeta* m_pMeta;
-    ByteArray m_info;
-
 public:
     //--------------------------------------------------------------------------------------------
     //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
@@ -447,9 +447,7 @@ public:
     The type is 0 (invalid).
     The name is empty.
     */
-    Param() : ParamBase(), m_pMeta(nullptr), m_info(nullptr)
-    {
-    }
+    Param();
 
     //!< type-less Param with name only
     /*
@@ -458,9 +456,7 @@ public:
 
     \param name is the name of the parameter
     */
-    Param(const ByteArray& name) : ParamBase(name), m_pMeta(nullptr), m_info(nullptr)
-    {
-    }
+    Param(const ByteArray& name);
 
     //!< type-less Param with name and type
     /*
@@ -470,10 +466,7 @@ public:
     \type is a flag mask, that might consists of combinations of ito::ParamBase::Type,
     e.g. ito::ParamBase::Char | ito::ParamBase::In for a read-only input parameter
     */
-    Param(const ByteArray& name, const uint32 typeAndFlags) :
-        ParamBase(name, typeAndFlags), m_pMeta(nullptr), m_info(nullptr)
-    {
-    }
+    Param(const ByteArray& name, const uint32 typeAndFlags);
 
     //!< Constructor for a string value (const char*)
     /*
@@ -818,6 +811,8 @@ public:
     //!< Copy-Constructor
     Param(const Param& copyConstr);
 
+    Param(Param&& rvalue);
+
     //--------------------------------------------------------------------------------------------
     //  ASSIGNMENT AND OPERATORS
     //--------------------------------------------------------------------------------------------
@@ -829,15 +824,54 @@ public:
     //!< rhs Param, strings are copied)
     Param& operator=(const Param& rhs);
 
+    Param& operator=(Param&& rvalue);
+
     //!< just copies the value from the right-hand-side ParamBase (rhs)
     //!< to this tParam.
     ito::RetVal copyValueFrom(const ParamBase* rhs);
 
+private:
+    struct MetaShared
+    {
+        MetaShared(ParamMeta* m) : meta(m), ref(0)
+        {
+        }
+
+        ParamMeta* meta;
+        std::atomic_int ref;
+    };
+
+    MetaShared* m_pMetaShared;
+
+    //!< description of this parameter
+    ByteArray m_info;
+
+    void detachMeta();
+
+    inline void incRefMeta(MetaShared* ms) const
+    {
+        if (ms)
+        {
+            ms->ref++;
+        }
+    }
+
+    inline void decRefMeta(MetaShared* ms) const
+    {
+        if (ms && !(ms->ref--))
+        {
+            delete ms->meta;
+            delete ms;
+            ms = nullptr;
+        }
+    }
+
+public:
     //--------------------------------------------------------------------------------------------
     //  SET/GET FURTHER PROPERTIES
     //--------------------------------------------------------------------------------------------
     //!< returns content of info string (string is not copied)
-    inline const char* getInfo(void) const
+    inline const char* getInfo() const
     {
         return m_info.data();
     }
@@ -856,16 +890,23 @@ public:
 
     //!< returns const-pointer to meta-information instance or nullptr if not available. Cast this
     //!< pointer to the right class of the parameter.
-    inline const ParamMeta* getMeta(void) const
+    inline const ParamMeta* getMeta() const
     {
-        return m_pMeta;
+        return m_pMetaShared ? m_pMetaShared->meta : nullptr;
     }
 
     //!< returns pointer to meta-information instance or nullptr if not available. Cast this pointer
     //!< to the right class of the parameter.
     inline ParamMeta* getMeta(void)
     {
-        return m_pMeta;
+        if (m_pMetaShared && m_pMetaShared->ref > 0)
+        {
+            // decouple the internal meta object, since it
+            // could be changed by the caller of this method.
+            detachMeta();
+        }
+
+        return m_pMetaShared ? m_pMetaShared->meta : nullptr;
     }
 
     //!< returns const-pointer to meta-information instance casted to 'const _Tp*' or nullptr if not
@@ -875,7 +916,12 @@ public:
     */
     template <typename _Tp> inline const _Tp* getMetaT(void) const
     {
-        return static_cast<const _Tp*>(m_pMeta);
+        if (m_pMetaShared)
+        {
+            return static_cast<const _Tp*>(m_pMetaShared->meta);
+        }
+
+        return nullptr;
     }
 
     //!< returns pointer to meta-information instance casted to '_Tp*' or nullptr if not available
@@ -885,7 +931,19 @@ public:
     */
     template <typename _Tp> inline _Tp* getMetaT(void)
     {
-        return static_cast<_Tp*>(m_pMeta);
+        if (m_pMetaShared)
+        {
+            if (m_pMetaShared->ref > 0)
+            {
+                // decouple the internal meta object, since it
+                // could be changed by the caller of this method.
+                detachMeta();
+            }
+
+            return static_cast<_Tp*>(m_pMetaShared->meta);
+        }
+
+        return nullptr;
     }
 
     //! sets a new ParamMeta-instance as meta information for this Param

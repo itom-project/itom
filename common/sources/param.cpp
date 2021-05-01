@@ -54,7 +54,7 @@ constexpr uint32 toFlagsExternal(uint16 flags)
 ParamBase::ParamBase() :
     d(new Data())
 {
-    setDefaultAutosave();
+    setDefaultAutosaveFlag();
 }
 
 //-------------------------------------------------------------------------------------
@@ -67,8 +67,8 @@ ParamBase::ParamBase() :
 ParamBase::ParamBase(const ByteArray& name) :
     d(new Data(name))
 {
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 }
 
 //-------------------------------------------------------------------------------------
@@ -84,8 +84,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags) :
 {
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 }
 
 //-------------------------------------------------------------------------------------
@@ -104,8 +104,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     if (val)
     {
@@ -138,8 +138,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const flo
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     switch (d->type)
     {
@@ -177,8 +177,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     switch (d->type)
     {
@@ -252,8 +252,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const com
         break;
     }
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 }
 
 //-------------------------------------------------------------------------------------
@@ -287,8 +287,8 @@ ParamBase::ParamBase(
         break;
     }
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 }
 
 //-------------------------------------------------------------------------------------
@@ -308,8 +308,8 @@ ParamBase::ParamBase(
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     if (d->type == CharArray)
     {
@@ -354,8 +354,8 @@ ParamBase::ParamBase(
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     if (d->type == IntArray)
     {
@@ -400,8 +400,8 @@ ParamBase::ParamBase(
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     if (d->type == DoubleArray)
     {
@@ -446,8 +446,8 @@ ParamBase::ParamBase(
     d->type = typeAndFlags & ito::paramTypeMask;
     d->flags = toFlagsInternal(typeAndFlags);
 
-    inOutCheck();
-    setDefaultAutosave();
+    checkAndCorrectInOutFlag();
+    setDefaultAutosaveFlag();
 
     if (d->type == ComplexArray)
     {
@@ -484,7 +484,7 @@ ParamBase::~ParamBase()
 
 //-------------------------------------------------------------------------------------
 //!< depending on the type, set the default value for the autosave flag.
-void ParamBase::setDefaultAutosave()
+void ParamBase::setDefaultAutosaveFlag()
 {
     ito::uint16 flags = d->flags;
 
@@ -510,7 +510,7 @@ void ParamBase::setDefaultAutosave()
 }
 
 //-------------------------------------------------------------------------------------
-void ParamBase::freeMemory(Data *data)
+void ParamBase::clearData(Data *data)
 {
     bool arrType = true;
 
@@ -554,10 +554,7 @@ void ParamBase::freeMemory(Data *data)
 ParamBase::ParamBase(const ParamBase& other) :
     d(other.d)
 {
-    if (d)
-    {
-        (d->ref)++;
-    }
+    incRef(d);
 }
 
 //-------------------------------------------------------------------------------------
@@ -710,7 +707,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
 
     \seealso ito::ParamBase::Type
 */
-void ParamBase::inOutCheck()
+void ParamBase::checkAndCorrectInOutFlag()
 {
     const uint16 in_internal = toFlagsInternal(ParamBase::In);
     const uint16 out_internal = toFlagsInternal(ParamBase::Out);
@@ -1131,8 +1128,24 @@ ito::RetVal ParamBase::copyValueFrom(const ParamBase* rhs)
 }
 
 //-------------------------------------------------------------------------------------
+Param::Param() : ParamBase(), m_pMetaShared(nullptr), m_info(nullptr)
+{
+}
+
+//-------------------------------------------------------------------------------------
+Param::Param(const ByteArray& name) : ParamBase(name), m_pMetaShared(nullptr), m_info(nullptr)
+{
+}
+
+//-------------------------------------------------------------------------------------
+Param::Param(const ByteArray& name, const uint32 typeAndFlags) :
+    ParamBase(name, typeAndFlags), m_pMetaShared(nullptr), m_info(nullptr)
+{
+}
+
+//-------------------------------------------------------------------------------------
 Param::Param(const ByteArray& name, const uint32 typeAndFlags, const char* val, const char* info) :
-    ParamBase(name, typeAndFlags, val), m_pMeta(nullptr), m_info(info)
+    ParamBase(name, typeAndFlags, val), m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1148,7 +1161,7 @@ Param::Param(
     m_info(info)
 {
     assert((typeAndFlags & ParamBase::Char)); // use this constructor only for type character
-    m_pMeta = new CharMeta(minVal, maxVal);
+    m_pMetaShared = new MetaShared(new CharMeta(minVal, maxVal));
 }
 
 //-------------------------------------------------------------------------------------
@@ -1163,7 +1176,7 @@ Param::Param(
     m_info(info)
 {
     assert((typeAndFlags & ParamBase::Int)); // use this constructor only for type integer
-    m_pMeta = new IntMeta(minVal, maxVal);
+    m_pMetaShared = new MetaShared(new IntMeta(minVal, maxVal));
 }
 
 //-------------------------------------------------------------------------------------
@@ -1178,7 +1191,7 @@ Param::Param(
     m_info(info)
 {
     assert((typeAndFlags & ParamBase::Double)); // use this constructor only for type double
-    m_pMeta = new DoubleMeta(minVal, maxVal);
+    m_pMetaShared = new MetaShared(new DoubleMeta(minVal, maxVal));
 }
 
 
@@ -1190,7 +1203,7 @@ Param::Param(
     const char* values,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1202,7 +1215,7 @@ Param::Param(
     const int32* values,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1214,7 +1227,7 @@ Param::Param(
     const float64* values,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1226,7 +1239,7 @@ Param::Param(
     const complex128* values,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1238,7 +1251,7 @@ Param::Param(
     const ByteArray* values,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
 }
 
@@ -1250,7 +1263,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, val),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1263,7 +1276,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, val),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1276,7 +1289,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, val),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1289,7 +1302,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, val),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1303,7 +1316,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1317,7 +1330,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1331,7 +1344,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1345,7 +1358,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1359,7 +1372,7 @@ Param::Param(
     ParamMeta* meta,
     const char* info) :
     ParamBase(name, typeAndFlags, size, values),
-    m_pMeta(nullptr), m_info(info)
+    m_pMetaShared(nullptr), m_info(info)
 {
     setMeta(meta, true); // throws exception if meta does not fit to type
 }
@@ -1368,16 +1381,24 @@ Param::Param(
 //-------------------------------------------------------------------------------------
 Param::~Param()
 {
-    DELETE_AND_SET_NULL(m_pMeta);
+    decRefMeta(m_pMetaShared);
+    m_pMetaShared = nullptr;
 }
 
 //-------------------------------------------------------------------------------------
 Param::Param(const Param& copyConstr) :
-    ParamBase(copyConstr), m_pMeta(nullptr), m_info(copyConstr.m_info)
+    ParamBase(copyConstr), m_pMetaShared(copyConstr.m_pMetaShared), m_info(copyConstr.m_info)
 {
-    setMeta(copyConstr.m_pMeta);
+    incRefMeta(m_pMetaShared);
 }
 
+//-------------------------------------------------------------------------------------
+Param::Param(Param&& rvalue) :
+    ParamBase(rvalue), m_pMetaShared(nullptr)
+{
+    std::swap(m_pMetaShared, rvalue.m_pMetaShared);
+    std::swap(m_info, rvalue.m_info);
+}
 
 //--------------------------------------------------------------------------------------------
 //  ASSIGNMENT AND OPERATORS
@@ -1387,6 +1408,7 @@ Param::Param(const Param& copyConstr) :
 const Param Param::operator[](const int index) const
 {
     auto type = getType();
+    const ito::ParamMeta *pMeta = getMeta();
 
     if ((type == CharArray) || (type == IntArray) || (type == DoubleArray) ||
         (type == ComplexArray) || (type == StringList))
@@ -1410,9 +1432,9 @@ const Param Param::operator[](const int index) const
             case Char: {
                 CharMeta* cMeta = nullptr;
 
-                if (m_pMeta && m_pMeta->getType() == ParamMeta::rttiCharArrayMeta)
+                if (pMeta && pMeta->getType() == ParamMeta::rttiCharArrayMeta)
                 {
-                    const CharArrayMeta* caMeta = static_cast<const CharArrayMeta*>(m_pMeta);
+                    const CharArrayMeta* caMeta = static_cast<const CharArrayMeta*>(pMeta);
                     cMeta = new CharMeta(caMeta->getMin(), caMeta->getMax(), caMeta->getStepSize());
                 }
                 return Param(
@@ -1427,12 +1449,12 @@ const Param Param::operator[](const int index) const
             case Int: {
                 IntMeta* iMeta = nullptr;
 
-                if (m_pMeta &&
-                    (m_pMeta->getType() == ParamMeta::rttiIntArrayMeta ||
-                     m_pMeta->getType() == ParamMeta::rttiIntervalMeta ||
-                     m_pMeta->getType() == ParamMeta::rttiRangeMeta))
+                if (pMeta &&
+                    (pMeta->getType() == ParamMeta::rttiIntArrayMeta ||
+                        pMeta->getType() == ParamMeta::rttiIntervalMeta ||
+                        pMeta->getType() == ParamMeta::rttiRangeMeta))
                 {
-                    const IntMeta* iaMeta = static_cast<const IntMeta*>(m_pMeta);
+                    const IntMeta* iaMeta = static_cast<const IntMeta*>(pMeta);
                     iMeta = new IntMeta(*iaMeta);
                 }
 
@@ -1445,11 +1467,11 @@ const Param Param::operator[](const int index) const
             case Double: {
                 DoubleMeta* dMeta = nullptr;
 
-                if (m_pMeta &&
-                    (m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta ||
-                     m_pMeta->getType() == ParamMeta::rttiDoubleArrayMeta))
+                if (pMeta &&
+                    (pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta ||
+                        pMeta->getType() == ParamMeta::rttiDoubleArrayMeta))
                 {
-                    const DoubleMeta* daMeta = static_cast<const DoubleMeta*>(m_pMeta);
+                    const DoubleMeta* daMeta = static_cast<const DoubleMeta*>(pMeta);
                     dMeta = new DoubleMeta(*daMeta);
                 }
 
@@ -1495,7 +1517,17 @@ Param& Param::operator=(const Param& rhs)
 {
     ParamBase::operator=(rhs);
     m_info = rhs.m_info;
-    setMeta(const_cast<ito::ParamMeta*>(rhs.getMeta()));
+    m_pMetaShared = rhs.m_pMetaShared;
+    incRefMeta(m_pMetaShared);
+    return *this;
+}
+
+//-------------------------------------------------------------------------------------
+Param& Param::operator=(Param&& rvalue)
+{
+    ParamBase::operator=(rvalue);
+    std::swap(m_info, rvalue.m_info);
+    std::swap(m_pMetaShared, rvalue.m_pMetaShared);
     return *this;
 }
 
@@ -1506,10 +1538,21 @@ ito::RetVal Param::copyValueFrom(const ParamBase* rhs)
 }
 
 //-------------------------------------------------------------------------------------
+void Param::detachMeta()
+{
+    if (m_pMetaShared)
+    {
+        // make a copy of the current meta
+        setMeta(m_pMetaShared->meta, false);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void Param::setMeta(ParamMeta* meta, bool takeOwnership)
 {
-    ParamMeta* oldMeta = m_pMeta;
-
+    MetaShared *oldMetaShared = m_pMetaShared;
+    m_pMetaShared = nullptr;
+    
     if (meta)
     {
         ito::ParamMeta::MetaRtti metaType = meta->getType();
@@ -1576,70 +1619,71 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
 
         if (takeOwnership)
         {
-            m_pMeta = meta; // Param takes ownership of meta
+            // Param takes ownership of meta
+            m_pMetaShared = new MetaShared(meta);
         }
         else
         {
+            ito::ParamMeta* newMeta = nullptr;
+
             switch (metaType)
             {
             case ParamMeta::rttiCharMeta:
-                m_pMeta = new CharMeta(*(CharMeta*)(meta));
+                newMeta = new CharMeta(*(CharMeta*)(meta));
                 break;
             case ParamMeta::rttiIntMeta:
-                m_pMeta = new IntMeta(*(IntMeta*)(meta));
+                newMeta = new IntMeta(*(IntMeta*)(meta));
                 break;
             case ParamMeta::rttiDoubleMeta:
-                m_pMeta = new DoubleMeta(*(DoubleMeta*)(meta));
+                newMeta = new DoubleMeta(*(DoubleMeta*)(meta));
                 break;
             case ParamMeta::rttiStringMeta:
-                m_pMeta = new StringMeta(*(StringMeta*)(meta));
+                newMeta = new StringMeta(*(StringMeta*)(meta));
                 break;
             case ParamMeta::rttiDObjMeta:
-                m_pMeta = new DObjMeta(*(DObjMeta*)(meta));
+                newMeta = new DObjMeta(*(DObjMeta*)(meta));
                 break;
             case ParamMeta::rttiHWMeta:
-                m_pMeta = new HWMeta(*(HWMeta*)(meta));
+                newMeta = new HWMeta(*(HWMeta*)(meta));
                 break;
             case ParamMeta::rttiCharArrayMeta:
-                m_pMeta = new CharArrayMeta(*(CharArrayMeta*)(meta));
+                newMeta = new CharArrayMeta(*(CharArrayMeta*)(meta));
                 break;
             case ParamMeta::rttiIntArrayMeta:
-                m_pMeta = new IntArrayMeta(*(IntArrayMeta*)(meta));
+                newMeta = new IntArrayMeta(*(IntArrayMeta*)(meta));
                 break;
             case ParamMeta::rttiDoubleArrayMeta:
-                m_pMeta = new DoubleArrayMeta(*(DoubleArrayMeta*)(meta));
+                newMeta = new DoubleArrayMeta(*(DoubleArrayMeta*)(meta));
                 break;
             case ParamMeta::rttiIntervalMeta:
-                m_pMeta = new IntervalMeta(*(IntervalMeta*)(meta));
+                newMeta = new IntervalMeta(*(IntervalMeta*)(meta));
                 break;
             case ParamMeta::rttiRangeMeta:
-                m_pMeta = new RangeMeta(*(RangeMeta*)(meta));
+                newMeta = new RangeMeta(*(RangeMeta*)(meta));
                 break;
             case ParamMeta::rttiDoubleIntervalMeta:
-                m_pMeta = new DoubleIntervalMeta(*(DoubleIntervalMeta*)(meta));
+                newMeta = new DoubleIntervalMeta(*(DoubleIntervalMeta*)(meta));
                 break;
             case ParamMeta::rttiRectMeta:
-                m_pMeta = new RectMeta(*(RectMeta*)(meta));
+                newMeta = new RectMeta(*(RectMeta*)(meta));
                 break;
             case ParamMeta::rttiStringListMeta:
-                m_pMeta = new StringListMeta(*(StringListMeta*)(meta));
+                newMeta = new StringListMeta(*(StringListMeta*)(meta));
                 break;
             default:
                 throw std::logic_error(
                     "Type of meta [ParamMeta] is unknown and cannot not be copied or assigned.");
             }
+
+            if (newMeta)
+            {
+                m_pMetaShared = new MetaShared(newMeta);
+            }
         }
     }
-    else
-    {
-        m_pMeta = nullptr;
-    }
 
-    if (oldMeta)
-    {
-        delete oldMeta;
-        oldMeta = nullptr;
-    }
+    // remove old shared meta
+    decRefMeta(oldMetaShared);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1654,21 +1698,21 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
  */
 float64 Param::getMin() const
 {
-    if (m_pMeta)
+    if (m_pMetaShared && m_pMetaShared->meta)
     {
-        switch (m_pMeta->getType())
+        switch (m_pMetaShared->meta->getType())
         {
         case ParamMeta::rttiCharMeta:
         case ParamMeta::rttiCharArrayMeta:
-            return static_cast<const CharMeta*>(m_pMeta)->getMin();
+            return static_cast<const CharMeta*>(m_pMetaShared->meta)->getMin();
         case ParamMeta::rttiIntMeta:
         case ParamMeta::rttiIntArrayMeta:
         case ParamMeta::rttiIntervalMeta:
         case ParamMeta::rttiRangeMeta:
-            return static_cast<const IntMeta*>(m_pMeta)->getMin();
+            return static_cast<const IntMeta*>(m_pMetaShared->meta)->getMin();
         case ParamMeta::rttiDoubleMeta:
         case ParamMeta::rttiDoubleArrayMeta:
-            return static_cast<const DoubleMeta*>(m_pMeta)->getMin();
+            return static_cast<const DoubleMeta*>(m_pMetaShared->meta)->getMin();
         }
     }
     return -std::numeric_limits<float64>::infinity();
@@ -1686,21 +1730,21 @@ float64 Param::getMin() const
  */
 float64 Param::getMax() const
 {
-    if (m_pMeta)
+    if (m_pMetaShared && m_pMetaShared->meta)
     {
-        switch (m_pMeta->getType())
+        switch (m_pMetaShared->meta->getType())
         {
         case ParamMeta::rttiCharMeta:
         case ParamMeta::rttiCharArrayMeta:
-            return static_cast<const CharMeta*>(m_pMeta)->getMax();
+            return static_cast<const CharMeta*>(m_pMetaShared->meta)->getMax();
         case ParamMeta::rttiIntMeta:
         case ParamMeta::rttiIntArrayMeta:
         case ParamMeta::rttiIntervalMeta:
         case ParamMeta::rttiRangeMeta:
-            return static_cast<const IntMeta*>(m_pMeta)->getMax();
+            return static_cast<const IntMeta*>(m_pMetaShared->meta)->getMax();
         case ParamMeta::rttiDoubleMeta:
         case ParamMeta::rttiDoubleArrayMeta:
-            return static_cast<const DoubleMeta*>(m_pMeta)->getMax();
+            return static_cast<const DoubleMeta*>(m_pMetaShared->meta)->getMax();
         }
     }
     return std::numeric_limits<float64>::infinity();
