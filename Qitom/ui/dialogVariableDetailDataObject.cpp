@@ -25,6 +25,7 @@
 #include "dataobj.h"
 
 #include <qclipboard.h>
+#include <dObMetaDataTable.h>
 
 namespace ito
 {
@@ -40,6 +41,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& na
     ui.table->setData(dObj);
     ui.txtDType->setText(dtype);
     ui.table->setReadOnly(true);
+    //ui.dObMetaDataTable->setData(dObj);
     
 }
 
