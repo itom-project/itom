@@ -26,13 +26,13 @@
 #include "qglobal.h"
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class dObMetaDataTableFactory : public QObject, public QDesignerCustomWidgetInterface
+class DataObjectMetaTableFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    dObMetaDataTableFactory(QObject *parent = 0);
+    DataObjectMetaTableFactory(QObject* parent = 0);
 
     bool isContainer() const;
     bool isInitialized() const;

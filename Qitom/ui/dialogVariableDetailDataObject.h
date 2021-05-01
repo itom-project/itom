@@ -45,9 +45,14 @@ public:
 
 private:
     Ui::DialogVariableDetailDataObject ui;
+    QSharedPointer<ito::DataObject> m_dObj;
+
+    void changeDObjAxes();
 
 private slots:
     void on_btnCopyClipboard_clicked();
+    void on_spinBoxDObjRowAxis_valueChanged();
+    void on_spinBoxDObjColAxis_valueChanged();
 };
 
 } //end namespace ito

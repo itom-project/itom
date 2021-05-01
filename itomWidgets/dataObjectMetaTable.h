@@ -20,8 +20,8 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOBJMETADATATABLE_H
-#define DOBJMETADATATABLE_H
+#ifndef DATAOBJECTMETATABLE_H 
+#define DATAOBJECTMETATABLE_H
 
 #include "DataObject/dataobj.h"
 
@@ -31,7 +31,7 @@
 #include "commonWidgets.h"
 
 
-class ITOMWIDGETS_EXPORT dObMetaDataTable : public QTreeWidget
+class ITOMWIDGETS_EXPORT DataObjectMetaTable : public QTreeWidget
 {
     Q_OBJECT
 
@@ -53,8 +53,8 @@ class ITOMWIDGETS_EXPORT dObMetaDataTable : public QTreeWidget
 
 
 public:
-    dObMetaDataTable(QWidget *parent = 0);
-    ~dObMetaDataTable();
+    DataObjectMetaTable(QWidget* parent = 0);
+    ~DataObjectMetaTable();
 
     void setData(QSharedPointer<ito::DataObject> dataObj);
     QSharedPointer<ito::DataObject> getData() const;

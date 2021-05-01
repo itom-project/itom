@@ -20,7 +20,7 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dObMetaDataTable.h"
+#include "DataObjectMetaTable.h"
 #include <qspinbox.h>
 #include <complex>
 
@@ -102,7 +102,8 @@ template<typename _Tp> void convertComplexMat(const cv::Mat &complexIn, cv::Mat 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-dObMetaDataTable::dObMetaDataTable(QWidget *parent /*= 0*/) : QTreeWidget(parent), 
+DataObjectMetaTable::DataObjectMetaTable(QWidget* parent /*= 0*/) :
+    QTreeWidget(parent), 
     m_readOnly(false),
     m_decimals(3),
     m_preview(true),
@@ -131,13 +132,13 @@ dObMetaDataTable::dObMetaDataTable(QWidget *parent /*= 0*/) : QTreeWidget(parent
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-dObMetaDataTable::~dObMetaDataTable()
+DataObjectMetaTable::~DataObjectMetaTable()
 {
     m_data = ito::DataObject();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setData(QSharedPointer<ito::DataObject> dataObj)
+void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
 {
     m_data = *dataObj;
 
@@ -434,39 +435,39 @@ void dObMetaDataTable::setData(QSharedPointer<ito::DataObject> dataObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> dObMetaDataTable::getData() const
+QSharedPointer<ito::DataObject> DataObjectMetaTable::getData() const
 {
     return QSharedPointer<ito::DataObject>(new ito::DataObject(m_data));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setReadOnly(const bool value)
+void DataObjectMetaTable::setReadOnly(const bool value)
 {
     m_readOnly = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setDecimals(const int value)
+void DataObjectMetaTable::setDecimals(const int value)
 {
     m_decimals = value > 0 ? value : 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setPreviewSize(const int value)
+void DataObjectMetaTable::setPreviewSize(const int value)
 {
    m_previewSize = value > 0 ? (value < 512 ? value : 512) : 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setPreviewStatus(const bool value)
+void DataObjectMetaTable::setPreviewStatus(const bool value)
 {
     m_preview = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dObMetaDataTable::setDetailedStatus(const bool value)
+void DataObjectMetaTable::setDetailedStatus(const bool value)
 {
     m_detailedStatus = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
-void dObMetaDataTable::setColorMap(const QString &name)
+void DataObjectMetaTable::setColorMap(const QString &name)
 {
     ito::RetVal retval(ito::retOk);
     int numPalettes = 1;
@@ -507,7 +508,7 @@ void dObMetaDataTable::setColorMap(const QString &name)
 }
 */
 //----------------------------------------------------------------------------------------------------------------------------------
-QSize dObMetaDataTable::sizeHint() const
+QSize DataObjectMetaTable::sizeHint() const
 {
 
     int h = 25;
