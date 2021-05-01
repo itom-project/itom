@@ -233,6 +233,11 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
 //-------------------------------------------------------------------
 /*virtual*/ CodeCompletionMode::~CodeCompletionMode()
 {
+    if (m_pCompleter)
+    {
+        m_pCompleter->deleteLater();
+        m_pCompleter = nullptr;
+    }
 }
 
 //-------------------------------------------------------------------

@@ -136,6 +136,9 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 
     m_pBookmarkModel->saveState(); //save current set of bookmarks to settings file
     DELETE_AND_SET_NULL(m_pBookmarkModel);
+
+    m_pGoBackNavigationMenu->deleteLater();
+    m_pGoBackNavigationMenu = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
