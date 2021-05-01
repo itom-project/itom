@@ -139,7 +139,7 @@ The result will look like this (copy selection):
 dObMetaDataTable
 -------------------------------------
 
-The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.g. to realize a measurement protocol . The widget is not inherited from a AbstractDObject and can not be used for a live plot.
+The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.g. to realize a measurement protocol. The widget is not inherited from a AbstractDObject and can not be used for a live plot.
 
 Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

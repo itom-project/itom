@@ -914,8 +914,18 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
 endif()
 
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
-    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    message(WARNING "dataObjectTabled.dll exists in designer. This file will be removed.")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTable.dll")
+    message(WARNING "dObMetaDataTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTabled.dll")
+    message(WARNING "dObMetaDataTabled.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTabled.dll")
 endif()
 
 # copy some folders and files during generate
