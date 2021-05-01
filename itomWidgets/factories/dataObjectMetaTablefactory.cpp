@@ -20,19 +20,19 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dObMetaDataTable.h"
+#include "dataObjectMetaTable.h"
 
 #include <QtCore/QtPlugin>
-#include "dObMetaDataTablefactory.h"
+#include "dataObjectMetaTablefactory.h"
 
 
-dObMetaDataTableFactory::dObMetaDataTableFactory(QObject *parent)
+DataObjectMetaTableFactory::DataObjectMetaTableFactory(QObject* parent)
     : QObject(parent)
 {
     initialized = false;
 }
 
-void dObMetaDataTableFactory::initialize(QDesignerFormEditorInterface * /*core*/)
+void DataObjectMetaTableFactory::initialize(QDesignerFormEditorInterface* /*core*/)
 {
     if (initialized)
         return;
@@ -40,49 +40,49 @@ void dObMetaDataTableFactory::initialize(QDesignerFormEditorInterface * /*core*/
     initialized = true;
 }
 
-bool dObMetaDataTableFactory::isInitialized() const
+bool DataObjectMetaTableFactory::isInitialized() const
 {
     return initialized;
 }
 
-QWidget *dObMetaDataTableFactory::createWidget(QWidget *parent)
+QWidget* DataObjectMetaTableFactory::createWidget(QWidget* parent)
 {
-    return new dObMetaDataTable(parent);
+    return new DataObjectMetaTable(parent);
 }
 
-QString dObMetaDataTableFactory::name() const
+QString DataObjectMetaTableFactory::name() const
 {
-    return "dObMetaDataTable";
+    return "DataObjectMetaTable";
 }
 
-QString dObMetaDataTableFactory::group() const
+QString DataObjectMetaTableFactory::group() const
 {
     return "itom Plugins";
 }
 
-QIcon dObMetaDataTableFactory::icon() const
+QIcon DataObjectMetaTableFactory::icon() const
 {
     return QIcon(":/itomDesignerPlugins/itom/icons/q_itoM32.png");
 }
 
-QString dObMetaDataTableFactory::toolTip() const
+QString DataObjectMetaTableFactory::toolTip() const
 {
     return QString();
 }
 
-QString dObMetaDataTableFactory::whatsThis() const
+QString DataObjectMetaTableFactory::whatsThis() const
 {
     return QObject::tr("itom widget to interprete a dataObject as a table.");
 }
 
-bool dObMetaDataTableFactory::isContainer() const
+bool DataObjectMetaTableFactory::isContainer() const
 {
     return false;
 }
 
-QString dObMetaDataTableFactory::domXml() const
+QString DataObjectMetaTableFactory::domXml() const
 {
-    return "<widget class=\"dObMetaDataTable\" name=\"dObMetaDataTable\">\n"
+    return "<widget class=\"DataObjectMetaTable\" name=\"DataObjectMetaTable\">\n"
         " <attribute name=\"verticalHeaderDefaultSectionSize\">\n \
             <number>20</number>\n \
           </attribute>\n"
@@ -98,7 +98,7 @@ QString dObMetaDataTableFactory::domXml() const
         </widget>\n";
 }
 
-QString dObMetaDataTableFactory::includeFile() const
+QString DataObjectMetaTableFactory::includeFile() const
 {
-    return "dObMetaDataTable.h";
+    return "dataObjectMetaTable.h";
 }

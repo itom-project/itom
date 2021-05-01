@@ -1,4 +1,4 @@
-# - itom software 
+# - itom software
 # URL: http://www.uni-stuttgart.de/ito
 # Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
@@ -19,6 +19,7 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
 # General Public Licence for more details.
+#
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
@@ -172,7 +173,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/dataObjectTableFactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/dObMetaDataTableFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/dataObjectMetaTableFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
@@ -227,7 +228,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dObMetaDataTable.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaTable.h
 )
 
 QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
@@ -297,7 +298,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/dataObjectTableFactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/dObMetaDataTableFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/dataObjectMetaTableFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
@@ -337,7 +338,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dObMetaDataTable.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaTable.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.

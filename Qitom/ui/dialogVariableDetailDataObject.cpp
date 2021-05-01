@@ -25,7 +25,7 @@
 #include "dataobj.h"
 
 #include <qclipboard.h>
-#include <dObMetaDataTable.h>
+#include <dataObjectMetaTable.h>
 
 namespace ito
 {
@@ -35,14 +35,33 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& na
     QDialog(parent)
 {
     ui.setupUi(this);
-    
+
+    m_dObj = dObj;
+
     ui.txtName->setText(name);
     ui.txtType->setText(type);
-    ui.table->setData(dObj);
     ui.txtDType->setText(dtype);
-    ui.table->setReadOnly(true);
-    //ui.dObMetaDataTable->setData(dObj);
-    
+
+    ui.dataTable->setData(m_dObj);
+    ui.dataTable->setReadOnly(true);
+
+    ui.metaTable->setData(m_dObj);    
+    ui.metaTable->setReadOnly(true);
+
+    if (m_dObj->getDims() < 3)
+    {
+        ui.frameAxesVisible->setVisible(false);
+    }
+    else
+    {
+        ui.spinBoxDObjColAxis->setValue(0);
+        ui.spinBoxDObjColAxis->setMinimum(0);
+        ui.spinBoxDObjColAxis->setMaximum(m_dObj->getDims() - 1);
+        
+        ui.spinBoxDObjRowAxis->setValue(1);
+        ui.spinBoxDObjRowAxis->setMinimum(1);
+        ui.spinBoxDObjRowAxis->setMaximum(m_dObj->getDims());
+    }
 }
 
 //----------------------------------------------------------------------------------------------
@@ -50,6 +69,24 @@ void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
+}
+
+void DialogVariableDetailDataObject::on_spinBoxDObjRowAxis_valueChanged()
+{
+    changeDObjAxes();
+}
+
+void DialogVariableDetailDataObject::on_spinBoxDObjColAxis_valueChanged()
+{   
+    changeDObjAxes();
+}
+
+void DialogVariableDetailDataObject::changeDObjAxes()
+{
+    int colIdx = ui.spinBoxDObjColAxis->value();
+    int rowIdx = ui.spinBoxDObjRowAxis->value();
+    /*ito::DataObject roiObj = m_dObj->at(rowIdx, colIdx);
+    ui.table->setData(roiObj);*/
 }
 
 } //end namespace ito

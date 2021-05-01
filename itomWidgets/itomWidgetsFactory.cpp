@@ -53,7 +53,7 @@
 #include "factories/paramEditorFactory.h"
 #include "factories/pythonLogWidgetFactory.h"
 #include "factories/dataObjectTableFactory.h"
-#include "factories/dObMetaDataTableFactory.h"
+#include "factories/dataObjectMetaTableFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -87,7 +87,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new ParamEditorFactory(this));
     widgets.append(new PythonLogWidgetFactory(this));
     widgets.append(new DataObjectTableFactory(this));
-    widgets.append(new dObMetaDataTableFactory(this));
+    widgets.append(new DataObjectMetaTableFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------
