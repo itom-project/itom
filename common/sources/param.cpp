@@ -104,19 +104,62 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
     checkAndCorrectInOutFlag();
     setDefaultAutosaveFlag();
 
-    if (val)
+    //todo: add scalar types with value 0, since this can occur, too!!!
+
+    switch (d->type)
     {
-        if (d->type == String)
+    case Char:
+    case Int:
+    case Complex:
+    case Double:
+        if (val == 0)
         {
-            d->len = strlen(val);
-            d->data.ptrVal = new char[strlen(val) + 1];
-            std::copy_n(val, d->len + 1, (char*)(d->data.ptrVal));
+            memset(&(d->data), 0, sizeof(ParamBaseData));
+            d->len = 0;
         }
         else
         {
-            d->data.ptrVal = const_cast<char*>(val);
-            d->len = 0;
+            throw std::logic_error(
+                "valie must be 0 only for Char, "
+                "Int, Double, Complex.");
         }
+    case DObjPtr:
+    case PointCloudPtr:
+    case PolygonMeshPtr:
+    case PointPtr:
+    case HWRef:
+        d->data.ptrVal = const_cast<char*>(val);
+        d->len = 0;
+        break;
+    case String:
+        if (val)
+        {
+            d->len = strlen(val);
+            d->data.ptrVal = new char[d->len + 1];
+            std::copy_n(val, d->len + 1, (char*)(d->data.ptrVal));
+        }
+        break;
+    case CharArray:
+    case IntArray:
+    case DoubleArray:
+    case ComplexArray:
+    case StringList:
+        if (val== nullptr)
+        {
+            d->len = 0;
+            d->data.ptrVal = nullptr;
+        }
+        else
+        {
+            throw std::logic_error(
+                "valie must be nullptr for CharArray, "
+                "IntArray, DoubleArray, ComplexArray or StringList.");
+        }
+        break;
+    default:
+        throw std::logic_error(
+            "invalid type for constructor with const char* value.");
+        break;
     }
 }
 
@@ -616,7 +659,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
         case DoubleArray:
             if (d->len > 0 && (d->len == rhs.d->len))
             {
-                for (int i = 0; i < d->len; ++i)
+                for (uint32 i = 0; i < d->len; ++i)
                 {
                     if (!ito::areEqual(
                             ((float64*)d->data.ptrVal)[i], ((float64*)rhs.d->data.ptrVal)[i]))
@@ -788,11 +831,11 @@ int ParamBase::getLen() const
     case String:
         if (d->data.ptrVal)
         {
-            return static_cast<int>(strlen((char*)d->data.ptrVal));
+            return d->len;
         }
         else
         {
-            return 0;
+            return -1;
         }
     case Char:
     case Double:
@@ -998,7 +1041,8 @@ void ParamBase::detach(bool allocNewArray /*= true*/)
                     break;
                 case ParamBase::DoubleArray:
                     new_d->data.ptrVal = new float64[d->len];
-                    std::copy_n((const float64*)d->data.ptrVal, d->len, (float64*)new_d->data.ptrVal);
+                    std::copy_n(
+                        (const float64*)d->data.ptrVal, d->len, (float64*)new_d->data.ptrVal);
                     break;
                 case ParamBase::ComplexArray:
                     new_d->data.ptrVal = new complex128[d->len];
@@ -1018,12 +1062,9 @@ void ParamBase::detach(bool allocNewArray /*= true*/)
                 }
             }
             else if (
-                (d->type == ParamBase::CharArray) ||
-                (d->type == ParamBase::IntArray) ||
-                (d->type == ParamBase::DoubleArray) ||
-                (d->type == ParamBase::ComplexArray) ||
-                (d->type == ParamBase::StringList) ||
-                (d->type == ParamBase::String))
+                (d->type == ParamBase::CharArray) || (d->type == ParamBase::IntArray) ||
+                (d->type == ParamBase::DoubleArray) || (d->type == ParamBase::ComplexArray) ||
+                (d->type == ParamBase::StringList) || (d->type == ParamBase::String))
             {
                 new_d->data.ptrVal = nullptr;
                 new_d->len = 0;

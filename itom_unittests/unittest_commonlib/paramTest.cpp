@@ -649,6 +649,111 @@ TEST(ParamTest, FlagTest)
     EXPECT_FALSE(charArray2.getFlags() & ParamBase::In);
 }
 
+// this tests for constructors that have been used in the past and should still be supported
+TEST(ParamTest, CompatibilityParamInitialization)
+{
+    // empty array and list types
+    int arrayTypes[] = {
+        ParamBase::CharArray,
+        ParamBase::IntArray,
+        ParamBase::DoubleArray,
+        ParamBase::ComplexArray};
+
+    double values[] = {1, 2, 3, 4, 5, 6, 7, 8};
+
+    for (int t : arrayTypes)
+    {
+        Param param = Param("p", t, nullptr, "test");
+        EXPECT_EQ(param.getType(), t);
+        EXPECT_EQ(param.getVal<const void*>(), nullptr);
+        EXPECT_EQ(param.getVal<void*>(), nullptr);
+
+        // not allowed for real values
+        EXPECT_THROW(Param("p", t, (const char*)values, "test"), std::logic_error);
+    }
+
+    int ptrTypes[] = {
+        ParamBase::DObjPtr,
+        ParamBase::HWRef,
+        ParamBase::PointCloudPtr,
+        ParamBase::PolygonMeshPtr,
+        ParamBase::PointPtr };
+
+    for (int t : ptrTypes)
+    {
+        Param param = Param("p", t, nullptr, "test");
+        EXPECT_EQ(param.getType(), t);
+        EXPECT_EQ(param.getVal<const void*>(), nullptr);
+        EXPECT_EQ(param.getVal<void*>(), nullptr);
+
+        param = Param("p", t, (char*)values, "test");
+        EXPECT_EQ(param.getVal<void*>(), values);
+    }
+}
+
+TEST(ParamTest, LenTest)
+{
+    // no type
+    Param nop;
+    EXPECT_EQ(nop.getLen(), -1);
+
+    // scalar types
+    int scalarType[] = {ParamBase::Char, ParamBase::Int, ParamBase::Double, ParamBase::Complex};
+    for (int t : scalarType)
+    {
+        Param intParam("scalar", t);
+        EXPECT_EQ(intParam.getLen(), 1);
+    }
+
+    // string type
+    ito::Param s("String", ParamBase::String, nullptr, "");
+    EXPECT_EQ(s.getLen(), -1);
+
+    s.setVal<const char*>("new string");
+    EXPECT_EQ(s.getLen(), 10);
+
+    s.setVal<const char*>("");
+    EXPECT_EQ(s.getLen(), 0);
+
+    ito::Param s2("String", ParamBase::String, "abc", "");
+    EXPECT_EQ(s2.getLen(), 3);
+
+    // empty array and list types
+    char* ptr = new char[200];
+
+    //CharArray
+    Param arrParam("arr", ParamBase::CharArray);
+    EXPECT_EQ(arrParam.getLen(), 0);
+
+    Param arrParam2("arr2", ParamBase::CharArray, 0, (const char*)nullptr, nullptr, "info");
+    EXPECT_EQ(arrParam2.getLen(), 0);
+
+    Param arrParam3("arr3", ParamBase::CharArray, 5, ptr, "info");
+    EXPECT_EQ(arrParam3.getLen(), 5);
+
+    //IntArray
+    arrParam = Param("arr", ParamBase::IntArray);
+    EXPECT_EQ(arrParam.getLen(), 0);
+
+    arrParam2 = Param("arr2", ParamBase::IntArray, 0, (const int32*)nullptr, nullptr, "info");
+    EXPECT_EQ(arrParam2.getLen(), 0);
+
+    arrParam3 = Param("arr3", ParamBase::IntArray, 5, (const int32*)ptr, "info");
+    EXPECT_EQ(arrParam3.getLen(), 5);
+
+    //ComplexArray
+    arrParam = Param("arr", ParamBase::ComplexArray);
+    EXPECT_EQ(arrParam.getLen(), 0);
+
+    arrParam2 = Param("arr2", ParamBase::ComplexArray, 0, (const complex128*)nullptr, nullptr, "info");
+    EXPECT_EQ(arrParam2.getLen(), 0);
+
+    arrParam3 = Param("arr3", ParamBase::ComplexArray, 5, (const complex128*)ptr, "info");
+    EXPECT_EQ(arrParam3.getLen(), 5);
+
+    delete[] ptr;
+}
+
 TEST(ParamTest, ConstGetValTest)
 {
     ByteArray ba[] = {"blub", "blob"};
@@ -687,6 +792,7 @@ TEST(ParamTest, ConstGetValTest)
 
     delete[] dbl;
 
-    //EXPECT_TRUE(false) << "time:" << (end_time1 - start_time) / std::chrono::milliseconds(1)
-    //                   << ", dbl-array:" << (end_time2 - end_time1) / std::chrono::milliseconds(1);
+    // EXPECT_TRUE(false) << "time:" << (end_time1 - start_time) / std::chrono::milliseconds(1)
+    //                   << ", dbl-array:" << (end_time2 - end_time1) /
+    //                   std::chrono::milliseconds(1);
 }

@@ -241,7 +241,8 @@ public:
         const uint32 size,
         const ByteArray* values);
 
-    virtual ~ParamBase(); // Destructor
+    //!< Destructor
+    virtual ~ParamBase();
 
     //!< copy constructor
     ParamBase(const ParamBase& other);
@@ -318,13 +319,24 @@ public:
     //! automagically saved to xml file when an instance of a plugin class is deleted (closed)
     void setAutosave(const bool autosave);
 
-    //! returns length of array parameters or 0 if no array is given. For string parameter returns
-    //! length of string or 0 if not given, for number parameters return 1. In all other cases -1.
-    /* From itom 5.0 the behaviour in case of arrays or string list changed. Before, -1 was
-       returned if the internal array is a nullptr and 0 if the array has zero items. From itom
-       5.0 on, an empty or non-existing array or list always returns 0.
+    //! returns length of array parameters.
+    /* The return value of this method depends on the type of parameter:
+
+    For scalar parameters, like Char, Int, Double, Complex, 1 is always returned.
+    
+    For number array parameters (CharArray, IntArray, DoubleArray, ComplexArray, the
+    number of values in the array is returned. Even if the array is a nullptr,
+    0 is returned. This changed from itom 5.0 on. Before -1 was returned
+    if the array is a nullptr (which is equal to a length of 0).
+
+    StringList parameter behave like the other scalar parmeters.
+
+    For String parameters, the length of the string is returned, but
+    -1 is returned if the internal string is nullptr.
+
+    An invalid parameter will also return -1 always.
     */
-    int getLen(void) const;
+    int getLen() const;
 
     /** setVal  set parameter value - templated version
      *   @param [in] val  value to set to
@@ -1193,7 +1205,7 @@ template <> struct ItomParamHelper<const char*>
 
             if (val)
             {
-                size_t len = strlen(val);
+                int len = static_cast<int>(strlen(val));
 
                 if (len != param->d->len)
                 {
