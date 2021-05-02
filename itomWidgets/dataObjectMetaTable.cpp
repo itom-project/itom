@@ -116,10 +116,11 @@ DataObjectMetaTable::DataObjectMetaTable(QWidget* parent /*= 0*/) :
 
     this->setHeaderHidden(true);
     this->setColumnCount(2);
-    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("no preview available")), 0));
-    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("header")), 0));
-    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("tag Space")), 0));
-    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("protocol")), 0));
+    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("Object details").toLatin1().data()), 0));
+    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("Axes details").toLatin1().data()), 0));
+    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("Value details").toLatin1().data()), 0));
+    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("Tags").toLatin1().data()), 0));
+    addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("Protocol").toLatin1().data()), 0));
     setIconSize(QSize(m_previewSize, m_previewSize));
     
     m_colorTable.reserve(256);
@@ -150,165 +151,46 @@ void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
     QStringList data;
     data.reserve(2);
     // write new object data
-    // add preview is ask
 
     int dims = m_data.getDims();
 
-    if(m_preview)
-    {
-        
-        if(dims > 0)
-        {
-            setIconSize(QSize(m_previewSize, m_previewSize));
-
-            bool setThis = true;
-            QIcon newPreview;
-            cv::Mat tempMat;
-            cv::resize(*((cv::Mat*)(m_data.get_mdata()[m_data.seekMat(0)])), tempMat, cv::Size(64, 64), 0, 0, cv::INTER_NEAREST);
-            if(m_data.getType() == ito::tRGBA32)
-            {
-                newPreview = QIcon(QPixmap::fromImage(QImage(tempMat.ptr<ito::uint8>(0),64,64, 64 *4, QImage::Format_ARGB32), Qt::ColorOnly));
-            }
-            else if(m_data.getType() == ito::tUInt8)
-            {
-                QImage retImage(tempMat.ptr<ito::uint8>(0), 64,64, 64, QImage::Format_Indexed8);
-                retImage.setColorTable(m_colorTable);
-                newPreview = QIcon(QPixmap::fromImage(retImage));
-            }
-            else if(m_data.getType() == ito::tUInt16)
-            {
-                double minVal = 0.0;
-                double maxVal = 1.0;
-                cv::minMaxIdx(tempMat, &minVal, &maxVal);
-
-                tempMat.convertTo(tempMat, CV_8U, 256.0 / maxVal);
-
-                QImage retImage(tempMat.ptr<ito::uint8>(0), 64,64, 64, QImage::Format_Indexed8);
-                retImage.setColorTable(m_colorTable);
-                newPreview = QIcon(QPixmap::fromImage(retImage));
-            }
-            else if(m_data.getType() == ito::tComplex64 || m_data.getType() == ito::tComplex128)
-            {
-                addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("no preview available")), 0));
-
-                cv::Mat tarMat(64, 130, CV_8U);
-
-                if (m_data.getType() == ito::tComplex64)
-                {
-                    convertComplexMat<ito::complex64>(tempMat, tarMat);
-                }
-                else
-                {
-                    convertComplexMat<ito::complex128>(tempMat, tarMat);
-                }
-
-                QImage retImage(tarMat.ptr<ito::uint8>(0), 130,64, 130, QImage::Format_Indexed8);
-                retImage.setColorTable(m_colorTable);
-                newPreview = QIcon(QPixmap::fromImage(retImage));
-            }
-            else
-            {
-                double minVal = 0.0;
-                double maxVal = 1.0;
-                cv::minMaxIdx(tempMat, &minVal, &maxVal);
-
-                if(!ito::isFinite(minVal))
-                {
-                    minVal = 0.0;
-                }
-
-                if(!ito::isFinite(maxVal))
-                {
-                    minVal = 1.0;
-                }
-
-                tempMat.convertTo(tempMat, CV_8U, 255.0 / (maxVal - minVal), - 255.0 * minVal / (maxVal - minVal));
-                
-                QImage retImage(tempMat.ptr<ito::uint8>(0), 64,64, 64, QImage::Format_Indexed8);
-                retImage.setColorTable(m_colorTable);
-                newPreview = QIcon(QPixmap::fromImage(retImage));
-            }
-
-            if(setThis)
-            {
-                QTreeWidgetItem *preview = new QTreeWidgetItem(this, QStringList(tr("preview")), 0);
-                preview->addChild(new QTreeWidgetItem(preview, QStringList(tr("")), 0));
-                preview->child(0)->setIcon(1, newPreview);
-            }
-        }
-        else
-        {
-            addTopLevelItem(new QTreeWidgetItem(this, QStringList(tr("no preview available")), 0));
-        }
-    }
-
     // write header
-    QTreeWidgetItem *header = new QTreeWidgetItem(this, QStringList(tr("header")), 0);
+    QTreeWidgetItem *objTree = new QTreeWidgetItem(this, QStringList(tr("Object details").toLatin1().data()), 0);
+    QTreeWidgetItem* axesTree = new QTreeWidgetItem(this, QStringList(tr("Axes details").toLatin1().data()), 0);
+    QTreeWidgetItem* valueTree =
+        new QTreeWidgetItem(this, QStringList(tr("Value details").toLatin1().data()), 0);
+    QTreeWidgetItem* tagsTree =
+        new QTreeWidgetItem(this, QStringList(tr("Tags").toLatin1().data()), 0);
+    QTreeWidgetItem* protocolTree = new QTreeWidgetItem(this, QStringList(tr("Protocol").toLatin1().data()), 0);
 
-    data.append("type");
-    data.append(QString::number(m_data.getType()));
-    header->addChild(new QTreeWidgetItem(header, data, 0));
+    data.append("continuous");
+    data.append(m_data.getContinuous() == 0 ? "no" : "yes");
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
-    if(m_detailedStatus)
-    {
-        data[0] = "continuous";
-        data[1] = m_data.getContinuous() == 0 ? "no" : "yes";
-        header->addChild(new QTreeWidgetItem(header, data, 0));
+    data[0] = "own data";
+    data[1] = m_data.getOwnData() == 0 ? "no" : "yes";
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
-        data[0] = "pwn Data";
-        data[1] = m_data.getOwnData() == 0 ? "no" : "yes";
-        header->addChild(new QTreeWidgetItem(header, data, 0));
+    data[0] = "dimensions";
+    data[1] = QString::number(dims);
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
-        data[0] = "dimensions";
-        data[1] = QString::number(dims);
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-    }
-
-#if 0
-    for(int dim = 0; dim < dims - 3; dim++)
-    {
-        data[0] = (QString::number(dim));
-        data[1] = (QString::number(m_data.getSize(dim)));
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-    }
-
-    if(dims > 2)
-    {
-        data[0] = 'z';
-        data[1] = (QString::number(m_data.getSize(dims - 3))); 
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-    }
-
-    if(dims > 0)
-    {
-        data[0] = 'y';
-        data[1] = (QString::number(m_data.getSize(dims - 2))); 
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-
-        data[0] = 'x';
-        data[1] = (QString::number(m_data.getSize(dims - 1))); 
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-    }
-#else
-
+    // pixel size
     data[0] = "pixel size";
     data[1].reserve(2 + 2 + 12 * dims);
     data[1] = "[";
     for(int dim = 0; dim < dims; dim++)
     {
         data[1].append(QString::number(m_data.getSize(dim)));
-        data[1].append(", ");
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        } 
     }
     data[1].append("]");
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
-/*
-    if(data[1].length() > columnWidth(1))
-    {
-        setColumnWidth(1, data[1].length());
-    }
-*/
-
-    header->addChild(new QTreeWidgetItem(header, data, 0));
+    // physical size
     data[0] = "physical size";
     data[1] = "[";
     double val;
@@ -316,56 +198,95 @@ void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
     {
         val = m_data.getPixToPhys(dim, m_data.getSize(dim), checker) - m_data.getPixToPhys(dim, 0, checker);
         data[1].append(QString::number(val));
-        data[1].append(m_data.getAxisUnit(dim, checker).data());
-        data[1].append(", ");
+        data[1].append(QString::fromLocal8Bit(m_data.getAxisUnit(dim, checker).data()));
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
     }
     data[1].append("]");
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
-/*
-    if(data[1].length() > columnWidth(1))
-    {
-        setColumnWidth(1, data[1].length());
-    }
-*/
-
-    header->addChild(new QTreeWidgetItem(header, data, 0));
-#endif
-
-    if(m_detailedStatus)
-    {
-        data[0] = "scales";
-        data[1].reserve(2 + 2 + 12 * dims);
-        data[1] = "[";
-        for(int dim = 0; dim < dims; dim++)
-        {
-            val = m_data.getAxisScale(dim);
-            data[1].append(QString::number(val));
-            data[1].append(", ");
-        }
-        data[1].append("]");
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-
-        data[0] = "offsets";
-        data[1] = "[";
-        for(int dim = 0; dim < dims; dim++)
-        {
-            val = m_data.getAxisOffset(dim);
-            data[1].append(QString::number(val));
-            data[1].append(", ");
-        }
-        data[1].append("]");
-        header->addChild(new QTreeWidgetItem(header, data, 0));
-    }
-
-    data[0] = "value unit";
-    data[1] = m_data.getValueUnit().data();
-    header->addChild(new QTreeWidgetItem(header, data, 0));
-    addTopLevelItem(header);
     
-    // write tagSpace
+    // write axes tree
+    data[0] = "descriptions";
+    data[1].reserve(2 + 2 + 12 * dims);
+    data[1] = "[";
+    for (int dim = 0; dim < dims; dim++)
+    {
+        data[1].append(QString::fromLocal8Bit(m_data.getAxisDescription(dim, checker).data()));
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
+    }
+    data[1].append("]");
+    axesTree->addChild(new QTreeWidgetItem(axesTree, data, 0));
 
-    QTreeWidgetItem *tagSpace = new QTreeWidgetItem(this, QStringList(tr("Tag Space")), 0);
+    data[0] = "units";
+    data[1].reserve(2 + 2 + 12 * dims);
+    data[1] = "[";
+    for (int dim = 0; dim < dims; dim++)
+    {
+        data[1].append(QString::fromLocal8Bit(m_data.getAxisUnit(dim, checker).data()));
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
+    }
+    data[1].append("]");
+    axesTree->addChild(new QTreeWidgetItem(axesTree, data, 0));
 
+    data[0] = "scales";
+    data[1].reserve(2 + 2 + 12 * dims);
+    data[1] = "[";
+    for (int dim = 0; dim < dims; dim++)
+    {
+        val = m_data.getAxisScale(dim);
+        data[1].append(QString::number(val));
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
+    }
+    data[1].append("]");
+    axesTree->addChild(new QTreeWidgetItem(axesTree, data, 0));
+
+    data[0] = "offsets";
+    data[1] = "[";
+    for (int dim = 0; dim < dims; dim++)
+    {
+        val = m_data.getAxisOffset(dim);
+        data[1].append(QString::number(val));
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
+    }
+    data[1].append("]");
+    axesTree->addChild(new QTreeWidgetItem(axesTree, data, 0));
+    addTopLevelItem(axesTree);
+
+    // value tree
+    data[0] = "description";
+    data[1] = QString::fromLocal8Bit(m_data.getValueDescription().data());
+    valueTree->addChild(new QTreeWidgetItem(valueTree, data, 0));
+
+    data[0] = "unit";
+    data[1] = QString::fromLocal8Bit(m_data.getValueUnit().data());
+    valueTree->addChild(new QTreeWidgetItem(valueTree, data, 0));
+
+    data[0] = "scale";
+    data[1] = QString::number(m_data.getValueScale());
+    valueTree->addChild(new QTreeWidgetItem(valueTree, data, 0));
+
+    data[0] = "offset";
+    data[1] = QString::number(m_data.getValueOffset());
+    valueTree->addChild(new QTreeWidgetItem(valueTree, data, 0));
+
+    addTopLevelItem(valueTree);
+
+    // tags tree
     int tagNumber = m_data.getTagListSize();
     std::string key;
     ito::DataObjectTagType type;
@@ -381,52 +302,34 @@ void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
         {
             data[0] = key.data();
             data[1] = QString::number(type.getVal_ToDouble(), 'g', m_decimals);
-            tagSpace->addChild(new QTreeWidgetItem(tagSpace, data, 0));
+            tagsTree->addChild(new QTreeWidgetItem(tagsTree, data, 0));
         }
         else if(type.getType() == ito::DataObjectTagType::typeString)
         {
             data[0] = key.data();
             data[1] = type.getVal_ToString().data();
-            tagSpace->addChild(new QTreeWidgetItem(tagSpace, data, 0));        
+            tagsTree->addChild(new QTreeWidgetItem(tagsTree, data, 0));        
         }
-
-/*
-        if(data[1].length() > columnWidth(1))
-        {
-            setColumnWidth(1, data[1].length());
-        }
-*/
-
     }
 
-    addTopLevelItem(tagSpace);
+    addTopLevelItem(tagsTree);
 
-    // write protocol
-
-    QTreeWidgetItem *protocol = new QTreeWidgetItem(this, QStringList(tr("Protocol")), 0);
-
-    
+    //  protocol tree
     type = m_data.getTag("protocol", checker);
 
     if(checker)
     {
-        QString temp = type.getVal_ToString().data();
+        QString temp = QString::fromLocal8Bit(type.getVal_ToString().data());
         QStringList tempList = temp.split('\n', QString::SkipEmptyParts);
         for(int i = 0; i < tempList.size(); i++)
         {
             data[0] = "";
             data[1] = tempList[i];
-            protocol->addChild(new QTreeWidgetItem(protocol, data, 0)); 
-/*
-            if(data[1].length() > columnWidth(1))
-            {
-                setColumnWidth(1, data[1].length());
-            }
-*/
+            protocolTree->addChild(new QTreeWidgetItem(protocolTree, data, 0));
         }
 
     }
-    addTopLevelItem(protocol);
+    addTopLevelItem(protocolTree);
 
     expandAll();
 

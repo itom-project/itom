@@ -36,19 +36,19 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& na
 {
     ui.setupUi(this);
 
-    m_dObj = dObj;
+    m_dObj = *dObj;
 
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtDType->setText(dtype);
 
-    ui.dataTable->setData(m_dObj);
+    ui.dataTable->setData(dObj);
     ui.dataTable->setReadOnly(true);
 
-    ui.metaTable->setData(m_dObj);    
+    ui.metaTable->setData(dObj);    
     ui.metaTable->setReadOnly(true);
 
-    if (m_dObj->getDims() < 3)
+    if (m_dObj.getDims() < 3)
     {
         ui.frameAxesVisible->setVisible(false);
     }
@@ -56,11 +56,11 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& na
     {
         ui.spinBoxDObjColAxis->setValue(0);
         ui.spinBoxDObjColAxis->setMinimum(0);
-        ui.spinBoxDObjColAxis->setMaximum(m_dObj->getDims() - 1);
+        ui.spinBoxDObjColAxis->setMaximum(m_dObj.getDims() - 1);
         
         ui.spinBoxDObjRowAxis->setValue(1);
         ui.spinBoxDObjRowAxis->setMinimum(1);
-        ui.spinBoxDObjRowAxis->setMaximum(m_dObj->getDims());
+        ui.spinBoxDObjRowAxis->setMaximum(m_dObj.getDims());
     }
 }
 
