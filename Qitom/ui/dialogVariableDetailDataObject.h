@@ -27,6 +27,8 @@
 
 #include "ui_dialogVariableDetailDataObject.h"
 
+#include "DataObject/dataobj.h"
+
 namespace ito
 {
 
@@ -45,7 +47,7 @@ public:
 
 private:
     Ui::DialogVariableDetailDataObject ui;
-    QSharedPointer<ito::DataObject> m_dObj;
+    ito::DataObject m_dObj;
 
     void changeDObjAxes();
 
