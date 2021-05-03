@@ -380,6 +380,11 @@ bool PythonQtConversion::PyObjGetBool(PyObject* val, bool strict, bool &ok)
         d = true;
         ok = true;
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_BOOL) // Scalar
+    {
+        // cast the scalar numpy type to bool
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         d = PyObjGetInt(val, false, ok) != 0;
@@ -413,6 +418,11 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
             ok = false;
         }
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_INT) // Scalar
+    {
+        // cast the scalar numpy type to int
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         if (PyFloat_Check(val)) 
@@ -427,6 +437,13 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
         {
             d = 1;
         } 
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to int
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_INT);
+            PyArray_CastScalarToCtype(val, &d, descr);
+            Py_DECREF(descr);
+        }
         else 
         {
             //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
@@ -476,6 +493,11 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
             ok = false;
         }
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_LONGLONG) // Scalar
+    {
+        // cast the scalar numpy type to long long
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         if (PyFloat_Check(val)) 
@@ -490,6 +512,13 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
         {
             d = 1;
         } 
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to int64
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_LONGLONG);
+            PyArray_CastScalarToCtype(val, &d, descr);
+            Py_DECREF(descr);
+        }
         else 
         {
             //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
@@ -530,7 +559,8 @@ quint64 PythonQtConversion::PyObjGetULongLong(PyObject* val, bool strict, bool &
 {
     quint64 d = 0;
     ok = true;
-    if (PyLong_Check(val)) {
+    if (PyLong_Check(val)) 
+    {
         d = PyLong_AsUnsignedLongLong(val);
         if (PyErr_Occurred())
         {
@@ -538,6 +568,11 @@ quint64 PythonQtConversion::PyObjGetULongLong(PyObject* val, bool strict, bool &
             PyErr_Clear();
         }
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_ULONGLONG) // Scalar
+    {
+        // cast the scalar numpy type to long long
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         if (PyFloat_Check(val)) 
@@ -552,6 +587,13 @@ quint64 PythonQtConversion::PyObjGetULongLong(PyObject* val, bool strict, bool &
         {
             d = 1;
         } 
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to uint64
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_ULONGLONG);
+            PyArray_CastScalarToCtype(val, &d, descr);
+            Py_DECREF(descr);
+        }
         else 
         {
             ok = false;
@@ -584,6 +626,11 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
     {
         d = PyFloat_AS_DOUBLE(val);
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_FLOAT64) // Scalar
+    {
+        // cast the scalar numpy type to float64
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         if (PyLong_Check(val)) 
@@ -594,6 +641,13 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
             {
                 ok = false;
             }
+        }
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to float64
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_FLOAT64);
+            PyArray_CastScalarToCtype(val, &d, descr);
+            Py_DECREF(descr);
         }
         else if (val == Py_False) 
         {
@@ -628,6 +682,7 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
 {
     ok = true;
     QVector<double> v;
+
     if (PySequence_Check(val) == false)
     {
         ok = false;
@@ -635,67 +690,17 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
     }
 
     Py_ssize_t len = PySequence_Size(val);
-    PyObject *t = NULL;
+    PyObject *t = nullptr;
 
-    if (strict)
+    for (Py_ssize_t i = 0; i < len; i++)
     {
-        for (Py_ssize_t i = 0; i < len; i++)
+        t = PySequence_GetItem(val, i); //new reference
+        v << PyObjGetDouble(t, strict, ok);
+        Py_XDECREF(t);
+
+        if (!ok)
         {
-            t = PySequence_GetItem(val, i); //new reference
-            if (PyFloat_Check(t))
-            {
-                v.append(PyFloat_AS_DOUBLE(t));
-            }
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
-        }
-    }
-    else
-    {
-        int overflow;
-        for (Py_ssize_t i = 0; i < len; i++)
-        {
-            t = PySequence_GetItem(val, i); //new reference
-            
-            if (PyFloat_Check(t)) 
-            {
-                v.append(PyFloat_AS_DOUBLE(t));
-            } 
-            else if (PyLong_Check(t))
-            {
-                qreal v2 = PyLong_AsLongAndOverflow(t, &overflow);
-                if (overflow)
-                {
-                    v2 = PyLong_AsLongLongAndOverflow(t, &overflow);
-                    if (overflow)
-                    {
-                        ok = false;
-                        Py_XDECREF(t);
-                        break;
-                    }
-                }
-                v.append(v2);
-            }
-            else if (t == Py_False) 
-            {
-                v.append(0);
-            } 
-            else if (t == Py_True) 
-            {
-                v.append(1);
-            } 
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
+            break;
         }
     }
 
@@ -713,10 +718,16 @@ complex128  PythonQtConversion::PyObjGetComplex(PyObject* val, bool strict, bool
 {
     complex128 d = 0;
     ok = true;
+
     if (PyComplex_Check(val)) 
     {
         d = complex128(PyComplex_RealAsDouble(val), PyComplex_ImagAsDouble(val));
     } 
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_COMPLEX128) // Scalar
+    {
+        // cast the scalar numpy type to complex128
+        PyArray_ScalarAsCtype(val, &d);
+    }
     else if (!strict) 
     {
         if (PyLong_Check(val)) 
@@ -740,6 +751,13 @@ complex128  PythonQtConversion::PyObjGetComplex(PyObject* val, bool strict, bool
         {
             d = 1.0;
         } 
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to complex128
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_COMPLEX128);
+            PyArray_CastScalarToCtype(val, &d, descr);
+            Py_DECREF(descr);
+        }
         else 
         {
             ok = false;
@@ -758,6 +776,7 @@ QVector<complex128>  PythonQtConversion::PyObjGetComplexArray(PyObject* val, boo
 {
     ok = true;
     QVector<complex128> v;
+
     if (PySequence_Check(val) == false)
     {
         ok = false;
@@ -765,71 +784,17 @@ QVector<complex128>  PythonQtConversion::PyObjGetComplexArray(PyObject* val, boo
     }
 
     Py_ssize_t len = PySequence_Size(val);
-    PyObject *t = NULL;
+    PyObject *t = nullptr;
 
-    if (strict)
+    for (Py_ssize_t i = 0; i < len; i++)
     {
-        for (Py_ssize_t i = 0; i < len; i++)
+        t = PySequence_GetItem(val, i); //new reference
+        v << PyObjGetComplex(t, strict, ok);
+        Py_XDECREF(t);
+
+        if (!ok)
         {
-            t = PySequence_GetItem(val, i); //new reference
-            if (PyComplex_Check(t))
-            {
-                v.append(complex128(PyComplex_RealAsDouble(t), PyComplex_ImagAsDouble(t)));
-            }
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
-        }
-    }
-    else
-    {
-        int overflow;
-        for (Py_ssize_t i = 0; i < len; i++)
-        {
-            t = PySequence_GetItem(val, i); //new reference
-            
-            if (PyComplex_Check(t))
-            {
-                v.append(complex128(PyComplex_RealAsDouble(t), PyComplex_ImagAsDouble(t)));
-            }
-            else if (PyFloat_Check(t)) 
-            {
-                v.append(PyFloat_AS_DOUBLE(t));
-            } 
-            else if (PyLong_Check(t))
-            {
-                qreal v2 = PyLong_AsLongAndOverflow(t, &overflow);
-                if (overflow)
-                {
-                    v2 = PyLong_AsLongLongAndOverflow(t, &overflow);
-                    if (overflow)
-                    {
-                        ok = false;
-                        Py_XDECREF(t);
-                        break;
-                    }
-                }
-                v.append(v2);
-            }
-            else if (t == Py_False) 
-            {
-                v.append(0);
-            } 
-            else if (t == Py_True) 
-            {
-                v.append(1);
-            } 
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
+            break;
         }
     }
 
@@ -845,9 +810,8 @@ QVector<complex128>  PythonQtConversion::PyObjGetComplexArray(PyObject* val, boo
 //! get int-array from py object
 QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bool &ok)
 {
-    QVector<int> v;
-    int overflow;
     ok = true;
+    QVector<int> v;
 
     if (PySequence_Check(val) == false)
     {
@@ -856,66 +820,17 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     }
 
     Py_ssize_t len = PySequence_Size(val);
-    PyObject *t = NULL;
+    PyObject *t = nullptr;
 
-    if (strict)
+    for (Py_ssize_t i = 0; i < len; i++)
     {
-        for (Py_ssize_t i = 0; i < len; i++)
+        t = PySequence_GetItem(val, i); //new reference
+        v << PyObjGetInt(t, strict, ok);
+        Py_XDECREF(t);
+
+        if (!ok)
         {
-            t = PySequence_GetItem(val,i); //new reference
-            if (PyLong_Check(t))
-            {
-                v.append(PyLong_AsLongAndOverflow(t, &overflow));
-                if (overflow)
-                {
-                    ok = false;
-                    Py_XDECREF(t);
-                    break;
-                }
-            }
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
-        }
-    }
-    else
-    {
-        for (Py_ssize_t i = 0; i < len; i++)
-        {
-            t = PySequence_GetItem(val,i); //new reference
-            if (PyLong_Check(t))
-            {
-                v.append(PyLong_AsLongAndOverflow(t, &overflow));
-                if (overflow)
-                {
-                    ok = false;
-                    Py_XDECREF(t);
-                    break;
-                }
-            }
-            else if (PyFloat_Check(t)) 
-            {
-                v.append(floor(PyFloat_AS_DOUBLE(t)));
-            } 
-            else if (t == Py_False) 
-            {
-                v.append(0);
-            } 
-            else if (t == Py_True) 
-            {
-                v.append(1);
-            } 
-            else
-            {
-                ok = false;
-                Py_XDECREF(t);
-                break;
-            }
-            Py_XDECREF(t);
+            break;
         }
     }
 
