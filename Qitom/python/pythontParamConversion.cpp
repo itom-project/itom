@@ -156,12 +156,9 @@ namespace ito
         break;
 
     case (ito::ParamBase::DObjPtr): {
-        ito::DataObject *dObj = (ito::DataObject *)(param.getVal<void *>());
-        if (dObj)
+        ito::DataObject* dObj = param.getVal<ito::DataObject*>();
+        if(dObj)
         {
-            ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
-            if (pyDataObj)
-            {
                 pyDataObj->dataObject = new ito::DataObject(*dObj);
                 result = (PyObject *)pyDataObj;
             }
@@ -180,12 +177,8 @@ namespace ito
     break;
 #if ITOM_POINTCLOUDLIBRARY > 0
     case (ito::ParamBase::PointCloudPtr): {
-        ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud *)(param.getVal<void *>());
-        if (pointCloud)
-        {
-            ito::PythonPCL::PyPointCloud *pyPointCloud = ito::PythonPCL::createEmptyPyPointCloud();
-            if (pyPointCloud)
-            {
+        ito::PCLPointCloud* pointCloud = param.getVal<ito::PCLPointCloud*>();
+            if(pointCloud)            {
                 pyPointCloud->data = new ito::PCLPointCloud(*pointCloud);
                 result = (PyObject *)pyPointCloud;
             }
@@ -204,12 +197,8 @@ namespace ito
     break;
 
     case (ito::ParamBase::PolygonMeshPtr): {
-        ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh *)(param.getVal<void *>());
-        if (polygonMesh)
-        {
-            ito::PythonPCL::PyPolygonMesh *pyPolygonMesh = ito::PythonPCL::createEmptyPyPolygonMesh();
-            if (pyPolygonMesh)
-            {
+        ito::PCLPolygonMesh* polygonMesh = param.getVal<ito::PCLPolygonMesh*>();
+            if(polygonMesh)            {
                 pyPolygonMesh->polygonMesh = new ito::PCLPolygonMesh(*polygonMesh);
                 result = (PyObject *)pyPolygonMesh;
             }
@@ -360,6 +349,24 @@ namespace ito
         else if (PyDataObject_Check(obj))
         {
             paramBaseType = ito::ParamBase::DObjPtr;
+        }
+        else if (PyArray_CheckScalar(obj))
+        {
+            switch (PyArray_DescrFromScalar(obj)->type_num)
+            {
+            case NPY_BOOL:
+            case NPY_INT:
+                paramBaseType = ito::ParamBase::Int;
+                break;
+            case NPY_FLOAT:
+            case NPY_DOUBLE:
+                paramBaseType = ito::ParamBase::Double;
+                break;
+            case NPY_CDOUBLE:
+            case NPY_CFLOAT:
+                paramBaseType = ito::ParamBase::Complex;
+                break;
+            }
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if (PyPointCloud_Check(obj))
@@ -583,6 +590,8 @@ namespace ito
     return QSharedPointer<ito::ParamBase>();
 }
 
+
+//------------------------------------------------------------------------------------
 //! special deleter for param, where the wrapped object is deleted, too.
 /*!
     This method can be used as deleter callback for a shared pointer, covering
