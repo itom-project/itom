@@ -20,19 +20,19 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOBJMETADATATABLEFACTORY_H
-#define DOBJMETADATATABLEFACTORY_H
+#ifndef DATAOBJECTMETAWIDGETFACTORY_H
+#define DATAOBJECTMETAWIDGETFACTORY_H
 
 #include "qglobal.h"
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class DataObjectMetaTableFactory : public QObject, public QDesignerCustomWidgetInterface
+class DataObjectMetaWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    DataObjectMetaTableFactory(QObject* parent = 0);
+    DataObjectMetaWidgetFactory(QObject* parent = 0);
 
     bool isContainer() const;
     bool isInitialized() const;
@@ -50,4 +50,4 @@ private:
     bool initialized;
 };
 
-#endif // DOBJMETADATATABLEFACTORY_H
+#endif // DATAOBJECTMETAWIDGETFACTORY_H

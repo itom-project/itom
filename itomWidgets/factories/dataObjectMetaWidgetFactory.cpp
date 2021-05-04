@@ -20,19 +20,19 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dataObjectMetaTable.h"
+#include "dataObjectMetaWidget.h"
 
 #include <QtCore/QtPlugin>
-#include "dataObjectMetaTablefactory.h"
+#include "dataObjectMetaWidgetFactory.h"
 
 
-DataObjectMetaTableFactory::DataObjectMetaTableFactory(QObject* parent)
+DataObjectMetaWidgetFactory::DataObjectMetaWidgetFactory(QObject* parent)
     : QObject(parent)
 {
     initialized = false;
 }
 
-void DataObjectMetaTableFactory::initialize(QDesignerFormEditorInterface* /*core*/)
+void DataObjectMetaWidgetFactory::initialize(QDesignerFormEditorInterface* /*core*/)
 {
     if (initialized)
         return;
@@ -40,49 +40,49 @@ void DataObjectMetaTableFactory::initialize(QDesignerFormEditorInterface* /*core
     initialized = true;
 }
 
-bool DataObjectMetaTableFactory::isInitialized() const
+bool DataObjectMetaWidgetFactory::isInitialized() const
 {
     return initialized;
 }
 
-QWidget* DataObjectMetaTableFactory::createWidget(QWidget* parent)
+QWidget* DataObjectMetaWidgetFactory::createWidget(QWidget* parent)
 {
-    return new DataObjectMetaTable(parent);
+    return new DataObjectMetaWidget(parent);
 }
 
-QString DataObjectMetaTableFactory::name() const
+QString DataObjectMetaWidgetFactory::name() const
 {
-    return "DataObjectMetaTable";
+    return "DataObjectMetaWidget";
 }
 
-QString DataObjectMetaTableFactory::group() const
+QString DataObjectMetaWidgetFactory::group() const
 {
     return "itom Plugins";
 }
 
-QIcon DataObjectMetaTableFactory::icon() const
+QIcon DataObjectMetaWidgetFactory::icon() const
 {
     return QIcon(":/itomDesignerPlugins/itom/icons/q_itoM32.png");
 }
 
-QString DataObjectMetaTableFactory::toolTip() const
+QString DataObjectMetaWidgetFactory::toolTip() const
 {
     return QString();
 }
 
-QString DataObjectMetaTableFactory::whatsThis() const
+QString DataObjectMetaWidgetFactory::whatsThis() const
 {
-    return QObject::tr("itom widget to interprete a dataObject as a table.");
+    return QObject::tr("itom widget to show the dataObject meta information.");
 }
 
-bool DataObjectMetaTableFactory::isContainer() const
+bool DataObjectMetaWidgetFactory::isContainer() const
 {
     return false;
 }
 
-QString DataObjectMetaTableFactory::domXml() const
+QString DataObjectMetaWidgetFactory::domXml() const
 {
-    return "<widget class=\"DataObjectMetaTable\" name=\"DataObjectMetaTable\">\n"
+    return "<widget class=\"DataObjectMetaWidget\" name=\"dataObjectMetaWidget\">\n"
         " <attribute name=\"verticalHeaderDefaultSectionSize\">\n \
             <number>20</number>\n \
           </attribute>\n"
@@ -98,7 +98,7 @@ QString DataObjectMetaTableFactory::domXml() const
         </widget>\n";
 }
 
-QString DataObjectMetaTableFactory::includeFile() const
+QString DataObjectMetaWidgetFactory::includeFile() const
 {
-    return "dataObjectMetaTable.h";
+    return "dataObjectMetaWidget.h";
 }

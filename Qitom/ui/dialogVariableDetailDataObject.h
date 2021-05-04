@@ -53,8 +53,8 @@ private:
 
 private slots:
     void on_btnCopyClipboard_clicked();
-    void on_spinBoxDObjRowAxis_valueChanged();
-    void on_spinBoxDObjColAxis_valueChanged();
+    //void on_spinBoxDObjRowAxis_valueChanged();
+    //void on_spinBoxDObjColAxis_valueChanged();
 };
 
 } //end namespace ito
