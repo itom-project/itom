@@ -418,10 +418,17 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
             ok = false;
         }
     } 
-    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_INT) // Scalar
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_INT) // Scalar, 32bit
     {
         // cast the scalar numpy type to int
         PyArray_ScalarAsCtype(val, &d);
+    }
+    else if (PyArray_CheckScalar(val) && PyArray_DescrFromScalar(val)->type_num == NPY_LONG) // Scalar, 32bit
+    {
+        long l;
+        // cast the scalar numpy type to int
+        PyArray_ScalarAsCtype(val, &l);
+        d = static_cast<int>(l);
     }
     else if (!strict) 
     {
