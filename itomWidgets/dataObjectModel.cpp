@@ -41,6 +41,7 @@ DataObjectModel::DataObjectModel() :
 {
     m_sharedDataObj = QSharedPointer<ito::DataObject>(new ito::DataObject());
     m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
+    setAlignment(Qt::AlignVCenter);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

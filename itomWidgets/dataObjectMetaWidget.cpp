@@ -20,7 +20,7 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "DataObjectMetaTable.h"
+#include "DataObjectMetaWidget.h"
 #include <qspinbox.h>
 #include <complex>
 
@@ -102,7 +102,7 @@ template<typename _Tp> void convertComplexMat(const cv::Mat &complexIn, cv::Mat 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObjectMetaTable::DataObjectMetaTable(QWidget* parent /*= 0*/) :
+DataObjectMetaWidget::DataObjectMetaWidget(QWidget* parent /*= 0*/) :
     QTreeWidget(parent), 
     m_readOnly(false),
     m_decimals(3),
@@ -133,13 +133,13 @@ DataObjectMetaTable::DataObjectMetaTable(QWidget* parent /*= 0*/) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObjectMetaTable::~DataObjectMetaTable()
+DataObjectMetaWidget::~DataObjectMetaWidget()
 {
     m_data = ito::DataObject();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
+void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
 {
     m_data = *dataObj;
 
@@ -338,39 +338,39 @@ void DataObjectMetaTable::setData(QSharedPointer<ito::DataObject> dataObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> DataObjectMetaTable::getData() const
+QSharedPointer<ito::DataObject> DataObjectMetaWidget::getData() const
 {
     return QSharedPointer<ito::DataObject>(new ito::DataObject(m_data));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setReadOnly(const bool value)
+void DataObjectMetaWidget::setReadOnly(const bool value)
 {
     m_readOnly = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setDecimals(const int value)
+void DataObjectMetaWidget::setDecimals(const int value)
 {
     m_decimals = value > 0 ? value : 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setPreviewSize(const int value)
+void DataObjectMetaWidget::setPreviewSize(const int value)
 {
    m_previewSize = value > 0 ? (value < 512 ? value : 512) : 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setPreviewStatus(const bool value)
+void DataObjectMetaWidget::setPreviewStatus(const bool value)
 {
     m_preview = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObjectMetaTable::setDetailedStatus(const bool value)
+void DataObjectMetaWidget::setDetailedStatus(const bool value)
 {
     m_detailedStatus = value;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
-void DataObjectMetaTable::setColorMap(const QString &name)
+void DataObjectMetaWidget::setColorMap(const QString &name)
 {
     ito::RetVal retval(ito::retOk);
     int numPalettes = 1;
@@ -410,8 +410,9 @@ void DataObjectMetaTable::setColorMap(const QString &name)
     return;
 }
 */
+
 //----------------------------------------------------------------------------------------------------------------------------------
-QSize DataObjectMetaTable::sizeHint() const
+QSize DataObjectMetaWidget::sizeHint() const
 {
 
     int h = 25;

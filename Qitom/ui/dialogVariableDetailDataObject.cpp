@@ -24,8 +24,9 @@
 #include <qsharedpointer.h>
 #include "dataobj.h"
 
+#include "checkableComboBox.h"
+
 #include <qclipboard.h>
-#include <dataObjectMetaTable.h>
 
 namespace ito
 {
@@ -45,22 +46,29 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& na
     ui.dataTable->setData(dObj);
     ui.dataTable->setReadOnly(true);
 
-    ui.metaTable->setData(dObj);    
-    ui.metaTable->setReadOnly(true);
+    ui.metaWidget->setData(dObj);    
+    ui.metaWidget->setReadOnly(true);
 
-    if (m_dObj.getDims() < 3)
+    if (m_dObj.getDims() >= 3)
     {
-        ui.frameAxesVisible->setVisible(false);
-    }
-    else
-    {
-        ui.spinBoxDObjColAxis->setValue(0);
-        ui.spinBoxDObjColAxis->setMinimum(0);
-        ui.spinBoxDObjColAxis->setMaximum(m_dObj.getDims() - 1);
+        QLabel* axesShowLabel = new QLabel(this);
+        axesShowLabel->setText("axes shown");
+        ui.verticalLayoutAxes->addWidget(axesShowLabel);
+
+        QList<CheckableComboBox*> comboList;
+        for (int dim = 0; dim < m_dObj.getDims(); dim++)
+        {
+            comboList.append(new CheckableComboBox());
+        }
+
+        int cnt = 0;
+        for each (CheckableComboBox* combo in comboList)
+        {
+            combo->addItem(tr("axis: %1").arg(QString::number(cnt)));
+            ui.verticalLayoutAxes->addWidget(combo);
+            cnt += 1;
+        }
         
-        ui.spinBoxDObjRowAxis->setValue(1);
-        ui.spinBoxDObjRowAxis->setMinimum(1);
-        ui.spinBoxDObjRowAxis->setMaximum(m_dObj.getDims());
     }
 }
 
@@ -71,20 +79,18 @@ void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
     clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
 }
 
-void DialogVariableDetailDataObject::on_spinBoxDObjRowAxis_valueChanged()
-{
-    changeDObjAxes();
-}
-
-void DialogVariableDetailDataObject::on_spinBoxDObjColAxis_valueChanged()
-{   
-    changeDObjAxes();
-}
+//void DialogVariableDetailDataObject::on_spinBoxDObjRowAxis_valueChanged()
+//{
+//    changeDObjAxes();
+//}
+//
+//void DialogVariableDetailDataObject::on_spinBoxDObjColAxis_valueChanged()
+//{   
+//    changeDObjAxes();
+//}
 
 void DialogVariableDetailDataObject::changeDObjAxes()
 {
-    int colIdx = ui.spinBoxDObjColAxis->value();
-    int rowIdx = ui.spinBoxDObjRowAxis->value();
     /*ito::DataObject roiObj = m_dObj->at(rowIdx, colIdx);
     ui.table->setData(roiObj);*/
 }
