@@ -304,12 +304,87 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
     return retval;
 }
 
+//-------------------------------------------------------------------------------------
+QStringList renderDescriptionOutput(const QString &description, bool splitLongLines, int descriptionMaxLength, int identLevelFollowingLines)
+{
+    QStringList descriptions = description.split("\n");
+    QStringList output;
+    QString indent = "";
+
+    for (int idx = 0; idx < descriptions.size(); ++idx)
+    {
+        const QString &line = descriptions[idx];
+
+        if (splitLongLines)
+        {
+            if (line.size() <= descriptionMaxLength)
+            {
+                output.append(indent + line);
+            }
+            else
+            {
+                QTextBoundaryFinder finder(QTextBoundaryFinder::Line, line);
+                QStringList lines;
+                int lineStartPos = 0;
+                int prevPos;
+                finder.setPosition(0);
+
+                while (lineStartPos < line.size())
+                {
+                    finder.setPosition(lineStartPos + descriptionMaxLength);
+
+                    if (finder.isAtBoundary())
+                    {
+                        prevPos = finder.position();
+                    }
+                    else
+                    {
+                        prevPos = finder.toPreviousBoundary();
+                    }
+
+                    if (prevPos <= lineStartPos)
+                    {
+                        QString substr = line.mid(lineStartPos, descriptionMaxLength);
+                        lineStartPos += substr.size();
+                        lines.append(substr.trimmed());
+                    }
+                    else
+                    {
+                        lines.append(line.mid(lineStartPos, prevPos - lineStartPos).trimmed());
+                        lineStartPos = prevPos;
+                    }
+                }
+
+                foreach(const QString &l, lines)
+                {
+                    output.append(indent + l);
+
+                    if (indent == "")
+                    {
+                        indent = QString(identLevelFollowingLines, ' ');
+                    }
+                }
+            }
+        }
+        else
+        {
+            output.append(indent + line);
+        }
+
+        indent = QString(identLevelFollowingLines, ' ');
+    }
+
+    return output;
+    
+    
+}
+
 
 //--------------------------------------------------------------------------------------------------------------
-PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream /*= true*/)
+PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, int errorneousParamIdx, bool printToStdStream /*= true*/)
 {
-    PyObject *p_pyLine = NULL;
-    PyObject *item = NULL;
+    PyObject *p_pyLine = nullptr;
+    PyObject *item = nullptr;
     QString type;
     QString temp;
     QMap<QString, QStringList> values;
@@ -322,8 +397,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 	values["available"] = QStringList();
     bool readonly;
 	bool available;
-    const ito::ParamMeta *meta = NULL;
-
+    const ito::ParamMeta *meta = nullptr;
     bool splitLongLines = true;
     int splitLongLinesMaxLength = 200;
 
@@ -333,10 +407,12 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup("CodeEditor");
         splitLongLines = settings.value("SplitLongLines", true).toBool();
+
         if (splitLongLines)
         {
             splitLongLinesMaxLength = qMax(10, settings.value("SplitLongLinesMaxLength", 200).toInt());
         }
+
         settings.endGroup();
     }
 
@@ -487,8 +563,8 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 
             if (addInfos)
             {
-                char* tempinfobuf = NULL;
-                tempinfobuf = const_cast<char*>(p.getInfo());
+                const char* tempinfobuf = p.getInfo();
+
                 if (tempinfobuf)
                 {
                     temp = QString::fromLatin1(tempinfobuf);
@@ -857,6 +933,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					PyDict_SetItemString(p_pyLine, "value", Py_None);
 				}
             }
+
             if (p.getInfo())
             {
                 item = PythonQtConversion::QByteArrayToPyUnicodeSecure(p.getInfo());
@@ -993,6 +1070,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
         {
             temp = values["values"][i].leftJustified(valuesLength,' ', true);
             output.append(temp);
+
 			if (available)
 			{
 				temp = values["readwrite"][i].leftJustified(readWriteLength, ' ', true);
@@ -1001,78 +1079,46 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 			{
 				temp = QString("n.a.").leftJustified(readWriteLength, ' ', true);
 			}
+
             output.append(temp);
 
-            if (splitLongLines)
-            {
-                QString description = values["description"][i];
+            QStringList descriptionLines = renderDescriptionOutput(values["description"][i], splitLongLines, descriptionMaxLength, descriptionStartColumn);
 
-                if (description.size() <= descriptionMaxLength)
+            bool firstLine = true;
+
+            foreach(const QString &descr, descriptionLines)
+            {
+                if (firstLine)
                 {
-                    output.append(description);
+                    output.append(descr);
+
+                    if (errorneousParamIdx == i)
+                    {
+                        output.append(" <-- erroneous parameter");
+                        errorneousParamIdx = -1; // invalidate it
+                    }
+
+                    firstLine = false;
                 }
                 else
                 {
-                    QTextBoundaryFinder finder(QTextBoundaryFinder::Line, description);
-                    QStringList lines;
-                    int lineStartPos = 0;
-                    int prevPos;
-                    finder.setPosition(0);
-
-                    while (lineStartPos < description.size())
+                    if (asErr)
                     {
-                        finder.setPosition(lineStartPos + descriptionMaxLength);
-                        if (finder.isAtBoundary())
-                        {
-                            prevPos = finder.position();
-                        }
-                        else
-                        {
-                            prevPos = finder.toPreviousBoundary();
-                        }
-
-                        if (prevPos <= lineStartPos)
-                        {
-                            QString substr = description.mid(lineStartPos, descriptionMaxLength);
-                            lineStartPos += substr.size();
-                            lines.append(substr.trimmed());
-                        }
-                        else
-                        {
-                            lines.append(description.mid(lineStartPos, prevPos - lineStartPos).trimmed());
-                            lineStartPos = prevPos;
-                        }
+                        output.append("\n#" + descr.mid(1));
                     }
-
-                    if (lines.size() > 0)
+                    else
                     {
-                        output.append(lines[0]);
-                        for (int i = 1; i < lines.size(); ++i)
-                        {
-                            output.append("\n");
-                            if (asErr)
-                            {
-                                output.append(QString("#").leftJustified(descriptionStartColumn, ' '));
-                            }
-                            else
-                            {
-                                output.append(QString("'").leftJustified(descriptionStartColumn, ' ')); //mark as unclosed string
-                            }
-                            output.append(lines[i]);
-                        }
+                        output.append("\n'" + descr.mid(1)); //mark as unclosed string
                     }
                 }
             }
-            else
-            {
-                output.append(values["description"][i]);
-            }
         }
 
-        if (num == i)
+        if (errorneousParamIdx == i)
         {
             output.append(" <-- erroneous parameter");
         }
+
         output.append("\n");
     }
 
