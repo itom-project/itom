@@ -5594,18 +5594,42 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
             PyExc_RuntimeError, "NewPath parameter could not be interpreted as string.");
         return NULL;
     }
-    if (!QDir::setCurrent(path))
+
+    QDir pathDir(path);
+
+    if (pathDir.exists())
     {
-        Py_RETURN_FALSE;
+        if (!QDir::setCurrent(path))
+        {
+            Py_RETURN_FALSE;
+        }
+        else
+        {
+            PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+            if (pyEngine)
+            {
+                emit pyEngine->pythonCurrentDirChanged();
+            }
+
+            if (QString::compare(
+                    QDir::current().currentPath(), pathDir.absolutePath(), Qt::CaseInsensitive) ==
+                0)
+            {
+                Py_RETURN_TRUE;
+            }
+            else
+            {
+                Py_RETURN_FALSE;
+            }
+        }
     }
     else
     {
-        PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-        if (pyEngine)
-            emit pyEngine->pythonCurrentDirChanged();
-        Py_RETURN_TRUE;
+        PyErr_SetString(PyExc_RuntimeError, "NewPath does not exists.");
+        return NULL;
     }
 }
+
 
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyCompressData_doc, "compressData(text) -> bytes \n\
