@@ -6,9 +6,9 @@ def channelSpecificFunc1():
     cam.setParam('defaultChannel','Channel_1')
     cam.setParam('channelSpecificParameter',200)
 
-    def channelSpecificFunc2():
-        cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('channelSpecificParameter:Channel_1',200)
+def channelSpecificFunc2():
+    cam = dataIO("DummyMultiChannelGrabber")
+    cam.setParam('channelSpecificParameter:Channel_1',200)
 
 class MultiChannelDummyGrabberTest(unittest.TestCase):
     @classmethod

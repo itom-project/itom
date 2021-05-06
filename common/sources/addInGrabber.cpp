@@ -289,8 +289,9 @@ namespace ito
 	\param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinit waiting time, else time in milliseconds
 	\return retOk if everything was ok, retWarning if live image could not be invoked
 	*/
-	ito::RetVal AddInGrabber::sendDataToListeners(int waitMS)
+	ito::RetVal AddInGrabber::sendDataToListeners(int waitMS, QString channel)
 	{
+        Q_UNUSED(channel);
 		QObject *obj;
 		ito::RetVal retValue = ito::retOk;
 		//        int i=0;
@@ -391,20 +392,23 @@ namespace ito
 	//\param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinit waiting time, else time in milliseconds
 	//\return retOk if everything was ok, retWarning if live image could not be invoked
 	//*/
-	ito::RetVal AddInMultiChannelGrabber::sendDataToListeners(int waitMS)
+	ito::RetVal AddInMultiChannelGrabber::sendDataToListeners(int waitMS, QString channel)
 	{
 		QObject *obj;
 		ito::RetVal retValue = ito::retOk;
 		//        int i=0;
 		int size = m_autoGrabbingListeners.size();
-		char* defChannel = m_params["defaultChannel"].getVal<char*>();
-		if (m_channels.contains(defChannel))
+        if (channel.isEmpty())
+        {
+            channel = m_params["defaultChannel"].getVal<char*>();
+        }
+		if (m_channels.contains(channel))
 		{
 			if (waitMS == 0)
 			{
 				foreach(obj, m_autoGrabbingListeners)
 				{
-					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[defChannel].data))), Q_ARG(ItomSharedSemaphore*, NULL)))
+					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[channel].data))), Q_ARG(ItomSharedSemaphore*, NULL)))
 					{
 						retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
 					}
@@ -419,7 +423,7 @@ namespace ito
 				{
 					waitConds[i] = new ItomSharedSemaphore();
 					// \todo On Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
-					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[defChannel].data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
+					if (!QMetaObject::invokeMethod(obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[channel].data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
 					{
 						retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
 					}

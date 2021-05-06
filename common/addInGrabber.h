@@ -90,7 +90,7 @@ namespace ito
         */
         virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0; 
 
-		virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
+		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = "") = 0; /*!< sends m_data to all registered listeners. */
 
         inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
         
@@ -151,7 +151,7 @@ namespace ito
 		*/
 		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
-		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = ""); /*!< sends m_data to all registered listeners. */
 	public:
 		AddInGrabber();
 		~AddInGrabber();
@@ -181,7 +181,7 @@ namespace ito
 		};
 		QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
 		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-		virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = ""); /*!< sends m_data to all registered listeners. */
 		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
 		void addChannel(QString name);
 		virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
