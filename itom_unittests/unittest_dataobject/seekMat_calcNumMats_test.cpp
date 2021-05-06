@@ -25,12 +25,7 @@ template <typename _Tp> class seekMat_calcNumMats_test : public ::testing::Test
         this->dObj1 = ito::DataObject();
         this->dObj2 = ito::DataObject(10, 10, ito::getDataType2<_Tp *>());
         this->dObj3 = ito::DataObject(5, 10, 10, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[5];
-        temp_size[0] = 3;
-        temp_size[1] = 4;
-        temp_size[2] = 2;
-        temp_size[3] = 10;
-        temp_size[4] = 10;
+        int temp_size[] = { 3,4,2,10,10 };
         this->dObj5 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>());
     };
 

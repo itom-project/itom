@@ -22,11 +22,8 @@ template <typename _Tp> class makeContinuousFunc_test : public ::testing::Test
     virtual void SetUp(void)
     {
         this->dObj_3d = ito::DataObject(4, 5, 5, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[4];
-        temp_size[0] = 4;
-        temp_size[1] = 5;
-        temp_size[2] = 2;
-        temp_size[3] = 3;
+
+        int temp_size[] = { 4,5,2,3 };
         this->dObj_4d = ito::DataObject(4, temp_size, ito::getDataType2<_Tp *>());
         // this->dObj_4d_con = ito::DataObject(4,temp_size,ito::getDataType2<_Tp*>(),1);
         // this->dObj_4dres = this->dObj_4d;
@@ -207,12 +204,9 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_4d)
 
 TYPED_TEST(makeContinuousFunc_test, nonContTest_big4d)
 {
-    int *temp_size = new int[4];
-    temp_size[0] = 50;
-    temp_size[1] = 50;
-    temp_size[2] = 100;
-    temp_size[3] = 130;
+    int temp_size[] = { 50,50,100,130 };
     ito::DataObject bigDataObj(4, temp_size, ito::getDataType((const TypeParam *)NULL));
+
     int limits[] = {0, 0, -20, -20, -31, -49, -60, -10};
     bigDataObj.adjustROI(4, limits);
     ito::DataObject *roiBased =

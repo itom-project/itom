@@ -26,11 +26,8 @@ template <typename _Tp> class const_iterator_test : public ::testing::Test
     {
         this->dObj2d = ito::DataObject(21, 13, ito::getDataType2<_Tp *>());
         this->dObj3d = ito::DataObject(5, 10, 10, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[5];
-        temp_size[0] = 3;
-        temp_size[1] = 4;
-        temp_size[2] = 2;
-        temp_size[3] = 10;
+
+        int temp_size[] = { 3,4,2,10 };
         this->dObj4d = ito::DataObject(4, temp_size, ito::getDataType2<_Tp *>());
     };
 

@@ -886,7 +886,7 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
     QString nameOnly;
     int index;
     QString additionalTag;
-    if(ito::ParamHelper::parseParamName(paramName, nameOnly, hasIndex, index, additionalTag).containsError())
+    if(ito::parseParamName(paramName, nameOnly, hasIndex, index, additionalTag).containsError())
     {
         PyErr_SetString(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
         return NULL;
@@ -894,12 +894,12 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
 
     //now get pointer to the parameter-map from plugin and check whether paramName is available
     QMap<QString, Param> *params;
-    QMap<QString, Param>::iterator it;
     (addInObj)->getParamList(&params); //always returns ok
 
     //find parameter in params
-    it = params->find(nameOnly);
-    if (it == params->end())
+    auto it = params->constFind(nameOnly);
+
+    if (it == params->constEnd())
     {
         PyErr_Format(PyExc_ValueError, "Parameter '%s' not contained in plugin.", nameOnly.toLatin1().data());
         return NULL;
@@ -907,7 +907,7 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
 
     //create a container for the returned parameter. This value is initialized by the full name including the type of the corresponding parameter of the m_params map.
     //Usually, this type is correct, such that setVal can directly used within the plugin. However, the plugin is also allowed to change the type.
-    QSharedPointer<ito::Param> qsParam(new ito::Param(paramName, it->getType(false)));
+    QSharedPointer<ito::Param> qsParam(new ito::Param(paramName, it->getType() | it->getFlags()));
     
     if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -1364,7 +1364,7 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
     QString paramName;
     int index;
     QString additionalTag;
-    if(ito::ParamHelper::parseParamName(key, paramName, hasIndex, index, additionalTag).containsError())
+    if(ito::parseParamName(key, paramName, hasIndex, index, additionalTag).containsError())
     {
         PyErr_SetString(PyExc_TypeError, "parameter name is invalid. It must have the following format: paramName['['index']'][:additionalTag]");
         return NULL;
@@ -1396,6 +1396,12 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
         case ito::ParamBase::DoubleArray:
             qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Double, false);
             break;
+        case ito::ParamBase::ComplexArray:
+            qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::Complex, false);
+            break;
+        case ito::ParamBase::StringList:
+            qsParam = PythonParamConversion::PyObjectToParamBase(value, key, ret, ito::ParamBase::String, false);
+            break;
         default:
             PyErr_Format(PyExc_ValueError, "Parameter '%s' of plugin is no array.", paramName.toLatin1().data());
             return NULL;
@@ -1408,7 +1414,7 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
 
     if(ret.containsError())
     {
-        PyErr_Format(PyExc_ValueError, "The given value could not be transformed to type of parameter.", paramName.toLatin1().data());
+        PyErr_Format(PyExc_ValueError, "The given value could not be transformed to the type of parameter.", paramName.toLatin1().data());
         return NULL;
     }
     else

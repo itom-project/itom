@@ -1,4 +1,4 @@
-set(target_name unittest_commonlib)
+set(target_name unittest_commonqtlib)
  
 project(${target_name})
 
@@ -35,25 +35,18 @@ include_directories(
 )
 
 link_directories(
-    # ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
-    
 )
 
 set(unittest_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/unittest_commonlib.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/unittest_commonqtlib.cc
 )
 
 set(unittest_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/byteArrayTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/retValTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramMetaTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/colorTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/numericTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helperCommonTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
-target_link_libraries(${target_name} itomCommonLib ${OpenCV_LIBS})
+target_link_libraries(${target_name} itomCommonQtLib ${OpenCV_LIBS})
 
 set_target_properties( ${target_name}
     PROPERTIES

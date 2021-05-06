@@ -105,8 +105,8 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
 {
     switch (param->getType())
     {
-        case ito::ParamBase::Char & ito::paramTypeMask:
-        case ito::ParamBase::Int & ito::paramTypeMask:
+        case ito::ParamBase::Char:
+        case ito::ParamBase::Int:
             if (tempParam->type() == QVariant::Char)
             {
                 *set = 1;
@@ -118,7 +118,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
             }
         break;
 
-        case ito::ParamBase::Double & ito::paramTypeMask:
+        case ito::ParamBase::Double:
             if ((tempParam->type() == QVariant::Double) || (tempParam->type() == QVariant::Int)
                 || (tempParam->type() == QVariant::Char))
             {
@@ -131,7 +131,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
             }
         break;
 
-        case ito::ParamBase::String & ito::paramTypeMask:
+        case ito::ParamBase::String:
             if ((tempParam->type() == QVariant::String) || (tempParam->type() == QVariant::ByteArray))
             {
                 *set = 1;
@@ -144,10 +144,10 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
             }
         break;
 
-        case ito::ParamBase::HWRef & ito::paramTypeMask:
-        case ito::ParamBase::DObjPtr & ito::paramTypeMask:
-        case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
-        case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+        case ito::ParamBase::HWRef:
+        case ito::ParamBase::DObjPtr:
+        case ito::ParamBase::PointCloudPtr:
+        case ito::ParamBase::PolygonMeshPtr:
             if (tempParam->type() == QVariant::UserType)
             {
                 *set = 1;

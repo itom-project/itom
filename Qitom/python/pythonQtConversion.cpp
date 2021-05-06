@@ -304,6 +304,7 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
     return r;
 }
 
+//-------------------------------------------------------------------------------------
 QSharedPointer<char> PythonQtConversion::PyObjGetBytesShared(PyObject* val, bool strict, bool& ok) 
 {
     // TODO: support buffer objects in general
@@ -352,6 +353,55 @@ QSharedPointer<char> PythonQtConversion::PyObjGetBytesShared(PyObject* val, bool
         return r;
     }
     return QSharedPointer<char>();
+}
+
+//-------------------------------------------------------------------------------------
+//! conversion from PyObject* to vector of ito::ByteArray
+/*!
+    tries to interprete given PyObject* as list of strings and converts it to QVector<ito::ByteArray>.
+    If strict is true, we do not want to convert a string to a stringlist, since single strings in python
+    are also detected to be sequences.
+
+    Strings are converted to the byte array using the latin1 coded, if possible.
+
+    \param val is the given python object
+    \param strict indicates if any object fitting to the sequence protocol is interpreted as string list, too [true]
+    \param ok (ByRef) is set to true if conversion was successful, else false
+    \return resulting QVector<ito::ByteArray>
+*/
+QVector<ito::ByteArray> PythonQtConversion::PyObjGetByteArrayList(PyObject *val, bool strict, bool &ok)
+{
+    QVector<ito::ByteArray> v;
+    ok = false;
+
+    // if we are strict, we do not want to convert a string to a stringlist
+    // (strings in python are detected to be sequences)
+    if (strict && (PyBytes_Check(val) || PyUnicode_Check(val)))
+    {
+        ok = false;
+        return v;
+    }
+    if (PySequence_Check(val))
+    {
+        int count = PySequence_Size(val);
+        PyObject *value = nullptr;
+        QByteArray ba;
+
+        for (int i = 0; i < count; i++)
+        {
+            value = PySequence_GetItem(val, i); //new reference
+
+            ba = PyObjGetBytes(value, strict, ok);
+
+            v.append(ito::ByteArray(ba.constData()));
+
+            Py_XDECREF(value);
+        }
+
+        ok = true;
+    }
+
+    return v;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

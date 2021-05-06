@@ -107,6 +107,9 @@ public:
     //! get shape vector from py object
     static QVector<ito::Shape> PyObjGetShapeVector(PyObject* val, bool &ok);
 
+    //! get ito::ByteArray list from py object
+    static QVector<ito::ByteArray> PyObjGetByteArrayList(PyObject *val, bool strict, bool &ok);
+
 #if ITOM_POINTCLOUDLIBRARY > 0
     static ito::PCLPointCloud PyObjGetPointCloud(PyObject *val, bool strict, bool &ok);
     static ito::PCLPoint PyObjGetPoint(PyObject *val, bool strict, bool &ok);

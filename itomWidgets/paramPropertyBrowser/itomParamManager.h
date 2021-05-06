@@ -361,6 +361,44 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
+class ParamStringListPropertyManagerPrivate;
+
+/*
+Property Manager for parameters of type ito::ParamBase::StringList
+*/
+class ITOMWIDGETS_EXPORT ParamStringListPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamStringListPropertyManager(QObject *parent = 0);
+    ~ParamStringListPropertyManager();
+
+    typedef ito::ByteArray DataType;
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int num, const ito::ByteArray* values);
+    void metaChanged(QtProperty *property, ito::StringListMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int num, const ito::ByteArray* values);
+
+    ParamStringPropertyManager *subPropertyManager() const;
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+    ParamStringListPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(ParamStringListPropertyManager)
+    Q_DISABLE_COPY(ParamStringListPropertyManager)
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QByteArray &))
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
+};
+
 /*
 Property Manager for parameters of type ito::ParamBase::HWRef, ito::ParamBase::DObjPtr,
 ito::ParamBase::PolygonMeshPtr, ito::ParamBase::PointCloudPtr, ito::ParamBase::PointPtr
