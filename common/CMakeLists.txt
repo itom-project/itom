@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 3.1)
  
 set(target_name itomCommonLib)  
 project(${target_name}) 
-
+ 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
   
 # include commonly used itom CMake macros (internal can only be used within the core projects) 

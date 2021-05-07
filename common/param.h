@@ -264,7 +264,11 @@ public:
     //!< rvalue assignment operator
     inline ParamBase& operator=(ParamBase&& other) noexcept
     {
-        std::swap(d, other.d);
+        if (this != &other)
+        {
+            std::swap(d, other.d);
+        }
+
         return *this;
     }
 
