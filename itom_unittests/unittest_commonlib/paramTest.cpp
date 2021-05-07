@@ -669,6 +669,53 @@ TEST(ParamTest, ParamRValueCopyConstructor)
     EXPECT_STREQ(p2.getName(), "name4");
 }
 
+TEST(ParamTest, ParamDetachString)
+{
+    {
+        //empty string
+
+        Param p("str", ParamBase::String, "", "empty string");
+        p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
+        const char* str1 = p.getVal<const char*>(); //not detached
+
+        Param p2;
+        p2 = p;
+
+        char* str2 = p2.getVal<char*>(); // must be detached
+        EXPECT_NE(str1, str2); // pointer must be different
+        EXPECT_STREQ(str2, "");
+    }
+
+    {
+        //filled string
+        Param p("str", ParamBase::String, "test", "test string");
+        p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
+        const char* str1 = p.getVal<const char*>(); //not detached
+
+        Param p2;
+        p2 = p;
+
+        char* str2 = p2.getVal<char*>(); // must be detached
+        EXPECT_NE(str1, str2); // pointer must be different
+        EXPECT_STREQ(str2, "test");
+    }
+
+    {
+        //nullptr string
+        Param p("str", ParamBase::String, nullptr, "nullptr");
+        p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
+        const char* str1 = p.getVal<const char*>(); //not detached
+
+        Param p2;
+        p2 = p;
+
+        char* str2 = p2.getVal<char*>(); // must be detached
+        EXPECT_EQ(str1, nullptr);
+        EXPECT_EQ(str2, nullptr);
+    }
+
+}
+
 TEST(ParamTest, ParamBaseRValueCopyConstructor)
 {
     ParamBase p2("name2", ParamBase::Int, 4);
