@@ -716,6 +716,23 @@ TEST(ParamTest, ParamDetachString)
 
 }
 
+TEST(ParamTest, DetachNumber)
+{
+    int scalarType[] = {
+            ParamBase::Char, ParamBase::Int, ParamBase::Double, ParamBase::Complex };
+    for (int t : scalarType)
+    {
+        ParamBase p("scalar", t, 7);
+        ParamBase p2;
+        p2 = p;
+        EXPECT_EQ(p.getVal<int>(), 7);
+        EXPECT_EQ(p2.getVal<int>(), 7);
+        p2.setAutosave(true); // this triggers the detach
+        EXPECT_EQ(p.getVal<int>(), 7);
+        EXPECT_EQ(p2.getVal<int>(), 7);
+    }
+}
+
 TEST(ParamTest, ParamBaseRValueCopyConstructor)
 {
     ParamBase p2("name2", ParamBase::Int, 4);

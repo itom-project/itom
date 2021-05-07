@@ -1049,7 +1049,7 @@ void ParamBase::detach(bool allocNewArray /*= true*/)
         new_d->type = d->type;
         new_d->flags = d->flags;
         new_d->len = d->len;
-        memset(&(new_d->data), 0, sizeof(ParamBaseData));
+        new_d->data = d->data; // in order to copy single numbers...
 
         if (d->data.ptrVal != nullptr)
         {
