@@ -1005,7 +1005,7 @@ const ParamBase ParamBase::operator[](const int index) const
  */
 ParamBase& ParamBase::operator=(const ParamBase& rhs)
 {
-    if (*this != rhs)
+    if (this != &rhs)
     {
         incRef(rhs.d);
         decRefAndFree(d);
@@ -1576,17 +1576,21 @@ const Param Param::operator[](const int index) const
 //-------------------------------------------------------------------------------------
 Param& Param::operator=(const Param& rhs)
 {
-    ParamBase::operator=(rhs);
-    m_info = rhs.m_info;
-    m_pMetaShared = rhs.m_pMetaShared;
-    incRefMeta(m_pMetaShared);
+    if (this != &rhs)
+    {
+        ParamBase::operator=(rhs);
+        m_info = rhs.m_info;
+        m_pMetaShared = rhs.m_pMetaShared;
+        incRefMeta(m_pMetaShared);
+    }
+
     return *this;
 }
 
 //-------------------------------------------------------------------------------------
 Param& Param::operator=(Param&& rvalue) noexcept
 {
-    if (*this != rvalue)
+    if (this != &rvalue)
     {
         ParamBase::operator=(std::move(rvalue));
         std::swap(m_info, rvalue.m_info);

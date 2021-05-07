@@ -649,6 +649,43 @@ TEST(ParamTest, FlagTest)
     EXPECT_FALSE(charArray2.getFlags() & ParamBase::In);
 }
 
+TEST(ParamTest, ParamRValueCopyConstructor)
+{
+    Param p2("name2", ParamBase::Int, -1, 5, 4, "");
+    p2 = Param("name3", ParamBase::Int, 0, 10, 5, "");
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_EQ(p2.getMin(), 0);
+    EXPECT_STREQ(p2.getName(), "name3");
+
+    // assign itself should not cause any problems
+    p2 = p2;
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_EQ(p2.getMin(), 0);
+    EXPECT_STREQ(p2.getName(), "name3");
+
+    p2 = Param("name4", ParamBase::Int, 0, 10, 5, "");
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_EQ(p2.getMin(), 0);
+    EXPECT_STREQ(p2.getName(), "name4");
+}
+
+TEST(ParamTest, ParamBaseRValueCopyConstructor)
+{
+    ParamBase p2("name2", ParamBase::Int, 4);
+    p2 = ParamBase("name3", ParamBase::Int, 5);
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_STREQ(p2.getName(), "name3");
+
+    // assign itself should not cause any problems
+    p2 = p2;
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_STREQ(p2.getName(), "name3");
+
+    p2 = ParamBase("name4", ParamBase::Int, 5);
+    EXPECT_EQ(p2.getVal<int>(), 5);
+    EXPECT_STREQ(p2.getName(), "name4");
+}
+
 // this tests for constructors that have been used in the past and should still be supported
 TEST(ParamTest, CompatibilityParamInitialization)
 {
