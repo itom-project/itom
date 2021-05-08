@@ -35,6 +35,7 @@
 #include "retVal.h"
 #include "typeDefs.h"
 
+#include <algorithm>
 #include <atomic>
 #include <limits>
 #include <stdarg.h>
@@ -1049,7 +1050,7 @@ template <typename _Tp> struct ItomParamHelper
     static ito::RetVal setVal(ito::ParamBase* param, const _Tp val, int len = 0)
     {
         static_assert(std::is_pointer<_Tp>::value, "invalid template type");
-
+        
         switch (param->d->type)
         {
         case ito::ParamBase::HWRef:
@@ -1062,27 +1063,186 @@ template <typename _Tp> struct ItomParamHelper
             return ito::retOk;
         }
 
-        case ito::ParamBase::String:
-        case ito::ParamBase::CharArray:
-            return ItomParamHelper<const char*>::setVal(
-                param, reinterpret_cast<const char*>(val), len);
+        case ito::ParamBase::String:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
 
-        case ito::ParamBase::IntArray:
-            return ItomParamHelper<const int32*>::setVal(
-                param, reinterpret_cast<const int32*>(val), len);
+            if (val)
+            {
+                int len = static_cast<int>(strlen((const char*)val));
 
-        case ito::ParamBase::DoubleArray:
-            return ItomParamHelper<const float64*>::setVal(
-                param, reinterpret_cast<const float64*>(val), len);
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new char[len + 1];
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
 
-        case ito::ParamBase::ComplexArray:
-            return ItomParamHelper<const complex128*>::setVal(
-                param, reinterpret_cast<const complex128*>(val), len);
+                std::copy_n((const char*)val, len + 1, (char*)param->d->data.ptrVal);
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = 0;
+                param->d->len = 0;
+            }
 
-        case ito::ParamBase::StringList:
-            return ItomParamHelper<const ByteArray*>::setVal(
-                param, reinterpret_cast<const ByteArray*>(val), len);
+            if (cVal_)
+            {
+                delete[](char*) cVal_;
+            }
+        }
+            return ito::retOk;
+        case ito::ParamBase::CharArray:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
 
+            if ((val) && (len > 0))
+            {
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new char[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n((const char*)val, len, (char*)param->d->data.ptrVal);
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = 0;
+            }
+
+            if (cVal_)
+            {
+                delete[](char*) cVal_;
+            }
+        }
+             return ito::retOk;
+        case ito::ParamBase::IntArray:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
+
+            if ((val) && (len > 0))
+            {
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new int32[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n((const int32*)val, len, (int32*)param->d->data.ptrVal);
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = 0;
+            }
+
+            if (cVal_)
+            {
+                delete[](int32*) cVal_;
+            }
+        }
+            return ito::retOk;
+        case ito::ParamBase::DoubleArray:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
+
+            if ((val) && (len > 0))
+            {
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new float64[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n((const float64*)val, len, (float64*)param->d->data.ptrVal);
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = 0;
+            }
+
+            if (cVal_)
+            {
+                delete[](float64*) cVal_;
+            }
+        }
+            return ito::retOk;
+        case ito::ParamBase::ComplexArray:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
+
+            if ((val) && (len > 0))
+            {
+                if (len != param->d->len)
+                {
+                    param->d->data.ptrVal = new complex128[len];
+                    param->d->len = len;
+                }
+                else
+                {
+                    cVal_ = nullptr;
+                }
+
+                std::copy_n((const complex128*)val, len, (complex128*)param->d->data.ptrVal);
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = 0;
+            }
+
+            if (cVal_)
+            {
+                delete[](complex128*) cVal_;
+            }
+        }
+            return ito::retOk;
+        case ito::ParamBase::StringList:{
+            param->detach(false);
+            auto cVal_ = param->d->data.ptrVal;
+
+            if ((val) && (len > 0))
+            {
+                ito::ByteArray* dest = new ito::ByteArray[len];
+                param->d->data.ptrVal = dest;
+
+                for (int i = 0; i < len; ++i)
+                {
+                    dest[i] = ((const ito::ByteArray*)(val))[i]; // operator=
+                }
+
+                param->d->len = len;
+            }
+            else
+            {
+                param->d->data.ptrVal = nullptr;
+                param->d->len = 0;
+            }
+
+            if (cVal_)
+            {
+                delete[](ito::ByteArray*) cVal_;
+            }
+        }
+            return ito::retOk;
         default:
             return ito::RetVal(
                 ito::retError,
@@ -1097,7 +1257,15 @@ template <typename _Tp> struct ItomParamHelper
 
         if (std::is_pointer<_Tp>::value)
         {
-            const_cast<ito::ParamBase*>(param)->detach();
+            if (std::is_same<_Tp, ito::ByteArray*>::value ||
+                std::is_same<_Tp, char*>::value ||
+                std::is_same<_Tp, ito::int8*>::value ||
+                std::is_same<_Tp, ito::int32*>::value ||
+                std::is_same<_Tp, ito::float64*>::value ||
+                std::is_same<_Tp, ito::complex128*>::value)
+            {
+                const_cast<ito::ParamBase*>(param)->detach();
+            }
         }
 
         switch (param->d->type)
@@ -1139,378 +1307,6 @@ template <typename _Tp> struct ItomParamHelper
 
         default:
             throw std::logic_error("Param::getVal<_Tp>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const ByteArray*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const ByteArray* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::StringList: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                ito::ByteArray* dest = new ito::ByteArray[len];
-                param->d->data.ptrVal = dest;
-
-                for (int i = 0; i < len; ++i)
-                {
-                    dest[i] = val[i]; // operator=
-                }
-
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](ito::ByteArray*) cVal_;
-            }
-        }
-        default:
-            return ito::RetVal(
-                ito::retError,
-                0,
-                "setVal<const ByteArray*> does not match the type of the parameter");
-        }
-    }
-
-    static const ByteArray* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::StringList:
-            len = param->d->len;
-            return static_cast<const ByteArray*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const ByteArray*>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const char*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const char* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::String: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if (val)
-            {
-                int len = static_cast<int>(strlen(val));
-
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new char[len + 1];
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len + 1, (char*)param->d->data.ptrVal);
-                param->d->len = len;
-            }
-            else
-            {
-                param->d->data.ptrVal = 0;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](char*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        case ito::ParamBase::CharArray: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new char[len];
-                    param->d->len = len;
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len, (char*)param->d->data.ptrVal);
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](char*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        default:
-            return ito::RetVal(
-                ito::retError, 0, "setVal<const char*> does not match the type of the parameter");
-        }
-    }
-
-    static const char* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::CharArray:
-        case ito::ParamBase::String:
-            len = param->d->len;
-            return static_cast<const char*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const char*>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const int8*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const int8* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::CharArray: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new int8[len];
-                    param->d->len = len;
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len, (int8*)param->d->data.ptrVal);
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](int8*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        default:
-            return ito::RetVal(
-                ito::retError, 0, "setVal<const int8*> does not match the type of the parameter");
-        }
-    }
-
-    static const int8* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::IntArray:
-            len = param->d->len;
-            return static_cast<const int8*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const int8*>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const int32*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const int32* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::IntArray: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new int32[len];
-                    param->d->len = len;
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len, (int32*)param->d->data.ptrVal);
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](int32*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        default:
-            return ito::RetVal(
-                ito::retError, 0, "setVal<const int32*> does not match the type of the parameter");
-        }
-    }
-
-    static const int32* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::IntArray:
-            len = param->d->len;
-            return static_cast<const int32*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const int32*>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const float64*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const float64* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::DoubleArray: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new float64[len];
-                    param->d->len = len;
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len, (float64*)param->d->data.ptrVal);
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](float64*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        default:
-            return ito::RetVal(
-                ito::retError,
-                0,
-                "setVal<const float64*> does not match the type of the parameter");
-        }
-    }
-
-    static const float64* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::DoubleArray:
-            len = param->d->len;
-            return static_cast<const float64*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const float64*>: Non-matching type!");
-        }
-    }
-};
-
-template <> struct ItomParamHelper<const complex128*>
-{
-    static ito::RetVal setVal(ito::ParamBase* param, const complex128* val, int len = 0)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::ComplexArray: {
-            param->detach(false);
-            auto cVal_ = param->d->data.ptrVal;
-
-            if ((val) && (len > 0))
-            {
-                if (len != param->d->len)
-                {
-                    param->d->data.ptrVal = new complex128[len];
-                    param->d->len = len;
-                }
-                else
-                {
-                    cVal_ = nullptr;
-                }
-
-                std::copy_n(val, len, (complex128*)param->d->data.ptrVal);
-            }
-            else
-            {
-                param->d->data.ptrVal = nullptr;
-                param->d->len = 0;
-            }
-
-            if (cVal_)
-            {
-                delete[](complex128*) cVal_;
-            }
-        }
-            return ito::retOk;
-
-        default:
-            return ito::RetVal(
-                ito::retError,
-                0,
-                "setVal<const complex128*> does not match the type of the parameter");
-        }
-    }
-
-    static const complex128* getVal(const ito::ParamBase* param, int& len)
-    {
-        switch (param->d->type)
-        {
-        case ito::ParamBase::ComplexArray:
-            len = param->d->len;
-            return static_cast<const complex128*>(param->d->data.ptrVal);
-        default:
-            throw std::logic_error("Param::getVal<const complex128*>: Non-matching type!");
         }
     }
 };
