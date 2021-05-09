@@ -855,6 +855,47 @@ TEST(ParamTest, LenTest)
     delete[] ptr;
 }
 
+TEST(ParamTest, IntArrayGetSetTest)
+{
+    int data[] = { 4,5,6,7,8 };
+    int data2[] = { 1,2,3 };
+
+    ParamBase p1("p1", ParamBase::IntArray, 5, data);
+    ParamBase p2 = p1; 
+    ParamBase p3 = p1;
+
+    const int* p1data = p1.getVal<const int*>();
+    const int* p2data = p2.getVal<const int*>();
+    const int* p3data = p3.getVal<const int*>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, p2data);
+    EXPECT_EQ(p2data, p3data);
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+
+    // detach p3 due to setVal
+    p3.setVal<const int*>(data2, 3);
+    p3data = p3.getVal<const int*>();
+    EXPECT_NE(p3data, p1data);
+    EXPECT_EQ(p3data[2], 3);
+    EXPECT_EQ(p1.getVal<const int*>(), p2.getVal<const int*>());
+
+    // non-const getVal should detach, too
+    int* p2dataWrite = p2.getVal<int*>();
+    EXPECT_NE(p2dataWrite, p1data);
+    p2dataWrite[0] = 11;
+    p2dataWrite[4] = 14;
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+    EXPECT_EQ(p2dataWrite[0], 11);
+    EXPECT_EQ(p2dataWrite[4], 14);
+
+    p1.setVal<int*>(nullptr);
+    EXPECT_EQ(p1.getLen(), 0);
+    EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+}
+
 TEST(ParamTest, ConstGetValTest)
 {
     ByteArray ba[] = {"blub", "blob"};
