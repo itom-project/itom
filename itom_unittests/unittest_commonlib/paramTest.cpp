@@ -635,8 +635,8 @@ TEST(ParamTest, FlagTest)
 
     for (auto t : noAutosaveTypes)
     {
-        ParamBase p1("name", t);
-        EXPECT_TRUE(p1.getFlags() & ParamBase::NoAutosave);
+        ParamBase param1("name", t);
+        EXPECT_TRUE(param1.getFlags() & ParamBase::NoAutosave);
     }
 
     // check if flags are also copied for indexing operator
@@ -672,11 +672,11 @@ TEST(ParamTest, ParamRValueCopyConstructor)
 TEST(ParamTest, ParamDetachString)
 {
     {
-        //empty string
+        // empty string
 
         Param p("str", ParamBase::String, "", "empty string");
         p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
-        const char* str1 = p.getVal<const char*>(); //not detached
+        const char* str1 = p.getVal<const char*>(); // not detached
 
         Param p2;
         p2 = p;
@@ -687,10 +687,10 @@ TEST(ParamTest, ParamDetachString)
     }
 
     {
-        //filled string
+        // filled string
         Param p("str", ParamBase::String, "test", "test string");
         p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
-        const char* str1 = p.getVal<const char*>(); //not detached
+        const char* str1 = p.getVal<const char*>(); // not detached
 
         Param p2;
         p2 = p;
@@ -701,10 +701,10 @@ TEST(ParamTest, ParamDetachString)
     }
 
     {
-        //nullptr string
+        // nullptr string
         Param p("str", ParamBase::String, nullptr, "nullptr");
         p.setMeta(new StringMeta(StringMeta::Wildcard, "*"), true);
-        const char* str1 = p.getVal<const char*>(); //not detached
+        const char* str1 = p.getVal<const char*>(); // not detached
 
         Param p2;
         p2 = p;
@@ -713,13 +713,11 @@ TEST(ParamTest, ParamDetachString)
         EXPECT_EQ(str1, nullptr);
         EXPECT_EQ(str2, nullptr);
     }
-
 }
 
 TEST(ParamTest, DetachNumber)
 {
-    int scalarType[] = {
-            ParamBase::Char, ParamBase::Int, ParamBase::Double, ParamBase::Complex };
+    int scalarType[] = {ParamBase::Char, ParamBase::Int, ParamBase::Double, ParamBase::Complex};
     for (int t : scalarType)
     {
         ParamBase p("scalar", t, 7);
@@ -755,10 +753,7 @@ TEST(ParamTest, CompatibilityParamInitialization)
 {
     // empty array and list types
     int arrayTypes[] = {
-        ParamBase::CharArray,
-        ParamBase::IntArray,
-        ParamBase::DoubleArray,
-        ParamBase::ComplexArray};
+        ParamBase::CharArray, ParamBase::IntArray, ParamBase::DoubleArray, ParamBase::ComplexArray};
 
     double values[] = {1, 2, 3, 4, 5, 6, 7, 8};
 
@@ -778,7 +773,7 @@ TEST(ParamTest, CompatibilityParamInitialization)
         ParamBase::HWRef,
         ParamBase::PointCloudPtr,
         ParamBase::PolygonMeshPtr,
-        ParamBase::PointPtr };
+        ParamBase::PointPtr};
 
     for (int t : ptrTypes)
     {
@@ -822,7 +817,7 @@ TEST(ParamTest, LenTest)
     // empty array and list types
     char* ptr = new char[200];
 
-    //CharArray
+    // CharArray
     Param arrParam("arr", ParamBase::CharArray);
     EXPECT_EQ(arrParam.getLen(), 0);
 
@@ -832,7 +827,7 @@ TEST(ParamTest, LenTest)
     Param arrParam3("arr3", ParamBase::CharArray, 5, ptr, "info");
     EXPECT_EQ(arrParam3.getLen(), 5);
 
-    //IntArray
+    // IntArray
     arrParam = Param("arr", ParamBase::IntArray);
     EXPECT_EQ(arrParam.getLen(), 0);
 
@@ -842,11 +837,12 @@ TEST(ParamTest, LenTest)
     arrParam3 = Param("arr3", ParamBase::IntArray, 5, (const int32*)ptr, "info");
     EXPECT_EQ(arrParam3.getLen(), 5);
 
-    //ComplexArray
+    // ComplexArray
     arrParam = Param("arr", ParamBase::ComplexArray);
     EXPECT_EQ(arrParam.getLen(), 0);
 
-    arrParam2 = Param("arr2", ParamBase::ComplexArray, 0, (const complex128*)nullptr, nullptr, "info");
+    arrParam2 =
+        Param("arr2", ParamBase::ComplexArray, 0, (const complex128*)nullptr, nullptr, "info");
     EXPECT_EQ(arrParam2.getLen(), 0);
 
     arrParam3 = Param("arr3", ParamBase::ComplexArray, 5, (const complex128*)ptr, "info");
@@ -855,18 +851,19 @@ TEST(ParamTest, LenTest)
     delete[] ptr;
 }
 
-TEST(ParamTest, IntArrayGetSetTest)
+TEST(ParamTest, CharArrayGetSetTest)
 {
-    int data[] = { 4,5,6,7,8 };
-    int data2[] = { 1,2,3 };
+    typedef char Tp;
+    Tp data[] = {4, 5, 6, 7, 8};
+    Tp data2[] = {1, 2, 3};
 
-    ParamBase p1("p1", ParamBase::IntArray, 5, data);
-    ParamBase p2 = p1; 
+    ParamBase p1("p1", ParamBase::CharArray, 5, data);
+    ParamBase p2 = p1;
     ParamBase p3 = p1;
 
-    const int* p1data = p1.getVal<const int*>();
-    const int* p2data = p2.getVal<const int*>();
-    const int* p3data = p3.getVal<const int*>();
+    const auto* p1data = p1.getVal<const Tp*>();
+    const auto* p2data = p2.getVal<const Tp*>();
+    const auto* p3data = p3.getVal<const Tp*>();
 
     // p1, p2, p3 should point to the same memory
     EXPECT_EQ(p1data, p2data);
@@ -875,14 +872,14 @@ TEST(ParamTest, IntArrayGetSetTest)
     EXPECT_EQ(p1data[4], data[4]);
 
     // detach p3 due to setVal
-    p3.setVal<const int*>(data2, 3);
-    p3data = p3.getVal<const int*>();
+    p3.setVal<const Tp*>(data2, 3);
+    p3data = p3.getVal<const Tp*>();
     EXPECT_NE(p3data, p1data);
     EXPECT_EQ(p3data[2], 3);
-    EXPECT_EQ(p1.getVal<const int*>(), p2.getVal<const int*>());
+    EXPECT_EQ(p1.getVal<const Tp*>(), p2.getVal<const Tp*>());
 
     // non-const getVal should detach, too
-    int* p2dataWrite = p2.getVal<int*>();
+    auto p2dataWrite = p2.getVal<Tp*>();
     EXPECT_NE(p2dataWrite, p1data);
     p2dataWrite[0] = 11;
     p2dataWrite[4] = 14;
@@ -891,9 +888,205 @@ TEST(ParamTest, IntArrayGetSetTest)
     EXPECT_EQ(p2dataWrite[0], 11);
     EXPECT_EQ(p2dataWrite[4], 14);
 
-    p1.setVal<int*>(nullptr);
+    p1.setVal<Tp*>(nullptr);
     EXPECT_EQ(p1.getLen(), 0);
     EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+    EXPECT_EQ(p1.getVal<Tp*>(), nullptr);
+}
+
+TEST(ParamTest, IntArrayGetSetTest)
+{
+    typedef int Tp;
+    Tp data[] = {4, 5, 6, 7, 8};
+    Tp data2[] = {1, 2, 3};
+
+    ParamBase p1("p1", ParamBase::IntArray, 5, data);
+    ParamBase p2 = p1;
+    ParamBase p3 = p1;
+
+    const auto* p1data = p1.getVal<const Tp*>();
+    const auto* p2data = p2.getVal<const Tp*>();
+    const auto* p3data = p3.getVal<const Tp*>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, p2data);
+    EXPECT_EQ(p2data, p3data);
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+
+    // detach p3 due to setVal
+    p3.setVal<const Tp*>(data2, 3);
+    p3data = p3.getVal<const Tp*>();
+    EXPECT_NE(p3data, p1data);
+    EXPECT_EQ(p3data[2], 3);
+    EXPECT_EQ(p1.getVal<const Tp*>(), p2.getVal<const Tp*>());
+
+    // non-const getVal should detach, too
+    auto p2dataWrite = p2.getVal<Tp*>();
+    EXPECT_NE(p2dataWrite, p1data);
+    p2dataWrite[0] = 11;
+    p2dataWrite[4] = 14;
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+    EXPECT_EQ(p2dataWrite[0], 11);
+    EXPECT_EQ(p2dataWrite[4], 14);
+
+    p1.setVal<Tp*>(nullptr);
+    EXPECT_EQ(p1.getLen(), 0);
+    EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+    EXPECT_EQ(p1.getVal<Tp*>(), nullptr);
+}
+
+TEST(ParamTest, DoubleArrayGetSetTest)
+{
+    typedef double Tp;
+    Tp data[] = {4.1, 5.2, 6.3, 7.4, 8.5};
+    Tp data2[] = {1.01, 2.02, 3.03};
+
+    ParamBase p1("p1", ParamBase::DoubleArray, 5, data);
+    ParamBase p2 = p1;
+    ParamBase p3 = p1;
+
+    const auto* p1data = p1.getVal<const Tp*>();
+    const auto* p2data = p2.getVal<const Tp*>();
+    const auto* p3data = p3.getVal<const Tp*>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, p2data);
+    EXPECT_EQ(p2data, p3data);
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+
+    // detach p3 due to setVal
+    p3.setVal<const Tp*>(data2, 3);
+    p3data = p3.getVal<const Tp*>();
+    EXPECT_NE(p3data, p1data);
+    EXPECT_EQ(p3data[2], 3.03);
+    EXPECT_EQ(p1.getVal<const Tp*>(), p2.getVal<const Tp*>());
+
+    // non-const getVal should detach, too
+    auto p2dataWrite = p2.getVal<Tp*>();
+    EXPECT_NE(p2dataWrite, p1data);
+    p2dataWrite[0] = 11.7;
+    p2dataWrite[4] = 14.3;
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+    EXPECT_EQ(p2dataWrite[0], 11.7);
+    EXPECT_EQ(p2dataWrite[4], 14.3);
+
+    p1.setVal<Tp*>(nullptr);
+    EXPECT_EQ(p1.getLen(), 0);
+    EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+    EXPECT_EQ(p1.getVal<Tp*>(), nullptr);
+}
+
+TEST(ParamTest, ComplexArrayGetSetTest)
+{
+    typedef std::complex<double> Tp;
+    Tp data[] = {Tp(-1, 2), Tp(0, -3), Tp(5, 0), Tp(-1, -2), Tp(7.77, 8.88)};
+    Tp data2[] = {Tp(1.01, 1.02), Tp(-1, 2), Tp(0, -4)};
+
+    ParamBase p1("p1", ParamBase::ComplexArray, 5, data);
+    ParamBase p2 = p1;
+    ParamBase p3 = p1;
+
+    const auto* p1data = p1.getVal<const Tp*>();
+    const auto* p2data = p2.getVal<const Tp*>();
+    const auto* p3data = p3.getVal<const Tp*>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, p2data);
+    EXPECT_EQ(p2data, p3data);
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+
+    // detach p3 due to setVal
+    p3.setVal<const Tp*>(data2, 3);
+    p3data = p3.getVal<const Tp*>();
+    EXPECT_NE(p3data, p1data);
+    EXPECT_EQ(p3data[2], Tp(0, -4));
+    EXPECT_EQ(p1.getVal<const Tp*>(), p2.getVal<const Tp*>());
+
+    // non-const getVal should detach, too
+    auto p2dataWrite = p2.getVal<Tp*>();
+    EXPECT_NE(p2dataWrite, p1data);
+    p2dataWrite[0] = 11.7;
+    p2dataWrite[4] = 14.3;
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+    EXPECT_EQ(p2dataWrite[0], 11.7);
+    EXPECT_EQ(p2dataWrite[4], 14.3);
+
+    p1.setVal<Tp*>(nullptr);
+    EXPECT_EQ(p1.getLen(), 0);
+    EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+    EXPECT_EQ(p1.getVal<Tp*>(), nullptr);
+}
+
+TEST(ParamTest, StringListGetSetTest)
+{
+    typedef ByteArray Tp;
+    Tp data[] = { Tp("hallo"), Tp("hello"), Tp("salut"), Tp("ciao"), Tp("hi") };
+    Tp data2[] = { Tp("nein"), Tp("yes"), Tp("si") };
+
+    ParamBase p1("p1", ParamBase::StringList, 5, data);
+    ParamBase p2 = p1;
+    ParamBase p3 = p1;
+
+    const auto* p1data = p1.getVal<const Tp*>();
+    const auto* p2data = p2.getVal<const Tp*>();
+    const auto* p3data = p3.getVal<const Tp*>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, p2data);
+    EXPECT_EQ(p2data, p3data);
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+
+    // detach p3 due to setVal
+    p3.setVal<const Tp*>(data2, 3);
+    p3data = p3.getVal<const Tp*>();
+    EXPECT_NE(p3data, p1data);
+    EXPECT_EQ(p3data[2], "si");
+    EXPECT_EQ(p1.getVal<const Tp*>(), p2.getVal<const Tp*>());
+
+    // non-const getVal should detach, too
+    auto p2dataWrite = p2.getVal<Tp*>();
+    EXPECT_NE(p2dataWrite, p1data);
+    p2dataWrite[0] = "test";
+    p2dataWrite[4] = "no test";
+    EXPECT_EQ(p1data[0], data[0]);
+    EXPECT_EQ(p1data[4], data[4]);
+    EXPECT_EQ(p2dataWrite[0], "test");
+    EXPECT_EQ(p2dataWrite[4], "no test");
+
+    p1.setVal<Tp*>(nullptr);
+    EXPECT_EQ(p1.getLen(), 0);
+    EXPECT_EQ(p1.getVal<const void*>(), nullptr);
+    EXPECT_EQ(p1.getVal<Tp*>(), nullptr);
+}
+
+TEST(ParamTest, IntGetSetTest)
+{
+    typedef ito::int32 Tp;
+
+    ParamBase p1("p1", ParamBase::Int, 7);
+    ParamBase p2 = p1;
+    ParamBase p3 = p1;
+
+    auto p1data = p1.getVal<Tp>();
+    auto p2data = p2.getVal<Tp>();
+    auto p3data = p3.getVal<Tp>();
+
+    // p1, p2, p3 should point to the same memory
+    EXPECT_EQ(p1data, 7);
+    EXPECT_EQ(p2data, 7);
+    EXPECT_EQ(p3data, 7);
+
+    // detach p3 due to setVal
+    p3.setVal<Tp>(9);
+    p3data = p3.getVal<Tp>();
+    EXPECT_EQ(p3data, 9);
 }
 
 TEST(ParamTest, ConstGetValTest)

@@ -1049,7 +1049,7 @@ template <typename _Tp> struct ItomParamHelper
 {
     static ito::RetVal setVal(ito::ParamBase* param, const _Tp val, int len = 0)
     {
-        static_assert(std::is_pointer<_Tp>::value, "invalid template type");
+        static_assert(std::is_pointer<_Tp>::value, "unsupported template type.");
         
         switch (param->d->type)
         {
@@ -1071,7 +1071,7 @@ template <typename _Tp> struct ItomParamHelper
             {
                 int len = static_cast<int>(strlen((const char*)val));
 
-                if (len != param->d->len)
+                if ((ito::int32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new char[len + 1];
                 }
@@ -1101,7 +1101,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if (len != param->d->len)
+                if ((ito::int32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new char[len];
                     param->d->len = len;
@@ -1131,7 +1131,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if (len != param->d->len)
+                if ((ito::int32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new int32[len];
                     param->d->len = len;
@@ -1161,7 +1161,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if (len != param->d->len)
+                if ((ito::int32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new float64[len];
                     param->d->len = len;
@@ -1191,7 +1191,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if (len != param->d->len)
+                if ((ito::int32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new complex128[len];
                     param->d->len = len;
@@ -1253,15 +1253,19 @@ template <typename _Tp> struct ItomParamHelper
 
     static _Tp getVal(const ito::ParamBase* param, int& len)
     {
-        static_assert(std::is_pointer<_Tp>::value, "invalid template type");
+        static_assert(std::is_pointer<_Tp>::value, "unsupported template type.");
 
         if (std::is_pointer<_Tp>::value)
         {
             if (std::is_same<_Tp, ito::ByteArray*>::value ||
+                std::is_same<_Tp, void*>::value ||
                 std::is_same<_Tp, char*>::value ||
                 std::is_same<_Tp, ito::int8*>::value ||
+                std::is_same<_Tp, ito::int16*>::value ||
                 std::is_same<_Tp, ito::int32*>::value ||
+                std::is_same<_Tp, ito::float32*>::value ||
                 std::is_same<_Tp, ito::float64*>::value ||
+                std::is_same<_Tp, ito::complex64*>::value ||
                 std::is_same<_Tp, ito::complex128*>::value)
             {
                 const_cast<ito::ParamBase*>(param)->detach();
@@ -1279,7 +1283,7 @@ template <typename _Tp> struct ItomParamHelper
             else
             {
                 len = 0;
-                return 0;
+                return nullptr;
             }
 
         case ito::ParamBase::CharArray:
@@ -1295,7 +1299,7 @@ template <typename _Tp> struct ItomParamHelper
             else
             {
                 len = 0;
-                return 0;
+                return nullptr;
             }
 
         case ito::ParamBase::HWRef:
