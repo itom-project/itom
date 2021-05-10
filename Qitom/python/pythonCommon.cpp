@@ -676,8 +676,9 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 
 					case (ito::ParamBase::String) :
 					{
-						char* tempbuf = p.getVal<char*>();
-						if (tempbuf == NULL)
+						auto tempbuf = p.getVal<const char*>();
+
+						if (tempbuf == nullptr)
 						{
 							item = PyUnicode_FromString("");
 							values["values"].append("");

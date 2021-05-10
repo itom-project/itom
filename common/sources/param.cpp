@@ -119,6 +119,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
         }
         else
         {
+            // delete d since destructor of ParamBase will not be called if exception is thrown.
+            DELETE_AND_SET_NULL(d);
             throw std::logic_error(
                 "valie must be 0 only for Char, "
                 "Int, Double, Complex.");
@@ -151,12 +153,16 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
         }
         else
         {
+            // delete d since destructor of ParamBase will not be called if exception is thrown.
+            DELETE_AND_SET_NULL(d);
             throw std::logic_error(
                 "valie must be nullptr for CharArray, "
                 "IntArray, DoubleArray, ComplexArray or StringList.");
         }
         break;
     default:
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error(
             "invalid type for constructor with const char* value.");
         break;
@@ -196,6 +202,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const flo
         d->data.f64Val = val;
         break;
     default:
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error("constructor with float64 val is only callable for types Char, Int, "
                                "Complex and Double");
         break;
@@ -242,6 +250,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int
         }
         else
         {
+            // delete d since destructor of ParamBase will not be called if exception is thrown.
+            DELETE_AND_SET_NULL(d);
             throw std::runtime_error(
                 "constructor with int32 value and type String is not callable for val != nullptr");
         }
@@ -254,11 +264,15 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const int
         }
         else
         {
+            // delete d since destructor of ParamBase will not be called if exception is thrown.
+            DELETE_AND_SET_NULL(d);
             throw std::runtime_error(
                 "constructor with int32 value and type HWRef is not callable for val != nullptr");
         }
         break;
     default:
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::runtime_error(
             "constructor with int32 val is only callable for types Int, Complex, Double, String "
             "(for val==0 only) and Hardware (for val==0 only)");
@@ -288,6 +302,8 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const com
         d->data.c128Val.imag = val.imag();
         break;
     default:
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error("constructor with complex128 val is only callable for type Complex");
         break;
     }
@@ -322,6 +338,8 @@ ParamBase::ParamBase(
         break;
     }
     default:
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error(
             "constructor with ByteArray values is only callable for type StringList");
         break;
@@ -369,6 +387,8 @@ ParamBase::ParamBase(
     }
     else
     {
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error(
             "constructor with const char* values and size is only callable for type CharArray.");
     }
@@ -415,6 +435,8 @@ ParamBase::ParamBase(
     }
     else
     {
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error(
             "constructor with const int32* values and size is only callable for type IntArray.");
     }
@@ -461,6 +483,8 @@ ParamBase::ParamBase(
     }
     else
     {
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error("constructor with const float64* values and size is only callable "
                                "for type DoubleArray.");
     }
@@ -507,6 +531,8 @@ ParamBase::ParamBase(
     }
     else
     {
+        // delete d since destructor of ParamBase will not be called if exception is thrown.
+        DELETE_AND_SET_NULL(d);
         throw std::logic_error("constructor with const complex128* values and size is only "
                                "callable for type ComplexArray.");
     }
@@ -1023,9 +1049,9 @@ void ParamBase::detach(bool allocNewArray /*= true*/)
         new_d->type = d->type;
         new_d->flags = d->flags;
         new_d->len = d->len;
-        new_d->data = d->data;
+        new_d->data = d->data; // in order to copy single numbers...
 
-        if (d->len > 0)
+        if (d->data.ptrVal != nullptr)
         {
             if (allocNewArray)
             {

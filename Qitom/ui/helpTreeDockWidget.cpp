@@ -689,7 +689,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             QCollator collator;
                             std::sort(algoLinks.begin(), algoLinks.end(), collator);
 
-                            for each (QString algo in algoLinks)
+                            foreach(const QString &algo, algoLinks)
                             {
                                 extendedInfo.append(algo);
                             }                            
@@ -719,7 +719,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             QCollator collator;
                             std::sort(widgetList.begin(), widgetList.end(), collator);
 
-                            for each (QString widget in widgetList)
+                            foreach (const QString &widget, widgetList)
                             {
                                 extendedInfo.append(widget);
                             } 
