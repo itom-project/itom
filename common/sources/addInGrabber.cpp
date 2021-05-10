@@ -377,7 +377,7 @@ namespace ito
 		paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
 		m_params.insert(paramVal.getName(), paramVal);
 
-        paramVal = ito::Param("channelList", ito::ParamBase::StringList, {}, tr("names of the channels provided by the plugin").toLatin1().data());
+        paramVal = ito::Param("channelList", ito::ParamBase::StringList | ito::ParamBase::Readonly, {}, tr("names of the channels provided by the plugin").toLatin1().data());
         m_params.insert(paramVal.getName(), paramVal);
 	}
 
