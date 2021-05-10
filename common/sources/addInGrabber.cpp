@@ -377,7 +377,8 @@ namespace ito
 		paramVal = ito::Param("defaultChannel", ito::ParamBase::String, "", tr("indicates the current default channel").toLatin1().data());
 		m_params.insert(paramVal.getName(), paramVal);
 
-        paramVal = ito::Param("channelList", ito::ParamBase::StringList, "", tr("names of the channels provided by the plugin").toLatin1().data());
+        paramVal = ito::Param("channelList", ito::ParamBase::StringList, {}, tr("names of the channels provided by the plugin").toLatin1().data());
+        m_params.insert(paramVal.getName(), paramVal);
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------------------
@@ -525,9 +526,10 @@ namespace ito
         const ByteArray* channelList = m_params["channelList"].getVal<const ByteArray*>();
         int len = 0; 
         m_params["channelList"].getVal<const ByteArray*>(len);
+
         QVector<ByteArray> qVectorList(len, *channelList);
         qVectorList.append(ByteArray(name.toLatin1().data()));
-        m_params["channelList"].setVal<ByteArray*>(qVectorList.data());
+        m_params["channelList"].setVal<ByteArray*>(qVectorList.data(),qVectorList.length());
 
 	}
 
