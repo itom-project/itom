@@ -32,67 +32,112 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------
-DialogVariableDetailDataObject::DialogVariableDetailDataObject(const QString& name, const QString& type, const char* dtype, QSharedPointer<ito::DataObject> dObj, QWidget* parent):
-    QDialog(parent)
+DialogVariableDetailDataObject::DialogVariableDetailDataObject(
+    const QString& name,
+    const QString& type,
+    const char* dtype,
+    QSharedPointer<ito::DataObject> dObj,
+    QWidget* parent) :
+    QDialog(parent),
+    m_isChanging(true), 
+    m_AxesRanges(nullptr)
 {
     ui.setupUi(this);
 
-    m_dObj = *dObj;
+    m_dObj = dObj;
 
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtDType->setText(dtype);
 
-    ui.dataTable->setData(dObj);
+    
     ui.dataTable->setReadOnly(true);
 
-    ui.metaWidget->setData(dObj);    
+    ui.metaWidget->setData(m_dObj);    
     ui.metaWidget->setReadOnly(true);
 
-    if (m_dObj.getDims() >= 3)
+    int dims = m_dObj->getDims();
+    if (dims >= 3)
     {
-        QLabel* axesShowLabel = new QLabel(this);
-        axesShowLabel->setText("axes shown");
-        ui.verticalLayoutAxes->addWidget(axesShowLabel);
+        int col = dims - 2;
+        int row = dims - 1;
+        ui.groupBoxTableAxes->setVisible(true);
 
-        QList<CheckableComboBox*> comboList;
-        for (int dim = 0; dim < m_dObj.getDims(); dim++)
-        {
-            comboList.append(new CheckableComboBox());
-        }
+        ui.spinBoxTableCol->setMinimum(0);
+        ui.spinBoxTableCol->setMaximum(col);
+        ui.spinBoxTableCol->setValue(col);
 
-        int cnt = 0;
-        for each (CheckableComboBox* combo in comboList)
-        {
-            combo->addItem(tr("axis: %1").arg(QString::number(cnt)));
-            ui.verticalLayoutAxes->addWidget(combo);
-            cnt += 1;
-        }
-        
+        ui.spinBoxTableRow->setMinimum(1);
+        ui.spinBoxTableRow->setMaximum(row);
+        ui.spinBoxTableRow->setValue(row);
+
+        m_AxesRanges = new ito::Range[dims];
+        m_isChanging = false;
+
+        // show last two axes after start
+        changeDObjAxes(row, col);
     }
+    else
+    {
+        ui.groupBoxTableAxes->setVisible(false);
+        ui.dataTable->setData(m_dObj);
+    }
+
 }
 
 //----------------------------------------------------------------------------------------------
+DialogVariableDetailDataObject::~DialogVariableDetailDataObject()
+{
+    DELETE_AND_SET_NULL_ARRAY(m_AxesRanges);
+}
+    //----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
 }
 
-//void DialogVariableDetailDataObject::on_spinBoxDObjRowAxis_valueChanged()
-//{
-//    changeDObjAxes();
-//}
-//
-//void DialogVariableDetailDataObject::on_spinBoxDObjColAxis_valueChanged()
-//{   
-//    changeDObjAxes();
-//}
-
-void DialogVariableDetailDataObject::changeDObjAxes()
+void DialogVariableDetailDataObject::on_spinBoxTableCol_valueChanged()
 {
-    /*ito::DataObject roiObj = m_dObj->at(rowIdx, colIdx);
-    ui.table->setData(roiObj);*/
+    ui.spinBoxTableRow->setEnabled(false);
+    changeDObjAxes(ui.spinBoxTableRow->value(), ui.spinBoxTableCol->value());
+    ui.spinBoxTableRow->setEnabled(true);
+}
+
+void DialogVariableDetailDataObject::on_spinBoxTableRow_valueChanged()
+{   
+    ui.spinBoxTableCol->setEnabled(false);
+    changeDObjAxes(ui.spinBoxTableRow->value(), ui.spinBoxTableCol->value());
+    ui.spinBoxTableCol->setEnabled(true);
+}
+
+void DialogVariableDetailDataObject::changeDObjAxes(const int row, const int col)
+{
+    if (!m_isChanging)
+    {
+        int dims = m_dObj->getDims();
+        for (int idx = 0; idx < dims; idx++)
+        {
+            // first time show last 2 axes
+            if (dims - idx == row)
+            {
+                m_AxesRanges[idx] = ito::Range(ito::Range::all());
+            }
+            else if (dims - idx == col)
+            {
+                m_AxesRanges[idx] = ito::Range(ito::Range::all());
+            }
+            else
+            {
+                m_AxesRanges[idx] = ito::Range(0, 1);
+            }
+        }
+
+        ui.dataTable->setData(QSharedPointer<ito::DataObject>(
+            new ito::DataObject(m_dObj->at(m_AxesRanges).squeeze())));
+
+        
+    }
 }
 
 } //end namespace ito
