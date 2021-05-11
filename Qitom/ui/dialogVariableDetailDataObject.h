@@ -43,18 +43,20 @@ public:
         const char* dtype,
         QSharedPointer<ito::DataObject> data,
         QWidget* parent);
-    ~DialogVariableDetailDataObject(){};
+    ~DialogVariableDetailDataObject();
 
 private:
     Ui::DialogVariableDetailDataObject ui;
-    ito::DataObject m_dObj;
+    QSharedPointer<ito::DataObject> m_dObj;
+    bool m_isChanging;
+    ito::Range* m_AxesRanges;
 
-    void changeDObjAxes();
+    void changeDObjAxes(const int row, const int col);
 
 private slots:
     void on_btnCopyClipboard_clicked();
-    //void on_spinBoxDObjRowAxis_valueChanged();
-    //void on_spinBoxDObjColAxis_valueChanged();
+    void on_spinBoxTableCol_valueChanged();
+    void on_spinBoxTableRow_valueChanged();
 };
 
 } //end namespace ito

@@ -32,9 +32,6 @@
    </item>
    <item row="0" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout_4">
-     <item row="6" column="1">
-      <layout class="QVBoxLayout" name="verticalLayoutAxes"/>
-     </item>
      <item row="0" column="2" colspan="3">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -60,6 +57,115 @@
        </item>
       </layout>
      </item>
+     <item row="4" column="1">
+      <widget class="CollapsibleGroupBox" name="collapsibleGroupBoxMetaInfo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>meta information</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="collapsed">
+        <bool>false</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="DataObjectMetaWidget" name="metaWidget">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="columnCount">
+           <number>3</number>
+          </property>
+          <property name="rowCount" stdset="0">
+           <number>3</number>
+          </property>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string notr="true">2</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string notr="true">3</string>
+           </property>
+          </column>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+          <item/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QLabel" name="labelName">
        <property name="sizePolicy">
@@ -79,43 +185,37 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="labelValue">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="5" column="1">
+      <widget class="QGroupBox" name="groupBoxTableAxes">
+       <property name="title">
+        <string>Shown axes:</string>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>75</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Value:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="spinBoxTableCol"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>column</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="spinBoxTableRow"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>row</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item row="1" column="4">
-      <widget class="QLineEdit" name="txtDType"/>
-     </item>
-     <item row="5" column="1">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
+     <item row="6" column="1">
+      <layout class="QVBoxLayout" name="verticalLayoutAxes"/>
      </item>
      <item row="1" column="1">
       <widget class="QLabel" name="labelType">
@@ -136,25 +236,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QLabel" name="labelDType">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Data type:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLineEdit" name="txtType">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
+     <item row="1" column="4">
+      <widget class="QLineEdit" name="txtDType"/>
      </item>
      <item row="3" column="2" rowspan="5" colspan="3">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -186,96 +269,49 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="CollapsibleGroupBox" name="collapsibleGroupBoxMetaInfo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="title">
-          <string>meta information</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <property name="collapsed">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="DataObjectMetaWidget" name="metaWidget">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="columnCount">
-             <number>3</number>
-            </property>
-            <property name="rowCount" stdset="0">
-             <number>3</number>
-            </property>
-            <column>
-             <property name="text">
-              <string notr="true">1</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string notr="true">2</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string notr="true">3</string>
-             </property>
-            </column>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-            <item/>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="labelValue">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Value:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="txtType">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="labelDType">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Data type:</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
