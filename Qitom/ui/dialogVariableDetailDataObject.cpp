@@ -27,6 +27,7 @@
 #include "checkableComboBox.h"
 
 #include <qclipboard.h>
+#include <QTableWidgetItem>
 
 namespace ito
 {
@@ -61,15 +62,38 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     {
         int col = dims - 2;
         int row = dims - 1;
-        ui.groupBoxTableAxes->setVisible(true);
+        bool valid = true;
+        ui.groupBoxTableDisplays->setVisible(true);
 
-        ui.spinBoxTableCol->setMinimum(0);
-        ui.spinBoxTableCol->setMaximum(col);
-        ui.spinBoxTableCol->setValue(col);
+        QStringList items;
+        QString itemDescription;
+        std::string axisDescription;
+        for (int idx = 0; idx < dims; idx++)
+        {
+            itemDescription = "";
+            axisDescription = m_dObj->getAxisDescription(idx, valid);  
+            if (!axisDescription.empty())
+            {
+                itemDescription += QString::fromUtf8(axisDescription.data()); 
+                itemDescription += " (";
+            }
 
-        ui.spinBoxTableRow->setMinimum(1);
-        ui.spinBoxTableRow->setMaximum(row);
-        ui.spinBoxTableRow->setValue(row);
+            itemDescription += QString::number(idx);
+
+            if (!axisDescription.empty())
+            {
+                itemDescription += ")";
+            }      
+
+            items += itemDescription;
+        }
+
+        ui.comboBoxDisplayedRow->addItems(items);
+        ui.comboBoxDisplayedRow->setCurrentIndex(dims - 2);
+        ui.comboBoxDisplayedCol->addItems(items);
+        ui.comboBoxDisplayedCol->setCurrentIndex(dims - 1);
+
+        ui.labelDims->setText(QString::number(dims));
 
         m_AxesRanges = new ito::Range[dims];
         m_isChanging = false;
@@ -79,7 +103,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     }
     else
     {
-        ui.groupBoxTableAxes->setVisible(false);
+        ui.groupBoxTableDisplays->setVisible(false);
         ui.dataTable->setData(m_dObj);
     }
 
@@ -90,25 +114,11 @@ DialogVariableDetailDataObject::~DialogVariableDetailDataObject()
 {
     DELETE_AND_SET_NULL_ARRAY(m_AxesRanges);
 }
-    //----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
-}
-
-void DialogVariableDetailDataObject::on_spinBoxTableCol_valueChanged()
-{
-    ui.spinBoxTableRow->setEnabled(false);
-    changeDObjAxes(ui.spinBoxTableRow->value(), ui.spinBoxTableCol->value());
-    ui.spinBoxTableRow->setEnabled(true);
-}
-
-void DialogVariableDetailDataObject::on_spinBoxTableRow_valueChanged()
-{   
-    ui.spinBoxTableCol->setEnabled(false);
-    changeDObjAxes(ui.spinBoxTableRow->value(), ui.spinBoxTableCol->value());
-    ui.spinBoxTableCol->setEnabled(true);
 }
 
 void DialogVariableDetailDataObject::changeDObjAxes(const int row, const int col)
@@ -118,7 +128,6 @@ void DialogVariableDetailDataObject::changeDObjAxes(const int row, const int col
         int dims = m_dObj->getDims();
         for (int idx = 0; idx < dims; idx++)
         {
-            // first time show last 2 axes
             if (dims - idx == row)
             {
                 m_AxesRanges[idx] = ito::Range(ito::Range::all());
@@ -135,8 +144,6 @@ void DialogVariableDetailDataObject::changeDObjAxes(const int row, const int col
 
         ui.dataTable->setData(QSharedPointer<ito::DataObject>(
             new ito::DataObject(m_dObj->at(m_AxesRanges).squeeze())));
-
-        
     }
 }
 

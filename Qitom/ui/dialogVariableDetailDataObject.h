@@ -55,8 +55,6 @@ private:
 
 private slots:
     void on_btnCopyClipboard_clicked();
-    void on_spinBoxTableCol_valueChanged();
-    void on_spinBoxTableRow_valueChanged();
 };
 
 } //end namespace ito
