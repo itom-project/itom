@@ -176,7 +176,7 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
     objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
     // pixel size
-    data[0] = "pixel size";
+    data[0] = "shape";
     data[1].reserve(2 + 2 + 12 * dims);
     data[1] = "[";
     for(int dim = 0; dim < dims; dim++)
@@ -191,7 +191,7 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
     objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
     // physical size
-    data[0] = "physical size";
+    data[0] = "physical shape";
     data[1] = "[";
     double val;
     for(int dim = 0; dim < dims; dim++)
@@ -199,6 +199,25 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
         val = m_data.getPixToPhys(dim, m_data.getSize(dim), checker) - m_data.getPixToPhys(dim, 0, checker);
         data[1].append(QString::number(val));
         data[1].append(QString::fromLocal8Bit(m_data.getAxisUnit(dim, checker).data()));
+
+        if (dim < (dims - 1))
+        {
+            data[1].append(", ");
+        }
+
+    }
+    data[1].append("]");
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
+
+    // physical origin
+    data[0] = "physical origin";
+    data[1] = "[";
+    for (int dim = 0; dim < dims; dim++)
+    {
+        val = m_data.getPixToPhys(dim, 0, checker);
+        data[1].append(QString::number(val));
+        data[1].append(QString::fromLocal8Bit(m_data.getAxisUnit(dim, checker).data()));
+
         if (dim < (dims - 1))
         {
             data[1].append(", ");
@@ -206,7 +225,6 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
     }
     data[1].append("]");
     objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
-
     
     // write axes tree
     data[0] = "descriptions";
