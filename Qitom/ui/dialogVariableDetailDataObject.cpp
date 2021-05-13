@@ -27,7 +27,8 @@
 #include "checkableComboBox.h"
 
 #include <qclipboard.h>
-#include <QTableWidgetItem>
+#include <qtablewidgetitem>
+#include <qspinbox.h>
 
 namespace ito
 {
@@ -50,7 +51,6 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtDType->setText(dtype);
-
     
     ui.dataTable->setReadOnly(true);
 
@@ -63,7 +63,6 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         int col = dims - 2;
         int row = dims - 1;
         bool valid = true;
-        ui.groupBoxTableDisplays->setVisible(true);
 
         QStringList items;
         QString itemDescription;
@@ -86,14 +85,43 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
             }      
 
             items += itemDescription;
+
+            if (idx == 0)
+            {
+                ui.horizontalLayoutSlicing->addWidget(new QLabel("["));
+            }
+
+            if (dims - idx == 2) // row
+            {
+                ui.horizontalLayoutSlicing->addWidget(new QLabel(":"));
+            }
+            else if (dims - idx == 1) // col
+            {
+                ui.horizontalLayoutSlicing->addWidget(new QLabel(":"));
+            }
+            else
+            {
+                QSpinBox* spin = new QSpinBox();
+                spin->setMaximum(m_dObj->getSize(idx));
+                connect(spin, SIGNAL(valueChanged(int)), this, SLOT(spinBoxValueChanged(int)));
+                ui.horizontalLayoutSlicing->addWidget(spin);   
+            }
+
+            if (idx + 1 == dims)
+            {
+                ui.horizontalLayoutSlicing->addWidget(new QLabel("]"));
+            }
+            else
+            {
+                ui.horizontalLayoutSlicing->addWidget(new QLabel(", "));
+            }
+
         }
 
         ui.comboBoxDisplayedRow->addItems(items);
         ui.comboBoxDisplayedRow->setCurrentIndex(dims - 2);
         ui.comboBoxDisplayedCol->addItems(items);
         ui.comboBoxDisplayedCol->setCurrentIndex(dims - 1);
-
-        ui.labelDims->setText(QString::number(dims));
 
         m_AxesRanges = new ito::Range[dims];
         m_isChanging = false;
@@ -103,7 +131,6 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     }
     else
     {
-        ui.groupBoxTableDisplays->setVisible(false);
         ui.dataTable->setData(m_dObj);
     }
 
@@ -114,6 +141,7 @@ DialogVariableDetailDataObject::~DialogVariableDetailDataObject()
 {
     DELETE_AND_SET_NULL_ARRAY(m_AxesRanges);
 }
+
 //----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
 {
@@ -121,6 +149,29 @@ void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
     clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
 }
 
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetailDataObject::on_comboBoxDisplayedRow_currentIndexChanged(int idx)
+{
+    // update slicing
+    // update max value of new spinbox axes
+    // update changeDObjAxes here
+}
+
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetailDataObject::on_comboBoxDisplayedCol_currentIndexChanged(int idx)
+{
+    // update slicing
+    // update max value of new spinbox axes
+    // update changeDObjAxes here
+}
+
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetailDataObject::spinBoxValueChanged(int idx)
+{
+    // update changeDObjAxes here
+}
+
+//----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::changeDObjAxes(const int row, const int col)
 {
     if (!m_isChanging)
