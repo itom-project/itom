@@ -55,6 +55,9 @@ private:
 
 private slots:
     void on_btnCopyClipboard_clicked();
+    void on_comboBoxDisplayedRow_currentIndexChanged(int idx);
+    void on_comboBoxDisplayedCol_currentIndexChanged(int idx);
+    void spinBoxValueChanged(int idx);
 };
 
 } //end namespace ito
