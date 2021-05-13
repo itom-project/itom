@@ -3,6 +3,7 @@ import jedi
 import unittest
 from typing import Tuple, Dict, List, Optional
 import warnings
+import sys
 
 
 class ItomJediLibTest(unittest.TestCase):
@@ -265,7 +266,33 @@ dataObject.ones([2, 2])"""
         
         h = jedilib.get_help(doc, 152, 7, path=p)  # mycls1
         self.assertEqual(h, [('mycls1 = MyClassDocStr(6, 7)', ['mycls1: MyClassDocStr'])])
+
+    def test_recursionAbility(self):
+        """Check by an example, that the maximum recursion limit value, indicated
+        in itomJediLib.py can be fullfilled by this itom / Python setup. This
+        test is inspired by check_recursionlimit.py, a tool script of Python.
+
+        If the test fails, the application usually crashes.
+        """
+        class RecursiveBlowup2:
+            def __repr__(self):
+                return repr(self)
         
+        def func_repr():
+            return repr(RecursiveBlowup2())
+        
+        maxreclimit = jedilib.maxreclimit + 200
+        currentlimit = sys.getrecursionlimit()
+        sys.setrecursionlimit(maxreclimit)
+        try:
+            func_repr()
+        # AttributeError can be raised because of the way e.g. PyDict_GetItem()
+        # silences all exceptions and returns NULL, which is usually interpreted
+        # as "missing attribute".
+        except (RecursionError, AttributeError):
+            pass
+        self.assertTrue(True)
+        sys.setrecursionlimit(currentlimit)
 
 if __name__ == '__main__':
     unittest.main(module='itom_jedilib', exit=False)
