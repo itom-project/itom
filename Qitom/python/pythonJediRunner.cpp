@@ -51,6 +51,9 @@ PythonJediRunner::PythonJediRunner(const QString& includeItomImportString) :
 {
 #if QT_VERSION >= 0x050a00
     // increase the stack size for the jedi worker thread to allow a deeper recursion depth.
+    // For Qt < 5.10, the stack size cannot be changed for Jedi / Python relevant
+    // threads only (especially this thread pool). Therefore it is globally increased
+    // for all threads for MSVC via CMake (Linker flag /STACK).
     m_threadPool->setStackSize(5000000);
 #endif
     m_threadPool->setMaxThreadCount(1);
