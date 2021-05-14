@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -22,20 +22,19 @@
 
 #include "pythonJediRunner.h"
 
-#include "../global.h"
 #include "../AppManagement.h"
+#include "../global.h"
 #include "pythonQtConversion.h"
 
-#include <qmetaobject.h>
+#include <iostream>
+#include <qdatetime.h>
 #include <qdebug.h>
 #include <qfileinfo.h>
-#include <qdatetime.h>
-#include <iostream>
+#include <qmetaobject.h>
 
 
 //-------------------------------------------------------------------------------------
-namespace ito
-{
+namespace ito {
 
 // static member initialization
 
@@ -46,21 +45,21 @@ namespace ito
 /*static*/ QMutex JediRunnable::m_mutex;
 
 //-------------------------------------------------------------------------------------
-PythonJediRunner::PythonJediRunner(const QString &includeItomImportString) :
-    QObject(),
-    m_threadPool(new QThreadPool(this)),
-    m_pyModJediChecked(false),
-    m_pyModJedi(NULL),
-    m_includeItomImportString(includeItomImportString),
-    m_includeItomImportBeforeCodeAnalysis(false)
+PythonJediRunner::PythonJediRunner(const QString& includeItomImportString) :
+    QObject(), m_threadPool(new QThreadPool(this)), m_pyModJediChecked(false), m_pyModJedi(NULL),
+    m_includeItomImportString(includeItomImportString), m_includeItomImportBeforeCodeAnalysis(false)
 {
+#if QT_VERSION >= 0x050a00
+    // increase the stack size for the jedi worker thread to allow a deeper recursion depth.
+    m_threadPool->setStackSize(5000000);
+#endif
     m_threadPool->setMaxThreadCount(1);
 }
 
 //-------------------------------------------------------------------------------------
 PythonJediRunner::~PythonJediRunner()
 {
-    QThreadPool *pool = m_threadPool.take();
+    QThreadPool* pool = m_threadPool.take();
 
     pool->clear();
 
@@ -72,7 +71,7 @@ PythonJediRunner::~PythonJediRunner()
         PyGILState_STATE gstate = PyGILState_Ensure();
 
         Py_XDECREF(m_pyModJedi);
-        m_pyModJedi = NULL;
+        m_pyModJedi = nullptr;
 
         PyGILState_Release(gstate);
     }
@@ -90,7 +89,7 @@ bool PythonJediRunner::tryToLoadJediIfNotYetDone()
         PyGILState_STATE gstate = PyGILState_Ensure();
 
         m_pyModJediChecked = true;
-        m_pyModJedi = PyImport_ImportModule("itomJediLib"); //new reference
+        m_pyModJedi = PyImport_ImportModule("itomJediLib"); // new reference
 
         if (m_pyModJedi == NULL)
         {
@@ -99,9 +98,9 @@ bool PythonJediRunner::tryToLoadJediIfNotYetDone()
             if (mainWin)
             {
                 QString text = tr("Auto completion, calltips, goto definition... "
-                    "not possible, since the package 'jedi' could not be "
-                    "loaded (Python packages 'jedi' and 'parso' are "
-                    "required for this feature).");
+                                  "not possible, since the package 'jedi' could not be "
+                                  "loaded (Python packages 'jedi' and 'parso' are "
+                                  "required for this feature).");
 
                 QMetaObject::invokeMethod(
                     mainWin,
@@ -121,19 +120,16 @@ bool PythonJediRunner::tryToLoadJediIfNotYetDone()
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addCalltipRequest(const JediCalltipRequest &request)
+void PythonJediRunner::addCalltipRequest(const JediCalltipRequest& request)
 {
     if (!m_threadPool.isNull())
     {
-        CalltipRunnable *runnable = new CalltipRunnable(
-            additionalImportString(),
-            m_pyModJedi,
-            request
-        );
-        
-        /*qDebug() 
-            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz") 
-            << "Calltip request enqueued. ID:" 
+        CalltipRunnable* runnable =
+            new CalltipRunnable(additionalImportString(), m_pyModJedi, request);
+
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Calltip request enqueued. ID:"
             << runnable->getCurrentId();*/
 
         m_threadPool->start(runnable);
@@ -141,19 +137,16 @@ void PythonJediRunner::addCalltipRequest(const JediCalltipRequest &request)
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addCompletionRequest(const JediCompletionRequest &request)
+void PythonJediRunner::addCompletionRequest(const JediCompletionRequest& request)
 {
     if (!m_threadPool.isNull())
     {
-        CompletionRunnable *runnable = new CompletionRunnable(
-            additionalImportString(),
-            m_pyModJedi,
-            request
-        );
+        CompletionRunnable* runnable =
+            new CompletionRunnable(additionalImportString(), m_pyModJedi, request);
 
-        /*qDebug() 
-            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz") 
-            << "Completion request enqueued. ID:" 
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Completion request enqueued. ID:"
             << runnable->getCurrentId();*/
 
         m_threadPool->start(runnable);
@@ -161,19 +154,16 @@ void PythonJediRunner::addCompletionRequest(const JediCompletionRequest &request
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest &request)
+void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest& request)
 {
     if (!m_threadPool.isNull())
     {
-        GoToAssignmentRunnable *runnable = new GoToAssignmentRunnable(
-            additionalImportString(),
-            m_pyModJedi,
-            request
-        );
+        GoToAssignmentRunnable* runnable =
+            new GoToAssignmentRunnable(additionalImportString(), m_pyModJedi, request);
 
-        /*qDebug() 
-            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz") 
-            << "Assignment request enqueued. ID:" 
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Assignment request enqueued. ID:"
             << runnable->getCurrentId();*/
 
         m_threadPool->start(runnable);
@@ -181,15 +171,12 @@ void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest &req
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest &request)
+void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest& request)
 {
     if (!m_threadPool.isNull())
     {
-        GetHelpRunnable *runnable = new GetHelpRunnable(
-            additionalImportString(),
-            m_pyModJedi,
-            request
-        );
+        GetHelpRunnable* runnable =
+            new GetHelpRunnable(additionalImportString(), m_pyModJedi, request);
 
         /*qDebug()
             << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
@@ -218,60 +205,66 @@ void CompletionRunnable::run()
 
     try
     {
-        PyObject *result = NULL;
+        PyObject* result = NULL;
 
         if (m_additionalImportString != "")
         {
-            //add from itom import * as first line (this is afterwards removed from results)
+            // add from itom import * as first line (this is afterwards removed from results)
             result = PyObject_CallMethod(
                 m_pPyModJedi,
-                "completions", 
-                "siiss", 
+                "completions",
+                "siiss",
                 (m_additionalImportString + "\n" + m_request.m_source).toUtf8().constData(),
-                m_request.m_line + 1, 
-                m_request.m_col, 
-                m_request.m_path.toUtf8().constData(), 
-                m_request.m_prefix.toUtf8().constData()); //new ref
+                m_request.m_line + 1,
+                m_request.m_col,
+                m_request.m_path.toUtf8().constData(),
+                m_request.m_prefix.toUtf8().constData()); // new ref
         }
         else
         {
             result = PyObject_CallMethod(
-                m_pPyModJedi, 
-                "completions", 
-                "siiss", 
-                m_request.m_source.toUtf8().constData(), 
-                m_request.m_line, 
+                m_pPyModJedi,
+                "completions",
+                "siiss",
+                m_request.m_source.toUtf8().constData(),
+                m_request.m_line,
                 m_request.m_col,
-                m_request.m_path.toUtf8().constData(), 
-                m_request.m_prefix.toUtf8().constData()); //new ref
+                m_request.m_path.toUtf8().constData(),
+                m_request.m_prefix.toUtf8().constData()); // new ref
         }
 
         if (result && PyList_Check(result))
         {
-            PyObject *pycompletion = NULL;
+            PyObject* pycompletion = NULL;
             const char* calltip;
             const char* description;
             const char* icon;
-            PyObject *tooltips = NULL;
+            PyObject* tooltips = NULL;
 
             for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
             {
-                pycompletion = PyList_GetItem(result, idx); //borrowed ref
+                pycompletion = PyList_GetItem(result, idx); // borrowed ref
 
                 if (PyTuple_Check(pycompletion))
                 {
-                    if (PyArg_ParseTuple(pycompletion, "sssO!", &calltip, &description, &icon, &PyList_Type, &tooltips))
+                    if (PyArg_ParseTuple(
+                            pycompletion,
+                            "sssO!",
+                            &calltip,
+                            &description,
+                            &icon,
+                            &PyList_Type,
+                            &tooltips))
                     {
                         bool ok;
-                        QStringList tooltipList = PythonQtConversion::PyObjToStringList(tooltips, false, ok);
+                        QStringList tooltipList =
+                            PythonQtConversion::PyObjToStringList(tooltips, false, ok);
 
-                        completions.append(
-                            ito::JediCompletion(
-                                QLatin1String(calltip),
-                                tooltipList,
-                                QLatin1String(icon),
-                                QLatin1String(description))
-                        );
+                        completions.append(ito::JediCompletion(
+                            QLatin1String(calltip),
+                            tooltipList,
+                            QLatin1String(icon),
+                            QLatin1String(description)));
                     }
                     else
                     {
@@ -299,23 +292,22 @@ void CompletionRunnable::run()
     catch (...)
     {
         qDebug() << "jediCompletionRequestEnqueued4: exception";
-        std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n" << std::endl;
+        std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n"
+                  << std::endl;
     }
 
     PyGILState_Release(gstate);
 
-    QObject *s = m_request.m_sender.data();
+    QObject* s = m_request.m_sender.data();
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, 
-            m_request.m_callbackFctName.constData(), 
+            s,
+            m_request.m_callbackFctName.constData(),
             Q_ARG(int, m_request.m_line),
-            Q_ARG(int, m_request.m_col), 
-            Q_ARG(int, m_request.m_requestId), 
-            Q_ARG(QVector<ito::JediCompletion>, completions)
-        );
-
+            Q_ARG(int, m_request.m_col),
+            Q_ARG(int, m_request.m_requestId),
+            Q_ARG(QVector<ito::JediCompletion>, completions));
     }
 
     endRun();
@@ -336,12 +328,12 @@ void GoToAssignmentRunnable::run()
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     int lineOffset = 0;
-    PyObject *result = NULL;
+    PyObject* result = NULL;
 
     if (m_additionalImportString != "")
     {
         lineOffset = 1;
-        //add from itom import * as first line (this is afterwards removed from results)
+        // add from itom import * as first line (this is afterwards removed from results)
         result = PyObject_CallMethod(
             m_pPyModJedi,
             "goto_assignments",
@@ -350,8 +342,7 @@ void GoToAssignmentRunnable::run()
             m_request.m_line + 1,
             m_request.m_col,
             m_request.m_path.toUtf8().constData(),
-            m_request.m_mode
-        ); //new ref
+            m_request.m_mode); // new ref
     }
     else
     {
@@ -363,13 +354,12 @@ void GoToAssignmentRunnable::run()
             m_request.m_line,
             m_request.m_col,
             m_request.m_path.toUtf8().constData(),
-            m_request.m_mode
-        ); //new ref
+            m_request.m_mode); // new ref
     }
 
     if (result && PyList_Check(result))
     {
-        PyObject *pydefinition = NULL;
+        PyObject* pydefinition = NULL;
         const char* path2;
         const char* fullName;
         int column;
@@ -377,7 +367,7 @@ void GoToAssignmentRunnable::run()
 
         for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
         {
-            pydefinition = PyList_GetItem(result, idx); //borrowed ref
+            pydefinition = PyList_GetItem(result, idx); // borrowed ref
 
             if (PyTuple_Check(pydefinition))
             {
@@ -394,24 +384,24 @@ void GoToAssignmentRunnable::run()
                                 lineOffset = 0;
                             }
                         }
-                        assignments.append(
-                            ito::JediAssignment(
-                                filepath2.canonicalFilePath(),
-                                line - lineOffset,
-                                column,
-                                QLatin1String(fullName))
-                        );
+                        assignments.append(ito::JediAssignment(
+                            filepath2.canonicalFilePath(),
+                            line - lineOffset,
+                            column,
+                            QLatin1String(fullName)));
                     }
                 }
                 else
                 {
                     PyErr_Clear();
-                    std::cerr << "Error in assignment / definition: invalid format of tuple\n" << std::endl;
+                    std::cerr << "Error in assignment / definition: invalid format of tuple\n"
+                              << std::endl;
                 }
             }
             else
             {
-                std::cerr << "Error in assignment / definition: list of tuples required\n" << std::endl;
+                std::cerr << "Error in assignment / definition: list of tuples required\n"
+                          << std::endl;
             }
         }
 
@@ -428,18 +418,15 @@ void GoToAssignmentRunnable::run()
     }
 
 
-
     PyGILState_Release(gstate);
 
-    QObject *s = m_request.m_sender.data();
+    QObject* s = m_request.m_sender.data();
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
             s,
             m_request.m_callbackFctName.constData(),
-            Q_ARG(QVector<ito::JediAssignment>, assignments)
-        );
-
+            Q_ARG(QVector<ito::JediAssignment>, assignments));
     }
 
     endRun();
@@ -459,51 +446,58 @@ void CalltipRunnable::run()
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
-    PyObject *result = NULL;
+    PyObject* result = NULL;
     int lineOffset = 0;
 
     if (m_additionalImportString != "")
     {
-        //add from itom import * as first line (this is afterwards removed from results)
+        // add from itom import * as first line (this is afterwards removed from results)
         lineOffset = 1;
         result = PyObject_CallMethod(
-            m_pPyModJedi, 
-            "calltips", 
-            "siis", 
+            m_pPyModJedi,
+            "calltips",
+            "siis",
             (m_additionalImportString + "\n" + m_request.m_source).toUtf8().constData(),
             m_request.m_line + 1,
             m_request.m_col,
-            m_request.m_path.toUtf8().constData()
-        ); //new ref
+            m_request.m_path.toUtf8().constData()); // new ref
     }
     else
     {
         result = PyObject_CallMethod(
-            m_pPyModJedi, "calltips", 
-            "siis", 
+            m_pPyModJedi,
+            "calltips",
+            "siis",
             m_request.m_source.toUtf8().constData(),
             m_request.m_line,
             m_request.m_col,
-            m_request.m_path.toUtf8().constData()
-        ); //new ref
+            m_request.m_path.toUtf8().constData()); // new ref
     }
 
     if (result && PyList_Check(result))
     {
-        PyObject *pycalltip = NULL;
+        PyObject* pycalltip = NULL;
         const char* calltipMethodName;
-        PyObject *pyparams = NULL;
+        PyObject* pyparams = NULL;
         int column;
         int bracketStartCol;
         int bracketStartLine;
 
         for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
         {
-            pycalltip = PyList_GetItem(result, idx); //borrowed ref
+            pycalltip = PyList_GetItem(result, idx); // borrowed ref
 
             if (PyTuple_Check(pycalltip))
             {
-                if (PyArg_ParseTuple(pycalltip, "sO!iii", &calltipMethodName, &PyList_Type, &pyparams, &column, &bracketStartLine, &bracketStartCol))
+                if (PyArg_ParseTuple(
+                        pycalltip,
+                        "sO!iii",
+                        &calltipMethodName,
+                        &PyList_Type,
+                        &pyparams,
+                        &column,
+                        &bracketStartLine,
+                        &bracketStartCol))
                 {
                     bool ok;
                     QStringList params = PythonQtConversion::PyObjToStringList(pyparams, false, ok);
@@ -515,13 +509,14 @@ void CalltipRunnable::run()
                             params,
                             column,
                             bracketStartLine - lineOffset,
-                            bracketStartCol)
-                        );
+                            bracketStartCol));
                     }
                     else
                     {
                         PyErr_Clear();
-                        std::cerr << "Error in param string list of calltip: invalid format of tuple\n" << std::endl;
+                        std::cerr
+                            << "Error in param string list of calltip: invalid format of tuple\n"
+                            << std::endl;
                     }
                 }
                 else
@@ -550,16 +545,12 @@ void CalltipRunnable::run()
 
     PyGILState_Release(gstate);
 
-    QObject *s = m_request.m_sender.data();
+    QObject* s = m_request.m_sender.data();
 
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, 
-            m_request.m_callbackFctName.constData(),
-            Q_ARG(QVector<ito::JediCalltip>, calltips)
-        );
-
+            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
     }
 
     endRun();
@@ -580,12 +571,12 @@ void GetHelpRunnable::run()
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     int lineOffset = 0;
-    PyObject *result = nullptr;
+    PyObject* result = nullptr;
 
     if (m_additionalImportString != "")
     {
         lineOffset = 1;
-        //add from itom import * as first line (this is afterwards removed from results)
+        // add from itom import * as first line (this is afterwards removed from results)
         result = PyObject_CallMethod(
             m_pPyModJedi,
             "get_help",
@@ -593,8 +584,7 @@ void GetHelpRunnable::run()
             (m_additionalImportString + "\n" + m_request.m_source).toUtf8().constData(),
             m_request.m_line + 1,
             m_request.m_col,
-            m_request.m_path.toUtf8().constData()
-        ); //new ref
+            m_request.m_path.toUtf8().constData()); // new ref
     }
     else
     {
@@ -605,34 +595,30 @@ void GetHelpRunnable::run()
             m_request.m_source.toUtf8().constData(),
             m_request.m_line,
             m_request.m_col,
-            m_request.m_path.toUtf8().constData()
-        ); //new ref
+            m_request.m_path.toUtf8().constData()); // new ref
     }
 
     if (result && PyList_Check(result))
     {
-        PyObject *pygethelp = nullptr;
+        PyObject* pygethelp = nullptr;
         const char* description;
-        PyObject *pytooltips = nullptr;
+        PyObject* pytooltips = nullptr;
 
         for (Py_ssize_t idx = 0; idx < PyList_Size(result); ++idx)
         {
-            pygethelp = PyList_GetItem(result, idx); //borrowed ref
+            pygethelp = PyList_GetItem(result, idx); // borrowed ref
 
             if (PyTuple_Check(pygethelp))
             {
                 if (PyArg_ParseTuple(pygethelp, "sO!", &description, &PyList_Type, &pytooltips))
                 {
                     bool ok;
-                    QStringList tooltips = PythonQtConversion::PyObjToStringList(pytooltips, false, ok);
+                    QStringList tooltips =
+                        PythonQtConversion::PyObjToStringList(pytooltips, false, ok);
 
                     if (ok)
                     {
-                        helps.append(
-                            ito::JediGetHelp(
-                                description,
-                                tooltips)
-                        );
+                        helps.append(ito::JediGetHelp(description, tooltips));
                     }
                 }
                 else
@@ -660,18 +646,13 @@ void GetHelpRunnable::run()
     }
 
 
-
     PyGILState_Release(gstate);
 
-    QObject *s = m_request.m_sender.data();
+    QObject* s = m_request.m_sender.data();
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s,
-            m_request.m_callbackFctName.constData(),
-            Q_ARG(QVector<ito::JediGetHelp>, helps)
-        );
-
+            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediGetHelp>, helps));
     }
 
     endRun();
@@ -680,7 +661,7 @@ void GetHelpRunnable::run()
 //--------------------------------------------------------------------------------
 void JediRunnable::startRun()
 {
-    /*qDebug() << QDateTime::currentDateTime().toString("hh:mm:ss.zzz") 
+    /*qDebug() << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
         << "start run. Type:" << m_type
         << "ID:" << getCurrentId()
         << "Outdated:" << isOutdated();*/
@@ -701,4 +682,4 @@ bool JediRunnable::isOutdated() const
 }
 
 
-} //end namespace ito
+} // end namespace ito
