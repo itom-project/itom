@@ -878,6 +878,18 @@ endforeach()
 
 # Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
+# increase the stack size of the linker to avoid stack overflow errors for recursive calls
+# Since stack size holds for all threads. The python thread itself gets its own.
+# From Qt 5.10 on, it is possible to directly set the stack size of relevant threads,
+# including the worker thread for Jedi calls. Since the stack size of the thread pool
+# for Jedi cannot be changed with Qt < 5.10, the overall stack size is changed then here.
+if(MSVC)
+    if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.10.0))
+        # see https://stackoverflow.com/questions/49644273/cmake-change-stack-size
+        set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/STACK:4000000")
+    endif()
+endif()
  
 itom_build_parallel_linux(${target_name})
 
