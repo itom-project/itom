@@ -28,6 +28,8 @@
 #include "ui_dialogVariableDetailDataObject.h"
 
 #include "DataObject/dataobj.h"
+#include <qspinbox.h>
+#include <qlist.h>
 
 namespace ito
 {
@@ -50,14 +52,16 @@ private:
     QSharedPointer<ito::DataObject> m_dObj;
     bool m_isChanging;
     ito::Range* m_AxesRanges;
+    QList<QSpinBox*> m_ListSlicingSpinBoxes;
 
-    void changeDObjAxes(const int row, const int col);
+    void changeDisplayedAxes();
+    void deleteSlicingWidgets();
+    void addSlicingWidgets();
 
 private slots:
     void on_btnCopyClipboard_clicked();
-    void on_comboBoxDisplayedRow_currentIndexChanged(int idx);
-    void on_comboBoxDisplayedCol_currentIndexChanged(int idx);
     void spinBoxValueChanged(int idx);
+    void comboBoxCurrentIndexChanged(int idx);
 };
 
 } //end namespace ito
