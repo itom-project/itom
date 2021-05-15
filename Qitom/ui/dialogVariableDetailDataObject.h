@@ -50,9 +50,8 @@ public:
 private:
     Ui::DialogVariableDetailDataObject ui;
     QSharedPointer<ito::DataObject> m_dObj;
-    bool m_isChanging;
     ito::Range* m_AxesRanges;
-    QList<QSpinBox*> m_ListSlicingSpinBoxes;
+    QMap<int, QSpinBox*> m_SpinBoxToIdxMap;
 
     void changeDisplayedAxes();
     void deleteSlicingWidgets();

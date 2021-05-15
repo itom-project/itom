@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -24,12 +24,9 @@
 #include "dataobj.h"
 #include <qsharedpointer.h>
 
-#include "checkableComboBox.h"
-
 #include <qclipboard.h>
-#include <qsignalmapper.h>
+#include <qmap.h>
 #include <qspinbox.h>
-#include <qtablewidgetitem>
 
 namespace ito {
 
@@ -41,7 +38,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QSharedPointer<ito::DataObject> dObj,
     QWidget* parent) :
     QDialog(parent),
-    m_isChanging(true), m_AxesRanges(nullptr)
+    m_AxesRanges(nullptr)
 {
     ui.setupUi(this);
 
@@ -56,67 +53,55 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
 
+    // add combobox for displayed axis and slicing of dataObject axis
     int dims = m_dObj->getDims();
-    if (dims >= 3)
+    int col = dims - 2;
+    int row = dims - 1;
+    bool valid = true;
+
+    m_AxesRanges = new ito::Range[dims];
+
+    QStringList items;
+    QString itemDescription;
+    std::string axisDescription;
+    for (int idx = 0; idx < dims; idx++)
     {
-        int col = dims - 2;
-        int row = dims - 1;
-        bool valid = true;
-
-        m_AxesRanges = new ito::Range[dims];
-        m_isChanging = false;
-
-        QStringList items;
-        QString itemDescription;
-        std::string axisDescription;
-        for (int idx = 0; idx < dims; idx++)
+        itemDescription = "";
+        axisDescription = m_dObj->getAxisDescription(idx, valid);
+        if (!axisDescription.empty())
         {
-            itemDescription = "";
-            axisDescription = m_dObj->getAxisDescription(idx, valid);
-            if (!axisDescription.empty())
-            {
-                itemDescription += QString::fromUtf8(axisDescription.data());
-                itemDescription += " (";
-            }
-
-            itemDescription += QString::number(idx);
-
-            if (!axisDescription.empty())
-            {
-                itemDescription += ")";
-            }
-
-            items += itemDescription;
-
-            
+            itemDescription += QString::fromUtf8(axisDescription.data());
+            itemDescription += " (";
         }
 
-        ui.comboBoxDisplayedRow->addItems(items);
-        ui.comboBoxDisplayedRow->setCurrentIndex(col);
-        ui.comboBoxDisplayedCol->addItems(items);
-        ui.comboBoxDisplayedCol->setCurrentIndex(row);
+        itemDescription += QString::number(idx);
 
+        if (!axisDescription.empty())
+        {
+            itemDescription += ")";
+        }
 
-        addSlicingWidgets();
-
-        // show last two axes after start
-        changeDisplayedAxes();
-
-        connect(
-            ui.comboBoxDisplayedRow,
-            SIGNAL(currentIndexChanged(int)),
-            this,
-            SLOT(comboBoxCurrentIndexChanged(int)));
-        connect(
-            ui.comboBoxDisplayedCol,
-            SIGNAL(currentIndexChanged(int)),
-            this,
-            SLOT(comboBoxCurrentIndexChanged(int)));
+        items += itemDescription;
     }
-    else
-    {
-        ui.dataTable->setData(m_dObj);
-    }
+
+    ui.comboBoxDisplayedRow->addItems(items);
+    ui.comboBoxDisplayedRow->setCurrentIndex(col);
+    ui.comboBoxDisplayedCol->addItems(items);
+    ui.comboBoxDisplayedCol->setCurrentIndex(row);
+
+    addSlicingWidgets();
+    changeDisplayedAxes();
+
+    connect(
+        ui.comboBoxDisplayedRow,
+        SIGNAL(currentIndexChanged(int)),
+        this,
+        SLOT(comboBoxCurrentIndexChanged(int)));
+    connect(
+        ui.comboBoxDisplayedCol,
+        SIGNAL(currentIndexChanged(int)),
+        this,
+        SLOT(comboBoxCurrentIndexChanged(int)));
 }
 
 //----------------------------------------------------------------------------------------------
@@ -135,9 +120,6 @@ void DialogVariableDetailDataObject::on_btnCopyClipboard_clicked()
 //----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::comboBoxCurrentIndexChanged(int idx)
 {
-    // update slicing
-    // update max value of new spinbox axes
-    // update changeDObjAxes here
     deleteSlicingWidgets();
     addSlicingWidgets();
 }
@@ -145,7 +127,6 @@ void DialogVariableDetailDataObject::comboBoxCurrentIndexChanged(int idx)
 //----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::spinBoxValueChanged(int idx)
 {
-    // update changeDisplayedAxes here
     changeDisplayedAxes();
 }
 
@@ -169,22 +150,21 @@ void DialogVariableDetailDataObject::addSlicingWidgets()
 
     ui.horizontalLayoutSlicing->addWidget(new QLabel("["));
 
-    m_ListSlicingSpinBoxes.clear();
+    m_SpinBoxToIdxMap.clear();
 
     for (int idx = 0; idx < dims; idx++)
     {
-
         if ((idx == row) || (idx == col)) // row
         {
             ui.horizontalLayoutSlicing->addWidget(new QLabel(":"));
         }
         else
         {
-            QSpinBox* spin = new QSpinBox();
-            spin->setMaximum(m_dObj->getSize(idx) - 1);
-            connect(spin, SIGNAL(valueChanged(int)), this, SLOT(spinBoxValueChanged(int)));
-            ui.horizontalLayoutSlicing->addWidget(spin);
-            m_ListSlicingSpinBoxes.append(spin);
+            QSpinBox* spinBox = new QSpinBox();
+            spinBox->setMaximum(m_dObj->getSize(idx) - 1);
+            connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxValueChanged(int)));
+            ui.horizontalLayoutSlicing->addWidget(spinBox);
+            m_SpinBoxToIdxMap.insert(idx, spinBox);
         }
 
         if (idx < dims - 1)
@@ -194,6 +174,7 @@ void DialogVariableDetailDataObject::addSlicingWidgets()
     }
 
     ui.horizontalLayoutSlicing->addWidget(new QLabel("]"));
+    changeDisplayedAxes();
 }
 
 //----------------------------------------------------------------------------------------------
@@ -202,24 +183,21 @@ void DialogVariableDetailDataObject::changeDisplayedAxes()
     int dims = m_dObj->getDims();
     int col = ui.comboBoxDisplayedCol->currentIndex();
     int row = ui.comboBoxDisplayedRow->currentIndex();
-    
-    int cntList = 0;
 
     for (int idx = 0; idx < dims; idx++)
     {
-        if (dims - idx == row)
+        if (idx == row)
         {
             m_AxesRanges[idx] = ito::Range(ito::Range::all());
         }
-        else if (dims - idx == col)
+        else if (idx == col)
         {
             m_AxesRanges[idx] = ito::Range(ito::Range::all());
         }
         else
         {
-            int index = m_ListSlicingSpinBoxes.at(cntList)->value();
+            int index = m_SpinBoxToIdxMap.value(idx)->value();
             m_AxesRanges[idx] = ito::Range(index, index + 1);
-            cntList++;
         }
     }
 
