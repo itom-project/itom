@@ -158,6 +158,10 @@ void DialogVariableDetailDataObject::addSlicingWidgets()
         {
             ui.horizontalLayoutSlicing->addWidget(new QLabel(":"));
         }
+        else if (m_dObj->getSize(idx) == 1)
+        {
+            ui.horizontalLayoutSlicing->addWidget(new QLabel("0"));
+        }
         else
         {
             QSpinBox* spinBox = new QSpinBox();
@@ -196,7 +200,15 @@ void DialogVariableDetailDataObject::changeDisplayedAxes()
         }
         else
         {
-            int index = m_SpinBoxToIdxMap.value(idx)->value();
+            int index;
+            if (m_SpinBoxToIdxMap.empty())
+            {
+                index = 0;
+            }
+            else
+            {
+                int index = m_SpinBoxToIdxMap.value(idx)->value();
+            }
             m_AxesRanges[idx] = ito::Range(index, index + 1);
         }
     }
