@@ -207,7 +207,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes()
             }
             else
             {
-                int index = m_SpinBoxToIdxMap.value(idx)->value();
+                index = m_SpinBoxToIdxMap.value(idx)->value();
             }
             m_AxesRanges[idx] = ito::Range(index, index + 1);
         }
