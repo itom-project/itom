@@ -1229,14 +1229,17 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
 
     bool ok;
     quint64 flags = PythonQtConversion::PyObjGetULongLong(value, true, ok);
+
     if (ok)
     {
         quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+
         if ((flags | allowedFlags) != allowedFlags)
         {
             PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
             return -1;
         }
+
         self->shape->setFlags(flags);
         return 0;
     }

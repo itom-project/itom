@@ -355,7 +355,16 @@ namespace ito
             switch (PyArray_DescrFromScalar(obj)->type_num)
             {
             case NPY_BOOL:
+            case NPY_UBYTE:
+            case NPY_BYTE:
+            case NPY_USHORT:
+            case NPY_SHORT:
             case NPY_INT:
+            case NPY_UINT:
+            case NPY_LONG:
+            case NPY_ULONG:
+            case NPY_LONGLONG:
+            case NPY_ULONGLONG:
                 paramBaseType = ito::ParamBase::Int;
                 break;
             case NPY_FLOAT:
