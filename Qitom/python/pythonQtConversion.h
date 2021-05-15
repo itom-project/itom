@@ -163,6 +163,8 @@ private:
     static unicodeEncodings textEncoding;
     static QByteArray textEncodingName;
 
+    static int guessQMetaTypeFromPyObject(PyObject* val);
+
     /*!
     if any PyObject is converted into a QVariant-object, dataObject or any other class, and if this
     PyObject has a base-pointer unequal to None, this base pointer is incremented during the lifetime of the
