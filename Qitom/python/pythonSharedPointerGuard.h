@@ -49,8 +49,6 @@ namespace ito
 class PythonSharedPointerGuard
 {
 public:
-    static PyObject *tParamToPyObject(ito::ParamBase &param);
-
     static void safeDecrefPyObject2Async(PyObject* obj);
 
     template<typename _Tp> static void deleter(_Tp *sharedPointerData)
