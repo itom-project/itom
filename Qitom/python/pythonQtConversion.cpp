@@ -114,10 +114,11 @@ QString PythonQtConversion::PyObjGetRepresentation(PyObject* val)
 {
     QString r;
     PyObject* str =  PyObject_Repr(val);
+
     if (str) 
     {
         bool ok;
-        r = PyObjGetString(val, false, ok);
+        r = PyObjGetString(str, false, ok);
         Py_DECREF(str);
     }
 	else
