@@ -4805,7 +4805,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFilter_doc, "filter(name : str, *args, _observer = None, **kwds) -> Any \n\
+PyDoc_STRVAR(pyFilter_doc, "filter(name, *args, _observer = None, **kwds) -> Any \n\
 \n\
 Invokes a filter (or algorithm) function from an algorithm-plugin. \n\
 \n\
