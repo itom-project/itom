@@ -160,7 +160,7 @@ namespace ito
         if(dObj)
         {
             ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
-            if (pyDataObj)
+            if (pyDataObj)            
             {
                 pyDataObj->dataObject = new ito::DataObject(*dObj);
                 result = (PyObject *)pyDataObj;
@@ -184,7 +184,7 @@ namespace ito
         if(pointCloud)            
         {
             ito::PythonPCL::PyPointCloud *pyPointCloud = ito::PythonPCL::createEmptyPyPointCloud();
-            if (pyPointCloud)
+            if (pyPointCloud)            
             {
                 pyPointCloud->data = new ito::PCLPointCloud(*pointCloud);
                 result = (PyObject *)pyPointCloud;
@@ -208,7 +208,7 @@ namespace ito
         if (polygonMesh)
         {
             ito::PythonPCL::PyPolygonMesh *pyPolygonMesh = ito::PythonPCL::createEmptyPyPolygonMesh();
-            if (pyPolygonMesh)
+            if (pyPolygonMesh)            
             {
                 pyPolygonMesh->polygonMesh = new ito::PCLPolygonMesh(*polygonMesh);
                 result = (PyObject *)pyPolygonMesh;
