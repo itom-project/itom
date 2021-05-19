@@ -29,7 +29,7 @@ installed on your computer:
     needs the |Python| package **Sphinx** (http://sphinx-doc.org/).
     **Sphinx** itself requires other python packages to be installed on your 
     computer. For windows users, we therefore suggest to obtain **Sphinx** via
-    the python package tools *pip* or *easy\_install*.
+    the python package manager, using **pip**.
     
     The easiest way to obtain **Sphinx** is using the :ref:`Python package 
     manager <gui-pipmanager>` in the *script* menu of |itom|. Choose
@@ -38,23 +38,30 @@ installed on your computer:
     if you want to upgrade **Sphinx** to a newer version.
     
     You can also manually download and install Sphinx and its depending packages. 
-    Setup-versions of **Sphinx**, **Pygments**, **Jinja2**, **docutils**... are 
-    also available from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However, you 
+    However, you 
     then need to separately install all depending packages of **Sphinx**.
 
-3. Python-Packacke breathe
+3. Python-Packages breathe and numpydoc
     
-    Install the python package **breathe** (e.g. from pypi.org) in order to
-    integrate some doxygen outputs into the Sphinx user documentation.
+    Besides **Sphinx**, the additional packages 
+    `breathe <https://pypi.org/project/breathe/>`_ and 
+    `numpydoc <https://pypi.org/project/numpydoc/>`_ have to be installed in 
+    order to create the user documentation of itom. It is recommended to 
+    install them via the Python Package Manager of itom, too.
+
 
 Run doxygen
 ---------------
+.. doxygenLabel:
 
 In your build-directory of |itom|, you will find a folder **docs**. Open its 
 subfolder **doxygen**. There you will find a document
 **itom_doxygen.dox**. This document contains absolute paths to the source 
 directories of |itom|'s sources. Run doxygen with this document
 in order to create the source code documentation. 
+
+You can also run the **create_doc.py** script explained in :ref:`sphinxLabel` section. 
+First of all it will ask you if you want to run doxygen, too. 
 
 On Windows computers, the easiest way to do this is open **itom_doxygen.dox** 
 with the tool **doxywizard** that is located in the **bin**-folder 
@@ -69,8 +76,12 @@ click on the *run*-button.
 After the build process, a folder **xml** is created in the **doxygen** 
 sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 
+
+.. sphinxLabel:
+
 Run Sphinx
 --------------
+
 
 Now, open |itom| and execute the script **create_doc.py** in the folder **docs/userDoc** 
 of the build-directory. The default-builder of the

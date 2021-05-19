@@ -41,14 +41,14 @@ namespace ito
         settings.beginGroup("ito::AbstractFigure");
 
 
-        ui.titleFontBtn->setCurrentFont(settings.value("titleFont", ("Helvetica", 12)).value<QFont>());
-        ui.labelFontBtn->setCurrentFont(settings.value("labelFont", ("Helvetica", 12)).value<QFont>());
-        ui.axisFontBtn->setCurrentFont(settings.value("axisFont", ("Helvetica", 12)).value<QFont>());
+        ui.titleFontBtn->setCurrentFont(settings.value("titleFont", ("Verdana", 12)).value<QFont>());
+        ui.labelFontBtn->setCurrentFont(settings.value("labelFont", ("Verdana", 10)).value<QFont>());
+        ui.axisFontBtn->setCurrentFont(settings.value("axisFont", ("Verdana", 10)).value<QFont>());
         QPen pen;
         pen.setStyle((Qt::PenStyle)settings.value("lineStyle", (int)Qt::SolidLine).toInt());
         pen.setWidth(settings.value("lineWidth", 1.0).value<qreal>());
         ui.lineStyleBtn->setPen(pen);
-        ui.legendFontBtn->setCurrentFont(settings.value("legendFont", ("Helvetica", 8)).value<QFont>());
+        ui.legendFontBtn->setCurrentFont(settings.value("legendFont", ("Verdana", 8)).value<QFont>());
         ui.zoomRubberBandPenBtn->setPen(settings.value("zoomRubberBandPen", QPen((Qt::red), 2, Qt::DashLine)).value<QPen>());
         ui.trackerPenBtn->setColor(settings.value("trackerPen", QPen(Qt::red,2)).value<QPen>().color());
         ui.trackerFontBtn->setCurrentFont(settings.value("trackerFont", ("Verdana", 10)).value<QFont>());
@@ -103,13 +103,13 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void WidgetPropGeneralPlotSettings::on_defaultBtn_clicked()
     {
-        ui.titleFontBtn->setCurrentFont(QFont("Helvetica", 12));
-        ui.labelFontBtn->setCurrentFont(QFont("Helvetica", 12));
-        ui.axisFontBtn->setCurrentFont(QFont("Helvetica", 12));
+        ui.titleFontBtn->setCurrentFont(QFont("Verdana", 12));
+        ui.labelFontBtn->setCurrentFont(QFont("Verdana", 10));
+        ui.axisFontBtn->setCurrentFont(QFont("Verdana", 10));
         QPen pen(Qt::SolidLine);
         pen.setWidth(1.0);
         ui.lineStyleBtn->setPen(pen);
-        ui.legendFontBtn->setCurrentFont(QFont("Helvetica", 8));
+        ui.legendFontBtn->setCurrentFont(QFont("Verdana", 8));
         ui.zoomRubberBandPenBtn->setPen(QPen(Qt::red, 2, Qt::DashLine));
         ui.trackerPenBtn->setColor(Qt::red);
         ui.trackerFontBtn->setCurrentFont(QFont("Verdana", 10));

@@ -376,7 +376,6 @@ private:
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
     QString m_wordSeparators;
-    bool m_saveOnFocusOut;
     QPoint m_lastMousePos;
     int m_prevTooltipBlockNbr;
     int m_indentationBarWidth;
@@ -393,9 +392,6 @@ private:
     bool m_undoAvailable;
 
     //flags/working variables
-    bool m_cleaning;
-    QSet<int> m_modifiedLines; //(line)
-    bool m_dirty;
     QList<VisibleBlock> m_visibleBlocks;
     QSet<TextBlockUserData*> m_textBlockUserDataList;
 
@@ -409,7 +405,6 @@ private:
 
 private slots:
     void emitDirtyChanged(bool state);
-    void onTextChanged();
     void setUndoAvailable(bool available);
     void setRedoAvailable(bool available);
 

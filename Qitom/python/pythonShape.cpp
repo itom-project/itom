@@ -1229,14 +1229,17 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
 
     bool ok;
     quint64 flags = PythonQtConversion::PyObjGetULongLong(value, true, ok);
+
     if (ok)
     {
         quint64 allowedFlags = Shape::MoveLock | Shape::RotateLock | Shape::ResizeLock;
+
         if ((flags | allowedFlags) != allowedFlags)
         {
             PyErr_SetString(PyExc_TypeError, "at least one flag value is not supported.");
             return -1;
         }
+
         self->shape->setFlags(flags);
         return 0;
     }
@@ -2463,18 +2466,18 @@ result : bool or dataObject \n\
     shape's contour and ``0`` outside.");
 /*static*/ PyObject* PythonShape::PyShape_contains(PyShape *self, PyObject *args, PyObject *kwds)
 {
-    if (!self || self->shape == NULL)
+    if (!self || self->shape == nullptr)
     {
         PyErr_SetString(PyExc_RuntimeError, "shape is not available");
         return NULL;
     }
 
-    PyObject *points = NULL;
-    const char *kwlist[] = { "points", NULL };
+    PyObject *points = nullptr;
+    const char *kwlist[] = { "points", nullptr };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", const_cast<char**>(kwlist), &points))
     {
-        return NULL;
+        return nullptr;
     }
 
     bool ok;
@@ -2502,20 +2505,18 @@ result : bool or dataObject \n\
         }
     }
 
-    ito::DataObject* dataobj = PythonQtConversion::PyObjGetDataObjectNewPtr(points, false, ok, &pointsRetVal);
+    auto dataobj = PythonQtConversion::PyObjGetSharedDataObject(points, false, ok, &pointsRetVal);
 
     if (ok)
     {
         ito::DataObject dataobj_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(
-            dataobj, 
+            dataobj.data(), 
             "points", 
             ito::Range(2, 2), 
             ito::Range::all(), 
             pointsRetVal, 
             ito::tFloat64, 
             8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
-
-        DELETE_AND_SET_NULL(dataobj);
 
         if (PythonCommon::transformRetValToPyException(pointsRetVal))
         {
@@ -2550,14 +2551,12 @@ result : bool or dataObject \n\
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
 
-    DELETE_AND_SET_NULL(dataobj);
-
     PythonCommon::transformRetValToPyException(pointsRetVal);
-    return NULL;
+    return nullptr;
 }
 
 //-------------------------------------------------------------------------------------

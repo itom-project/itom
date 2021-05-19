@@ -107,6 +107,10 @@ between the following style sheet options:
 
 Some icons have two different representations, one for bright themes and 
 one for dark themes. It is possible to switch between both themes by the drop-down box. 
+Set this value to automatic, if the icon theme should be chosen automatically
+based on the selected style. If the basic background color is rather dark, the dark
+theme is chosen, else the bright theme.
+
 Changes to style-sheets and icons are only effectuated after a restart of |itom|.
 
 Section Console
@@ -185,7 +189,7 @@ The editor section covers all properties, that are related to the
 :ref:`script editor windows <gui-editor>`.
 
 .. _gui-prop-py-general:
-    
+
 General
 ----------------------
 
@@ -213,7 +217,7 @@ In this tab, you can mainly set all settings that are related to indentation:
   removed from a block with another initial indentation level, should be adapted 
   to the current identation level of the current cursor position.
 
-    .. _gui-prop-py-code-checkers:
+.. _gui-prop-py-code-checkers:
 
 Code Checkers
 ----------------------
@@ -369,17 +373,22 @@ Within itom you can set the following options:
         max-doc-length=79
         disable-noqa
 
+.. _gui-prop-script-editors:
+
 Script Editors
 ----------------------
 
-The **Class Navigator** feature allows configuring the 
-:ref:`class navigator <gui-editor-class-navigator>` of any script editor window. 
-The checkbox of the entire groupbox en- or disables this feature. Use the timer 
-to recheck the script structure after a certain amount of seconds since the 
-last change of the script. If the timer is disabled, the structure is only 
-analyzed when the script is shown or loaded.
+The **Code Outline** feature allows configuring the 
+:ref:`code outline <gui-editor-outline-navigator>` of any script editor.
+The outline contains the start and end of all functions, class and methods of
+a script. It can for instance be used as content for the code navigation bar
+above each script editor. It is for instance possible to show or hide this
+navigation bar. The outline is usually determined once a script is loaded
+or if a tab is changed. However, you can also enable an automatic update
+mechanism, such that the outline is updated after that the last key has
+been pressed in a script. The delay can be configured in this property page, too.
 
-As second last option in this property page, you can optionally choose if a 
+As next option in this property page, you can optionally choose if a 
 vertical line should be displayed in the background of the script editor windows 
 after a user-defined number of columns. This line can for instance be used to 
 keep the script thin and be remembered to add a line break instead of generating 
@@ -531,7 +540,7 @@ are parsed by a syntax highlighter, that visualizes the
 components of the code with different styles.
 
 .. figure:: images/propEditorStyles.png
-    :width: 100%
+    :width: 778px
     :align: center
 
 This property page is divided into the following parts:
@@ -560,6 +569,24 @@ This property page is divided into the following parts:
     From |itom| 3.2 on, text, that is printed to the console widget (or error 
     texts), are not parsed by the python syntax highlighted, but they are
     styled with the specific styles **Stream Output** or **Stream Error**.
+
+.. _gui-prop-docstring-generator:
+
+Docstring Generator
+--------------------
+
+In the section :ref:`docstring generator <gui-editor-docstring-generator>` of the 
+script editor, there is explained how to automatically insert a pre-filled 
+docstring for methods, functions or properties.
+
+In this property page, this feature can be configured:
+
+1. Style: Choose if the **Google Style** or **Numpy Docstring Style** should
+   be applied. For more information see 
+   `here <https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html>`_.
+2. Quote characters: Choose between if the docstring should be wrapped by
+   three double quotes (""") or by three apostrophes (''').
+
 
 Section Workspace
 ===================
@@ -655,7 +682,7 @@ These palettes can also be exported and / or imported, such that a backup of
 user-defined palettes is possible. 
 
 .. figure:: images/propEditorColorPalette.png
-    :width: 100%
+    :width: 778px
     :align: center
 
 An |itom| color palette is defined by an array of 256 colors, which are mainly 

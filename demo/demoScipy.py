@@ -1,12 +1,13 @@
-#this demo requires the python packages scipy and matplotlib
+# this demo requires the python packages scipy and matplotlib
 
-'''
+"""
 opens the ascent image from scipy.misc and shifts the image.
 Finally the shift offsets are determined using cross-correlation
-'''
+"""
 
 import matplotlib
-matplotlib.use('module://mpl_itom.backend_itomagg',False)
+
+matplotlib.use("module://mpl_itom.backend_itomagg")
 import scipy.misc
 import numpy
 from numpy.fft import fft2
@@ -14,16 +15,15 @@ from numpy.fft import fftshift
 import pylab
 from matplotlib import cm, colors
 
+
 def demo_scipy():
     ascent = scipy.misc.ascent()
-    print("The ascent-image has a size of",ascent.shape)
+    print("The ascent-image has a size of", ascent.shape)
     print("The maximum value of this image is ", ascent.max())
     print("Its data type is ", ascent.dtype)
 
     F = fft2(ascent)
     F2 = fftshift(F)
-
-
 
     pylab.figure()
     pylab.gray()
@@ -33,16 +33,15 @@ def demo_scipy():
 
     pylab.subplot(222)
     img = pylab.imshow(numpy.real(F))
-    img.set_clim(0,100)
+    img.set_clim(0, 100)
     pylab.title("ascent (FFT)")
 
     pylab.subplot(223)
     img = pylab.imshow(numpy.real(F2))
-    img.set_clim(0,100)
+    img.set_clim(0, 100)
     pylab.title("ascent (FFT), fftshift")
 
-
-    #cross-correlation
+    # cross-correlation
     pylab.figure()
     pylab.subplot(231)
     pylab.imshow(ascent)
@@ -56,21 +55,21 @@ def demo_scipy():
     F = fftshift(fft2(ascent))
     F2 = fftshift(fft2(ascent_roll))
 
-    F3 = numpy.multiply(F,F2.conj())
+    F3 = numpy.multiply(F, F2.conj())
 
     F4 = fftshift(numpy.fft.ifft2(F3))
 
     pylab.subplot(233)
     img = pylab.imshow(numpy.real(F))
-    img.set_clim(0,100)
+    img.set_clim(0, 100)
 
     pylab.subplot(234)
     img = pylab.imshow(numpy.real(F2))
-    img.set_clim(0,100)
+    img.set_clim(0, 100)
 
     pylab.subplot(235)
     img = pylab.imshow(numpy.real(F3))
-    img.set_clim(0,100)
+    img.set_clim(0, 100)
 
     pylab.subplot(236)
     F5 = numpy.real(F4)
@@ -86,6 +85,6 @@ def demo_scipy():
 
     pylab.show()
 
+
 if __name__ == "__main__":
     demo_scipy()
-

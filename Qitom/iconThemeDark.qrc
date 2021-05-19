@@ -8,6 +8,7 @@
     </qresource>
     <qresource prefix="/classNavigator">
         <file alias="icons/var.png">icons_dark/var.png</file>
+        <file alias="icons/sortAZAsc.png">icons_dark/sortAZAsc.png</file>
     </qresource>
      <qresource prefix="/plugins">
         <file alias="icons/pluginFilter.png">icons_dark/pluginFilter.png</file>

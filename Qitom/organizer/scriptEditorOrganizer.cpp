@@ -77,7 +77,8 @@ const int ScriptEditorOrganizer::MaxGoBackNavigationEntries = 20;
 */
 ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     m_dockAvailable(dockAvailable),
-    m_goBackNavigationIndex(-1)
+    m_goBackNavigationIndex(-1),
+    m_dockedNewWidget(true)
 {
     widgetFocusChanged(NULL, NULL); //sets active ScriptDockWidget to NULL
 
@@ -105,9 +106,6 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
     a->setMenu(m_pGoBackNavigationMenu);
     a->setEnabled(false);
-
-    m_pGoBackNavigationMapper = new QSignalMapper(this);
-    connect(m_pGoBackNavigationMapper, SIGNAL(mapped(int)), this, SLOT(mnuNavigateBackwardItem(int)));
 
     m_pBookmarkModel = new ito::BookmarkModel();
     m_pBookmarkModel->restoreState(); //get bookmarks from last session
@@ -138,6 +136,9 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 
     m_pBookmarkModel->saveState(); //save current set of bookmarks to settings file
     DELETE_AND_SET_NULL(m_pBookmarkModel);
+
+    m_pGoBackNavigationMenu->deleteLater();
+    m_pGoBackNavigationMenu = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -299,6 +300,51 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     return retval;
 }
 
+//-------------------------------------------------------------------------------------
+QList<OutlineSelectorWidget::EditorOutline> ScriptEditorOrganizer::getAllOutlines(
+    const ScriptDockWidget *currentScriptDockWidget, 
+    int &currentIndex) const
+{
+
+    QList<OutlineSelectorWidget::EditorOutline> outlines;
+    currentIndex = -1;
+    int count = 0;
+    int tempActiveIndex = -1;
+
+    foreach(const ScriptDockWidget* sdw, m_scriptDockElements)
+    {
+        outlines << sdw->getAllOutlines(tempActiveIndex);
+        
+        if (sdw == currentScriptDockWidget)
+        {
+            currentIndex = count + tempActiveIndex;
+        }
+
+        count = outlines.size();
+    }
+
+    return outlines;
+}
+
+//-------------------------------------------------------------------------------------
+/* activate an opened script in one of all script dock widgets.
+
+The script editor either belongs to a filename or is defined by its unique UID.
+*/
+ScriptDockWidget* ScriptEditorOrganizer::activateOpenedScriptByFilename(
+    const QString &filename, int currentDebugLine /*= -1*/, int UID /*= -1*/)
+{
+    foreach(ScriptDockWidget* sdw, m_scriptDockElements)
+    {
+        if (sdw->activateTabByFilename(filename, currentDebugLine, UID))
+        {
+            return sdw;
+        }
+    }
+
+    return nullptr;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This slot is called if a file is saved or stored in any widget
 /*!
@@ -313,6 +359,7 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
     m_recentlyUsedFiles.prepend(QDir::toNativeSeparators(filename));
     m_recentlyUsedFiles.removeDuplicates();
     const int maxNumberLastFiles = 10;
+
     if (m_recentlyUsedFiles.size() > maxNumberLastFiles) 
     {
         while (m_recentlyUsedFiles.size() > maxNumberLastFiles)
@@ -547,18 +594,16 @@ RetVal ScriptEditorOrganizer::closeAllScripts(bool saveFirst)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns first ScriptDockWidget of the widget-list which is docked. This is also the last activated docked widget.
 /*!
     \return docked ScriptDockWidget or NULL, if no such widget exists.
 */
-ScriptDockWidget* ScriptEditorOrganizer::getFirstDockedElement()
+ScriptDockWidget* ScriptEditorOrganizer::getFirstDockedElement() const
 {
-    QList<ScriptDockWidget*>::iterator it;
-
     QMutexLocker locker(&m_scriptStackMutex);
 
-    for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
+    for (auto it = m_scriptDockElements.constBegin(); it != m_scriptDockElements.constEnd(); ++it)
     {
         if ((*it)->docked())
         {
@@ -569,12 +614,12 @@ ScriptDockWidget* ScriptEditorOrganizer::getFirstDockedElement()
     return NULL;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns the ScriptDockWidget, which actually has the focus or lastly got the focus.
 /*!
     \return Active ScriptDockWidget or NULL, if no ScriptDockWidget is available
 */
-ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
+ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget() const
 {
     QMutexLocker locker(&m_scriptStackMutex);
 
@@ -588,14 +633,15 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! 
 /*!
     \return ScriptDockWidget
 */
-ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement()
+ScriptDockWidget* ScriptEditorOrganizer::getFirstUndockedElement() const
 {
     QMutexLocker locker(&m_scriptStackMutex);
+
     foreach(ito::ScriptDockWidget *sdw, m_scriptDockElements)
     {
         if (sdw->docked() == false)
@@ -1212,8 +1258,11 @@ void ScriptEditorOrganizer::updateGoBackNavigationActions()
             act->setCheckable(true);
             act->setChecked(idx == m_goBackNavigationIndex);
             act->setToolTip(item.filename);
-            connect(act, SIGNAL(triggered()), m_pGoBackNavigationMapper, SLOT(map()));
-            m_pGoBackNavigationMapper->setMapping(act, idx);
+
+            connect(act, &QAction::triggered, [=]() {
+                mnuNavigateBackwardItem(idx);
+            });
+
             m_pGoBackNavigationMenu->addAction(act);
         }
     }

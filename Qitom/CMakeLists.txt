@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.1)
  
 set(target_name qitom) 
 project(${target_name})
-
+ 
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
@@ -225,8 +225,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
 )
  
 set(qitom_HEADERS_NOMOC
@@ -263,7 +263,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
@@ -303,6 +303,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
@@ -345,6 +346,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
@@ -373,6 +375,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
@@ -415,6 +419,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
@@ -426,6 +431,14 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/iterator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.h
 )
 
 set(qitom_UI
@@ -461,6 +474,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
@@ -500,7 +514,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
@@ -536,6 +550,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
@@ -574,6 +589,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCodeFormat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.cpp
@@ -602,6 +618,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
@@ -636,6 +653,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
@@ -650,6 +668,13 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.cpp
 )
 
 if(MSVC)
@@ -672,7 +697,9 @@ itom_add_source_group(codeEditor/modes)
 itom_add_source_group(codeEditor/panels)
 itom_add_source_group(codeEditor/syntaxHighlighter)
 itom_add_source_group(codeEditor/utils)
+itom_add_source_group(textdiff)
 #end add filters to visual studio
+
 
 #Find ITOM_VERION version by looking at global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
@@ -848,6 +875,18 @@ endforeach()
 
 # Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
+# increase the stack size of the linker to avoid stack overflow errors for recursive calls
+# Since stack size holds for all threads. The python thread itself gets its own.
+# From Qt 5.10 on, it is possible to directly set the stack size of relevant threads,
+# including the worker thread for Jedi calls. Since the stack size of the thread pool
+# for Jedi cannot be changed with Qt < 5.10, the overall stack size is changed then here.
+if(MSVC)
+    if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.10.0))
+        # see https://stackoverflow.com/questions/49644273/cmake-change-stack-size
+        set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/STACK:4000000")
+    endif()
+endif()
  
 itom_build_parallel_linux(${target_name})
 
@@ -864,6 +903,16 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     message(WARNING "SDK/include/plotLegends exists. This folder will be removed.")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
 endif()
 
 # copy some folders and files during generate

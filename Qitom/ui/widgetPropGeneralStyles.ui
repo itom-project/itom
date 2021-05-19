@@ -132,7 +132,12 @@
        <widget class="QComboBox" name="comboIconTheme">
         <item>
          <property name="text">
-          <string>icon theme for bright background [default]</string>
+          <string>auto selection based on base color of stylesheet [default]</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>icon theme for bright background</string>
          </property>
         </item>
         <item>

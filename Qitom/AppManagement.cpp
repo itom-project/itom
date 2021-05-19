@@ -34,21 +34,22 @@ namespace ito
 */
 
 //initialization of members
-QObject* AppManagement::m_pe = NULL;
-QObject* AppManagement::m_sew = NULL;
-QObject* AppManagement::m_dwo = NULL;
-QObject* AppManagement::m_plo = NULL;
-QObject* AppManagement::m_app = NULL;
-QObject* AppManagement::m_mainWin = NULL;
-QObject* AppManagement::m_uiOrganizer = NULL;
-QObject* AppManagement::m_processOrganizer = NULL;
-QObject* AppManagement::m_userOrganizer = NULL;
-QObject* AppManagement::m_addInManager = NULL;
-QObject* AppManagement::m_cerrStream = NULL;
-QObject* AppManagement::m_coutStream = NULL;
+QObject* AppManagement::m_pe = nullptr;
+QObject* AppManagement::m_psp = nullptr;
+QObject* AppManagement::m_sew = nullptr;
+QObject* AppManagement::m_dwo = nullptr;
+QObject* AppManagement::m_plo = nullptr;
+QObject* AppManagement::m_app = nullptr;
+QObject* AppManagement::m_mainWin = nullptr;
+QObject* AppManagement::m_uiOrganizer = nullptr;
+QObject* AppManagement::m_processOrganizer = nullptr;
+QObject* AppManagement::m_userOrganizer = nullptr;
+QObject* AppManagement::m_addInManager = nullptr;
+QObject* AppManagement::m_cerrStream = nullptr;
+QObject* AppManagement::m_coutStream = nullptr;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
-QTextCodec* AppManagement::m_scriptTextCodec = NULL;
+QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
 
 //-------------------------------------------------------------------------------------------
 /*static*/ QString AppManagement::getSettingsFile(void)

@@ -70,6 +70,8 @@ public:
 
     virtual void onStateChanged(bool state);
 
+    void hideTooltip();
+
 protected:
     QTextCursor m_cursor;
 
@@ -85,6 +87,7 @@ private:
     QObject *m_pPythonEngine;
     int m_requestCount;
     int m_tooltipsMaxLength;
+    bool m_tooltipVisible;
 
 private slots:
     void onMouseMoved(QMouseEvent *e);

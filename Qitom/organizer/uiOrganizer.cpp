@@ -3198,7 +3198,12 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         {
             if (tmpObjectInfo.length() > 0)
             {
-                qSort(tmpObjectInfo);
+                std::sort(
+                    tmpObjectInfo.begin(),
+                    tmpObjectInfo.end(),
+                    [](ito::ClassInfoContainer t1, ito::ClassInfoContainer t2) {
+                        return t1.m_name < t2.m_name;
+                    });
             }
 
             std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;
@@ -3618,7 +3623,7 @@ RetVal UiOrganizer::createFigure(
             }
             else
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr("handle '%i' is no figure.").toLatin1().data(), h);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("handle '%1' is no figure.").toLatin1().data(), h);
             }
         }
         else

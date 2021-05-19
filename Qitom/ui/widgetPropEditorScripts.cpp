@@ -50,12 +50,12 @@ void WidgetPropEditorScripts::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    // Class Navigator
-    ui.groupClassNavigator->setChecked(settings.value("classNavigator", true).toBool());
-    ui.checkActiveClassNavigatorTimer->setChecked(settings.value("classNavigatorTimerActive", true).toBool());
-    ui.spinClassNavigatorInterval->setValue(settings.value("classNavigatorInterval", 2.00).toDouble());
+    // Code Outline
+    ui.checkOutlineAutoUpdateEnabled->setChecked(settings.value("outlineAutoUpdateEnabled", true).toBool());
+    ui.spinOutlineAutoUpdateDelay->setValue(settings.value("outlineAutoUpdateDelay", 0.5).toDouble());
+    ui.checkOutlineShowNavigation->setChecked(settings.value("outlineShowNavigation", true).toBool());
 
-    //edge mode
+    // edge mode
     switch ((CodeEditor::EdgeMode)(settings.value("edgeMode", CodeEditor::EdgeNone).toInt()))
     {
     case CodeEditor::EdgeNone:
@@ -71,7 +71,7 @@ void WidgetPropEditorScripts::readSettings()
 
     on_comboEdgeMode_currentIndexChanged(ui.comboEdgeMode->currentIndex());
 
-    ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 0).toInt());
+    ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 88).toInt());
     ui.colorEdgeBg->setColor(settings.value("edgeColor", QColor(Qt::black)).value<QColor>());
 
     int elideMode = settings.value("tabElideMode", Qt::ElideNone).toInt();
@@ -103,9 +103,9 @@ void WidgetPropEditorScripts::writeSettings()
     settings.beginGroup("CodeEditor");
 
     // Class Navigator
-    settings.setValue("classNavigator", ui.groupClassNavigator->isChecked());
-    settings.setValue("classNavigatorTimerActive", ui.checkActiveClassNavigatorTimer->isChecked());
-    settings.setValue("classNavigatorInterval", ui.spinClassNavigatorInterval->value());
+    settings.setValue("outlineAutoUpdateEnabled", ui.checkOutlineAutoUpdateEnabled->isChecked());
+    settings.setValue("outlineAutoUpdateDelay", ui.spinOutlineAutoUpdateDelay->value());
+    settings.setValue("outlineShowNavigation", ui.checkOutlineShowNavigation->isChecked());
 
     //edge mode
     //edge mode

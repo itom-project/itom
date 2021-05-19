@@ -1,4 +1,11 @@
 @echo off
-PATH="@InnoSetupPath@"
+PATH="C:/Program Files (x86)/Inno Setup 5"
 call start_qt_deployment.bat
+
+cd PythonRequirements
+del /S *.whl
+C:/itom_vs2017_x64_Qt5.12.6_setup4.0/3rdParty/Python/python.exe -m pip download --prefer-binary -r requirementsMandatory.txt
+C:/itom_vs2017_x64_Qt5.12.6_setup4.0/3rdParty/Python/python.exe -m pip download --prefer-binary -r requirementsOptional.txt
+cd ..
+
 compil32 /cc "itom_setup_win32.iss"

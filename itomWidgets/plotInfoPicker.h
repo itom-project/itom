@@ -43,6 +43,7 @@ extern "C++" {
 #include <qvector4d.h>
 #include <QtWidgets/qtreewidget.h>
 #include <QtGui/qpixmap.h>
+#include <QtGui/qpainterpath.h>
 
 class ITOMWIDGETS_EXPORT PlotInfoPicker : public QTreeWidget
 {

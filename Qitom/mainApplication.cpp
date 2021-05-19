@@ -36,6 +36,7 @@
 #include "ui/dialogPipManager.h"
 #include "ui/dialogCloseItom.h"
 #include "DataObject/dataobj.h"
+#include "python/pythonStatePublisher.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -106,18 +107,19 @@ MainApplication* MainApplication::instance()
     \sa tGuiType
 */
 MainApplication::MainApplication(tGuiType guiType) :
-    m_pyThread(NULL),
-    m_pyEngine(NULL),
-    m_scriptEditorOrganizer(NULL),
-    m_mainWin(NULL),
-    m_paletteOrganizer(NULL),
-    m_uiOrganizer(NULL),
-    m_designerWidgetOrganizer(NULL),
-    m_processOrganizer(NULL),
-    m_pSplashScreen(NULL),
+    m_pyThread(nullptr),
+    m_pyEngine(nullptr),
+    m_pyStatePublisher(nullptr),
+    m_scriptEditorOrganizer(nullptr),
+    m_mainWin(nullptr),
+    m_paletteOrganizer(nullptr),
+    m_uiOrganizer(nullptr),
+    m_designerWidgetOrganizer(nullptr),
+    m_processOrganizer(nullptr),
+    m_pSplashScreen(nullptr),
     m_splashScreenTextColor(Qt::white),
-    m_pQout(NULL),
-    m_pQerr(NULL)
+    m_pQout(nullptr),
+    m_pQerr(nullptr)
 {
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
@@ -504,16 +506,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         settings->endGroup();
 
         QDir iconThemeDir(QCoreApplication::applicationDirPath());
-        QString iconThemeFile = "iconThemeBright.rcc";
-        if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
-        {
-            iconThemeFile = "iconThemeDark.rcc";
-        }
-
-        if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
-        {
-            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
-        }
 
         if (styleName != "")
         {
@@ -584,6 +576,30 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
                 qDebug() << "style-file " << cssFile << " does not exist";
             }
         }
+
+        // test the base color of a widget 
+        QString iconThemeFile = "iconThemeBright.rcc";
+
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
+        {
+            // test the base color of the color palette of a widget (here: the splashscreen)
+            // and set the dark theme, if the lightness of this color is < 0.5.
+            QColor bgColor = m_pSplashScreen->palette().window().color();
+
+            if (bgColor.toHsv().lightnessF() < 0.5)
+            {
+                iconThemeFile = "iconThemeDark.rcc";
+            }
+        }
+        else if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
+        {
+            iconThemeFile = "iconThemeDark.rcc";
+        }
+
+        if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
+        {
+            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
+        }
     }
 
     DELETE_AND_SET_NULL(settings);
@@ -625,9 +641,15 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_pyEngine = new PythonEngine();
     AppManagement::setPythonEngine(qobject_cast<QObject*>(m_pyEngine));
 
+    m_pyStatePublisher = new PythonStatePublisher(m_pyEngine);
+    AppManagement::setPythonStatePublisher(m_pyStatePublisher);
+
     qDebug("..python engine started");
 
     m_pyThread = new QThread();
+    // increase the stack size of the Python thread to 5MB (instead of 1MB default).
+    m_pyThread->setStackSize(5000000);
+    qDebug() << "..python engine thread stack size" << m_pyThread->stackSize();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
     QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue), Q_ARG(QSharedPointer<QVariantMap>, infoMessages));
@@ -909,7 +931,7 @@ void MainApplication::finalizeApplication()
     AppManagement::setDesignerWidgetOrganizer(NULL);
 
     DELETE_AND_SET_NULL(m_mainWin);
-    AppManagement::setMainWindow(NULL);
+    AppManagement::setMainWindow(nullptr);
 
     if (m_pyEngine)
     {
@@ -919,15 +941,18 @@ void MainApplication::finalizeApplication()
 
         //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
         QCoreApplication::sendPostedEvents();
-        QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
         QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
-        waitCond = NULL;
+        waitCond = nullptr;
     }
 
+    DELETE_AND_SET_NULL(m_pyStatePublisher);
+    AppManagement::setPythonStatePublisher(nullptr);
+
     DELETE_AND_SET_NULL(m_pyEngine);
-    AppManagement::setPythonEngine(NULL);
+    AppManagement::setPythonEngine(nullptr);
 
     if (m_pyThread)
     {

@@ -152,13 +152,13 @@ namespace ito
             bool isPluginInstanceDead(const ito::AddInBase *plugin) const;
 
             //!> return list of filter matching the passed interface
-            const QList<ito::AddInAlgo::FilterDef *> getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag = QString::Null()) const;
+            const QList<ito::AddInAlgo::FilterDef *> getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag = QString()) const;
 
             //!> return list of filter matching the passed category
             const QList<ito::AddInAlgo::FilterDef *> getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const;
 
             //!> return list of filter matching the passed interface and category
-            const QList<ito::AddInAlgo::FilterDef *> getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag = QString::Null()) const;
+            const QList<ito::AddInAlgo::FilterDef *> getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag = QString()) const;
 
             //!> return itomApi functions pointer (e.g. used in plugins to call itom api functions)
             void **getItomApiFuncsPtr(void);

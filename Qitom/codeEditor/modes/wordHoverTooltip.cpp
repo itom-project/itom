@@ -48,6 +48,7 @@
 #include "../../AppManagement.h"
 #include "../../python/pythonEngine.h"
 #include "../../widgets/scriptEditorWidget.h"
+#include "../../widgets/scriptDockWidget.h"
 
 #include <qdir.h>
 
@@ -64,9 +65,10 @@ WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTool
     m_pTimer(nullptr),
     m_pPythonEngine(AppManagement::getPythonEngine()),
     m_requestCount(0),
-    m_tooltipsMaxLength(300)
+    m_tooltipsMaxLength(300),
+    m_tooltipVisible(false)
 {
-    m_pTimer = new DelayJobRunnerArgTextCursor<WordHoverTooltipMode, void(WordHoverTooltipMode::*)(QTextCursor)>(400);
+    m_pTimer = new DelayJobRunnerArgTextCursor<WordHoverTooltipMode, void(WordHoverTooltipMode::*)(QTextCursor)>(500);
 }
 
 //-------------------------------------------------------------------------------------
@@ -75,6 +77,20 @@ WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTool
 WordHoverTooltipMode::~WordHoverTooltipMode()
 {
     DELETE_AND_SET_NULL(m_pTimer);
+}
+
+//-------------------------------------------------------------------------------------
+/*
+*/
+void WordHoverTooltipMode::hideTooltip()
+{
+    m_pTimer->cancelRequests();
+
+    if (m_tooltipVisible)
+    {
+        ToolTip::hideText();
+        m_tooltipVisible = false;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -101,10 +117,56 @@ mouse moved callback
 */
 void WordHoverTooltipMode::onMouseMoved(QMouseEvent *e)
 {
+    CodeEditor *edit = editor();
+    QWidget *activeWindow = QApplication::activeWindow();
+    bool hasFocus = edit->hasFocus();
+    ScriptDockWidget *sdw;
+    QWidget *widget = edit;
+    QWidget *widget_temp;
+
+    if (activeWindow && !hasFocus)
+    {
+        // check if the activeWindow is on the parent path
+        // of the editor. Only show tooltips if the editor
+        // or one of its parent widgets have the focus.
+        while (widget != nullptr)
+        {
+            if (widget == activeWindow)
+            {
+                hasFocus = true;
+                break;
+            }
+
+            // special handling for ScriptDockWidget classes:
+            // their parent is not their real parent if they are
+            // undocked. Therefore, the getActiveInstance has
+            // to be called.
+            sdw = qobject_cast<ScriptDockWidget*>(widget);
+
+            if (sdw)
+            {
+                widget_temp = sdw->getActiveInstance();
+
+                if (widget_temp == widget)
+                {
+                    widget = widget_temp->parentWidget();
+                }
+                else
+                {
+                    widget = widget_temp;
+                }
+            }
+            else
+            {
+                widget = widget->parentWidget();
+            }
+        }
+    }
+
     QPoint mousePos = e->pos();
     QTextCursor textCursor;
     
-    if (e->modifiers() == Qt::NoModifier)
+    if (e->modifiers() == Qt::NoModifier && hasFocus)
     {
         textCursor = editor()->cursorForPosition(mousePos);
 
@@ -134,7 +196,12 @@ void WordHoverTooltipMode::onMouseMoved(QMouseEvent *e)
     if (textCursor.isNull())
     {
         m_pTimer->cancelRequests();
-        ToolTip::hideText();
+        
+        if (m_tooltipVisible)
+        {
+            ToolTip::hideText();
+            m_tooltipVisible = false;
+        }
     }
     else if ((m_cursor.isNull() || textCursor.position() != m_cursor.position()))
     {
@@ -161,6 +228,7 @@ void WordHoverTooltipMode::emitWordHover(QTextCursor cursor)
 
     QString loadingText = tr("Loading...");
     ToolTip::showText(position, loadingText, editor(), QRect());
+    m_tooltipVisible = true;
 
     PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
 
@@ -245,6 +313,7 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
 
     if (helps.size() < 1)
     {
+        m_tooltipVisible = false;
         ToolTip::hideText();
         return;
     }
@@ -300,6 +369,7 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
     if (styledTooltips.size() == 0)
     {
         ToolTip::hideText();
+        m_tooltipVisible = false;
         return;
     }
 
@@ -312,6 +382,7 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
             editor()->panels()->marginSize(ito::Panel::Top));
         position = editor()->mapToGlobal(position);
 
+        m_tooltipVisible = true;
         ToolTip::showText(position, styledTooltips.join("<hr>"), editor(), QRect());
     }
 }

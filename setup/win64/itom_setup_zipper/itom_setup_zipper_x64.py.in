@@ -1,0 +1,243 @@
+import os
+import shutil
+from distutils import dir_util
+import glob
+import sys
+
+#you have to set
+sourcePythonDir = r"C:/Users/itohahn/Desktop/Python38_Pure"
+appDir = r"C:/itom_vs2017_x64_Qt5.12.6_setup4.0/itom4.1.0_portable"
+pythonDLLName = "python38.dll"
+sourceRedistributableDir = r"W:/m/ITOM/Software/MS VisualStudio/Redistributable/DLLs"
+
+#C:/
+innosetupscript = r"@CMAKE_CURRENT_BINARY_DIR@/setup/win64/itom_setup_win64.iss"
+sourceQtDir = r"@QT_QMAKE_EXECUTABLE@"
+sourceDirItomBuild = r"@ITOM_APP_DIR@"
+sourceDirItomSource = r"@CMAKE_CURRENT_SOURCE_DIR@"
+opencvVersion = "@OpenCV_LIB_VERSION@"
+sourceDirOpenCV = r"@OpenCV_BIN_DIR@"
+sourceDirPCL = r"@PCL_DIR@/.."
+sourceDirVTK = r"@VTK_DIR@/../../.."
+
+
+
+blacklistsource = []
+    
+#add here the plugin names which should not be added to the repository
+pluginblacklist = []
+
+#add here the folder name of additional plugins that should be added (e.g. plugins from private repositories)
+additionalplugins = []
+
+
+sections = {"General":[], "[Files]":[]}
+#sections["[Files]"].append( {"Source":"{#SourceDirItomBuild}\\lib\\*.*", "DestDir":"{app}\\lib", "Flags":"ignoreversion recursesubdirs"} )
+#sections["[Files]"].append("Source: \"{#SourceDirQT}\Qt5QuickWidgets.dll\"; DestDir:\"{app}\"; Flags: ignoreversion")
+
+
+sections["[Files]"].append("Source: \"{#SourceDirOpenCV}\opencv_world%s.dll\"; DestDir: \"{app}\"; Flags: ignoreversion" % opencvVersion)
+    
+    
+for ap in additionalplugins:
+    sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\plugins\\%s\\*.*\"; DestDir: \"{app}\\plugins\\%s\"; Flags: ignoreversion recursesubdirs" % (ap, ap))
+    if ap == "GenICam":
+        sections["[Files]"].append("Source: \"{#SourceDirItomBuild}\\lib\\msvc*120.dll\"; DestDir: \"{app}\\lib\"; Flags: ignoreversion recursesubdirs")
+
+currentsection = "General"
+
+#turn pluginblacklist to lower case
+pluginblacklist = [i.lower() for i in pluginblacklist]
+
+def parseSourceLine(line):
+    if line.startswith("Source:"):
+        components = line.split(";")
+        items = {"Source":None, "DestDir":None, "Flags":None, "Components":None}
+        for comp in components:
+            cs = comp.split(":")
+            if len(cs) == 2:
+                if cs[0].strip() in items:
+                    value = cs[1].strip()
+                    if value[0] == "\"" or value[0] == "'":
+                        items[cs[0].strip()] = value[1:-1]
+                    else:
+                        items[cs[0].strip()] = value
+                else:
+                    print("Warning: Invalid argument '%s' in line '%s'" % (cs[0], line))
+            else:
+                print("Warning: Invalid line '%s'" % line)
+        if items["Source"] and items["DestDir"]:
+            return items
+        else:
+            print("Warning: Missing Source or DestDir in line '%s'" % line)
+    else:
+        return None
+
+def replace(path):
+    replacements = {
+        "{#SourceDirQT}": sourceQtDir,
+        "{#SourceDirItomBuild}": sourceDirItomBuild,
+        "{#SourceDirItomSource}": sourceDirItomSource,
+        "{#SourceDirOpenCV}": sourceDirOpenCV,
+        "{#SourceDirPCL}": sourceDirPCL,
+        "{#SourcePythonDir}": sourcePythonDir,
+        "{#SourceDirVTK}": sourceDirVTK,
+        "{#SourceRedistributableDir}": sourceRedistributableDir,
+        "python37.dll": pythonDLLName,
+        "python38.dll": pythonDLLName,
+        "python39.dll": pythonDLLName,
+        "{app}": appDir,
+        #"VC141_v3_2.dll": "VC120_v3_1.dll",
+        #"pcl_common.dll": "pcl_common_release.dll",
+        #"pcl_features.dll": "pcl_features_release.dll",
+        #"pcl_filters.dll": "pcl_filters_release.dll",
+        #"pcl_io.dll": "pcl_io_release.dll",
+        #"pcl_io_ply.dll": "pcl_io_ply_release.dll",
+        #"pcl_kdtree.dll": "pcl_kdtree_release.dll",
+        #"pcl_ml.dll": "pcl_ml_release.dll",
+        #"pcl_octree.dll": "pcl_octree_release.dll",
+        #"pcl_recognition.dll": "pcl_recognition_release.dll",
+        #"pcl_sample_consensus.dll": "pcl_sample_consensus_release.dll",
+        #"pcl_search.dll": "pcl_search_release.dll",
+        #"pcl_segmentation.dll": "pcl_segmentation_release.dll",
+        #"pcl_surface.dll": "pcl_surface_release.dll",
+        #"pcl_visualization.dll": "pcl_visualization_release.dll",
+        "{#ExeName}": "qitom.exe"}
+    for key in replacements:
+        path = path.replace(key, replacements[key])
+    return path
+
+def pathToSlash(path):
+    return path.replace("\\", "/")
+    
+def createDirRec(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+
+def execCopyTask(task):
+    source = replace(task["Source"])
+    dest = replace(task["DestDir"])
+    
+    if task["Source"] in blacklistsource:
+        print("Blacklist: '%s' to '%s'" % (source, dest))
+        return
+    
+    if "{tmp}" in dest:
+        print("Ignore copying '%s' to '%s'" % (source, dest))
+        return
+    
+    if not "*" in source and not "?" in source: #single file copying
+        filename, file_extension = os.path.splitext(source)
+        if not dest.endswith(file_extension):
+            dest = os.path.join(dest, os.path.basename(source))
+        
+        if  not os.path.exists(source):
+            print("Ignore file '%s'. It does not exist" % source, file=sys.stderr)
+            return
+        
+        print("Copy '%s' to '%s'" % (source, dest))
+        createDirRec(os.path.dirname(dest))
+        shutil.copyfile(source, dest)
+        
+    elif source.endswith("*.*") and "recursesubdirs" in task["Flags"]:
+        sourceDir = source[0:-3]
+        
+        if not os.path.exists(sourceDir):
+            print("Directory %s does not exist. Ignore it." % sourceDir, file=sys.stderr)
+            return
+        
+        createDirRec(dest)
+        #if dest.endswith("python3"):
+            #print("Copying of python temporarily ignored.")
+            #return
+        
+        pluginName = None
+        
+        if sourceDir.startswith(sourceDirItomBuild + "\\plugins"):
+            pluginName = sourceDir[len(sourceDirItomBuild)+len("\\plugins"):].replace("\\","")
+            pluginName = pluginName.replace("/", "").lower()
+            
+            if pluginName in pluginblacklist:
+                print("Blacklist: plugin '%s' on blacklist: Ignore it" % pluginName)
+                return
+            
+        print("Copy directory '%s' to '%s'" % (sourceDir, dest))
+        files = dir_util.copy_tree(sourceDir, dest)
+        
+        if not pluginName is None:
+            #remove all debug versions of the dlls
+            for filename in files:
+                if filename.endswith("d.dll"):
+                    print("Delete debug plugin dll '%s'" % filename)
+                    os.remove(filename)
+        
+    else:
+        path = os.path.join(os.path.dirname(source), ".")
+        basename = os.path.basename(source)
+        for root, dirs, files in os.walk(path):
+            if len(dirs) > 0 and "recursesubdirs" in task["Flags"]:
+                raise RuntimeError("Forbidden to use 'recursesubdirs' in wildcard-based filename")
+            for file in glob.glob(os.path.join(root, basename)):
+                filename, file_extension = os.path.splitext(file)
+                dest2 = dest
+                if not dest2.endswith(file_extension):
+                    dest2 = os.path.join(dest2, os.path.basename(file))
+                
+                if  not os.path.exists(file):
+                    print("Ignore file '%s'. It does not exist" % file, file=sys.stderr)
+                    return
+                
+                print("Copy '%s' to '%s'" % (file, dest2))
+                createDirRec(os.path.dirname(dest2))
+                if os.path.isfile(file):
+                    shutil.copyfile(file, dest2)
+                else:
+                    print("Warning: '%s' is no file" % file, file=sys.stderr)
+            break
+    
+
+with open(innosetupscript, 'rt') as file:
+    content = file.read()
+
+lines = content.split("\n")
+
+
+for l in lines:
+    line = l.strip()
+    if line != "" and line[0] != ";":
+        if line.startswith("["):
+            currentsection = line
+            if not currentsection in sections:
+                sections[currentsection] = []
+        else:
+            sections[currentsection].append(line)
+                
+    
+copyTasks = []
+for entry in sections["[Files]"]:
+    task = parseSourceLine(entry)
+    if task:
+        copyTasks.append(task)
+        
+for task in copyTasks:
+    execCopyTask(task)
+    
+#configure bat file for qt deployment process
+with open("start_qt_deployment.bat.in", "rt") as file:
+    content = file.read()
+
+replacements = {"${QT_DEPLOYMENT_FOLDER}" : pathToSlash(appDir),
+                "${QT_BIN}" : pathToSlash(sourceQtDir),
+                "${ITOM_BIN}" : pathToSlash(sourceDirItomBuild) }
+
+for key in replacements:
+    content = content.replace(key, replacements[key])
+
+with open("start_qt_deployment.bat", "wt") as file:
+    file.write(content)
+
+import subprocess
+try:
+    subprocess.call([r'start_qt_deployment.bat'])
+except:
+    print("couldn't call start_qt_deployment.bat")

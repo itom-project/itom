@@ -1,43 +1,42 @@
 #include "color.h"
 #include "gtest/gtest.h"
 
-
 TEST(ColorTest, Constructor)
 {
     ito::Rgba32 zeros = ito::Rgba32::zeros();
     EXPECT_EQ(zeros.argb(), 0);
-    
+
     ito::Rgba32 black = ito::Rgba32::black();
     EXPECT_EQ(black.r, 0);
     EXPECT_EQ(black.g, 0);
     EXPECT_EQ(black.b, 0);
     EXPECT_EQ(black.a, 255);
 
-    ito::Rgba32 ful = ito::Rgba32::fromUnsignedLong((12 << 24) + (200 << 16) + (130 << 8) + (27 << 0)); //argb
+    ito::Rgba32 ful = ito::Rgba32::fromUnsignedLong((12 << 24) + (200 << 16) + (130 << 8) + (27 << 0)); // argb
     EXPECT_EQ(ful.r, 200);
     EXPECT_EQ(ful.g, 130);
     EXPECT_EQ(ful.b, 27);
     EXPECT_EQ(ful.a, 12);
 
-    ito::Rgba32 rgba = ito::Rgba32(12,200,130,27);
+    ito::Rgba32 rgba = ito::Rgba32(12, 200, 130, 27);
     EXPECT_EQ(rgba.r, 200);
     EXPECT_EQ(rgba.g, 130);
     EXPECT_EQ(rgba.b, 27);
     EXPECT_EQ(rgba.a, 12);
 
-    ito::Rgba32 gray = ito::Rgba32(133); //from gray
+    ito::Rgba32 gray = ito::Rgba32(133); // from gray
     EXPECT_EQ(gray.r, 133);
     EXPECT_EQ(gray.g, 133);
     EXPECT_EQ(gray.b, 133);
     EXPECT_EQ(gray.a, 255);
 
-    ito::Rgba32 rgba2(rgba); //copy constructor
+    ito::Rgba32 rgba2(rgba); // copy constructor
     EXPECT_EQ(rgba2.r, 200);
     EXPECT_EQ(rgba2.g, 130);
     EXPECT_EQ(rgba2.b, 27);
     EXPECT_EQ(rgba2.a, 12);
 
-    gray = rgba; //assignment
+    gray = rgba; // assignment
     EXPECT_EQ(gray.r, 200);
     EXPECT_EQ(gray.g, 130);
     EXPECT_EQ(gray.b, 27);
@@ -48,15 +47,13 @@ TEST(ColorTest, Constructor)
     EXPECT_EQ(gray.g, 77);
     EXPECT_EQ(gray.b, 99);
     EXPECT_EQ(gray.a, 33);
-
 }
-
 
 TEST(ColorTest, PlusMinusOperation)
 {
-    ito::Rgba32 val1 = ito::Rgba32(12,20,90,100);
-    ito::Rgba32 val2 = ito::Rgba32(20,10,1,15);
-    ito::Rgba32 val3 = ito::Rgba32(254,254,254,254);
+    ito::Rgba32 val1 = ito::Rgba32(12, 20, 90, 100);
+    ito::Rgba32 val2 = ito::Rgba32(20, 10, 1, 15);
+    ito::Rgba32 val3 = ito::Rgba32(254, 254, 254, 254);
 
     ito::Rgba32 val1p2 = val1 + val2;
     ito::Rgba32 val1p3 = val1 + val3;
@@ -73,7 +70,7 @@ TEST(ColorTest, PlusMinusOperation)
     EXPECT_EQ(val1p3.r, 255);
     EXPECT_EQ(val1p3.g, 255);
     EXPECT_EQ(val1p3.b, 255);
-    
+
     EXPECT_EQ(val3m1.a, 242);
     EXPECT_EQ(val3m1.r, 234);
     EXPECT_EQ(val3m1.g, 164);
@@ -100,9 +97,9 @@ TEST(ColorTest, PlusMinusOperation)
 
 TEST(ColorTest, MulDivOperation)
 {
-    ito::Rgba32 val1 = ito::Rgba32(12,0,255,100);
-    ito::Rgba32 val2 = ito::Rgba32(20,0,255,15);
-    ito::Rgba32 val3 = ito::Rgba32(254,254,254,254);
+    ito::Rgba32 val1 = ito::Rgba32(12, 0, 255, 100);
+    ito::Rgba32 val2 = ito::Rgba32(20, 0, 255, 15);
+    ito::Rgba32 val3 = ito::Rgba32(254, 254, 254, 254);
 
     ito::Rgba32 val1m2 = val1 * val2;
     EXPECT_EQ(val1m2.a, 0);
@@ -116,7 +113,7 @@ TEST(ColorTest, MulDivOperation)
     EXPECT_EQ(val2d3.g, 255);
     EXPECT_EQ(val2d3.b, 15);
 
-    EXPECT_THROW(val3 / val2, std::runtime_error); //division by zero
+    EXPECT_THROW(val3 / val2, std::runtime_error); // division by zero
 }
 
 TEST(ColorTest, GrayTest)
@@ -153,5 +150,4 @@ TEST(ColorTest, Access)
 
     EXPECT_EQ(val.alpha(), 131);
     EXPECT_EQ(val.a, 131);
-
 }

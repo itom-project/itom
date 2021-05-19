@@ -41,6 +41,7 @@ import logging
 
 try:
     from flake8.api import legacy as flake8legacy
+
     _HAS_FLAKE8 = True
 except ImportError:
     _HAS_FLAKE8 = False
@@ -50,15 +51,19 @@ if _HAS_FLAKE8:
     from flake8.formatting import base
     from flake8.main import application as app
     from flake8.options import config
-    
+
     if False:  # `typing.TYPE_CHECKING` was introduced in 3.5.2
         from flake8.style_guide import Violation
-    
+
     # disable the flake8.checker logger
     log = logging.getLogger("flake8.checker")
     log.disabled = True
+    # disable the logger for warnings in the options manager of flake8
+    log = logging.getLogger("flake8.options.manager")
+    log.disabled = True
 try:
     from pyflakes import api as pyflakesapi
+
     _HAS_PYFLAKES = True
 except ModuleNotFoundError:
     _HAS_PYFLAKES = False
@@ -85,7 +90,8 @@ _CONFIG_DEFAULTS = {
     "codeCheckerFlake8OtherOptions": "",
     "codeCheckerFlake8SelectEnabled": False,
     "codeCheckerFlake8SelectValues": "",
-    "codeCheckerFlake8WarningNumbers": "E, C"}
+    "codeCheckerFlake8WarningNumbers": "E, C",
+}
 
 
 class TimeIt(object):
@@ -98,8 +104,8 @@ class TimeIt(object):
         with TimeIt("Step1"):
             doSomething(...)
     """
-    
-    def __init__(self, name = ""):
+
+    def __init__(self, name=""):
         self.name = name
 
     def __enter__(self):
@@ -107,10 +113,9 @@ class TimeIt(object):
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print('[%s]: %.4f s elapsed' % 
-                  (self.name, time.time() - self.tstart))
+            print("[%s]: %.4f s elapsed" % (self.name, time.time() - self.tstart))
         else:
-            print('%.4f s elapsed' % (time.time() - self.tstart))
+            print("%.4f s elapsed" % (time.time() - self.tstart))
 
 
 def _checkErrorCodeStringList(text: str):
@@ -135,12 +140,13 @@ def _checkErrorCodeStringList(text: str):
     validName = re.compile(
         r"^([A-Za-z]([0-9]){0,4}\s*,\s*)*([A-Za-z]([0-9]){0,4})?\s*$"
     )
-    
+
     if validName.match(text):
         return text.replace(" ", "").upper()
     else:
         return None
-    
+
+
 #############################################################
 
 
@@ -148,19 +154,21 @@ class CheckerWarning(Warning):
     """warning raised if any parameter to the checkers is invalid.
     This warning should always be presented to itom users.
     """
+
     pass
+
 
 #############################################################
 
 
-class ItomFlakesReporter():
+class ItomFlakesReporter:
     """Formats the results of pyflakes checks to be consumed by itom.
     
     This class provides the interface such that itom (pythonEngine) can
     read the results from a pyflakes file check.
     """
-    
-    def __init__(self, filename, lineOffset = 0, defaultMsgType = 2):
+
+    def __init__(self, filename, lineOffset=0, defaultMsgType=2):
         """Constructor.
         
         Args:
@@ -176,13 +184,12 @@ class ItomFlakesReporter():
         self._filename = filename
         self._lineOffset = lineOffset
         self._defaultMsgType = defaultMsgType
-    
+
     def reset(self):
         """Reset all current message items."""
         self._items = []
-    
-    def _addItem(self, msgType, filename, msgCode,
-                 description, lineNo = -1, column = -1):
+
+    def _addItem(self, msgType, filename, msgCode, description, lineNo=-1, column=-1):
         """Internal method to add a new item to the list of items.
         
         Args:
@@ -195,16 +202,22 @@ class ItomFlakesReporter():
             column (int): the column index of the start of the error or -1 if unknown
         """
         assert msgType in [0, 1, 2]
-        
+
         if lineNo > self._lineOffset:
             # all messages earlier than _lineOffset belong
             # to the additional itom import. Ignore them.
             self._items.append(
-                "%i::%s::%i::%i::%s::%s" % 
-                (msgType, self._filename, lineNo - self._lineOffset, 
-                 column, msgCode, description)
+                "%i::%s::%i::%i::%s::%s"
+                % (
+                    msgType,
+                    self._filename,
+                    lineNo - self._lineOffset,
+                    column,
+                    msgCode,
+                    description,
+                )
             )
-    
+
     def unexpectedError(self, filename, msg):
         """An unexpected error occurred trying to process C{filename}.
         
@@ -214,9 +227,15 @@ class ItomFlakesReporter():
             filename (str): The path to a file that we could not process.
             msg (str): A message explaining the problem.
         """
-        self._addItem(msgType=2, filename=filename, 
-                      msgCode="", description=msg, lineNo=-1, column=-1)
-    
+        self._addItem(
+            msgType=2,
+            filename=filename,
+            msgCode="",
+            description=msg,
+            lineNo=-1,
+            column=-1,
+        )
+
     def syntaxError(self, filename, msg, lineno, offset, text):
         """
         There was a syntax error in C{filename}.
@@ -231,14 +250,26 @@ class ItomFlakesReporter():
         This method is called by pyflakes
         """
         line = text.splitlines()[-1]
-        
+
         if offset is not None:
             offset = offset - (len(text) - len(line))
-            self._addItem(msgType=2, filename=filename, msgCode="", 
-                          description=msg, lineNo=lineno, column=offset + 1)
+            self._addItem(
+                msgType=2,
+                filename=filename,
+                msgCode="",
+                description=msg,
+                lineNo=lineno,
+                column=offset + 1,
+            )
         else:
-            self._addItem(msgType=2, filename=filename, msgCode="", 
-                          description=msg, lineNo=lineno, column=-1)
+            self._addItem(
+                msgType=2,
+                filename=filename,
+                msgCode="",
+                description=msg,
+                lineNo=lineno,
+                column=-1,
+            )
 
     def flake(self, message):
         """pyflakes found something wrong with the code.
@@ -255,9 +286,9 @@ class ItomFlakesReporter():
             msgCode="",
             description=msg,
             lineNo=message.lineno,
-            column=message.col
+            column=message.col,
         )
-    
+
     def results(self):
         """Called by pythonEngine in itom to obtain the
         current list of reported items.
@@ -277,7 +308,7 @@ class ItomFlakesReporter():
 
 if _HAS_FLAKE8:
     # code in this section is only active if flake8 is available.
-    
+
     class ItomFlake8Formatter(base.BaseFormatter):
         """Special formatter class to flake8 for itom.
         
@@ -287,14 +318,16 @@ if _HAS_FLAKE8:
         is the read by itom in order to visualize it in the 
         editor windows.
         """
-        
+
         def __init__(self, *args, **kwargs):
             """Constructor."""
             super(ItomFlake8Formatter, self).__init__(*args, **kwargs)
             self._items = []
-            self._errorCodes = ["F", ]
+            self._errorCodes = [
+                "F",
+            ]
             self._warningCodes = ["E", "C"]
-        
+
         def _check_categories(self, codes, error):
             """
             Args:
@@ -305,19 +338,21 @@ if _HAS_FLAKE8:
                 List[str] : 
             """
             codeCorrected = _checkErrorCodeStringList(codes)
-            
+
             if codeCorrected:
                 return codeCorrected.split(",")
             else:
                 with warnings.catch_warnings():
                     warnings.simplefilter("always")
                     warnings.warn("invalid code name: %s" % codes, CheckerWarning)
-                
+
                 if error:
-                    return ["F", ]
+                    return [
+                        "F",
+                    ]
                 else:
                     return ["E", "C"]
-        
+
         def set_warn_and_error_categories(self, errorCodes, warnCodes):
             """
             Args:
@@ -326,13 +361,10 @@ if _HAS_FLAKE8:
             """
             self._errorCodes = self._check_categories(errorCodes, True)
             self._warningCodes = self._check_categories(warnCodes, False)
-        
-        def _addItem(self, errorType,
-                     filename,
-                     msgCode,
-                     description,
-                     lineNo = -1,
-                     column = -1):
+
+        def _addItem(
+            self, errorType, filename, msgCode, description, lineNo=-1, column=-1,
+        ):
             """
                type: the type of message (0: Info, 1: Warning, 2: Error)
             @ptype type: C{int}
@@ -346,11 +378,11 @@ if _HAS_FLAKE8:
                 column (int) :
             """
             if lineNo > 0:
-                self._items.append("%i::%s::%i::%i::%s::%s" % 
-                                   (errorType, filename, 
-                                    lineNo, column, 
-                                    msgCode, description))
-        
+                self._items.append(
+                    "%i::%s::%i::%i::%s::%s"
+                    % (errorType, filename, lineNo, column, msgCode, description,)
+                )
+
         def results(self):
             """
             returns a list of reported items.
@@ -364,11 +396,11 @@ if _HAS_FLAKE8:
             6. description (str): text of error
             """
             return self._items
-        
+
         def after_init(self):  # type: () -> None
             """Initialize the formatter further."""
             self._items = []
-    
+
         def beginning(self, filename):  # type: (str) -> None
             """Notify the formatter that we're starting to process a file.
     
@@ -377,7 +409,7 @@ if _HAS_FLAKE8:
                 from.
             """
             pass
-    
+
         def finished(self, filename):  # type: (str) -> None
             """Notify the formatter that we've finished processing a file.
     
@@ -386,14 +418,14 @@ if _HAS_FLAKE8:
                 from.
             """
             pass
-    
+
         def start(self):  # type: () -> None
             """Prepare the formatter to receive input.
     
             This defaults to initializing :attr:`output_fd` if :attr:`filename`
             """
             pass
-    
+
         def handle(self, error):  # type: (Violation) -> None
             """Handle an error reported by Flake8.
     
@@ -414,23 +446,27 @@ if _HAS_FLAKE8:
             5. message code (str): e.g. E550...
             6. description (str): text of error
             """
-            
+
             # error code E999 is a real syntax error
-            if error.code == "E999" or error.code == "E902" or\
-               list(bfilter(error.code.startswith, self._errorCodes)) != []:
+            if (
+                error.code == "E999"
+                or error.code == "E902"
+                or list(bfilter(error.code.startswith, self._errorCodes)) != []
+            ):
                 errorType = 2  # error
             elif list(bfilter(error.code.startswith, self._warningCodes)) != []:
                 errorType = 1  # warning
             else:  # e.g. "W" --> warnings from pycodestyle
                 errorType = 0  # info
-            
-            self._addItem(errorType,
-                          error.filename,
-                          error.code,
-                          error.text,
-                          error.line_number,
-                          error.column_number - 1)
 
+            self._addItem(
+                errorType,
+                error.filename,
+                error.code,
+                error.text,
+                error.line_number,
+                error.column_number - 1,
+            )
 
     def flake8GetStyleGuideItom(base_directory, **kwargs):
         r"""Provision a StyleGuide for use.
@@ -462,73 +498,71 @@ if _HAS_FLAKE8:
         """
         current_working_dir = os.getcwd()
         os.chdir(base_directory)
-        
+
         application = app.Application()
-        
-        if not hasattr(application, 'parse_preliminary_options_and_args'):  # flake8 >= 3.8
+
+        if not hasattr(
+            application, "parse_preliminary_options_and_args"
+        ):  # flake8 >= 3.8
             application.parse_preliminary_options([])
             prelim_opts, remaining_args = application.parse_preliminary_options([])
-            flake8.configure_logging(
-                prelim_opts.verbose, prelim_opts.output_file)
-            
+            flake8.configure_logging(prelim_opts.verbose, prelim_opts.output_file)
+
             config_finder = config.ConfigFileFinder(
                 application.program,
                 prelim_opts.append_config,
                 config_file=prelim_opts.config,
                 ignore_config_files=prelim_opts.isolated,
             )
-            
+
             application.find_plugins(config_finder)
             application.register_plugin_options()
-            application.parse_configuration_and_cli(
-                config_finder, remaining_args
-            )
-            
+            application.parse_configuration_and_cli(config_finder, remaining_args)
+
             config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager,
-                config_finder=config_finder
+                option_manager=application.option_manager, config_finder=config_finder,
             )
-            
-            
+
         else:  # for older versions of flake8 < 3.8.0
-            application.parse_preliminary_options_and_args([])  # for max logging pass: ["-vvv"]
-            
+            application.parse_preliminary_options_and_args(
+                []
+            )  # for max logging pass: ["-vvv"]
+
             flake8.configure_logging(
-                application.prelim_opts.verbose, application.prelim_opts.output_file
+                application.prelim_opts.verbose, application.prelim_opts.output_file,
             )
             application.make_config_finder()
-            
+
             application.find_plugins()
             application.register_plugin_options()
-            
+
             application.parse_configuration_and_cli([])
-            
+
             config_finder = application.config_finder
-        
+
             config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager,
-                config_finder=config_finder
+                option_manager=application.option_manager, config_finder=config_finder,
             )
-        
+
         # Get the local (project) config again
         local_config = config_parser.parse_local_config()
-        
+
         # the dependent local config files can be read by this list:
         # local_config_files = config_finder._local_found_files  # careful: might change!!!
         # print("local_files:", local_config_files)
-        
+
         # reset current working directory
         os.chdir(current_working_dir)
-        
+
         # We basically want application.initialize to be called but with these
         # options set instead before we make our formatter, notifier, internal
         # style guide and file checker manager.
-        
+
         # itom specific: only update the option if not contained in local_config_files.
         # The local config file should be more important than the itom settings.
         options = application.options
         options_extended = False
-        
+
         for key, value in kwargs.items():
             if key not in local_config:
                 try:
@@ -538,30 +572,29 @@ if _HAS_FLAKE8:
                 except AttributeError:
                     pass
                     # LOG.error('Could not update option "%s"', key)
-        
+
         if options_extended:
             # parse the options again, since they have been changed again
             # and must then be propagated to the flake8 plugins
-            # the following lines are taken from 
+            # the following lines are taken from
             # application.parse_configuration_and_cli
             options._running_from_vcs = False
-            
+
             application.check_plugins.provide_options(
                 application.option_manager, options, application.args
             )
             application.formatting_plugins.provide_options(
                 application.option_manager, options, application.args
             )
-        
+
         # import pprint
         # pprint.pprint(options)
-        
+
         application.make_formatter()
         application.make_guide()
         application.make_file_checker_manager()
         return flake8legacy.StyleGuide(application)
-    
-    
+
     def createFlake8OptionsFromProperties(props):
         """converts properties, obtained from itom, to a options dict,
         that can be passed to flake8.
@@ -574,58 +607,73 @@ if _HAS_FLAKE8:
         """
         options = {}
         errors = []
-        
+
         # if pydocstyle is installed:
         if "codeCheckerFlake8Docstyle" in props:
             options["docstring_convention"] = props["codeCheckerFlake8Docstyle"]
-        
-        if "codeCheckerFlake8IgnoreEnabled" in props and \
-           props["codeCheckerFlake8IgnoreEnabled"]:
+
+        if (
+            "codeCheckerFlake8IgnoreEnabled" in props
+            and props["codeCheckerFlake8IgnoreEnabled"]
+        ):
             values = _checkErrorCodeStringList(props["codeCheckerFlake8IgnoreValues"])
-            
+
             if values is not None:
                 options["ignore"] = values
             else:
                 errors.append(
                     "ignore values of 'flake8' code checker "
-                    "are invalid. They will be ignored.")
-        
-        if "codeCheckerFlake8IgnoreExtendEnabled" in props and \
-               props["codeCheckerFlake8IgnoreExtendEnabled"]:
-                values = _checkErrorCodeStringList(props["codeCheckerFlake8IgnoreExtendValues"])
-                
-                if values is not None:
-                    options["extend_ignore"] = values
-                else:
-                    errors.append(
-                        "extend_ingore values of 'flake8' code checker "
-                        "are invalid. They will be ignored.")
-        
-        if "codeCheckerFlake8SelectEnabled" in props and \
-           props["codeCheckerFlake8SelectEnabled"]:
+                    "are invalid. They will be ignored."
+                )
+
+        if (
+            "codeCheckerFlake8IgnoreExtendEnabled" in props
+            and props["codeCheckerFlake8IgnoreExtendEnabled"]
+        ):
+            values = _checkErrorCodeStringList(
+                props["codeCheckerFlake8IgnoreExtendValues"]
+            )
+
+            if values is not None:
+                options["extend_ignore"] = values
+            else:
+                errors.append(
+                    "extend_ingore values of 'flake8' code checker "
+                    "are invalid. They will be ignored."
+                )
+
+        if (
+            "codeCheckerFlake8SelectEnabled" in props
+            and props["codeCheckerFlake8SelectEnabled"]
+        ):
             values = _checkErrorCodeStringList(props["codeCheckerFlake8SelectValues"])
-            
+
             if values is not None:
                 options["select"] = values
             else:
                 errors.append(
                     "select values of 'flake8' code checker "
-                    "are invalid. They will be ignored.")
-        
+                    "are invalid. They will be ignored."
+                )
+
         if "codeCheckerFlake8MaxLineLength" in props:
             options["max_line_length"] = props["codeCheckerFlake8MaxLineLength"]
-        
-        if "codeCheckerFlake8MaxComplexityEnabled" in props and \
-           props["codeCheckerFlake8MaxComplexityEnabled"]:
+
+        if (
+            "codeCheckerFlake8MaxComplexityEnabled" in props
+            and props["codeCheckerFlake8MaxComplexityEnabled"]
+        ):
             options["max_complexity"] = props["codeCheckerFlake8MaxComplexity"]
-        
-        if "codeCheckerFlake8OtherOptions" in props and \
-           props["codeCheckerFlake8OtherOptions"] != "":
+
+        if (
+            "codeCheckerFlake8OtherOptions" in props
+            and props["codeCheckerFlake8OtherOptions"] != ""
+        ):
             lines = props["codeCheckerFlake8OtherOptions"].replace("\r", "").split("\n")
-            
+
             for line in lines:
                 parts = line.split("=")
-                
+
                 if line.strip() == "":
                     continue
                 elif len(parts) == 1:
@@ -634,32 +682,37 @@ if _HAS_FLAKE8:
                     name = parts[0].strip()
                     name = name.replace("-", "_")
                     value = parts[1].strip()
-                    
+
                     if len(name) == 0 or len(value) == 0:
-                        errors.append("additional option line '%s' of "
-                                      "'flake8' code checker has an invalid format "
-                                      "(option=value)" % line)
+                        errors.append(
+                            "additional option line '%s' of "
+                            "'flake8' code checker has an invalid format "
+                            "(option=value)" % line
+                        )
                     else:
                         # if value contains a comma, it is likely that this is
                         # a list of values: convert it...
                         if "," in value:
                             value = value.split(",")
-                        
+
                         options[name] = value
                 else:
                     errors.append(
                         "additional option line '%s' of "
                         "'flake8' code checker has an invalid format "
-                        "(option=value)" % line)
-        
+                        "(option=value)" % line
+                    )
+
         if len(errors) > 0:
             with warnings.catch_warnings():
                 warnings.simplefilter("always")
                 warnings.warn(";".join(errors), CheckerWarning)
-        
+
         return options
 
+
 else:  # no flake8
+
     def createFlake8OptionsFromProperties(props):
         """This is a dummy method if flake8 not available.
         
@@ -682,12 +735,14 @@ def hasFlake8():
     return _HAS_FLAKE8
 
 
-def check(codestring, 
-          filename, 
-          fileSaved,
-          mode = 1,
-          autoImportItom = False,
-          furtherPropertiesJson = {}):
+def check(
+    codestring,
+    filename,
+    fileSaved,
+    mode=1,
+    autoImportItom=False,
+    furtherPropertiesJson={},
+):
     """Run the test for a single file.
     
     Args:
@@ -722,14 +777,15 @@ def check(codestring,
     global _CHECKER_CACHE
     global _PUBLIC_ITOM_MODULES
     global _CONFIG_DEFAULTS
-    
+
     propertiesChanged = False
     config = {}
-    
+
     if "importItomString" not in _CHECKER_CACHE:
-        _CHECKER_CACHE["importItomString"] = \
-            "from itom import %s" % ", ".join(_PUBLIC_ITOM_MODULES)
-    
+        _CHECKER_CACHE["importItomString"] = "from itom import %s" % ", ".join(
+            _PUBLIC_ITOM_MODULES
+        )
+
     if "propertiesString" not in _CHECKER_CACHE:
         _CHECKER_CACHE["propertiesString"] = furtherPropertiesJson
         _CHECKER_CACHE["properties"] = {}  # will be read later
@@ -739,56 +795,65 @@ def check(codestring,
         if _CHECKER_CACHE["propertiesString"] != furtherPropertiesJson:
             _CHECKER_CACHE["propertiesString"] = furtherPropertiesJson
             propertiesChanged = True
-    
+
     if propertiesChanged:
         # update config with default values
         config = _CONFIG_DEFAULTS
         config.update(json.loads(_CHECKER_CACHE["propertiesString"]))
         _CHECKER_CACHE["properties"] = config
-        
-        _CHECKER_CACHE["flake8options"] = \
-            createFlake8OptionsFromProperties(config)
-    
+
+        _CHECKER_CACHE["flake8options"] = createFlake8OptionsFromProperties(config)
+
     config = _CHECKER_CACHE["properties"]
-    
+
     if mode == 0:  # NoCodeChecker
         return []
-    
+
     elif mode == 1:  # CodeCheckerPyFlakes
         if _HAS_PYFLAKES:
             if autoImportItom:
-                codestring = "%s\n%s" % (_CHECKER_CACHE["importItomString"], codestring)
+                codestring = "%s\n%s" % (
+                    _CHECKER_CACHE["importItomString"],
+                    codestring,
+                )
                 lineOffset = 1
             else:
                 lineOffset = 0
-            
-            reporter = ItomFlakesReporter(filename,
-                                          lineOffset=lineOffset,
-                                          defaultMsgType=config["codeCheckerPyFlakesCategory"])
+
+            reporter = ItomFlakesReporter(
+                filename,
+                lineOffset=lineOffset,
+                defaultMsgType=config["codeCheckerPyFlakesCategory"],
+            )
             pyflakesapi.check(codestring, "code", reporter=reporter)
             return reporter.results()
         else:
             raise RuntimeError("Code check not possible, since module pyflakes missing")
-    
+
     elif mode == 2:  # CodeCheckerFlake8
         if _HAS_FLAKE8:
-            
+
             if autoImportItom:
                 # add the itom imports as builtins option to flake8.
                 # This overwrites other builtins, set in user or project config files!
                 _CHECKER_CACHE["flake8options"]["builtins"] = _PUBLIC_ITOM_MODULES
-            
-            #with TimeIt("flake8 loader"):
+
+            # with TimeIt("flake8 loader"):
             baseDir = os.path.abspath(os.path.dirname(filename))
-            style_guide = flake8GetStyleGuideItom(baseDir, **_CHECKER_CACHE["flake8options"])
-            
+            style_guide = flake8GetStyleGuideItom(
+                baseDir, **_CHECKER_CACHE["flake8options"]
+            )
+
             style_guide.init_report(reporter=ItomFlake8Formatter)
-            reporter = style_guide._application.formatter  # instance to ItomFlake8Formatter
+            reporter = (
+                style_guide._application.formatter
+            )  # instance to ItomFlake8Formatter
             reporter.set_warn_and_error_categories(
                 config["codeCheckerFlake8ErrorNumbers"],
-                config["codeCheckerFlake8WarningNumbers"])
+                config["codeCheckerFlake8WarningNumbers"],
+            )
             report = None
-            
+
             if fileSaved:
                 # print("check saved file %s" % filename)
                 with warnings.catch_warnings():
@@ -796,13 +861,15 @@ def check(codestring,
                     # can occure (e.g. from an assert statement). ignore this warning.
                     warnings.simplefilter("ignore")
                     try:
-                        report = style_guide.check_files([filename, ])
+                        report = style_guide.check_files([filename,])
                     except Exception as ex:
                         # import traceback
                         # traceback.print_exc()
                         pass
             else:
-                with tempfile.NamedTemporaryFile("wt", delete=False, suffix=".py") as fp:
+                with tempfile.NamedTemporaryFile(
+                    "wt", encoding="utf-8", suffix=".py", delete=False
+                ) as fp:
                     tempfilename = fp.name
                     fp.write(codestring)
                     # print("check saved file %s" % tempfilename)
@@ -811,14 +878,14 @@ def check(codestring,
                         # when parsing the file by the checker, a warning
                         # can occure (e.g. from an assert statement). ignore this warning.
                         warnings.simplefilter("ignore")
-                        report = style_guide.check_files([tempfilename, ])
+                        report = style_guide.check_files([tempfilename,])
                 except Exception as ex:
                     # import traceback
                     # traceback.print_exc()
                     pass
                 finally:
                     os.remove(tempfilename)
-            
+
             if report is not None:
                 results = reporter.results()
                 # print("Run flake8 on file %s: %i" % (filename, report.total_errors))
@@ -827,14 +894,16 @@ def check(codestring,
                 return []
         else:
             raise RuntimeError("Code check not possible, since module flake8 missing")
-    
+
     else:
-        raise RuntimeError("Code checker: invalid mode %i. Only 0, 1 or 2 supported" % mode)
+        raise RuntimeError(
+            "Code checker: invalid mode %i. Only 0, 1 or 2 supported" % mode
+        )
 
 
 if __name__ == "__main__":
     """small test run."""
-    
+
     codestring = """def test(i : str , b) :
     a=2*3
     
@@ -842,7 +911,7 @@ if __name__ == "__main__":
     assert(1, 1)
     
     return a"""
-    
+
     filename = "temp.py"
     fileSaved = False
     mode = 2  # all checks
@@ -861,8 +930,11 @@ if __name__ == "__main__":
     "codeCheckerFlake8WarningNumbers": "E, C",
     "codeCheckerPyFlakesCategory": 1
 }"""
-    
-    result = check(codestring, filename, fileSaved, mode, autoImportItom, furtherPropertiesJson)
-    
+
+    result = check(
+        codestring, filename, fileSaved, mode, autoImportItom, furtherPropertiesJson,
+    )
+
     import pprint
+
     pprint.pprint(result)

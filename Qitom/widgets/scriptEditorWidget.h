@@ -31,6 +31,7 @@
 #include "../codeEditor/panels/breakpointPanel.h"
 #include "../codeEditor/modes/errorLineHighlight.h"
 #include "../codeEditor/modes/pyGotoAssignment.h"
+#include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
@@ -39,14 +40,14 @@
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
-#include <qmutex.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
-#include "../models/classNavigatorItem.h"
+#include <qregularexpression.h>
+#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -59,6 +60,8 @@ QT_END_NAMESPACE
 
 namespace ito
 {
+
+class BreakPointModel;
 
 struct ScriptEditorStorage
 {
@@ -94,7 +97,7 @@ class ScriptEditorWidget : public AbstractCodeEditorWidget
     Q_OBJECT
 
 public:
-    ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent = NULL);
+    ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent = nullptr);
     ~ScriptEditorWidget();
 
     RetVal saveFile(bool askFirst = true);
@@ -110,11 +113,9 @@ public:
     inline int getUID() const { return m_uid; }
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
-    inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
-    inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
-    RetVal setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod);
+    RetVal showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
 
     void removeCurrentCallstackLine(); //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
 
@@ -128,6 +129,15 @@ public:
     //!< if UidFilter is -1, the current cursor position is always reported, else only if its editorUID is equal to UIDFilter
     void reportCurrentCursorAsGoBackNavigationItem(const QString &reason, int UIDFilter = -1);
 
+    //!< wrapper for undo() or redo() that tries to keep breakpoints and bookmarks
+    void startUndoRedo(bool unundoNotRedo);
+
+    QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
+
+    //!< returns true if the current line can be a trigger to insert a template docstring
+    //!< for a possible method / function, this line belongs to.
+    bool currentLineCanHaveDocstring() const;
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
@@ -136,14 +146,23 @@ protected:
     void insertFromMimeData(const QMimeData *source);
 
     void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void loadSettings();
     bool event(QEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
     virtual void contextMenuAboutToShow(int contextMenuLine);
 
     void reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const;
+
+    void replaceSelectionAndKeepBookmarksAndBreakpoints(QTextCursor &cursor, const QString &newString);
+    QVector<int> compareTexts(const QString &oldText, const QString &newText);
+
+    BreakPointModel* getBreakPointModel();
+    const BreakPointModel* getBreakPointModel() const;
 
 private:
     enum markerType
@@ -161,7 +180,6 @@ private:
     RetVal changeFilename(const QString &newFilename);
 
     QFileSystemWatcher *m_pFileSysWatcher;
-    QMutex m_fileSystemWatcherMutex;
 
     // the following variables are related to the code checker feature of Python
     bool m_codeCheckerEnabled;
@@ -171,7 +189,6 @@ private:
     Qt::CaseSensitivity m_filenameCaseSensitivity;
 
     //!< menus
-    QMenu *m_contextMenu;
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
@@ -184,9 +201,12 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
+    //!< to accept drop events of other files dropped onto this file, the script 
+    //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
+    bool m_wasReadonly; 
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
-
+    int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
@@ -199,22 +219,26 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;
     static int currentMaximumUID;
     static CursorPosition currentGlobalEditorCursorPos; //! the current cursor position within all opened editor widgets
     static QHash<int, ScriptEditorWidget*> editorByUID; //! hash table that maps the UID to its instance of ScriptEditorWidget*
 
-    // Class Navigator
-    bool m_classNavigatorEnabled;               // Enable Class-Navigator
-    QTimer *m_classNavigatorTimer;              // Class Navigator Timer
-    bool m_classNavigatorTimerEnabled;          // Class Navigator Timer Enable
-    int m_classNavigatorInterval;               // Class Navigator Timer Interval
-    QString m_currentClass;
-    QString m_currentMethod;
+    // Outline
+    QTimer *m_outlineTimer; //!< timer to recreate the outline model with a certain delay
+    bool m_outlineTimerEnabled; //!<
+    int m_currentLineIndex; //!< current line index of the cursor
+    mutable QSharedPointer<OutlineItem> m_rootOutlineItem; //!< cache for the latest outline items
+    mutable bool m_outlineDirty;
+    QRegularExpression m_regExpClass; //!< regular expression to parse the definition of a class
+    QRegularExpression m_regExpDecorator; //!< regular expression to parse a decorator
+    QRegularExpression m_regExpMethodStart; //!< regular expression to parse the start of a method definition
+    QRegularExpression m_regExpMethod; //!< regular expression to parse a full method definition
 
-    int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation = -1);
-    int getIndentationLength(const QString &str) const;
+    void parseOutlineRecursive(QSharedPointer<OutlineItem> &parent) const;
+    QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 
 signals:
     void pythonRunFile(QString filename);
@@ -222,9 +246,10 @@ signals:
     void pythonDebugFile(QString filename);
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
-    void requestModelRebuild(ScriptEditorWidget *editor);
+    void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
+    void findSymbolsShowRequested();
 
 public slots:
     void triggerCodeChecker();
@@ -250,19 +275,17 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
+    void menuGenerateDocstring();
     void menuInsertCodec();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);
 
     void breakPointAdd(BreakPointItem bp, int row);
-    void breakPointDelete(QString filename, int lineNo, int pyBpNumber);
+    void breakPointDelete(QString filename, int lineIdx, int pyBpNumber);
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
 
     void updateSyntaxCheck();
-
-    // Class Navigator  
-    ClassNavigatorItem* getPythonNavigatorRoot(); //creates new tree of current python code structure and returns its root pointer. Caller must delete the root pointer after usage.
 
     void print();
 
@@ -271,7 +294,6 @@ private slots:
     void onBookmarkAdded(const BookmarkItem &item);  
     void onBookmarkDeleted(const BookmarkItem &item);
     
-
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);
     RetVal editBreakpoint(int line);
@@ -283,19 +305,19 @@ private slots:
 
     void copyAvailable(const bool yes);
 
-    void classNavTimerElapsed();
+    void outlineTimerElapsed();
 
     void nrOfLinesChanged();
 
-    void fileSysWatcherFileChanged ( const QString & path );
+    void fileSysWatcherFileChanged(const QString &path);
+    void fileSysWatcherFileChangedStep2(const QString &path);
     void printPreviewRequested(QPrinter *printer);
 
     void dumpFoldsToConsole(bool);
     void onCursorPositionChanged();
-
+    void onTextChanged();
     void tabChangeRequest();
 
-    
     void pyCodeFormatterDone(bool success, QString code);
 };
 

@@ -32,6 +32,7 @@
 #include "widgetPropEditorAutoCompletion.h"
 #include "widgetPropEditorAutoCodeFormat.h"
 #include "widgetPropEditorGotoAssignment.h"
+#include "widgetPropEditorDocstringGenerator.h"
 #include "widgetPropEditorCodeCheckers.h"
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropEditorScripts.h"
@@ -171,6 +172,7 @@ void DialogProperties::initPages()
     m_pages["04_editor/06gotoassignment"] = PropertyPage(tr("Goto Assignment"), tr("Editor - Goto Assignment"), "04_editor/06gotoassignment", new WidgetPropEditorGotoAssignment(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/07autocodeformat"] = PropertyPage(tr("Auto Code Format"), tr("Editor - Auto Code Format"), "04_editor/07autocodeformat", new WidgetPropEditorAutoCodeFormat(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/08styles"] = PropertyPage(tr("Styles"), tr("Editor - Styles"), "04_editor/08styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/09docstringGenerator"] = PropertyPage(tr("Docstring Generator"), tr("Editor - Docstring Generator"), "04_editor/09docstringGenerator", new WidgetPropEditorDocstringGenerator(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - Please Choose Subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/01general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/01general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/02lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/02lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));

@@ -86,6 +86,28 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    CharMeta::CharMeta(const CharMeta &copy) :
+        ParamMeta(rttiCharMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    CharMeta& CharMeta::operator =(const CharMeta &rhs)
+    {
+        m_type = rttiCharMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_representation = rhs.m_representation;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     CharMeta* CharMeta::all(ito::ByteArray category /*= ito::ByteArray()*/)
     { 
         return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max(), 1, category); 
@@ -160,6 +182,28 @@ namespace ito
             throw std::logic_error("stepSize of IntMeta must be >= 1");
         }
 #endif
+    }
+
+    //---------------------------------------------------------------------------------
+    IntMeta::IntMeta(const IntMeta &copy) :
+        ParamMeta(rttiIntMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    IntMeta& IntMeta::operator =(const IntMeta &rhs)
+    {
+        m_type = rttiIntMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_representation = rhs.m_representation;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------
@@ -238,6 +282,32 @@ namespace ito
             throw std::logic_error("stepSize of DoubleMeta must be >= 0.0");
         }
 #endif
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleMeta::DoubleMeta(const DoubleMeta &copy) :
+        ParamMeta(rttiDoubleMeta, copy.m_category),
+        m_minVal(copy.m_minVal),
+        m_maxVal(copy.m_maxVal),
+        m_stepSize(copy.m_stepSize),
+        m_displayNotation(copy.m_displayNotation),
+        m_displayPrecision(copy.m_displayPrecision),
+        m_representation(copy.m_representation)
+    {
+
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleMeta& DoubleMeta::operator =(const DoubleMeta &rhs)
+    {
+        m_type = rttiDoubleMeta;
+        m_minVal = rhs.m_minVal;
+        m_maxVal = rhs.m_maxVal;
+        m_stepSize = rhs.m_stepSize;
+        m_displayNotation = rhs.m_displayNotation;
+        m_displayPrecision = rhs.m_displayPrecision;
+        m_representation = rhs.m_representation;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------
@@ -500,6 +570,28 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    CharArrayMeta::CharArrayMeta(const CharArrayMeta &cpy) :
+        CharMeta(cpy),
+        m_numMax(cpy.m_numMax),
+        m_numMin(cpy.m_numMin),
+        m_numStep(cpy.m_numStep)
+    {
+        m_type = rttiCharArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    CharArrayMeta &CharArrayMeta::operator=(const CharArrayMeta &rhs)
+    {
+        CharMeta::operator=(rhs);
+        m_type = rttiCharArrayMeta;
+        m_numMax = rhs.m_numMax;
+        m_numMin = rhs.m_numMin;
+        m_numStep = rhs.m_numStep;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     void CharArrayMeta::setNumMin(size_t val)
     {
         m_numMin = val; 
@@ -556,6 +648,28 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    IntArrayMeta::IntArrayMeta(const IntArrayMeta &cpy) :
+        IntMeta(cpy),
+        m_numMax(cpy.m_numMax),
+        m_numMin(cpy.m_numMin),
+        m_numStep(cpy.m_numStep)
+    {
+        m_type = rttiIntArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    IntArrayMeta &IntArrayMeta::operator=(const IntArrayMeta &rhs)
+    {
+        IntMeta::operator=(rhs);
+        m_type = rttiIntArrayMeta;
+        m_numMax = rhs.m_numMax;
+        m_numMin = rhs.m_numMin;
+        m_numStep = rhs.m_numStep;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     void IntArrayMeta::setNumMin(size_t val)
     {
         m_numMin = val; 
@@ -608,6 +722,28 @@ namespace ito
         if (m_numMax < m_numMin)
             m_numMax = m_numMin;
         m_type = rttiDoubleArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleArrayMeta::DoubleArrayMeta(const DoubleArrayMeta &cpy) :
+        DoubleMeta(cpy),
+        m_numMax(cpy.m_numMax),
+        m_numMin(cpy.m_numMin),
+        m_numStep(cpy.m_numStep)
+    {
+        m_type = rttiDoubleArrayMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    DoubleArrayMeta &DoubleArrayMeta::operator=(const DoubleArrayMeta &rhs)
+    {
+        DoubleMeta::operator=(rhs);
+        m_type = rttiDoubleArrayMeta;
+        m_numMax = rhs.m_numMax;
+        m_numMin = rhs.m_numMin;
+        m_numStep = rhs.m_numStep;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------
@@ -671,6 +807,29 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    IntervalMeta::IntervalMeta(const IntervalMeta &cpy) :
+        IntMeta(cpy),
+        m_sizeMin(cpy.m_sizeMin),
+        m_sizeMax(cpy.m_sizeMax),
+        m_sizeStep(cpy.m_sizeStep)
+    {
+        m_type = rttiIntervalMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    IntervalMeta &IntervalMeta::operator=(const IntervalMeta &rhs)
+    {
+        IntMeta::operator=(rhs);
+        m_type = rttiIntervalMeta;
+        m_sizeMax = rhs.m_sizeMax;
+        m_sizeMin = rhs.m_sizeMin;
+        m_sizeStep = rhs.m_sizeStep;
+        m_isIntervalNotRange = rhs.m_isIntervalNotRange;
+        return *this;
+    }
+
+    //---------------------------------------------------------------------------------
     void IntervalMeta::setIntervalMin(int32 val)
     {
         m_sizeMin = val; 
@@ -719,7 +878,23 @@ namespace ito
         m_isIntervalNotRange = false;
     }
 
-    
+    //---------------------------------------------------------------------------------
+    RangeMeta::RangeMeta(const RangeMeta &cpy) :
+        IntervalMeta(cpy)
+    {
+        m_type = rttiRangeMeta;
+        m_isIntervalNotRange = false;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    RangeMeta &RangeMeta::operator=(const RangeMeta &rhs)
+    {
+        IntervalMeta::operator=(rhs);
+        m_type = rttiRangeMeta;
+        m_isIntervalNotRange = rhs.m_isIntervalNotRange;
+        return *this;
+    }
 
 
     //---------------------------------------------------------------------------------
@@ -742,6 +917,28 @@ namespace ito
         if (m_sizeMax < m_sizeMin)
             m_sizeMax = m_sizeMin;
         m_type = rttiDoubleIntervalMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    DoubleIntervalMeta::DoubleIntervalMeta(const DoubleIntervalMeta &cpy) :
+        DoubleMeta(cpy),
+        m_sizeMin(cpy.m_sizeMin),
+        m_sizeMax(cpy.m_sizeMax),
+        m_sizeStep(cpy.m_sizeStep)
+    {
+        m_type = rttiDoubleIntervalMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    //!< assignment operator
+    DoubleIntervalMeta &DoubleIntervalMeta::operator=(const DoubleIntervalMeta &rhs)
+    {
+        DoubleMeta::operator=(rhs);
+        m_type = rttiDoubleIntervalMeta;
+        m_sizeMax = rhs.m_sizeMax;
+        m_sizeMin = rhs.m_sizeMin;
+        m_sizeStep = rhs.m_sizeStep;
+        return *this;
     }
 
     //---------------------------------------------------------------------------------

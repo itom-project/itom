@@ -42,6 +42,7 @@
 
 #if WIN32
 #include <Windows.h>
+#include <VersionHelpers.h>
 #endif
 
 //#include "benchmarks.h"
@@ -248,12 +249,12 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     newpath += "path=";
 
-#if WINVER > 0x0502
-    if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
-    {
-        SetDllDirectoryA(libDir.toLatin1().data());
-    }
-#endif
+    #if WINVER > 0x0502
+        if (IsWindowsVistaOrGreater())
+        {
+            SetDllDirectoryA(libDir.toLatin1().data());
+        }
+    #endif
 #else
 #endif
     newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable

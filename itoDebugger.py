@@ -267,7 +267,9 @@ class itoDebugger(bdb.Bdb):
     def addNewBreakPoint(self,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
         """Adds breakpoint to list of breakpoints.
         
-        Return breakpoint ID (int) or error string (str)
+        Return breakpoint ID (int) or error string (str).
+        
+        This method should not raise an exception.
         """
         if not filename:
             filename = self.defaultFile()
@@ -280,7 +282,8 @@ class itoDebugger(bdb.Bdb):
         except IndexError as err:
             return "Cannot add breakpoint: " + str(err)
         except UnicodeDecodeError as err:
-            return "Cannot add breakpoint: " + str(err)
+            # The _ in the error string indicates to not delete the break point.
+            return "_Cannot add breakpoint: " + str(err)
         
         if line > 0:
             # now set the break point
@@ -310,7 +313,8 @@ class itoDebugger(bdb.Bdb):
         except IndexError as err:
             return "Cannot edit breakpoint: " + str(err)
         except UnicodeDecodeError as err:
-            return "Cannot edit breakpoint: " + str(err)
+            # The _ in the error string indicates to not delete the break point.
+            return "_Cannot edit breakpoint: " + str(err)
             
         if line > 0:
             #input values are ok, break point can be edited

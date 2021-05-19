@@ -103,7 +103,7 @@ void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition,
         }
         else
         {
-            m_delayedTrans.timerId = startTimer(std::chrono::milliseconds(m_delayMs));
+            m_delayedTrans.timerId = startTimer(m_delayMs);
             m_delayedTrans.transition = pyTransition;
         }
         

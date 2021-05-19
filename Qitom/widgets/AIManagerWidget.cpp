@@ -396,7 +396,7 @@ void AIManagerWidget::updateActions()
                 }
                 else if (m_pActCloseAllInstances->isVisible())
                 {
-                    QModelIndex indexChild = index.child(0, 0);
+                    QModelIndex indexChild = plugInModel->index(0, 0, index);
                     m_pActCloseAllInstances->setEnabled(indexChild.isValid());
                 }
 

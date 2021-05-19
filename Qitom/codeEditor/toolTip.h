@@ -51,7 +51,7 @@ public:
     void setTipRect(QWidget *w, const QRect &r);
     void restartExpireTimer(int msecDisplayTime);
     bool tipChanged(const QPoint &pos, const QString &text, QObject *o);
-    void placeTip(const QPoint &pos, QWidget *w);
+    void placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos = QPoint());
     static int getTipScreen(const QPoint &pos, QWidget *w);
 protected:
     void timerEvent(QTimerEvent *e) override;
@@ -80,9 +80,9 @@ class ToolTip
     ToolTip() = delete;
 public:
     // ### Qt 6 - merge the three showText functions below
-    static void showText(const QPoint &pos, const QString &text, QWidget *w = nullptr);
+    static void showText(const QPoint &pos, const QString &text, QWidget *w = nullptr, const QPoint &alternativeTopRightPos = QPoint());
     static void showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect);
-    static void showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecShowTime);
+    static void showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecShowTime, const QPoint &alternativeTopRightPos = QPoint());
     static inline void hideText() { showText(QPoint(), QString()); }
     static bool isVisible();
     static QString text();

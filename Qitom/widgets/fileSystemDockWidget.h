@@ -87,7 +87,6 @@ namespace ito
             QLabel* m_pLblFilter;
             QComboBox* m_pCmbFilter;
             ItomFileSystemModel* m_pFileSystemModel;
-            QSignalMapper *m_newDirSelectedMapper;
             QString baseDirectory;
             QHash<QString,QStringList> defaultFilterPatterns;
             QMutex baseDirChangeMutex;

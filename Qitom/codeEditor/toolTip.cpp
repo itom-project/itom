@@ -224,6 +224,7 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
     }
     return false;
 }
+
 int ToolTipLabel::getTipScreen(const QPoint &pos, QWidget *w)
 {
     if (QApplication::desktop()->isVirtualDesktop())
@@ -231,7 +232,8 @@ int ToolTipLabel::getTipScreen(const QPoint &pos, QWidget *w)
     else
         return QApplication::desktop()->screenNumber(w);
 }
-void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w)
+
+void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
 {
 #ifndef QT_NO_STYLE_STYLESHEET
     if (testAttribute(Qt::WA_StyleSheet) || (w)) { // && qt_styleSheet(w->style()))) {
@@ -255,10 +257,31 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w)
 
     QPoint p = pos;
     p += QPoint(2,16);
+
     if (p.x() + this->width() > screen.x() + screen.width())
-        p.rx() -= 4 + this->width();
+    {
+        if (alternativeTopRightPos.isNull())
+        {
+            p.rx() -= 4 + this->width();
+        }
+        else
+        {
+            p.rx() = 2 + alternativeTopRightPos.x() - 4 - this->width();
+        }
+    }
+    
     if (p.y() + this->height() > screen.y() + screen.height())
-        p.ry() -= 24 + this->height();
+    {
+        if (alternativeTopRightPos.isNull())
+        {
+            p.ry() -= 24 + this->height();
+        }
+        else
+        {
+            p.ry() = 16 + alternativeTopRightPos.y() - 24 - this->height();
+        }
+    }
+
     if (p.y() < screen.y())
         p.setY(screen.y());
     if (p.x() + this->width() > screen.x() + screen.width())
@@ -305,7 +328,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
    This is similar to ItomToolTip::showText(\a pos, \a text, \a w, \a rect) but with an extra parameter \a msecDisplayTime
    that specifies how long the tool tip will be displayed, in milliseconds.
 */
-void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecDisplayTime)
+void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecDisplayTime, const QPoint &alternativeTopRightPos /* = QPoint()*/)
 {
     if (ToolTipLabel::instance && ToolTipLabel::instance->isVisible()) { // a tip does already exist
         if (text.isEmpty()) { // empty text means hide current tip
@@ -321,7 +344,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
             if (ToolTipLabel::instance->tipChanged(localPos, text, w)) {
                 ToolTipLabel::instance->reuseTip(text, msecDisplayTime, pos);
                 ToolTipLabel::instance->setTipRect(w, rect);
-                ToolTipLabel::instance->placeTip(pos, w);
+                ToolTipLabel::instance->placeTip(pos, w, alternativeTopRightPos);
             }
             return;
         }
@@ -338,7 +361,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         new ToolTipLabel(text, pos, w, msecDisplayTime); // sets ToolTipLabel::instance to itself
 #endif
         ToolTipLabel::instance->setTipRect(w, rect);
-        ToolTipLabel::instance->placeTip(pos, w);
+        ToolTipLabel::instance->placeTip(pos, w, alternativeTopRightPos);
         ToolTipLabel::instance->setObjectName(QLatin1String("ToolTip_label"));
         ToolTipLabel::instance->showNormal();
     }
@@ -347,9 +370,9 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
     \overload
     This is analogous to calling ItomToolTip::showText(\a pos, \a text, \a w, QRect())
 */
-void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w)
+void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
 {
-    ToolTip::showText(pos, text, w, QRect());
+    ToolTip::showText(pos, text, w, QRect(), -1, alternativeTopRightPos);
 }
 /*!
     \fn void ItomToolTip::hideText()

@@ -233,6 +233,11 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
 //-------------------------------------------------------------------
 /*virtual*/ CodeCompletionMode::~CodeCompletionMode()
 {
+    if (m_pCompleter)
+    {
+        m_pCompleter->deleteLater();
+        m_pCompleter = nullptr;
+    }
 }
 
 //-------------------------------------------------------------------
@@ -975,7 +980,8 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
         styledTooltips << Utils::parseStyledTooltipsFromSignature(
             tip.first,
             tip.second,
-            44
+            44,
+            m_tooltipsMaxLength
         );
     }
 
@@ -987,8 +993,10 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
 
     QPoint pos = m_pCompleter->popup()->pos();
     pos.setX(pos.x() + m_pCompleter->popup()->size().width());
-    pos.setY(pos.y() - 15);
-    ToolTip::showText(pos, styledTooltips.join("<hr>"), editor());
+    pos.ry() -= 15;
+    QPoint altTopRightPos = m_pCompleter->popup()->pos();
+    altTopRightPos.ry() += 40;
+    ToolTip::showText(pos, styledTooltips.join("<hr>"), editor(), altTopRightPos);
 }
 
 //--------------------------------------------------------------------

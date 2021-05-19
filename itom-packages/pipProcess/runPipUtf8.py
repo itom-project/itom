@@ -14,8 +14,8 @@ import runpy
 # get arguments, the first argument must be 'pip'
 args = sys.argv[1:]
 
-sys.stdout.reconfigure(encoding='utf-8')
-sys.stderr.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 # for the following code, see the comment in
 # pip/_internal/cli/main.py

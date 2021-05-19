@@ -236,9 +236,9 @@ void BreakPointDockWidget::mnuEditBreakpoint()
         {
             QModelIndex sel = m_breakPointView->selectedIndexes()[0];
             BreakPointItem bp = model->getBreakPoint(sel);
-            if (bp.lineno > -1)
+            if (bp.lineIdx > -1)
             {
-                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineno+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
+                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineIdx+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
                 dlg->exec();
                 if (dlg->result() == QDialog::Accepted)
                 {
@@ -274,7 +274,7 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
         for (int i = 0; i<selected.length(); ++i)
         {
             BreakPointItem bp = model->getBreakPoint(selected[i]);
-            if (bp.lineno > -1) //else the item is not valid
+            if (bp.lineIdx > -1) //else the item is not valid
             {
                 bp.enabled = !bp.enabled;
                 model->changeBreakPoint(selected[i], bp, true);

@@ -191,12 +191,13 @@ bool QPropertyModel::setData(const QModelIndex & index, const QVariant & value, 
 
         if (p.isValid())
         {   
-            emit dataChanged(p.child(0,0), p.child(rowCount(p)-1,1));
+            emit dataChanged(this->index(0, 0, p), this->index(rowCount(p) - 1, 1, p));
         }
         else
         {
             emit dataChanged(index, index);
         }
+
         return true;
     }
     return false;

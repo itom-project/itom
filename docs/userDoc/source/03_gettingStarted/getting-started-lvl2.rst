@@ -13,17 +13,19 @@ The GUI
 If you open |itom| for the first time, the main graphical user interface will look like the following screenshot:
 
 .. figure:: images/itom_layout.png
-    :width: 100%
+    :width: 931px
     :align: center
     
 The main components are highlighted with different colors and numbers. These components are:
 
 1. The menu bar gives you access to the script management, the :ref:`script execution and debugging <gui-editor>`, the windowing system and help features. You can :ref:`add your own menus <toolbar-createmenu>` to this bar.
 2. The most common commands are also accessible via the main toolbar of |itom|. :ref:`Add your own toolbars <toolbar-addtoolbar>` and connect them with user defined scripts to adapt |itom| to your personal needs.
-3. The :ref:`file system toolbox <gui-filesystem>` gives you access to script files (written in Python 3) or other files that can be loaded with |itom| (e.g. bmp, png, gif, tif, Matlab files... - depending on the installed plugins)
-4. The :ref:`console (command line) <console>` allows you directly executing single or multiline script commands.
-5. The current set of global (or local) variables in the Python workspace is listed in the :ref:`corresponding toolboxes <gui-workspace>`.
-6. All available hardware and software plugins are listed in the :ref:`plugin toolbox <gui-plugins>`. Use this toolbox to connect to your cameras or actuators or get informed about available software filters or algorithms. If you miss a plugin whose library file exists, check the menu **file >> loaded plugins...** so see if the library has been found and / or why this library could not been loaded.
+3. The :ref:`Command History DockWidget <gui-commandhistory>` show the history of commands executed via the command line. 
+4. The :ref:`File System Toolbox <gui-filesystem>` gives you access to script files (written in Python 3) or other files that can be loaded with |itom| (e.g. bmp, png, gif, tif, Matlab files... - depending on the installed plugins)
+5. The :ref:`Script Editor DockWidget <gui-editor>` allows working on one or several python scripts. No script is displayed after the first start. Open a Python script that can be docked above the command line as shown here. 
+6. The :ref:`Console (command line) <console>` allows you directly executing single or multiline script commands.
+7. The current set of global (or local) variables in the Python workspace is listed in the :ref:`corresponding toolboxes <gui-workspace>`.
+8. All available hardware and software plugins are listed in the :ref:`plugin toolbox <gui-plugins>`. Use this toolbox to connect to your cameras or actuators or get informed about available software filters or algorithms. If you miss a plugin whose library file exists, check the menu **file >> loaded plugins...** so see if the library has been found and / or why this library could not been loaded.
 
 Connected hardware components can be operated either by script commands or directly by the GUI. The following sections show you examples for both approaches.
 
@@ -39,7 +41,7 @@ Connect to a hardware plugin using the GUI
 In the following example, we will connect to such a virtual actuator, move single axes and finally close the actuator. This is all done by the graphical user interface of |itom|. Later we will learn, how to do this by the help of script commands. For this example, you need to have the hardware plugin **DummyMotor** which should be listed in the plugin toolbox as child of the **actuators** group.
 
 .. figure:: images/openDummyMotor1.png
-    :width: 100%
+    :width: 853px
     :align: center
 
 Every entry in this toolbox corresponds to one library file (Windows: \*.dll, Linux: \*.so), located in any subfolder of the **plugins** subfolder of your |itom| installation path. If the library could be loaded, you can connect to one or multiple instances of its represented hardware (e.g. you can connect to various motors of the same type that are connected to the computer). If you don't find the desired library in the :ref:`plugins toolbox <gui-plugins>`, you either don't have the library in the plugins subfolder or the library could not be loaded. This can have various reasons. See the **loaded plugins...** dialog in the menu **file** to check why the plugin could not be loaded.
