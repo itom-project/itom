@@ -87,7 +87,9 @@ public:
     //! get bytes from py object
     static QSharedPointer<char> PyObjGetBytesShared(PyObject* val, bool strict, bool &ok);
     //! get int from py object
-    static int     PyObjGetInt(PyObject* val, bool strict, bool &ok);
+    static int PyObjGetInt(PyObject* val, bool strict, bool &ok);
+    //! get unsigned int from py object
+    static unsigned int PyObjGetUInt(PyObject* val, bool strict, bool &ok);
     //! get int64 from py object
     static qint64  PyObjGetLongLong(PyObject* val, bool strict, bool &ok);
     //! get int64 from py object

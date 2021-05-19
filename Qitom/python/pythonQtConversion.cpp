@@ -440,7 +440,7 @@ bool PythonQtConversion::PyObjGetBool(PyObject* val, bool strict, bool &ok)
     }
     else if (!strict) 
     {
-        d = PyObjGetInt(val, false, ok) != 0;
+        d = (PyObjGetInt(val, false, ok) != 0);
         ok = true;
     }
     return d;
@@ -453,6 +453,17 @@ int castIntOverflow(const _Tp val, bool &ok)
     qint64 val_ = (qint64)val;
 
     ok = (val_ >= (qint64)std::numeric_limits<int>::min() && val_ <= (qint64)std::numeric_limits<int>::max());
+
+    return static_cast<int>(val);
+}
+
+template <typename _Tp>
+int castUIntOverflow(const _Tp val, bool &ok)
+{
+    static_assert(std::numeric_limits<_Tp>::is_integer, "_Tp must be an integer");
+    qint64 val_ = (qint64)val;
+
+    ok = (val_ >= 0 && val_ <= (qint64)std::numeric_limits<unsigned int>::max());
 
     return static_cast<int>(val);
 }
@@ -612,6 +623,150 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
     }
 
     return d;
+}
+
+//-------------------------------------------------------------------------------------
+//! conversion from PyObject* to unsigned integer
+/*!
+If val is a fixed-point object, it is directly converted into an integer variable. Otherwise, the output depends
+on strict. If strict is equal to false, any floating point object is rounded using floor and the result is returned.
+Additionally boolean variables are returned as 0 (false) or 1 (true) if strict is false, too.
+
+\param val is the given python object
+\param strict indicates if only real integer or long types should be converted
+\param ok (ByRef) is set to true if conversion succeeded.
+\return resulting integer
+*/
+unsigned int PythonQtConversion::PyObjGetUInt(PyObject* val, bool strict, bool &ok)
+{
+    unsigned int uInt = 0;
+    ok = true;
+    bool processed = false;
+
+    if (PyLong_Check(val))
+    {
+        uInt = PyLong_AsUnsignedLong(val);
+    }
+    else if (PyArray_CheckScalar(val))
+    {
+        int typeNum = PyArray_DescrFromScalar(val)->type_num;
+        processed = true;
+
+        switch (typeNum)
+        {
+        case NPY_ULONGLONG:
+        {
+            unsigned long long v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_LONGLONG:
+        {
+            long long v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_ULONG:
+        {
+            unsigned long v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_LONG:
+        {
+            long v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_UINT:
+        {
+            PyArray_ScalarAsCtype(val, &uInt);
+        }
+        break;
+        case NPY_INT:
+        {
+            int v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        case NPY_USHORT:
+        {
+            unsigned short v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_SHORT:
+        {
+            short v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_UBYTE:
+        {
+            unsigned char v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        case NPY_BYTE:
+        {
+            char v;
+            PyArray_ScalarAsCtype(val, &v);
+            uInt = castUIntOverflow(v, ok);
+        }
+        break;
+        default:
+            processed = false;
+            break;
+        }
+    }
+
+    if (!processed && !strict)
+    {
+        if (PyFloat_Check(val))
+        {
+            uInt = floor(PyFloat_AS_DOUBLE(val));
+        }
+        else if (val == Py_False)
+        {
+            uInt = 0;
+        }
+        else if (val == Py_True)
+        {
+            uInt = 1;
+        }
+        else if (PyArray_CheckScalar(val)) // Scalar
+        {
+            // cast the scalar numpy type to int
+            PyArray_Descr * descr = PyArray_DescrNewFromType(NPY_UINT);
+            PyArray_CastScalarToCtype(val, &uInt, descr);
+            Py_DECREF(descr);
+        }
+        else
+        {
+            //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
+            int overflow;
+            uInt = PyLong_AsUnsignedLong(val);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
+        }
+    }
+    else if (!processed)
+    {
+        ok = false;
+    }
+
+    return uInt;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1626,7 +1781,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     
     case QVariant::UInt:
     {
-        unsigned int d = cv::saturate_cast<unsigned int>(PyObjGetLongLong(val, false, ok));
+        unsigned int d = PyObjGetUInt(val, false, ok);
         if (ok) v = QVariant(d);
     }
     break;
@@ -2113,7 +2268,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
 
         if (QMetaType::typeFlags(type) & QMetaType::IsEnumeration)
         {
-            unsigned int d = (unsigned int)PyObjGetInt(val, strict, ok);
+            unsigned int d = PyObjGetUInt(val, strict, ok);
             if (ok)
             {
                 *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
@@ -2169,7 +2324,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             case QMetaType::UInt:
             {
-                unsigned int d = cv::saturate_cast<unsigned int>(PyObjGetLongLong(val, strict, ok));
+                unsigned int d = PyObjGetUInt(val, strict, ok);
                 if (ok)
                 {
                     *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
