@@ -99,6 +99,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/4.0.1", //outdated on 2020-03-31 due to atomic reference counting in ito::ByteArray
     "ito.AddIn.InterfaceBase/4.0.2", //outdated on 2020-09-15 due to additional property 'popupSlider' of 'ParamEditorWidget'
     "ito.AddIn.InterfaceBase/4.1.0", //outdated on 2020-12-14 due to new userMutex in AddInBase
+    "ito.AddIn.InterfaceBase/4.2.0", //outdated on 2021-05-19 due to rework of ParamBase, Param, ParamMeta including the new StringList parameter type. Further changes in RetVal interface and bool operator of itom.dataObject.
     NULL
 };
 
@@ -109,11 +110,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
 //please indicate the major, minor and patch version in the following defines.
 //Additionally put all three components of the version in the define ITOM_ADDININTERFACE_VERSION_STR
 //and add the major version number only as argument of the macro in the last line.
-#define ITOM_ADDININTERFACE_MAJOR 4
-#define ITOM_ADDININTERFACE_MINOR 2
+#define ITOM_ADDININTERFACE_MAJOR 5
+#define ITOM_ADDININTERFACE_MINOR 0
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATEVERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-#define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(4,2,0)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(4); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 4 can not be replaced by the macros above. Does not work properly)
+#define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(5,0,0)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(5); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 5 can not be replaced by the macros above. Does not work properly)
 
 #endif
