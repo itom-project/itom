@@ -647,6 +647,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug("..python engine started");
 
     m_pyThread = new QThread();
+    // increase the stack size of the Python thread to 5MB (instead of 1MB default).
+    m_pyThread->setStackSize(5000000);
+    qDebug() << "..python engine thread stack size" << m_pyThread->stackSize();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
     QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue), Q_ARG(QSharedPointer<QVariantMap>, infoMessages));

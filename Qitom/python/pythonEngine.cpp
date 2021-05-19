@@ -482,9 +482,26 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
             if (_import_array() < 0)
             {
+                PyObject *type = nullptr;
+                PyObject *value = nullptr;
+                PyObject *traceback = nullptr;
+
+                PyErr_Fetch(&type, &value, &traceback);
+
+                QString msg = tr("Numpy.core.multiarray failed to import. Please verify that you have a compatible version of Numpy installed.");
+
+                if (value)
+                {
+                    msg += tr("\nNumpy load error: %1").arg(PythonQtConversion::PyObjGetString(value));
+                }
+
+                Py_XDECREF(type);
+                Py_XDECREF(value);
+                Py_XDECREF(traceback);
+
                 PyErr_PrintEx(0);
-                PyErr_SetString(PyExc_ImportError, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.").toLatin1().data());
-                (*retValue) += RetVal(retError, 0, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n").toLatin1().data());
+                PyErr_SetString(PyExc_ImportError, msg.toLatin1().data());
+                (*retValue) += RetVal(retError, 0, (msg + "\n").toLatin1().data());
                 return;
             }
 
