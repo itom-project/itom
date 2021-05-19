@@ -35,6 +35,8 @@
 #include <QMenu>
 #include <QMetaType>
 #include <QWidget>
+#include <qvariant.h>
+#include <qlist.h>
 class QComboBox;
 class QToolButton;
 
@@ -151,6 +153,19 @@ protected:
 public Q_SLOTS:
     void clearActiveAction();
     void setToolButtonStyle(Qt::ToolButtonStyle style);
+
+    /// this slot only returns the argument list for unittest purposes.
+    /* This slot has no further functionality and can be used
+    to test the proper marshalling between Python, C++ and Qt.
+    */
+    QVariantList __unittestVariantList(const QVariantList &list);
+
+    int __unittestInt(int value);
+    qint64 __unittestInt64(qint64 value);
+    quint64 __unittestUInt64(quint64 value);
+    float __unittestFloat(float value);
+    double __unittestDouble(double value);
+    short __unittestShort(short value);
 
 Q_SIGNALS:
     void actionChanged(QAction* action);

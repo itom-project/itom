@@ -129,7 +129,7 @@ namespace ito
 
         case (ito::ParamBase::DObjPtr & ito::paramTypeMask):
         {
-            ito::DataObject* dObj = (ito::DataObject*)(param.getVal<void*>());
+            ito::DataObject* dObj = param.getVal<ito::DataObject*>();
             if(dObj)
             {
                 ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
@@ -156,7 +156,7 @@ namespace ito
 #if ITOM_POINTCLOUDLIBRARY > 0
         case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask):
         {
-            ito::PCLPointCloud* pointCloud = (ito::PCLPointCloud*)(param.getVal<void*>());
+            ito::PCLPointCloud* pointCloud = param.getVal<ito::PCLPointCloud*>();
             if(pointCloud)
             {
                 ito::PythonPCL::PyPointCloud *pyPointCloud = ito::PythonPCL::createEmptyPyPointCloud();
@@ -183,7 +183,7 @@ namespace ito
 
         case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
         {
-            ito::PCLPolygonMesh* polygonMesh = (ito::PCLPolygonMesh*)(param.getVal<void*>());
+            ito::PCLPolygonMesh* polygonMesh = param.getVal<ito::PCLPolygonMesh*>();
             if(polygonMesh)
             {
                 ito::PythonPCL::PyPolygonMesh *pyPolygonMesh = ito::PythonPCL::createEmptyPyPolygonMesh();
@@ -311,6 +311,33 @@ namespace ito
         else if(PyDataObject_Check(obj))
         {
             paramBaseType = ito::ParamBase::DObjPtr;
+        }
+        else if (PyArray_CheckScalar(obj))
+        {
+            switch (PyArray_DescrFromScalar(obj)->type_num)
+            {
+            case NPY_BOOL:
+            case NPY_UBYTE:
+            case NPY_BYTE:
+            case NPY_USHORT:
+            case NPY_SHORT:
+            case NPY_INT:
+            case NPY_UINT:
+            case NPY_LONG:
+            case NPY_ULONG:
+            case NPY_LONGLONG:
+            case NPY_ULONGLONG:
+                paramBaseType = ito::ParamBase::Int;
+                break;
+            case NPY_FLOAT:
+            case NPY_DOUBLE:
+                paramBaseType = ito::ParamBase::Double;
+                break;
+            case NPY_CDOUBLE:
+            case NPY_CFLOAT:
+                paramBaseType = ito::ParamBase::Complex;
+                break;
+            }
         }
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if(PyPointCloud_Check(obj))
@@ -506,6 +533,7 @@ namespace ito
 
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ void PythonParamConversion::PyObjectToParamBaseDeleter(ito::ParamBase *param)
 {
     if(param)
@@ -514,20 +542,20 @@ namespace ito
         {
         case ito::ParamBase::DObjPtr & ito::paramTypeMask:
             {
-                ito::DataObject *d = (ito::DataObject*)param->getVal<void*>();
+                ito::DataObject *d = param->getVal<ito::DataObject*>();
                 DELETE_AND_SET_NULL(d);
             }
             break;
 #if ITOM_POINTCLOUDLIBRARY > 0
          case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
             {
-                ito::PCLPointCloud *d = (ito::PCLPointCloud*)param->getVal<void*>();
+                ito::PCLPointCloud *d = param->getVal<ito::PCLPointCloud*>();
                 DELETE_AND_SET_NULL(d);
             }
             break;
          case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
             {
-                ito::PCLPolygonMesh *d = (ito::PCLPolygonMesh*)param->getVal<void*>();
+                ito::PCLPolygonMesh *d = param->getVal<ito::PCLPolygonMesh*>();
                 DELETE_AND_SET_NULL(d);
             }
             break;

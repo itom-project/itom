@@ -276,7 +276,8 @@ PyObject* PythonFont::PyFont_getWeight(PyFont *self, void * /*closure*/)
 int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure*/)
 {
     bool ok;
-    quint64 weight = PythonQtConversion::PyObjGetULongLong(value, true, ok);
+    int weight = PythonQtConversion::PyObjGetInt(value, true, ok);
+
     if (ok)
     {
         if (weight <= 99)
@@ -317,7 +318,7 @@ PyObject* PythonFont::PyFont_getPointSize(PyFont *self, void * /*closure*/)
 int PythonFont::PyFont_setPointSize(PyFont *self, PyObject *value, void * /*closure*/)
 {
     bool ok;
-    quint64 pointSize = PythonQtConversion::PyObjGetULongLong(value, true, ok);
+    int pointSize = PythonQtConversion::PyObjGetInt(value, true, ok);
 
     if (ok)
     {
@@ -329,7 +330,7 @@ int PythonFont::PyFont_setPointSize(PyFont *self, PyObject *value, void * /*clos
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "error interpreting the point size as uint.");
+        PyErr_SetString(PyExc_TypeError, "error interpreting the point size as int.");
         return -1;
     }
 }
