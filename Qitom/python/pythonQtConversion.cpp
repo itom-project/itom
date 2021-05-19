@@ -751,7 +751,6 @@ unsigned int PythonQtConversion::PyObjGetUInt(PyObject* val, bool strict, bool &
         else
         {
             //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
-            int overflow;
             uInt = PyLong_AsUnsignedLong(val);
             if (PyErr_Occurred())
             {
@@ -1432,7 +1431,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
 //-------------------------------------------------------------------------------------
-/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= NULL*/)
+/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= nullptr*/)
 {
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
@@ -1513,19 +1512,82 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
 }
 
 //-------------------------------------------------------------------------------------
-/*static*/ QSharedPointer<ito::DataObject> PythonQtConversion::PyObjGetSharedDataObject(PyObject *val, bool &ok) //is always strict, only dataobjects are allowed
+/*static*/ QSharedPointer<ito::DataObject> PythonQtConversion::PyObjGetSharedDataObject(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= nullptr*/)
 {
+    QSharedPointer<ito::DataObject> result = QSharedPointer<ito::DataObject>();
+    ok = false;
+
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
         ito::PythonDataObject::PyDataObject* dObj = (ito::PythonDataObject::PyDataObject*)val;
+
         if (dObj->dataObject)
         {
             ok = true;
-            return ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(dObj->dataObject, val);
+            // returns the internal dataObject of val and increments val to keep the dataObject.
+            // The refcount of val is decrementetd by the deleter of the returned shared pointer.
+            result = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(dObj->dataObject, val);
+        }
+        else if (retVal)
+        {
+            *retVal += ito::RetVal(ito::retError, 0, "given object must contain a valid dataObject.");
         }
     }
-    ok = false;
-    return QSharedPointer<ito::DataObject>();
+    else if (strict == false) //try to convert numpy.array to dataObject
+    {
+        if (PyArray_Check(val))
+        {
+            PyObject *args = Py_BuildValue("(O)", val);
+
+            ito::PythonDataObject::PyDataObject *newPyDataObject = 
+                (ito::PythonDataObject::PyDataObject*)PyObject_Call(
+                    (PyObject*)&ito::PythonDataObject::PyDataObjectType, 
+                    args, 
+                    nullptr
+                ); //new reference
+
+            ito::DataObject *dObj = nullptr;
+            Py_DECREF(args);
+
+            if (newPyDataObject)
+            {
+                // returns the internal dataObject of val and increments val to keep the dataObject.
+                // The refcount of val is decrementetd by the deleter of the returned shared pointer.
+                result = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(
+                    newPyDataObject->dataObject, 
+                    (PyObject*)newPyDataObject
+                );
+
+                ok = true;
+                Py_XDECREF(newPyDataObject);
+            }
+            else
+            {
+                ito::RetVal ret = PythonCommon::checkForPyExceptions(true);
+
+                if (retVal)
+                {
+                    *retVal += ret;
+                }
+            }
+        }
+        else
+        {
+            if (retVal)
+            {
+                *retVal += ito::RetVal(ito::retError, 0, "given object must be of type itom.dataObject or numpy.array.");
+            }
+        }
+    }
+    else //strict
+    {
+        if (retVal)
+        {
+            *retVal += ito::RetVal(ito::retError, 0, "given object must be of type itom.dataObject.");
+        }
+    }
+
+    return result;
 }
 
 #if ITOM_POINTCLOUDLIBRARY > 0
