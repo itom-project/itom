@@ -159,6 +159,9 @@ namespace ito
         ito::DataObject* dObj = param.getVal<ito::DataObject*>();
         if(dObj)
         {
+            ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
+            if (pyDataObj)
+            {
                 pyDataObj->dataObject = new ito::DataObject(*dObj);
                 result = (PyObject *)pyDataObj;
             }
@@ -178,7 +181,11 @@ namespace ito
 #if ITOM_POINTCLOUDLIBRARY > 0
     case (ito::ParamBase::PointCloudPtr): {
         ito::PCLPointCloud* pointCloud = param.getVal<ito::PCLPointCloud*>();
-            if(pointCloud)            {
+        if(pointCloud)            
+        {
+            ito::PythonPCL::PyPointCloud *pyPointCloud = ito::PythonPCL::createEmptyPyPointCloud();
+            if (pyPointCloud)
+            {
                 pyPointCloud->data = new ito::PCLPointCloud(*pointCloud);
                 result = (PyObject *)pyPointCloud;
             }
@@ -198,7 +205,11 @@ namespace ito
 
     case (ito::ParamBase::PolygonMeshPtr): {
         ito::PCLPolygonMesh* polygonMesh = param.getVal<ito::PCLPolygonMesh*>();
-            if(polygonMesh)            {
+        if (polygonMesh)
+        {
+            ito::PythonPCL::PyPolygonMesh *pyPolygonMesh = ito::PythonPCL::createEmptyPyPolygonMesh();
+            if (pyPolygonMesh)
+            {
                 pyPolygonMesh->polygonMesh = new ito::PCLPolygonMesh(*polygonMesh);
                 result = (PyObject *)pyPolygonMesh;
             }
