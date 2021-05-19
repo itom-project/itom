@@ -406,8 +406,7 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(
-            PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok, &retval2));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok, &retval2);
     }
 
     if (!ok)
@@ -614,12 +613,10 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(
-            PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
         if (ok && xData)
         {
-            xDataCont = QSharedPointer<ito::DataObject>(
-                PythonQtConversion::PyObjGetDataObjectNewPtr(xData, false, ok));
+            xDataCont = PythonQtConversion::PyObjGetSharedDataObject(xData, false, ok);
 
             if (!ok)
             {
@@ -840,8 +837,7 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(
-            PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
     }
 
     if (!ok)
@@ -1055,8 +1051,7 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(
-            PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
     }
 
     if (!ok)
