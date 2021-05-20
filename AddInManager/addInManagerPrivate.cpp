@@ -504,11 +504,11 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         catch (std::logic_error &ex)
         {
             const char* what = ex.what();
-            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1\nReason: %2").arg(filename).arg(what).toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'\nReason: %2").arg(filename).arg(what).toLatin1().data());
         }
         catch (...)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1").arg(filename).toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'").arg(filename).toLatin1().data());
         }
     }
 
