@@ -448,17 +448,17 @@ corresponding C++-structures and vice-versa. The following table lists some conv
 always tried to convert the input type to the desired destination type, such that a number can also be transformed to a 
 string, if it is always known, that the destination requires a string.
 
-================= ===========================================================================
+================= ==================================================================================================================
 C++/Qt-Type       Python-Type  
-================= ===========================================================================
+================= ==================================================================================================================
 QString           str or any type, that has a string representation
 QByteArray        unicode or byte type
 QUrl              any string that can be interpreted as Url
-bool              any type that can be casted to a boolean value (1,0,True,False...)
+bool              any type that can be casted to a boolean value (1, 0, True, False...), including corresponding numpy scalars.
 QStringList       any sequence that only contains values castable to QString
-int, short, long  integer, floats are rounded to integer, True=1, False=0
-unsigned int ...  integer, floats are rounded to integer, True=1, False=0
-float, double     integer, floats, True=1.0, False=0.0
+int, short, long  integer, floats are rounded to integer, True=1, False=0, including corresponding numpy scalars.
+unsigned int ...  integer, floats are rounded to integer, True=1, False=0, including corresponding numpy scalars.
+float, double     integer, floats, True=1.0, False=0.0, including corresponding numpy scalars.
 QVector<int>      any sequence whose values are castable to int
 QVector<double>   any sequence whose values are castable to float
 QList<int>        any sequence whose values are castable to int
@@ -484,7 +484,7 @@ QDateTime         :py:class:`datetime.datetime` object
 QFont             :py:class:`~itom.font`
 Qt::CheckState    int (0: unchecked, 1: partially checked, 2: checked)
 Qt::ItemFlags     int, bitmask (see Qt::ItemFlags for definitions)
-================= ===========================================================================
+================= ==================================================================================================================
 
 If a property or other arguments in |Qt| require other data types, it is possibly to implement a converter for them. It 
 only becomes a little bit more difficult for pointers to extended C++ or |Qt| classes. The conversion is mainly done in 
