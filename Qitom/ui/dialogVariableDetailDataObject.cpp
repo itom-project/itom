@@ -38,11 +38,9 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QSharedPointer<ito::DataObject> dObj,
     QWidget* parent) :
     QDialog(parent),
-    m_AxesRanges(nullptr)
+    m_axesRanges(nullptr), m_dObj(dObj)
 {
     ui.setupUi(this);
-
-    m_dObj = dObj;
 
     ui.txtName->setText(name);
     ui.txtType->setText(type);
@@ -55,59 +53,87 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     // add combobox for displayed axis and slicing of dataObject axis
     int dims = m_dObj->getDims();
-    int col = dims - 2;
-    int row = dims - 1;
-    bool valid = true;
 
-    m_AxesRanges = new ito::Range[dims];
+    QString dObjSize = "[";
 
-    QStringList items;
-    QString itemDescription;
-    std::string axisDescription;
-    for (int idx = 0; idx < dims; idx++)
+    for (int dim = 0; dim < dims; dim++)
     {
-        itemDescription = "";
-        axisDescription = m_dObj->getAxisDescription(idx, valid);
-        if (!axisDescription.empty())
+        if (dim < dims - 1)
         {
-            itemDescription += QString::fromUtf8(axisDescription.data());
-            itemDescription += " (";
+            dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
         }
-
-        itemDescription += QString::number(idx);
-
-        if (!axisDescription.empty())
+        else
         {
-            itemDescription += ")";
+            dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
         }
-
-        items += itemDescription;
+        
     }
+    dObjSize.append("]");
 
-    ui.comboBoxDisplayedRow->addItems(items);
-    ui.comboBoxDisplayedRow->setCurrentIndex(col);
-    ui.comboBoxDisplayedCol->addItems(items);
-    ui.comboBoxDisplayedCol->setCurrentIndex(row);
+    ui.txtDSize->setText(dObjSize);
 
-    addSlicingWidgets();
-    changeDisplayedAxes();
+    if (dims < 3)
+    {
+        ui.dataTable->setData(QSharedPointer<ito::DataObject>(m_dObj));
+        ui.frameSlicing->setVisible(false);
+    }
+    else
+    {
+        int col = dims - 2;
+        int row = dims - 1;
+        bool valid = true;
 
-    connect(
-        ui.comboBoxDisplayedRow,
-        SIGNAL(currentIndexChanged(int)),
-        this,
-        SLOT(comboBoxCurrentIndexChanged(int)));
-    connect(
-        ui.comboBoxDisplayedCol,
-        SIGNAL(currentIndexChanged(int)),
-        this,
-        SLOT(comboBoxCurrentIndexChanged(int)));
+
+        m_axesRanges = new ito::Range[dims];
+
+        QStringList items;
+        QString itemDescription;
+        std::string axisDescription;
+        for (int idx = 0; idx < dims; idx++)
+        {
+            itemDescription = "";
+            axisDescription = m_dObj->getAxisDescription(idx, valid);
+            if (!axisDescription.empty())
+            {
+                itemDescription += QString::fromUtf8(axisDescription.data());
+                itemDescription += " (Axis ";
+            }
+
+            itemDescription += QString::number(idx);
+
+            if (!axisDescription.empty())
+            {
+                itemDescription += ")";
+            }
+
+            items += itemDescription;
+        }
+
+        ui.comboBoxDisplayedRow->addItems(items);
+        ui.comboBoxDisplayedRow->setCurrentIndex(col);
+        ui.comboBoxDisplayedCol->addItems(items);
+        ui.comboBoxDisplayedCol->setCurrentIndex(row);
+
+        addSlicingWidgets();
+        changeDisplayedAxes();
+
+        connect(
+            ui.comboBoxDisplayedRow,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(comboBoxCurrentIndexChanged(int)));
+        connect(
+            ui.comboBoxDisplayedCol,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(comboBoxCurrentIndexChanged(int)));
+    }
 }
 
 //----------------------------------------------------------------------------------------------
 DialogVariableDetailDataObject::~DialogVariableDetailDataObject()
 {
-    DELETE_AND_SET_NULL_ARRAY(m_AxesRanges);
+    DELETE_AND_SET_NULL_ARRAY(m_axesRanges);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -150,7 +176,7 @@ void DialogVariableDetailDataObject::addSlicingWidgets()
 
     ui.horizontalLayoutSlicing->addWidget(new QLabel("["));
 
-    m_SpinBoxToIdxMap.clear();
+    m_spinBoxToIdxMap.clear();
 
     for (int idx = 0; idx < dims; idx++)
     {
@@ -168,7 +194,7 @@ void DialogVariableDetailDataObject::addSlicingWidgets()
             spinBox->setMaximum(m_dObj->getSize(idx) - 1);
             connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxValueChanged(int)));
             ui.horizontalLayoutSlicing->addWidget(spinBox);
-            m_SpinBoxToIdxMap.insert(idx, spinBox);
+            m_spinBoxToIdxMap.insert(idx, spinBox);
         }
 
         if (idx < dims - 1)
@@ -192,29 +218,29 @@ void DialogVariableDetailDataObject::changeDisplayedAxes()
     {
         if (idx == row)
         {
-            m_AxesRanges[idx] = ito::Range(ito::Range::all());
+            m_axesRanges[idx] = ito::Range(ito::Range::all());
         }
         else if (idx == col)
         {
-            m_AxesRanges[idx] = ito::Range(ito::Range::all());
+            m_axesRanges[idx] = ito::Range(ito::Range::all());
         }
         else
         {
             int index;
-            if (m_SpinBoxToIdxMap.empty())
+            if (m_spinBoxToIdxMap.empty())
             {
                 index = 0;
             }
             else
             {
-                index = m_SpinBoxToIdxMap.value(idx)->value();
+                index = m_spinBoxToIdxMap.value(idx)->value();
             }
-            m_AxesRanges[idx] = ito::Range(index, index + 1);
+            m_axesRanges[idx] = ito::Range(index, index + 1);
         }
     }
 
     ui.dataTable->setData(
-        QSharedPointer<ito::DataObject>(new ito::DataObject(m_dObj->at(m_AxesRanges).squeeze())));
+        QSharedPointer<ito::DataObject>(new ito::DataObject(m_dObj->at(m_axesRanges).squeeze())));
 }
 
 } // end namespace ito

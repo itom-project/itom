@@ -512,7 +512,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         {
             if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
             {
-                obj = (*values)[i]->getVal<ito::DataObject*>();
+                obj = (*values)[i]->getVal<const ito::DataObject*>();
                 dObj = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
                 break;
             }
