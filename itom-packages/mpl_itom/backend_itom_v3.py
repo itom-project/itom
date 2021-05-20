@@ -37,7 +37,7 @@ import weakref
 
 # itom specific imports (end)
 
-backend_version = "3.0.2"
+backend_version = "3.1.0"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -157,19 +157,28 @@ class TimerItom(TimerBase):
     """
 
     def __init__(self, *args, **kwargs):
-        TimerBase.__init__(self, *args, **kwargs)
-
         # Create a new timer and connect the timeout() signal to the
         # _on_timer method.
-        self._timer = itom.timer(
-            self._interval, self._on_timer, singleShot=self._single
-        )
-        self._timer_set_interval()
+        if matplotlib.__version__ < "3.3.0":
+            TimerBase.__init__(self, *args, **kwargs)
+            self._timer = itom.timer(
+                self._interval, self._on_timer, singleShot=self._single
+            )
+            self._timer_set_interval()
+        else:
+            # set a long default interval to stop the timer. The super
+            # constructor will then directly set the interval and singleShot.
+            self._timer = itom.timer(
+                1000000, self._on_timer, singleShot=False
+            )
+            super().__init__(*args, **kwargs)
 
     def __del__(self):
         # Probably not necessary in practice, but is good behavior to
         # disconnect
+        print("-------------disconnect-----------------")
         try:
+            self._timer_stop()
             TimerBase.__del__(self)
             self._timer = None
         except RuntimeError:
@@ -420,26 +429,27 @@ class FigureCanvasItom(FigureCanvasBase):
         elif type == 1:  # keyReleaseEvent
             FigureCanvasBase.key_release_event(self, key)
 
-    @property
-    @cbook.deprecated(
-        "3.0",
-        message="Manually check `event.guiEvent.isAutoRepeat()` "
-        "in the event handler.",
-    )
-    def keyAutoRepeat(self):
-        """
-        If True, enable auto-repeat for key events.
-        """
-        return self._keyautorepeat
-
-    @keyAutoRepeat.setter
-    @cbook.deprecated(
-        "3.0",
-        message="Manually check `event.guiEvent.isAutoRepeat()` "
-        "in the event handler.",
-    )
-    def keyAutoRepeat(self, val):
-        self._keyautorepeat = bool(val)
+    if matplotlib.__version__ < "3.2.0":
+        @property
+        @cbook.deprecated(
+            "3.0",
+            message="Manually check `event.guiEvent.isAutoRepeat()` "
+            "in the event handler.",
+        )
+        def keyAutoRepeat(self):
+            """
+            If True, enable auto-repeat for key events.
+            """
+            return self._keyautorepeat
+    
+        @keyAutoRepeat.setter
+        @cbook.deprecated(
+            "3.0",
+            message="Manually check `event.guiEvent.isAutoRepeat()` "
+            "in the event handler.",
+        )
+        def keyAutoRepeat(self, val):
+            self._keyautorepeat = bool(val)
 
     def resizeEvent(self, w, h, draw=True):
         if self._destroying or (w, h) == self.lastResizeSize:
@@ -642,7 +652,7 @@ class FigureManagerItom(FigureManagerBase):
     """
 
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
-        FigureManagerBase.__init__(self, canvas, num)
+        
         self.canvas = canvas
         self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
@@ -653,6 +663,8 @@ class FigureManagerItom(FigureManagerBase):
 
         self.matplotlibplotUiItem["focusPolicy"] = 0x2  # QtCore.Qt.ClickFocus
         self.matplotlibplotUiItem.connect("destroyed()", self._widgetclosed)
+
+        super().__init__(canvas, num)
 
         if embeddedWidget == False and self.windowUi:
             self.windowUi["windowTitle"] = "Figure %d" % num
@@ -905,8 +917,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         """
 
     def _initToolbar(self):
-        self.basedir = os.path.join(matplotlib.rcParams["datapath"], "images")
-
+        """
+        """
         w = self.matplotlibplotUiItem()
         if not w:
             return
@@ -1413,31 +1425,31 @@ backend_tools.ToolRubberband = RubberbandItom
 backend_tools.ToolHelp = HelpItom
 backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
 
-
-@cbook.deprecated("3.0")
-def error_msg_itom(msg, parent=None):
-    if not isinstance(msg, str):
-        msg = ",".join(map(str, msg))
-
-    itom.ui.msgWarning("Matplotlib", msg)
-
-
-@cbook.deprecated("3.0")
-def exception_handler(type, value, tb):
-    """Handle uncaught exceptions
-    It does not catch SystemExit
-    """
-    msg = ""
-    # get the filename attribute if available (for IOError)
-    if hasattr(value, "filename") and value.filename is not None:
-        msg = value.filename + ": "
-    if hasattr(value, "strerror") and value.strerror is not None:
-        msg += value.strerror
-    else:
-        msg += str(value)
-
-    if len(msg):
-        error_msg_itom(msg)
+if matplotlib.__version__ < "3.2.0":
+    @cbook.deprecated("3.0")
+    def error_msg_itom(msg, parent=None):
+        if not isinstance(msg, str):
+            msg = ",".join(map(str, msg))
+    
+        itom.ui.msgWarning("Matplotlib", msg)
+    
+    
+    @cbook.deprecated("3.0")
+    def exception_handler(type, value, tb):
+        """Handle uncaught exceptions
+        It does not catch SystemExit
+        """
+        msg = ""
+        # get the filename attribute if available (for IOError)
+        if hasattr(value, "filename") and value.filename is not None:
+            msg = value.filename + ": "
+        if hasattr(value, "strerror") and value.strerror is not None:
+            msg += value.strerror
+        else:
+            msg += str(value)
+    
+        if len(msg):
+            error_msg_itom(msg)
 
 
 @_Backend.export
