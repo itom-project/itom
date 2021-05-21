@@ -320,18 +320,11 @@ RuntimeError \n\
         return NULL;
     }
 
-    
+    // conversion must be strict, since the given dataObject should be changed by the subsequent calls.
     bool ok;
-    QSharedPointer<ito::DataObject> coords = PythonQtConversion::PyObjGetSharedDataObject(dataObject, ok);
+    QSharedPointer<ito::DataObject> coords = PythonQtConversion::PyObjGetSharedDataObject(dataObject, true, ok, &retval);
 
-    if (!ok)
-    {
-        retval += ito::RetVal(
-            ito::retError, 
-            0, 
-            QObject::tr("data object cannot be converted to a shared data object").toLatin1().data());
-    }
-    else
+    if (ok)
     {
         QSharedPointer<QVector<ito::Shape> > shapes(new QVector<ito::Shape>());
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -393,7 +386,7 @@ RuntimeError \n\
 
     if(!PythonCommon::transformRetValToPyException(retval))
     {
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;

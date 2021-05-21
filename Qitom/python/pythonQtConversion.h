@@ -119,9 +119,13 @@ public:
     static ito::PCLPolygonMesh* PyObjGetPolygonMeshNewPtr(PyObject *val, bool strict, bool &ok);
 #endif
 
-    static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal = NULL);
+    static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal = nullptr);
 
-    static QSharedPointer<ito::DataObject> PyObjGetSharedDataObject(PyObject *val, bool &ok); //is always strict, only dataobjects are allowed
+    //! converts the python object to a DataObject. If the returned value is destroyed, possible base objects will be safely
+    //! removed, too. If strict is true, the returned DataObject is exactly the same object, than wrapped by the given
+    //! python object. Else, numpy-like arrays can also be accepted and will be converted (shallow or deep copy, whatever
+    //! is possible) to a dataObject.
+    static QSharedPointer<ito::DataObject> PyObjGetSharedDataObject(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal = nullptr);
 
     //! create a string list from python sequence
     static QStringList PyObjToStringList(PyObject* val, bool strict, bool& ok);
