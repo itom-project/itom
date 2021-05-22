@@ -52,15 +52,18 @@ private:
     QSharedPointer<ito::DataObject> m_dObj;
     ito::Range* m_axesRanges;
     QMap<int, QSpinBox*> m_spinBoxToIdxMap;
+    QMap<QString, int> m_rowAxisToIndex;
+    QMap<QString, int> m_colAxisToIndex;
 
-    void changeDisplayedAxes();
+    void changeDisplayedAxes(int isColNotRow);
     void deleteSlicingWidgets();
     void addSlicingWidgets();
 
 private slots:
     void on_btnCopyClipboard_clicked();
     void spinBoxValueChanged(int idx);
-    void comboBoxCurrentIndexChanged(int idx);
+    void on_comboBoxDisplayedCol_currentIndexChanged(int idx);
+    void on_comboBoxDisplayedRow_currentIndexChanged(int idx);
 };
 
 } //end namespace ito
