@@ -84,7 +84,6 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         int row = dims - 2;
         bool valid = true;
 
-
         m_axesRanges = new ito::Range[dims];
 
         QStringList itemsRow;
@@ -135,17 +134,18 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
                 itemsCol += itemDescription;
                 m_colAxisToIndex.insert(itemDescription, idx);
-            }
-            
+            }            
         }
 
         ui.comboBoxDisplayedCol->blockSignals(true);
         ui.comboBoxDisplayedRow->blockSignals(true);
+
         ui.comboBoxDisplayedRow->addItems(itemsRow);
         ui.comboBoxDisplayedRow->setCurrentIndex(row);
 
         ui.comboBoxDisplayedCol->addItems(itemsCol);
-        ui.comboBoxDisplayedCol->setCurrentIndex(col-1);  // - 1 because first axis is not accessible with col
+        ui.comboBoxDisplayedCol->setCurrentIndex(col-1);  // - 1 because first axis is not accessible with col. ComboBox with one item less
+
         ui.comboBoxDisplayedCol->blockSignals(false);
         ui.comboBoxDisplayedRow->blockSignals(false);
 
@@ -172,7 +172,7 @@ void DialogVariableDetailDataObject::on_comboBoxDisplayedRow_currentIndexChanged
 {
     deleteSlicingWidgets();
     addSlicingWidgets();
-    changeDisplayedAxes(0);
+    changeDisplayedAxes(0); // 0: row, 1: col, -1: default
 }
 
 //----------------------------------------------------------------------------------------------
@@ -180,13 +180,13 @@ void DialogVariableDetailDataObject::on_comboBoxDisplayedCol_currentIndexChanged
 {
     deleteSlicingWidgets();
     addSlicingWidgets();
-    changeDisplayedAxes(1);
+    changeDisplayedAxes(1); // 0: row, 1: col, -1: default
 }
 
 //----------------------------------------------------------------------------------------------
 void DialogVariableDetailDataObject::spinBoxValueChanged(int idx)
 {
-    changeDisplayedAxes(-1);
+    changeDisplayedAxes(-1); // 0: row, 1: col, -1: default
 }
 
 //----------------------------------------------------------------------------------------------
@@ -252,12 +252,10 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
 
     if (row > col)
     {
-        if (isColNotRow)
+        if (isColNotRow) // 0: row, 1: col, -1: default
         {
             row = col;
             ui.comboBoxDisplayedRow->setCurrentIndex(row);
-            row = m_rowAxisToIndex.value(
-                ui.comboBoxDisplayedRow->itemText(ui.comboBoxDisplayedRow->currentIndex()));
         }
         else
         {
