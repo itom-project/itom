@@ -20,14 +20,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGVARIABLEDETAILDATAOBJECT_H
-#define DIALOGVARIABLEDETAILDATAOBJECT_H
-
-#include <qdialog.h>
+#pragma once
 
 #include "ui_dialogVariableDetailDataObject.h"
 
 #include "DataObject/dataobj.h"
+
+#include <qdialog.h>
 #include <qspinbox.h>
 #include <qlist.h>
 
@@ -50,7 +49,7 @@ public:
 private:
     Ui::DialogVariableDetailDataObject ui;
     QSharedPointer<ito::DataObject> m_dObj;
-    ito::Range* m_axesRanges;
+    ito::Range* m_pAxesRanges;
     QMap<int, QSpinBox*> m_spinBoxToIdxMap;
     QMap<QString, int> m_rowAxisToIndex;
     QMap<QString, int> m_colAxisToIndex;
@@ -67,5 +66,3 @@ private slots:
 };
 
 } //end namespace ito
-
-#endif
