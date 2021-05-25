@@ -545,6 +545,7 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
             PyArray_ScalarAsCtype(val, &v);
             d = v;
         }
+        break;
         case NPY_USHORT:
         {
             unsigned short v;
@@ -575,7 +576,7 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
         break;
         default:
             processed = false;
-            break;
+        break;
         }
     }
     
@@ -1871,14 +1872,14 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     
     case QMetaType::Long:
     {
-        long d = cv::saturate_cast<long>(PyObjGetLongLong(val, false, ok));
+        long d = static_cast<long>(PyObjGetLongLong(val, false, ok));
         if (ok) v =  qVariantFromValue(d);
     }
     break;
     
     case QMetaType::ULong:
     {
-        unsigned long d = cv::saturate_cast<unsigned long>(PyObjGetLongLong(val, false, ok));
+        unsigned long d = static_cast<unsigned long>(PyObjGetLongLong(val, false, ok));
         if (ok) v =  qVariantFromValue(d);
     }
     break;
@@ -2423,7 +2424,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             case QMetaType::Long:
             {
-                long d = cv::saturate_cast<long>(PyObjGetLongLong(val, strict, ok));
+                long d = static_cast<long>(PyObjGetLongLong(val, strict, ok));
                 if (ok)
                 {
                     * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
@@ -2432,7 +2433,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             case QMetaType::ULong:
             {
-                unsigned long d = cv::saturate_cast<unsigned long>(PyObjGetULongLong(val, strict, ok));
+                unsigned long d = static_cast<unsigned long>(PyObjGetULongLong(val, strict, ok));
                 if (ok)
                 {
                     * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
