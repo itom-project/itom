@@ -23,6 +23,7 @@
 #include "dialogVariableDetailDataObject.h"
 #include "dataobj.h"
 #include <qsharedpointer.h>
+#include <qstandarditemmodel.h>
 
 #include <qclipboard.h>
 #include <qmap.h>
@@ -94,61 +95,45 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
         m_pAxesRanges = new ito::Range[dims];
 
-        QStringList itemsRow;
-        QStringList itemsCol;
+        QStringList items;
         QString itemDescription;
         std::string axisDescription;
         for (int idx = 0; idx < dims; idx++)
         {
-            // define combobox for row without last axis
-            if (idx != dims - 1)
+            axisDescription = m_dObj->getAxisDescription(idx, valid);
+
+            if (axisDescription.empty())
             {
-                axisDescription = m_dObj->getAxisDescription(idx, valid);
-
-                if (axisDescription.empty())
-                {
-                    itemDescription = tr("Axis %1").arg(idx);
-                }
-                else
-                {
-                    itemDescription =
-                        tr("%1 (Axis %2)").arg(QString::fromUtf8(axisDescription.data())).arg(idx);
-                }
-
-                itemsRow += itemDescription;
-                m_rowAxisToIndex.insert(itemDescription, idx);
+                itemDescription = tr("Axis %1").arg(idx);
+            }
+            else
+            {
+                itemDescription =
+                    tr("%1 (Axis %2)").arg(QString::fromUtf8(axisDescription.data())).arg(idx);
             }
 
-            // define combobox for col
-            if (idx != 0)
-            {
-                axisDescription = m_dObj->getAxisDescription(idx, valid);
-
-                if (axisDescription.empty())
-                {
-                    itemDescription = tr("Axis %1").arg(idx);
-                }
-                else
-                {
-                    itemDescription =
-                        tr("%1 (Axis %2)").arg(QString::fromUtf8(axisDescription.data())).arg(idx);
-                }
-
-                itemsCol += itemDescription;
-                m_colAxisToIndex.insert(itemDescription, idx);
-            }
+            items += itemDescription;
         }
 
         ui.comboBoxDisplayedCol->blockSignals(true);
         ui.comboBoxDisplayedRow->blockSignals(true);
 
-        ui.comboBoxDisplayedRow->addItems(itemsRow);
+        ui.comboBoxDisplayedRow->addItems(items);
         ui.comboBoxDisplayedRow->setCurrentIndex(row);
 
-        ui.comboBoxDisplayedCol->addItems(itemsCol);
-        ui.comboBoxDisplayedCol->setCurrentIndex(
-            col -
-            1); // - 1 because first axis is not accessible with col. ComboBox with one item less
+        ui.comboBoxDisplayedCol->addItems(items);
+        ui.comboBoxDisplayedCol->setCurrentIndex(col);
+
+        
+        QStandardItemModel* model =
+            qobject_cast<QStandardItemModel*>(ui.comboBoxDisplayedRow->model());
+        QStandardItem* item =
+            model->item(ui.comboBoxDisplayedRow->count() - 1); // last axis not allow for rows
+        item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+
+        model = qobject_cast<QStandardItemModel*>(ui.comboBoxDisplayedCol->model());
+        item = model->item(0); // first axis not allow for cols
+        item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
 
         ui.comboBoxDisplayedCol->blockSignals(false);
         ui.comboBoxDisplayedRow->blockSignals(false);
@@ -208,11 +193,9 @@ void DialogVariableDetailDataObject::deleteSlicingWidgets()
 void DialogVariableDetailDataObject::addSlicingWidgets()
 {
     int dims = m_dObj->getDims();
-    int col = m_colAxisToIndex.value(
-        ui.comboBoxDisplayedCol->itemText(ui.comboBoxDisplayedCol->currentIndex()));
+    int col = ui.comboBoxDisplayedCol->currentIndex();
 
-    int row = m_rowAxisToIndex.value(
-        ui.comboBoxDisplayedRow->itemText(ui.comboBoxDisplayedRow->currentIndex()));
+    int row = ui.comboBoxDisplayedRow->currentIndex();
 
     ui.horizontalLayoutSlicing->addWidget(new QLabel("[", this));
 
@@ -249,24 +232,20 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
     ui.comboBoxDisplayedRow->blockSignals(true);
 
     int dims = m_dObj->getDims();
-    int col = m_colAxisToIndex.value(
-        ui.comboBoxDisplayedCol->itemText(ui.comboBoxDisplayedCol->currentIndex()));
-    int row = m_rowAxisToIndex.value(
-        ui.comboBoxDisplayedRow->itemText(ui.comboBoxDisplayedRow->currentIndex()));
+    int col = ui.comboBoxDisplayedCol->currentIndex();
+    int row = ui.comboBoxDisplayedRow->currentIndex();
 
-    if (row > col)
+    if (row == col)
     {
         if (isColNotRow) // 0: row, 1: col, -1: default
         {
-            row = col;
+            row = col - 1;
             ui.comboBoxDisplayedRow->setCurrentIndex(row);
         }
         else
         {
-            col = row;
-            ui.comboBoxDisplayedCol->setCurrentIndex(col - 1);
-            col = m_colAxisToIndex.value(
-                ui.comboBoxDisplayedCol->itemText(ui.comboBoxDisplayedCol->currentIndex()));
+            col = row + 1;
+            ui.comboBoxDisplayedCol->setCurrentIndex(col);
         }
         deleteSlicingWidgets();
         addSlicingWidgets();
