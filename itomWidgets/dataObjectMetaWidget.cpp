@@ -164,8 +164,7 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
     QTreeWidgetItem* protocolTree = new QTreeWidgetItem(this, QStringList(tr("Protocol").toLatin1().data()), 0);
 
     QString typeStr;
-    int dtype = m_data.getType();
-    switch (dtype)  // this swtich-case should move to dataobject 
+    switch (m_data.getType()) // this swtich-case should move to dataobject 
     {
     case ito::tUInt8:
         typeStr = "uint8";
