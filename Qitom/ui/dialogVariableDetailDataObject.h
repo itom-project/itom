@@ -51,8 +51,6 @@ private:
     QSharedPointer<ito::DataObject> m_dObj;
     ito::Range* m_pAxesRanges;
     QMap<int, QSpinBox*> m_spinBoxToIdxMap;
-    QMap<QString, int> m_rowAxisToIndex;
-    QMap<QString, int> m_colAxisToIndex;
 
     void changeDisplayedAxes(int isColNotRow);
     void deleteSlicingWidgets();
