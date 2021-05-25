@@ -163,8 +163,54 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
         new QTreeWidgetItem(this, QStringList(tr("Tags").toLatin1().data()), 0);
     QTreeWidgetItem* protocolTree = new QTreeWidgetItem(this, QStringList(tr("Protocol").toLatin1().data()), 0);
 
-    data.append("continuous");
-    data.append(m_data.getContinuous() == 0 ? "no" : "yes");
+    QString typeStr;
+    int dtype = m_data.getType();
+    switch (dtype)  // this swtich-case should move to dataobject 
+    {
+    case ito::tUInt8:
+        typeStr = "uint8";
+        break;
+    case ito::tInt8:
+        typeStr = "int8";
+        break;
+    case ito::tUInt16:
+        typeStr = "uint16";
+        break;
+    case ito::tInt16:
+        typeStr = "int16";
+        break;
+    case ito::tUInt32:
+        typeStr = "uint32";
+        break;
+    case ito::tInt32:
+        typeStr = "int32";
+        break;
+    case ito::tFloat32:
+        typeStr = "float32";
+        break;
+    case ito::tFloat64:
+        typeStr = "float64";
+        break;
+    case ito::tComplex64:
+        typeStr = "complex64";
+        break;
+    case ito::tComplex128:
+        typeStr = "complex128";
+        break;
+    case ito::tRGBA32:
+        typeStr = "rgba32";
+        break;
+    default:
+        typeStr = "";
+        break;
+    }
+
+    data.append("dtype");
+    data.append(typeStr);
+    objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
+
+    data[0] = "continuous";
+    data[1] = m_data.getContinuous() == 0 ? "no" : "yes";
     objTree->addChild(new QTreeWidgetItem(objTree, data, 0));
 
     data[0] = "own data";
