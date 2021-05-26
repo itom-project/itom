@@ -10,14 +10,15 @@ Parameter-Container class of |itom|
 Introduction
 ------------
 
-The base idea behind a container-class for parameters of varying types is to pass these parameters to 
-methods without the need of extensive templating. Of course, both |Python| and |Qt| provide such classes, 
-namely **PyObject** and **QVariant**. Nevertheless, |itom| provides an own, low-level container
-class, which is not dependent on any 3rd party library. This container only provides support for some specific
-types, that are widely used within |itom|. This parameter container is mainly used for the whole 
-communication process between all types of plugins and |itom|. Examples for their use are:
+The base idea behind a container-class for parameters of varying types is to pass these parameters to methods 
+without the need of extensive templating. Of course, both |Python| and |Qt| provide such classes, namely 
+**PyObject** and **QVariant**. Nevertheless, |itom| provides an own, low-level container class, which is not 
+dependent on any 3rd party library. This container only provides support for some specific types, that are widely 
+used within |itom|. This parameter container is mainly used for the whole communication process between all types 
+of plugins and |itom|. Examples for their use are:
 
-* Parameters of each plugin, which can be read by *getParam* or set by *setParam*. Additionally these parameters of the plugin can be obtained by the python command :py:func:`getParamList()`.
+* Parameters of each plugin, which can be read by *getParam* or set by *setParam*. 
+  Additionally these parameters of the plugin can be obtained by the python command :py:func:`getParamList()`.
 * Mandatory and optional parameters for the constructor of plugin instances.
 * Parameter transfer between configuration dialog, docking widget toolbox and plugin itself.
 
@@ -34,6 +35,7 @@ The possible types, covered by this container are:
 * **integer-array** (Type 1)
 * **double-array** (Type 1)
 * **string** (zero-terminated, Type 1)
+* **string-list** (Type 1)
 * **DataObject** (pointer-only, Type 2)
 * **PointCloud** (pointer-only, Type 2)
 * **PolygonMesh** (pointer-only, Type 2)
@@ -54,15 +56,31 @@ The possible types, covered by this container are:
 There are different classes, defined in *sharedStructures.h* which can be used for the parameter
 container:
 
-* class **ParamBase** represents a pure multi-type container, which only contains the name of the parameter and its value. This is the quickest parameter container implementation and should always be used, if only the parameter should be passed and no further information are needed. In any other cases use an implementation of the derived class *Param*.
+* class **ParamBase** represents a pure multi-type container, which only contains the name of the 
+  parameter and its value. This is the quickest parameter container implementation and should always 
+  be used, if only the parameter should be passed and no further information are needed. In any other 
+  cases use an implementation of the derived class *Param*.
 
-* class **Param** is derived from *ParamBase* and additionally contains a description string for the value (optional) and some further meta-information (optional) in form of an internal pointer, that points to an instance of class *MetaParam* or one of its derived classes.
+* class **Param** is derived from *ParamBase* and additionally contains a description string for the 
+  value (optional) and some further meta-information (optional) in form of an internal pointer, that points 
+  to an instance of class *MetaParam* or one of its derived classes.
 
-* class **MetaParam** is the base class for all parameter type-dependent meta information classes, like *IntMeta*, *DoubleMeta*, *StringMeta*... The idea is to add some restrictions about value ranges, allowed values... to parameters if this is needed or available. Please consider, that the meta information class is not internally checked in the parameter classes, hence, you can assign every value you want to. However the programmer, that is using a parameter, can access the MetaParam-instance and program its own validator for the parameter or use one of the pre-defined methods.
+* class **MetaParam** is the base class for all parameter type-dependent meta information classes, like 
+  *IntMeta*, *DoubleMeta*, *StringMeta*... The idea is to add some restrictions about value ranges, allowed 
+  values... to parameters if this is needed or available. Please consider, that the meta information class 
+  is not internally checked in the parameter classes, hence, you can assign every value you want to. However 
+  the programmer, that is using a parameter, can access the MetaParam-instance and program its own validator 
+  for the parameter or use one of the pre-defined methods.
 
-* class **CharMeta**, **IntMeta**, **DoubleMeta** are meta information classes derived from MetaParam which contain a minimum and maximum value for the parameter. Parameters of array-types may also contain an instance of one of these classes in order to describe the allowed range of every element of the array.
+* class **CharMeta**, **IntMeta**, **DoubleMeta** are meta information classes derived from ParamMeta 
+  which contain a minimum and maximum value for the parameter. Parameters of array-types may also contain 
+  an instance of one of these classes in order to describe the allowed range of every element of the array.
 
-* class **StringMeta** provides further information for the parameter of type *String* such that you restrict the string to certain values, which also can be evaluated in the sens of a regular expression or wildcard expression.
+* class **StringMeta** provides further information for the parameter of type *String* such that you restrict 
+  the string to certain values, which also can be evaluated in the sens of a regular expression or wildcard 
+  expression.
+
+* class **StringListMeta** provides further information for the parameter of type *StringList*.
 
 * class **HWMeta** provides restrictive information for a parameter of type *HWRef*
 
@@ -75,29 +93,34 @@ Variables of class **Param** are used whenever you explicitly want to add furthe
 parameter. Examples might be:
 
 * Vectors of mandatory and optional parameters, used as template for creating an instance of a plugin.
-* Vectors of mandatory and optional parameters, used as template for creating a widget defined in a plugin of type *AddInAlgo*.
+* Vectors of mandatory and optional parameters, used as template for creating a widget defined in a plugin 
+  of type *AddInAlgo*.
 * Vectors of mandatory, optional and out parameters, used as template for calling a filter.
 * Plugin-internal parameters, stored in the Map *m_params*.
-* *getParam*-method of plugins, which usually return one specific value of map *m_params*. Here an instance of class *Param* is returned and not *ParamBase* such that advanced information about the value can be presented.
+* *getParam*-method of plugins, which usually return one specific value of map *m_params*. Here an instance 
+  of class *Param* is returned and not *ParamBase* such that advanced information about the value can be 
+  presented.
 * Vector of out-parameters of filters.
 
 Variables of class *ParamBase* are used when you only need to transfer the parameter itself:
 
-* Method *setParam* of plugins. The validation of the given value is done with respect to its corresponding value in map *m_params*.
+* Method *setParam* of plugins. The validation of the given value is done with respect to its corresponding 
+  value in map *m_params*.
 * Vector of mandatory and optional parameters used for calling the constructor (method *init*) of plugins.
 * Vector of mandatory, optional and out parameters used for calling filters in plugins.
 * Vector of mandatory and optional parameters used for calling widgets, defined in plugins of type *AddInAlgo*.
 
-In the case of the described mandatory and optional parameter vectors, |itom| is requesting the template version (class *Param*)
-form the plugin and has enough information, in order to check the user input (done in GUI or by python) with respect to the template.
-Finally a vector of type *ParamBase* is created, where all the default values, given by the templates, are overwritten by the user input.
-Then the filter, plugin constructor or widget constructor is called with the version of *ParamBase*.
+In the case of the described mandatory and optional parameter vectors, |itom| is requesting the template version 
+(class *Param*) form the plugin and has enough information, in order to check the user input (done in GUI or by 
+python) with respect to the template. Finally a vector of type *ParamBase* is created, where all the default 
+values, given by the templates, are overwritten by the user input. Then the filter, plugin constructor or widget 
+constructor is called with the version of *ParamBase*.
 
 
 .. _plugin-params-typesFlags:
 
 Types and flags
----------------
+----------------
 
 The type as well as additional flags of each parameter is defined by an OR combination of values, contained
 in the enumeration **ito::ParamBase::Type**. The last 16 bit (bit 1-16) of this enumeration are reserved for
@@ -131,6 +154,7 @@ The following (high-level) types are available:
         PointCloudPtr   = 0x000080 | Pointer | NoAutosave, //pointer to point cloud
         PointPtr        = 0x000100 | Pointer | NoAutosave, //pointer to point
         PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave  //pointer to polygon mesh
+        StringList      = 0x000800 | Pointer //pointer to string list
         ...
     };
 
@@ -153,16 +177,18 @@ The following flags are implemented in the **Type**-enumeration:
         ...
     };
 
-The behaviour of the **NoAutosave**-flag can be read in see :ref:`plugin-autoloadsave-policy`.
-The **readonly**-flag marks this parameter to be readonly. Please consider, that this flag is not evaluated in the classes
-**Param** or **ParamBase**, but the programmer has access to this flag must implement the necessary behaviour. The flags **In**
-and **Out** or their combination are important for the declaration of the default parameters for plugins or filter-calls. If none
-of them is set, the flag **In** is automatically set. **In** indicates, that the parameter is handled like an input-variable only, hence,
-the filter or plugin's init method will not change the value of this parameter. A variable of type **In|Out** passes a value and the value
-might be changed within a filter call. This is a suitable form to pass a dataObject whose content and size might be changed by the filter.
-Parameters with flag **Out** only are only accepted in the parameter vector which is the default for the output-variables of a filter...
-It is only allowed to mark parameter of type **Char**, **Int**, **Double**, **String**, **CharArray**, **IntArray** or **DoubleArray** as **Out**-
-parameters.
+The behaviour of the **NoAutosave**-flag can be read in see :ref:`plugin-autoloadsave-policy`. The 
+**readonly**-flag marks this parameter to be readonly. Please consider, that this flag is not evaluated in 
+the classes **Param** or **ParamBase**, but the programmer has access to this flag and must implement the 
+necessary behaviour. The flags **In** and **Out** or their combination are important for the declaration of 
+the default parameters for plugins or filter-calls. If none of them is set, the flag **In** is 
+automatically set. **In** indicates, that the parameter is handled like an input-variable only, hence, the 
+filter or plugin's init method will not change the value of this parameter. A variable of type **In|Out** 
+passes a value and the value might be changed within a filter call. This is a suitable form to pass a 
+dataObject whose content and size might be changed by the filter. Parameters with flag **Out** only are 
+only accepted in the parameter vector which is the default for the output-variables of a filter... It is 
+only allowed to mark parameter of type **Char**, **Int**, **Double**, **String**, **CharArray**, 
+**IntArray**, **DoubleArray** or **StringList** as **Out**- parameters.
     
 
 Class *ParamBase*
@@ -193,7 +219,7 @@ Typical creations for parameters of class **ParamBase** are:
 
 .. code-block:: c++
     
-    //empty parameter (name: NULL, type: 0)
+    //empty parameter (name: nullptr, type: 0)
     ParamBase p1;
     
     //creating an integer-parameter, flag: In, value: 2
@@ -207,12 +233,9 @@ Typical creations for parameters of class **ParamBase** are:
     
     //creating an integer-array parameter
     int size = 5;
-    int* a = new int[size];
+    int a[] = {1, 2, 3, 4, 5};
     //.. fill a with valid values
     ParamBase p5("Array", ito::ParamBase::IntArray, size, a);
-    //a is copied, therefore delete it now
-    delete[] a;
-    a = NULL;
     
     //passing a dataObject pointer as parameter
     ito::DataObject *dObj = new ito::DataObject(...);
@@ -225,6 +248,11 @@ Typical creations for parameters of class **ParamBase** are:
     ParamBase p7("motor", ito::ParamBase::HWRef, aia);
     //like with the dataObject. Be careful and make sure, that the pointer 'aia' remains
     //accessible during the lifetime of p7.
+    
+    //creating a string-list parameter
+    int size = 2;
+    ito::ByteArray stringlist[] = { ito::ByteArray("arg1"), "arg2" };
+    ParamBase p8("StringList", ito::ParamBase::StringList, size, stringlist);
 
 The parameter **p1** has no suitable type or value right now. However, you can assign another parameter to **p1** 
 by using the assignment operator:
@@ -255,7 +283,7 @@ parameter, that corresponds to the original data type, which is covered by the p
     
     //the following examples return the internal pointer to the string or arrays.
     //This pointer is no copy, therefore you are not allowed to delete the pointer.
-    char* p4_val = p4.getVal<char*>();
+    const char* p4_val = p4.getVal<const char*>();
     
     int* p5_val = p5.getVal<int*>();
     //you can access the elements of p5 by
@@ -286,7 +314,11 @@ parameter, that corresponds to the original data type, which is covered by the p
     //base instance to ito::AddInBase and then try to safely cast it to your requested type:
     ito::AddInBase *aib = p7.getVal<ito::AddInBase*>();
     ito::AddInActutator *aia = qobject_cast<ito::AddInActuator*>(aib);
-    //aia is NULL, if the cast failed.
+    //aia is nullptr, if the cast failed.
+    
+    //access a string from a string list as follows
+    const ito::ByteArray *byteArray = p8.getVal<const ito::ByteArray*>();
+    const char* str = byteArray[1].data();
 
 If the given template parameter does not fit to the corresponding parameter type, the value of the
 parameter will be casted to the given template type. If this is not possible an exception is raised.
@@ -343,6 +375,8 @@ from **ParamBase**). The method returns an error if the parameters are not compa
     
 For a full reference to all member function of class **ParamBase**, see :ref:`plugin-paramBase-Ref`.
 
+.. _classParam:
+
 Class *Param*
 -------------
 
@@ -351,9 +385,10 @@ member variables:
 
     .. cpp:member:: ParamMeta *m_pMeta
         
-        This is a pointer to a struct containing type-dependent meta information about this plugin. This pointer may also be
-        NULL, if no meta information is provided. The meta-information struct is always owned by the parameter and deeply copied
-        when calling for instance a copy constructor. For more information see :ref:`plugin-ParamsMeta`.
+        This is a pointer to a struct containing type-dependent meta information about this plugin. This pointer 
+        may also be nullptr, if no meta information is provided. The meta-information struct is always owned by the 
+        parameter and deeply copied when calling for instance a copy constructor. For more information see 
+        :ref:`plugin-ParamsMeta`.
         
         Access to the meta information struct is given by
         
@@ -361,7 +396,7 @@ member variables:
             
             Param p;
             ParamMeta* meta = p.getMeta();
-            //in this case meta is NULL, since no meta information has been set to 'p'.
+            //in this case meta is nullptr, since no meta information has been set to 'p'.
             
             //now we create a integer-variable with a min and max value
             Param p2("var1",ParamBase::Int,2);
@@ -376,9 +411,9 @@ member variables:
 
     .. cpp:member:: ito::ByteArray m_Info
         
-        This is the description string of the parameter. If no description is indicated, this pointer is NULL, else it is a
-        zero-terminated string, which is also copied, when the parameter is called using a copy constructor or assigned to another
-        parameter.
+        This is the description string of the parameter. If no description is indicated, this pointer is nullptr, 
+        else it is a zero-terminated string, which is also copied, when the parameter is called using a copy 
+        constructor or assigned to another parameter.
         
         The description can be obtained by
         
@@ -417,7 +452,7 @@ In the following, examples about how to create parameters and meta information o
         ito::Param param("intNumber", ParamBase::Int, 5, new IntMeta(0,10), "description");
         
         // or (integer-variable without meta information)
-        ito::Param param("intNumber", ParamBase::Int, 5, NULL, "description");
+        ito::Param param("intNumber", ParamBase::Int, 5, nullptr, "description");
         param.setMeta(new IntMeta(0,10), true); //take ownership of IntMeta-instance
         
         int value = param.getVal<int>();                //returns 5
@@ -450,7 +485,7 @@ In the following, examples about how to create parameters and meta information o
         // are the minimum and maximum possible value of the double-range.
         
         // or (double-variable without meta information)
-        ito::Param param("doubleNumber", ParamBase::Double, 5.0, NULL, "description");
+        ito::Param param("doubleNumber", ParamBase::Double, 5.0, nullptr, "description");
         param.setMeta(new DoubleMeta(0.0,10.0), true); //take ownership of DoubleMeta-instance
         
         double value = param.getVal<double>();               //returns 5.0
@@ -497,7 +532,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        char ptr = [0,56,127,-10,-20];
+        char ptr[] = {0,56,127,-10,-20};
         ito::Param param("array", ito::ParamBase::CharArray, 5, &ptr, "description");
         //you can add a meta-information struct of class CharMeta to that char-array (if desired)
         
@@ -513,7 +548,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        int ptr = [1,2,3,4,5];
+        int ptr[] = {1,2,3,4,5};
         ito::Param param("array", ito::ParamBase::IntArray, 5, &ptr, "description");
         //you can add a meta-information struct of class IntMeta to that integer array (if desired)
         
@@ -529,13 +564,27 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        double ptr = [1.2,2.3,3.4,4.1,5.2];
+        double ptr[] = {1.2,2.3,3.4,4.1,5.2};
         ito::Param param("array", ito::ParamBase::DoubleArray, 5, &ptr, "description");
         
         double* value = param.getVal<double*>();    //returns the pointer to the first element of the array
         ito::RetVal retValue = param.setVal<double*>(ptr,5); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false (even it is an array of numeric values)
         int len = param.getLen()                //5
+
+* **List of strings (Type: StringList)**
+    
+    This is a list of string values. Consider that you should use the constructor where you can give the length 
+    of the list, else an error is returned.
+    
+    .. code-block:: c++
+        
+        ito::ByteArray ptr[] = {"test", "abc", "xcf"};
+        ito::Param param("array", ito::ParamBase::StringList, 3, &ptr, "description");
+        
+        const ito::ByteArray* value = param.getVal<const ito::ByteArray*>();    //returns the pointer to the first element of the array
+        ito::RetVal retValue = param.setVal<ito::ByteArray*>(ptr, 3); //should return ito::retOk
+        int len = param.getLen()                //3
 
 * **Reference to any initialized instance of dataIO or actuator (Type: HWRef)**
     
@@ -548,7 +597,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        ito::Param param("serialPort", ito::ParamBase::HWRef, NULL, "description");
+        ito::Param param("serialPort", ito::ParamBase::HWRef, nullptr, "description");
         
         //additionally define the meta-information
         ito::HWMeta *meta = new ito::HWMeta("SerialIO"); //restriction to plugins with name "SerialIO"
@@ -587,7 +636,7 @@ In the following, examples about how to create parameters and meta information o
         
         //if you do not need param again, you can delete dObj:
         delete dObj;
-        dObj = NULL;
+        dObj = nullptr;
         
 * **Reference to any initialized instance of ito::pclPointCloud (Type: PointCloudPtr)**
     
@@ -595,7 +644,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        ito::Param param("pcl", ito::ParamBase::PointCloudPtr, NULL, "description");
+        ito::Param param("pcl", ito::ParamBase::PointCloudPtr, nullptr, "description");
         
         //returns the pointer casted to pclPointCloud*
         ito::pclPointCloud* value = param.getVal<ito::pclPointCloud*>();    
@@ -609,7 +658,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        ito::Param param("point", ito::ParamBase::PointPtr, NULL, "description");
+        ito::Param param("point", ito::ParamBase::PointPtr, nullptr, "description");
         
         //returns the pointer casted to pclPoint*
         ito::pclPoint* value = param.getVal<ito::pclPoint*>();    
@@ -623,7 +672,7 @@ In the following, examples about how to create parameters and meta information o
     
     .. code-block:: c++
         
-        ito::Param param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, "description");
+        ito::Param param("polygonMesh", ito::ParamBase::PolygonMeshPtr, nullptr, "description");
         
         //returns the pointer casted to pclPolygonMesh*
         ito::pclPolygonMesh* value = param.getVal<ito::pclPolygonMesh*>();    

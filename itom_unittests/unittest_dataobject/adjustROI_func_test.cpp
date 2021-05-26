@@ -21,18 +21,12 @@ template <typename _Tp> class adjustROI_func_test : public ::testing::Test
   public:
     virtual void SetUp(void)
     {
-        int *temp_size1 = new int[2];
-        temp_size1[0] = 10;
-        temp_size1[1] = 10;
+        int temp_size1[] = { 10,10 };
         dObj1 = ito::DataObject(0, temp_size1, ito::getDataType2<_Tp *>());
         dObj2 = ito::DataObject(2, temp_size1, ito::getDataType2<_Tp *>());
         dObj3 = ito::DataObject(4, 5, 5, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[5];
-        temp_size[0] = 4;
-        temp_size[1] = 5;
-        temp_size[2] = 5;
-        temp_size[3] = 4;
-        temp_size[4] = 3;
+
+        int temp_size[] = { 4,5,5,4,3 };
         dObj4 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>());
     };
 

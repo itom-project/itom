@@ -157,30 +157,6 @@ bool SemVerVersion::isCompatible(const SemVerVersion &other) const //returns tru
 }
 
 //-----------------------------------------------------------------------------------
-//!< deprecated. Do not use this method anymore. Use svMajor() instead, 
-//!< since this method will be removed (due to a conflict with a define with the same name under linux)
-int SemVerVersion::major() const
-{
-    return svMajor();
-}
-
-//-----------------------------------------------------------------------------------
-//!< deprecated. Do not use this method anymore. Use svMinor() instead, 
-//!< since this method will be removed (due to a conflict with a define with the same name under linux)
-int SemVerVersion::minor() const
-{
-    return svMinor();
-}
-
-//-----------------------------------------------------------------------------------
-//!< deprecated. Do not use this method anymore. Use svPatch() instead, 
-//!< since this method will be removed (due to a conflict with a define with the same name under linux)
-int SemVerVersion::patch() const
-{
-    return svPatch();
-}
-
-//-----------------------------------------------------------------------------------
 int SemVerVersion::svMajor() const
 {
     return m_major;

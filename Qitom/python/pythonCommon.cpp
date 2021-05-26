@@ -65,8 +65,8 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
 
     switch (defaultParam->getType())
     {
-    case ito::ParamBase::Char & ito::paramTypeMask:
-    case ito::ParamBase::Int & ito::paramTypeMask:
+    case ito::ParamBase::Char:
+    case ito::ParamBase::Int:
         if (PyRgba_Check(pyObj))
         {
             PythonRgba::PyRgba *pyRgba = (PythonRgba::PyRgba*)(pyObj);
@@ -87,7 +87,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::Double & ito::paramTypeMask:
+    case ito::ParamBase::Double:
         {
             bool ok;
             outParam.setVal<double>(PythonQtConversion::PyObjGetDouble(pyObj, false, ok));
@@ -102,7 +102,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::Complex & ito::paramTypeMask:
+    case ito::ParamBase::Complex:
         {
             bool ok;
             outParam.setVal<ito::complex128>(PythonQtConversion::PyObjGetComplex(pyObj, false, ok));
@@ -117,7 +117,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::CharArray & ito::paramTypeMask:
+    case ito::ParamBase::CharArray:
         {
             if (PyByteArray_Check(pyObj))
             {
@@ -132,7 +132,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray:
         {
             bool ok;
             QVector<double> v = PythonQtConversion::PyObjGetDoubleArray(pyObj, false, ok);
@@ -149,7 +149,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::IntArray & ito::paramTypeMask:
+    case ito::ParamBase::IntArray:
         {
             bool ok;
             QVector<int> v = PythonQtConversion::PyObjGetIntArray(pyObj, false, ok);
@@ -166,7 +166,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+    case ito::ParamBase::ComplexArray:
         {
             bool ok;
             QVector<ito::complex128> v = PythonQtConversion::PyObjGetComplexArray(pyObj, false, ok);
@@ -183,7 +183,25 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::String & ito::paramTypeMask:
+    case ito::ParamBase::StringList:
+    {
+        bool ok;
+        QVector<ito::ByteArray> v = PythonQtConversion::PyObjGetByteArrayList(pyObj, false, ok);
+
+        if (ok)
+        {
+            *set = 1;
+            outParam.setVal<ito::ByteArray*>(v.data(), v.size());
+        }
+        else
+        {
+            return ito::retError;
+        }
+    }
+    break;
+
+
+    case ito::ParamBase::String:
         if (PyUnicode_Check(pyObj))
         {
             *set = 1;
@@ -201,7 +219,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::HWRef & ito::paramTypeMask:
+    case ito::ParamBase::HWRef:
         if (Py_TYPE(pyObj) == &PythonPlugins::PyDataIOPluginType)
         {
             *set = 1;
@@ -218,7 +236,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::DObjPtr & ito::paramTypeMask:
+    case ito::ParamBase::DObjPtr:
         if ((Py_TYPE(pyObj) == &ito::PythonDataObject::PyDataObjectType))
         {
             *set = 1;
@@ -231,7 +249,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
     break;
 
 #if ITOM_POINTCLOUDLIBRARY > 0
-    case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
+    case ito::ParamBase::PointCloudPtr:
         if ((Py_TYPE(pyObj) == &ito::PythonPCL::PyPointCloudType))
         {
             *set = 1;
@@ -243,7 +261,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::PointPtr & ito::paramTypeMask:
+    case ito::ParamBase::PointPtr:
         if ((Py_TYPE(pyObj) == &ito::PythonPCL::PyPointType))
         {
             *set = 1;
@@ -255,7 +273,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
-    case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+    case ito::ParamBase::PolygonMeshPtr:
         if ((Py_TYPE(pyObj) == &ito::PythonPCL::PyPolygonMeshType))
         {
             *set = 1;
@@ -434,31 +452,31 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 
             switch(p.getType())
             {
-                case ito::ParamBase::Char & ito::paramTypeMask:
+                case ito::ParamBase::Char:
                     type = ("int (char)");
                 break;
 
-                case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Int:
                     type = ("int");
                 break;
 
-                case ito::ParamBase::Double & ito::paramTypeMask:
+                case ito::ParamBase::Double:
                     type = ("float");
                 break;
 
-                case ito::ParamBase::Complex & ito::paramTypeMask:
+                case ito::ParamBase::Complex:
                     type = ("complex");
                 break;
 
-                case ito::ParamBase::String & ito::paramTypeMask:
+                case ito::ParamBase::String:
                     type = ("str");
                 break;
 
-                case ito::ParamBase::CharArray & ito::paramTypeMask:
+                case ito::ParamBase::CharArray:
                     type = ("seq. of int (char)");
                 break;
 
-                case ito::ParamBase::IntArray & ito::paramTypeMask:
+                case ito::ParamBase::IntArray:
                     switch (metaType)
                     {
                     case ito::ParamMeta::rttiIntervalMeta:
@@ -475,7 +493,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                     }
                 break;
 
-                case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+                case ito::ParamBase::DoubleArray:
                     switch (metaType)
                     {
                     case ito::ParamMeta::rttiDoubleIntervalMeta:
@@ -486,31 +504,35 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                     }
                 break;
 
-                case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+                case ito::ParamBase::ComplexArray:
                     type = ("seq. of complex");
                 break;
 
-                case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef) & ito::paramTypeMask):
+                case ito::ParamBase::StringList:
+                    type = "seq. of str";
+                break;
+
+                case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef)):
                     type = ("dataIO|actuator");
                 break;
 
-                case (ito::ParamBase::Pointer & ito::paramTypeMask):
+                case (ito::ParamBase::Pointer):
                     type = ("void*");
                 break;
 
-                case (ito::ParamBase::DObjPtr & ito::paramTypeMask):
+                case (ito::ParamBase::DObjPtr):
                     type = ("dataObject");
                 break;
 
-                case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask):
+                case (ito::ParamBase::PointCloudPtr):
                     type = ("pointCloud");
                 break;
 
-                case (ito::ParamBase::PointPtr & ito::paramTypeMask):
+                case (ito::ParamBase::PointPtr):
                     type = ("point");
                 break;
 
-                case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
+                case (ito::ParamBase::PolygonMeshPtr):
                     type = ("polygonMesh");
                 break;
 
@@ -557,8 +579,8 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 				{
 					switch (p.getType())
 					{
-					case ito::ParamBase::Char & ito::paramTypeMask:
-					case ito::ParamBase::Int & ito::paramTypeMask:
+					case ito::ParamBase::Char:
+					case ito::ParamBase::Int:
 					{
 						const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>(meta);
 						int mi, ma, step;
@@ -610,7 +632,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case ito::ParamBase::Double & ito::paramTypeMask:
+					case ito::ParamBase::Double:
 					{
 						const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>(meta);
 						double mi, ma, step;
@@ -652,10 +674,11 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case (ito::ParamBase::String & ito::paramTypeMask) :
+					case (ito::ParamBase::String) :
 					{
-						char* tempbuf = p.getVal<char*>();
-						if (tempbuf == NULL)
+						auto tempbuf = p.getVal<const char*>();
+
+						if (tempbuf == nullptr)
 						{
 							item = PyUnicode_FromString("");
 							values["values"].append("");
@@ -683,10 +706,11 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case ito::ParamBase::CharArray & ito::paramTypeMask:
+					case ito::ParamBase::CharArray:
 					{
 						int len = p.getLen();
-						char *ptr = p.getVal<char*>();
+						auto ptr = p.getVal<const char*>();
+
 						switch (len)
 						{
 						case 0:
@@ -709,7 +733,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -720,10 +744,11 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case ito::ParamBase::IntArray & ito::paramTypeMask:
+					case ito::ParamBase::IntArray:
 					{
 						int len = p.getLen();
-						int *ptr = p.getVal<int*>();
+						auto ptr = p.getVal<const int*>();
+
 						switch (len)
 						{
 						case 0:
@@ -746,7 +771,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -757,10 +782,11 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+					case ito::ParamBase::DoubleArray:
 					{
 						int len = p.getLen();
-						double *ptr = p.getVal<double*>();
+						auto ptr = p.getVal<const double*>();
+
 						switch (len)
 						{
 						case 0:
@@ -783,7 +809,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							values["values"].append(temp);
 							break;
 						default:
-							temp = QString("%1 elements").arg(len);
+							temp = QString("%1 elements").arg(std::max(0, len));
 							values["values"].append(temp);
 							break;
 						}
@@ -794,12 +820,99 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					}
 					break;
 
-					case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef) & ito::paramTypeMask) :
-					case (ito::ParamBase::Pointer & ito::paramTypeMask) :
-					case (ito::ParamBase::DObjPtr & ito::paramTypeMask) :
-					case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask) :
-					case (ito::ParamBase::PointPtr & ito::paramTypeMask) :
-					case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask) :
+                    case ito::ParamBase::ComplexArray:
+                    {
+                        int len = p.getLen();
+                        auto ptr = p.getVal<const ito::complex128*>();
+
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        {
+                            QStringList items;
+
+                            for (int i = 0; i < std::min(len, 4); ++i)
+                            {
+                                if (ptr[i].imag() >= 0)
+                                {
+                                    items.append(
+                                        QString::number(ptr[i].real(), 'g', 4) + "+" +
+                                        QString::number(ptr[i].imag(), 'g', 4) + "i");
+                                }
+                                else
+                                {
+                                    items.append(
+                                        QString::number(ptr[i].real(), 'g', 4) + "-" +
+                                        QString::number(ptr[i].imag(), 'g', 4) + "i");
+                                }
+                            }
+
+                            temp = QString("[%1]").arg(items.join(","));
+                            values["values"].append(temp);
+                        }
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(std::max(0, len));
+                            values["values"].append(temp);
+                            break;
+                        }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
+                    }
+                    break;
+
+                    case ito::ParamBase::StringList:
+                    {
+                        int len = p.getLen();
+                        auto ptr = p.getVal<const ito::ByteArray*>();
+
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                            temp = QString("[%1]").arg(ptr[0].data());
+                            values["values"].append(temp);
+                            break;
+                        case 2:
+                            temp = QString("[%1,%2]").arg(ptr[0].data()).arg(ptr[1].data());
+                            values["values"].append(temp);
+                            break;
+                        case 3:
+                            temp = QString("[%1,%2,%3]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
+                            values["values"].append(temp);
+                            break;
+                        case 4:
+                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
+                            values["values"].append(temp);
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(std::max(0, len));
+                            values["values"].append(temp);
+                            break;
+                        }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
+                    }
+                    break;
+
+					case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef)) :
+					case (ito::ParamBase::Pointer) :
+					case (ito::ParamBase::DObjPtr) :
+					case (ito::ParamBase::PointCloudPtr) :
+					case (ito::ParamBase::PointPtr) :
+					case (ito::ParamBase::PolygonMeshPtr) :
 						values["values"].append("<Object-Pointer>");
 						item = parseParamMetaAsDict(meta);
 						PyDict_Merge(p_pyLine, item, 1);

@@ -3034,35 +3034,36 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     thisDims = j;
 
     j = 0;
-    for (int i = 0; i < rhsDims; i++)
+    for(int i = 0; i < rhsDims; i++)
     {
         rhsSizes[j] = copyTo.getSize(i);
-        if (rhsSizes[j] > 1)
+        if (rhsSizes[j] > 1) 
+        { 
             j++;
+        }
     }
     rhsDims = j;
 
     if (thisDims != rhsDims)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject - operands differ in number of dimensions",
-            "",
-            __FILE__,
-            __LINE__));
+        DELETE_AND_SET_NULL_ARRAY(thisSizes);
+        DELETE_AND_SET_NULL_ARRAY(rhsSizes);
+        cv::error(cv::Exception(CV_StsAssert, "DataObject - operands differ in number of dimensions","", __FILE__,__LINE__));
     }
 
-    for (int i = 0; i < thisDims; i++)
+    for(int i = 0; i < thisDims; i++)
     {
         if (thisSizes[i] != rhsSizes[i])
         {
-            cv::error(cv::Exception(
-                CV_StsAssert, "DataObject - operands differ in size", "", __FILE__, __LINE__));
+            DELETE_AND_SET_NULL_ARRAY(thisSizes);
+            DELETE_AND_SET_NULL_ARRAY(rhsSizes);
+            cv::error(cv::Exception(CV_StsAssert, "DataObject - operands differ in size","", __FILE__,__LINE__));
         }
     }
 
-    delete[] thisSizes;
-    delete[] rhsSizes;
+    DELETE_AND_SET_NULL_ARRAY(thisSizes);
+    DELETE_AND_SET_NULL_ARRAY(rhsSizes);
+
 
     ito::RetVal ret = fListDeepCopyPartialFunc[m_type](*this, copyTo);
 
@@ -7638,9 +7639,17 @@ DataObject DataObject::at(ito::Range* ranges) const
         }
     }
 
-    resMat.adjustROI(m_dims, lims);
+    try
+    {
+        resMat.adjustROI(m_dims, lims);
+    }
+    catch (cv::Exception &ex)
+    {
+        DELETE_AND_SET_NULL_ARRAY(lims);
+        throw ex; //rethrow
+    }
 
-    delete[] lims;
+    DELETE_AND_SET_NULL_ARRAY(lims);
 
     return resMat;
 }
