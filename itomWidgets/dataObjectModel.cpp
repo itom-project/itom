@@ -36,11 +36,12 @@ int DataObjectModel::preciseDisplayRoleWithoutSuffix = Qt::UserRole + 2;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectModel::DataObjectModel() :
-    m_readOnly(false), m_defaultRows(3), m_defaultCols(3), m_decimals(2), m_dummyData(true),
+    m_readOnly(false), m_defaultRows(0), m_defaultCols(0), m_decimals(2), m_dummyData(true),
     m_alignment(Qt::AlignLeft)
 {
     m_sharedDataObj = QSharedPointer<ito::DataObject>(new ito::DataObject());
-    m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
+    //m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
+    setAlignment(Qt::AlignVCenter);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

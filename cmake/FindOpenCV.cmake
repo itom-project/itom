@@ -54,8 +54,8 @@ find_path(
     HINTS 
     "/usr/share/OpenCV" 
     "/usr/local/share/OpenCV" 
-    "/usr/lib64/OpenCV" "
-    /usr/lib64/cmake/OpenCV" 
+    "/usr/lib64/OpenCV" 
+    "/usr/lib64/cmake/OpenCV" 
     "/usr/lib/OpenCV" 
     "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
     DOC "Root directory of OpenCV")
