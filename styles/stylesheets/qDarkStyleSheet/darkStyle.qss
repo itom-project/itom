@@ -1929,6 +1929,10 @@ QTableView::indicator:indeterminate:pressed {
   image: url(":/qss_icons/rc/checkbox_indeterminate_focus.png");
 }
 
+QTableView {
+  alternate-background-color: #32414b;
+}
+
 QTreeView,
 QListView,
 QTableView,
