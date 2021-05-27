@@ -1513,9 +1513,10 @@ ito::RetVal PythonEngine::runString(const QString &command)
 
     PyObject *mainDict = getGlobalDictionary();
     PyObject *localDict = getLocalDictionary();
-    PyObject *result = NULL;
 
-    if (mainDict == NULL)
+    PyObject *result = nullptr;
+
+    if (mainDict == nullptr)
     {
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
         retValue += RetVal(retError, 1, tr("Main dictionary is empty").toLatin1().data());
@@ -1533,10 +1534,12 @@ ito::RetVal PythonEngine::runString(const QString &command)
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+
             if (!result)
             {
                 PyErr_PrintEx(0);
             }
+
             Py_XDECREF(result);
         }
 
@@ -1565,7 +1568,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python command (maybe stack overflow?)");
         }
 
-        if (result == NULL)
+        if (result == nullptr)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
@@ -1577,16 +1580,19 @@ ito::RetVal PythonEngine::runString(const QString &command)
                 PyErr_PrintEx(0);
                 retValue += RetVal(retError, 2, tr("Error while evaluating python string.").toLatin1().data());
             }
+
             PyErr_Clear();
         }
 
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
+
             if (!result)
             {
                 PyErr_PrintEx(0);
             }
+
             Py_XDECREF(result);
         }
 
