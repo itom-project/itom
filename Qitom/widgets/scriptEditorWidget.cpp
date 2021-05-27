@@ -2581,9 +2581,9 @@ void ScriptEditorWidget::print()
     else
     {
         ScriptEditorPrinter printer(QPrinter::HighResolution);
-        printer.setPageSize(QPagedPaintDevice::A4);
-        printer.setOrientation(QPrinter::Portrait);
-        printer.setPageMargins(20, 15, 20, 15, QPrinter::Millimeter);
+        printer.setPageSize(QPagedPaintDevice::PageSize::A4);
+        printer.setPageOrientation(QPageLayout::Orientation::Portrait);
+        printer.setPageMargins(QMarginsF(20, 15, 20, 15), QPageLayout::Unit::Millimeter);
 
         if (hasNoFilename() == false)
         {

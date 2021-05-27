@@ -202,12 +202,14 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget *parent, Qt::WindowFlags f, bool isStandardUser) :
+DialogUserManagementEdit::DialogUserManagementEdit(
+    const QString& filename,
+    UserModel* userModel,
+    QWidget* parent,
+    QFlag f,
+    bool isStandardUser) :
     QDialog(parent, f),
-    m_userModel(userModel),
-    m_fileName(filename),
-    m_osUser(""),
-    m_showsStandardUser(isStandardUser)
+    m_userModel(userModel), m_fileName(filename), m_osUser(""), m_showsStandardUser(isStandardUser)
 {
     ui.setupUi(this);
 

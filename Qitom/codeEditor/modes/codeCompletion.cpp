@@ -764,7 +764,13 @@ void CodeCompletionMode::hidePopup()
 QRect CodeCompletionMode::getPopupRect() const
 {
     QRect cursor_rec = editor()->cursorRect();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    int char_width = editor()->fontMetrics().horizontalAdvance('A');
+#else
     int char_width = editor()->fontMetrics().width('A');
+#endif
+    
     int prefix_len = (m_completionPrefix.size() * char_width);
     cursor_rec.translate(
         editor()->panels()->marginSize() - prefix_len,

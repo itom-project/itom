@@ -549,7 +549,11 @@ void CodeEditor::updateTabStopAndIndentationWidth()
     if (useSpacesInsteadOfTabs())
     {
         QString tab_text = QString(tabLength(), ' ');
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        m_indentationBarWidth = fm.horizontalAdvance(tab_text);
+#else
         m_indentationBarWidth = fm.width(tab_text);
+#endif  
     }
     else
     {
@@ -640,7 +644,11 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         QPainter painter(viewport());
         painter.setPen(m_edgeColor);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif  
         x += xoffset;
         painter.drawLine(x, 0, x, size().height());
         }
@@ -651,7 +659,11 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         painter.setBrush(m_edgeColor);
         painter.setPen(Qt::NoPen);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif        
         x += xoffset;
         painter.drawRect(x, 0, size().width() - x, size().height());
         }

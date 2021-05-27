@@ -524,7 +524,11 @@ namespace Utils
             sigs = sigs.replace(idx, pattern.size(), ") &#8594; ");
         }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        QStringList s = sigs.split('\n', Qt::SkipEmptyParts);
+#else
         QStringList s = sigs.split('\n', QString::SkipEmptyParts);
+#endif
 
         // for unbreakable paragraphs, do not use <nobr>, but <p style=...>
         // see also: https://bugreports.qt.io/browse/QTBUG-1135

@@ -126,10 +126,8 @@ void DialogUserManagement::loadUserList()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
-    QDialog(parent),
-    m_userModel(NULL),
-    m_currentUserName("")
+DialogUserManagement::DialogUserManagement(QWidget* parent, QFlag f) :
+    QDialog(parent), m_userModel(NULL), m_currentUserName("")
 {
     ui.setupUi(this);
 

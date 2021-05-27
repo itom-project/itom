@@ -255,7 +255,7 @@ void ScriptDockWidget::fillNavigationClassComboBox(
 
         if (parent->m_type == OutlineItem::typeRoot)
         {
-            QVariant userData = qVariantFromValue(parent);
+            QVariant userData = QVariant::fromValue(parent);
             m_classBox->addItem(
                 parent->icon(),
                 parent->m_name,
@@ -267,7 +267,7 @@ void ScriptDockWidget::fillNavigationClassComboBox(
         {
             if (item->m_type == OutlineItem::typeClass)
             {
-                QVariant userData = qVariantFromValue(item);
+                QVariant userData = QVariant::fromValue(item);
 
                 if (prefix != "")
                 {
@@ -401,7 +401,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
     // insert empty dummy item
     if (prefix == "")
     {
-        auto invalid = qVariantFromValue(QSharedPointer<OutlineItem>());
+        auto invalid = QVariant::fromValue(QSharedPointer<OutlineItem>());
         m_methodBox->addItem(QIcon(), "", invalid);
     }
 
@@ -412,7 +412,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
 
     foreach(const auto &item, parent->m_childs)
     {
-        auto userData = qVariantFromValue(item);
+        auto userData = QVariant::fromValue(item);
 
         switch (item->m_type)
         {
