@@ -70,7 +70,7 @@ public:
 protected:
     virtual void loadSettings();
     virtual void contextMenuAboutToShow(int contextMenuLine);
-
+    virtual int startLineOffset(int lineIdx) const;
     void initMenus();
 
 public slots:

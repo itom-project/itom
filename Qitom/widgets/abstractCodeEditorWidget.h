@@ -60,8 +60,8 @@ protected:
 
     virtual void loadSettings(); //overwrite this method if you want to load further settings
 
-    QString formatPythonCodePart(const QString &text, int &lineCount) const;
-    QString formatConsoleCodePart(const QString &text) const;
+    QString formatCodeBeforeInsertion(const QString &text, int &lineCount, bool trimText = false, const QString &newIndent = "") const;
+    QString formatCodeForClipboard(const QString &code, const QString &prependedTextInFirstLine) const;
 
     QPixmap loadMarker(const QString &name, int sizeAt96dpi) const;
 
@@ -75,11 +75,19 @@ protected:
     QSharedPointer<CodeCompletionMode> m_codeCompletionMode;
     QSharedPointer<PyAutoIndentMode> m_pyAutoIndentMode;
 
+    virtual int startLineOffset(int lineIdx) const { return 0; }
+
 private:
     int getSpaceTabCount(const QString &text) const;
 
 public slots:
     void reloadSettings() { loadSettings(); };
+
+    virtual void copy();
+
+    virtual void paste();
+
+    virtual void cut();
 
 signals:
     void userSelectionChanged(int lineFrom, int indexFrom, int lineTo, int indexTo);
