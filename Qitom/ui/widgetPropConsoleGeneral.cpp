@@ -46,8 +46,8 @@ void WidgetPropConsoleGeneral::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    ui.checkBoxFormatCopyCode->setChecked(settings.value("formatCopyCode", "false").toBool());
-    ui.checkBoxFormatPastCode->setChecked(settings.value("formatPastCode", "false").toBool());
+    ui.checkBoxFormatCopyCode->setChecked(settings.value("formatCopyCutCode", true).toBool());
+    ui.checkBoxFormatPastCode->setChecked(settings.value("formatPasteAndDropCode", true).toBool());
 
     settings.endGroup();
 }
@@ -58,8 +58,8 @@ void WidgetPropConsoleGeneral::writeSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
-    settings.setValue("formatCopyCode", ui.checkBoxFormatCopyCode->isChecked());
-    settings.setValue("formatPastCode", ui.checkBoxFormatPastCode->isChecked());
+    settings.setValue("formatCopyCutCode", ui.checkBoxFormatCopyCode->isChecked());
+    settings.setValue("formatPasteAndDropCode", ui.checkBoxFormatPastCode->isChecked());
 
     settings.endGroup();
 }

@@ -38,6 +38,9 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qtooltip.h>
+#include <qclipboard.h>
+#include <qapplication.h>
+#include <qmimedata.h>
 
 
 
@@ -370,38 +373,42 @@ int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
     return res;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! removes parts of the possible indentation of the given text from line 2 until the end and returns the re-formatted text.
 /*
-This method splits the given text using the \n endline character. If the given text is empty or only contains spaces
-or tabs, an empty string is returned and lineCount is equal to 0.
+This method splits the given text using the \n endline character.
 
-If the text only contains one line, the trimmed line is returned and lineCount is equal to 1.
+If the given or returned text is empty, an empty string is returned and lineCount is set to 0.
 
-Else the current indentation level of each non-empty line is checked and the minimum indentation level is denoted as minIndentLevel.
-Afterwards every line is tried to be unindented by minIndentLevel.
+If the given text contains only one line, it is returned (trimmed if ``trimText`` is true)
+and ``lineCount`` is 1.
 
-\param text contains the original text
-\param lineCount contains the number of lines in the given text after having called this method (byref)
+Else, the current indentation level of each non-empty line is checked and the minimum 
+indentation level is denoted as minIndentLevel. Afterwards every line is tried to be 
+unindented by minIndentLevel.
+
+\param text is the original text
+\param lineCount contains the number of lines in the given text after having called this method
+\param trimText defines if the returned text should be trimmed (leading and trailing 
+    spaces and tabs are removed) or if not.
 
 \returns the modified string
 */
-QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int &lineCount) const
+QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(const QString &text, int &lineCount, bool trimText /*= false*/, const QString &newIndent /*= ""*/) const
 {
     QString res = "";
     lineCount = 0;
 
-    if (text.trimmed() != "")
+    if (text != "")
     {
-        QString endline = "\n";
+        const QString endline = "\n";
 
         QStringList commandList = text.split(endline);
         lineCount = commandList.size();
 
         if (lineCount == 1)
         {
-            res = text.trimmed();
-
+            res = text;
         }
         else if (lineCount > 1)
         {
@@ -411,11 +418,11 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 			//do not change or consider the first line for indentation detection
 			//and / or removal. Else: consider it.
 			const QString &firstLine = commandList[0];
-			const QString &firstLineTrimmed = firstLine.trimmed();
+			const QString &firstLineLeftStrip = Utils::lstrip(firstLine);
 
-			bool firstLineIndented = (firstLine.size() > 0) && (firstLine[0] == ' ' || firstLine[0] == '\t');
+			bool firstLineIndented = firstLine.size() > firstLineLeftStrip.size();
 
-			if (!firstLineIndented && firstLineTrimmed.size() > 0)
+			if (!firstLineIndented && firstLineLeftStrip.size() > 0)
 			{
 				//it can be that the first line starts with a possible keyword
 				//for a subsequent indented block. If so, also consider the first line to
@@ -424,11 +431,10 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 				blockKeywords << "def" << "if" << "elif" << "else" << "while" << \
 					"for" << "try" << "except" << "finally" << "with" << "class" << "async";
 
-				if (blockKeywords.contains(firstLineTrimmed.split(" ")[0]))
+				if (blockKeywords.contains(firstLineLeftStrip.split(" ")[0]))
 				{
 					firstLineIndented = true;
 				}
-
 			}
 
 			int minIndentLevel = 1e6;
@@ -442,7 +448,7 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 				}
 			}
 
-			if (minIndentLevel == 0)
+			if (minIndentLevel == 0 && newIndent == "")
 			{
 				res = text;
 			}
@@ -461,48 +467,203 @@ QString AbstractCodeEditorWidget::formatPythonCodePart(const QString &text, int 
 				{
                     if (commandList[i][0] != '#')
                     {
-                        res += endline + commandList[i].mid(minIndentLevel);
+                        res += endline + newIndent + commandList[i].mid(minIndentLevel);
                     }
                     else
                     {
-                        res += endline + commandList[i]; // do not remove indent from comment line
+                        res += endline + newIndent + commandList[i]; // do not remove indent from comment line
                     }
 				}
 			}
         }
     }
 
-    return res;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractCodeEditorWidget::formatConsoleCodePart(const QString &text) const
-{
-    QString res = "";
-    QString temp = "";
-    QString endlineRegExp = "[\n]";
-    QString endline = "\n";
-    QStringList commandList = text.split(QRegExp(endlineRegExp));
-    
-    for (int i = 0; i < commandList.size(); ++i)
+    if (trimText)
     {
-        if (i == commandList.size() - 1)
-        {
-            endline = "";
-        }
+        res = res.trimmed();
+    }
 
-        temp = commandList[i];
-        while (temp.size() > 0 && temp[0] == '>')
-        {
-            temp.remove(0, 1);
-        }
-
-        res += temp + endline;
+    if (res == "")
+    {
+        lineCount = 0;
     }
 
     return res;
 }
 
+//-------------------------------------------------------------------------------------
+//! this method modifies a code string such before copying it to the clipboard or a mimedata.
+/*
+If the text contains less than two lines, nothing is changed.
+Else, the prependedTextInFirstLine can contain the text before the code. If this text
+only contains whitespaces, it is prepended to the code, such that the entire code
+has a proper indentation.
+*/
+QString AbstractCodeEditorWidget::formatCodeForClipboard(const QString &code, const QString &prependedTextInFirstLine) const
+{
+    if (prependedTextInFirstLine == "" || prependedTextInFirstLine.trimmed() != "")
+    {
+        return code;
+    }
+
+    QStringList lines = code.split("\n");
+
+    if (lines.size() < 2)
+    {
+        return code;
+    }
+    else
+    {
+        return prependedTextInFirstLine + code;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! copy selected code to the clipboard
+/*
+Depending on the settings, the text, that is copied will be
+pre-formatted, such that it better fits to the current column
+of the cursor to keep a consistent indentation level.
+
+Make sure to call this method only if the copy operation is allowed.
+*/
+void AbstractCodeEditorWidget::copy()
+{
+    CodeEditor::copy();
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    bool formatCopyCode = settings.value("formatCopyCutCode", true).toBool();
+    settings.endGroup();
+
+    if (formatCopyCode)
+    {
+        QClipboard *clipboard = QApplication::clipboard();
+
+        const QMimeData *mimeData = clipboard->mimeData();
+
+        if (mimeData && mimeData->hasText())
+        {
+            int column, line;
+            getCursorPosition(&line, &column);
+            QString prependText;
+
+            if (line >= 0 && column >= 0)
+            {
+                prependText = lineText(line).left(column);
+            }
+
+            QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
+            clipboard->clear(); // mimeData is now invalid!
+            clipboard->setText(modifiedText);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! paste code from the clipboard at the current cursor position
+/*
+Depending on the settings, the text, that should be pasted,
+is pre-formatted, such that it better fits to the current column
+of the cursor to keep a consistent indentation level.
+
+Make sure that the cursor is at the desired position before calling this method.
+*/
+void AbstractCodeEditorWidget::paste()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    bool formatPasteCode = settings.value("formatPasteAndDropCode", true).toBool();
+    settings.endGroup();
+
+    if (formatPasteCode)
+    {
+        // the strategy is to get the text from the clipboard,
+        // adapt this text, set it again to the clipboard and
+        // use the ordinary paste method to insert it. Afterwards,
+        // the original text will be set again to the clipboard.
+        QClipboard *clipboard = QApplication::clipboard();
+        QString currentClipboardText = "";
+
+        if (clipboard->mimeData()->hasText())
+        {
+            int lineIdx, column;
+            getCursorPosition(&lineIdx, &column);
+            QString indent;
+
+            // if this is a console widget and the current line starts with >>,
+            // the column should be subtracted by the length of this special start string.
+            column -= std::max(0, startLineOffset(lineIdx));
+            
+            if (useSpacesInsteadOfTabs())
+            {
+                indent = QString(column, ' ');
+            }
+            else
+            {
+                indent = QString(column, '\t');
+            }
+
+            currentClipboardText = clipboard->text();
+            int lineCount;
+            clipboard->setText(formatCodeBeforeInsertion(currentClipboardText, lineCount, false, indent));
+        }
+
+        CodeEditor::paste();
+
+        if (currentClipboardText != "")
+        {
+            clipboard->setText(currentClipboardText);
+        }
+    }
+    else
+    {
+        CodeEditor::paste();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! cut selected code and puts it into the clipboard
+/*
+Depending on the settings, the text, that is cut will be
+pre-formatted, such that it better fits to the current column
+of the cursor to keep a consistent indentation level.
+
+Make sure to call this method only if the cut operation is allowed or
+possibly adjust the selected text to a valid section.
+*/
+void AbstractCodeEditorWidget::cut()
+{
+    CodeEditor::cut();
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("CodeEditor");
+    bool formatCopyCode = settings.value("formatCopyCutCode", true).toBool();
+    settings.endGroup();
+
+    if (formatCopyCode)
+    {
+        QClipboard *clipboard = QApplication::clipboard();
+
+        const QMimeData *mimeData = clipboard->mimeData();
+
+        if (mimeData && mimeData->hasText())
+        {
+            int column, line;
+            getCursorPosition(&line, &column);
+            QString prependText;
+
+            if (line >= 0 && column >= 0)
+            {
+                prependText = lineText(line).left(column);
+            }
+
+            QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
+            clipboard->clear(); // mimeData is now invalid!
+            clipboard->setText(modifiedText);
+        }
+    }
+}
 
 
 } //end namespace ito
