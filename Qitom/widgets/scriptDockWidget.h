@@ -61,7 +61,7 @@ class ScriptDockWidget : public AbstractDockWidget
 public:
     ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, 
         const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel, 
-        QWidget *parent = 0, Qt::WindowFlags flags = 0);
+        QWidget *parent = 0, QFlag flags = 0);
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;

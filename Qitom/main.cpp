@@ -258,9 +258,9 @@ int main(int argc, char *argv[])
 #else
 #endif
     newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += designerDir.toLatin1();
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += oldpath;
 #ifdef WIN32
     _putenv(newpath.constData());

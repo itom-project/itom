@@ -41,7 +41,13 @@ namespace ito
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UserUiDialog::UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
+UserUiDialog::UserUiDialog(
+    const QString& filename,
+    tButtonBarType buttonBarType,
+    const StringMap& dialogButtons,
+    RetVal& retValue,
+    QWidget* parent,
+    QFlag f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),
@@ -51,7 +57,13 @@ UserUiDialog::UserUiDialog(const QString &filename, tButtonBarType buttonBarType
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-UserUiDialog::UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
+UserUiDialog::UserUiDialog(
+    QWidget* contentWidget,
+    tButtonBarType buttonBarType,
+    const StringMap& dialogButtons,
+    RetVal& retValue,
+    QWidget* parent,
+    QFlag f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),

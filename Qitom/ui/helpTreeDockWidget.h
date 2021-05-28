@@ -36,7 +36,7 @@ class HelpTreeDockWidget : public QWidget
     Q_FLAGS(State States)
 
 public:
-    HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WindowFlags flags = 0);
+    HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, QFlag flags = 0);
     ~HelpTreeDockWidget();
 
     enum HelpItemType 

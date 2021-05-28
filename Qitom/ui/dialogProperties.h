@@ -60,7 +60,7 @@ public:
         bool m_visited;
     };
 
-    DialogProperties(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    DialogProperties(QWidget * parent = 0, QFlag f = 0);
     ~DialogProperties();
 
     bool selectTabByKey(QString &key, QTreeWidgetItem *parent = NULL);

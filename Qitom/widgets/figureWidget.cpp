@@ -41,7 +41,8 @@ FigureWidget::FigureWidget(
         const QString &title,
         bool docked, bool isDockAvailable,
         int rows, int cols,
-        QWidget *parent, Qt::WindowFlags /*flags*/):
+        QWidget* parent,
+        QFlag /*flags*/) :
         AbstractDockWidget(docked, isDockAvailable,
                             floatingWindow, movingEnabled,
                             title, "", parent),

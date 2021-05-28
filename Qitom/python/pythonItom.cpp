@@ -1379,7 +1379,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     }
     else
     {
-        namefilter.sprintf("%s", filterstring);
+        namefilter.asprintf("%s", filterstring);
 
         if (namefilter.length())
         {

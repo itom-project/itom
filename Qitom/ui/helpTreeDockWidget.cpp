@@ -35,7 +35,7 @@ namespace ito
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Constructor
-HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WindowFlags flags)
+HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, QFlag flags)
     : QWidget(parent, flags),
     m_historyIndex(-1),
     m_pMainModel(NULL),

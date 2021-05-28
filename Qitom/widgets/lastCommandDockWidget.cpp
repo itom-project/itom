@@ -118,7 +118,7 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
                 date = tmpDate;
                 parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
                 parentItem->setText(0, date);
-                parentItem->setTextColor(0, QColor(m_dateColor));
+                parentItem->setForeground(0, QColor(m_dateColor));
                 parentItem->setFlags(Qt::ItemIsEnabled);
                 m_lastCommandTreeWidget->addTopLevelItem(parentItem);
                 m_lastTreeWidgetParent = parentItem;
@@ -247,7 +247,7 @@ void LastCommandDockWidget::addLastCommand(QString cmd)
                 QTreeWidgetItem *parentItem;
                 parentItem = new QTreeWidgetItem(m_lastCommandTreeWidget);
                 parentItem->setText(0, strDate);
-                parentItem->setTextColor(0, QColor(m_dateColor));
+                parentItem->setForeground(0, QColor(m_dateColor));
                 parentItem->setFlags(Qt::ItemIsEnabled);
                 m_lastCommandTreeWidget->addTopLevelItem(parentItem);
                 m_lastTreeWidgetParent = parentItem;
@@ -282,7 +282,7 @@ void LastCommandDockWidget::propertiesChanged()
     {
         for (int x = 0; x < m_lastCommandTreeWidget->topLevelItemCount(); ++x)
         {
-            m_lastCommandTreeWidget->topLevelItem(x)->setTextColor(0, QColor(m_dateColor));
+            m_lastCommandTreeWidget->topLevelItem(x)->setForeground(0, QColor(m_dateColor));
         }
     }
     else

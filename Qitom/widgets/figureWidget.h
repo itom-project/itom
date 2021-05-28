@@ -52,7 +52,14 @@ class FigureWidget : public AbstractDockWidget
 
 
 public:
-    FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    FigureWidget(
+        const QString& title,
+        bool docked,
+        bool isDockAvailable,
+        int rows,
+        int cols,
+        QWidget* parent = 0,
+        QFlag flags = 0);
     ~FigureWidget();
 
     RetVal plot(QSharedPointer<ito::DataObject> dataObj,

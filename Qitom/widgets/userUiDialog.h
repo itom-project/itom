@@ -52,8 +52,8 @@ public:
         bbTypeVertical      = 0x0002
     };
 
-    UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
-    UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, Qt::WindowFlags f = NULL);
+    UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, QFlag f = NULL);
+    UserUiDialog(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent = NULL, QFlag f = NULL);
 
     ~UserUiDialog();
 
