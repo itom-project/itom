@@ -544,13 +544,29 @@ void AbstractCodeEditorWidget::copy()
 
         if (mimeData && mimeData->hasText())
         {
-            int column, line;
-            getCursorPosition(&line, &column);
+            int lineFrom, lineTo, columnFrom, columnTo;
+            getSelection(&lineFrom, &columnFrom, &lineTo, &columnTo);
+
+            if (lineFrom > lineTo)
+            {
+                std::swap(lineFrom, lineTo);
+                std::swap(columnFrom, columnTo);
+            }
+            else if ((lineFrom == lineTo) && (columnFrom > columnTo))
+            {
+                std::swap(columnFrom, columnTo);
+            }
+
+            if (lineFrom == -1)
+            {
+                getCursorPosition(&lineFrom, &columnFrom);
+            }
+
             QString prependText;
 
-            if (line >= 0 && column >= 0)
+            if (lineFrom >= 0 && columnFrom >= 0)
             {
-                prependText = lineText(line).left(column);
+                prependText = lineText(lineFrom).left(columnFrom);
             }
 
             QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
@@ -649,13 +665,29 @@ void AbstractCodeEditorWidget::cut()
 
         if (mimeData && mimeData->hasText())
         {
-            int column, line;
-            getCursorPosition(&line, &column);
+            int lineFrom, lineTo, columnFrom, columnTo;
+            getSelection(&lineFrom, &columnFrom, &lineTo, &columnTo);
+
+            if (lineFrom > lineTo)
+            {
+                std::swap(lineFrom, lineTo);
+                std::swap(columnFrom, columnTo);
+            }
+            else if ((lineFrom == lineTo) && (columnFrom > columnTo))
+            {
+                std::swap(columnFrom, columnTo);
+            }
+
+            if (lineFrom == -1)
+            {
+                getCursorPosition(&lineFrom, &columnFrom);
+            }
+            
             QString prependText;
 
-            if (line >= 0 && column >= 0)
+            if (lineFrom >= 0 && columnFrom >= 0)
             {
-                prependText = lineText(line).left(column);
+                prependText = lineText(lineFrom).left(columnFrom);
             }
 
             QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
