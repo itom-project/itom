@@ -4055,19 +4055,11 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
             sharedBuffer = PythonSharedPointerGuard::createPythonSharedPointer<char>(tempBuf, bufferObj);
             *maxLength = static_cast<int>(length < 0 ? PyBytes_Size(bufferObj) : qMin(PyBytes_Size(bufferObj),length));
         }
-        else if (sizeof(Py_UNICODE) == sizeof(char) && PyUnicode_Check(bufferObj))
-        {
-            tempBuf = (char*)PyUnicode_AS_DATA(bufferObj);
-            sharedBuffer = PythonSharedPointerGuard::createPythonSharedPointer<char>(tempBuf, bufferObj);
-            *maxLength = static_cast<int>(length < 0 ? (Py_ssize_t)strlen(tempBuf) : qMin((Py_ssize_t)strlen(tempBuf), length));
-        }
         else
         {
             PyErr_SetString(
                 PyExc_RuntimeError, 
-                "arguments of method must be a byte array, byte object or unicode "
-                "object (only if unicode corresponds to a 8bit char) - in the case "
-                "that a length value is provided");
+                "arguments of method must be a byte array or byte object");
             return NULL;
         }
 
@@ -4094,9 +4086,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         PyErr_Clear();
         PyErr_SetString(
             PyExc_RuntimeError, 
-            "arguments of method must be either one data object or a byte array, "
-            "byte object or unicode object (only if unicode corresponds to a 8bit "
-            "char) followed by an optional maximum length.");
+            "arguments of method must be either one data object, byte array or "
+            "byte object.");
         return NULL;
     }
 
@@ -4402,36 +4393,21 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else if (PyUnicode_Check(bufferObj))
         {
-            //Py_ssize_t stringLengthByte = PyUnicode_GET_DATA_SIZE(tempObj);
-            if (sizeof(Py_UNICODE) == sizeof(wchar_t))
+            Py_ssize_t wstring_size;
+            wchar_t* wstring = PyUnicode_AsWideCharString(bufferObj, &wstring_size);
+
+            if (wstring != nullptr)
             {
-                tempString = QString::fromWCharArray((wchar_t*)PyUnicode_AS_DATA(bufferObj));
+                tempString = QString::fromWCharArray(wstring, wstring_size);
                 ba = tempString.toLatin1();
                 buf = ba.data();
                 datalen_temp = ba.length();
-            }
-            else if (sizeof(Py_UNICODE) == 1)
-            {
-                buf = PyUnicode_AS_DATA(bufferObj);
-                datalen_temp = (int)strlen(buf);
-            }
-            else if (sizeof(Py_UNICODE) == 2)
-            {
-                tempString = QString::fromUtf16((ushort*)PyUnicode_AS_DATA(bufferObj));
-                ba = tempString.toLatin1();
-                buf = ba.data();
-                datalen_temp = ba.length();
-            }
-            else if (sizeof(Py_UNICODE) == 4)
-            {
-                tempString = QString::fromUcs4((uint*)PyUnicode_AS_DATA(bufferObj));
-                ba = tempString.toLatin1();
-                buf = ba.data();
-                datalen_temp = ba.length();
+                PyMem_Free(wstring);
+                wstring = nullptr;
             }
             else
             {
-                PyErr_Format(PyExc_TypeError, "given unicode must have an element size of 1,2 or 4 bytes. Given is %i.", sizeof(Py_UNICODE));
+                PyErr_Format(PyExc_TypeError, "given unicode cannot be parsed to an latin1 string.");
                 return NULL;
             }
 

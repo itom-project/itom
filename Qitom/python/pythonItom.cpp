@@ -3014,18 +3014,18 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
 {
     bool returnDict = false;
     bool addPluginInfo = false;
-    const char* kwlist[] = {"dictionary", "addPluginInfo", NULL};
+    const char* kwlist[] = {"dictionary", "addPluginInfo", nullptr };
 
     if (!PyArg_ParseTupleAndKeywords(
             pArgs, pKwds, "|bb", const_cast<char**>(kwlist), &returnDict, &addPluginInfo))
     {
-        return NULL;
+        return nullptr;
     }
 
     PyObject* myDic = PyDict_New(); // new ref
     PyObject* myTempDic = PyDict_New(); // new ref
-    PyObject* key = NULL;
-    PyObject* value = NULL;
+    PyObject* key = nullptr;
+    PyObject* value = nullptr;
 
     QMap<QString, QString> versionMap = ito::getItomVersionMap();
     QMapIterator<QString, QString> i(versionMap);
@@ -3047,14 +3047,13 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
     if (addPluginInfo)
     {
         PyObject* myTempDic = PyDict_New();
-        char buf[7] = {0};
         ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-        ito::AddInInterfaceBase* curAddInInterface = NULL;
+        ito::AddInInterfaceBase* curAddInInterface = nullptr;
 
-        if (aim != NULL)
+        if (aim != nullptr)
         {
-            PyObject* info = NULL;
-            PyObject* license = NULL;
+            PyObject* info = nullptr;
+            PyObject* license = nullptr;
 
             for (int i = 0; i < aim->getTotalNumAddIns(); i++)
             {
@@ -3072,8 +3071,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
                     int first = MAJORVERSION(val);
                     int middle = MINORVERSION(val);
                     int last = PATCHVERSION(val);
-                    sprintf_s(buf, 7, "%i.%i.%i", first, middle, last);
-                    value = PyUnicode_FromString(buf);
+                    value = PyUnicode_FromFormat("%d.%d.%d", first, middle, last);
 
                     PyDict_SetItemString(info, "version", value);
                     PyDict_SetItemString(info, "license", license);
@@ -3130,7 +3128,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
             for (Py_ssize_t m = 0; m < PyList_Size(mySubKeys); ++m)
             {
                 currentSubKey = PyList_GET_ITEM(mySubKeys, m);
-                temp = PyUnicode_GET_SIZE(currentSubKey);
+                temp = PyUnicode_GET_LENGTH(currentSubKey);
                 longestKeySize = std::max(temp, longestKeySize);
             }
 
@@ -3251,9 +3249,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
             Py_XDECREF(mySubKeys);
         }
 
-
         Py_DECREF(myKeys);
-
         Py_DECREF(myDic);
         Py_RETURN_NONE;
     }

@@ -1351,7 +1351,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input);
+    _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9
     _node *n2 = n;
     if (n == NULL)
     {
@@ -6417,7 +6417,11 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                     }
                     else
                     {
-                        qDebug() << "variable with key '" << PyUnicode_AS_DATA(key) << "' already exists and must not be overwritten.";
+                        bool ok_;
+                        qDebug() << 
+                            "variable with key '" << 
+                            PythonQtConversion::PyObjGetString(key_approved, false, ok_) << 
+                            "' already exists and must not be overwritten.";
                     }
                 }
                 else
