@@ -458,7 +458,7 @@ QModelIndex PipManager::index(int row, int column, const QModelIndex &parent) co
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PipManager::isPipStarted() const
 {
-    return m_pipProcess.pid() != 0;
+    return m_pipProcess.processId() != 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
