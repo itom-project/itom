@@ -50,6 +50,7 @@
 #include <qdir.h>
 #include <qresource.h>
 #include <qstringlist.h>
+#include <qscreen.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -4319,17 +4320,26 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
     if (pyEngine)
     {
         PyObject* res = PyDict_New();
-        int nScreens = pyEngine->m_pDesktopWidget->screenCount();
-        int primaryScreen = pyEngine->m_pDesktopWidget->primaryScreen();
+        
+        QList<QScreen*> screens = QApplication::QGuiApplication::screens();
+        QScreen* primaryScreen = QApplication::QGuiApplication::primaryScreen();
+        int nScreens = screens.length();
 
         PyObject* geom = PyTuple_New(nScreens);
-        PyObject* subgeom = NULL;
-        PyObject* item = NULL;
+        PyObject* subgeom = nullptr;
+        PyObject* item = nullptr;
         QRect rec;
-        for (int i = 0; i < nScreens; i++)
+        int i = 0;
+        int primaryIdx = 0;
+        foreach (auto scr, screens)
         {
+            if (scr == primaryScreen)
+            {
+                primaryIdx = i;
+            }
+            
             subgeom = PyDict_New();
-            rec = pyEngine->m_pDesktopWidget->screenGeometry(i);
+            rec = scr->geometry();
             item = PyLong_FromLong(rec.x());
             PyDict_SetItemString(subgeom, "x", item);
             Py_DECREF(item);
@@ -4343,12 +4353,13 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
             PyDict_SetItemString(subgeom, "h", item);
             Py_DECREF(item);
             PyTuple_SetItem(geom, i, subgeom); // steals reference
+            i++;
         }
 
         item = PyLong_FromLong(nScreens);
         PyDict_SetItemString(res, "screenCount", item);
         Py_DECREF(item);
-        item = PyLong_FromLong(primaryScreen);
+        item = PyLong_FromLong(primaryIdx);
         PyDict_SetItemString(res, "primaryScreen", item);
         Py_DECREF(item);
         PyDict_SetItemString(res, "geometry", geom);

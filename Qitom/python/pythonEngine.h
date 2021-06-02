@@ -249,7 +249,6 @@ private:
 
     QMutex dbgCmdMutex;
     QMutex pythonStateChangeMutex;
-    QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> debugCommandQueue;
     ito::tPythonDbgCmd debugCommand;
     

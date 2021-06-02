@@ -161,28 +161,20 @@ PythonEngine *PythonEngine::getInstanceInternal()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonEngine::PythonEngine() :
-    m_started(false),
-    m_pDesktopWidget(NULL),
-    m_pythonState(pyStateIdle),
-    bpModel(NULL),
-    mainModule(NULL),
-    m_pMainDictionary(NULL),
-    m_pLocalDictionary(NULL),
-    m_pGlobalDictionary(NULL),
-    itomDbgModule(NULL),
-    itomDbgInstance(NULL),
-    itomModule(NULL),
-    itomFunctions(NULL),
-    m_pyFuncWeakRefAutoInc(0),
-    m_pyModGC(NULL),
-    m_pyModCodeChecker(NULL),
+    m_started(false), 
+    m_pythonState(pyStateIdle), bpModel(nullptr),
+    mainModule(nullptr), m_pMainDictionary(nullptr), m_pLocalDictionary(nullptr),
+    m_pGlobalDictionary(nullptr), itomDbgModule(nullptr), itomDbgInstance(nullptr),
+    itomModule(nullptr), itomFunctions(nullptr),
+    m_pyFuncWeakRefAutoInc(0), m_pyModGC(nullptr),
+    m_pyModCodeChecker(nullptr),
 	m_pyModCodeCheckerHasPyFlakes(false),
 	m_pyModCodeCheckerHasFlake8(false),
     m_executeInternalPythonCodeInDebugMode(false),
-    dictUnicode(NULL),
+    dictUnicode(nullptr),
     m_pythonThreadId(0),
     m_includeItomImportString(""),
-    m_pUserDefinedPythonHome(NULL)
+    m_pUserDefinedPythonHome(nullptr)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -276,8 +268,6 @@ PythonEngine::PythonEngine() :
     bpModel = new ito::BreakPointModel();
     bpModel->restoreState(); //get breakPoints from last session
 
-    m_pDesktopWidget = new QDesktopWidget(); //must be in constructor, since the constructor is executed in main-thread
-
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = const_cast<PythonEngine*>(this);
     locker.unlock();
@@ -295,8 +285,6 @@ PythonEngine::~PythonEngine()
 
     bpModel->saveState(); //save current set of breakPoints to settings file
     DELETE_AND_SET_NULL(bpModel);
-
-    DELETE_AND_SET_NULL(m_pDesktopWidget);
 
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = NULL;
