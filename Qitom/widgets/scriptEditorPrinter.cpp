@@ -61,14 +61,14 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
     QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
     QString page = QObject::tr("Page %1/%2").arg(pageNumber).arg(pageCount);
     int width = area.width();
-    int dateWidth = painter.fontMetrics().width(date);
+    int dateWidth = painter.fontMetrics().horizontalAdvance(date);
     filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
 
     if (drawing)
     {
         //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
         painter.drawText(area.left(), area.top() + painter.fontMetrics().ascent(), filename);
-        painter.drawText(area.right() - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
+        painter.drawText(area.right() - painter.fontMetrics().horizontalAdvance(date), area.top() + painter.fontMetrics().ascent(), date);
         painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
     }
 
