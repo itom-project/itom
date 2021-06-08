@@ -34,6 +34,7 @@
 #include <qcoreapplication.h>
 #include <qpointer.h>
 #include <QtCore/qpluginloader.h>
+#include "addInGrabber.h"
 
 #include "abstractAddInDockWidget.h"
 
@@ -425,12 +426,12 @@ namespace ito
         moveToThread(d->m_pThread);
         d->m_pThread->start();
 
-		/*set new seed for random generator of OpenCV. 
-		This is required to have real random values for any randn or randu command.
-		The seed must be set in every thread. This is for the main thread.
-		*/
-		cv::theRNG().state = (uint64)cv::getCPUTickCount();
-		/*seed is set*/
+        /*set new seed for random generator of OpenCV. 
+        This is required to have real random values for any randn or randu command.
+        The seed must be set in every thread. This is for the main thread.
+        */
+        cv::theRNG().state = (uint64)cv::getCPUTickCount();
+        /*seed is set*/
 
         return retOk;
     }
@@ -848,12 +849,20 @@ namespace ito
         qDebug("begin: startDeviceAndRegisterListener");
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
+        QString defaultChannel;
+        bool isMultiChannel = false;
+        isMultiChannel = this->inherits("ito::AddInMultiChannelGrabber");
+
+        if (isMultiChannel)
+        {
+            defaultChannel = m_params["defaultChannel"].getVal<const char*>();
+        }
 
         if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
         {
             retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toLatin1().data());
         }
-        else if (m_autoGrabbingListeners.contains(obj))
+        else if ((!isMultiChannel && m_autoGrabbingListeners.contains("",obj))||(isMultiChannel && m_autoGrabbingListeners.contains(defaultChannel, obj)))
         {
             retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toLatin1().data());
         }
@@ -861,20 +870,26 @@ namespace ito
         {
             retValue += startDevice(NULL);
 
-			if (!retValue.containsError())
-			{
-				if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
-				{
-					m_timerID = startTimer(m_timerIntervalMS);
+            if (!retValue.containsError())
+            {
+                if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+                {
+                    m_timerID = startTimer(m_timerIntervalMS);
 
-					if (m_timerID == 0)
-					{
-						retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
-					}
-				}
-
-				m_autoGrabbingListeners.insert(obj);
-			}
+                    if (m_timerID == 0)
+                    {
+                        retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
+                    }
+                }
+                if (!isMultiChannel)
+                {
+                    m_autoGrabbingListeners.insert("",obj);
+                }
+                else 
+                {
+                    m_autoGrabbingListeners.insert(defaultChannel, obj);
+                }
+            }
         }
 
         if (waitCond)
@@ -882,51 +897,66 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-		else if (retValue.containsError())
-		{
-			std::cout << "Error binding / starting camera: " << retValue.errorMessage() << "\n" << std::endl;
-		}
+        else if (retValue.containsError())
+        {
+            std::cout << "Error binding / starting camera: " << retValue.errorMessage() << "\n" << std::endl;
+        }
 
         qDebug("end: startDeviceAndRegisterListener");
         return retValue;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-	ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
-	{
-		qDebug("start: stopDeviceAndUnregisterListener");
-		ItomSharedSemaphoreLocker locker(waitCond);
-		ito::RetVal retValue(ito::retOk);
+    ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
+    {
+        qDebug("start: stopDeviceAndUnregisterListener");
+        ItomSharedSemaphoreLocker locker(waitCond);
+        ito::RetVal retValue(ito::retOk);
 
-		if (!m_autoGrabbingListeners.remove(obj))
-		{
-			retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toLatin1().data());
-		}
-		else
-		{
-			qDebug("live image has been removed from listener list");
+        if (obj)
+        {
+            bool found = false;
+            QMultiMap<QString, QObject*>::iterator i = m_autoGrabbingListeners.begin();
+            while (i != m_autoGrabbingListeners.end())
+            {
+                if (i.value() == obj)
+                {
+                    found = true;
+                    m_autoGrabbingListeners.remove(i.key(), i.value());
+                    break;
+                }
 
-			if (m_autoGrabbingListeners.size() <= 0)
-			{
-				if (m_timerID) //stop timer if no other listeners are registered
-				{
-					killTimer(m_timerID);
-					m_timerID = 0;
-				}
-			}
+            }
+            if (!found)
+            {
+                retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been found in m_autoGrabbingListeners").toLatin1().data());
+            }
+        }
+        else
+        {
+            qDebug("live image has been removed from listener list");
 
-			retValue += stopDevice(NULL);
-		}
+            if (m_autoGrabbingListeners.size() <= 0)
+            {
+                if (m_timerID) //stop timer if no other listeners are registered
+                {
+                    killTimer(m_timerID);
+                    m_timerID = 0;
+                }
+            }
+
+            retValue += stopDevice(NULL);
+        }
 
         if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-		else if (retValue.containsError())
-		{
-			std::cout << "Error unbinding / stopping camera: " << retValue.errorMessage() << "\n" << std::endl;
-		}
+        else if (retValue.containsError())
+        {
+            std::cout << "Error unbinding / stopping camera: " << retValue.errorMessage() << "\n" << std::endl;
+        }
 
         qDebug("end: stopDeviceAndUnregisterListener");
         return retValue;

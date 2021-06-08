@@ -39,26 +39,26 @@
 namespace ito
 {
     class AddInAbstractGrabberPrivate;
-	class AddInGrabberPrivate;
-	class AddInMultiChannelGrabberPrivate;
+    class AddInGrabberPrivate;
+    class AddInMultiChannelGrabberPrivate;
 
     class ITOMCOMMONQT_EXPORT AddInAbstractGrabber : public ito::AddInDataIO
     {
         Q_OBJECT
-	public:
-		enum PixelFormat
-		{
-			mono8 = ito::tUInt8,
-			mono10 = ito::tUInt16,
-			mono12 = ito::tUInt16,
-			mono16 = ito::tUInt16,
-			rgb32 = ito::tRGBA32,
-		};
+    public:
+        enum PixelFormat
+        {
+            mono8 = ito::tUInt8,
+            mono10 = ito::tUInt16,
+            mono12 = ito::tUInt16,
+            mono16 = ito::tUInt16,
+            rgb32 = ito::tRGBA32,
+        };
 #if QT_VERSION < 0x050500
-		//for >= Qt 5.5.0 see Q_ENUM definition below
-		Q_ENUMS(PixelFormat)
+        //for >= Qt 5.5.0 see Q_ENUM definition below
+        Q_ENUMS(PixelFormat)
 #else
-		Q_ENUM(PixelFormat)
+        Q_ENUM(PixelFormat)
 #endif
     private:
         //! counter indicating how many times startDevice has been called
@@ -90,7 +90,7 @@ namespace ito
         */
         virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0; 
 
-		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = "") = 0; /*!< sends m_data to all registered listeners. */
+        virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
 
         inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
         
@@ -122,97 +122,97 @@ namespace ito
         }  
 
     public:
-		static int pixelFormatStringToBpp(const char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
-		static int pixelFormatStringToEnum(const char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
+        static int pixelFormatStringToBpp(const char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
+        static int pixelFormatStringToEnum(const char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
         AddInAbstractGrabber();
         ~AddInAbstractGrabber();
 
 
     };
 
-	class ITOMCOMMONQT_EXPORT AddInGrabber : public AddInAbstractGrabber
-	{
-		Q_OBJECT
-	private:
-			
-		AddInGrabberPrivate *dd;
-	protected:
-		ito::DataObject m_data; /*!< variable for the recently grabbed image*/
+    class ITOMCOMMONQT_EXPORT AddInGrabber : public AddInAbstractGrabber
+    {
+        Q_OBJECT
+    private:
+            
+        AddInGrabberPrivate *dd;
+    protected:
+        ito::DataObject m_data; /*!< variable for the recently grabbed image*/
 
-		//! implement this method in order to check if m_image should be (re)allocated with respect to the current sizex, sizey, bpp...
-		/*!
-		Call this method if the size or bitdepth of your camera has changed (e.g. in your constructor, too). In this method, compare if the new size
-		is equal to the old one. If this is not the case, use the following example to set m_image to a newly allocated dataObject. The old dataObject
-		is deleted automatically with respect to its internal reference counter:
+        //! implement this method in order to check if m_image should be (re)allocated with respect to the current sizex, sizey, bpp...
+        /*!
+        Call this method if the size or bitdepth of your camera has changed (e.g. in your constructor, too). In this method, compare if the new size
+        is equal to the old one. If this is not the case, use the following example to set m_image to a newly allocated dataObject. The old dataObject
+        is deleted automatically with respect to its internal reference counter:
 
-		m_image = ito::DataObject(futureHeight,futureWidth,futureType);
+        m_image = ito::DataObject(futureHeight,futureWidth,futureType);
 
-		\see m_image
-		*/
-		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        \see m_image
+        */
+        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
-		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = ""); /*!< sends m_data to all registered listeners. */
-	public:
-		AddInGrabber();
-		~AddInGrabber();
+        virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+    public:
+        AddInGrabber();
+        ~AddInGrabber();
 
-	};
+    };
 
-	class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AddInAbstractGrabber
-	{
-		Q_OBJECT
-	private:
-		AddInMultiChannelGrabberPrivate *dd;
-	protected:
-		
-		struct ChannelContainer 
-		{
-			ito::DataObject data;
-			QMap<QString, ito::Param> m_channelParam;
-			ChannelContainer() {};
-			ChannelContainer(ito::Param roi, ito::Param pixelFormat, ito::Param sizex, ito::Param sizey)
-			{
-				m_channelParam.insert("pixelFormat",pixelFormat);
-				m_channelParam.insert("roi", roi);
-				m_channelParam.insert("sizex", sizex);
-				m_channelParam.insert("sizey", sizey);
-				
-			}
-		};
-		QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
-		virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-		virtual ito::RetVal sendDataToListeners(int waitMS, QString channel = ""); /*!< sends m_data to all registered listeners. */
-		ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
-		void addChannel(QString name);
-		virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
-		virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
+    class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AddInAbstractGrabber
+    {
+        Q_OBJECT
+    private:
+        AddInMultiChannelGrabberPrivate *dd;
+    protected:
+        
+        struct ChannelContainer 
+        {
+            ito::DataObject data;
+            QMap<QString, ito::Param> m_channelParam;
+            ChannelContainer() {};
+            ChannelContainer(ito::Param roi, ito::Param pixelFormat, ito::Param sizex, ito::Param sizey)
+            {
+                m_channelParam.insert("pixelFormat",pixelFormat);
+                m_channelParam.insert("roi", roi);
+                m_channelParam.insert("sizex", sizex);
+                m_channelParam.insert("sizey", sizey);
+                
+            }
+        };
+        QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
+        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
+        ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
+        void addChannel(QString name);
+        virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
+        virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
 
-		////! Specific function to set the parameters in the respective plugin class
-		///*!
-		//This function is a specific implementation of setParam. Overload this function to process parameters individually in the plugin class. This function is called by setParam after the parameter has been parsed and checked .
+        ////! Specific function to set the parameters in the respective plugin class
+        ///*!
+        //This function is a specific implementation of setParam. Overload this function to process parameters individually in the plugin class. This function is called by setParam after the parameter has been parsed and checked .
 
-		//\param [in] val parameter to be processed
-		//\param [in] it ParamMapIterator iterator to the parameter in m_params
-		//\param [in] suffix possible suffix of the parameter
-		//\param [in] key of the parameter
-		//\param [in] index of the parameter
-		//\param [in] hasIndex is set to true if parameter has an index
-		//\param [in] set ok to true if parameter was processed
-		//\param [in] add key of changed channel specific parameters to pendingUpdate. 
-		//\return retOk if everything was ok, else retError
-		//*/
-		virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
-		virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
-		void updateSizeXY(); /*!< updates sizex und sizey*/
+        //\param [in] val parameter to be processed
+        //\param [in] it ParamMapIterator iterator to the parameter in m_params
+        //\param [in] suffix possible suffix of the parameter
+        //\param [in] key of the parameter
+        //\param [in] index of the parameter
+        //\param [in] hasIndex is set to true if parameter has an index
+        //\param [in] set ok to true if parameter was processed
+        //\param [in] add key of changed channel specific parameters to pendingUpdate. 
+        //\return retOk if everything was ok, else retError
+        //*/
+        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
+        virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
+        void updateSizeXY(); /*!< updates sizex und sizey*/
 
-	public:
-		AddInMultiChannelGrabber();
-		~AddInMultiChannelGrabber();
-	public slots:
-		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) final;
-		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
-		
-	};
+    public:
+        AddInMultiChannelGrabber();
+        ~AddInMultiChannelGrabber();
+    public slots:
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) final;
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;      
+        ito::RetVal changeChannelForListerners(const QString& newChannel, QObject* obj);
+    };
 
 
 
