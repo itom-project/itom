@@ -279,6 +279,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -291,7 +292,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.h
@@ -532,6 +532,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
@@ -540,7 +541,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.cpp

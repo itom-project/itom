@@ -581,15 +581,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 PyModule_AddObject(itomModule, "actuator", (PyObject *)&PythonPlugins::PyActuatorPluginType);
             }
 
-// pending for deletion, so for how long already!?
-/*
-            if (PyType_Ready(&PythonPlugins::PyActuatorAxisType) >= 0)
-            {
-                Py_INCREF(&PythonPlugins::PyActuatorAxisType);
-                PyModule_AddObject(itomModule, "axis", (PyObject *)&PythonPlugins::PyActuatorAxisType);
-            }
-*/
-
             if (PyType_Ready(&PythonPlugins::PyDataIOPluginType) >= 0)
             {
                 Py_INCREF(&PythonPlugins::PyDataIOPluginType);
@@ -1351,7 +1342,8 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9
+    _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9, use Py_CompileString instead
+    PyCodeObject oJ;
     _node *n2 = n;
     if (n == NULL)
     {
