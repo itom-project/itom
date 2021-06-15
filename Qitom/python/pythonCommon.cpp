@@ -450,6 +450,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 				available = true;
 			}
 
+            // the type strings are also parsed by itomAlgorithmsStubsGen.py!
             switch(p.getType())
             {
                 case ito::ParamBase::Char:
@@ -473,23 +474,23 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 case ito::ParamBase::CharArray:
-                    type = ("seq. of int (char)");
+                    type = ("Sequence[int] (char)");
                 break;
 
                 case ito::ParamBase::IntArray:
                     switch (metaType)
                     {
                     case ito::ParamMeta::rttiIntervalMeta:
-                        type = "int interval [v1,v2]";
+                        type = "Tuple[int,int] (interval [v1,v2])";
                         break;
                     case ito::ParamMeta::rttiRangeMeta:
-                        type = "int range [v1,v2)";
+                        type = "Tuple[int,int] (range [v1,v2))";
                         break;
                     case ito::ParamMeta::rttiRectMeta:
-                        type = "int rect [x0,y0,width,height]";
+                        type = "Tuple[int,int,int,int] (rect [x0,y0,width,height])";
                         break;
                     default:
-                        type = ("seq. of int");
+                        type = ("Sequence[int]");
                     }
                 break;
 
@@ -497,27 +498,27 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                     switch (metaType)
                     {
                     case ito::ParamMeta::rttiDoubleIntervalMeta:
-                        type = "float interval [v1,v2]";
+                        type = "Tuple[float,float] (interval [v1,v2])";
                         break;
                     default:
-                        type = ("seq. of float");
+                        type = ("Sequence[float]");
                     }
                 break;
 
                 case ito::ParamBase::ComplexArray:
-                    type = ("seq. of complex");
+                    type = ("Sequence[complex]");
                 break;
 
                 case ito::ParamBase::StringList:
-                    type = "seq. of str";
+                    type = "Sequence[str]";
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef)):
-                    type = ("dataIO|actuator");
+                    type = ("Union[dataIO,actuator]");
                 break;
 
                 case (ito::ParamBase::Pointer):
-                    type = ("void*");
+                    type = ("Any (void*)");
                 break;
 
                 case (ito::ParamBase::DObjPtr):
@@ -537,7 +538,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 default:
-                    type = ("unknown type");
+                    type = ("Any (unknown type)");
                 break;
             }
 

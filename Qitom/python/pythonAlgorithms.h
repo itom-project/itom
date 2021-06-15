@@ -24,7 +24,8 @@
 
 /* includes */
 #ifndef Q_MOC_RUN
-#define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
+//see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
+#define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API 
 #define NO_IMPORT_ARRAY
 
 //python
@@ -37,6 +38,8 @@
 #include "python/pythonWrapper.h"
 #endif
 #endif
+
+#include "common/addInInterface.h"
 
 #include <qstring.h>
 
@@ -54,6 +57,8 @@ public:
 
     //!< calls an algorithm with a given name and the required args and kwds.
     static PyObject* PyGenericAlgorithm(const QString &algorithmName, PyObject *self, PyObject *args, PyObject *kwds);
+
+    static PyObject* PyGenericAlgorithm2(const AddInAlgo::FilterDef *filterDef, PyObject *self, PyObject *args, PyObject *kwds);
 
 private:
 
@@ -76,7 +81,7 @@ private:
     typedef struct
     {
         PyObject_HEAD
-        QString *algorithmName;
+        const ito::AddInAlgo::FilterDef *filterDef;
     }
     PyAlgorithm;
 
@@ -89,9 +94,10 @@ private:
     static PyObject* PyAlgorithm_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyAlgorithm_init(PyAlgorithm *self, PyObject *args, PyObject *kwds);
     static PyObject* PyAlgorithm_call(PyAlgorithm *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyAlgorithm_repr(PyAlgorithm *self);
 
     // creates a new PyAlgorithm object.
-    static PyObject* createPyAlgorithm(const QString &algorithmName);
+    static PyObject* createPyAlgorithm(const ito::AddInAlgo::FilterDef *filterDef);
 
     //-------------------------------------------------------------------------------------------------
     // type structures

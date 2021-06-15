@@ -3026,6 +3026,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
     PyObject* myTempDic = PyDict_New(); // new ref
     PyObject* key = nullptr;
     PyObject* value = nullptr;
+    PyObject* pluginType = nullptr;
 
     QMap<QString, QString> versionMap = ito::getItomVersionMap();
     QMapIterator<QString, QString> i(versionMap);
@@ -3073,14 +3074,32 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
                     int last = PATCHVERSION(val);
                     value = PyUnicode_FromFormat("%d.%d.%d", first, middle, last);
 
+                    switch (curAddInInterface->getType())
+                    {
+                    case ito::typeDataIO:
+                        pluginType = PyUnicode_FromString("dataIO");
+                        break;
+                    case ito::typeActuator:
+                        pluginType = PyUnicode_FromString("actuator");
+                        break;
+                    case ito::typeAlgo:
+                        pluginType = PyUnicode_FromString("algorithm");
+                        break;
+                    default:
+                        pluginType = PyUnicode_FromString("unknown");
+                        break;
+                    }
+
                     PyDict_SetItemString(info, "version", value);
                     PyDict_SetItemString(info, "license", license);
+                    PyDict_SetItemString(info, "type", pluginType);
 
                     PyDict_SetItem(myTempDic, key, info);
 
                     Py_DECREF(key);
                     Py_DECREF(value);
                     Py_DECREF(license);
+                    Py_DECREF(pluginType);
                     Py_XDECREF(info);
                 }
             }

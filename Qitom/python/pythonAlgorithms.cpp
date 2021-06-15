@@ -24,7 +24,6 @@
 
 #include "../../AddInManager/addInManager.h"
 #include "../AppManagement.h"
-#include "common/addInInterface.h"
 #include "pythonEngine.h"
 #include "pythonItom.h"
 #include "pythonProgressObserver.h"
@@ -50,15 +49,29 @@ void PythonAlgorithms::AddAlgorithmFunctions(PyObject* mod)
     ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     auto flist = aim->getFilterList();
     auto flistIt = flist->constBegin();
-    QString name;
+    QByteArray name;
 
     while (flistIt != flist->constEnd())
     {
-        name = flistIt.key();
+        name = flistIt.key().toLatin1();
 
-        PyObject* algoWrapper = createPyAlgorithm(name);
+        PyObject *obj = PyUnicode_DecodeLatin1(name.data(), name.size(), nullptr);
 
-        if (PyModule_AddObject(mod, name.toLatin1().data(), algoWrapper) < 0)
+        if (obj)
+        {
+            if (!PyUnicode_IsIdentifier(obj))
+            {
+                Py_DECREF(obj);
+                qDebug() << "Algorithm " << name << " cannot be added to itom.algorithms module, since the name is no valid Python identifier.";
+                continue;
+            }
+
+            Py_DECREF(obj);
+        }
+
+        PyObject* algoWrapper = createPyAlgorithm(flistIt.value());
+
+        if (PyModule_AddObject(mod, name.data(), algoWrapper) < 0)
         {
             Py_DECREF(algoWrapper);
         }
@@ -71,9 +84,6 @@ void PythonAlgorithms::AddAlgorithmFunctions(PyObject* mod)
 PyObject* PythonAlgorithms::PyGenericAlgorithm(
     const QString& algorithmName, PyObject* self, PyObject* args, PyObject* kwds)
 {
-    ito::RetVal ret = ito::retOk;
-    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
     ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     auto flist = aim->getFilterList();
     auto cfit = flist->constFind(algorithmName);
@@ -85,11 +95,21 @@ PyObject* PythonAlgorithms::PyGenericAlgorithm(
     }
 
     ito::AddInAlgo::FilterDef* fFunc = cfit.value();
-    ito::AddInAlgo::FilterDefExt* fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
+
+    return PyGenericAlgorithm2(fFunc, self, args, kwds);
+}
+
+//-------------------------------------------------------------------------------------
+PyObject* PythonAlgorithms::PyGenericAlgorithm2(const AddInAlgo::FilterDef *filterDef, PyObject *self, PyObject *args, PyObject *kwds)
+{
+    ito::RetVal ret = ito::retOk;
+    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    const ito::AddInAlgo::FilterDefExt* fFuncExt = dynamic_cast<const ito::AddInAlgo::FilterDefExt*>(filterDef);
 
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase, paramsOutBase;
 
-    const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);
+    const ito::FilterParams* filterParams = aim->getHashedFilterParams(filterDef->m_paramFunc);
 
     if (filterParams == nullptr)
     {
@@ -209,7 +229,7 @@ PyObject* PythonAlgorithms::PyGenericAlgorithm(
         }
         else
         {
-            ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
+            ret = (*(filterDef->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
         }
     }
     catch (cv::Exception& exc)
@@ -291,7 +311,7 @@ PyObject* PythonAlgorithms::PyGenericAlgorithm(
 
     Py_END_ALLOW_THREADS // now we want to get back the GIL from Python
 
-        if (!PythonCommon::transformRetValToPyException(ret))
+    if (!PythonCommon::transformRetValToPyException(ret))
     {
         return nullptr;
     }
@@ -367,7 +387,7 @@ PyModuleDef PythonAlgorithms::PythonModuleItomAlgorithms = {
 //-------------------------------------------------------------------------------------
 void PythonAlgorithms::PyAlgorithm_dealloc(PyAlgorithm* self)
 {
-    DELETE_AND_SET_NULL(self->algorithmName);
+    self->filterDef = nullptr;
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
 
@@ -378,7 +398,7 @@ PyObject* PythonAlgorithms::PyAlgorithm_new(
     PyAlgorithm* self = (PyAlgorithm*)type->tp_alloc(type, 0);
     if (self != nullptr)
     {
-        self->algorithmName = nullptr;
+        self->filterDef = nullptr;
     }
 
     return (PyObject*)self;
@@ -387,41 +407,43 @@ PyObject* PythonAlgorithms::PyAlgorithm_new(
 //-------------------------------------------------------------------------------------
 int PythonAlgorithms::PyAlgorithm_init(PyAlgorithm* self, PyObject* args, PyObject* kwds)
 {
-    const char* algorithmName = nullptr;
-
-    const char* kwlist[] = {"algorithmName", nullptr};
-
     if (args == nullptr && kwds == nullptr)
     {
         return 0; // call from createPyAlgorithm
     }
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &(algorithmName)))
+    else
     {
+        PyErr_Format(PyExc_ValueError, "_algorithm can never be directly called.");
         return -1;
     }
-
-    *(self->algorithmName) = QString(algorithmName);
-
-    return 0;
 };
 
 //-----------------------------------------------------------------------------
 /*static*/ PyObject* PythonAlgorithms::PyAlgorithm_call(
     PyAlgorithm* self, PyObject* args, PyObject* kwds)
 {
-    return PyGenericAlgorithm(*(self->algorithmName), nullptr, args, kwds);
+    return PyGenericAlgorithm2(self->filterDef, nullptr, args, kwds);
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonAlgorithms::createPyAlgorithm(const QString& algorithmName)
+/*static*/ PyObject* PythonAlgorithms::PyAlgorithm_repr(PyAlgorithm* self)
+{
+    PyObject* result = PyUnicode_FromFormat(
+        "algorithm(\"%s\", plugin \"%s\")",
+        self->filterDef->m_name.toLatin1().data(),
+        self->filterDef->m_pBasePlugin->objectName().toLatin1().data());
+    return result;
+}
+
+//-----------------------------------------------------------------------------
+/*static*/ PyObject* PythonAlgorithms::createPyAlgorithm(const ito::AddInAlgo::FilterDef* filterDef)
 {
     PyAlgorithm* result =
         (PyAlgorithm*)PyObject_Call((PyObject*)&PyAlgorithmType, nullptr, nullptr);
 
     if (result != nullptr)
     {
-        result->algorithmName = new QString(algorithmName);
+        result->filterDef = filterDef;
         return (PyObject*)result; // result is always a new reference
     }
     else
@@ -454,7 +476,7 @@ PyTypeObject PythonAlgorithms::PyAlgorithmType = {
     0, /* tp_getattr */
     0, /* tp_setattr */
     0, /* tp_reserved */
-    (reprfunc)0, /* tp_repr */
+    (reprfunc)PyAlgorithm_repr, /* tp_repr */
     0, /* tp_as_number */
     0, /* tp_as_sequence */
     0, /* tp_as_mapping */
