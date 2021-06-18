@@ -115,15 +115,16 @@ namespace ito
     This function maps a string to a pixel format by using QMetaType.
     */
 
-    int AddInAbstractGrabber::pixelFormatStringToEnum(const char* val, bool* ok)
+    int AddInAbstractGrabber::pixelFormatStringToEnum(const QByteArray &val, bool* ok)
     {
 #if QT_VERSION >= 0x050500
         const QMetaObject mo = staticMetaObject;
 #else
         const QMetaObject mo = StaticQtMetaObject::get();
 #endif
+        const char* val_ = val.toLower().data();
         QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("PixelFormat"));
-        int pixelFormat = me.keyToValue(val, ok);
+        int pixelFormat = me.keyToValue(val_, ok);
         return pixelFormat;
     }
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -132,7 +133,7 @@ namespace ito
         This event is continoulsy fired if auto grabbing is enabled. At first, the image is acquired (method acquire). Then
         the image is retrieved (retrieveImage) and finally the newly grabbed image is send to all registered listeners (sendImagetoListeners)
     */
-    void AddInAbstractGrabber::timerEvent (QTimerEvent * /*event*/)
+    void AddInAbstractGrabber::timerEvent(QTimerEvent * /*event*/)
     {
         QCoreApplication::sendPostedEvents(this,0);
         ito::RetVal retValue = ito::retOk;
@@ -342,12 +343,12 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! constructor
-    AddInMultiChannelGrabber::AddInMultiChannelGrabber() :
+    AddInMultiChannelGrabber::AddInMultiChannelGrabber(const QByteArray &grabberName) :
         AddInAbstractGrabber()
     {
         dd = new AddInMultiChannelGrabberPrivate();
 
-        ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMultiChannelGrabber", "GrabberName");
+        ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, grabberName.data(), "GrabberName");
         paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
         m_params.insert(paramVal.getName(), paramVal);
 
@@ -460,7 +461,7 @@ namespace ito
             QMutableMapIterator<QString, ChannelContainer> i(m_channels);
             while (i.hasNext()) {
                 i.next();
-                futureType = pixelFormatStringToEnum(i.value().m_channelParam["pixelFormat"].getVal<char*>(),&ok);
+                futureType = pixelFormatStringToEnum(i.value().m_channelParam["pixelFormat"].getVal<const char*>(),&ok);
                 if (ok)
                 {
                     int* roi = i.value().m_channelParam["roi"].getVal<int*>();
@@ -483,7 +484,7 @@ namespace ito
             char* channel = m_params["defaultChannel"].getVal<char*>();
             if (m_channels.contains(channel))
             {
-                futureType = pixelFormatStringToEnum(m_channels[channel].m_channelParam["pixelFormat"].getVal<char*>(), &ok);
+                futureType = pixelFormatStringToEnum(m_channels[channel].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
                 if (ok)
                 {
                     int* roi = m_channels[channel].m_channelParam["roi"].getVal<int*>();

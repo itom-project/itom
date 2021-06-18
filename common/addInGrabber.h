@@ -46,6 +46,8 @@ namespace ito
     {
         Q_OBJECT
     public:
+
+        // all items must be lowercase!
         enum PixelFormat
         {
             mono8 = ito::tUInt8,
@@ -123,7 +125,7 @@ namespace ito
 
     public:
         static int pixelFormatStringToBpp(const char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
-        static int pixelFormatStringToEnum(const char* val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
+        static int pixelFormatStringToEnum(const QByteArray &val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
         AddInAbstractGrabber();
         ~AddInAbstractGrabber();
 
