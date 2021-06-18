@@ -482,9 +482,26 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
             if (_import_array() < 0)
             {
+                PyObject *type = nullptr;
+                PyObject *value = nullptr;
+                PyObject *traceback = nullptr;
+
+                PyErr_Fetch(&type, &value, &traceback);
+
+                QString msg = tr("Numpy.core.multiarray failed to import. Please verify that you have a compatible version of Numpy installed.");
+
+                if (value)
+                {
+                    msg += tr("\nNumpy load error: %1").arg(PythonQtConversion::PyObjGetString(value));
+                }
+
+                Py_XDECREF(type);
+                Py_XDECREF(value);
+                Py_XDECREF(traceback);
+
                 PyErr_PrintEx(0);
-                PyErr_SetString(PyExc_ImportError, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.").toLatin1().data());
-                (*retValue) += RetVal(retError, 0, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n").toLatin1().data());
+                PyErr_SetString(PyExc_ImportError, msg.toLatin1().data());
+                (*retValue) += RetVal(retError, 0, (msg + "\n").toLatin1().data());
                 return;
             }
 
@@ -1334,7 +1351,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input);
+    _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9
     _node *n2 = n;
     if (n == NULL)
     {
@@ -1496,9 +1513,10 @@ ito::RetVal PythonEngine::runString(const QString &command)
 
     PyObject *mainDict = getGlobalDictionary();
     PyObject *localDict = getLocalDictionary();
-    PyObject *result = NULL;
 
-    if (mainDict == NULL)
+    PyObject *result = nullptr;
+
+    if (mainDict == nullptr)
     {
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
         retValue += RetVal(retError, 1, tr("Main dictionary is empty").toLatin1().data());
@@ -1516,10 +1534,12 @@ ito::RetVal PythonEngine::runString(const QString &command)
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+
             if (!result)
             {
                 PyErr_PrintEx(0);
             }
+
             Py_XDECREF(result);
         }
 
@@ -1548,7 +1568,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python command (maybe stack overflow?)");
         }
 
-        if (result == NULL)
+        if (result == nullptr)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
@@ -1560,16 +1580,19 @@ ito::RetVal PythonEngine::runString(const QString &command)
                 PyErr_PrintEx(0);
                 retValue += RetVal(retError, 2, tr("Error while evaluating python string.").toLatin1().data());
             }
+
             PyErr_Clear();
         }
 
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
+
             if (!result)
             {
                 PyErr_PrintEx(0);
             }
+
             Py_XDECREF(result);
         }
 
@@ -6394,7 +6417,11 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                     }
                     else
                     {
-                        qDebug() << "variable with key '" << PyUnicode_AS_DATA(key) << "' already exists and must not be overwritten.";
+                        bool ok_;
+                        qDebug() << 
+                            "variable with key '" << 
+                            PythonQtConversion::PyObjGetString(key_approved, false, ok_) << 
+                            "' already exists and must not be overwritten.";
                     }
                 }
                 else

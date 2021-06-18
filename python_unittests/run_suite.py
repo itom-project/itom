@@ -14,6 +14,7 @@ import dataobject_multiplication
 import dataobject_np_conversion
 import dataobject_makecontinuous
 import dataobject_scale_offset
+import datatype_conversion_test
 import plot_test
 import shape_test
 import multichannel_test
@@ -35,7 +36,9 @@ def suite():
     suite.addTest(unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))
     suite.addTest(unittest.makeSuite(plot_test.PlotTest))
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
+    suite.addTest(unittest.makeSuite(datatype_conversion_test.DatatypeConversionTest))
     suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
+    
     if pyversion >= "3.6":
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))

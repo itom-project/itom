@@ -732,40 +732,26 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
         source->hasText() &&
         !m_wasReadonly)
     {
-        int lineCount;
-        QString formattedText = formatPythonCodePart(source->text(), lineCount);
+        int currentColumn;
+        getCursorPosition(nullptr, &currentColumn);
 
-        QStringList textlines = formattedText.split("\n");
+        QString currentIndent;
 
-        if (textlines.size() > 0)
+        if (useSpacesInsteadOfTabs())
         {
-            int currentLine;
-            int currentColumn;
-            getCursorPosition(&currentLine, &currentColumn);
-
-            QString currentIdent = lineText(currentLine).left(currentColumn);
-
-            if (currentIdent.trimmed().size() != 0)
-            {
-                //the text in the current line from the beginning to the cursor does not
-                //only contain spaces or tabs. Therefore this line is not considered.
-                currentIdent = "";
-            }
-
-            for (int i = 1; i < textlines.size(); ++i)
-            {
-                textlines[i] = currentIdent + textlines[i];
-            }
-
-            QMimeData mimeData;
-            mimeData.setText(textlines.join("\n"));
-
-            AbstractCodeEditorWidget::insertFromMimeData(&mimeData);
+            currentIndent = QString(currentColumn, ' ');
         }
         else
         {
-            AbstractCodeEditorWidget::insertFromMimeData(source);
+            currentIndent = QString(currentColumn, '\t');
         }
+
+        int lineCount;
+        QString formattedText = formatCodeBeforeInsertion(source->text(), lineCount, false, currentIndent);
+
+        QMimeData mimeData;
+        mimeData.setText(formattedText);
+        AbstractCodeEditorWidget::insertFromMimeData(&mimeData);
     }
     else
     {

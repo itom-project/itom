@@ -21,14 +21,20 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/pythonDataObject.h"
 #include "workspaceWidget.h"
 
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
+#include "../ui/dialogVariableDetailDataObject.h"
+
+#include "dataobj.h"
 
 #include <qstringlist.h>
 #include <qdrag.h>
 #include <qsettings.h>
+#include <qsharedpointer.h>
+
 
 namespace ito
 {
@@ -414,12 +420,20 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QTreeWidgetItem *tempItem = NULL;
     QString fullName("empty item");
     QByteArray type;
+    QSharedPointer<ito::ParamBase> value;
+    QStringList key;
+    QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
+    QSharedPointer<ito::DataObject> dObj = nullptr;
+    const ito::DataObject* obj = nullptr;
+
+    PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    ito::PyWorkspaceItem* item2 = nullptr;
 
     if (item)
     {
         fullName = item->data(0, RoleFullName).toString();
         type = item->data(0, RoleType).toByteArray();
-        ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName(fullName);
+        item2 = m_workspaceContainer->getItemByFullName(fullName);
         extendedValue = item2->m_extendedValue;
 
         if (item->parent() == NULL)
@@ -454,10 +468,9 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that is hasn't been evaluated at runtime before
+    if (extendedValue == "") //ask python to get extendedValue, since this value has been complex such that it hasn't been evaluated at runtime before
     {
-        PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
+        
         if (eng)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -475,14 +488,54 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         }
     }
 
-    DialogVariableDetail* dlg = new DialogVariableDetail(name, item->text(2), extendedValue, this);
-    
+    if (item2->m_compatibleParamBaseType == ito::ParamBase::DObjPtr)
+    {
+        key.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+        paramBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
 
-    dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-    dlg->setModal(false);
-    dlg->show();
-    dlg->raise();
-    dlg->activateWindow();
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<SharedParamBasePointerVector> values(new SharedParamBasePointerVector());
+        QMetaObject::invokeMethod(
+            eng,
+            "getParamsFromWorkspace",
+            Q_ARG(bool, m_globalNotLocal),
+            Q_ARG(QStringList, key),
+            Q_ARG(QVector<int>, paramBaseTypes),
+            Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            extendedValue = tr("timeout while asking python for detailed information");
+        }
+
+        for (int i = 0; i < values->size(); ++i)
+        {
+            if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+            {
+                obj = (*values)[i]->getVal<const ito::DataObject*>();
+                dObj = QSharedPointer<ito::DataObject>(new ito::DataObject(*obj));
+                break;
+            }
+        }
+
+        DialogVariableDetailDataObject* dlg = new DialogVariableDetailDataObject(
+            name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), dObj, this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        dlg->setModal(false);
+        dlg->show();
+        dlg->raise();
+        dlg->activateWindow();
+    }    
+    else
+    {
+        DialogVariableDetail* dlg =
+            new DialogVariableDetail(name, item->text(2), extendedValue, this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        dlg->setModal(false);
+        dlg->show();
+        dlg->raise();
+        dlg->activateWindow();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
