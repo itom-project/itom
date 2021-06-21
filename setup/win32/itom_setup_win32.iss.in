@@ -255,6 +255,7 @@ Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubePA\*.*"; DestDir: "{app}\plugins\ThorlabsKCubePA"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeIM\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeIM"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeDCServo\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeDCServo"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs

@@ -1343,7 +1343,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
 
     //see http://docs.python.org/devguide/compiler.html
     _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9, use Py_CompileString instead
-    PyCodeObject oJ;
+    
     _node *n2 = n;
     if (n == NULL)
     {
