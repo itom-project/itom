@@ -29,7 +29,7 @@
 #include "../helper/guiHelper.h"
 #include "plot/AbstractDObjFigure.h"
 #include "plot/AbstractDObjPCLFigure.h"
-#include "../common/addInGrabber.h"
+#include "../common/addInMultiChannelGrabber.h"
 
 #include <qlayoutitem.h>
 
