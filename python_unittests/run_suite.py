@@ -19,6 +19,7 @@ import plot_test
 import shape_test
 if pyversion >= "3.6":
     import itom_stubs_generator
+    import itom_algorithm_stubs_generator
     import itom_jedilib
 
 
@@ -39,6 +40,7 @@ def suite():
     if pyversion >= "3.6":
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
+        suite.addTest(unittest.makeSuite(itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest))
     return suite
 
 
